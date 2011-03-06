@@ -1,0 +1,35 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <style type="text/css">
+      tr.odd td {
+        background-color: #ddd;
+      }
+    </style>
+    
+  </head>
+
+  <body id="body">
+
+    <h1>Comments for product: <span th:text="${prod.name}">Hot Garlic</span></h1>
+  
+    <table>
+      <tr th:each="c : ${prod.comments}" th:class="${cStat.even}? '' : 'odd'">
+        <td th:text="${c.text}">Garlic is just fantastic!</td>
+      </tr>
+    </table>
+  
+    <p>
+      <a href="productlist.html" th:href="@{/product/list}">Return to product list</a>
+    </p>
+    
+  </body>
+  
+</html>
+

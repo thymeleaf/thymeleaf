@@ -1,0 +1,28 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <h1>Good Thymes Virtual Grocery</h1>
+  
+    <p th:utext="#{home.welcome}">Welcome to our grocery store!</p>
+  
+    <p>Today is: <span th:text="${today}">13 february 2011</span></p>
+    
+    <p>Please select an option</p>
+    <ol>
+      <li><a href="productlist.html" th:href="@{/product/list}">Product List</a></li>
+      <li><a href="subscribe.html" th:href="@{/subscribe}">Subscribe to our Newsletter</a></li>
+    </ol>
+  
+  </body>
+  
+</html>
+
