@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.0 r9654"
-   sodipodi:docname="thymelead.svg">
+   sodipodi:docname="thymeleaf.svg">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -250,7 +250,7 @@
     <rect
        style="fill:#145000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="rect2985-0-9-2-2"
-       width="569.47583"
+       width="548.42859"
        height="121.77984"
        x="72.57267"
        y="392.36206"
@@ -261,24 +261,24 @@
     <text
        xml:space="preserve"
        style="font-size:120px;font-style:oblique;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#f0faaa;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans Bold Oblique"
-       x="265.62189"
+       x="247.62189"
        y="476.06229"
        id="text3960-4-8-4-8-2"
        sodipodi:linespacing="125%"
        inkscape:export-filename="C:\Documents and Settings\Daniel\Desktop\thymelogotrans.png"
-       inkscape:export-xdpi="88.615387"
-       inkscape:export-ydpi="88.615387"><tspan
+       inkscape:export-xdpi="113.54193"
+       inkscape:export-ydpi="113.54193"><tspan
          sodipodi:role="line"
          id="tspan3962-6-2-0-8-3"
-         x="265.62189"
+         x="247.62189"
          y="476.06229"
          style="font-size:80px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#f0faaa;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy">thymeleaf</tspan></text>
     <g
        id="g3938-5-6"
        transform="matrix(1.4885231,0,0,1.4885231,-722.22868,-39.756649)"
        inkscape:export-filename="C:\Documents and Settings\Daniel\Desktop\thymelogotrans.png"
-       inkscape:export-xdpi="88.615387"
-       inkscape:export-ydpi="88.615387"
+       inkscape:export-xdpi="113.54193"
+       inkscape:export-ydpi="113.54193"
        style="fill:#f0faaa;fill-opacity:1">
       <path
          sodipodi:nodetypes="csscccccccccccccccccc"
@@ -363,14 +363,17 @@
     <text
        xml:space="preserve"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#f0faaa;fill-opacity:1;stroke:none;font-family:Sans"
-       x="609.30811"
+       x="591.30811"
        y="492.19711"
        id="text3034"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="C:\Documents and Settings\Daniel\Desktop\thymelogotrans.png"
+       inkscape:export-xdpi="113.54193"
+       inkscape:export-ydpi="113.54193"><tspan
          sodipodi:role="line"
          id="tspan3036"
-         x="609.30811"
+         x="591.30811"
          y="492.19711"
-         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;text-anchor:end;fill:#f0faaa;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy">XML · XHTML · HTML5</tspan></text>
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:end;text-anchor:end;fill:#f0faaa;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy">JAVA · XML · XHTML · HTML5</tspan></text>
   </g>
 </svg>
