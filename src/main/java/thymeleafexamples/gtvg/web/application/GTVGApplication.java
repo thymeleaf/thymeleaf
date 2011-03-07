@@ -31,6 +31,7 @@ import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import thymeleafexamples.gtvg.web.controller.HomeController;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
+import thymeleafexamples.gtvg.web.controller.OrderListController;
 import thymeleafexamples.gtvg.web.controller.ProductCommentsController;
 import thymeleafexamples.gtvg.web.controller.ProductListController;
 import thymeleafexamples.gtvg.web.controller.SubscribeController;
@@ -71,6 +72,7 @@ public class GTVGApplication {
         controllersByURL.put("/", new HomeController());
         controllersByURL.put("/product/list", new ProductListController());
         controllersByURL.put("/product/comments", new ProductCommentsController());
+        controllersByURL.put("/order/list", new OrderListController());
         controllersByURL.put("/subscribe", new SubscribeController());
         
         return controllersByURL;

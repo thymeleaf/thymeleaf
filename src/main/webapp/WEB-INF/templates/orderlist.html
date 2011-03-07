@@ -19,18 +19,16 @@
 
   <body>
 
-    <h1>Product list</h1>
+    <h1>Order list</h1>
   
     <table>
       <tr>
-        <th>NAME</th>
-        <th>PRICE</th>
-        <th>IN STOCK</th>
+        <th>DATE</th>
+        <th>CUSTOMER</th>
       </tr>
-      <tr th:each="prod : ${prods}" th:class="${prodStat.even}? '' : 'odd'">
-        <td th:text="${prod.name}">Onions</td>
-        <td th:text="${prod.price}">2.41</td>
-        <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
+      <tr th:each="o : ${orders}" th:class="${oStat.even}? '' : 'odd'">
+        <td th:text="${#dates.format(o.date,'dd/MMM/yyyy')}">13 jan 2011</td>
+        <td th:text="${o.customer.name}">Frederick Tomato</td>
       </tr>
     </table>
   

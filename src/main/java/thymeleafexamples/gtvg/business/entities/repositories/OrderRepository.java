@@ -121,7 +121,7 @@ public class OrderRepository {
         final Order order3 = new Order();
         order3.setId(Integer.valueOf(3));
         order3.setCustomer(cust4);
-        order2.setDate(CalendarUtil.calendarFor(2010, 7, 18, 22, 32));
+        order3.setDate(CalendarUtil.calendarFor(2010, 7, 18, 22, 32));
         this.ordersById.put(order3.getId(), order3);
         this.ordersByCustomerId.get(cust4.getId()).add(order3);
 
