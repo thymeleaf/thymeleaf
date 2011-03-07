@@ -3,7 +3,7 @@
 
   <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Thymeleaf Template Engine: From HTML to HTML via HTML</title>
+	<title>Thymeleaf: From HTML to HTML via HTML</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
   </head>
 
@@ -11,11 +11,11 @@
   <body lang="en" xml:lang="en" dir="ltr">
 
    <div id="header">
-     <img src="images/thymeleaflogotrans.png" class="logo" alt="Thymeleaf Template Engine"/>
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogotrans.png" class="logo" alt="Thymeleaf Template Engine"/></a>
      <ul class="menu">
-       <li><a href="index.html">home</a></li>
-       <li><a href="download.html">download</a></li>
-       <li><a href="documentation.html">documentation</a></li>
+       <li><a href="index.html" title="home">home</a></li>
+       <li><a href="download.html" title="download">download</a></li>
+       <li><a href="documentation.html" title="documentation">documentation</a></li>
      </ul>
    </div>
 
@@ -31,6 +31,28 @@
       ::
       <span class="title">from HTML to HTML (via HTML)</span>
     </h1>
+
+    <p>
+      Knowing the internals of the HTML family of web standards is quite important 
+      when you are using software such as Thymeleaf. At least if you want to understand
+      what you are doing.
+    </p>
+    <p>
+      The problem is that many people know the technologies they are
+      using for creating webs, but don't really know where these technologies
+      come from. It has been a long way since the inception of the first web
+      interfaces, and since then every new technology has been changing the way
+      we developed for the web by deprecating a good amount of our work and,
+      especially, our knowledge.
+    </p>
+    <p>
+      And now, with the arrival of HTML5, things have become even more complicated.
+      <em>What's it?</em> <em>Why is it HTML instead of XHTML?</em> <em>Wasn't the 
+      HTML tag soup considered harmful?</em>  
+    </p>
+    <p>
+      So let's take a step back, and see how we arrived where we are now, and why.
+    </p>
 
     <h2>Back in the 90s, there was HTML...</h2>
 
@@ -481,7 +503,7 @@
       and XHTML 1.0/1.1, which were incompatible languages.
     </p>
     
-    <h2>OK. The history lesson was great. How does Thymeleaf fit here?</h2>
+    <h2>OK. The history lesson was great. Now, how does this relate to Thymeleaf?</h2>
     
     <p>
       Thymeleaf allows you to create web templates according
@@ -501,9 +523,9 @@
       The main reason for this is that at the heart of
       Thymeleaf lie an XML parser and a DOM processor, and so Thymeleaf will always
       need XML input. If your HTML5 templates are well-formed XML they will
-      be parsed just as fine as any other XHTML template, but if they
+      be parsed just as fine as any other XHTML template; but if they
       aren't, Thymeleaf will need to execute a previous conversion (basically a
-      tag balancing operation) to convert your HTML to XML before parsing.
+      tag balancing operation) to convert your HTML into XML before parsing.
       Obviously, this will not be the end of the world, but in some
       high-load scenarios it could affect template processing performance.
     </p>
@@ -512,14 +534,10 @@
       often. The main reason HTML5 allows non-XML syntax is legacy
       integration, and there is no good reason why you should not be
       closing your tags and escaping your attributes in new applications
-      being developed these days. You do not want to voluntarily go back to
-      the days of tag soup, do you?
-    </p>
-    <p>
-      And standardized error handling isn't an excuse
-      for considering non-XML HTML5 <em>good code</em> today, because support
-      for that kind of error handling is still poor in browsers, so you
-      will just find yourself going back to the late 90s for no reason.
+      being developed these days. Remember that <em>with power comes
+      responsibility</em>. You do not want to voluntarily go back to
+      the olden days of tag soup by relying on how well browsers implement
+      standardized error handling, do you?
     </p>
     
    </div>
