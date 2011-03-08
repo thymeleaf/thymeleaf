@@ -39,6 +39,23 @@
              th:unless="${#lists.isEmpty(prod.comments)}">[view]</a>
         </td>
       </tr>
+      <tr class="odd" th:remove="all">
+        <td>Blue Lettuce</td>
+        <td>9.55</td>
+        <td>no</td>
+        <td>
+          <span>0</span> comment/s
+        </td>
+      </tr>
+      <tr th:remove="all">
+        <td>Mild Cinnamon</td>
+        <td>1.99</td>
+        <td>yes</td>
+        <td>
+          <span>3</span> comment/s
+          <a href="comments.html">[view]</a>
+        </td>
+      </tr>
     </table>
   
     <p>
