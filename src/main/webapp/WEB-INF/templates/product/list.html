@@ -26,11 +26,18 @@
         <th>NAME</th>
         <th>PRICE</th>
         <th>IN STOCK</th>
+        <th>COMMENTS</th>
       </tr>
       <tr th:each="prod : ${prods}" th:class="${prodStat.even}? '' : 'odd'">
         <td th:text="${prod.name}">Onions</td>
         <td th:text="${prod.price}">2.41</td>
         <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
+        <td>
+          <span th:text="${#lists.size(prod.comments)}">2</span> comment/s
+          <a href="comments.html" 
+             th:href="@{/product/comments(prodId=${prod.id})}" 
+             th:unless="${#lists.isEmpty(prod.comments)}">[view]</a>
+        </td>
       </tr>
     </table>
   
