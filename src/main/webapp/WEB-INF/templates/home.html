@@ -15,7 +15,9 @@
   
     <p th:utext="#{home.welcome(${session.user.name})}">Welcome to our grocery store, Sebastian!</p>
   
-    <p>Today is: <span th:text="${#dates.format(today,'dd MMMM yyyy')}">13 february 2011</span></p>
+    <p>
+      Today is: <span th:with="df=#{date.format}" th:text="${#dates.format(today,df)}">13 february 2011</span>
+    </p>
     
     <p>Please select an option</p>
     <ol>
