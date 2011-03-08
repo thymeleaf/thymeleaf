@@ -46,6 +46,40 @@ public class GTVGFilter implements Filter {
     public GTVGFilter() {
         super();
     }
+    
+    
+    
+    private static void addUserToSession(final HttpServletRequest request) {
+        // Simulate a real user session by adding a user object
+        request.getSession(true).setAttribute("user", new User("John", "Apricot", "Antarctica", null));
+    }
+
+
+
+
+    public void init(final FilterConfig filterConfig) throws ServletException {
+        // nothing to do
+    }
+
+
+
+
+    public void doFilter(final ServletRequest request, final ServletResponse response,
+            final FilterChain chain) throws IOException, ServletException {
+        addUserToSession((HttpServletRequest)request);
+        if (!process((HttpServletRequest)request, (HttpServletResponse)response)) {
+            chain.doFilter(request, response);
+        }
+    }
+
+
+
+
+    public void destroy() {
+        // nothing to do
+    }
+
+    
 
 
     private boolean process(HttpServletRequest request, HttpServletResponse response)
@@ -91,37 +125,6 @@ public class GTVGFilter implements Filter {
         
     }
     
-    
-    
-    private static void addUserToSession(final HttpServletRequest request) {
-        // Simulate a real user session by adding a user object
-        request.getSession(true).setAttribute("user", new User("John", "Apricot", "Antarctica", null));
-    }
-
-
-
-
-    public void init(final FilterConfig filterConfig) throws ServletException {
-        // nothing to do
-    }
-
-
-
-
-    public void doFilter(final ServletRequest request, final ServletResponse response,
-            final FilterChain chain) throws IOException, ServletException {
-        addUserToSession((HttpServletRequest)request);
-        if (!process((HttpServletRequest)request, (HttpServletResponse)response)) {
-            chain.doFilter(request, response);
-        }
-    }
-
-
-
-
-    public void destroy() {
-        // nothing to do
-    }
     
     
 }
