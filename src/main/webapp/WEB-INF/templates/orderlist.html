@@ -25,10 +25,16 @@
       <tr>
         <th>DATE</th>
         <th>CUSTOMER</th>
+        <th>TOTAL</th>
+        <th></th>
       </tr>
       <tr th:each="o : ${orders}" th:class="${oStat.even}? '' : 'odd'">
         <td th:text="${#dates.format(o.date,'dd/MMM/yyyy')}">13 jan 2011</td>
-        <td th:text="${o.customer.name}">Frederick Tomato</td>
+        <td th:text="${o.customer.name}">Frederic Tomato</td>
+        <td th:text="${#aggregates.sum(o.orderLines.{purchasePrice * amount})}">23.32</td>
+        <td>
+          <a href="orderdetails.html" th:href="@{/order/details(orderId=${o.id})}">[View]</a>
+        </td>
       </tr>
     </table>
   

@@ -1,0 +1,69 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+    <style type="text/css">
+      /* <![CDATA[ */
+      tr.odd td {
+        background-color: #ddd;
+      }
+      td.number {
+        text-align: right;
+      }
+      /* ]]> */
+    </style>
+    
+  </head>
+
+  <body>
+
+    <h1>Order details</h1>
+
+    <div>
+      <b>Code:</b> <span th:text="${order.id}">99</span>
+    </div>
+    <div>
+      <b>Date:</b> <span th:text="${#dates.format(order.date,'dd MMM yyyy')}">13 jan 2011</span>
+    </div>
+
+    <h2>Customer</h2>
+      
+    <div>
+      <b>Name:</b> <span th:text="${order.customer.name}">Frederic Tomato</span>
+    </div>
+    <div>
+      <b>Since:</b> <span th:text="${#dates.format(order.customer.customerSince,'dd MMM yyyy')}">13 jan 2011</span>
+    </div>
+  
+    <h2>Products</h2>
+  
+    <table>
+      <tr>
+        <th>PRODUCT</th>
+        <th>AMOUNT</th>
+        <th>PURCHASE PRICE</th>
+      </tr>
+      <tr th:each="ol : ${order.orderLines}" th:class="${olStat.even}? '' : 'odd'">
+        <td th:text="${ol.product.name}">Strawberries</td>
+        <td th:text="${ol.amount}" class="number">3</td>
+        <td th:text="${ol.purchasePrice}" class="number">23.32</td>
+      </tr>
+    </table>
+
+    <div>
+      <b>TOTAL:</b> <span th:text="${#aggregates.sum(order.orderLines.{purchasePrice * amount})}">35.23</span>
+    </div>
+  
+    <p>
+      <a href="orderlist.html" th:href="@{/order/list}">Return to order list</a>
+    </p>
+    
+  </body>
+  
+</html>
+
