@@ -12,7 +12,7 @@
 
     <h1>Good Thymes Virtual Grocery</h1>
   
-    <p th:utext="#{home.welcome}">Welcome to our grocery store!</p>
+    <p th:utext="#{home.welcome(${session.user.name})}">Welcome to our grocery store, Sebastian!</p>
   
     <p>Today is: <span th:text="${today}">13 february 2011</span></p>
     

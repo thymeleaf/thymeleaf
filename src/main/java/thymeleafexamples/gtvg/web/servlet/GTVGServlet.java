@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
 
+import thymeleafexamples.gtvg.business.entities.User;
 import thymeleafexamples.gtvg.web.application.GTVGApplication;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
 
@@ -48,6 +49,8 @@ public class GTVGServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
+        // Simulate a real user session by adding a user object
+        req.getSession(true).setAttribute("user", new User("John Apricot"));
         process(req, resp);
     }
 
@@ -58,6 +61,8 @@ public class GTVGServlet extends HttpServlet {
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
+        // Simulate a real user session by adding a user object
+        req.getSession(true).setAttribute("user", new User("John Apricot"));
         process(req, resp);
     }
 
