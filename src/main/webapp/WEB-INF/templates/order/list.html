@@ -33,13 +33,13 @@
         <td th:text="${o.customer.name}">Frederic Tomato</td>
         <td th:text="${#aggregates.sum(o.orderLines.{purchasePrice * amount})}">23.32</td>
         <td>
-          <a href="orderdetails.html" th:href="@{/order/details(orderId=${o.id})}">[View]</a>
+          <a href="details.html" th:href="@{/order/details(orderId=${o.id})}">[View]</a>
         </td>
       </tr>
     </table>
   
     <p>
-      <a href="home.html" th:href="@{/}">Return to home</a>
+      <a href="../home.html" th:href="@{/}">Return to home</a>
     </p>
     
   </body>

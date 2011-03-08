@@ -48,7 +48,7 @@ public class OrderListController implements IGTVGController {
         final WebContext ctx = new WebContext(request, request.getLocale());
         ctx.setVariable("orders", allOrders);
         
-        return templateEngine.process("orderlist", ctx);
+        return templateEngine.process("order/list", ctx);
         
     }
 

@@ -8,34 +8,25 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     
     <style type="text/css">
-      /* <![CDATA[ */
       tr.odd td {
         background-color: #ddd;
       }
-      /* ]]> */
     </style>
     
   </head>
 
-  <body>
+  <body id="body">
 
-    <h1>Product list</h1>
+    <h1>Comments for product: <span th:text="${prod.name}">Hot Garlic</span></h1>
   
     <table>
-      <tr>
-        <th>NAME</th>
-        <th>PRICE</th>
-        <th>IN STOCK</th>
-      </tr>
-      <tr th:each="prod : ${prods}" th:class="${prodStat.even}? '' : 'odd'">
-        <td th:text="${prod.name}">Onions</td>
-        <td th:text="${prod.price}">2.41</td>
-        <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
+      <tr th:each="c : ${prod.comments}" th:class="${cStat.even}? '' : 'odd'">
+        <td th:text="${c.text}">Garlic is just fantastic!</td>
       </tr>
     </table>
   
     <p>
-      <a href="home.html" th:href="@{/}">Return to home</a>
+      <a href="list.html" th:href="@{/product/list}">Return to product list</a>
     </p>
     
   </body>

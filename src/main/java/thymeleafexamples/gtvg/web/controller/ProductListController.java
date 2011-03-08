@@ -48,7 +48,7 @@ public class ProductListController implements IGTVGController {
         final WebContext ctx = new WebContext(request, request.getLocale());
         ctx.setVariable("prods", allProducts);
         
-        return templateEngine.process("productlist", ctx);
+        return templateEngine.process("product/list", ctx);
         
     }
 

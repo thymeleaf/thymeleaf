@@ -48,7 +48,7 @@ public class ProductCommentsController implements IGTVGController {
         final WebContext ctx = new WebContext(request, request.getLocale());
         ctx.setVariable("prod", product);
         
-        return templateEngine.process("productcomments", ctx);
+        return templateEngine.process("product/comments", ctx);
         
     }
 
