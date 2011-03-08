@@ -49,8 +49,7 @@ public class GTVGServlet extends HttpServlet {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
-        // Simulate a real user session by adding a user object
-        req.getSession(true).setAttribute("user", new User("John Apricot"));
+        addUserToSession(req);
         process(req, resp);
     }
 
@@ -61,8 +60,7 @@ public class GTVGServlet extends HttpServlet {
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
-        // Simulate a real user session by adding a user object
-        req.getSession(true).setAttribute("user", new User("John Apricot"));
+        addUserToSession(req);
         process(req, resp);
     }
 
@@ -110,6 +108,12 @@ public class GTVGServlet extends HttpServlet {
         
     }
     
+    
+    
+    private static void addUserToSession(final HttpServletRequest request) {
+        // Simulate a real user session by adding a user object
+        request.getSession(true).setAttribute("user", new User("John", "Apricot", "Antarctica"));
+    }
     
     
 }

@@ -36,6 +36,7 @@ import thymeleafexamples.gtvg.web.controller.OrderListController;
 import thymeleafexamples.gtvg.web.controller.ProductCommentsController;
 import thymeleafexamples.gtvg.web.controller.ProductListController;
 import thymeleafexamples.gtvg.web.controller.SubscribeController;
+import thymeleafexamples.gtvg.web.controller.UserProfileController;
 
 
 public class GTVGApplication {
@@ -76,6 +77,7 @@ public class GTVGApplication {
         controllersByURL.put("/order/list", new OrderListController());
         controllersByURL.put("/order/details", new OrderDetailsController());
         controllersByURL.put("/subscribe", new SubscribeController());
+        controllersByURL.put("/userprofile", new UserProfileController());
         
         return controllersByURL;
         

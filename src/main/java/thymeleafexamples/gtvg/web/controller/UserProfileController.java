@@ -17,38 +17,29 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.gtvg.business.entities;
+package thymeleafexamples.gtvg.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class User {
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
 
-    private String firstName = null;
-    private String lastName = null;
-    private String nationality = null;
+public class UserProfileController implements IGTVGController {
+
     
-    
-    public User(final String firstName, final String lastName, final String nationality) {
+    public UserProfileController() {
         super();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.nationality = nationality;
-    }
-
-
-    public String getFirstName() {
-        return this.firstName;
-    }
-
-    public String getLastName() {
-        return this.lastName;
     }
     
-    public String getName() {
-        return this.firstName + " " + this.lastName;
+    
+    public String process(
+            final HttpServletRequest request, final HttpServletResponse response,
+            final TemplateEngine templateEngine) {
+        
+        final WebContext ctx = new WebContext(request, request.getLocale());
+        return templateEngine.process("userprofile", ctx);
+        
     }
 
-    public String getNationality() {
-        return this.nationality;
-    }
-    
 }
