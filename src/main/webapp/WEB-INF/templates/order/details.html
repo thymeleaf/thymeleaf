@@ -25,19 +25,15 @@
     <h1>Order details</h1>
 
     <div>
-      <b>Code:</b> <span th:text="*{id}">99</span>
-    </div>
-    <div>
-      <b>Date:</b> <span th:text="${#dates.format(#object.date,'dd MMM yyyy')}">13 jan 2011</span>
+      <p><b>Code:</b> <span th:text="*{id}">99</span></p>
+      <p><b>Date:</b> <span th:text="*{#dates.format(date,'dd MMM yyyy')}">13 jan 2011</span></p>
     </div>
 
     <h2>Customer</h2>
       
-    <div>
-      <b>Name:</b> <span th:text="*{customer.name}">Frederic Tomato</span>
-    </div>
-    <div>
-      <b>Since:</b> <span th:text="${#dates.format(#object.customer.customerSince,'dd MMM yyyy')}">13 jan 2011</span>
+    <div th:object="*{customer}">
+      <p><b>Name:</b> <span th:text="*{name}">Frederic Tomato</span></p>
+      <p><b>Since:</b> <span th:text="*{#dates.format(customerSince,'dd MMM yyyy')}">13 jan 2011</span></p>
     </div>
   
     <h2>Products</h2>
@@ -48,7 +44,7 @@
         <th>AMOUNT</th>
         <th>PURCHASE PRICE</th>
       </tr>
-      <tr th:each="ol : ${order.orderLines}" th:class="${olStat.even}? '' : 'odd'">
+      <tr th:each="ol,row : *{orderLines}" th:class="${row.even}? '' : 'odd'">
         <td th:text="${ol.product.name}">Strawberries</td>
         <td th:text="${ol.amount}" class="number">3</td>
         <td th:text="${ol.purchasePrice}" class="number">23.32</td>
@@ -56,7 +52,7 @@
     </table>
 
     <div>
-      <b>TOTAL:</b> <span th:text="${#aggregates.sum(order.orderLines.{purchasePrice * amount})}">35.23</span>
+      <b>TOTAL:</b> <span th:text="*{#aggregates.sum(orderLines.{purchasePrice * amount})}">35.23</span>
     </div>
   
     <p>
