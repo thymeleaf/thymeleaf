@@ -84,11 +84,10 @@ public class GTVGApplication {
 
     
     public static IGTVGController resolveControllerForRequest(final HttpServletRequest request) {
-        
         final String path = getRequestPath(request);
         return controllersByURL.get(path);
-        
     }
+    
     
     public static TemplateEngine getTemplateEngine() {
         return templateEngine;

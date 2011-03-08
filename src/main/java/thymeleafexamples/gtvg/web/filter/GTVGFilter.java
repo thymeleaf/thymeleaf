@@ -89,7 +89,8 @@ public class GTVGFilter implements Filter {
             
             /*
              * Query controller/URL mapping and obtain the controller
-             * that will process the request.
+             * that will process the request. If no controller is available,
+             * return false and let other filters/servlets process the request.
              */
             IGTVGController controller = GTVGApplication.resolveControllerForRequest(request);
             if (controller == null) {

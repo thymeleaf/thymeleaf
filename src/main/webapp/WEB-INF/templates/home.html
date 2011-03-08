@@ -10,7 +10,8 @@
 
   <body>
 
-    <img src="../../images/gtvglogo.png" th:src="@{/images/gtvglogo.png}" th:alt-title="'GTVG Logo'"/>
+    <img src="../../images/gtvglogo.png" alt="GTVG logo" title="GTVG logo" 
+         th:src="@{/images/gtvglogo.png}" th:alt-title="#{logo}"/>
   
     <p th:utext="#{home.welcome(${session.user.name})}">Welcome to our grocery store, Sebastian!</p>
   
