@@ -19,7 +19,6 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,11 +39,8 @@ public class HomeController implements IGTVGController {
             HttpServletRequest request, HttpServletResponse response,
             TemplateEngine templateEngine) {
         
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy");
-        final Calendar cal = Calendar.getInstance();
-        
         WebContext ctx = new WebContext(request, request.getLocale());
-        ctx.setVariable("today", dateFormat.format(cal.getTime()));
+        ctx.setVariable("today", Calendar.getInstance());
         
         return templateEngine.process("home", ctx);
         

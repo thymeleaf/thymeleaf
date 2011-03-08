@@ -22,7 +22,6 @@ package thymeleafexamples.gtvg.web.application;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.thymeleaf.TemplateEngine;
@@ -84,20 +83,26 @@ public class GTVGApplication {
     }
 
     
-    public static IGTVGController resolveControllerForRequest(final HttpServletRequest request) 
-            throws ServletException {
+    public static IGTVGController resolveControllerForRequest(final HttpServletRequest request) {
         
-        final String path = request.getServletPath();
-        final IGTVGController controller = controllersByURL.get(path); 
-        if (controller == null) {
-            throw new ServletException("Cannot find controller for URL path \"" + path + "\"");
-        }
-        return controller;
+        final String path = getRequestPath(request);
+        return controllersByURL.get(path);
         
     }
     
     public static TemplateEngine getTemplateEngine() {
         return templateEngine;
+    }
+
+    
+    
+    private static String getRequestPath(final HttpServletRequest request) {
+        final String requestURI = request.getRequestURI();
+        final String contextPath = request.getContextPath();
+        if (requestURI.startsWith(contextPath)) {
+            return requestURI.substring(contextPath.length());
+        }
+        return requestURI;
     }
     
     

@@ -10,16 +10,15 @@
         <session-timeout>60</session-timeout>
     </session-config>
 
-    <servlet>
-        <servlet-name>gtvgservlet</servlet-name>
-        <servlet-class>thymeleafexamples.gtvg.web.servlet.GTVGServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
+    <filter>
+        <filter-name>gtvgfilter</filter-name>
+        <filter-class>thymeleafexamples.gtvg.web.filter.GTVGFilter</filter-class>
+    </filter>
 
 
-    <servlet-mapping>
-        <servlet-name>gtvgservlet</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-
+    <filter-mapping>
+        <filter-name>gtvgfilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    
 </web-app>

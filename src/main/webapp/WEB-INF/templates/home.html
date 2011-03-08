@@ -10,11 +10,11 @@
 
   <body>
 
-    <h1>Good Thymes Virtual Grocery</h1>
+    <img src="../../images/gtvglogo.png" th:src="@{/images/gtvglogo.png}" th:alt-title="'GTVG Logo'"/>
   
     <p th:utext="#{home.welcome(${session.user.name})}">Welcome to our grocery store, Sebastian!</p>
   
-    <p>Today is: <span th:text="${today}">13 february 2011</span></p>
+    <p>Today is: <span th:text="${#dates.format(today,'dd MMMM yyyy')}">13 february 2011</span></p>
     
     <p>Please select an option</p>
     <ol>
