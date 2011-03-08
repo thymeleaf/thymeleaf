@@ -20,24 +20,24 @@
     
   </head>
 
-  <body>
+  <body th:object="${order}">
 
     <h1>Order details</h1>
 
     <div>
-      <b>Code:</b> <span th:text="${order.id}">99</span>
+      <b>Code:</b> <span th:text="*{id}">99</span>
     </div>
     <div>
-      <b>Date:</b> <span th:text="${#dates.format(order.date,'dd MMM yyyy')}">13 jan 2011</span>
+      <b>Date:</b> <span th:text="${#dates.format(#object.date,'dd MMM yyyy')}">13 jan 2011</span>
     </div>
 
     <h2>Customer</h2>
       
     <div>
-      <b>Name:</b> <span th:text="${order.customer.name}">Frederic Tomato</span>
+      <b>Name:</b> <span th:text="*{customer.name}">Frederic Tomato</span>
     </div>
     <div>
-      <b>Since:</b> <span th:text="${#dates.format(order.customer.customerSince,'dd MMM yyyy')}">13 jan 2011</span>
+      <b>Since:</b> <span th:text="${#dates.format(#object.customer.customerSince,'dd MMM yyyy')}">13 jan 2011</span>
     </div>
   
     <h2>Products</h2>

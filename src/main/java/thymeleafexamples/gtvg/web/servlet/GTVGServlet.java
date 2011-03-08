@@ -112,7 +112,7 @@ public class GTVGServlet extends HttpServlet {
     
     private static void addUserToSession(final HttpServletRequest request) {
         // Simulate a real user session by adding a user object
-        request.getSession(true).setAttribute("user", new User("John", "Apricot", "Antarctica"));
+        request.getSession(true).setAttribute("user", new User("John", "Apricot", "Antarctica", null));
     }
     
     
