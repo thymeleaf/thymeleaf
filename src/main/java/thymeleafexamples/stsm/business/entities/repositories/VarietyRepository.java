@@ -17,14 +17,14 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.sts.business.entities.repositories;
+package thymeleafexamples.stsm.business.entities.repositories;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import thymeleafexamples.sts.business.entities.Variety;
+import thymeleafexamples.stsm.business.entities.Variety;
 
 
 public class VarietyRepository {

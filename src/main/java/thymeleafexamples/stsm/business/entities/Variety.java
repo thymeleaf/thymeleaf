@@ -17,44 +17,34 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.sts.business.entities;
+package thymeleafexamples.stsm.business.entities;
 
 
-public enum Type {
-    
-    PLASTIC("PLASTIC"), 
-    WOOD("WOOD");
-    
-    
-    private final String name;
 
+public class Variety {
+
+    private Integer id = null;
+    private String name = null;
     
-    public static Type forName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null for type");
-        }
-        if (name.toUpperCase().equals("PLASTIC")) {
-            return PLASTIC;
-        } else if (name.toUpperCase().equals("WOOD")) {
-            return WOOD;
-        }
-        throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Type");
+    
+    public Variety() {
+        super();
     }
-    
-    
-    private Type(final String name) {
-        this.name = name;
+
+
+    public Integer getId() {
+        return this.id;
     }
-    
-    
+    public void setId(final Integer id) {
+        this.id = id;
+    }
+
+
     public String getName() {
         return this.name;
     }
-    
-    @Override
-    public String toString() {
-        return getName();
+    public void setName(final String name) {
+        this.name = name;
     }
-    
     
 }

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.sts.business.entities;
+package thymeleafexamples.stsm.business.entities;
 
 
 

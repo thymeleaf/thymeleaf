@@ -17,34 +17,29 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.sts.business.entities;
+package thymeleafexamples.stsm.business.services;
 
+import java.util.List;
 
+import thymeleafexamples.stsm.business.entities.Variety;
+import thymeleafexamples.stsm.business.entities.repositories.VarietyRepository;
 
-public class Variety {
-
-    private Integer id = null;
-    private String name = null;
+public class VarietyService {
     
     
-    public Variety() {
+    
+    public VarietyService() {
         super();
     }
-
-
-    public Integer getId() {
-        return this.id;
-    }
-    public void setId(final Integer id) {
-        this.id = id;
+    
+    
+    
+    public List<Variety> findAll() {
+        return VarietyRepository.getInstance().findAll();
     }
 
-
-    public String getName() {
-        return this.name;
-    }
-    public void setName(final String name) {
-        this.name = name;
+    public Variety findById(final Integer id) {
+        return VarietyRepository.getInstance().findById(id);
     }
     
 }

@@ -17,29 +17,44 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.sts.business.services;
+package thymeleafexamples.stsm.business.entities;
 
-import java.util.List;
 
-import thymeleafexamples.sts.business.entities.Variety;
-import thymeleafexamples.sts.business.entities.repositories.VarietyRepository;
-
-public class VarietyService {
+public enum Type {
+    
+    PLASTIC("PLASTIC"), 
+    WOOD("WOOD");
     
     
+    private final String name;
+
     
-    public VarietyService() {
-        super();
+    public static Type forName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Name cannot be null for type");
+        }
+        if (name.toUpperCase().equals("PLASTIC")) {
+            return PLASTIC;
+        } else if (name.toUpperCase().equals("WOOD")) {
+            return WOOD;
+        }
+        throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Type");
     }
     
     
+    private Type(final String name) {
+        this.name = name;
+    }
     
-    public List<Variety> findAll() {
-        return VarietyRepository.getInstance().findAll();
+    
+    public String getName() {
+        return this.name;
     }
-
-    public Variety findById(final Integer id) {
-        return VarietyRepository.getInstance().findById(id);
+    
+    @Override
+    public String toString() {
+        return getName();
     }
+    
     
 }
