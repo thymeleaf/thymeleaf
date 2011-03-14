@@ -14,7 +14,6 @@
     <mvc:annotation-driven />
     <context:component-scan base-package="thymeleafexamples.stsm.web" />
     
-    <mvc:resources mapping="/resources/Messages**" location="/resources/" />
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="Messages" />
     </bean>
