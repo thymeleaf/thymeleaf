@@ -26,6 +26,9 @@ public enum Feature {
     SEEDBED_SUBSTRATE("SEEDBED_SUBSTRATE"), 
     FERTILIZER("FERTILIZER"), 
     PH_CORRECTOR("PH_CORRECTOR");
+
+    
+    public static final Feature[] ALL = { SEEDBED_SUBSTRATE, FERTILIZER, PH_CORRECTOR };
     
     
     private final String name;

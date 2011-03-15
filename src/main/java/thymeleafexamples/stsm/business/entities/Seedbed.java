@@ -19,13 +19,14 @@
  */
 package thymeleafexamples.stsm.business.entities;
 
-import java.util.Calendar;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 
 public class Seedbed {
 
     private Integer id = null;
-    private Calendar datePlanted = null;
+    private Date datePlanted = null;
     private Boolean covered = null;
     private Type type = null;
     private Feature[] features = null;
@@ -48,12 +49,12 @@ public class Seedbed {
     }
 
 
-    public Calendar getDatePlanted() {
+    public Date getDatePlanted() {
         return this.datePlanted;
     }
 
 
-    public void setDatePlanted(final Calendar datePlanted) {
+    public void setDatePlanted(final Date datePlanted) {
         this.datePlanted = datePlanted;
     }
 
@@ -96,6 +97,13 @@ public class Seedbed {
     public void setRows(final Map<Integer, Row> rows) {
         this.rows = rows;
     }
-    
+
+
+    @Override
+    public String toString() {
+        return "Seedbed [id=" + this.id + ", datePlanted=" + this.datePlanted
+                + ", covered=" + this.covered + ", type=" + this.type + ", features="
+                + Arrays.toString(this.features) + ", rows=" + this.rows + "]";
+    }
     
 }

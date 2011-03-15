@@ -1,0 +1,51 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Spring Thyme Seedbed Manager</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+
+    <h1>Spring Thyme Seedbed Manager</h1>
+  
+    <p>Welcome to the Manager!</p>
+
+    <form action="#" th:action="@{/seedbedmng}" th:object="${seedbed}">
+
+      <fieldset>
+      
+        <legend th:text="#{seedbed.data}">Seedbed data</legend>
+      
+        <input type="hidden" th:field="*{id}" />
+        <div>
+          <input type="text" th:field="*{datePlanted}" />
+        </div>
+        <div>
+          <input type="checkbox" th:field="*{covered}" />
+        </div>
+        <div>
+          <select th:field="*{type}">
+            <option th:each="type : ${types}" th:value="${type}" th:text="${type}">[type]</option>
+          </select>
+        </div>
+        <div>
+          <p th:each="feat : ${features}">
+            <input type="checkbox" th:field="*{features}" th:value="${feat}" /><span th:text="${feat}">[feat]</span>
+          </p>
+        </div>
+
+        <p>
+          <input type="submit" value="Submit" 
+                 th:value="*{id == null}? #{seedbed.create} : #{seedbed.modify}" />    
+        </p>
+      
+      </fieldset>
+      
+    </form>
+
+  </body>
+</html>

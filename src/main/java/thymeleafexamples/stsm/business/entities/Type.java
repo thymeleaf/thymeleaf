@@ -26,6 +26,9 @@ public enum Type {
     WOOD("WOOD");
     
     
+    public static final Type[] ALL = { PLASTIC, WOOD };
+    
+    
     private final String name;
 
     
