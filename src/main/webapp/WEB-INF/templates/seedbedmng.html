@@ -14,7 +14,7 @@
   
     <p>Welcome to the Manager!</p>
 
-    <form action="#" th:action="@{/seedbedmng}" th:object="${seedbed}">
+    <form action="#" th:action="@{/seedbedmng}" th:object="${seedbed}" method="post">
 
       <fieldset>
       
@@ -38,10 +38,34 @@
           </p>
         </div>
 
-        <p>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Variety</th>
+                <th>Seeds per pod</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="row,rowStat : *{rows}">
+                <th>
+                  <select th:field="*{rows[__${rowStat.index}__].variety}">
+                    <option th:each="var : ${varieties}" th:value="${var.id}" th:text="${var.name}">[var]</option>
+                  </select>
+                </th>
+                <th>
+                  B
+                </th>
+              </tr>
+            </tbody>
+          </table>
+          <input type="submit" name="addRow" />
+        </div>
+
+        <div>
           <input type="submit" value="Submit" 
                  th:value="*{id == null}? #{seedbed.create} : #{seedbed.modify}" />    
-        </p>
+        </div>
       
       </fieldset>
       

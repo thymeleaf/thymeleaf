@@ -24,19 +24,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Repository;
+
 import thymeleafexamples.stsm.business.entities.Variety;
 
 
+@Repository
 public class VarietyRepository {
 
-    private static final VarietyRepository INSTANCE = new VarietyRepository();
     private final Map<Integer,Variety> varietiesById;
     
-    
-    
-    public static VarietyRepository getInstance() {
-        return INSTANCE;
-    }
     
     
     private VarietyRepository() {

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -15,11 +15,13 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.request.WebRequest;
 
 import thymeleafexamples.stsm.business.entities.Feature;
+import thymeleafexamples.stsm.business.entities.Row;
 import thymeleafexamples.stsm.business.entities.Seedbed;
 import thymeleafexamples.stsm.business.entities.Type;
+import thymeleafexamples.stsm.business.entities.Variety;
+import thymeleafexamples.stsm.business.services.VarietyService;
 
 
 @Controller
@@ -28,13 +30,23 @@ public class SeedbedMngController {
     @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    private VarietyService varietyService;
+    
+    
+    
+    public SeedbedMngController() {
+        super();
+    }
+    
+    
     
     
     @InitBinder
-    public void initDateBinder(final WebRequest request, final WebDataBinder dataBinder) {
+    public void initDateBinder(final WebDataBinder dataBinder, final Locale locale) {
         
         final String dateformat = 
-            this.messageSource.getMessage("date.format", null, request.getLocale());
+            this.messageSource.getMessage("date.format", null, locale);
         
         final SimpleDateFormat sdf = new SimpleDateFormat(dateformat);
         sdf.setLenient(false);
@@ -55,10 +67,15 @@ public class SeedbedMngController {
         return Arrays.asList(Feature.ALL);
     }
     
+    @ModelAttribute("varieties")
+    public List<Variety> populateVarieties() {
+        return this.varietyService.findAll();
+    }
+    
     
     
     @RequestMapping({"/","/seedbedmng"})
-    public String showSeedbedMng(final Seedbed seedbed, final Map<String,Object> model) {
+    public String showSeedbedMng(final Seedbed seedbed) {
         
         if (seedbed == null) {
             System.out.println("Seedbed is null!!");
@@ -69,5 +86,12 @@ public class SeedbedMngController {
         
     }
     
+
+    
+    @RequestMapping(value="/seedbedmng", params={"addRow"})
+    public String addRow(final Seedbed seedbed) {
+        seedbed.getRows().add(new Row());
+        return "seedbedmng";
+    }
     
 }

@@ -23,7 +23,6 @@ package thymeleafexamples.stsm.business.entities;
 
 public class Row {
 
-    private String id = null;
     private Variety variety = null;
     private Integer seedsPerPod = null;
     
@@ -34,15 +33,6 @@ public class Row {
         super();
     }
 
-
-    public String getId() {
-        return this.id;
-    }
-
-
-    public void setId(final String id) {
-        this.id = id;
-    }
 
     public Variety getVariety() {
         return this.variety;

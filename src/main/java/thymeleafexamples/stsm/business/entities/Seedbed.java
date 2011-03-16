@@ -19,9 +19,10 @@
  */
 package thymeleafexamples.stsm.business.entities;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 public class Seedbed {
 
@@ -31,7 +32,7 @@ public class Seedbed {
     private Type type = null;
     private Feature[] features = null;
     
-    private Map<Integer,Row> rows = null;
+    private List<Row> rows = new ArrayList<Row>();
     
     
     public Seedbed() {
@@ -89,13 +90,8 @@ public class Seedbed {
     }
 
 
-    public Map<Integer, Row> getRows() {
+    public List<Row> getRows() {
         return this.rows;
-    }
-
-
-    public void setRows(final Map<Integer, Row> rows) {
-        this.rows = rows;
     }
 
 
