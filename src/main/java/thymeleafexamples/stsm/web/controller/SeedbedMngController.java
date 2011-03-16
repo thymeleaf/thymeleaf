@@ -1,5 +1,6 @@
 package thymeleafexamples.stsm.web.controller;
 
+import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,15 +45,17 @@ public class SeedbedMngController {
     
     @InitBinder
     public void initDateBinder(final WebDataBinder dataBinder, final Locale locale) {
-        
         final String dateformat = 
             this.messageSource.getMessage("date.format", null, locale);
-        
         final SimpleDateFormat sdf = new SimpleDateFormat(dateformat);
         sdf.setLenient(false);
-        
         dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));
-        
+    }
+
+    
+    @InitBinder
+    public void initVarietyBinder(final WebDataBinder dataBinder) {
+        dataBinder.registerCustomEditor(Variety.class, new VarietyPropertyEditor(this.varietyService));
     }
     
     
@@ -92,6 +95,36 @@ public class SeedbedMngController {
     public String addRow(final Seedbed seedbed) {
         seedbed.getRows().add(new Row());
         return "seedbedmng";
+    }
+    
+    
+    
+    
+    
+    
+    static class VarietyPropertyEditor extends PropertyEditorSupport {
+
+        private final VarietyService varietyService;
+        
+        public VarietyPropertyEditor(final VarietyService varietyService) {
+            super();
+            this.varietyService = varietyService;
+        }
+        
+        
+        @Override
+        public String getAsText() {
+            final Variety value = (Variety) getValue();
+            return (value != null ? value.getId().toString() : "");
+        }
+
+        @Override
+        public void setAsText(final String text) throws IllegalArgumentException {
+            final Integer varietyId = Integer.valueOf(text);
+            setValue(this.varietyService.findById(varietyId));
+        }
+        
+        
     }
     
 }

@@ -51,5 +51,11 @@ public class Row {
         this.seedsPerPod = seedsPerPod;
     }
 
+
+    @Override
+    public String toString() {
+        return "Row [variety=" + this.variety + ", seedsPerPod=" + this.seedsPerPod + "]";
+    }
+
     
 }
