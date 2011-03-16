@@ -42,24 +42,29 @@
           <table>
             <thead>
               <tr>
-                <th>Variety</th>
-                <th>Seeds per pod</th>
+                <th th:text="#{seedbed.rows.head.variety}">Variety</th>
+                <th th:text="#{seedbed.rows.head.seedsPerPod}">Seeds per pod</th>
+                <th>
+                  <input type="submit" name="addRow" th:value="#{seedbed.row.add}"/>
+                </th>
               </tr>
             </thead>
             <tbody>
               <tr th:each="row,rowStat : *{rows}">
-                <th>
+                <td>
                   <select th:field="*{rows[__${rowStat.index}__].variety}">
                     <option th:each="var : ${varieties}" th:value="${var.id}" th:text="${var.name}">[var]</option>
                   </select>
-                </th>
-                <th>
+                </td>
+                <td>
                   <input type="text" th:field="*{rows[__${rowStat.index}__].seedsPerPod}" />
-                </th>
+                </td>
+                <td>
+                  <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedbed.row.remove}">[remove]</button>
+                </td>
               </tr>
             </tbody>
           </table>
-          <input type="submit" name="addRow" />
         </div>
 
         <div>

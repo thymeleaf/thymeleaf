@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
@@ -97,6 +99,13 @@ public class SeedbedMngController {
         return "seedbedmng";
     }
     
+    
+    @RequestMapping(value="/seedbedmng", params={"removeRow"})
+    public String removeRow(final Seedbed seedbed, final HttpServletRequest req) {
+        final Integer rowId = Integer.valueOf(req.getParameter("removeRow"));
+        seedbed.getRows().remove(rowId.intValue());
+        return "seedbedmng";
+    }
     
     
     
