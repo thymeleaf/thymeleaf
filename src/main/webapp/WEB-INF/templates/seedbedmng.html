@@ -13,6 +13,18 @@
     <h1>Spring Thyme Seedbed Manager</h1>
   
     <p>Welcome to the Manager!</p>
+    
+    <div>
+      <table>
+        <tbody>
+          <tr th:each="sb : ${seedbeds}">
+            <td th:text="${sb.datePlanted}">13/01/2011</td>
+            <td th:text="${sb.covered}">13/01/2011</td>
+            <td th:text="${sb.type}">13/01/2011</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <form action="#" th:action="@{/seedbedmng}" th:object="${seedbed}" method="post">
 
@@ -42,15 +54,17 @@
           <table>
             <thead>
               <tr>
+                <th th:text="#{seedbed.rows.head.rownum}">Row</th>
                 <th th:text="#{seedbed.rows.head.variety}">Variety</th>
                 <th th:text="#{seedbed.rows.head.seedsPerPod}">Seeds per pod</th>
                 <th>
-                  <input type="submit" name="addRow" th:value="#{seedbed.row.add}"/>
+                  <button type="submit" name="addRow" th:text="#{seedbed.row.add}">Add row</button>
                 </th>
               </tr>
             </thead>
             <tbody>
               <tr th:each="row,rowStat : *{rows}">
+                <td th:text="${rowStat.count}">1</td>
                 <td>
                   <select th:field="*{rows[__${rowStat.index}__].variety}">
                     <option th:each="var : ${varieties}" th:value="${var.id}" th:text="${var.name}">[var]</option>
@@ -68,8 +82,8 @@
         </div>
 
         <div>
-          <input type="submit" value="Submit" 
-                 th:value="*{id == null}? #{seedbed.create} : #{seedbed.modify}" />    
+          <button type="submit" name="save" 
+                 th:text="*{id == null}? #{seedbed.create} : #{seedbed.modify}">Submit</button>    
         </div>
       
       </fieldset>

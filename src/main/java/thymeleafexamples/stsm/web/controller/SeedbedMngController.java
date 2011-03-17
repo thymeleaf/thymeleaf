@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,6 +25,7 @@ import thymeleafexamples.stsm.business.entities.Row;
 import thymeleafexamples.stsm.business.entities.Seedbed;
 import thymeleafexamples.stsm.business.entities.Type;
 import thymeleafexamples.stsm.business.entities.Variety;
+import thymeleafexamples.stsm.business.services.SeedbedService;
 import thymeleafexamples.stsm.business.services.VarietyService;
 
 
@@ -35,6 +37,9 @@ public class SeedbedMngController {
 
     @Autowired
     private VarietyService varietyService;
+    
+    @Autowired
+    private SeedbedService seedbedService;
     
     
     
@@ -77,18 +82,27 @@ public class SeedbedMngController {
         return this.varietyService.findAll();
     }
     
+    @ModelAttribute("seedbeds")
+    public List<Seedbed> populateSeedbeds() {
+        return this.seedbedService.findAll();
+    }
+    
     
     
     @RequestMapping({"/","/seedbedmng"})
-    public String showSeedbedMng(final Seedbed seedbed) {
-        
-        if (seedbed == null) {
-            System.out.println("Seedbed is null!!");
-        }
-        System.out.println(seedbed);
+    public String showSeedbed(final Seedbed seedbed) {
         seedbed.setDatePlanted(Calendar.getInstance().getTime());
         return "seedbedmng";
-        
+    }
+    
+    
+    
+    @RequestMapping(value="/seedbedmng", params={"save"})
+    public String saveSeedbed(final Seedbed seedbed, final ModelMap model) {
+        this.seedbedService.add(seedbed);
+        model.put("seedbeds", populateSeedbeds());
+        System.out.println("\n" + seedbed + "\n");
+        return "redirect:seedbedmng";
     }
     
 

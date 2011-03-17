@@ -36,7 +36,7 @@ public class VarietyRepository {
     
     
     
-    private VarietyRepository() {
+    public VarietyRepository() {
         
         super();
         
