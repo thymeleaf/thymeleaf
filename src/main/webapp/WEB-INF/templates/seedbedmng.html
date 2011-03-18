@@ -19,8 +19,9 @@
         <tbody>
           <tr th:each="sb : ${seedbeds}">
             <td th:text="${sb.datePlanted}">13/01/2011</td>
-            <td th:text="${sb.covered}">13/01/2011</td>
-            <td th:text="${sb.type}">13/01/2011</td>
+            <td th:text="${sb.covered}">yes</td>
+            <td th:text="${sb.type}">wood</td>
+            <td th:text="${#strings.join(sb.features.{name},', ')}">ph corrector, fertilizer</td>
           </tr>
         </tbody>
       </table>
@@ -41,12 +42,12 @@
         </div>
         <div>
           <select th:field="*{type}">
-            <option th:each="type : ${types}" th:value="${type}" th:text="${type}">[type]</option>
+            <option th:each="type : ${types}" th:value="${type}" th:text="#{seedbed.type.__${type}__}">[type]</option>
           </select>
         </div>
         <div>
           <p th:each="feat : ${features}">
-            <input type="checkbox" th:field="*{features}" th:value="${feat}" /><span th:text="${feat}">[feat]</span>
+            <input type="checkbox" th:field="*{features}" th:value="${feat}" /><span th:text="#{seedbed.feature.__${feat}__}">[feat]</span>
           </p>
         </div>
 
