@@ -21,7 +21,7 @@
             <td th:text="${sb.datePlanted}">13/01/2011</td>
             <td th:text="${sb.covered}">yes</td>
             <td th:text="${sb.type}">wood</td>
-            <td th:text="${#strings.join(sb.features.![name],', ')}">ph corrector, fertilizer</td>
+            <td th:text="${#strings.join(#messages.msg(#strings.prepend(sb.features.![name],'seedbed.feature.')),', ')}">ph corrector, fertilizer</td>
           </tr>
         </tbody>
       </table>
