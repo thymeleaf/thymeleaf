@@ -26,14 +26,14 @@
 
     <div>
       <p><b>Code:</b> <span th:text="*{id}">99</span></p>
-      <p><b>Date:</b> <span th:text="*{#dates.format(date,'dd MMM yyyy')}">13 jan 2011</span></p>
+      <p><b>Date:</b> <span th:text="*{#calendars.format(date,'dd MMM yyyy')}">13 jan 2011</span></p>
     </div>
 
     <h2>Customer</h2>
       
     <div th:object="*{customer}">
       <p><b>Name:</b> <span th:text="*{name}">Frederic Tomato</span></p>
-      <p><b>Since:</b> <span th:text="*{#dates.format(customerSince,'dd MMM yyyy')}">13 jan 2011</span></p>
+      <p><b>Since:</b> <span th:text="*{#calendars.format(customerSince,'dd MMM yyyy')}">13 jan 2011</span></p>
     </div>
   
     <h2>Products</h2>
