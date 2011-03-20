@@ -17,17 +17,15 @@
     <div>
       <table>
         <tbody>
-          <tr th:each="sb : ${seedbeds}">
+          <tr th:each="sb : ${allSeedbeds}">
             <td th:text="${sb.datePlanted}">13/01/2011</td>
-            <td th:text="${sb.covered}">yes</td>
-            <td th:text="#{${'seedbed.type.' + sb.type.name}}">wood</td>
-            <td th:text="${#strings.join(#messages.msg(#strings.prepend(sb.features.![name],'seedbed.feature.')),', ')}">ph corrector, fertilizer</td>
+            <td th:text="${sb.covered}? #{bool.true} : #{bool.false}">yes</td>
+            <td th:text="#{${'seedbed.type.' + sb.type}}">wood</td>
+            <td th:text="${#strings.join(#messages.msg(#strings.prepend(sb.features,'seedbed.feature.')),', ')}">ph corrector, fertilizer</td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <p>All: <span th:text="${#bools.and(seedbeds.![covered])}"></span></p>
 
     <form action="#" th:action="@{/seedbedmng}" th:object="${seedbed}" method="post">
 
@@ -44,12 +42,12 @@
         </div>
         <div>
           <select th:field="*{type}">
-            <option th:each="type : ${types}" th:value="${type.name}" th:text="#{${'seedbed.type.' + type.name}}">[type]</option>
+            <option th:each="type : ${allTypes}" th:value="${type}" th:text="#{${'seedbed.type.' + type}}">[type]</option>
           </select>
         </div>
         <div>
-          <p th:each="feat : ${features}">
-            <input type="checkbox" th:field="*{features}" th:value="${feat.name}" /><span th:text="#{${'seedbed.feature.' +feat.name}}">[feat]</span>
+          <p th:each="feat : ${allFeatures}">
+            <input type="checkbox" th:field="*{features}" th:value="${feat}" /><span th:text="#{${'seedbed.feature.' + feat}}">[feat]</span>
           </p>
         </div>
 
@@ -70,7 +68,7 @@
                 <td th:text="${rowStat.count}">1</td>
                 <td>
                   <select th:field="*{rows[__${rowStat.index}__].variety}">
-                    <option th:each="var : ${varieties}" th:value="${var.id}" th:text="${var.name}">[var]</option>
+                    <option th:each="var : ${allVarieties}" th:value="${var.id}" th:text="${var.name}">[var]</option>
                   </select>
                 </td>
                 <td>

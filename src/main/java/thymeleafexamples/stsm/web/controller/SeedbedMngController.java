@@ -69,22 +69,22 @@ public class SeedbedMngController {
     
     
     
-    @ModelAttribute("types")
+    @ModelAttribute("allTypes")
     public List<Type> populateTypes() {
         return Arrays.asList(Type.ALL);
     }
     
-    @ModelAttribute("features")
+    @ModelAttribute("allFeatures")
     public List<Feature> populateFeatures() {
         return Arrays.asList(Feature.ALL);
     }
     
-    @ModelAttribute("varieties")
+    @ModelAttribute("allVarieties")
     public List<Variety> populateVarieties() {
         return this.varietyService.findAll();
     }
     
-    @ModelAttribute("seedbeds")
+    @ModelAttribute("allSeedbeds")
     public List<Seedbed> populateSeedbeds() {
         return this.seedbedService.findAll();
     }
@@ -115,7 +115,8 @@ public class SeedbedMngController {
         }
         this.seedbedService.add(seedbed);
         System.out.println("\nSAVED: " + seedbed + "\n");
-        return "redirect:seedbedmng";
+        model.clear();
+        return "redirect:/seedbedmng";
     }
     
 
