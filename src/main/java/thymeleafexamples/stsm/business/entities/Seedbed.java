@@ -30,7 +30,7 @@ public class Seedbed {
     private Date datePlanted = null;
     private Boolean covered = null;
     private Type type = null;
-    private Feature[] features = null;
+    private Feature[] features;
     
     private List<Row> rows = new ArrayList<Row>();
     

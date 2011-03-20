@@ -114,8 +114,7 @@ public class SeedbedMngController {
             return "seedbedmng";
         }
         this.seedbedService.add(seedbed);
-        model.put("seedbeds", populateSeedbeds());
-        System.out.println("\n" + seedbed + "\n");
+        System.out.println("\nSAVED: " + seedbed + "\n");
         return "redirect:seedbedmng";
     }
     
