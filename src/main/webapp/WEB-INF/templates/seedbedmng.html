@@ -35,13 +35,11 @@
             <td>
               <table>
                 <tbody>
-                
                   <tr th:each="row,rowStat : ${sb.rows}">
                     <td th:text="${rowStat.count}">1</td>
                     <td th:text="${row.variety.name}">[var]</td>
                     <td th:text="${row.seedsPerPod}">[num]</td>
                   </tr>
-              
                 </tbody>
               </table>
             </td>
@@ -68,7 +66,7 @@
             <input type="text" th:field="*{datePlanted}" />
           </div>
           <div>
-            <label for="covered" th:text="#{seedbed.covered}">Covered</label>
+            <label th:for="${#ids.next('covered')}" th:text="#{seedbed.covered}">Covered</label>
             <input type="checkbox" th:field="*{covered}" />
           </div>
           <div>
@@ -78,9 +76,9 @@
             </select>
           </div>
           <div>
-            <label for="features" th:text="#{seedbed.features}">Features</label>
+            <label th:text="#{seedbed.features}">Features</label>
             <p th:each="feat : ${allFeatures}">
-              <input type="checkbox" th:field="*{features}" th:value="${feat}" /><span th:text="#{${'seedbed.feature.' + feat}}">[feat]</span>
+              <input type="checkbox" th:field="*{features}" th:value="${feat}" /><label th:for="${#ids.prev('features')}" th:text="#{${'seedbed.feature.' + feat}}">[feat]</label>
             </p>
           </div>
     
