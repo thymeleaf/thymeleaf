@@ -4,7 +4,7 @@
 /* ---------------------- */
 body {
   font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
   background-color: #f0f0f0;
   margin: 0px;
@@ -115,7 +115,7 @@ body {
 /* HEADERS                */
 /* ---------------------- */
 h1 {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
   font-variant: small-caps;
   color: #f0faaa;
@@ -135,7 +135,7 @@ h1.hidden {
   display: none;
 }
 h2 {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   color: #352726;
   margin-top: 30px;
