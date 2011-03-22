@@ -54,7 +54,13 @@ body {
 }
 #menu li a {
   color: #f0faaa;
+  font-weight: normal;
   text-decoration: none;
+  border: 0px;
+}
+#menu li a:hover {
+  color: #f0faaa;
+  border-bottom: 1px solid #f0faaa;
 }
 
 
@@ -67,11 +73,14 @@ body {
   text-align: left;
   background-color: #352726;
   padding: 0px 4px 0px 4px;
-  border-top: 1px dotted #99cc33;
+  border-top: 1px dotted #99cc33; 
   border-bottom: 3px solid #99cc33;
 }
 #header .logo {
   display: inline;
+  border: 0px;
+}
+#header a {
   border: 0px;
 }
 
@@ -87,11 +96,12 @@ body {
   text-align: left;
   padding-left: 30px;
   font-weight: bold;
-  color: #99cc33;
+  color: #a0a0a0;
 }
 #breadcrumb a {
   text-decoration: none;
-  color: #99cc33;
+  color: #a0a0a0;
+  border: 0px;
 }
 #breadcrumb .current {
   color: #352726;
@@ -202,11 +212,36 @@ p, ul, ol {
 }
 a {
   text-decoration: none;
+  color: #352726;
+  border-bottom: 1px dotted #352726;
+}
+a:hover {
   color: #99cc33;
-  font-weight: bold;
+  border-bottom: 1px solid #99cc33;
+}
+a img {
+  border: 0px;
 }
 ul li ul {
-    padding-left: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+  padding-left: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+div.widetable {
+  text-align: center;
+  margin: 0px 20px;
+}
+.widetable table {
+  text-align: left;
+  padding: 0px;
+  width: 100%;
+}
+.widetable table th {
+  border-collapse: collapse;
+  padding: 5px 10px;
+}
+.widetable table td {
+  border-collapse: collapse;
+  background-color: #f0f0f0;
+  padding: 5px 10px;
 }
