@@ -10,58 +10,92 @@
 
   <body lang="en" xml:lang="en" dir="ltr">
 
-   <div id="header">
-     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogotrans.png" class="logo" alt="Thymeleaf Template Engine"/></a>
-     <ul class="menu">
-       <li><a href="index.html" title="home">home</a></li>
-       <li><a href="download.html" title="download">download</a></li>
-       <li><a href="documentation.html" title="documentation">documentation</a></li>
+  <div id="page">
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="#" title="Issue Tracking">Issue Tracking</a></li>
      </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <span class="current">home</span>
    </div>
 
 
    <div id="content">
 
-    <h1>
-      <a href="index.html">thymeleaf</a> 
-      ::
-      <span class="title">home</span>
-    </h1>
-
     <h2>What is Thymeleaf?</h2>
     <p>
       Thymeleaf is a Java library. It is an XML/XHTML/HTML5 template engine able to apply a set of transformations to template files in order to display data and/or text produced by your applications.
-    </p>      
+    </p>
     <p>
       It is better suited for serving XHTML/HTML5 in web applications, but it can process any XML file, be it in web or in standalone applications.
-    </p>      
+    </p>
     <p>
       The main goal of Thymeleaf is to provide an elegant and well-formed way of creating templates. In order to achieve this, it is based on XML tags and attributes that define the execution of predefined logic on the DOM (Document Object Model), instead of explicitly writing that logic as code inside the template.
-    </p>      
+    </p>
     <p>
       Its architecture allows a fast processing of templates, relying on intelligent caching of parsed files in order to use the least possible amount of I/O operations during execution.
-    </p>      
+    </p>
     <p>
       And last but not least, Thymeleaf has been designed from the beginning with XML and Web standards in mind, allowing you to create fully validating templates if that is a need for you.    </p>
-    </p>      
-    
-    
-    <h2>Project Status</h2>
-    
-    <p>
-      Thymeleaf is work in progress. Publishing of its first release is expected in March 2011.
     </p>
-    
+
+
+    <h2>How does it look like?</h2>
+    <p>
+      It looks like this:
+    </p>
+    <code>
+      &lt;<b>table</b>&gt;<br/>
+      &nbsp;&nbsp;&lt;<b>thead</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b> th:text=<span class="string">"#{msgs.headers.name}"</span>&gt;Name&lt;/<b>td</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b> th:text=<span class="string">"#{msgs.headers.price}"</span>&gt;Price&lt;/<b>td</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&lt;/<b>tr</b>&gt;<br/>
+      &nbsp;&nbsp;&lt;/<b>thead</b>&gt;<br/>
+      &nbsp;&nbsp;&lt;<b>tbody</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b> th:each=<span class="string">"prod : ${allProducts}"</span>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${prod.name}"</span>&gt;Oranges&lt;/<b>td</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${#numbers.format(prod.price,1,2)}"</span>&gt;0.99&lt;/<b>td</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&lt;/<b>tr</b>&gt;<br/>
+      &nbsp;&nbsp;&lt;/<b>tbody</b>&gt;<br/>
+      &lt;/<b>table</b>&gt;<br/>
+    </code>
+
+
+    <h2>How is it distributed?</h2>
+    <p>
+      Thymeleaf is Open Source Software, and it is distributed under the terms of the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache License 2.0</a>.
+    </p>
+
+    <h2>Where can I start learning about it?</h2>
+
+    <p>
+      You should start by reading the <b>tutorials</b> at the <a href="documentation.html">documentation page</a>.
+    </p>
+
+    <h2>Project Status</h2>
+
+    <p>
+      Thymeleaf is work in progress. Publishing of its first release is expected in April 2011.
+    </p>
+
       <ul>
         <li><b>thymeleaf</b> (core library): Feature-complete and in beta stage.</li>
         <li><b>thymeleaf-spring3</b> (Spring Framework integration package): Still some minor work to be done.</li>
       </ul>
-
-    <h2>Where to start</h2>
-
-    <p>
-      You should start by reading the TUTORIALS at the <a href="documentation.html">documentation page</a>.
-    </p>
 
     <h2>Stay Tuned</h2>
 
@@ -74,11 +108,11 @@
     </p>
 
 
-    
+
    </div>
    
    <div id="footer">
-     <img src="images/thymeleaflogofooter.png" alt="" />
+     Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
    </div>
 
 
@@ -96,5 +130,7 @@
 
    </script>
    
+  </div>
+
   </body>
 </html>

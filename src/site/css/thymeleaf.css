@@ -1,108 +1,212 @@
 
+/* ---------------------- */
+/* BODY                   */
+/* ---------------------- */
 body {
   font-family: 'DejaVu Sans', Arial, Helvetica;
   font-size: 14px;
   text-align: center;
-  background-color: #145000;
-}
-
-#header {
-  width: 90%;
-  margin: 20px auto 35px auto;
-  text-align: left;
-}
-
-#header .logo {
-  display: inline;
-}
-
-#header .menu {
-  float:right;
-  text-align: right;
+  background-color: #f0f0f0;
   margin: 0px;
+  padding: 0px;
 }
 
-#header .menu li {
-  display: block;
-  color: #fcfef0;
+
+
+/* ---------------------- */
+/* PAGE                   */
+/* ---------------------- */
+#page {
+  width: 75%;
+  margin: 0px auto; 
+  padding: 0px 0px; 
+  border-left: 1px solid #cccccc; 
+  border-right: 1px solid #cccccc;
+  border-bottom: 1px solid #cccccc;
+}
+
+
+
+/* ---------------------- */
+/* MENU                   */
+/* ---------------------- */
+#menu, #menu ul {
+  font-size: 12px;
+  text-align: left;
+  text-transform: lowercase;
   list-style: none;
+  background-color: #000000;
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+  line-height: 30px;
 }
-
-#header .menu li a {
-  color: #fcfef0;
+#menu li {
+  display: inline;
+  padding: 0px 5px;
+  margin: 0px;
+  white-space: nowrap;
+  border-right: 1px solid #ccc;
+  color: #f0faaa;
+}
+#menu ul > li:last-child { 
+  border-right: 0px;  
+}
+#menu li a {
+  color: #f0faaa;
   text-decoration: none;
 }
 
+
+
+/* ---------------------- */
+/* HEADER                 */
+/* ---------------------- */
+#header {
+  margin: 0px;
+  text-align: left;
+  background-color: #352726;
+  padding: 0px 4px 0px 4px;
+  border-top: 1px dotted #99cc33;
+  border-bottom: 3px solid #99cc33;
+}
+#header .logo {
+  display: inline;
+  border: 0px;
+}
+
+
+
+/* ---------------------- */
+/* BREADCRUMB             */
+/* ---------------------- */
+#breadcrumb {
+  font-size: 12px;
+  background-color: #f2f2f2;
+  line-height: 30px;
+  text-align: left;
+  padding-left: 30px;
+  font-weight: bold;
+  color: #99cc33;
+}
+#breadcrumb a {
+  text-decoration: none;
+  color: #99cc33;
+}
+#breadcrumb .current {
+  color: #352726;
+}
+
+
+
+/* ---------------------- */
+/* CONTENT                */
+/* ---------------------- */
 #content {
-  width: 90%;
-  margin: 0px auto;
+  margin: 0px;
   background-color: #fcfef0;
   text-align: left;
   padding: 15px 0px;
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -ms-border-radius: 10px;
-  -webkit-border-radius: 10px;
-  -khtml-border-radius: 10px;
 }
 
+
+
+/* ---------------------- */
+/* HEADERS                */
+/* ---------------------- */
+h1 {
+  font-size: 24px;
+  font-weight: bold;
+  font-variant: small-caps;
+  color: #f0faaa;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-top: 10px;
+  margin-bottom: 40px;
+  background-color: #352726;
+  padding: 5px 10px; 
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+}
+h1.hidden {
+  display: none;
+}
+h2 {
+  font-size: 15px;
+  font-weight: bold;
+  color: #352726;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  margin-left: 25px;
+  margin-right: 25px;
+  background-color: #f0faaa;
+  border: 1px solid #cccccc;
+  padding: 3px 10px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -khtml-border-radius: 5px;
+}
+#content > h2:first-child {
+  margin-top: 10px;
+}
+
+
+/* ---------------------- */
+/* FOOTER                 */
+/* ---------------------- */
 #footer {
-  width: 90%;
+  font-size: 11px;
+  background-color: #fcfef0;
   margin: 0px auto;
-  text-align: center;
-  padding: 15px 0px;
+  text-align: right;
+  padding: 30px 10px;
 }
 
+
+
+/* ---------------------- */
+/* TT, CODE && STRINGS    */
+/* ---------------------- */
 tt, code {
   font-family: 'DejaVu Sans Mono', 'Courier New', Courier, monospace;
 }
-
 tt {
   color: #707070;
   font-weight: bold;
 }
-
 code {
-  border: 1px #000 solid;
-  background-color: #e5ef9f;
+  border: 1px solid #cccccc;
+  background-color: #f2f2f2;
   font-size: 12px;
   margin: 25px 60px;
   display: block;
   padding: 8px 15px;
 }
-
 span.string {
   color: blue;
 }
 
-h1 {
-  font-size: 20px;
-  font-weight: bold;
-  margin-left: 25px;
-  margin-bottom: 50px;
-  color: #c0c0c0;
-}
 
-h1 a {
-  color: #c0c0c0;
-  text-decoration: none;
-}
 
-h1 .title {
-  color: #000000;
-}
-
-h2 {
-  font-size: 16px;
-  font-weight: bold;
-  color: #000000;
-  margin-top: 55px;
-  margin-bottom: 30px;
-  margin-left: 25px;
-  margin-right: 25px;
-}
-
+/* ---------------------- */
+/* OTHER                  */
+/* ---------------------- */
 p, ul, ol {
   margin: 20px 50px;
   text-align: justify;
+}
+a {
+  text-decoration: none;
+  color: #99cc33;
+  font-weight: bold;
+}
+ul li ul {
+    padding-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

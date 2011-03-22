@@ -10,27 +10,37 @@
 
   <body lang="en" xml:lang="en" dir="ltr">
 
-   <div id="header">
-     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogotrans.png" class="logo" alt="Thymeleaf Template Engine"/></a>
-     <ul class="menu">
-       <li><a href="index.html" title="home">home</a></li>
-       <li><a href="download.html" title="download">download</a></li>
-       <li><a href="documentation.html" title="documentation">documentation</a></li>
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="#" title="Issue Tracking">Issue Tracking</a></li>
      </ul>
    </div>
 
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
 
-   <div id="content">
-
-    <h1>
+   <div id="breadcrumb">
       <a href="index.html">thymeleaf</a>
       ::
       <a href="documentation.html">documentation</a> 
       :: 
       articles
       ::
-      <span class="title">from HTML to HTML (via HTML)</span>
-    </h1>
+      <span class="current">from HTML to HTML (via HTML)</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>From HTML to HTML (via HTML)</h1>
 
     <p>
       Knowing the internals of the HTML family of web standards is quite important 
@@ -543,7 +553,7 @@
    </div>
    
    <div id="footer">
-     <img src="images/thymeleaflogofooter.png" alt="" />
+     Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
    </div>
    
    <script type="text/javascript">
@@ -560,5 +570,7 @@
 
    </script>
    
+  </div>
   </body>
+  
 </html>
