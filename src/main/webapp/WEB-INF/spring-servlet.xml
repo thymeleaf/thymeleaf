@@ -11,6 +11,11 @@
                         http://www.springframework.org/schema/context/spring-context-3.0.xsd">
                         
     
+    
+    <mvc:resources location="/images/" mapping="/images/**" />
+    <mvc:resources location="/css/" mapping="/css/**" />
+    
+    
     <mvc:annotation-driven />
     <context:component-scan base-package="thymeleafexamples.stsm" />
     
@@ -27,6 +32,7 @@
           class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
         <property name="prefix" value="/WEB-INF/templates/" />
         <property name="suffix" value=".html" />
+        <property name="templateMode" value="HTML5" />
     </bean>
     
     <bean id="templateEngine"
