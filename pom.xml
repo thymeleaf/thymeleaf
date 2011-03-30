@@ -6,7 +6,7 @@
     <artifactId>gtvg</artifactId>
     <packaging>war</packaging>
     <!-- Versions of this project will match those of the "Using Thymeleaf" tutorial. -->
-    <version>20110403</version>
+    <version>20110330</version>
     <name>Thymeleaf Examples - Good Thymes Virtual Grocery</name>
 
     <build>
