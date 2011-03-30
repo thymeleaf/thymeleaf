@@ -6,15 +6,17 @@
     <artifactId>gtvg</artifactId>
     <packaging>war</packaging>
     <!-- Versions of this project will match those of the "Using Thymeleaf" tutorial. -->
-    <version>1.0</version>
+    <version>20110403</version>
     <name>Thymeleaf Examples - Good Thymes Virtual Grocery</name>
 
     <build>
+    
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
+        
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -24,8 +26,42 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+        
         </plugins>
+        
     </build>
+
+    <profiles>
+    
+      <profile>
+        <id>build-dist</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>make-assembly-dist</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>attached</goal>
+                  </goals>
+                  <configuration>
+                    <descriptors>
+                      <descriptor>${basedir}/src/assembly/sources.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>true</appendAssemblyId>
+                    <finalName>${groupId}-${artifactId}-${version}</finalName>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      
+    </profiles>
 
 
     <dependencies>

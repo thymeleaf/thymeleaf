@@ -44,7 +44,7 @@
         <th>AMOUNT</th>
         <th>PURCHASE PRICE</th>
       </tr>
-      <tr th:each="ol,row : *{orderLines}" th:class="${row.even}? '' : 'odd'">
+      <tr th:each="ol,row : *{orderLines}" th:class="${row.odd}? 'odd'">
         <td th:text="${ol.product.name}">Strawberries</td>
         <td th:text="${ol.amount}" class="number">3</td>
         <td th:text="${ol.purchasePrice}" class="number">23.32</td>

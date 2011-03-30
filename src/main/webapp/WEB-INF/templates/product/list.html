@@ -28,7 +28,7 @@
         <th>IN STOCK</th>
         <th>COMMENTS</th>
       </tr>
-      <tr th:each="prod : ${prods}" th:class="${prodStat.even}? '' : 'odd'">
+      <tr th:each="prod : ${prods}" th:class="${prodStat.odd}? 'odd'">
         <td th:text="${prod.name}">Onions</td>
         <td th:text="${prod.price}">2.41</td>
         <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
