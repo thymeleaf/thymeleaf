@@ -59,15 +59,38 @@
         <fieldset>
           
           <legend th:text="#{seedbed.data}">Seedbed data</legend>
+
+          <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">something</li>
+          </ul>
+
+          <span th:errors="*{*}">...</span>
           
           <input type="hidden" th:field="*{id}" />
           <div>
             <label for="datePlanted" th:text="#{seedbed.datePlanted}">Date planted</label>
-            <input type="text" th:field="*{datePlanted}" />
+            <input type="text" th:field="*{datePlanted}" th:class="${#fields.hasErrors('datePlanted')}? 'fieldError'"/>
+            <p>
+            <span th:errors="*{datePlanted}">...</span>
+            </p>
+            <p>
+            <span th:if="${#fields.hasErrors('datePlanted')}" 
+                  th:text="${#fields.errors('datePlanted')}">THESE ARE THE ERRORS</span>
+            </p>
+            <p>
+            <span th:unless="${#fields.hasErrors('datePlanted')}">FIELD HAS NO ERRORRRRS!</span>
+            </p>
           </div>
           <div>
             <label th:for="${#ids.next('covered')}" th:text="#{seedbed.covered}">Covered</label>
             <input type="checkbox" th:field="*{covered}" />
+            <p>
+            <span th:if="${#fields.hasErrors('covered')}"
+                  th:text="${#fields.errors('covered')}">THESE ARE THE ERRORS</span>
+            </p>
+            <p>
+            <span th:unless="${#fields.hasErrors('covered')}">FIELD HAS NO ERRORRRRS!</span>
+            </p>
           </div>
           <div>
             <label for="type" th:text="#{seedbed.type}">Type</label>
@@ -79,7 +102,8 @@
             <label th:text="#{seedbed.features}">Features</label>
             <ul>
               <li th:each="feat : ${allFeatures}">
-                <input type="checkbox" th:field="*{features}" th:value="${feat}" /><label th:for="${#ids.prev('features')}" th:text="#{${'seedbed.feature.' + feat}}">[feat]</label>
+                <input type="checkbox" th:field="*{features}" th:value="${feat}" />
+                <label th:for="${#ids.prev('features')}" th:text="#{${'seedbed.feature.' + feat}}">[feat]</label>
               </li>
             </ul>
           </div>
@@ -107,6 +131,7 @@
                   </td>
                   <td>
                     <input type="text" th:field="*{rows[__${rowStat.index}__].seedsPerPod}" />
+                    <span th:errors="*{rows[__${rowStat.index}__].seedsPerPod}">...</span>
                   </td>
                   <td>
                     <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedbed.row.remove}">[remove]</button>

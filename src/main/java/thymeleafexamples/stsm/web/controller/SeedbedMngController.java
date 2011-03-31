@@ -102,7 +102,7 @@ public class SeedbedMngController {
     @RequestMapping(value="/seedbedmng", params={"save"})
     public String saveSeedbed(final Seedbed seedbed, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
-            System.out.println("***ERRORS!!!");
+            System.out.println("***ERRORS!!!: " + bindingResult.getClass().getName());
             for (final ObjectError error : bindingResult.getAllErrors()) {
                 System.out.println("---------------------------");
                 System.out.println("   Code: " + error.getCode());
@@ -134,7 +134,7 @@ public class SeedbedMngController {
         seedbed.getRows().remove(rowId.intValue());
         return "seedbedmng";
     }
-    
+
     
     
     

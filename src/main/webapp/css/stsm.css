@@ -119,3 +119,8 @@ div.seedbedlist > table > tbody > tr > td > table > tbody > tr> td {
 div.seedbedlist > table > tbody > tr > td > table > tbody > tr> td:last-child {
   text-align: right;
 }
+
+
+.fieldError {
+    border: 1px solid red;
+}

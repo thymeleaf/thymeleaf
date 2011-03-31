@@ -6,7 +6,7 @@
     <artifactId>stsm</artifactId>
     <packaging>war</packaging>
     <!-- Versions of this project will match those of the "Thymeleaf + Spring 3" tutorial. -->
-    <version>1.0</version>
+    <version>20110403</version>
     <name>Thymeleaf Examples - Spring Thyme Seedbed Manager</name>
 
     <build>
@@ -26,6 +26,38 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+    
+      <profile>
+        <id>build-dist</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>make-assembly-dist</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>attached</goal>
+                  </goals>
+                  <configuration>
+                    <descriptors>
+                      <descriptor>${basedir}/src/assembly/sources.xml</descriptor>
+                    </descriptors>
+                    <appendAssemblyId>true</appendAssemblyId>
+                    <finalName>${groupId}-${artifactId}-${version}</finalName>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
+      </profile>
+      
+    </profiles>
 
 
     <dependencies>
