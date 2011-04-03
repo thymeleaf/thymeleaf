@@ -23,7 +23,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>seedbedmng</welcome-file>
+        <welcome-file>seedstartermng</welcome-file>
     </welcome-file-list>
     
 </web-app>

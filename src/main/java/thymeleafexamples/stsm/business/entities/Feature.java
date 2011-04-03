@@ -23,12 +23,12 @@ package thymeleafexamples.stsm.business.entities;
 
 public enum Feature {
     
-    SEEDBED_SUBSTRATE("SEEDBED_SUBSTRATE"), 
+    SEEDSTARTER_SPECIFIC_SUBSTRATE("SEEDSTARTER_SPECIFIC_SUBSTRATE"), 
     FERTILIZER("FERTILIZER"), 
     PH_CORRECTOR("PH_CORRECTOR");
 
     
-    public static final Feature[] ALL = { SEEDBED_SUBSTRATE, FERTILIZER, PH_CORRECTOR };
+    public static final Feature[] ALL = { SEEDSTARTER_SPECIFIC_SUBSTRATE, FERTILIZER, PH_CORRECTOR };
     
     
     private final String name;
@@ -39,8 +39,8 @@ public enum Feature {
         if (name == null) {
             throw new IllegalArgumentException("Name cannot be null for feature");
         }
-        if (name.toUpperCase().equals("SEEDBED_SUBSTRATE")) {
-            return SEEDBED_SUBSTRATE;
+        if (name.toUpperCase().equals("SEEDSTARTER_SPECIFIC_SUBSTRATE")) {
+            return SEEDSTARTER_SPECIFIC_SUBSTRATE;
         } else if (name.toUpperCase().equals("FERTILIZER")) {
             return FERTILIZER;
         } else if (name.toUpperCase().equals("PH_CORRECTOR")) {

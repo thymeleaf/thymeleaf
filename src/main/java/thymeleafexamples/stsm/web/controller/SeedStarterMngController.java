@@ -24,15 +24,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import thymeleafexamples.stsm.business.entities.Feature;
 import thymeleafexamples.stsm.business.entities.Row;
-import thymeleafexamples.stsm.business.entities.Seedbed;
+import thymeleafexamples.stsm.business.entities.SeedStarter;
 import thymeleafexamples.stsm.business.entities.Type;
 import thymeleafexamples.stsm.business.entities.Variety;
-import thymeleafexamples.stsm.business.services.SeedbedService;
+import thymeleafexamples.stsm.business.services.SeedStarterService;
 import thymeleafexamples.stsm.business.services.VarietyService;
 
 
 @Controller
-public class SeedbedMngController {
+public class SeedStarterMngController {
 
     @Autowired
     private MessageSource messageSource;
@@ -41,11 +41,11 @@ public class SeedbedMngController {
     private VarietyService varietyService;
     
     @Autowired
-    private SeedbedService seedbedService;
+    private SeedStarterService seedStarterService;
     
     
     
-    public SeedbedMngController() {
+    public SeedStarterMngController() {
         super();
     }
     
@@ -84,23 +84,23 @@ public class SeedbedMngController {
         return this.varietyService.findAll();
     }
     
-    @ModelAttribute("allSeedbeds")
-    public List<Seedbed> populateSeedbeds() {
-        return this.seedbedService.findAll();
+    @ModelAttribute("allSeedStarters")
+    public List<SeedStarter> populateSeedStarters() {
+        return this.seedStarterService.findAll();
     }
     
     
     
-    @RequestMapping({"/","/seedbedmng"})
-    public String showSeedbed(final Seedbed seedbed) {
-        seedbed.setDatePlanted(Calendar.getInstance().getTime());
-        return "seedbedmng";
+    @RequestMapping({"/","/seedstartermng"})
+    public String showSeedstarters(final SeedStarter seedStarter) {
+        seedStarter.setDatePlanted(Calendar.getInstance().getTime());
+        return "seedstartermng";
     }
     
     
     
-    @RequestMapping(value="/seedbedmng", params={"save"})
-    public String saveSeedbed(final Seedbed seedbed, final BindingResult bindingResult, final ModelMap model) {
+    @RequestMapping(value="/seedstartermng", params={"save"})
+    public String saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
             System.out.println("***ERRORS!!!: " + bindingResult.getClass().getName());
             for (final ObjectError error : bindingResult.getAllErrors()) {
@@ -111,28 +111,28 @@ public class SeedbedMngController {
                 System.out.println("   Default message: " + error.getDefaultMessage());
                 System.out.println("   Object name: " + error.getObjectName());
             }
-            return "seedbedmng";
+            return "seedstartermng";
         }
-        this.seedbedService.add(seedbed);
-        System.out.println("\nSAVED: " + seedbed + "\n");
+        this.seedStarterService.add(seedStarter);
+        System.out.println("\nSAVED: " + seedStarter + "\n");
         model.clear();
-        return "redirect:/seedbedmng";
+        return "redirect:/seedstartermng";
     }
     
 
     
-    @RequestMapping(value="/seedbedmng", params={"addRow"})
-    public String addRow(final Seedbed seedbed, final BindingResult bindingResult) {
-        seedbed.getRows().add(new Row());
-        return "seedbedmng";
+    @RequestMapping(value="/seedstartermng", params={"addRow"})
+    public String addRow(final SeedStarter seedStarter, final BindingResult bindingResult) {
+        seedStarter.getRows().add(new Row());
+        return "seedstartermng";
     }
     
     
-    @RequestMapping(value="/seedbedmng", params={"removeRow"})
-    public String removeRow(final Seedbed seedbed, final BindingResult bindingResult, final HttpServletRequest req) {
+    @RequestMapping(value="/seedstartermng", params={"removeRow"})
+    public String removeRow(final SeedStarter seedStarter, final BindingResult bindingResult, final HttpServletRequest req) {
         final Integer rowId = Integer.valueOf(req.getParameter("removeRow"));
-        seedbed.getRows().remove(rowId.intValue());
-        return "seedbedmng";
+        seedStarter.getRows().remove(rowId.intValue());
+        return "seedstartermng";
     }
 
     

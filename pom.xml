@@ -7,7 +7,7 @@
     <packaging>war</packaging>
     <!-- Versions of this project will match those of the "Thymeleaf + Spring 3" tutorial. -->
     <version>20110403</version>
-    <name>Thymeleaf Examples - Spring Thyme Seedbed Manager</name>
+    <name>Thymeleaf Examples - Spring Thyme Seedstarter Manager</name>
 
     <build>
         <resources>

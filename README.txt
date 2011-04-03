@@ -1,6 +1,6 @@
 
- Thymeleaf Examples: Spring Thyme Seedbed Manager
- ------------------------------------------------
+ Thymeleaf Examples: Spring Thyme Seedstarter Manager
+ ----------------------------------------------------
  
  This is an example project containing code used in the "Thymeleaf + Spring 3" tutorial.
  
