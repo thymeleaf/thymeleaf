@@ -24,7 +24,7 @@ package thymeleafexamples.stsm.business.entities;
 public class Row {
 
     private Variety variety = null;
-    private Integer seedsPerPod = null;
+    private Integer seedsPerCell = null;
     
     
     
@@ -43,18 +43,18 @@ public class Row {
         this.variety = variety;
     }
 
-    public Integer getSeedsPerPod() {
-        return this.seedsPerPod;
+    public Integer getSeedsPerCell() {
+        return this.seedsPerCell;
     }
 
-    public void setSeedsPerPod(final Integer seedsPerPod) {
-        this.seedsPerPod = seedsPerPod;
+    public void setSeedsPerCell(final Integer seedsPerCell) {
+        this.seedsPerCell = seedsPerCell;
     }
 
 
     @Override
     public String toString() {
-        return "Row [variety=" + this.variety + ", seedsPerPod=" + this.seedsPerPod + "]";
+        return "Row [variety=" + this.variety + ", seedsPerCell=" + this.seedsPerCell + "]";
     }
 
     

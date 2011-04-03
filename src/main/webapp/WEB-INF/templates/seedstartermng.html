@@ -40,7 +40,7 @@
                   <tr th:each="row,rowStat : ${sb.rows}">
                     <td th:text="${rowStat.count}">1</td>
                     <td th:text="${row.variety.name}">[var]</td>
-                    <td th:text="${row.seedsPerPod}">[num]</td>
+                    <td th:text="${row.seedsPerCell}">[num]</td>
                   </tr>
                 </tbody>
               </table>
@@ -102,7 +102,7 @@
                 <tr>
                   <th th:text="#{seedstarter.rows.head.rownum}">Row</th>
                   <th th:text="#{seedstarter.rows.head.variety}">Variety</th>
-                  <th th:text="#{seedstarter.rows.head.seedsPerPod}">Seeds per pod</th>
+                  <th th:text="#{seedstarter.rows.head.seedsPerCell}">Seeds per cell</th>
                   <th>
                     <button type="submit" name="addRow" th:text="#{seedstarter.row.add}">Add row</button>
                   </th>
@@ -118,8 +118,8 @@
                   </td>
                   <td>
                     <input type="text" 
-                           th:field="*{rows[__${rowStat.index}__].seedsPerPod}" 
-                           th:class="${#fields.hasErrors('rows[__${rowStat.index}__].seedsPerPod')}? 'fieldError'" />
+                           th:field="*{rows[__${rowStat.index}__].seedsPerCell}" 
+                           th:class="${#fields.hasErrors('rows[__${rowStat.index}__].seedsPerCell')}? 'fieldError'" />
                   </td>
                   <td>
                     <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedstarter.row.remove}">[remove]</button>
