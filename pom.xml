@@ -74,7 +74,7 @@
       </repository>
       <repository>
           <id>jboss</id>
-          <url>https://repository.jboss.org/nexus/</url>
+          <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
           <releases>
             <enabled>true</enabled>
           </releases>
