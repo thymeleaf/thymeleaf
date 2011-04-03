@@ -74,7 +74,10 @@
       </repository>
       <repository>
           <id>jboss</id>
-          <url>http://repository.jboss.org/maven2</url>
+          <url>https://repository.jboss.org/nexus/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
       </repository>
     </repositories>
 
@@ -197,13 +200,14 @@
             <version>1.0.0.GA</version>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>4.1.0.Final</version>
         </dependency>        
 
-
+        
         
         <dependency>
             <groupId>org.thymeleaf</groupId>
@@ -217,6 +221,7 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
 
 
         <dependency>
