@@ -9,6 +9,53 @@
     <version>20110403</version>
     <name>Thymeleaf Examples - Spring Thyme Seedstarter Manager</name>
 
+
+    <description>XML/XHTML/HTML5 template engine for Java</description>
+
+    <licenses>
+      <license>
+        <name>The Apache Software License, Version 2.0</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
+
+    <organization>
+      <name>The THYMELEAF team</name>
+      <url>http://www.thymeleaf.org</url>
+    </organization>
+  
+    <scm>
+      <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-stsm</url>
+      <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-stsm</connection>
+      <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-stsm</developerConnection>
+    </scm>
+  
+    <developers>
+      <developer>
+        <id>dfernandez</id>
+        <name>Daniel Fernandez</name>
+        <email>dfernandez AT users.sourceforge.net</email>
+        <roles>
+          <role>Project admin</role>
+        </roles>
+      </developer>
+    </developers>
+  
+
+    <repositories>
+      <repository>
+        <id>sonatype-nexus-snapshots</id>
+        <name>Sonatype Nexus Snapshots</name>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        <snapshots>
+          <enabled>true</enabled>
+        </snapshots>
+      </repository>
+    </repositories>
+
+
+
     <build>
         <resources>
             <resource>
