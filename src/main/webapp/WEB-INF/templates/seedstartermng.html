@@ -10,9 +10,10 @@
 
   <body>
 
-
-    <img src="../../images/stsmlogo.png" alt="STSM logo" title="STSM logo" 
-         th:src="@{/images/stsmlogo.png}" th:alt-title="#{title.application}"/>
+    <div>
+      <img src="../../images/stsmlogo.png" alt="STSM logo" title="STSM logo" 
+           th:src="@{/images/stsmlogo.png}" th:alt-title="#{title.application}"/>
+    </div>
     
     <div class="seedstarterlist" th:unless="${#lists.isEmpty(allSeedStarters)}">
     
