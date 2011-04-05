@@ -102,19 +102,9 @@ public class SeedStarterMngController {
     @RequestMapping(value="/seedstartermng", params={"save"})
     public String saveSeedstarter(final SeedStarter seedStarter, final BindingResult bindingResult, final ModelMap model) {
         if (bindingResult.hasErrors()) {
-            System.out.println("***ERRORS!!!: " + bindingResult.getClass().getName());
-            for (final ObjectError error : bindingResult.getAllErrors()) {
-                System.out.println("---------------------------");
-                System.out.println("   Code: " + error.getCode());
-                System.out.println("   Codes: " + Arrays.asList(error.getCodes()));
-                System.out.println("   Arguments: " + Arrays.asList(error.getArguments()));
-                System.out.println("   Default message: " + error.getDefaultMessage());
-                System.out.println("   Object name: " + error.getObjectName());
-            }
             return "seedstartermng";
         }
         this.seedStarterService.add(seedStarter);
-        System.out.println("\nSAVED: " + seedStarter + "\n");
         model.clear();
         return "redirect:/seedstartermng";
     }

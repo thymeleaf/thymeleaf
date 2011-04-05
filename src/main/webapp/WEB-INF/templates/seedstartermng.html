@@ -68,7 +68,6 @@
           </ul>
 
           
-          <input type="hidden" th:field="*{id}" />
           <div>
             <label for="datePlanted">
               <span th:text="#{seedstarter.datePlanted}">Date planted</span>
@@ -131,8 +130,7 @@
           </div>
     
           <div class="submit">
-            <button type="submit" name="save" 
-                   th:text="*{id == null}? #{seedstarter.create} : #{seedstarter.modify}">Submit</button>    
+            <button type="submit" name="save" th:text="#{seedstarter.create}">Submit</button>    
           </div>
         
         </fieldset>
