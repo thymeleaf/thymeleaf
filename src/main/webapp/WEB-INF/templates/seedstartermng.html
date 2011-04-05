@@ -33,15 +33,18 @@
           <tr th:each="sb : ${allSeedStarters}">
             <td th:text="${#dates.format(sb.datePlanted, #messages.msg('date.format'))}">13/01/2011</td>
             <td th:text="${sb.covered}? #{bool.true} : #{bool.false}">yes</td>
-            <td th:text="#{${'seedstarter.type.' + sb.type}}">wood</td>
-            <td th:text="${#strings.join(#messages.msg(#strings.prepend(sb.features,'seedstarter.feature.')),', ')}">ph corrector, fertilizer</td>
+            <td th:text="#{${'seedstarter.type.' + sb.type}}">Wireframe</td>
+            <td th:text="${#strings.join(
+                             #messages.msg(
+                               #strings.prepend(sb.features,'seedstarter.feature.')),
+                             ', ')}">Electric Heating, Turf</td>
             <td>
               <table>
                 <tbody>
                   <tr th:each="row,rowStat : ${sb.rows}">
                     <td th:text="${rowStat.count}">1</td>
-                    <td th:text="${row.variety.name}">[var]</td>
-                    <td th:text="${row.seedsPerCell}">[num]</td>
+                    <td th:text="${row.variety.name}">Thymus Thymi</td>
+                    <td th:text="${row.seedsPerCell}">12</td>
                   </tr>
                 </tbody>
               </table>
@@ -55,16 +58,16 @@
 
     <div>
     
-      <h2 th:text="#{title.new}">Add new seedstarter</h2>
+      <h2 th:text="#{title.new}">Add new Seed Starter</h2>
 
       <form action="#" th:action="@{/seedstartermng}" th:object="${seedStarter}" method="post">
     
         <fieldset>
           
-          <legend th:text="#{seedstarter.data}">seedstarter data</legend>
+          <legend th:text="#{seedstarter.data}">Seed Starter Data</legend>
 
           <ul th:if="${#fields.hasErrors('*')}" class="errorlist">
-            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">something</li>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Input is incorrect</li>
           </ul>
 
           
@@ -82,7 +85,7 @@
           <div>
             <label for="type" th:text="#{seedstarter.type}">Type</label>
             <select th:field="*{type}">
-              <option th:each="type : ${allTypes}" th:value="${type}" th:text="#{${'seedstarter.type.' + type}}">[type]</option>
+              <option th:each="type : ${allTypes}" th:value="${type}" th:text="#{${'seedstarter.type.' + type}}">Wireframe</option>
             </select>
           </div>
           <div>
@@ -90,7 +93,10 @@
             <ul>
               <li th:each="feat : ${allFeatures}">
                 <input type="checkbox" th:field="*{features}" th:value="${feat}" />
-                <label th:for="${#ids.prev('features')}" th:text="#{${'seedstarter.feature.' + feat}}">[feat]</label>
+                <label th:for="${#ids.prev('features')}" th:text="#{${'seedstarter.feature.' + feat}}">Electric Heating</label>
+              </li>
+              <li th:remove="all">
+                <input id="removed1" type="checkbox" /> <label for="removed1">Turf</label>
               </li>
             </ul>
           </div>
@@ -113,7 +119,7 @@
                   <td th:text="${rowStat.count}">1</td>
                   <td>
                     <select th:field="*{rows[__${rowStat.index}__].variety}">
-                      <option th:each="var : ${allVarieties}" th:value="${var.id}" th:text="${var.name}">[var]</option>
+                      <option th:each="var : ${allVarieties}" th:value="${var.id}" th:text="${var.name}">Thymus Thymi</option>
                     </select>
                   </td>
                   <td>
@@ -122,7 +128,7 @@
                            th:class="${#fields.hasErrors('rows[__${rowStat.index}__].seedsPerCell')}? 'fieldError'" />
                   </td>
                   <td>
-                    <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedstarter.row.remove}">[remove]</button>
+                    <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedstarter.row.remove}">Remove row</button>
                   </td>
                 </tr>
               </tbody>
@@ -130,7 +136,7 @@
           </div>
     
           <div class="submit">
-            <button type="submit" name="save" th:text="#{seedstarter.create}">Submit</button>    
+            <button type="submit" name="save" th:text="#{seedstarter.create}">Add Seed Starter</button>    
           </div>
         
         </fieldset>
