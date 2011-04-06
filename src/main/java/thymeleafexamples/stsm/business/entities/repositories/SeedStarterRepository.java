@@ -47,7 +47,6 @@ public class SeedStarterRepository {
     
     public void add(final SeedStarter seedStarter) {
         this.seedStarters.add(seedStarter);
-        System.out.println("New size: " + this.seedStarters.size());
     }
     
     
