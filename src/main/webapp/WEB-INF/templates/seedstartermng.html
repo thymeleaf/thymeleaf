@@ -76,7 +76,7 @@
               <span th:text="#{seedstarter.datePlanted}">Date planted</span>
               (<span th:text="#{date.format}">YYYY/MM/DD</span>)
             </label>
-            <input type="text" th:field="*{datePlanted}" th:class="${#fields.hasErrors('datePlanted')}? 'fieldError'"/>
+            <input type="text" th:field="*{datePlanted}" th:class="${#fields.hasErrors('datePlanted')}? 'fieldError'" />
           </div>
           <div>
             <label th:for="${#ids.next('covered')}" th:text="#{seedstarter.covered}">Covered</label>
