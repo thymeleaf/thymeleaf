@@ -199,6 +199,9 @@ p, ul, ol {
   margin: 20px 40px;
   text-align: justify;
 }
+li {
+  margin-top: 5px;
+}
 a {
   text-decoration: none;
   color: #352726;
