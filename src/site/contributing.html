@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Thymeleaf</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      <span class="current">contributing to thymeleaf</span>
+   </div>
+
+
+   <div id="content">
+
+
+     <h1>Contributing to Thymeleaf: Terms</h1>
+
+     <p>
+       In order to contribute to Thymeleaf, there are some terms with which you must agree:
+     </p>
+
+     <h2>Who can contribute?</h2>
+  
+     <p>
+       Anyone, with the unique condition that he/she must be a <b>private individual</b>,
+       acting in his/her own name, and not being endorsed in their contributed work
+       by any company or government.
+     </p>
+
+     <h2>About your contributed code</h2>
+
+     <ul>
+       <li>
+         First and important: your code <b>must both compile and work correctly</b>. 
+         Also, the addition of any new patches to the codebase should not render 
+         it unstable in any way.
+       </li>
+       <li>
+         There should be no compilation warnings.
+       </li>
+       <li>
+         All your code should follow the Java Code Conventions. The only 
+         exception for this is that column limit is not the usual 
+         80 characters (this is a matter of convenience -just don't make them 200 characters
+         long and it will be OK).
+       </li>
+       <li>
+         Remember that indentation is made of four spaces, not tabs.
+       </li>
+       <li>
+         All your code should compile and run in Java 1.5, and it should be 
+         easy to read and understand by a human.
+       </li>
+       <li>
+         All public methods and classes directly available to the Thymeleaf users
+         should have comprehensive javadoc (e.g: functions, operators), and 
+         code should have a reasonable amount of comments in it (when needed, 
+         of course, not just comment for the sake of comment).
+       </li>
+       <li>
+         All comments, names of classes and variables, log messages, etc. must
+        be in <b>English</b>.
+       </li>
+     </ul>
+
+     <h2>About your relation to the Thymeleaf project</h2>
+
+     <ul>
+       <li>
+         First and most important: please, don't feel any obligation to do 
+         anything. If you like/want/feel happy about contributing, go for it. If not, 
+         don't feel any kind of commitment just for having discussed technical 
+         details with the project maintainers or other members, just leave it 
+         behind and it will be absolutely fine, 
+         even if it is after months and you have already coded thousands of lines.
+       </li>
+       <li>
+         You will be <tt>@author</tt> for any new classes that you code and also 
+         co-author to any existing classes to which you make <i>significant</i> 
+         changes. Of course you can say "no" to this, but unless you do, it 
+         is a matter of basic fairness to give the credit and merit to the person 
+         who deserves it.
+       </li>
+       <li>
+         Your contributions will be applied as patches that you will send to the
+         project maintainers, and you will have the consideration of <i>contributor</i> 
+         in the team page. This means that you will not have read+write direct access to
+         the CVS repository. This is something reserved for developers
+         who are author to a very significant percent of the total code base. Of 
+         course, this consideration can change in the future.
+       </li>
+       <li>
+         And importantly: You will have to take the required measures, under your 
+         entire responsibility, to <b>ensure that neither you nor the company/ies you work for will 
+         ever claim any rights over your contributed code</b>, and that all the code 
+         you contribute is original and will rise no claims over its intellectual 
+         property by any third persons or companies. Also, you agree to contribute 
+         your code or documentation <b>completely for free and under the terms established by the 
+         Apache License 2.0 in a time-unlimited basis</b>.
+       </li>
+     </ul>
+     
+
+
+     <h2>Contributing to Thymeleaf: Steps</h2>
+
+     <p>
+       If, after carefully reading the above terms, you are willing to contribute 
+       some of your effort to Thymeleaf, first of all... THANK YOU!
+     </p>
+     <p>
+       The steps you should take are:
+     </p> 
+
+     <ol>
+       <li>
+         First, send an email to the project maintainers talking about the new features
+         or fixes you would like to contribute. Don't forget to include your full
+         name :-).
+       </li>
+       <li>
+         If your contribution is approved, send the project maintainers an email
+         including a copy of the terms above, with your complete name, and 
+         stating clearly that you agree with these conditions.
+       </li>
+       <li>
+         If you work for a company which, by the way or place in which your code was
+         written, by your contract terms or by the laws in your contry, could claim
+         any rights (including but not limited to intellectual property) over your contributed code, you will have
+         to send the project maintainers (either by email from your authorised superiors or 
+         by signed fax), a statement indicating that your company agrees
+         with the terms explained in this page, and that it both authorises your 
+         contribution to Thymeleaf and states that will never claim any kind of rights 
+         over it.
+       </li>
+     </ol>
+
+
+   </div>
+   
+   <div id="footer">
+     <div id="twitter">
+       <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow @thymeleaf on Twitter" title="Follow @thymeleaf on Twitter "/></a>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+</html>
