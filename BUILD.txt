@@ -18,6 +18,9 @@
  
      mvn tomcat:run
 
+ Once starter, the application should be available at:
+ 
+     http://localhost:8080/stsm
 
 
  
