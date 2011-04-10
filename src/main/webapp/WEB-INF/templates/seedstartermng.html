@@ -34,9 +34,9 @@
             <td th:text="${#dates.format(sb.datePlanted, #messages.msg('date.format'))}">13/01/2011</td>
             <td th:text="${sb.covered}? #{bool.true} : #{bool.false}">yes</td>
             <td th:text="#{${'seedstarter.type.' + sb.type}}">Wireframe</td>
-            <td th:text="${#strings.join(
-                             #messages.msg(
-                               #strings.prepend(sb.features,'seedstarter.feature.')),
+            <td th:text="${#strings.arrayJoin(
+                             #messages.arrayMsg(
+                               #strings.arrayPrepend(sb.features,'seedstarter.feature.')),
                              ', ')}">Electric Heating, Turf</td>
             <td>
               <table>
