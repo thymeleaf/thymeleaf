@@ -62,7 +62,6 @@ body {
 }
 
 
-
 /* ---------------------- */
 /* HEADER                 */
 /* ---------------------- */
@@ -159,11 +158,36 @@ h2 {
 /* FOOTER                 */
 /* ---------------------- */
 #footer {
+  border-top: 1px solid #cccccc;
   font-size: 11px;
   background-color: #fcfef0;
-  margin: 0px auto;
+  padding: 10px 35px 5px 35px;
+  text-align: left;
+  margin-bottom: 30px;
+}
+#footer > #twitter {
+  display: inline;
+  line-height: 30px;
+}
+#footer > #twitter a {
+  text-decoration: none;
+  border: 0px;
+}
+#footer > #sourceforge {
+  display: inline;
+  line-height: 35px;
+  float:right;
+  margin-left: 10px;
+}
+#footer > #sourceforge a {
+  text-decoration: none;
+  border: 0px;
+}
+#footer #copy {
+  display: inline;
   text-align: right;
-  padding: 30px 10px;
+  line-height: 30px;
+  float:right;
 }
 
 

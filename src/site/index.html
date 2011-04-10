@@ -69,7 +69,7 @@
       &nbsp;&nbsp;&lt;<b>tbody</b>&gt;<br/>
       &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b> th:each=<span class="string">"prod : ${allProducts}"</span>&gt;<br/>
       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${prod.name}"</span>&gt;Oranges&lt;/<b>td</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${#numbers.format(prod.price,1,2)}"</span>&gt;0.99&lt;/<b>td</b>&gt;<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${#numbers.formatDecimal(prod.price,1,2)}"</span>&gt;0.99&lt;/<b>td</b>&gt;<br/>
       &nbsp;&nbsp;&nbsp;&nbsp;&lt;/<b>tr</b>&gt;<br/>
       &nbsp;&nbsp;&lt;/<b>tbody</b>&gt;<br/>
       &lt;/<b>table</b>&gt;<br/>
@@ -90,22 +90,25 @@
     <h2>Project Status</h2>
 
     <p>
-      Thymeleaf is now reaching beta stage. First public release (version <b>1.0.0-beta1</b>) will be published on <b>10 April 2011</b>.
-    </p>
-    <p>
-      Both the core (thymeleaf) and Spring 3 integration (thymeleaf-spring3) libraries are now feature-complete.
-      First beta version is expected to be stable, but a non-beta version will not be released until
-      an <i>"Extending Thyme"</i> tutorial is produced and some real javadoc is written. 
+      Thymeleaf is in beta stage, current version is <b>1.0.0-beta1</b>.
     </p>
 
-    <h2>Stay Tuned</h2>
+    <h2>Why is it beta?</h2>
 
     <p>
-      Follow Thymeleaf on <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow thymeleaf on Twitter"/></a>
+      Being beta does not mean that the software does not work - it does. But we still need to prepare an
+      <i>Extending Thymeleaf</i> tutorial as well as creating some really useful javadoc text before producing
+      a stable release that deserves to be called so.
+    </p>
+    <p>
+      In the meantime, we would love you to use the software, talk about it, love it, hate it, and also report
+      any bugs you might find.
     </p>
 
+    <h2>Have a question?</h2>
+
     <p>
-      Have a question? post it at our <a href="http://forum.thymeleaf.org">User Forum</a>.
+     A post it at our <a href="http://forum.thymeleaf.org">User Forum</a>.
     </p>
 
 
@@ -113,7 +116,15 @@
    </div>
    
    <div id="footer">
-     Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     <div id="twitter">
+       <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow @thymeleaf on Twitter" title="Follow @thymeleaf on Twitter "/></a>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     </div>
    </div>
 
 
