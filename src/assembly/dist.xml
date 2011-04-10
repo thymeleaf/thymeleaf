@@ -12,7 +12,14 @@
   <fileSets>
     <fileSet>
       <directory>${basedir}/../thymeleaf/target/apidocs/</directory>
-      <outputDirectory>/apidocs</outputDirectory>
+      <outputDirectory>/apidocs/thymeleaf/</outputDirectory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../thymeleaf-spring3/target/apidocs/</directory>
+      <outputDirectory>/apidocs/thymeleaf-spring3/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
@@ -21,9 +28,18 @@
       <directory>${basedir}/../thymeleaf/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
-        <include>thymeleaf-${version}.jar</include>
-        <include>thymeleaf-${version}-javadoc.jar</include>
-        <include>thymeleaf-${version}-sources.jar</include>
+        <include>thymeleaf-${project.version}.jar</include>
+        <include>thymeleaf-${project.version}-javadoc.jar</include>
+        <include>thymeleaf-${project.version}-sources.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${basedir}/../thymeleaf-spring3/target/</directory>
+      <outputDirectory>/dist</outputDirectory>
+      <includes>
+        <include>thymeleaf-spring3-${project.version}.jar</include>
+        <include>thymeleaf-spring3-${project.version}-javadoc.jar</include>
+        <include>thymeleaf-spring3-${project.version}-sources.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -43,6 +59,11 @@
       <outputDirectory>/lib</outputDirectory>
       <unpack>false</unpack>
       <scope>runtime</scope>
+      <excludes>
+        <exclude>org.thymeleaf:thymeleaf</exclude>
+        <exclude>org.thymeleaf:thymeleaf-spring3</exclude>
+        <exclude>org.thymeleaf:thymeleaf-dist</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets> 
   
