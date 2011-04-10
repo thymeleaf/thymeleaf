@@ -3,8 +3,8 @@
 /* BODY                   */
 /* ---------------------- */
 body {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 12px;
+  font-family: 'DejaVu Serif', 'Times New Roman', Times;
+  font-size: 13px;
   text-align: center;
   background-color: #f0f0f0;
   margin: 0px;
@@ -19,10 +19,7 @@ body {
 #page {
   width: 75%;
   margin: 0px auto; 
-  padding: 0px 0px; 
-  border-left: 1px solid #cccccc; 
-  border-right: 1px solid #cccccc;
-  border-bottom: 1px solid #cccccc;
+  padding: 0px 0px;
 }
 
 
@@ -31,6 +28,7 @@ body {
 /* MENU                   */
 /* ---------------------- */
 #menu, #menu ul {
+  font-family: 'DejaVu Sans', Arial, Helvetica;
   font-size: 12px;
   text-align: left;
   text-transform: lowercase;
@@ -73,8 +71,7 @@ body {
   text-align: left;
   background-color: #352726;
   padding: 0px 4px 0px 4px;
-  border-top: 1px dotted #99cc33; 
-  border-bottom: 3px solid #99cc33;
+  border-top: 1px dotted #f2f2f2; 
 }
 #header .logo {
   display: inline;
@@ -90,11 +87,13 @@ body {
 /* BREADCRUMB             */
 /* ---------------------- */
 #breadcrumb {
+  font-family: 'DejaVu Sans', Arial, Helvetica;
   font-size: 12px;
-  background-color: #f2f2f2;
+  background-color: #ffffff;
+  border-bottom: 1px solid #cccccc;
   line-height: 30px;
   text-align: left;
-  padding-left: 30px;
+  padding-left: 40px;
   font-weight: bold;
   color: #a0a0a0;
 }
@@ -114,7 +113,7 @@ body {
 /* ---------------------- */
 #content {
   margin: 0px;
-  background-color: #fcfef0;
+  background-color: #ffffff;
   text-align: left;
   padding: 15px 0px;
 }
@@ -125,41 +124,31 @@ body {
 /* HEADERS                */
 /* ---------------------- */
 h1 {
-  font-size: 18px;
+  font-family: 'DejaVu Sans', Arial, Helvetica;
+  font-size: 24px;
   font-weight: bold;
   font-variant: small-caps;
-  color: #f0faaa;
-  margin-left: 25px;
-  margin-right: 25px;
+  margin-left: 40px;
+  margin-right: 40px;
   margin-top: 10px;
   margin-bottom: 40px;
-  background-color: #352726;
+  border-left: 5px solid #352726;
   padding: 5px 10px; 
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -khtml-border-radius: 5px;
 }
 h1.hidden {
   display: none;
 }
 h2 {
-  font-size: 14px;
+  font-family: 'DejaVu Sans', Arial, Helvetica;
+  font-size: 18px;
   font-weight: bold;
   color: #352726;
-  margin-top: 30px;
-  margin-bottom: 20px;
-  margin-left: 25px;
-  margin-right: 25px;
-  background-color: #f0faaa;
-  border: 1px solid #cccccc;
+  margin-top: 35px;
+  margin-bottom: 25px;
+  margin-left: 40px;
+  margin-right: 40px;
+  border-left: 5px solid #99cc33;
   padding: 3px 10px;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  -khtml-border-radius: 5px;
 }
 #content > h2:first-child {
   margin-top: 10px;
@@ -193,7 +182,7 @@ code {
   border: 1px solid #cccccc;
   background-color: #f2f2f2;
   font-size: 12px;
-  margin: 25px 60px;
+  margin: 25px 50px;
   display: block;
   padding: 8px 15px;
 }
@@ -207,7 +196,7 @@ span.string {
 /* OTHER                  */
 /* ---------------------- */
 p, ul, ol {
-  margin: 20px 50px;
+  margin: 20px 40px;
   text-align: justify;
 }
 a {
