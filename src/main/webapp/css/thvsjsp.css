@@ -1,0 +1,69 @@
+
+html {
+  background-color: #f0f0f0;
+}
+
+body {
+  font-family: 'DejaVu Sans', Arial, Helvetica;
+  font-size: 12px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  margin: 0px auto; 
+  padding: 20px 20px; 
+  width: 90%;
+}
+
+form fieldset {
+  padding-top: 20px;
+}
+
+form div {
+  float: left;
+  clear: left;
+  width: 100%;
+  padding-bottom: 1em;
+}
+
+form div > label {
+  width: 100px;
+  display: block;
+  float: left;
+  text-align: right;
+  margin-right: 20px;
+  line-height: 20px;
+  padding: 0;
+  font-weight: bold;
+}
+
+form div > input, form div > select {
+  height: 20px;
+  margin: 0px;
+  padding: 0px;
+}
+
+form div > ul {
+  list-style: none;
+  padding: 0;
+  vertical-align: top;
+}
+
+form div > ul li {
+  padding: 0;
+  margin-left: 120px;    
+}
+
+
+form div.submit {
+  margin-top: 40px;
+  background-color: #99cc33;
+  text-align: center;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border: 1px solid #000000;
+}
+
+form div.submit button {
+  font-weight: bold;
+  font-variant: small-caps;
+}
+

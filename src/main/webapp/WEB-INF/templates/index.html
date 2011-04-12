@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Spring MVC view layer: Thymeleaf vs. JSP</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+
+  <body>
+  
+    <h1>Spring MVC view layer: Thymeleaf vs. JSP+JSTL</h1>
+    <h2>Subscription example</h2>
+    <ul>
+      <li><a href="subscribe.html" th:href="@{/subscribeth}">Thymeleaf version</a></li>
+      <li><a href="subscribe.jsp" th:href="@{/subscribejsp}">JSP+JSTL version</a></li>
+    </ul>
+
+  </body>
+  
+</html>

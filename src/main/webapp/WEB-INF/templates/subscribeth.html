@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Spring MVC view layer: Thymeleaf vs. JSP</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/thvsjsp.css" th:href="@{/css/thvsjsp.css}"/>
+  </head>
+
+  <body>
+
+    <h2>This is a Thymeleaf template</h2>
+
+    <form action="#" th:object="${subscription}" th:action="@{/subscribeth}">
+      
+      <fieldset>
+      
+        <div>
+          <label for="email" th:text="#{subscription.email}">Email: </label>
+          <input type="email" th:field="*{email}" placeholder="your@email.com" />
+        </div>
+        <div>
+          <label th:text="#{subscription.type}">Type: </label>
+          <ul>
+            <li th:each="type : ${allTypes}">
+              <input type="radio" th:field="*{subscriptionType}" th:value="${type}" />
+              <label th:for="${#ids.prev('subscriptionType')}" 
+                     th:text="#{subscriptionType.__${type}__}">First type</label>
+            </li>
+            <li th:remove="all"><input type="radio" /> <label>Second Type</label></li>
+          </ul>
+        </div>
+
+        <div class="submit">
+          <button type="submit" name="save" th:text="#{subscription.submit}">Subscribe me!</button>
+        </div>
+      
+      </fieldset>
+      
+    </form>
+
+  </body>
+  
+</html>
