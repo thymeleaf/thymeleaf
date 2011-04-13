@@ -45,7 +45,7 @@
 
     <p>
       In this article we will compare the same page (a subscription form) created
-      twice for the same Spring MVC application: once using Thymeleaf and another one using 
+      twice for the same Spring MVC application: once using Thymeleaf and another time using 
       JSP, JSTL and the Spring tag libraries. 
     </p>
     <p>
@@ -232,7 +232,13 @@
     <ul>
       <li>This looks much more HTML-ish than the JSP version &ndash; no strange tags, just some 
           meaningful attributes.</li>
-      <li>We have even been able to add an <tt>&lt;li&gt;</tt> for a second radio option
+      <li>Variable expressions (<tt>${...}</tt>) are Spring EL and execute on model attributes, asterisk expressions
+          (<tt>*{...}</tt>) execute on the form backing bean, hash expressions (<tt>#{...}</tt>)
+          are for internationalization and link expressions (<tt>@{...}</tt>) rewrite URLs.</li>
+      <li>We are allowed to have prototype code there: for example, we can set an <tt>Email:</tt> text in the label
+          for the first field, knowing that Thymeleaf will substitute it with the internationalized
+          text with key <tt>subscription.email</tt> when it executes the page.</li> 
+      <li>We have even been able to add an <tt>&lt;li&gt;</tt> for a second radiobutton
           just for prototyping pleasure. It will be removed when Thymeleaf executes our page.</li>
     </ul>
 
@@ -321,7 +327,8 @@
     <p>
       The difference in the number of steps is not really important here (we could also have used
       firebug with the Thymeleaf template). What is really important is the complexity,
-      the effort and the time required by each of these steps.
+      the effort and the time required by each of the steps required for JSP. Having to deploy and start the whole
+      application made JSP just lose.
     </p>
     <p>
       What's more: think of how this difference would evolve if:
@@ -396,7 +403,8 @@
       Sounds good, doesn't it? Unfortunately not all browsers support this yet (as of 2011,
       Opera 11 and Firefox 4 do), but we are safe using these features anyway because all 
       browsers will treat an input of a type they do not understand (<tt>email</tt>) as a 
-      <tt>text</tt> input, and will silently ignore the <tt>placeholder</tt> attribute.
+      <tt>text</tt> input, and will silently ignore the <tt>placeholder</tt> attribute in
+      the same way they ignore Thymeleaf's <tt>th:*</tt> ones.
     </p>
 
     <h3>Doing HTML5 with JSP</h3>    
