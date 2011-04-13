@@ -103,7 +103,8 @@
     </div>
 
     <p>
-      And this is our JSP code:
+      And this is our JSP code, making use of both JSTL (<tt>core</tt>) and Spring (<tt>tags</tt> and 
+      <tt>form</tt>) JSP tag libraries:
     </p>
     <code>
     
@@ -136,13 +137,13 @@
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&gt;&lt;s:message&nbsp;code=&quot;subscription.type&quot;&nbsp;/&gt;:&nbsp;&lt;/label&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:forEach&nbsp;var=&quot;type&quot;&nbsp;items=&quot;${allTypes}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:forEach&nbsp;var=&quot;type&quot;&nbsp;items=&quot;${allTypes}&quot;&nbsp;varStatus=&quot;typeStatus&quot;&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:radiobutton&nbsp;path=&quot;subscriptionType&quot;&nbsp;value=&quot;${type}&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:label&nbsp;path=&quot;subscriptionType&quot;&gt;&lt;s:message&nbsp;code=&quot;subscriptionType.${type}&quot;&nbsp;/&gt;&lt;/sf:label&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:forEach&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;for=&quot;subscriptionType${typeStatus.count}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;s:message&nbsp;code=&quot;subscriptionType.${type}&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/label&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:forEach&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
 <br />
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;submit&quot;&gt;
@@ -159,18 +160,6 @@
 
     </code>
     
-    <p>
-      Things to notice here:
-    </p>
-    <ul>
-      <li>We are making use of both JSTL (<tt>core</tt>) and Spring (<tt>tags</tt> and 
-          <tt>form</tt>) JSP tag libraries.</li>
-      <li>That <tt>sf:label</tt> tag doesn't work correctly for assigning a label to
-          the corresponding radio button (because the radio will be assigned an <tt>id</tt>
-          with a suffixed sequence number and <tt>sf:label</tt> does not take that into account).
-    </ul>
-    
-
 
 
     <h2>Doing it with Thymeleaf</h2>
@@ -241,15 +230,15 @@
       Things to notice here:
     </p>
     <ul>
-      <li>This looks much more HTML-ish than the JSP version. No strange tags, only attributes.</li>
-      <li><tt>label</tt> assignment <i>does</i> work here, because Thymeleaf provides the 
-          <tt>#ids.previd(...)</tt> function to know the last <tt>id</tt> sequence generated for a 
-          specific base.
+      <li>This looks much more HTML-ish than the JSP version &ndash; no strange tags, just some 
+          meaningful attributes.</li>
+      <li>We have even been able to add an <tt>&lt;li&gt;</tt> for a second radio option
+          just for prototyping pleasure. It will be removed when Thymeleaf executes our page.</li>
     </ul>
 
     
-    <h2>Let's change our style!</h2>
-
+    <h2>Let's change some style!</h2>
+<!-- 
     <p>
       For some people, most differences until now could just fall in the category of <i>"it's a matter of taste"</i>.
       But things start to get nasty for JSP when our customers suddenly decide that they do
@@ -269,7 +258,7 @@
       Trouble is, our customers aren't local, and we won't be able to show them the application running
       on our local tomcat <i>remotely</i>, nor we 
     </p>
-    
+-->    
     <h3>Changing the page style with JSP</h3>    
 
     <h3>Changing the page style with Thymeleaf</h3>    
