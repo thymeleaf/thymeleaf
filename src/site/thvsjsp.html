@@ -108,55 +108,55 @@
     </p>
     <code>
     
-&lt;%@&nbsp;taglib&nbsp;prefix=&quot;sf&quot;&nbsp;uri=&quot;http://www.springframework.org/tags/form&quot;&nbsp;%&gt;&lt;%@&nbsp;
-<br />taglib&nbsp;prefix=&quot;s&quot;&nbsp;uri=&quot;http://www.springframework.org/tags&quot;&nbsp;%&gt;&lt;%@
-<br />taglib&nbsp;prefix=&quot;c&quot;&nbsp;uri=&quot;http://java.sun.com/jsp/jstl/core&quot;&nbsp;%&gt;&lt;%@&nbsp;
-<br />page&nbsp;contentType=&quot;text/html;&nbsp;charset=UTF-8&quot;&nbsp;pageEncoding=&quot;UTF-8&quot;%&gt;&lt;!DOCTYPE&nbsp;html&gt;
+&lt;<b>%@&nbsp;taglib</b>&nbsp;prefix=<span class="string">&quot;sf&quot;</span>&nbsp;uri=<span class="string">&quot;http://www.springframework.org/tags/form&quot;</span>&nbsp;%&gt;&lt;<b>%@&nbsp;
+<br />taglib</b>&nbsp;prefix=<span class="string">&quot;s&quot;</span>&nbsp;uri=<span class="string">&quot;http://www.springframework.org/tags&quot;</span>&nbsp;%&gt;&lt;<b>%@
+<br />taglib</b>&nbsp;prefix=<span class="string">&quot;c&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/core&quot;</span>&nbsp;%&gt;&lt;<b>%@&nbsp;
+<br />page</b>&nbsp;contentType=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;&lt;<b>!DOCTYPE&nbsp;html</b>&gt;
 <br />
-<br />&lt;html&gt;
+<br />&lt;<b>html</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&lt;head&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;/title&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;&nbsp;charset=UTF-8&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;link&nbsp;rel=&quot;stylesheet&quot;&nbsp;type=&quot;text/css&quot;&nbsp;media=&quot;all&quot;&nbsp;href=&quot;&lt;s:url&nbsp;value='/css/thvsjsp.css'&nbsp;/&gt;&quot;/&gt;
-<br />&nbsp;&nbsp;&lt;/head&gt;
+<br />&nbsp;&nbsp;&lt;<b>head</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;<b>/title</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>&nbsp;media=<span class="string">&quot;all&quot;</span>&nbsp;href=<span class="string">&quot;&lt;<b>s:url</b>&nbsp;value='/css/thvsjsp.css'&nbsp;/&gt;&quot;</span>/&gt;
+<br />&nbsp;&nbsp;&lt;<b>/head</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&lt;body&gt;
+<br />&nbsp;&nbsp;&lt;<b>body</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;h2&gt;This&nbsp;is&nbsp;a&nbsp;JSP&lt;/h2&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;This&nbsp;is&nbsp;a&nbsp;JSP&lt;<b>/h2</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;s:url&nbsp;var=&quot;formUrl&quot;&nbsp;value=&quot;/subscribejsp&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:form&nbsp;modelAttribute=&quot;subscription&quot;&nbsp;action=&quot;${formUrl}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>s:url</b>&nbsp;var=<span class="string">&quot;formUrl&quot;</span>&nbsp;value=<span class="string">&quot;/subscribejsp&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>sf:form</b>&nbsp;modelAttribute=<span class="string">&quot;subscription&quot;</span>&nbsp;action=<span class="string">&quot;${formUrl}&quot;</span>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>fieldset</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;for=&quot;email&quot;&gt;&lt;s:message&nbsp;code=&quot;subscription.email&quot;&nbsp;/&gt;:&nbsp;&lt;/label&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:input&nbsp;path=&quot;email&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&gt;&lt;s:message&nbsp;code=&quot;subscription.type&quot;&nbsp;/&gt;:&nbsp;&lt;/label&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:forEach&nbsp;var=&quot;type&quot;&nbsp;items=&quot;${allTypes}&quot;&nbsp;varStatus=&quot;typeStatus&quot;&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:radiobutton&nbsp;path=&quot;subscriptionType&quot;&nbsp;value=&quot;${type}&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;for=&quot;subscriptionType${typeStatus.count}&quot;&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;s:message&nbsp;code=&quot;subscriptionType.${type}&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/label&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:forEach&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;email&quot;</span>&gt;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscription.email&quot;</span>&nbsp;/&gt;:&nbsp;&lt;<b>/label</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>sf:input</b>&nbsp;path=<span class="string">&quot;email&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&gt;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscription.type&quot;</span>&nbsp;/&gt;:&nbsp;&lt;<b>/label</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:forEach</b>&nbsp;var=<span class="string">&quot;type&quot;</span>&nbsp;items=<span class="string">&quot;${allTypes}&quot;</span>&nbsp;varStatus=<span class="string">&quot;typeStatus&quot;</span>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>sf:radiobutton</b>&nbsp;path=<span class="string">&quot;subscriptionType&quot;</span>&nbsp;value=<span class="string">&quot;${type}&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;subscriptionType${typeStatus.count}&quot;</span>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscriptionType.${type}&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/label</b>&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/c:forEach</b>&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;submit&quot;&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;type=&quot;submit&quot;&nbsp;name=&quot;save&quot;&gt;&lt;s:message&nbsp;code=&quot;subscription.submit&quot;&nbsp;/&gt;&lt;/button&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;submit&quot;</span>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>button</b>&nbsp;type=<span class="string">&quot;submit&quot;</span>&nbsp;name=<span class="string">&quot;save&quot;</span>&gt;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscription.submit&quot;</span>&nbsp;/&gt;&lt;<b>/button</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/fieldset</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sf:form&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/sf:form</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&lt;/body&gt;
+<br />&nbsp;&nbsp;&lt;<b>/body</b>&gt;
 <br />&nbsp;&nbsp;
-<br />&lt;/html&gt;    
+<br />&lt;<b>/html</b>&gt;    
 
     </code>
     
@@ -178,51 +178,51 @@
 
     <code>
     
-&lt;!DOCTYPE&nbsp;html&gt;
+&lt;<b>!DOCTYPE&nbsp;html</b>&gt;
 <br />
-<br />&lt;html&nbsp;xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+<br />&lt;<b>html</b>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
 <br />
-<br />&nbsp;&nbsp;&lt;head&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;/title&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;&nbsp;charset=UTF-8&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;link&nbsp;rel=&quot;stylesheet&quot;&nbsp;type=&quot;text/css&quot;&nbsp;media=&quot;all&quot;&nbsp;href=&quot;../../css/thvsjsp.css&quot;&nbsp;th:href=&quot;@{/css/thvsjsp.css}&quot;/&gt;
-<br />&nbsp;&nbsp;&lt;/head&gt;
+<br />&nbsp;&nbsp;&lt;<b>head</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;<b>/title</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>&nbsp;media=<span class="string">&quot;all&quot;</span>&nbsp;href=<span class="string">&quot;../../css/thvsjsp.css&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/css/thvsjsp.css}&quot;</span>/&gt;
+<br />&nbsp;&nbsp;&lt;<b>/head</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&lt;body&gt;
+<br />&nbsp;&nbsp;&lt;<b>body</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;h2&gt;This&nbsp;is&nbsp;a&nbsp;Thymeleaf&nbsp;template&lt;/h2&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;This&nbsp;is&nbsp;a&nbsp;Thymeleaf&nbsp;template&lt;<b>/h2</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;form&nbsp;action=&quot;#&quot;&nbsp;th:object=&quot;${subscription}&quot;&nbsp;th:action=&quot;@{/subscribeth}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>form</b>&nbsp;action=<span class="string">&quot;#&quot;</span>&nbsp;th:object=<span class="string">&quot;${subscription}&quot;</span>&nbsp;th:action=<span class="string">&quot;@{/subscribeth}&quot;</span>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>fieldset</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;for=&quot;email&quot;&nbsp;th:text=&quot;#{subscription.email}&quot;&gt;Email:&nbsp;&lt;/label&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;text&quot;&nbsp;th:field=&quot;*{email}&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;th:text=&quot;#{subscription.type}&quot;&gt;Type:&nbsp;&lt;/label&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;th:each=&quot;type&nbsp;:&nbsp;${allTypes}&quot;&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;radio&quot;&nbsp;th:field=&quot;*{subscriptionType}&quot;&nbsp;th:value=&quot;${type}&quot;&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;th:for=&quot;${#ids.prev('subscriptionType')}&quot;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=&quot;#{subscriptionType.__${type}__}&quot;&gt;First&nbsp;type&lt;/label&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;th:remove=&quot;all&quot;&gt;&lt;input&nbsp;type=&quot;radio&quot;&nbsp;/&gt;&nbsp;&lt;label&gt;Second&nbsp;Type&lt;/label&gt;&lt;/li&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;email&quot;</span>&nbsp;th:text=<span class="string">&quot;#{subscription.email}&quot;</span>&gt;Email:&nbsp;&lt;<b>/label</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;text&quot;</span>&nbsp;th:field=<span class="string">&quot;*{email}&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;th:text=<span class="string">&quot;#{subscription.type}&quot;</span>&gt;Type:&nbsp;&lt;<b>/label</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;type&nbsp;:&nbsp;${allTypes}&quot;</span>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;radio&quot;</span>&nbsp;th:field=<span class="string">&quot;*{subscriptionType}&quot;</span>&nbsp;th:value=<span class="string">&quot;${type}&quot;</span>&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;th:for=<span class="string">&quot;${#ids.prev('subscriptionType')}&quot;</span>&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;#{subscriptionType.__${type}__}&quot;</span>&gt;First&nbsp;type&lt;<b>/label</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;radio&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>label</b>&gt;Second&nbsp;Type&lt;<b>/label</b>&gt;&lt;<b>/li</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;submit&quot;&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;type=&quot;submit&quot;&nbsp;name=&quot;save&quot;&nbsp;th:text=&quot;#{subscription.submit}&quot;&gt;Subscribe&nbsp;me!&lt;/button&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;submit&quot;</span>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>button</b>&nbsp;type=<span class="string">&quot;submit&quot;</span>&nbsp;name=<span class="string">&quot;save&quot;</span>&nbsp;th:text=<span class="string">&quot;#{subscription.submit}&quot;</span>&gt;Subscribe&nbsp;me!&lt;<b>/button</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/fieldset</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;/form&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/form</b>&gt;
 <br />
-<br />&nbsp;&nbsp;&lt;/body&gt;
+<br />&nbsp;&nbsp;&lt;<b>/body</b>&gt;
 <br />&nbsp;&nbsp;
-<br />&lt;/html&gt;    
+<br />&lt;<b>/html</b>&gt;    
     
     </code>
     
@@ -237,35 +237,217 @@
     </ul>
 
     
-    <h2>Let's change some style!</h2>
-<!-- 
-    <p>
-      For some people, most differences until now could just fall in the category of <i>"it's a matter of taste"</i>.
-      But things start to get nasty for JSP when our customers suddenly decide that they do
-      not want green anymore in that button bar, but better a pale blue. 
-    </p>
-    <p>
-      What's more: in fact they are not sure about pale blue either, so they ask us to make <i>a quick change</i>
-      and show them, so that they can decide if they want it darker or lighter... or even red.
-      On the fly.
-    </p>
-    <p>
-      Normally, in order to do this with our JSP, we would fire up our development webserver (let's say 
-      that that's an Apache Tomcat in our desktop), open firebug, dragonfly or our favourite in-browser
-      development tool, and start making the changes on the CSS until we find what the customer wanted.
-    </p>
-    <p>
-      Trouble is, our customers aren't local, and we won't be able to show them the application running
-      on our local tomcat <i>remotely</i>, nor we 
-    </p>
--->    
-    <h3>Changing the page style with JSP</h3>    
+    <h2>Let's change the page style!</h2>
 
-    <h3>Changing the page style with Thymeleaf</h3>    
+    <p>
+      Imagine that now our pages are written we suddenly decide that we do
+      not want green anymore for that region around the submit button, but rather a pale blue.
+      Anyway we're not sure about the exact tone of blue that will fit better, so
+      we will have to try some combinations before deciding on a specific one. 
+    </p>
+    <p>
+      Let's see the steps we would have to take with each technology:
+    </p>
+    
+    <h3>Changing the page style using JSP</h3>
+    
+    <p>
+      <b>Step 1</b>: <i>Deploy the application into our development server and start it up</i>.
+      Our JSP page will not render without starting the server, so this will be a requirement.
+    </p>
+    
+    <p>
+      <b>Step 2</b>: <i>Navigate through the pages until we find the one to change</i>. Normally,
+      the page to change will be one among several dozen pages in our application, and it is quite possible that
+      in order to reach it we will need to click links, submit forms and/or query databases.
+    </p>
+
+    <p>
+      <b>Step 3</b>: <i>Fire up firebug, dragonfly, or our favourite in-browser web development
+      tool</i>. This will allow us to modify our styles acting directly on the browser's DOM, and
+      thus see immediate results.
+    </p>
+
+    <p>
+      <b>Step 4</b>: <i>Make the colour changes</i>. Probably trying a couple of different tones
+      of blue before deciding on the one we like.
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_jsp2.png" />
+    </div>
+
+    <p>
+      <b>Step 5</b>: <i>Copy-paste the changes into our CSS files</i>. 
+    </p>
+    
+    <p>
+      Done!
+    </p>
+
+    <h3>Changing the page style using Thymeleaf</h3>    
+    
+    <p>
+      <b>Step 1</b>: <i>Double-click on the <tt>.html</tt> template file itself and
+      let our browser open it</i>. Being a Thymeleaf template, it will show just fine, only
+      with template/prototype data (note the subscription type options):
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_th2.png" />
+    </div>
+    
+    <p>
+      <b>Step 2</b>: <i>Open the <tt>.css</tt> file with our favourite text editor</i>. The 
+      template file statically links to the CSS in its <tt>&lt;link rel="stylesheet" ...&gt;</tt> tag
+      (with an <tt>href</tt> that Thymeleaf substitutes when executing the template by the one
+      generated by <tt>th:href</tt>). So any changes we make to that CSS will be applied
+      to the static page our browser is displaying.
+    </p>
+    
+    <p>
+      <b>Step 3</b>: <i>Make the colour changes</i>. As was the case with JSP, we will probably
+      have to try several colour combinations, which will be refreshed in our browser just by
+      pressing F5.  
+    </p>
+    
+    <p>
+      Done!
+    </p>
+
+
+    <h3>That was a big difference!</h3>    
+
+    <p>
+      The difference in the number of steps is not really important here (we could also have used
+      firebug with the Thymeleaf template). What is really important is the complexity,
+      the effort and the time required by each of these steps.
+    </p>
+    <p>
+      What's more: think of how this difference would evolve if:
+    </p>
+    <ul>
+      <li>Our development server was not local but remote.</li>
+      <li>Changes didn't involve only CSS but also adding/removing some HTML code.</li>
+      <li>We still hadn't implemented the required logic in our application to actually
+          <i>reach that page</i> once deployed.</li> 
+    </ul>
+    <p>
+      This last point is an important one: what if our application was still being developed,
+      the Java logic needed to show this or other previous pages wasn't still working alright, and
+      we had to show the new colour to our customer? (or even let him/her choose on the fly!)...
+    </p>
+
+    <h3>And what about trying to use the JSP as a static prototype?</h3>    
+
+    <p>
+      OK, you can say now, <i>but why did we start the application to modify the JSP instead 
+      of just opening it like you did with the Thymeleaf one? Can't we just do that?</i>.
+    </p>
+    <p>
+      The short answer is NO.
+    </p>
+    <p>
+      But let's try anyway: of course, we will have to rename our file so that its name ends
+      in <tt>.html</tt> instead of <tt>.jsp</tt>, but let's see what happens when we
+      open our browser:
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_jsp3.png" />
+    </div>
+
+    <p>
+      <i>WHAT? Where's our page gone?</i> Well, it's still there, but in order to make our page work
+      as JSP we had to add lots of JSP tags and features that made it work wondefully when executed
+      by our web server... but at the same time made it be HTML no more. And therefore made it
+      undisplayable for a browser.
+    </p>
+    <p>
+      Again, let's remind ourselves what the Thymeleaf template looked
+      like when we double-clicked on it:
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_th2.png" />
+    </div>
+    
+    <p>
+      Definitely not in the same league, right?
+    </p>
+    
 
     <h2>Got HTML5?</h2>
 
+    <p>
+      But hey &ndash; we said at the beginning that our page was going to be HTML5, so...
+      why don't we use some of the cool new HTML5 form-related features?
+    </p>
+    
+    <p>
+      For example, there is now an <tt>&lt;input type="email" ...&gt;</tt>, which will
+      make our browser check that the text input by users has the shape of an email address. And
+      also, there is a new property for all inputs called <tt>placeholder</tt> which shows a
+      text in the field that automatically dissapears when the input gains focus (usually by
+      the user clicking on it).
+    </p>
+    
+    <p>
+      Sounds good, doesn't it? Unfortunately not all browsers support this yet (as of 2011,
+      Opera 11 and Firefox 4 do), but we are safe using these features anyway because all 
+      browsers will treat an input of a type they do not understand (<tt>email</tt>) as a 
+      <tt>text</tt> input, and will silently ignore the <tt>placeholder</tt> attribute.
+    </p>
+
+    <h3>Doing HTML5 with JSP</h3>    
+
+    <p>
+      Unfortunately, Spring MVC's JSP tag libraries still have no support for HTML5, so there isn't
+      an <tt>&lt;sf:email ...&gt;</tt> tag at our disposal. This means that we will have to 
+      write it in plain HTML code, emulating the results of executing an imaginary <tt>&lt;sf:email&gt;</tt> tag:
+    </p>
+
+    <code>
+      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;id=<span class="string">&quot;email&quot;</span>&nbsp;name=<span class="string">&quot;email&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;value=<span class="string">&quot;&quot;</span> /&gt;
+    </code>
+
+    <p>
+      But this is not correct! In Spring MVC we should never write a JSP input field like that,
+      because we wouldn't be correctly <i>binding</i> our input to the <tt>email</tt> property of
+      the form-backing bean. In order to do so, we would need to use an <tt>&lt;s:eval/&gt;</tt> tag, which
+      will apply all the required transformations (like <i>property editors</i>) and make our
+      plain-HTML tag work as if an <tt>&lt;sf:email/&gt;</tt> tag existed:
+    </p>
+
+    <code>
+      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;id=<span class="string">&quot;email&quot;</span>&nbsp;name=<span class="string">&quot;email&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value=<span class="string">&quot;&lt;<b>s:eval</b>&nbsp;expression=&#39;subscription.email&#39;&nbsp;/&gt;&quot;</span> /&gt;
+    </code>
+
+    <h3>Doing HTML5 with Thymeleaf</h3>
+    
+    <p>
+      Thymeleaf, on the other hand, has complete support for HTML5, so we will only have to
+      change the <tt>type</tt> of our input and add a <tt>placeholder</tt>, and it will work
+      out of the box, even correctly binding our property and integrating with Spring MVCs
+      <i>property editors</i>: 
+    </p>
+
+    <code>
+      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;th:field=<span class="string">&quot;*{email}&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;/&gt;
+    </code>
+
+    <p>
+      Done!
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_th3.png" />
+    </div>
+
+
    </div>
+   
    
    <div id="footer">
      <div id="twitter">
