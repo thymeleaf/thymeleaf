@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Spring MVC view layer: Thymeleaf vs. JSP - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      articles
+      ::
+      <span class="current">spring mvc view layer: thymeleaf vs jsp</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>Spring MVC view layer: Thymeleaf vs. JSP</h1>
+
+    <p>
+      In this article we will compare the same page (a subscription form) created
+      twice for the same Spring MVC application: once using Thymeleaf and another one using 
+      JSP, JSTL and the Spring tag libraries. 
+    </p>
+    <p>
+      All the code seen here comes from a working application. You can download the source code
+      of such application from the <a href="documentation.html">documentation page</a>. 
+    </p>
+    
+    
+    <h2>Common requirements</h2>
+    
+    <p>
+      Our customers need a form for subscribing new members to a message list, with two fields:
+    </p>
+    <ul>
+      <li>Email address</li>
+      <li>Type of subscription (receive all emails, daily digest)</li>
+    </ul>
+    <p>
+      We will also need this page to be HTML5 and completely internationalizable, extracting all texts and messages
+      from resource files already configured in our <tt>MessageSource</tt> objects in our Spring 
+      infrastructure.
+    </p>
+    <p>
+      Our application will have two <tt>@Controller</tt>s, which will contain exactly the same code
+      but will forward to different view names:
+    </p>
+    <ul>
+      <li><tt>SubscribeJsp</tt> for the JSP page (the <tt>subscribejsp</tt> view).
+      <li><tt>SubscribeTh</tt> for the Thymeleaf page (the <tt>subscribeth</tt> view).
+    </ul>
+    <p>
+      We will have the following classes in our model:
+    </p>
+    <ul>
+      <li><tt>Subscription</tt> form-backing bean with two fields: <tt>String email</tt> and
+          <tt>SubscriptionType subscriptionType</tt>.</li>
+      <li><tt>SubscriptionType</tt> an enum modeling the <tt>subscriptionType</tt> field of the form,
+          with values <tt>ALL_EMAILS</tt> and <tt>DAILY_DIGEST</tt>.</li> 
+    </ul>
+    <p>
+      <i>(In this article we will just focus on the JSP/Thymeleaf template code. If you want
+      to know implementation details for the controller code or Spring configuration, check
+      the source code in the downloadable package)</i>
+    </p>
+        
+    
+    <h2>Doing it with JSP</h2>
+
+    <p>
+      This is our page:
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_jsp1.png" />
+    </div>
+
+    <p>
+      And this is our JSP code:
+    </p>
+    <code>
+    
+&lt;%@&nbsp;taglib&nbsp;prefix=&quot;sf&quot;&nbsp;uri=&quot;http://www.springframework.org/tags/form&quot;&nbsp;%&gt;&lt;%@&nbsp;
+<br />taglib&nbsp;prefix=&quot;s&quot;&nbsp;uri=&quot;http://www.springframework.org/tags&quot;&nbsp;%&gt;&lt;%@
+<br />taglib&nbsp;prefix=&quot;c&quot;&nbsp;uri=&quot;http://java.sun.com/jsp/jstl/core&quot;&nbsp;%&gt;&lt;%@&nbsp;
+<br />page&nbsp;contentType=&quot;text/html;&nbsp;charset=UTF-8&quot;&nbsp;pageEncoding=&quot;UTF-8&quot;%&gt;&lt;!DOCTYPE&nbsp;html&gt;
+<br />
+<br />&lt;html&gt;
+<br />
+<br />&nbsp;&nbsp;&lt;head&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;/title&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;&nbsp;charset=UTF-8&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;link&nbsp;rel=&quot;stylesheet&quot;&nbsp;type=&quot;text/css&quot;&nbsp;media=&quot;all&quot;&nbsp;href=&quot;&lt;s:url&nbsp;value='/css/thvsjsp.css'&nbsp;/&gt;&quot;/&gt;
+<br />&nbsp;&nbsp;&lt;/head&gt;
+<br />
+<br />&nbsp;&nbsp;&lt;body&gt;
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;h2&gt;This&nbsp;is&nbsp;a&nbsp;JSP&lt;/h2&gt;
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;s:url&nbsp;var=&quot;formUrl&quot;&nbsp;value=&quot;/subscribejsp&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:form&nbsp;modelAttribute=&quot;subscription&quot;&nbsp;action=&quot;${formUrl}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;for=&quot;email&quot;&gt;&lt;s:message&nbsp;code=&quot;subscription.email&quot;&nbsp;/&gt;:&nbsp;&lt;/label&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:input&nbsp;path=&quot;email&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&gt;&lt;s:message&nbsp;code=&quot;subscription.type&quot;&nbsp;/&gt;:&nbsp;&lt;/label&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;c:forEach&nbsp;var=&quot;type&quot;&nbsp;items=&quot;${allTypes}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:radiobutton&nbsp;path=&quot;subscriptionType&quot;&nbsp;value=&quot;${type}&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;sf:label&nbsp;path=&quot;subscriptionType&quot;&gt;&lt;s:message&nbsp;code=&quot;subscriptionType.${type}&quot;&nbsp;/&gt;&lt;/sf:label&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/c:forEach&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;submit&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;type=&quot;submit&quot;&nbsp;name=&quot;save&quot;&gt;&lt;s:message&nbsp;code=&quot;subscription.submit&quot;&nbsp;/&gt;&lt;/button&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;/sf:form&gt;
+<br />
+<br />&nbsp;&nbsp;&lt;/body&gt;
+<br />&nbsp;&nbsp;
+<br />&lt;/html&gt;    
+
+    </code>
+    
+    <p>
+      Things to notice here:
+    </p>
+    <ul>
+      <li>We are making use of both JSTL (<tt>core</tt>) and Spring (<tt>tags</tt> and 
+          <tt>form</tt>) JSP tag libraries.</li>
+      <li>That <tt>sf:label</tt> tag doesn't work correctly for assigning a label to
+          the corresponding radio button (because the radio will be assigned an <tt>id</tt>
+          with a suffixed sequence number and <tt>sf:label</tt> does not take that into account).
+    </ul>
+    
+
+
+
+    <h2>Doing it with Thymeleaf</h2>
+
+    <p>
+      Now, let's do the same with Thymeleaf. This is our page:
+    </p>
+
+    <div class="caption">
+      <img src="images/thvsjsp_th1.png" />
+    </div>
+
+    <p>
+      And this is our Thymeleaf code:
+    </p>
+
+    <code>
+    
+&lt;!DOCTYPE&nbsp;html&gt;
+<br />
+<br />&lt;html&nbsp;xmlns:th=&quot;http://www.thymeleaf.org&quot;&gt;
+<br />
+<br />&nbsp;&nbsp;&lt;head&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;/title&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;meta&nbsp;http-equiv=&quot;Content-Type&quot;&nbsp;content=&quot;text/html;&nbsp;charset=UTF-8&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;link&nbsp;rel=&quot;stylesheet&quot;&nbsp;type=&quot;text/css&quot;&nbsp;media=&quot;all&quot;&nbsp;href=&quot;../../css/thvsjsp.css&quot;&nbsp;th:href=&quot;@{/css/thvsjsp.css}&quot;/&gt;
+<br />&nbsp;&nbsp;&lt;/head&gt;
+<br />
+<br />&nbsp;&nbsp;&lt;body&gt;
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;h2&gt;This&nbsp;is&nbsp;a&nbsp;Thymeleaf&nbsp;template&lt;/h2&gt;
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;form&nbsp;action=&quot;#&quot;&nbsp;th:object=&quot;${subscription}&quot;&nbsp;th:action=&quot;@{/subscribeth}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;for=&quot;email&quot;&nbsp;th:text=&quot;#{subscription.email}&quot;&gt;Email:&nbsp;&lt;/label&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;text&quot;&nbsp;th:field=&quot;*{email}&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;th:text=&quot;#{subscription.type}&quot;&gt;Type:&nbsp;&lt;/label&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;ul&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;th:each=&quot;type&nbsp;:&nbsp;${allTypes}&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;input&nbsp;type=&quot;radio&quot;&nbsp;th:field=&quot;*{subscriptionType}&quot;&nbsp;th:value=&quot;${type}&quot;&nbsp;/&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;label&nbsp;th:for=&quot;${#ids.prev('subscriptionType')}&quot;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=&quot;#{subscriptionType.__${type}__}&quot;&gt;First&nbsp;type&lt;/label&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/li&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&nbsp;th:remove=&quot;all&quot;&gt;&lt;input&nbsp;type=&quot;radio&quot;&nbsp;/&gt;&nbsp;&lt;label&gt;Second&nbsp;Type&lt;/label&gt;&lt;/li&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/ul&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div&nbsp;class=&quot;submit&quot;&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;button&nbsp;type=&quot;submit&quot;&nbsp;name=&quot;save&quot;&nbsp;th:text=&quot;#{subscription.submit}&quot;&gt;Subscribe&nbsp;me!&lt;/button&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/fieldset&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;/form&gt;
+<br />
+<br />&nbsp;&nbsp;&lt;/body&gt;
+<br />&nbsp;&nbsp;
+<br />&lt;/html&gt;    
+    
+    </code>
+    
+    <p>
+      Things to notice here:
+    </p>
+    <ul>
+      <li>This looks much more HTML-ish than the JSP version. No strange tags, only attributes.</li>
+      <li><tt>label</tt> assignment <i>does</i> work here, because Thymeleaf provides the 
+          <tt>#ids.previd(...)</tt> function to know the last <tt>id</tt> sequence generated for a 
+          specific base.
+    </ul>
+
+    
+    <h2>Let's change our style!</h2>
+
+    <p>
+      For some people, most differences until now could just fall in the category of <i>"it's a matter of taste"</i>.
+      But things start to get nasty for JSP when our customers suddenly decide that they do
+      not want green anymore in that button bar, but better a pale blue. 
+    </p>
+    <p>
+      What's more: in fact they are not sure about pale blue either, so they ask us to make <i>a quick change</i>
+      and show them, so that they can decide if they want it darker or lighter... or even red.
+      On the fly.
+    </p>
+    <p>
+      Normally, in order to do this with our JSP, we would fire up our development webserver (let's say 
+      that that's an Apache Tomcat in our desktop), open firebug, dragonfly or our favourite in-browser
+      development tool, and start making the changes on the CSS until we find what the customer wanted.
+    </p>
+    <p>
+      Trouble is, our customers aren't local, and we won't be able to show them the application running
+      on our local tomcat <i>remotely</i>, nor we 
+    </p>
+    
+    <h3>Changing the page style with JSP</h3>    
+
+    <h3>Changing the page style with Thymeleaf</h3>    
+
+    <h2>Got HTML5?</h2>
+
+   </div>
+   
+   <div id="footer">
+     <div id="twitter">
+       <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow @thymeleaf on Twitter" title="Follow @thymeleaf on Twitter "/></a>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+  
+</html>
