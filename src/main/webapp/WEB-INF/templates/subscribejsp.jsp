@@ -27,10 +27,12 @@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><!DOCTYPE html
         <div>
           <label><s:message code="subscription.type" />: </label>
           <ul>
-            <c:forEach var="type" items="${allTypes}">
+            <c:forEach var="type" items="${allTypes}" varStatus="typeStatus">
               <li>
                 <sf:radiobutton path="subscriptionType" value="${type}" />
-                <sf:label path="subscriptionType"><s:message code="subscriptionType.${type}" /></sf:label>
+                <label for="subscriptionType${typeStatus.count}">
+                  <s:message code="subscriptionType.${type}" />
+                </label>
               </li>
             </c:forEach>
           </ul>
