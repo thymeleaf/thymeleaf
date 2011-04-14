@@ -234,7 +234,10 @@
           meaningful attributes.</li>
       <li>Variable expressions (<tt>${...}</tt>) are Spring EL and execute on model attributes, asterisk expressions
           (<tt>*{...}</tt>) execute on the form backing bean, hash expressions (<tt>#{...}</tt>)
-          are for internationalization and link expressions (<tt>@{...}</tt>) rewrite URLs.</li>
+          are for internationalization and link expressions (<tt>@{...}</tt>) rewrite URLs.
+          (<i>If you want to know more about this, have a look at the 
+          <a href="standarddialect5minutes.html">"Getting started with the Standard Dialect in 5 minutes"</a>
+          guide</i>).</li>
       <li>We are allowed to have prototype code there: for example, we can set an <tt>Email:</tt> text in the label
           for the first field, knowing that Thymeleaf will substitute it with the internationalized
           text with key <tt>subscription.email</tt> when it executes the page.</li> 

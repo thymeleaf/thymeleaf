@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Getting started with the Standard Dialect in 5 minutes - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      tutorials and guides
+      ::
+      <span class="current">getting started with the standard dialect in 5 minutes</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>Getting started with the Standard Dialect in 5 minutes</h1>
+
+    <p>
+      This guide will take you through some of the most important concepts you
+      need to know to understand a Thymeleaf template written in the Standard Dialect.
+      It is not a substitute for the tutorials &ndash; which are much more comprehensive &ndash;
+      but it will teach you enough for getting the feel of the technology.
+    </p>
+    
+    <h2>Standard Dialect?</h2>
+    
+    <p>
+      Thymeleaf is very, very extensible, and it in fact allows you to define your own sets of
+      template attributes (or even tags) with the names you want, evaluating the expressions you want
+      in the syntax you want and applying the logic you want. It's more like a <i>template engine framework</i>.
+    </p>
+    <p>
+      Out of the box, nevertheless, it comes with something called <i>the Standard Dialect</i> that
+      defines a set of features which should be more than enough for most scenarios. You can identify
+      when this standard dialect is being used in a template because it will contain attributes
+      starting with the <tt>th</tt> prefix, like <tt>&lt;span&nbsp;th:text="..."&gt;</tt>. 
+    </p>
+    <p>
+      Note that if you are using the <tt>thymeleaf-spring3</tt> module for integrating Thymeleaf
+      into a Spring MVC application you will not be using the Standard Dialect, but rather the
+      <i>Spring Thymeleaf Dialect</i>. However, this dialect extends from the Standard Dialect,
+      uses the same attribute prefix (<tt>th</tt>),
+      and inherits all of its features with just a couple of small differences (like using SpringEL instead
+      of OGNL and getting internationalization messages from <tt>MessageSource</tt>s). So everything
+      you learn about the Standard Dialect will be of use when using Spring.  
+    </p>
+    <p>
+      Also note that we always refer to the Standard Dialect when we talk about Thymeleaf without
+      being more specific.
+    </p>
+
+    <h2>Expression syntax</h2>
+    
+    <p>
+       Most Thymeleaf attributes allow their values to be set as or containing <i>expressions</i>.
+       These can be of four types:
+    </p>
+    <ul>
+      <li>Variable expressions</li>
+      <li>Selection or <i>asterisk</i> expressions</li>
+      <li>Text externalization or <i>internationalization</i> expressions</li>
+      <li>URL expressions</li> 
+    </ul>
+    
+    <h3>Variable expressions</h3>
+    
+    <p>
+      Variable expressions are OGNL &ndash; or Spring EL if you're using Spring &ndash; expressions executed
+      on the map of context variables (<i>model attributes</i> in Spring jargon). They look like this:
+    </p>
+    
+    <code>
+      ${session.user.name}
+    </code>
+    
+    <p>
+      And you will find them as attribute values or as a part of them, depending on the attribute:
+    </p>
+    
+    <code>
+      &lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${book.author.name}&quot;</span>&gt;
+    </code>
+    
+    <code>
+      &lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;book : ${books}&quot;</span>&gt;
+    </code>
+
+    <h3>Selection (asterisk) expressions</h3>
+
+    <p>
+      Selection expressions are just like variable expressions, except they will be executed on a
+      previously selected object instead of the whole context variables map. They look like this: 
+    </p>    
+    
+    <code>
+      *{customer.name}
+    </code>
+
+    <p>
+      The object they act on is specified by a <tt>th:object</tt> attribute: 
+    </p>
+    
+    <code>
+&lt;<b>div</b>&nbsp;th:object=<span class="string">&quot;${book}&quot;</span>&gt;
+<br />&nbsp;&nbsp;...
+<br />&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;*{title}&quot;</span>&gt;...&lt;<b>/span</b>&gt;
+<br />&nbsp;&nbsp;...
+<br />&lt;<b>/div</b>&gt;
+    </code>
+
+    <h3>Text externalization expressions</h3>
+    
+    <p>
+      Text externalization (often called <i>internationalization</i>) expressions allow us to
+      retrieve locale-specific texts from external sources (<tt>.properties</tt> files), referencing
+      them by a key and (optionally) applying a set of parameters. 
+    </p>
+    
+    <code>
+      #{main.title}
+    </code>
+    
+    <code>
+      #{message.entrycreated(${entryId})}
+    </code>
+
+    <p>
+      You can find them like: 
+    </p>
+
+    <code>
+&lt;<b>table</b>&gt;
+<br />&nbsp;&nbsp;...
+<br />&nbsp;&nbsp;&lt;<b>th</b>&nbsp;th:text=<span class="string">&quot;#{header.address.city}&quot;</span>&gt;...&lt;<b>/th</b>&gt;
+<br />&nbsp;&nbsp;&lt;<b>th</b>&nbsp;th:text=<span class="string">&quot;#{header.address.country}&quot;</span>&gt;...&lt;<b>/th</b>&gt;
+<br />&nbsp;&nbsp;...
+<br />&lt;<b>/table</b>&gt;
+    </code>
+
+    <h3>URL expressions</h3>
+
+    <p>
+      URL expressions are meant to add useful context and session info to the URLs, a process usually
+      called <i>URL rewriting</i>.
+    </p>
+    
+    <code>
+      @{/order/list}
+    </code>
+    
+    <p>
+      URLs can also take parameters:
+    </p>
+    
+    <code>
+      @{/order/details(id=${orderId})}
+    </code>
+    
+    <p>
+      And be relative (in which case no application context will be added to the URL):
+    </p>
+    
+    <code>
+      @{../documents/report}
+    </code>
+    
+    <p>
+      Let's see these expressions in context:
+    </p>
+    
+    <code>
+      &lt;<b>form</b>&nbsp;th:action=<span class="string">&quot;@{/createOrder}&quot;</span>&gt;
+    </code>
+    
+    <code>
+      &lt;<b>a</b>&nbsp;href=<span class="string">&quot;main.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/main}&quot;</span>&gt;
+    </code>
+
+    <p>
+      From this last example, see how Thymleaf allows us to set an <tt>href</tt> value for static 
+      prototyping, letting our templates link to each other nicely when directly open in a browser, 
+      and at the same time with <tt>th:href</tt> we can specify the URL that will be set as 
+      <tt>href</tt> when Thymeleaf really executes the template.   
+    </p>
+
+    <h3>Expression preprocessing</h3>
+    
+    <p>
+      One last thing to know about expressions is there is something called <i>expression 
+      preprocessing</i>, specified between <tt>__</tt>, which looks like this:
+    </p>
+
+    <code>
+      #{selection.__${sel.code}__}
+    </code>
+
+    <p>
+      What we are seeing there is a variable expression (<tt>${sel.code}</tt>) that will be
+      executed first and which result &ndash; let's say, "<tt>ALL</tt>" &ndash; will be used
+      as a part of the real expression to be executed afterwards, in this case an 
+      internationalization one (which would look for the message with key <tt>selection.ALL</tt>). 
+    </p>
+
+
+    <h2>Some basic attributes</h2>
+    
+    <p>
+      Let's have a look at a couple of the most basic attributes in the Standard Dialect.
+      Starting with <tt>th:text</tt>, which just replaces the body of a tag
+      (see again the prototyping abilities here):
+    </p>
+    
+    <code>
+      &lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;#{msg.welcome}&quot;</span>&gt;Welcome everyone!&lt;<b>/p</b>&gt;
+    </code>
+    
+    <p>
+      Now <tt>th:each</tt>, which repeats the element it's in as many times as specified
+      by the array or list returned by its expression, creating also an inner variable for
+      the iteration element with a syntax equivalent to that of a Java <i>foreach</i> expression:
+    </p>
+    
+    <code>
+      &lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;book : ${books}&quot;</span>&nbsp;th:text=<span class="string">&quot;${book.title}&quot;</span>&gt;En las Orillas del Sar&lt;<b>/li</b>&gt;
+    </code>
+    
+    <p>
+      Lastly, Thymeleaf includes lots of <tt>th</tt> attributes for specific XHTML and HTML5 
+      attributes which just evaluate their expressions and set the value of these attributes
+      to their result. Their names mimic those of the attributes which values they set:
+    </p>
+    
+    <code>
+      &lt;<b>form</b>&nbsp;th:action=<span class="string">&quot;@{/createOrder}&quot;</span>&gt;
+    </code>
+    
+    <code>
+      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;button&quot;</span>&nbsp;th:value=<span class="string">&quot;#{form.submit}&quot;</span> /&gt;
+    </code>
+    
+    <code>
+      &lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{/admin/users}&quot;</span>&gt;
+    </code>
+
+
+    <h2>Want to know more?</h2>
+    
+    <p>
+      Then the <a href="documentation.html"><i>"Using Thymeleaf"</i></a> tutorial is what you're looking for!
+    </p>
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="twitter">
+       <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow @thymeleaf on Twitter" title="Follow @thymeleaf on Twitter "/></a>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+  
+</html>
