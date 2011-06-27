@@ -137,7 +137,7 @@
                     <descriptor>${basedir}/src/assembly/sources.xml</descriptor>
                   </descriptors>
                   <appendAssemblyId>true</appendAssemblyId>
-                  <finalName>${groupId}-${artifactId}-${version}</finalName>
+                  <finalName>${project.groupId}-${project.artifactId}-${project.version}</finalName>
                 </configuration>
               </execution>
             </executions>
