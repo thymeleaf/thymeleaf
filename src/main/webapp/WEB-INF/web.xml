@@ -4,7 +4,7 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
 
-    <display-name>thymeleafexamples-stsm</display-name>
+    <display-name>thymeleafexamples-extrathyme</display-name>
 
     <session-config>
         <session-timeout>60</session-timeout>
