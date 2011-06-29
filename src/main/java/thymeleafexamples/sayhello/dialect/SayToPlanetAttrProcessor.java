@@ -11,7 +11,6 @@ import org.thymeleaf.standard.processor.value.StandardValueProcessor;
 import org.thymeleaf.standard.syntax.StandardSyntax;
 import org.thymeleaf.standard.syntax.StandardSyntax.Value;
 import org.thymeleaf.templateresolver.TemplateResolution;
-import org.thymeleaf.util.MessagesUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -60,8 +59,7 @@ public class SayToPlanetAttrProcessor
         final String planet = (String) valueProcessor.getValue(arguments, templateResolution, planetValue); 
 
         final String message = 
-            MessagesUtils.resolveMsg(arguments, templateResolution, 
-                    SAYTO_PLANET_MESSAGE, new Object[] {planet});
+            resolveMessageForProcessor(arguments, SAYTO_PLANET_MESSAGE, new Object[] {planet});
         
         return message;
         
