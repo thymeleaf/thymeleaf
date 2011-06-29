@@ -9,7 +9,11 @@
 
   <body>
 
-    <h1 hello:sayto="Thymeleaf User">Hi ya!</h1>
+    <h1>To the world...</h1>
+    
+    <p hello:sayto="World">Hi ya!</p>
+
+    <h1>To each planet...</h1>
 
     <ul>
       <li th:each="planet : ${planets}" hello:saytoplanet="${planet}">Hello Planet!</li>
