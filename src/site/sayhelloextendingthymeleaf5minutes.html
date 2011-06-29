@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Say Hello! Extending Thymeleaf in 5 minutes - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      articles
+      ::
+      <span class="current">say hello! extending thymeleaf in 5 minutes</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>Say Hello! Extending Thymeleaf in 5 minutes</h1>
+
+    <p>
+      Extending Thymeleaf is easy: you only have to create a dialect and add it to your
+      template engine. Let's see how.
+    </p>
+    <p>
+      <i>(All the code seen here comes from a working application. You can download the source code
+      of such application from the <a href="documentation.html">documentation page</a>)</i> 
+    </p>
+    
+    <h2>Dialects</h2>
+    
+    <p>
+      Thymeleaf Dialects are sets of features you can use in your templates. These features include:
+    </p>
+    <ul>
+      <li><b>Processing logic</b> specified via <i>tags</i> and <i>attributes</i>, which are
+          executed by <i>tag / attribute processors</i>. These tag or attribute processors
+          can also use a third type of processor also present in dialects: <i>value processors</i>, which are in
+          charge of performing computations needed throughout the dialect (e.g. processing
+          the dialect's expression language).</li>
+      <li><b>DOCTYPE transformations</b> which allow the automatic conversion of the template's
+          DOCTYPE declaration into a target one, thus allowing validation both before processing
+          --against a DTD including the dialect's tags and attributes-- and after processing
+          --against a DTD not including these, like e.g. a standard XHTML DTD.</li>
+      <li><b>DOCTYPE resolution entries</b> which are fed into Thymeleaf's template parser and allow
+          the resolution of DTD files for the validation of templates (if required) in an offline manner, 
+          this is, without the need to perform remote HTTP connections and/or download anything.</li>
+    </ul>
+    <p>
+      All of these features are optional, and a dialect can specify only some of them. For example,
+      neither the Standard nor the Spring Thymeleaf dialect include any <i>tag processors</i>, which
+      is why all template features are written into <tt>th:*</tt> attributes when using any of these
+      dialects.
+    </p>
+    <p>
+      By the way, that "<tt>th</tt>" in <tt>th:*</tt> is called the <b>dialect prefix</b>, and it
+      means that all tags and attributes processed by that dialect will start with
+      such prefix.
+    </p>
+    <p>
+      It is important also to note that <b>a Template Engine can be set several dialects at a time</b>,
+      thus allowing the processing of templates including features from all of the specified dialects
+      (think of dialects as a sort of <i>JSP taglibs</i> in steroids).
+      What's more, some of these dialects can <i>share prefix</i>, effectively acting as an aggregate
+      dialect.
+    </p>
+    
+    <h2>The simplest dialect ever: Say Hello!</h2>
+    
+    <p>
+      Let's create a dialect for one of our applications. This will be a Spring MVC application, so
+      we will be already using the Spring Thymeleaf dialect (have a look at the 
+      <a href="documentation.html">Thymeleaf + Spring 3 tutorial</a> for more details). But we
+      want to add a new attribute that allows us to say hello to whoever we want, like this:
+    </p>    
+    
+    <code>
+&lt;<b>p</b>&nbsp;hello:sayto=<span class="string">&quot;World&quot;</span>&gt;Hi&nbsp;ya!&lt;/<b>p</b>&gt;
+    </code>
+    
+    <h3>The attribute processor</h3>
+    
+    <p>
+      First, we will have to create the attribute processor that will take care of displaying
+      our salutation message. All attribute processors implement the
+      <tt>org.thymeleaf.processor.attr.IAttrProcessor</tt> interface, but several convenience
+      abstract implementations exist that ease the development of each type of processor. 
+    </p>
+    <p>
+      Specifically, the <tt>AbstractTextChildModifierAttrProcessor</tt>
+      class specializes in attributes that substitute the body of the tag they sit on by
+      a text (which is exactly what we want). So we will extend this class for our attribute
+      processor:
+    </p>
+    <p>
+      [CODE HERE]
+    </p>
+
+    <h3>The dialect class</h3>
+    
+    <p>
+      Creating our processor was very easy, but now we will need to create the <i>dialect class</i>,
+      which will be in charge of telling Thymeleaf that our processor is available. 
+    </p>
+    <p>
+      We could make our dialect implement the <tt>org.thymeleaf.dialect.IDialect</tt> interface (which is the one
+      every dialect should implement), but instead we will extend a convenience abstract class 
+      called <tt>AbstractDialect</tt> that
+      already implements all methods from that interface, returning empty values for all of them (so
+      that we only have to override the ones we require).
+    </p>
+    <p>
+      [CODE HERE, WITHOUT ADVANCED ARTIFACTS]
+    </p>
+    <p>
+      As you can see, we didn't need to set any <i>DOCTYPE resolution entries</i> or <i>translations</i>, nor
+      we specify any <i>value processors</i>. We didn't need any of that because our dialect
+      is meant to be used together with the Spring Thymeleaf dialect, which already includes
+      a useful set of all those things (although we could have defined them here also if for some reason we wanted 
+      to be more exhaustive). All our dialect does is specify a prefix (<tt>hello</tt>), a <i>leniency</i>,
+      and our <i>"sayto"</i> attribute processor.
+    </p>
+    
+    <h2>Using the hello dialect</h2>
+    
+    <p>
+      Using our new dialect is very easy. This being a Spring MVC application, we just have to add
+      it to the <i>dialects</i> property of the Template Engine bean:
+    </p>
+    
+    <p>
+    [SPRING BEAN XML CODE HERE]
+    </p>
+
+    <p>
+      And our new attribute would work seamlessly:
+    </p>
+    <code>
+&lt;<b>p</b>&gt;Hello&nbsp;World!&lt;/<b>p</b>&gt;
+    </code>
+
+    <h2>Want to know more?</h2>
+    
+    <p>
+      Then the <a href="documentation.html"><i>"Extending Thymeleaf"</i></a> tutorial is what you're looking for!
+    </p>
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="twitter">
+       <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow @thymeleaf on Twitter" title="Follow @thymeleaf on Twitter "/></a>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+  
+</html>
