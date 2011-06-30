@@ -20,7 +20,7 @@ public class SayToAttrProcessor
     
     
     public Set<AttrApplicability> getAttributeApplicabilities() {
-        // Only execute this processor for "sayto" attributes.
+        // Only execute this processor for 'sayto' attributes.
         return AttrApplicability.createSetForAttrName("sayto");
     }
 
@@ -35,8 +35,8 @@ public class SayToAttrProcessor
     
     /*
      * Our processor is a subclass of the convenience abstract implementation
-     * "AbstractTextChildModifierAttrProcessor", which takes care of the
-     * DOM modifying stuff and allows us just to implement this "getText(...)"
+     * 'AbstractTextChildModifierAttrProcessor', which takes care of the
+     * DOM modifying stuff and allows us just to implement this 'getText(...)'
      * method to compute the text to be set as tag body.
      */
     @Override

@@ -10,9 +10,13 @@ import org.thymeleaf.spring3.dialect.SpringThymeleafDialect;
 
 public class HelloDialect extends AbstractDialect {
 
+    public HelloDialect() {
+        super();
+    }
+    
     /*
      * All of this dialect's attributes and/or tags
-     * will start with "hello:*" 
+     * will start with 'hello:*'
      */
     public String getPrefix() {
         return "hello";
@@ -20,7 +24,7 @@ public class HelloDialect extends AbstractDialect {
 
     
     /*
-     * Non-lenient: if a tag starting with "hello:" is
+     * Non-lenient: if a tag starting with 'hello:' is
      * found but no processor exists in this dialect for it,
      * throw an exception. 
      */
