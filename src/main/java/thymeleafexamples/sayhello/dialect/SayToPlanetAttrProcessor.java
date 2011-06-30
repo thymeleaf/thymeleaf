@@ -27,14 +27,14 @@ public class SayToPlanetAttrProcessor
     
     
     public Set<AttrApplicability> getAttributeApplicabilities() {
-        // Only execute this processor for "saytoplanet" attributes.
+        // Only execute this processor for 'saytoplanet' attributes.
         return AttrApplicability.createSetForAttrName("saytoplanet");
     }
 
     
     public Integer getPrecedence() {
         // Higher (less-precedent) than any attribute in the
-        // Spring Thymeleaf dialect and also than "sayto".
+        // Spring Thymeleaf dialect and also than 'sayto'.
         return Integer.valueOf(11000);
     }
 
@@ -65,8 +65,8 @@ public class SayToPlanetAttrProcessor
         final String planet = (String) valueProcessor.getValue(arguments, templateResolution, planetValue); 
 
         /*
-         * This "getMessage(...)" method will first try to resolve the
-         * message as a "template message" (one that is defined for a specific 
+         * This 'getMessage(...)' method will first try to resolve the
+         * message as a 'template message' (one that is defined for a specific 
          * template or templates, and that would be resolved, in a Spring MVC app, 
          * by Spring's MessageSource objects).
          * 
