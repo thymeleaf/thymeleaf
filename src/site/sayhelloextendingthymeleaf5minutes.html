@@ -117,9 +117,96 @@
       a text (which is exactly what we want). So we will extend this class for our attribute
       processor:
     </p>
-    <p>
-      [CODE HERE]
-    </p>
+    <code>
+
+<br />
+<b>public</b>&nbsp;<b>class</b>&nbsp;SayToAttrProcessor&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>extends</b>&nbsp;AbstractTextChildModifierAttrProcessor&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToAttrProcessor()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;AttrApplicability&gt;&nbsp;getAttributeApplicabilities()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;sayto&#39;&nbsp;attributes.
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;AttrApplicability.createSetForAttrName(<span class="string">&quot;sayto&quot;</span>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Integer&nbsp;getPrecedence()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;A&nbsp;value&nbsp;of&nbsp;10000&nbsp;is&nbsp;higher&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
+
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Spring&nbsp;Thymeleaf&nbsp;dialect.&nbsp;So&nbsp;this&nbsp;attribute&nbsp;will&nbsp;execute
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;after&nbsp;all&nbsp;other&nbsp;attributes&nbsp;from&nbsp;that&nbsp;dialect,&nbsp;if&nbsp;in&nbsp;the&nbsp;
+
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;same&nbsp;tag.
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Integer.valueOf(10000);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Our&nbsp;processor&nbsp;is&nbsp;a&nbsp;subclass&nbsp;of&nbsp;the&nbsp;convenience&nbsp;abstract&nbsp;implementation
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&#39;AbstractTextChildModifierAttrProcessor&#39;,&nbsp;which&nbsp;takes&nbsp;care&nbsp;of&nbsp;the
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;DOM&nbsp;modifying&nbsp;stuff&nbsp;and&nbsp;allows&nbsp;us&nbsp;just&nbsp;to&nbsp;implement&nbsp;this&nbsp;&#39;getText(...)&#39;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;method&nbsp;to&nbsp;compute&nbsp;the&nbsp;text&nbsp;to&nbsp;be&nbsp;set&nbsp;as&nbsp;tag&nbsp;body.
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;<b>final</b>&nbsp;Attr&nbsp;attribute,&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName,
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeValue)&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;&quot;</span>&nbsp;&nbsp;+&nbsp;attributeValue&nbsp;+&nbsp;<span class="string">&quot;!&quot;</span>;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+}
+<br />
+<br />
+
+
+    </code>
 
     <h3>The dialect class</h3>
     
@@ -134,9 +221,94 @@
       already implements all methods from that interface, returning empty values for all of them (so
       that we only have to override the ones we require).
     </p>
-    <p>
-      [CODE HERE, WITHOUT ADVANCED ARTIFACTS]
-    </p>
+    <code>
+
+
+<br />
+<b>public</b>&nbsp;<b>class</b>&nbsp;HelloDialect&nbsp;<b>extends</b>&nbsp;AbstractDialect&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;HelloDialect()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;All&nbsp;of&nbsp;this&nbsp;dialect&#39;s&nbsp;attributes&nbsp;and/or&nbsp;tags
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;will&nbsp;start&nbsp;with&nbsp;&#39;hello:*&#39;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;getPrefix()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;hello&quot;</span>;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Non-lenient:&nbsp;if&nbsp;a&nbsp;tag&nbsp;starting&nbsp;with&nbsp;&#39;hello:&#39;&nbsp;is
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;found&nbsp;but&nbsp;no&nbsp;processor&nbsp;exists&nbsp;in&nbsp;this&nbsp;dialect&nbsp;<b>for</b>&nbsp;it,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;throw&nbsp;an&nbsp;exception.&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>boolean</b>&nbsp;isLenient()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<b>false</b>;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;attribute&nbsp;processors.
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;getAttrProcessors()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;attrProcessors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IAttrProcessor&gt;();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attrProcessors.add(<b>new</b>&nbsp;SayToAttrProcessor());
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;attrProcessors;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+}
+<br />
+<br />
+
+
+
+    </code>
     <p>
       As you can see, we didn't need to set any <i>DOCTYPE resolution entries</i> or <i>translations</i>, nor
       we specify any <i>value processors</i>. We didn't need any of that because our dialect
@@ -153,9 +325,36 @@
       it to the <i>dialects</i> property of the Template Engine bean:
     </p>
     
-    <p>
-    [SPRING BEAN XML CODE HERE]
-    </p>
+    <code>
+
+
+<br />
+&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringThymeleafTemplateEngine&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;dialects&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>set</b>&gt;
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.dialect.SpringThymeleafDialect&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;thymeleafexamples.sayhello.dialect.HelloDialect&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/set</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
+
+<br />
+&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+<br /><br />
+
+
+    </code>
 
     <p>
       And our new attribute would work seamlessly:

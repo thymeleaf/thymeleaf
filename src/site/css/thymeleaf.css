@@ -235,6 +235,10 @@ code {
 span.string {
   color: blue;
 }
+span.comment {
+  font-style: italic;
+  color: green;
+}
 
 
 
