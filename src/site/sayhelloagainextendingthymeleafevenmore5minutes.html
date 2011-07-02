@@ -50,7 +50,7 @@
       can download from the <a href="documentation.html">documentation</a> page.
     </p>
 
-    <h2>Revisiting the hello dialect</h2>
+    <h2>Some improvements for our 'hello' dialect</h2>
     
     <p>
       To the moment, our <tt>HelloDialect</tt> allowed us to turn this:
@@ -77,9 +77,598 @@
       <li>Internationalize output: say <i>Hello</i> for English, <i>Hola</i> for Spanish, <i>Olá</i> for
           Portuguese, etc.</li>
     </ul>
+    <p>
+      And we will need all that because we want to be able to create a new attribute, called
+      "<tt>saytoplanet</tt>" and salute all the planets in the solar system, with a template
+      like this:
+    </p>
+    
+    <code>
+    
+<br />
+&lt;<b>ul</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;planet&nbsp;:&nbsp;${planets}&quot;</span>&nbsp;hello:saytoplanet=<span class="string">&quot;${planet}&quot;</span>&gt;Hello&nbsp;Planet!&lt;<b>/li</b>&gt;
+
+<br />
+&lt;<b>/ul</b>&gt;
+<br />
+
+<br />
+
+    </code>
+
+    <p>
+      ...backed by a Spring MVC controller that includes all those planets as a model attribute
+      called <tt>planets</tt>:
+    </p>
+    
+    <code>
+
+<br />
+@Controller
+<br />
+<b>public</b>&nbsp;<b>class</b>&nbsp;SayHelloController&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayHelloController()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@ModelAttribute(<span class="string">&quot;planets&quot;</span>)
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;List&lt;String&gt;&nbsp;populatePlanets()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Arrays.asList(<b>new</b>&nbsp;String[]&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">&quot;Mercury&quot;</span>,&nbsp;<span class="string">&quot;Venus&quot;</span>,&nbsp;<span class="string">&quot;Earth&quot;</span>,&nbsp;<span class="string">&quot;Mars&quot;</span>,&nbsp;<span class="string">&quot;Jupiter&quot;</span>,&nbsp;<span class="string">&quot;Saturn&quot;</span>,&nbsp;<span class="string">&quot;Uranus&quot;</span>,&nbsp;<span class="string">&quot;Neptune&quot;</span>
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping({<span class="string">&quot;/&quot;</span>,<span class="string">&quot;/sayhello&quot;</span>})
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;showSayHello()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;sayhello&quot;</span>;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+}
+<br />
+<br />
+    
+    </code>
+
+
+    <h2>Using expressions as attribute values</h2>
+    
+    <p>
+      The first thing we want to do is adding to our attributes the ability of parsing and 
+      executing expressions in the same way we can do in the <i>Spring Thymeleaf Dialect</i>, this is: 
+    </p>
+    <ul>
+      <li><tt>${...}</tt> Spring EL variable expressions.</li>
+      <li><tt>#{...}</tt> externalization of messages.</li>
+      <li><tt>@{...}</tt> link specifications.</li>
+      <li><tt>(cond)? (then) : (else)</tt> conditional/default expressions.</li>
+      <li>etc...</li>
+    </ul>
+    <p>
+      In order to achieve this, we will need to declare in our Dialect the <i>value processors</i>
+      from the <i>Spring Thymeleaf Dialect</i>, which are the ones able to process this syntax.
+      That's easily done, like this:
+    </p>
+
+    <code>
+
+
+<br />
+<b>public</b>&nbsp;<b>class</b>&nbsp;HelloDialect&nbsp;<b>extends</b>&nbsp;AbstractDialect&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;HelloDialect()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;All&nbsp;of&nbsp;this&nbsp;dialect&#39;s&nbsp;attributes&nbsp;and/or&nbsp;tags
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;will&nbsp;start&nbsp;with&nbsp;&#39;hello:*&#39;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;getPrefix()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;hello&quot;</span>;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Non-lenient:&nbsp;if&nbsp;a&nbsp;tag&nbsp;starting&nbsp;with&nbsp;&#39;hello:&#39;&nbsp;is
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;found&nbsp;but&nbsp;no&nbsp;processor&nbsp;exists&nbsp;in&nbsp;this&nbsp;dialect&nbsp;for&nbsp;it,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;throw&nbsp;an&nbsp;exception.&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>boolean</b>&nbsp;isLenient()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<b>false</b>;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;attribute&nbsp;processors.
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;getAttrProcessors()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;attrProcessors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IAttrProcessor&gt;();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attrProcessors.add(<b>new</b>&nbsp;SayToAttrProcessor());
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attrProcessors.add(<b>new</b>&nbsp;SayToPlanetAttrProcessor());
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;attrProcessors;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Value&nbsp;processors:&nbsp;we&nbsp;will&nbsp;be&nbsp;using&nbsp;the&nbsp;set&nbsp;of&nbsp;value
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;processors&nbsp;from&nbsp;the&nbsp;Spring&nbsp;Thymeleaf&nbsp;dialect,&nbsp;and&nbsp;so&nbsp;we&nbsp;will
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;benefit&nbsp;from&nbsp;all&nbsp;its&nbsp;syntax&nbsp;features&nbsp;(${...},&nbsp;#{...},&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;SpringEL&nbsp;evaluation,&nbsp;etc.)
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IValueProcessor&gt;&nbsp;getValueProcessors()&nbsp;{
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;SpringThymeleafDialect.createSpringThymeleafValueProcessorsSet();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+}
+<br />
+<br />
+    
+    </code>
+    
+    
+    <p>
+      Notice the <tt>getValueProcessors()</tt> method in which we declare all the set of <i>value processors</i>
+      coming from the Spring Thymeleaf Dialect. And also a new line in the <tt>getAttrProcessors()</tt> method
+      in which we declare our new attribute processors
+    </p>
+    <p>
+      And now for the attribute processor class. As we did in the previous article, we will
+      use the <tt>AbstractTextChildModifierAttrProcessor</tt> convenience abstract class
+      in order to simplify the development of our processor, simply computing the text
+      that will be inserted as body of the processed tag.
+    </p>
+    
+    <code>
+<br />
+<b>public</b>&nbsp;<b>class</b>&nbsp;SayToPlanetAttrProcessor&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>extends</b>&nbsp;AbstractTextChildModifierAttrProcessor&nbsp;{
+
+<br />
+
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToPlanetAttrProcessor()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;AttrApplicability&gt;&nbsp;getAttributeApplicabilities()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;saytoplanet&#39;&nbsp;attributes.
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;AttrApplicability.createSetForAttrName(<span class="string">&quot;saytoplanet&quot;</span>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Integer&nbsp;getPrecedence()&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Higher&nbsp;(less-precedent)&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Spring&nbsp;Thymeleaf&nbsp;dialect&nbsp;and&nbsp;also&nbsp;than&nbsp;&#39;sayto&#39;.
+
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Integer.valueOf(11000);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;Class&lt;?&nbsp;<b>extends</b>&nbsp;IValueProcessor&gt;&gt;&nbsp;getValueProcessorDependencies()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;This&nbsp;attribute&nbsp;processor&nbsp;needs&nbsp;the&nbsp;StandardValueProcessor&nbsp;(declared
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;in&nbsp;the&nbsp;dialect&nbsp;class).
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;Class&lt;?&nbsp;<b>extends</b>&nbsp;IValueProcessor&gt;&gt;&nbsp;dependencies&nbsp;=&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>new</b>&nbsp;HashSet&lt;Class&lt;?&nbsp;<b>extends</b>&nbsp;IValueProcessor&gt;&gt;();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dependencies.add(StandardValueProcessor.<b>class</b>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;dependencies;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;<b>final</b>&nbsp;Attr&nbsp;attribute,&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeValue)&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,StandardValueProcessor.<b>class</b>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Value&nbsp;planetValue&nbsp;=&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;planetValue);&nbsp;
+
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;planet&nbsp;&quot;</span>&nbsp;+&nbsp;planet;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+}
+<br />
+<br />
+    
+    </code>
+    
+    <p>
+      Note that we had to implement the <tt>getValueProcessorDependencies()</tt> in order to tell
+      Thymeleaf that this attribute processor depends on the <i>Standard Value Processor</i>.
+      This is a validation mechanism that checks every processor in a dialect has all it
+      needs at dialect initialization time.
+    </p>
+    <p>
+      Also, our <tt>getText(...)</tt> method now takes care of the attribute value and evaluates
+      it as an expression in the Standard Syntax in three steps:
+    </p>
+    <p>
+      1. Obtain the <i>value processor</i> from configuration, referenced by class:
+    </p>
+    <code>
+<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,StandardValueProcessor.<b>class</b>);
+<br />
+    </code>
+    <p>
+      2. Parse the attribute value into a standard syntax's <tt>Value</tt> object. This object
+      only represents the (parsed) expression, but still contains no resolved values:
+    </p>
+    <code>
+<b>final</b>&nbsp;Value&nbsp;planetValue&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
+<br />
+    </code>
+    <p>
+      3. Use the <i>value processor</i> for resolving the obtained <tt>Value</tt> object &dash;which
+      specifies the expression to be used&dash; on the current context (or <i>model attributes</i>):
+    </p>
+    <code>
+<b>final</b>&nbsp;String&nbsp;planet&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;planetValue);&nbsp;
+<br />
+    </code>    
+
+
+    <h2>Adding internationalization</h2>
+
+    <p>
+      Now we want to internationalize the message returned by our attribute processor. This means
+      substituting this English-only message building code:
+    </p>
+    <code>
+<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;planet&nbsp;&quot;</span>&nbsp;+&nbsp;planet;
+    </code>
+    <p>
+      ...by a message built from an externalized String that we must somehow obtain from our
+      code. The abstract parent class <tt>AbstractAttrProcessor</tt> offers three methods we 
+      can use for this:
+    </p>
+    <code>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessage(
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessageForTemplate(
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessageForProcessor(
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
+
+<br />
+<br />
+    
+    </code>
+    <p>
+      Each of them has a different meaning, let's start by the last two:
+    </p>
+    <ul>
+      <li><tt>getMessageForTemplate(...)</tt> uses the Template Engine's currently registered
+          internationalization mechanisms to look for the desired message. For example:
+          <ul>
+            <li>In a Spring application, we will probably be using specific <i>Message Resolvers</i> that
+                query the Spring <tt>MessageSource</tt> objects registered for the application.
+            <li>When not in a Spring application, we will probably be using Thymeleaf's
+                <i>Standard Message Resolver</i> that looks for <tt>.properties</tt> files with the
+                same name as the template being processed.
+          </ul>
+      </li>
+      <li><tt>getMessageForProcessor(...)</tt> uses a message resolution mechanism created for allowing
+          the <i>componentization</i> &dash;or, if you prefer, <i>encapsulation</i>&dash; of dialects.  
+          This mechanism consists in allowing <i>tag</i> and <i>attribute processors</i> to specify
+          their own messages, whichever the application their dialects are used on. These are
+          read from <tt>.properties</tt> files with the same name and living in the
+          same package as the processor class (or any of its superclasses). For example, the <tt>thymeleafexamples.sayhello.dialect</tt>
+          package in our example could contain:
+          <ul>
+            <li><tt>SayToPlanetAttrProcessor.java</tt>: the <i>attribute processor</i>.</li>
+            <li><tt>SayToPlanetAttrProcessor_en_GB.properties</tt>: externalized messages for English (UK) language.</li>
+            <li><tt>SayToPlanetAttrProcessor_en.properties</tt>: externalized messages for English (rest of countries) language.</li>
+            <li><tt>SayToPlanetAttrProcessor.properties</tt>: default externalized messages.</li>
+          </ul>
+      </li> 
+    </ul>
+    
+    <p>
+      Finally, the first method of the three, <tt>getMessage(...)</tt> acts as a combination of the
+      other two: first it tries to resolve the required message as a <i>template message</i>
+      (defined in the application messages files) and if it doesn't exist tries to resolve it
+      as a <i>processor message</i>. This way, applications can override if needed any messages
+      established by its dialects.
+    </p>
+
+    <p>
+      Enough about theory, let's put all this into practice. First we will need some <tt>.properties</tt>
+      files, like <tt>SayToPlanetAttrProcessor_es.properties</tt> for Spanish:
+    </p>
+    <code>
+msg.helloplanet=&iexcl;Hola, planeta {0}!
+    </code>
+    <p>
+      <tt>SayToPlanetAttrProcessor_pt.properties</tt> for Portuguese:
+    </p>
+    <code>
+msg.helloplanet=Ol&aacute;, planeta {0}!
+    </code>
+    <p>
+      ...etc.
+    </p>
+    <p>
+      And now we will have to modify the <tt>getText()</tt> method in our <tt>SayToPlanetAttrProcessor</tt>
+      class to make use of these messages:
+    </p>
+    <code>
+    
+<br />
+@Override
+<br />
+<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;<b>final</b>&nbsp;Attr&nbsp;attribute,&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName,
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeValue)&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,StandardValueProcessor.<b>class</b>);
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Value&nbsp;planetValue&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;planetValue);&nbsp;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;&#39;getMessage(...)&#39;&nbsp;method&nbsp;will&nbsp;first&nbsp;&nbsp;to&nbsp;resolve&nbsp;the
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;message&nbsp;as&nbsp;a&nbsp;&#39;template&nbsp;message&#39;&nbsp;(one&nbsp;that&nbsp;is&nbsp;defined&nbsp;for&nbsp;a&nbsp;specific&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;template&nbsp;or&nbsp;templates,&nbsp;and&nbsp;that&nbsp;would&nbsp;be&nbsp;resolved,&nbsp;in&nbsp;a&nbsp;Spring&nbsp;MVC&nbsp;app,&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;Spring&#39;s&nbsp;MessageSource&nbsp;objects).
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;If&nbsp;not&nbsp;found,&nbsp;it&nbsp;will&nbsp;&nbsp;to&nbsp;resolve&nbsp;it&nbsp;as&nbsp;a&nbsp;&#39;processor&nbsp;message&#39;,&nbsp;a&nbsp;type
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;of&nbsp;messages&nbsp;meant&nbsp;to&nbsp;appear&nbsp;in&nbsp;.properties&nbsp;files&nbsp;by&nbsp;the&nbsp;side&nbsp;of&nbsp;the&nbsp;
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;attribute&nbsp;processor&nbsp;itself&nbsp;(or&nbsp;any&nbsp;of&nbsp;its&nbsp;superclasses)&nbsp;and,&nbsp;if&nbsp;needed,&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;be&nbsp;packaged&nbsp;along&nbsp;with&nbsp;it&nbsp;in&nbsp;a&nbsp;.jar&nbsp;file&nbsp;for&nbsp;better&nbsp;encapsulation&nbsp;of&nbsp;UI&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;components.
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;message&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessage(arguments,&nbsp;templateResolution,&nbsp;<span class="string">&quot;msg.helloplanet&quot;</span>,&nbsp;<b>new</b>&nbsp;Object[]&nbsp;{planet});
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;message;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+}
+<br />
+<br />    
+    
+    </code>
+
+    <p>
+      And that's it! Let's have a look at the results of executing our template with Spanish locale:
+    </p>
+
+    <code>
+    <ul>
+      <li>¡Hola, planeta Mercury!</li><li>¡Hola, planeta Venus!</li><li>¡Hola, planeta Earth!</li><li>¡Hola, planeta Mars!</li><li>¡Hola, planeta Jupiter!</li><li>¡Hola, planeta Saturn!</li><li>¡Hola, planeta Uranus!</li><li>¡Hola, planeta Neptune!</li>
+    </ul>
+    </code>
+   
+    <h2>Exercise for the reader: internationalize the planet names</h2>
+    
+    <p>
+      Now we've applied internationalization to the message output by our attribute processor, but
+      our planet names are still all in English because they are <i>hard coded</i> variables in
+      our context (in Spring language, <i>model attributes</i>).
+    </p> 
+    <p>
+      So, how about internationalizing those planet names? The <tt>#{...}</tt> expressions we
+      can use in this attribute now should make this quite easy, and there are also some examples in articles
+      like <a href="standarddialect5minutes.html"><i>"Getting started with the Standard Dialect in 5 minutes"</i></a>
+      and the <a href="documentation.html">tutorials</a> quite similar to this scenario.
+    </p>
+    <p>
+      Once you're done (or if you get stuck), you can share your results at our <a href="http://forum.thymeleaf.org">user forums</a>.
+    </p>
 
    </div>
-   
    
    <div id="footer">
      <div id="twitter">
