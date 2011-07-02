@@ -70,7 +70,7 @@ public class SayToPlanetAttrProcessor
          * template or templates, and that would be resolved, in a Spring MVC app, 
          * by Spring's MessageSource objects).
          * 
-         * If not found, it will try to resolve it as a "processor message", a type
+         * If not found, it will try to resolve it as a 'processor message', a type
          * of messages meant to appear in .properties files by the side of the 
          * attribute processor itself (or any of its superclasses) and, if needed, 
          * be packaged along with it in a .jar file for better encapsulation of UI 

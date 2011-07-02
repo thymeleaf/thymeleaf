@@ -14,10 +14,7 @@ public class SayHelloController {
     public SayHelloController() {
         super();
     }
-    
-    
-    
-    
+
     
     @ModelAttribute("planets")
     public List<String> populatePlanets() {
@@ -25,8 +22,6 @@ public class SayHelloController {
                 "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"
         });
     }
-    
-    
     
     @RequestMapping({"/","/sayhello"})
     public String showSayHello() {
