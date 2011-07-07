@@ -17,34 +17,31 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.extrathyme.business.entities;
+package thymeleafexamples.extrathyme.business.services;
 
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class Variety {
+import thymeleafexamples.extrathyme.business.entities.Team;
+import thymeleafexamples.extrathyme.business.entities.repositories.TeamRepository;
 
-    private Integer id = null;
-    private String name = null;
+@Service
+public class TeamService {
+    
+    @Autowired
+    private TeamRepository teamRepository; 
     
     
-    public Variety() {
+    public TeamService() {
         super();
     }
-
-
-    public Integer getId() {
-        return this.id;
-    }
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-
-    public String getName() {
-        return this.name;
-    }
-    public void setName(final String name) {
-        this.name = name;
+    
+    
+    
+    public List<Team> findAll() {
+        return this.teamRepository.findAll();
     }
     
 }

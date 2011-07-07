@@ -21,47 +21,48 @@ package thymeleafexamples.extrathyme.business.entities;
 
 
 
-public enum Feature {
-    
-    SEEDSTARTER_SPECIFIC_SUBSTRATE("SEEDSTARTER_SPECIFIC_SUBSTRATE"), 
-    FERTILIZER("FERTILIZER"), 
-    PH_CORRECTOR("PH_CORRECTOR");
+public class Team {
 
-    
-    public static final Feature[] ALL = { SEEDSTARTER_SPECIFIC_SUBSTRATE, FERTILIZER, PH_CORRECTOR };
-    
-    
-    private final String name;
-
+    private String name = null;
+    private Integer points = null;
     
     
-    public static Feature forName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("Name cannot be null for feature");
-        }
-        if (name.toUpperCase().equals("SEEDSTARTER_SPECIFIC_SUBSTRATE")) {
-            return SEEDSTARTER_SPECIFIC_SUBSTRATE;
-        } else if (name.toUpperCase().equals("FERTILIZER")) {
-            return FERTILIZER;
-        } else if (name.toUpperCase().equals("PH_CORRECTOR")) {
-            return PH_CORRECTOR;
-        }
-        throw new IllegalArgumentException("Name \"" + name + "\" does not correspond to any Feature");
+    
+    
+    public Team() {
+        super();
     }
-    
-    
-    private Feature(final String name) {
+
+    public Team(final String name, final int points) {
+        super();
         this.name = name;
+        this.points = Integer.valueOf(points);
     }
-    
-    
+
+
+
     public String getName() {
         return this.name;
     }
-    
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public Integer getPoints() {
+        return this.points;
+    }
+
+    public void setPoints(final Integer points) {
+        this.points = points;
+    }
+
+
+
     @Override
     public String toString() {
-        return getName();
+        return "Team [name=" + this.name + ", points=" + this.points + "]";
     }
+
     
 }

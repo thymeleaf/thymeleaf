@@ -17,35 +17,38 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.extrathyme.business.services;
+package thymeleafexamples.extrathyme.business.entities.repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-import thymeleafexamples.extrathyme.business.entities.Variety;
-import thymeleafexamples.extrathyme.business.entities.repositories.VarietyRepository;
+import thymeleafexamples.extrathyme.business.entities.Team;
 
-@Service
-public class VarietyService {
+
+@Repository
+public class TeamRepository {
+
     
-    @Autowired
-    private VarietyRepository varietyRepository; 
-    
-    
-    public VarietyService() {
+    public TeamRepository() {
         super();
     }
     
     
+    public List<Team> findAll() {
+        
+        final List<Team> teams = new ArrayList<Team>();
+        
+        teams.add(new Team("Basil Dragons", 75));
+        teams.add(new Team("Parsley Warriors", 67));
+        teams.add(new Team("Antarctica Corianders", 61));
+        teams.add(new Team("Rosemary 75ers", 54));
+        
+        return teams;
+        
+    }
     
-    public List<Variety> findAll() {
-        return this.varietyRepository.findAll();
-    }
-
-    public Variety findById(final Integer id) {
-        return this.varietyRepository.findById(id);
-    }
+    
     
 }
