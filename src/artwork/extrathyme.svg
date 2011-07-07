@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 r9760"
+   sodipodi:docname="extrathyme.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4744919"
+     inkscape:cx="306.13209"
+     inkscape:cy="768.74087"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1400"
+     inkscape:window-height="973"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g3938-5-5"
+       transform="matrix(2.3981513,0,0,2.4737687,-1024.9977,-618.43705)"
+       inkscape:export-filename="/home/daniel/workspace/thymeleaf-dist/src/artwork/extrathymelogo.png"
+       inkscape:export-xdpi="98.535233"
+       inkscape:export-ydpi="98.535233"
+       style="fill:#99cc33;fill-opacity:1">
+      <path
+         sodipodi:nodetypes="csscccccccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path3002-7-1-1"
+         d="m 548.7525,339.44002 c -1.57587,0.46132 -1.97701,0.72089 -6.56294,0.19472 -0.096,-0.011 -1.27672,-0.41636 -1.37482,-0.44339 -2.89361,-0.79744 -7.9589,-2.58927 -17.30274,-6.3337 -2.7718,-1.02774 -7.43117,-1.55782 -7.39807,-4.23151 -0.22583,-2.40856 1.00955,-3.49961 1.95831,-4.12704 2.49938,-1.87612 5.85173,-2.53946 8.26844,-2.92551 3.82545,-0.20725 6.6264,-0.4945 11.09711,1.04482 3.72101,0.99782 6.12616,2.91468 8.26844,5.01514 l 3.09906,3.67697 c -3.48086,-1.79923 -6.93366,-3.36965 -9.5275,-4.54953 -2.46602,-1.14587 -5.98057,-1.72613 -8.07912,-1.66722 -1.93022,0.0105 -3.1018,0.21736 -5.1934,0.52901 -2.25945,0.49389 -1.54101,0.30502 -4.23221,1.10641 3.62644,-0.85855 5.88206,-1.08973 8.90157,-1.1588 2.94596,0.0656 3.93013,0.42525 7.25363,1.31552 2.08751,0.70693 6.2367,2.92435 9.3011,4.61347 2.29253,1.48681 2.5678,2.35204 3.26386,4.07481 0.18171,1.19203 0.98305,1.38378 -0.0544,2.61204 -0.16129,0.25939 -0.99378,1.16335 -1.68631,1.25379 z"
+         style="fill:#99cc33;fill-opacity:0.61702127;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         sodipodi:nodetypes="ccccccc"
+         inkscape:connector-curvature="0"
+         id="path3790-0-7-7"
+         d="m 551.47667,335.37795 c 0.98306,-0.32647 1.00746,-0.43362 5.7876,-3.94253 1.33345,-1.56545 2.80289,-1.87754 4.13634,-4.62754 0.4521,-2.03949 -1.20555,-1.81273 -3.30798,-1.1082 -1.99532,0.974 -3.34843,1.2912 -5.84667,3.54624 -0.66991,0.70246 -1.55467,1.26588 -1.92324,2.58579 -0.41524,0.63355 -0.0614,3.77566 1.15395,3.54624 z"
+         style="fill:#99cc33;fill-opacity:0.61702127;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         sodipodi:nodetypes="ccscccsssssc"
+         inkscape:connector-curvature="0"
+         id="path3792-3-1-1"
+         d="m 549.52621,331.03433 c -2.2972,-3.3716 -1.94888,-2.5858 -2.92333,-3.8787 -1.04639,-1.00491 -0.40345,-6.35114 -0.38464,-6.53837 0.15365,-1.52903 1.98103,-5.91356 2.69256,-5.39324 1.98537,-0.94692 4.23431,4.97213 4.69272,7.35106 0.45287,1.16845 0.69703,3.46266 -0.19233,4.39586 -0.32878,0.26883 -0.54987,0.62289 -1.54813,1.50529 -0.20617,0.18224 -0.5235,-3.15413 -0.83191,-4.60369 -0.58694,-2.75871 -1.50741,-6.90594 -1.4762,-6.69963 0.51502,3.40522 0.92997,5.1991 1.18261,6.76492 0.26896,1.66704 0.72798,4.9557 0.72798,4.9557 -0.79132,0.50477 -1.30087,1.46125 -1.93933,2.1408 z"
+         style="fill:#99cc33;fill-opacity:0.61702127;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         sodipodi:nodetypes="cccccccccccccccccccccccccccccccccccc"
+         inkscape:connector-curvature="0"
+         id="path3796-4-1-1"
+         d="m 555.57055,325.15752 c -0.56525,-1.27586 -0.22085,-2.34162 0.0914,-2.93187 0.2603,-0.42315 1.48958,-1.93642 2.85181,-3.44099 2.74138,-2.94837 4.05464,-3.94256 5.39286,-5.0035 4.02061,-2.87935 4.8863,-3.29021 8.18982,-5.1966 2.52492,-1.31975 7.05568,-3.30284 10.73087,-4.52948 2.53179,-0.83474 6.1504,-1.0717 7.40373,-0.8778 1.14658,0.11918 2.21382,0.3771 2.85182,1.54493 0.37654,0.71529 0.69202,1.53304 0.29249,2.03651 -0.11463,0.37664 -1.7942,0.3152 -4.11319,1.91361 -1.10295,0.86025 -1.59498,0.96428 -2.68729,3.283 -1.26823,3.16652 -1.73231,4.40968 -3.06674,6.5316 -1.04866,1.75599 -2.19476,3.40885 -3.51436,4.77452 -0.83991,1.02581 -3.98861,4.37387 -4.54696,4.68521 -1.18441,1.20759 -6.01135,4.18001 -6.62394,4.54049 -1.37063,0.75782 -3.21871,1.36474 -4.44798,1.42931 -2.28355,0.068 -2.78437,-0.24089 -3.74996,-0.53842 -0.89701,-0.43842 -1.84614,-0.90186 -2.34514,-1.14915 -0.5683,-0.46107 0.52553,-0.92213 0.87381,-1.3832 0.95959,-0.75615 1.43107,-1.26541 1.97876,-2.00389 0.34354,-0.67522 0.73687,-1.15917 1.01929,-2.06912 0.15695,-0.81068 0.2684,-1.04274 0.0732,-1.68539 -0.36713,-0.50025 -0.20929,-0.25792 -0.47531,-0.63202 0.71071,-0.99657 1.83977,-2.21359 2.68592,-3.14512 2.1229,-2.27548 3.33449,-3.51579 5.97699,-5.96135 0.50442,-0.505 2.77548,-2.49843 4.85384,-4.07302 1.07633,-0.81259 1.5135,-1.08638 2.7202,-1.70765 l 3.68614,-1.98156 c -1.19778,0.48557 -2.79588,1.12209 -3.99365,1.73004 -1.38782,0.70987 -1.81194,0.96023 -2.84168,1.74344 -2.42606,1.69956 -4.80277,3.91996 -5.09988,4.19437 -2.52085,2.22627 -4.49091,4.18949 -6.50874,6.27273 -0.87004,0.93233 -1.73964,1.86638 -2.57599,2.92812 l -1.35278,0.14045 c -1.26295,0.23828 -1.53996,0.40275 -2.70557,0.91292 -0.94759,0.30351 -0.91718,-0.0713 -1.02375,-0.35112 z"
+         style="fill:#99cc33;fill-opacity:0.61702127;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:30.21272087px;font-style:oblique;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:OFL Sorts Mill Goudy Bold Oblique"
+       x="176.4534"
+       y="186.38094"
+       id="text2985"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/daniel/workspace/thymeleaf-dist/src/artwork/extrathymelogo.png"
+       inkscape:export-xdpi="98.535233"
+       inkscape:export-ydpi="98.535233"><tspan
+         sodipodi:role="line"
+         id="tspan2987"
+         x="176.4534"
+         y="186.38094"
+         style="font-size:60.42544174px;font-style:oblique;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#352726;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy Bold Oblique"><tspan
+   style="fill:#aa8800"
+   id="tspan3036">extra</tspan>thyme</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:66.88153839px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#352726;fill-opacity:1;stroke:none;font-family:Sans"
+       x="175.05528"
+       y="208.60202"
+       id="text3772"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/daniel/workspace/thymeleaf-dist/src/artwork/extrathymelogo.png"
+       inkscape:export-xdpi="98.535233"
+       inkscape:export-ydpi="98.535233"><tspan
+         sodipodi:role="line"
+         id="tspan3774"
+         x="175.05528"
+         y="208.60202"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#352726;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy">Thymeland's soccer scoreboard</tspan></text>
+  </g>
+</svg>
