@@ -53,7 +53,7 @@
     <property name="dialects">
       <set>
         <bean class="org.thymeleaf.spring3.dialect.SpringThymeleafDialect" />
-        <bean class="thymeleafexamples.sampledialects.score.ScoreDialect" />
+        <bean class="thymeleafexamples.extrathyme.dialects.score.ScoreDialect" />
       </set>
     </property>
   </bean>

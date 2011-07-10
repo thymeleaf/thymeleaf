@@ -32,19 +32,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr th:each="t : ${teams}" score:appendclassforposition="${tStat.index}">
+          <tr th:each="t : ${teams}" score:appendclassforposition="${tStat.count}">
             <td th:text="${t.name + ' (' + t.code + ')'}">TWN The Winners</td>
             <td th:text="${t.points}" class="points">99</td>
             <td th:text="${t.goalsScored}" class="points">45</td>
             <td th:text="${t.goalsConceded}" class="points">12</td>
-            <td>CUCU</td>
+            <td score:remarkforposition="${tStat.count}">Great winner!</td>
           </tr>
           <tr th:remove="all">
             <td>TLS The Losers</td>
             <td class="points">1</td>
             <td class="points">18</td>
             <td class="points">28</td>
-            <td>Relegated to Regional League</td>
+            <td>Big loooooser</td>
           </tr>
         </tbody>
       </table>

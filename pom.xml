@@ -164,12 +164,6 @@
       <version>1.0.0-beta6-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>thymeleafexamples</groupId>
-      <artifactId>sampledialects</artifactId>
-      <version>20110711</version>
-      <scope>compile</scope>
-    </dependency>
     
         
     <dependency>

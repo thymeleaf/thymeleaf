@@ -66,3 +66,16 @@ td.points {
   width: 30px;
   text-align: right;
 }
+
+
+tr.wcl {
+  background-color: #ddf;
+}
+
+tr.cpo {
+  background-color: #dfd;
+}
+
+tr.rel {
+  background-color: #fdd;
+}

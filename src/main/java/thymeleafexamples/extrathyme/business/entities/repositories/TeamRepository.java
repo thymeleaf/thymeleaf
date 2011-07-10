@@ -43,7 +43,9 @@ public class TeamRepository {
         teams.add(new Team("BAD", "Basil Dragons", 75, 68, 32));
         teams.add(new Team("PAW", "Parsley Warriors", 67, 67, 45));
         teams.add(new Team("ACO", "Antarctica Corianders", 61, 58, 55));
-        teams.add(new Team("ROS", "Rosemary 75ers", 54, 43, 52));
+        teams.add(new Team("CSA", "Cinnamon Sailors", 58, 48, 45));
+        teams.add(new Team("RHP", "Raging Hot Paprikas", 54, 49, 61));
+        teams.add(new Team("ROS", "Rosemary 75ers", 53, 43, 52));
         
         return teams;
         
