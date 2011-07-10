@@ -26,17 +26,17 @@
           <tr>
             <th th:text="#{team.name}">Team</th>
             <th th:text="#{team.points}" class="points">Points</th>
-            <th th:text="#{team.goalsFor}" class="points">Goals For</th>
-            <th th:text="#{team.goalsAgainst}" class="points">Goals Against</th>
+            <th th:text="#{team.goalsScored}" class="points">Goals Scored</th>
+            <th th:text="#{team.goalsConceded}" class="points">Goals Conceded</th>
             <th th:text="#{team.remarks}">Remarks</th>
           </tr>
         </thead>
         <tbody>
           <tr th:each="t : ${teams}">
-            <td th:text="${t.code + ' ' + t.name}">TWN The Winners</td>
+            <td th:text="${t.name + ' (' + t.code + ')'}">TWN The Winners</td>
             <td th:text="${t.points}" class="points">99</td>
-            <td th:text="${t.goalsFor}" class="points">45</td>
-            <td th:text="${t.goalsAgainst}" class="points">12</td>
+            <td th:text="${t.goalsScored}" class="points">45</td>
+            <td th:text="${t.goalsConceded}" class="points">12</td>
             <td>CUCU</td>
           </tr>
           <tr th:remove="all">
