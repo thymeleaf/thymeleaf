@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:score="http://thymeleafexamples">
 
   <head>
     <title>extraThyme: Thymeland's soccer scoreboard</title>
@@ -32,7 +32,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr th:each="t : ${teams}">
+          <tr th:each="t : ${teams}" score:appendclassforposition="${tStat.index}">
             <td th:text="${t.name + ' (' + t.code + ')'}">TWN The Winners</td>
             <td th:text="${t.points}" class="points">99</td>
             <td th:text="${t.goalsScored}" class="points">45</td>
