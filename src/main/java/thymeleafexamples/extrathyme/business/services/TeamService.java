@@ -40,8 +40,8 @@ public class TeamService {
     
     
     
-    public List<Team> findAll() {
-        return this.teamRepository.findAll();
+    public List<Team> findAllTeams() {
+        return this.teamRepository.findAllTeams();
     }
     
 }

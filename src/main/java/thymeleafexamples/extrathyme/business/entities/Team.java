@@ -23,45 +23,44 @@ package thymeleafexamples.extrathyme.business.entities;
 
 public class Team {
 
-    private String name = null;
-    private Integer points = null;
+    private String code;
+    private String name;
+    private int points;
+    private int goalsScored;
+    private int goalsConceded;
     
     
     
     
-    public Team() {
+    public Team(final String code, final String name, final int points, final int goalsScored, final int goalsConceded) {
         super();
-    }
-
-    public Team(final String name, final int points) {
-        super();
+        this.code = code;
         this.name = name;
-        this.points = Integer.valueOf(points);
+        this.points = points;
+        this.goalsScored = goalsScored;
+        this.goalsConceded = goalsConceded;
     }
 
 
+
+    public String getCode() {
+        return this.code;
+    }
 
     public String getName() {
         return this.name;
     }
 
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Integer getPoints() {
+    public int getPoints() {
         return this.points;
     }
 
-    public void setPoints(final Integer points) {
-        this.points = points;
+    public int getGoalsScored() {
+        return this.goalsScored;
     }
 
-
-
-    @Override
-    public String toString() {
-        return "Team [name=" + this.name + ", points=" + this.points + "]";
+    public int getGoalsConceded() {
+        return this.goalsConceded;
     }
 
     

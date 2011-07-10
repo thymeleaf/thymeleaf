@@ -24,9 +24,9 @@ public class ExtraThymeController {
     }
     
     
-    @ModelAttribute("allTeams")
+    @ModelAttribute("teams")
     public List<Team> populateTeams() {
-        return this.teamService.findAll();
+        return this.teamService.findAllTeams();
     }
     
     

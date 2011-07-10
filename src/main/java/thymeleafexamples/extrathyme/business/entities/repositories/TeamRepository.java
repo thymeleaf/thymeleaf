@@ -36,14 +36,14 @@ public class TeamRepository {
     }
     
     
-    public List<Team> findAll() {
+    public List<Team> findAllTeams() {
         
         final List<Team> teams = new ArrayList<Team>();
         
-        teams.add(new Team("Basil Dragons", 75));
-        teams.add(new Team("Parsley Warriors", 67));
-        teams.add(new Team("Antarctica Corianders", 61));
-        teams.add(new Team("Rosemary 75ers", 54));
+        teams.add(new Team("BAD", "Basil Dragons", 75, 68, 32));
+        teams.add(new Team("PAW", "Parsley Warriors", 67, 67, 45));
+        teams.add(new Team("ACO", "Antarctica Corianders", 61, 58, 55));
+        teams.add(new Team("ROS", "Rosemary 75ers", 54, 43, 52));
         
         return teams;
         

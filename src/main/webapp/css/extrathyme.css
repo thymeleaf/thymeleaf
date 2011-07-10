@@ -57,3 +57,12 @@ div.classification > table > tbody > tr > td > table > tbody > tr> td {
 div.classification > table > tbody > tr > td > table > tbody > tr> td:last-child {
   text-align: right;
 }
+
+th.points {
+  width: 30px;
+}
+
+td.points {
+  width: 30px;
+  text-align: right;
+}
