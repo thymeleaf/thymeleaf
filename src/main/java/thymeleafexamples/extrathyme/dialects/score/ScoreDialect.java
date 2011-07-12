@@ -30,19 +30,31 @@ import org.thymeleaf.spring3.dialect.SpringThymeleafDialect;
 
 public class ScoreDialect extends AbstractDialect {
 
-    
+    /*
+     * Default prefix: this is the prefix that will be used for this dialect
+     * unless a different one is specified when adding the dialect to
+     * the Template Engine.
+     */
     public String getPrefix() {
         return "score";
     }
 
+    /*
+     * Non-lenient: if a tag or attribute with its prefix ('score') appears on
+     * the template and there is no value or tag/attribute processor 
+     * associated with it, an exception is thrown.
+     */
     public boolean isLenient() {
         return false;
     }
-    @Override
-    public Set<IValueProcessor> getValueProcessors() {
-        return SpringThymeleafDialect.createSpringThymeleafValueProcessorsSet();
-    }
-
+    
+    /*
+     * Two attribute processors are declared: 'classforposition' and
+     * 'remarkforposition'. Both of them make use of the Spring Thymeleaf
+     * Dialect's value processors for evaluating Spring EL expressions,
+     * so these value processors must also be declared at 
+     * 'getValueProcessors()'.  
+     */
     @Override
     public Set<IAttrProcessor> getAttrProcessors() {
         final Set<IAttrProcessor> attrProcessors = new HashSet<IAttrProcessor>();
@@ -51,11 +63,25 @@ public class ScoreDialect extends AbstractDialect {
         return attrProcessors;
     }
 
+    /*
+     * Only one tag processor: the 'headlines' tag.
+     */
     @Override
     public Set<ITagProcessor> getTagProcessors() {
         final Set<ITagProcessor> tagProcessors = new HashSet<ITagProcessor>();
         tagProcessors.add(new HeadlinesTagProcessor());
         return tagProcessors;
+    }
+    
+    /*
+     * Some of the processors declared for the dialect need to make use of
+     * expression evaluation (for example, Spring EL expressions declared
+     * with ${...}). For doing so, this dialect needs to declare the set 
+     * of value processors coming from the Spring Thymeleaf Dialect.
+     */
+    @Override
+    public Set<IValueProcessor> getValueProcessors() {
+        return SpringThymeleafDialect.createSpringThymeleafValueProcessorsSet();
     }
 
 }
