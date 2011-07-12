@@ -23,13 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.context.ApplicationContext;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.processor.applicability.TagApplicability;
 import org.thymeleaf.processor.tag.AbstractMarkupSubstitutionTagProcessor;
+import org.thymeleaf.spring3.context.SpringWebContext;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+
+import thymeleafexamples.extrathyme.business.entities.Headline;
+import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepository;
 
 public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
 
@@ -48,10 +54,22 @@ public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcesso
     protected List<Node> getMarkupSubstitutes(final Arguments arguments,
             final TemplateResolution templateResolution, final Document document,
             final Element element) {
+
+        final ApplicationContext appCtx = 
+            ((SpringWebContext)arguments.getContext()).getApplicationContext();
+        
+        final HeadlineRepository headlineRepository = appCtx.getBean(HeadlineRepository.class);
+        
+        final List<Headline> headlines = headlineRepository.findAllHeadlines();
+        
+        final Element container = document.createElement("div");
+        container.setAttribute("class", "headlines");
+
+        final Text text = document.createTextNode(headlines.get(0).getText());
+        container.appendChild(text);
         
         final List<Node> nodes = new ArrayList<Node>();
-        
-        nodes.add(document.createTextNode("Cinnamon Sailors 2 - 0 Raging Hot Paprikas"));
+        nodes.add(container);
         
         return nodes;
         

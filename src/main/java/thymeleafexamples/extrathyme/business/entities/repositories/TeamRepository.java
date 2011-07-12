@@ -42,7 +42,7 @@ public class TeamRepository {
         
         teams.add(new Team("SPC", "Spearmint Caterpillars", 73, 21, 10, 5));
         teams.add(new Team("BAD", "Basil Dragons", 72, 21, 9, 6));
-        teams.add(new Team("RSP", "Raging Sweet Paprikas", 57, 15, 12, 9));
+        teams.add(new Team("SPS", "Sweet Paprika Savages", 57, 15, 12, 9));
         teams.add(new Team("PAW", "Parsley Warriors", 54, 15, 9, 12));
         teams.add(new Team("PCO", "Polar Corianders", 49, 11, 16, 9));
         teams.add(new Team("CSA", "Cinnamon Sailors", 48, 13, 9, 14));

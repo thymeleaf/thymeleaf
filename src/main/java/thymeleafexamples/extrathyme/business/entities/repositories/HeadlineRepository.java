@@ -20,6 +20,7 @@
 package thymeleafexamples.extrathyme.business.entities.repositories;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -39,6 +40,12 @@ public class HeadlineRepository {
     public List<Headline> findAllHeadlines() {
         
         final List<Headline> headlines = new ArrayList<Headline>();
+        
+        headlines.add(new Headline(Calendar.getInstance(), "First headline"));
+        headlines.add(new Headline(Calendar.getInstance(), "Second headline"));
+        headlines.add(new Headline(Calendar.getInstance(), "Third headline"));
+        headlines.add(new Headline(Calendar.getInstance(), "Fourth headline"));
+        headlines.add(new Headline(Calendar.getInstance(), "Fiftg headline"));
         
         return headlines;
         
