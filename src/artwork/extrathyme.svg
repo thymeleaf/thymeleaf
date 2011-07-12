@@ -14,7 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 r9760"
-   sodipodi:docname="extrathyme.svg">
+   sodipodi:docname="extrathyme.svg"
+   inkscape:export-filename="/home/daniel/workspace/thymeleaf-dist/src/artwork/extrathyme.png"
+   inkscape:export-xdpi="73.917229"
+   inkscape:export-ydpi="73.917229">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -103,8 +106,8 @@
     <text
        xml:space="preserve"
        style="font-size:66.88153839px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#352726;fill-opacity:1;stroke:none;font-family:Sans"
-       x="175.05528"
-       y="208.60202"
+       x="185.05528"
+       y="210.60202"
        id="text3772"
        sodipodi:linespacing="125%"
        inkscape:export-filename="/home/daniel/workspace/thymeleaf-dist/src/artwork/extrathymelogo.png"
@@ -112,8 +115,8 @@
        inkscape:export-ydpi="98.535233"><tspan
          sodipodi:role="line"
          id="tspan3774"
-         x="175.05528"
-         y="208.60202"
-         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#352726;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy">Thymeland's soccer scoreboard</tspan></text>
+         x="185.05528"
+         y="210.60202"
+         style="font-size:20px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#352726;fill-opacity:1;font-family:OFL Sorts Mill Goudy;-inkscape-font-specification:OFL Sorts Mill Goudy">Thymeland's football website</tspan></text>
   </g>
 </svg>
