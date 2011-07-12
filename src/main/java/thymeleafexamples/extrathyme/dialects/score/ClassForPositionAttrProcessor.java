@@ -75,19 +75,38 @@ public class ClassForPositionAttrProcessor
             final Element element, final Attr attribute, final String attributeName,
             final String attributeValue) {
 
+        /*
+         * Obtain the value processor, required for executing the expression specified
+         * as attribute value.
+         */
         final StandardValueProcessor valueProcessor =
             arguments.getConfiguration().getValueProcessorByClass(this,StandardValueProcessor.class);
-        
+
+        /*
+         * Parse the attribute value into a Value object. Value objects are objectual
+         * representations of expressions, ready to be executed but not containing any 
+         * specific values yet.
+         */
         final Value positionValue = 
             StandardSyntax.parseValue(attributeValue, valueProcessor, arguments, templateResolution);
-        
+
+        /*
+         * Execute the previously parsed expression (Value object) by specifying the values
+         * that should be applied (variables coming from the context contained in the
+         * execution arguments).
+         */
         final Integer position = 
             (Integer) valueProcessor.getValue(arguments, templateResolution, positionValue); 
-        
+
+        /*
+         * Obtain the remark corresponding to this position in the league table.
+         */
         final Remark remark = RemarkUtil.getRemarkForPosition(position);
         
+        /*
+         * Apply the corresponding CSS class to the element.
+         */
         final Map<String,String> values = new HashMap<String, String>();
-        
         if (remark != null) {
             switch (remark) {
                 case WORLD_CHAMPIONS_LEAGUE:  
