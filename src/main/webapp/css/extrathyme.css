@@ -58,14 +58,19 @@ div.classification > table > tbody > tr > td > table > tbody > tr> td:last-child
   text-align: right;
 }
 
-th.points {
+th.points, th.matches {
   width: 30px;
 }
 
-td.points {
+td.points, td.matches {
   width: 30px;
   text-align: right;
 }
+
+td.points {
+  font-weight: bold;
+}
+
 
 
 tr.wcl {

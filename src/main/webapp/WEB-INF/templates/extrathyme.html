@@ -15,7 +15,7 @@
            th:src="@{/images/extrathymelogo.png}" th:alt-title="#{title.application}"/>
     </div>
     
-    <score:latestscores />
+    <score:headlines order="random" />
     
     <div class="classification">
     
@@ -25,25 +25,28 @@
         <thead>
           <tr>
             <th th:text="#{team.name}">Team</th>
+            <th th:text="#{team.won}" class="points">Won</th>
+            <th th:text="#{team.drawn}" class="points">Drawn</th>
+            <th th:text="#{team.lost}" class="points">Lost</th>
             <th th:text="#{team.points}" class="points">Points</th>
-            <th th:text="#{team.goalsScored}" class="points">Goals Scored</th>
-            <th th:text="#{team.goalsConceded}" class="points">Goals Conceded</th>
             <th th:text="#{team.remarks}">Remarks</th>
           </tr>
         </thead>
         <tbody>
           <tr th:each="t : ${teams}" score:appendclassforposition="${tStat.count}">
             <td th:text="${t.name + ' (' + t.code + ')'}">TWN The Winners</td>
+            <td th:text="${t.won}" class="matches">12</td>
+            <td th:text="${t.drawn}" class="matches">45</td>
+            <td th:text="${t.lost}" class="matches">45</td>
             <td th:text="${t.points}" class="points">99</td>
-            <td th:text="${t.goalsScored}" class="points">45</td>
-            <td th:text="${t.goalsConceded}" class="points">12</td>
             <td score:remarkforposition="${tStat.count}">Great winner!</td>
           </tr>
           <tr th:remove="all">
             <td>TLS The Losers</td>
+            <td class="matches">18</td>
+            <td class="matches">28</td>
+            <td class="matches">28</td>
             <td class="points">1</td>
-            <td class="points">18</td>
-            <td class="points">28</td>
             <td>Big loooooser</td>
           </tr>
         </tbody>

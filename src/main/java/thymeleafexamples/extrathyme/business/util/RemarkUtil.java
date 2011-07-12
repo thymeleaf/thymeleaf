@@ -35,7 +35,7 @@ public class RemarkUtil {
             case 1: return Remark.WORLD_CHAMPIONS_LEAGUE;
             case 2:
             case 3: return Remark.CONTINENTAL_PLAYOFFS;
-            case 6: return Remark.RELEGATION;
+            case 10: return Remark.RELEGATION;
         }
         return null;
         

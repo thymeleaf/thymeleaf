@@ -54,7 +54,7 @@ public class ScoreDialect extends AbstractDialect {
     @Override
     public Set<ITagProcessor> getTagProcessors() {
         final Set<ITagProcessor> tagProcessors = new HashSet<ITagProcessor>();
-        tagProcessors.add(new LatestScoresTagProcessor());
+        tagProcessors.add(new HeadlinesTagProcessor());
         return tagProcessors;
     }
 

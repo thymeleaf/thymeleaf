@@ -24,34 +24,23 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import thymeleafexamples.extrathyme.business.entities.Team;
+import thymeleafexamples.extrathyme.business.entities.Headline;
 
 
 @Repository
-public class TeamRepository {
+public class HeadlineRepository {
 
     
-    public TeamRepository() {
+    public HeadlineRepository() {
         super();
     }
     
     
-    public List<Team> findAllTeams() {
+    public List<Headline> findAllHeadlines() {
         
-        final List<Team> teams = new ArrayList<Team>();
+        final List<Headline> headlines = new ArrayList<Headline>();
         
-        teams.add(new Team("SPC", "Spearmint Caterpillars", 73, 21, 10, 5));
-        teams.add(new Team("BAD", "Basil Dragons", 72, 21, 9, 6));
-        teams.add(new Team("RSP", "Raging Sweet Paprikas", 57, 15, 12, 9));
-        teams.add(new Team("PAW", "Parsley Warriors", 54, 15, 9, 12));
-        teams.add(new Team("PCO", "Polar Corianders", 49, 11, 16, 9));
-        teams.add(new Team("CSA", "Cinnamon Sailors", 48, 13, 9, 14));
-        teams.add(new Team("LTR", "Laurel Troglodytes", 41, 10, 11, 15));
-        teams.add(new Team("ARP", "Angry Red Peppers", 32, 8, 8, 20));
-        teams.add(new Team("ROS", "Rosemary 75ers", 32, 7, 11, 18));
-        teams.add(new Team("SHU", "Saffron Hunters", 31, 8, 7, 21));
-        
-        return teams;
+        return headlines;
         
     }
     

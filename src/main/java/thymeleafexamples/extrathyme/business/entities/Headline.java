@@ -19,57 +19,44 @@
  */
 package thymeleafexamples.extrathyme.business.entities;
 
+import java.util.Calendar;
 
 
-public class Team {
 
-    private final String code;
-    private final String name;
-    private final int points;
-    private final int won;
-    private final int drawn;
-    private final int lost;
+public class Headline 
+        implements Comparable<Headline> {
+
+    private final Calendar date;
+    private final String text;
     
     
     
-    
-    public Team(final String code, final String name, 
-            final int points, final int won, final int drawn, final int lost) {
+    public Headline(final Calendar date, final String text) {
         super();
-        this.code = code;
-        this.name = name;
-        this.points = points;
-        this.won = won;
-        this.drawn = drawn;
-        this.lost = lost;
+        this.date = date;
+        this.text = text;
     }
 
 
 
-    public String getCode() {
-        return this.code;
+    public Calendar getDate() {
+        return this.date;
     }
 
-    public String getName() {
-        return this.name;
+
+    public String getText() {
+        return this.text;
     }
 
-    public int getPoints() {
-        return this.points;
-    }
 
-    public int getWon() {
-        return this.won;
-    }
 
-    public int getDrawn() {
-        return this.drawn;
+    public int compareTo(final Headline o) {
+        if (o == null) {
+            return 1;
+        }
+        return this.date.compareTo(o.date);
     }
-
-    public int getLost() {
-        return this.lost;
-    }
-
+    
 
     
 }

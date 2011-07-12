@@ -31,16 +31,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class LatestScoresTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
+public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
 
     
-    public LatestScoresTagProcessor() {
+    public HeadlinesTagProcessor() {
         super();
     }
     
     
     public Set<TagApplicability> getTagApplicabilities() {
-        return TagApplicability.createSetForTagName("latestscores");
+        return TagApplicability.createSetForTagName("headlines");
     }
 
 
