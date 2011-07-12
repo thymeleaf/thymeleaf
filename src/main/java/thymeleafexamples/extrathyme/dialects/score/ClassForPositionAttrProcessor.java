@@ -39,18 +39,18 @@ import org.w3c.dom.Element;
 import thymeleafexamples.extrathyme.business.entities.Remark;
 import thymeleafexamples.extrathyme.business.util.RemarkUtil;
 
-public class AppendClassForPositionAttrProcessor 
+public class ClassForPositionAttrProcessor 
         extends AbstractAttributeModifierAttrProcessor {
 
     
-    public AppendClassForPositionAttrProcessor() {
+    public ClassForPositionAttrProcessor() {
         super();
     }
 
     
     
     public Set<AttrApplicability> getAttributeApplicabilities() {
-        return AttrApplicability.createSetForAttrName("appendclassforposition");
+        return AttrApplicability.createSetForAttrName("classforposition");
     }
 
     

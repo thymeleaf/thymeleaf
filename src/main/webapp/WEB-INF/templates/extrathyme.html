@@ -33,7 +33,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr th:each="t : ${teams}" score:appendclassforposition="${tStat.count}">
+          <tr th:each="t : ${teams}" score:classforposition="${tStat.count}">
             <td th:text="${t.name + ' (' + t.code + ')'}">The Winners (TWN)</td>
             <td th:text="${t.won}" class="matches">1</td>
             <td th:text="${t.drawn}" class="matches">0</td>
