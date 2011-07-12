@@ -20,7 +20,9 @@
 package thymeleafexamples.extrathyme.dialects.score;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
@@ -39,6 +41,8 @@ import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepos
 
 public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
 
+    private final Random rand = new Random(System.currentTimeMillis());
+    
     
     public HeadlinesTagProcessor() {
         super();
@@ -59,13 +63,29 @@ public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcesso
             ((SpringWebContext)arguments.getContext()).getApplicationContext();
         
         final HeadlineRepository headlineRepository = appCtx.getBean(HeadlineRepository.class);
-        
         final List<Headline> headlines = headlineRepository.findAllHeadlines();
+
+        final String order = element.getAttribute("order");
+
+        String headlineText = null;
+        if (order != null && order.trim().toLowerCase().equals("random")) {
+
+            final int r = this.rand.nextInt(headlines.size());
+            headlineText = headlines.get(r).getText();
+            
+        } else {
+            // order is "latest", only the latest headline will be shown
+            
+            Collections.sort(headlines);
+            headlineText = headlines.get(headlines.size() - 1).getText();
+            
+        }
         
+
         final Element container = document.createElement("div");
         container.setAttribute("class", "headlines");
 
-        final Text text = document.createTextNode(headlines.get(0).getText());
+        final Text text = document.createTextNode(headlineText);
         container.appendChild(text);
         
         final List<Node> nodes = new ArrayList<Node>();

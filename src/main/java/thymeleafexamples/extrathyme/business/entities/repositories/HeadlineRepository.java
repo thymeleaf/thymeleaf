@@ -41,11 +41,11 @@ public class HeadlineRepository {
         
         final List<Headline> headlines = new ArrayList<Headline>();
         
-        headlines.add(new Headline(Calendar.getInstance(), "First headline"));
-        headlines.add(new Headline(Calendar.getInstance(), "Second headline"));
-        headlines.add(new Headline(Calendar.getInstance(), "Third headline"));
-        headlines.add(new Headline(Calendar.getInstance(), "Fourth headline"));
-        headlines.add(new Headline(Calendar.getInstance(), "Fiftg headline"));
+        headlines.add(new Headline(Calendar.getInstance(), "Spearmint Caterpillars 1 - 0 Parsley Warriors"));
+        headlines.add(new Headline(Calendar.getInstance(), "Laurel Troglodytes 1 - 1 Rosemary 75ers"));
+        headlines.add(new Headline(Calendar.getInstance(), "Saffron Hunters 0 - 2 Polar Corianders"));
+        headlines.add(new Headline(Calendar.getInstance(), "Angry Red Peppers 4 - 2 Basil Dragons"));
+        headlines.add(new Headline(Calendar.getInstance(), "Sweet Paprika Savages 1 - 3 Cinnamon Sailors"));
         
         return headlines;
         
