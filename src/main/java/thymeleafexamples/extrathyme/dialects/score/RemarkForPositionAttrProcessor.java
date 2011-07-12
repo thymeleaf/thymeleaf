@@ -74,21 +74,46 @@ public class RemarkForPositionAttrProcessor
             final Element element, final Attr attribute, final String attributeName,
             final String attributeValue) {
 
+        /*
+         * Obtain the value processor, required for executing the expression specified
+         * as attribute value.
+         */
         final StandardValueProcessor valueProcessor =
             arguments.getConfiguration().getValueProcessorByClass(this,StandardValueProcessor.class);
         
+        /*
+         * Parse the attribute value into a Value object. Value objects are objectual
+         * representations of expressions, ready to be executed but not containing any 
+         * specific values yet.
+         */
         final Value positionValue = 
             StandardSyntax.parseValue(attributeValue, valueProcessor, arguments, templateResolution);
         
+        /*
+         * Execute the previously parsed expression (Value object) by specifying the values
+         * that should be applied (variables coming from the context contained in the
+         * execution arguments).
+         */
         final Integer position = 
             (Integer) valueProcessor.getValue(arguments, templateResolution, positionValue); 
         
+        /*
+         * Obtain the remark corresponding to this position in the league table.
+         */
         final Remark remark = RemarkUtil.getRemarkForPosition(position);
         
+        /*
+         * If no remark is to be applied, just return an empty message 
+         */
         if (remark == null) {
             return "";
         }
         
+        /*
+         * Message should be internationalized, so we ask the engine to resolve the message
+         * 'remarks.{REMARK}' (e.g. 'remarks.RELEGATION'). No parameters are needed for this
+         * message.
+         */
         return getMessage(arguments, templateResolution, "remarks." + remark.toString(), new Object[0]); 
         
     }
