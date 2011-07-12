@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.processor.attr.IAttrProcessor;
+import org.thymeleaf.processor.tag.ITagProcessor;
 import org.thymeleaf.processor.value.IValueProcessor;
 import org.thymeleaf.spring3.dialect.SpringThymeleafDialect;
 
@@ -48,6 +49,13 @@ public class ScoreDialect extends AbstractDialect {
         attrProcessors.add(new AppendClassForPositionAttrProcessor());
         attrProcessors.add(new RemarkForPositionAttrProcessor());
         return attrProcessors;
+    }
+
+    @Override
+    public Set<ITagProcessor> getTagProcessors() {
+        final Set<ITagProcessor> tagProcessors = new HashSet<ITagProcessor>();
+        tagProcessors.add(new LatestScoresTagProcessor());
+        return tagProcessors;
     }
 
 }

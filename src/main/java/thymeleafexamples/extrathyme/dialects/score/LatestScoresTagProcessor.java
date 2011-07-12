@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package thymeleafexamples.extrathyme.dialects.banners;
+package thymeleafexamples.extrathyme.dialects.score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,16 +31,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class AddBannerTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
+public class LatestScoresTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
 
     
-    public AddBannerTagProcessor() {
+    public LatestScoresTagProcessor() {
         super();
     }
     
     
     public Set<TagApplicability> getTagApplicabilities() {
-        return TagApplicability.createSetForTagName("addbanner");
+        return TagApplicability.createSetForTagName("latestscores");
     }
 
 
@@ -51,7 +51,7 @@ public class AddBannerTagProcessor extends AbstractMarkupSubstitutionTagProcesso
         
         final List<Node> nodes = new ArrayList<Node>();
         
-        nodes.add(document.createTextNode("Testing adding banner!!"));
+        nodes.add(document.createTextNode("Cinnamon Sailors 2 - 0 Raging Hot Paprikas"));
         
         return nodes;
         
