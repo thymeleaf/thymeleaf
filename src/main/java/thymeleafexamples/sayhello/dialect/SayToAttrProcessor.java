@@ -45,7 +45,7 @@ public class SayToAttrProcessor
 
     public Integer getPrecedence() {
         // A value of 10000 is higher than any attribute in the
-        // Spring Thymeleaf dialect. So this attribute will execute
+        // SpringStandard dialect. So this attribute will execute
         // after all other attributes from that dialect, if in the 
         // same tag.
         return Integer.valueOf(10000);

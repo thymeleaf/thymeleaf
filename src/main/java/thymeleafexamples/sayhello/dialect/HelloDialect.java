@@ -25,7 +25,7 @@ import java.util.Set;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.processor.attr.IAttrProcessor;
 import org.thymeleaf.processor.value.IValueProcessor;
-import org.thymeleaf.spring3.dialect.SpringThymeleafDialect;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 
 public class HelloDialect extends AbstractDialect {
 
@@ -66,13 +66,13 @@ public class HelloDialect extends AbstractDialect {
     
     /*
      * Value processors: we will be using the set of value
-     * processors from the Spring Thymeleaf dialect, and so we will
+     * processors from the SpringStandard dialect, and so we will
      * benefit from all its syntax features (${...}, #{...}, 
      * SpringEL evaluation, etc.)
      */
     @Override
     public Set<IValueProcessor> getValueProcessors() {
-        return SpringThymeleafDialect.createSpringThymeleafValueProcessorsSet();
+        return SpringStandardDialect.createSpringStandardValueProcessorsSet();
     }
 
 }

@@ -53,7 +53,7 @@ public class SayToPlanetAttrProcessor
     
     public Integer getPrecedence() {
         // Higher (less-precedent) than any attribute in the
-        // Spring Thymeleaf dialect and also than 'sayto'.
+        // SpringStandard dialect and also than 'sayto'.
         return Integer.valueOf(11000);
     }
 
