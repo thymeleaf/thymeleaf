@@ -132,9 +132,10 @@ public class ClassForPositionAttrProcessor
             final TemplateResolution templateResolution, final Document document,
             final Element element, final Attr attribute, final String attributeName,
             final String attributeValue, final String newAttributeName) {
-        
+        // Just in case there already is a value set for the 'class' attribute in the
+        // tag, we will append our new value (using a whitespace separator) instead
+        // of simply substituting it.
         return ModificationType.APPEND_WITH_SPACE;
-        
     }
 
     
@@ -144,7 +145,8 @@ public class ClassForPositionAttrProcessor
             final TemplateResolution templateResolution, final Document document,
             final Element element, final Attr attribute, final String attributeName,
             final String attributeValue, final String newAttributeName) {
-        return false;
+        // If the resulting 'class' attribute is empty, do not show it at all.
+        return true;
     }
     
 
