@@ -158,7 +158,7 @@
     
     <p>
       The first thing we want to do is adding to our attributes the ability of parsing and 
-      executing expressions in the same way we can do in the <i>Spring Thymeleaf Dialect</i>, this is: 
+      executing expressions in the same way we can do in the <i>SpringStandard Dialect</i>, this is: 
     </p>
     <ul>
       <li><tt>${...}</tt> Spring EL variable expressions.</li>
@@ -169,7 +169,7 @@
     </ul>
     <p>
       In order to achieve this, we will need to declare in our Dialect the <i>value processors</i>
-      from the <i>Spring Thymeleaf Dialect</i>, which are the ones able to process this syntax.
+      from the <i>SpringStandard Dialect</i>, which are the ones able to process this syntax.
       That's easily done, like this:
     </p>
 
@@ -264,7 +264,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Value&nbsp;processors:&nbsp;we&nbsp;will&nbsp;be&nbsp;using&nbsp;the&nbsp;set&nbsp;of&nbsp;value
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;processors&nbsp;from&nbsp;the&nbsp;Spring&nbsp;Thymeleaf&nbsp;dialect,&nbsp;and&nbsp;so&nbsp;we&nbsp;will
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;processors&nbsp;from&nbsp;the&nbsp;SpringStandard&nbsp;dialect,&nbsp;and&nbsp;so&nbsp;we&nbsp;will
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;benefit&nbsp;from&nbsp;all&nbsp;its&nbsp;syntax&nbsp;features&nbsp;(${...},&nbsp;#{...},&nbsp;
 
@@ -278,7 +278,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IValueProcessor&gt;&nbsp;getValueProcessors()&nbsp;{
 <br />
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;SpringThymeleafDialect.createSpringThymeleafValueProcessorsSet();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;SpringStandardDialect.createSpringStandardValueProcessorsSet();
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
@@ -293,7 +293,7 @@
     
     <p>
       Notice the <tt>getValueProcessors()</tt> method in which we declare all the set of <i>value processors</i>
-      coming from the Spring Thymeleaf Dialect. And also a new line in the <tt>getAttrProcessors()</tt> method
+      coming from the SpringStandard Dialect. And also a new line in the <tt>getAttrProcessors()</tt> method
       in which we declare our new attribute processors
     </p>
     <p>
@@ -338,7 +338,7 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Higher&nbsp;(less-precedent)&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
 </span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Spring&nbsp;Thymeleaf&nbsp;dialect&nbsp;and&nbsp;also&nbsp;than&nbsp;&#39;sayto&#39;.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;SpringStandard&nbsp;dialect&nbsp;and&nbsp;also&nbsp;than&nbsp;&#39;sayto&#39;.
 
 </span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Integer.valueOf(11000);

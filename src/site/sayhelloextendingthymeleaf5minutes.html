@@ -73,7 +73,7 @@
     </ul>
     <p>
       All of these features are optional, and a dialect can specify only some of them. For example,
-      neither the Standard nor the Spring Thymeleaf dialect include any <i>tag processors</i>, which
+      neither the Standard nor the SpringStandard dialects include any <i>tag processors</i>, which
       is why all template features are written into <tt>th:*</tt> attributes when using any of these
       dialects.
     </p>
@@ -94,7 +94,7 @@
     
     <p>
       Let's create a dialect for one of our applications. This will be a Spring MVC application, so
-      we will be already using the Spring Thymeleaf dialect (have a look at the 
+      we will be already using the SpringStandard dialect (have a look at the 
       <a href="documentation.html">Thymeleaf + Spring 3 tutorial</a> for more details). But we
       want to add a new attribute that allows us to say hello to whoever we want, like this:
     </p>    
@@ -151,7 +151,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;A&nbsp;value&nbsp;of&nbsp;10000&nbsp;is&nbsp;higher&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
 
 </span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Spring&nbsp;Thymeleaf&nbsp;dialect.&nbsp;So&nbsp;this&nbsp;attribute&nbsp;will&nbsp;execute
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;SpringStandard&nbsp;dialect.&nbsp;So&nbsp;this&nbsp;attribute&nbsp;will&nbsp;execute
 </span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;after&nbsp;all&nbsp;other&nbsp;attributes&nbsp;from&nbsp;that&nbsp;dialect,&nbsp;if&nbsp;in&nbsp;the&nbsp;
 
@@ -312,7 +312,7 @@
     <p>
       As you can see, we didn't need to set any <i>DOCTYPE resolution entries</i> or <i>translations</i>, nor
       we specify any <i>value processors</i>. We didn't need any of that because our dialect
-      is meant to be used together with the Spring Thymeleaf dialect, which already includes
+      is meant to be used together with the SpringStandard dialect, which already includes
       a useful set of all those things (although we could have defined them here also if for some reason we wanted 
       to be more exhaustive). All our dialect does is specify a prefix (<tt>hello</tt>), a <i>leniency</i>,
       and our <i>"sayto"</i> attribute processor.
@@ -331,7 +331,7 @@
 <br />
 &nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringThymeleafTemplateEngine&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
@@ -341,7 +341,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>set</b>&gt;
 <br />
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.dialect.SpringThymeleafDialect&quot;</span>/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.dialect.SpringStandardDialect&quot;</span>/&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;thymeleafexamples.sayhello.dialect.HelloDialect&quot;</span>/&gt;
 <br />
