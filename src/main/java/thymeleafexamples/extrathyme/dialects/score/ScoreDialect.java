@@ -26,7 +26,7 @@ import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.processor.attr.IAttrProcessor;
 import org.thymeleaf.processor.tag.ITagProcessor;
 import org.thymeleaf.processor.value.IValueProcessor;
-import org.thymeleaf.spring3.dialect.SpringThymeleafDialect;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 
 public class ScoreDialect extends AbstractDialect {
 
@@ -50,7 +50,7 @@ public class ScoreDialect extends AbstractDialect {
     
     /*
      * Two attribute processors are declared: 'classforposition' and
-     * 'remarkforposition'. Both of them make use of the Spring Thymeleaf
+     * 'remarkforposition'. Both of them make use of the SpringStandard
      * Dialect's value processors for evaluating Spring EL expressions,
      * so these value processors must also be declared at 
      * 'getValueProcessors()'.  
@@ -77,11 +77,11 @@ public class ScoreDialect extends AbstractDialect {
      * Some of the processors declared for the dialect need to make use of
      * expression evaluation (for example, Spring EL expressions declared
      * with ${...}). For doing so, this dialect needs to declare the set 
-     * of value processors coming from the Spring Thymeleaf Dialect.
+     * of value processors coming from the SpringStandard Dialect.
      */
     @Override
     public Set<IValueProcessor> getValueProcessors() {
-        return SpringThymeleafDialect.createSpringThymeleafValueProcessorsSet();
+        return SpringStandardDialect.createSpringStandardValueProcessorsSet();
     }
 
 }
