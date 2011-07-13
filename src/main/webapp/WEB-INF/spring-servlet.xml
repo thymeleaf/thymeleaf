@@ -48,7 +48,7 @@
   </bean>
     
   <bean id="templateEngine"
-        class="org.thymeleaf.spring3.SpringThymeleafTemplateEngine">
+        class="org.thymeleaf.spring3.SpringTemplateEngine">
     <property name="templateResolver" ref="templateResolver" />
   </bean>
    
