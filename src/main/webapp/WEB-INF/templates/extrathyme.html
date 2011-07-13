@@ -17,7 +17,7 @@
     
     <score:headlines order="random" />
     
-    <div class="classification">
+    <div class="leaguetable">
     
       <h2 th:text="#{title.leaguetable(${execInfo.now.time})}">League table for 07 July 2011</h2>
       
@@ -25,9 +25,9 @@
         <thead>
           <tr>
             <th th:text="#{team.name}">Team</th>
-            <th th:text="#{team.won}" class="points">Won</th>
-            <th th:text="#{team.drawn}" class="points">Drawn</th>
-            <th th:text="#{team.lost}" class="points">Lost</th>
+            <th th:text="#{team.won}" class="matches">Won</th>
+            <th th:text="#{team.drawn}" class="matches">Drawn</th>
+            <th th:text="#{team.lost}" class="matches">Lost</th>
             <th th:text="#{team.points}" class="points">Points</th>
             <th th:text="#{team.remarks}">Remarks</th>
           </tr>
