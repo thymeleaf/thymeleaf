@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Features - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="features.html" title="Features">Features</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <span class="current">features</span>
+   </div>
+
+
+   <div id="content">
+
+    <h2>Core features</h2>
+    
+    <ul>
+      <li><b>Java template engine for XML, XHTML and HTML5</b>.</li>
+      <li>Works both in web and non-web (<i>offline</i>) environments. No hard dependency on the Servlet API.</li>
+      <li>Based on modular <i>feature sets</i> called <b>dialects</b>.
+        <ul>
+          <li>Dialect features (e.g.: evaluation, iteration, etc.) are applied by linking them to template's tags and/or attributes.</li>
+          <li>Two dialects available out-of-the-box: <i>Standard</i> and <i>SpringStandard</i> (for Spring MVC apps, same syntax as <i>Standard</i>).</li>
+          <li>Developers can extend and create custom dialects.</li>
+        </ul>
+      </li>
+      <li>Several <i>template modes</i>:
+        <ul>
+          <li><b>XML</b>: validating against a DTD or not.</li>
+          <li><b>XHTML 1.0 and 1.1</b>: validating against standard DTDs or not.</li>
+          <li><b>HTML5</b>: both XML-formed code and <i>legacy-based HTML5</i>. Legacy non-XML code will be automatically
+              cleaned and converted to XML form.</li>
+        </ul>
+      </li>
+      <li>Full (and extensible) <b>internationalization</b> support.</li>
+      <li>Configurable, high performance <b>parsed template cach&eacute;</b> that reduces input/output to the minimum.</li>
+      <li>Automatic DOCTYPE translations &ndash;from template DTD to result DTD&ndash; for (optional) validation of both
+          template and result code.</li>
+      <li>Extremely extensible: can be used as a <i>template engine framework</i> if needed.</li>
+      <li>Complete <a href="documentation.html">documentation</a> including several example applications.</li> 
+    </ul>
+    
+    <h2>Standard and SpringStandard Dialects</h2>
+    
+    <ul>
+      <li>XML, XHTML 1.0, XHTML 1.1 and <b>HTML5</b> support.</li>
+      <li>Complete substitute for view-layer web technologies such as <b>JSP</b>.</li>
+      <li>Easy-to-use, elegant syntax based on attributes only (these dialects include no tags).
+        <ul>
+          <li>Great for web templates: <tt>&lt;input type="text" th:field="*{name}" /&gt;</tt> instead of <tt>&lt;mylib:text field="name" /&gt;</tt></li>
+        </ul>
+      </li>
+      <li><b>Natural templating</b> for easy prototyping: display your templates statically in a browser (without running your app server).</li>
+      <li>Expression evaluation: <b>OGNL</b> (Standard) and <b>Spring Expression Language</b> (SpringStandard).</li>
+      <li>Complete <b>integration with Spring MVC</b> (SpringStandard): form binding, property editors, internationalization, etc.</li>
+      <li>Fully-featured template logic: iteration, conditional evaluation, context variable declaration, etc.</li>
+      <li>Inclusion of code fragments from external templates (<i><b>Composite View</b></i> pattern).</li>
+      <li><b>Internationalization</b> support: easy inclusion of externalized messages into templates.</li>
+      <li><b>URL rewriting</b> capabilities for adding context and session information to URLs.</li>
+      <li>JavaScript inlining: intelligent evaluation of expressions inside javascript code.</li>
+      <li>Template <b>validation support</b> for XML, XHTML 1.0 and XHTML 1.1.</li>
+    </ul>
+
+    
+    <h2>Extensibility</h2>
+
+    <ul>
+      <li>Dialects:
+        <ul>
+          <li>Out-of-the-box: <i>Standard</i> and <i>SpringStandard</i> dialects.</li>
+          <li>New custom dialects can be created, and existing ones can be extended.</li>
+          <li>Several dialects can be applied at the same time.</li>
+        </ul>
+      </li>
+      <li>Template resolution:
+        <ul>
+          <li>Out-of-the-box: templates can be read as classloader or ServletContext resources,
+              as well as files (from the filesystem) and by calling URLs.</li>
+          <li>Custom template resolvers can be developed.</li>
+        </ul>
+      </li>
+      <li>Message resolution (for internationalization):
+        <ul>
+          <li>Out-of-the-box:
+            <ul>
+              <li><i>Standard dialect</i>: Resolution of messages from <tt>.properties</tt> files for each template.</li>
+              <li><i>SpringStandard dialect</i>: Resolution of messages from Spring <tt>MessageSource</tt> objects.</li>
+            </ul>
+          </li>
+          <li>Custom message resolvers can be developed.</li>
+        </ul>
+      </li>
+      <li>Advantages obtained through extension:
+        <ul>
+          <li>Addition of required specific features to existing dialects.</li>
+          <li>Creation of view-layer reusable components (&agrave; la <i>JSP taglibs</i>).</li>
+          <li>Creation of custom templating systems for user-customizable applications.</li>
+        </ul>
+      </li>
+    </ul>
+    
+    
+    <h2>Community</h2>
+
+    <ul>
+      <li>User forums: <a href="http://forum.thymeleaf.org">http://forum.thymeleaf.org</a></li>
+      <li>Issue tracking: <a href="https://sourceforge.net/tracker/?func=browse&group_id=509826&atid=2072659">Bugs</a> and <a href="https://sourceforge.net/tracker/?atid=2072662&group_id=509826&func=browse">Feature Requests</a>.</li>
+      <li>Twitter: <a href="http://www.twitter.com/thymeleaf">@thymeleaf</a></li>
+    </ul>
+    
+   </div>
+   
+   <div id="footer">
+     <div id="twitter">
+       <a href="http://www.twitter.com/thymeleaf"><img src="http://twitter-badges.s3.amazonaws.com/twitter-a.png" alt="Follow @thymeleaf on Twitter" title="Follow @thymeleaf on Twitter "/></a>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. All Rights Reserved.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+</html>
