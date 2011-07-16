@@ -40,13 +40,47 @@
 
    <div id="content">
 
-    <h1>About Thymeleaf</h1>
+    <h2>Question index</h2>
+   
+    <ul>
+      <li><b>About Thymeleaf</b>
+        <ul>
+          <li><a href="#where-come-from">Where does Thymeleaf come from? Is it made or backed by any software company?</a>.</li>
+          <li><a href="#does-offer-support">Does Thymeleaf offer any type of commercial support?</a></li>
+          <li><a href="is-it-stable">Is it stable? Can it be considered production-ready?</a></li>
+          <li><a href="#how-can-i-contribute">How can I contribute to Thymeleaf?</a></li>
+        </ul>
+      </li>
+      <li><b>About Thymeleaf</b>
+        <ul>
+          <li><a href="#is-web-framework">Is Thymeleaf a web framework?</a></li>
+          <li><a href="#what-types-of-templates">What types of templates can Thymeleaf process?</a></li>
+          <li><a href="#substitute-jsp">Can Thymeleaf be used as a complete substitute for JSP and JSTL?</a></li>
+          <li><a href="#compare-other-engines">How does Thymeleaf compare with other template engines like Velocity or FreeMarker?</a></li>
+          <li><a href="#can-it-non-web">Can it be used outside web applications in non-web environments?</a></li>
+          <li><a href="#no-spring-can-I-use">I don't use Spring at all. Can I still use Thymeleaf?</a></li>
+          <li><a href="#can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></li>
+          <li><a href="#DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></li>
+        </ul>
+      </li>
+    </ul>
+    
 
-    <h2>Where does Thymeleaf come from? Is it made or backed by any software company?</h2>
+
+
+
+
+
+
+    <h2>About Thymeleaf</h2>
+
+    <h3><a id="where-come-from">Where does Thymeleaf come from? Is it made or backed by any software company?</a></h3>
     
     <p>
-      Thymeleaf is Open Source Software created by a Spanish Software Engineer
-      called <a href="team.html">Daniel Fernández</a> in his spare time. 
+      Thymeleaf is Open Source Software created in his spare time by a Spanish Software Engineer
+      called <a href="team.html">Daniel Fernández</a>, who's also the author
+      of other popular java libraries like <a href="http://www.jasypt.org">jasypt</a> or
+      <a href="http://www.op4j.org">op4j</a>.
     </p>
     <p>
       It is neither made nor backed
@@ -56,7 +90,7 @@
     
 
 
-    <h2>Does Thymeleaf offer any type of commercial support?</h2>
+    <h3><a id="does-offer-support">Does Thymeleaf offer any type of commercial support?</a></h3>
     
     <p>
       No, it does not. Commercial support is not offered at the moment, but
@@ -64,8 +98,14 @@
     </p>
     
 
+    <h3><a id="is-it-stable">Is it stable? Can it be considered production-ready?</a></h3>
+    
+    <p>
+      Yes, all stable (non-beta) releases can be considered production-ready. 
+    </p>
 
-    <h2>How can I contribute to Thymeleaf?</h2>
+
+    <h3><a id="how-can-i-contribute">How can I contribute to Thymeleaf?</a></h3>
     
     <p>
       In many ways:
@@ -85,7 +125,129 @@
       If you want to contribute some code to Thymeleaf, please read first the
       page on <a href="contributing.html">Contributing to Thymeleaf</a>.
     </p>
+
+    <h2>General</h2>
+
+    <h3><a id="is-web-framework">Is Thymeleaf a web framework?</a></h3>
     
+    <p>
+      No, it isn't. It is a template engine.
+    </p>
+    <p>
+      Template engines play a key role in web frameworks, though, and are one of its most
+      important components as they are in charge of producing the user interface or <i>view layer</i>
+      (usually in XHTML or HTML form).
+    </p>
+    <p>
+      <i>Spring MVC</i>, <i>Struts</i> or <i>Apache Wicket</i> are examples of web frameworks, whereas
+      <i>JSP</i>, <i>Velocity</i> or <i>FreeMarker</i> are examples of template engines.
+    </p>
+
+    <h3><a id="what-types-of-templates">What types of templates can Thymeleaf process?</a></h3>
+    
+    <p>
+      Thymeleaf templates can be:
+    </p>
+    <ul>
+      <li>XML: validating against a DTD or not.</li>
+      <li>XHTML 1.0 and 1.1: validating against standard DTDs or not.</li>
+      <li>HTML5: both XML-formed code and <i>legacy-based HTML5</i>. Legacy non-XML code will be automatically
+          cleaned and converted to XML form.</li>
+    </ul>
+    
+    <h3><a id="substitute-jsp">Can Thymeleaf be used as a complete substitute for JSP and JSTL?</a></h3>
+    
+    <p>
+      <b>Absolutely</b>. Not only it can, but we strongly encourage you to do so. Have a look 
+      at our <a href="thvsjsp.html">Thymeleaf vs. JSP</a> article if you want to learn
+      how these two technologies compare.
+    </p>
+    
+    <h3><a id="compare-other-engines">How does Thymeleaf compare with other template engines like Velocity or FreeMarker?</a></h3>
+    
+    <p>
+      Both <i>Velocity</i> and <i>FreeMarker</i> are terrific pieces of software, but they approach the templating problem
+      with a philosophy quite different to that of Thymeleaf.
+    </p>
+    <p> 
+      Thymeleaf makes a strong stress on <i>natural templating</i> &ndash;allowing templates to be working 
+      prototypes, which the other two do not allow&ndash;, and its syntax tries to be (arguably) cleaner and more in
+      tune with the current trends in web development. Also, from an architectural standpoint, both <i>Velocity</i> and <i>FreeMarker</i> work as sequential text processors
+      &ndash;which allows them to process many types of content&ndash; whereas Thymeleaf is based on XML parsing
+      techniques &ndash;which limits it to XML-based formats. This makes <i>Velocity</i> and <i>FreeMarker</i>
+      much more versatile, but on the other side allows Thymeleaf to take advantage of interesting features specific
+      to XML-based environments, especially the web.
+    </p>
+    <p>
+      Anyway, the best way to compare these technologies is 
+      to use them yourself and feel which one suits you best.
+    </p>
+
+    <h3><a id="can-it-non-web">Can it be used outside web applications in non-web environments?</a></h3>
+    
+    <p>
+      Yes it can. Although Thymeleaf (especially its <i>Standard</i> dialects) offers many features
+      that are especially useful in web environments, it can be used for processing non-web XML
+      documents (data XML, for example) or XHTML/HTML5 documents that are not meant for being
+      sent via HTTP (for example, rich email content).
+    </p>
+
+    <h3><a id="no-spring-can-I-use">I don't use Spring at all. Can I still use Thymeleaf?</a></h3>
+    
+    <p>
+      Absolutely. Thymeleaf offers nice integration with Spring MVC through its <i>SpringStandard</i>
+      dialect (included in the <tt>thymeleaf-spring3</tt> package), but Spring integration is completely
+      optional and the <i>Standard</i> dialect is in fact meant to be used without Spring. 
+    </p>
+
+    <h3><a id="can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></h3>
+    
+    <p>
+      You can because HTML5 allows non-XML-formed code only for legacy compatibility reasons, and HTML5 code
+      can be (in fact, <i>should be</i>) well-formed XML.
+    </p> 
+    <p>
+      Developers are encouraged to write new 
+      HTML5 code as well-formed XML because this produces cleaner code, allows easy processing and
+      parsing of code, and removes the need to rely on browsers' algorithms for automatically closing tags and
+      converting code into fully hierarchical structures &ndash;something called <i>error handling</i> that
+      browsers need to apply for representing web pages as DOM object trees. 
+    </p>
+    <p>
+      And don't be fooled by the existence of a standard called <i>XHTML5</i>: that is exactly the same
+      as HTML5, but served with the <tt>application/xhtml+xml</tt> HTTP Content-Type. There are no
+      syntax differences like those ones existing between <i>HTML 4</i> and <i>XHTML 1.0</i>.
+    </p>
+    <p>
+      If you want to know more about this topic, read our article 
+      <a href="fromhtmltohtmlviahtml.html">From HTML to HTML (via HTML)</a>.
+    </p>
+
+
+    <h3><a id="DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></h3>
+    
+    <p>    
+      The use of DOM parsing makes Thymeleaf very well suited for web applications because web documents 
+      are very often represented as object trees (in fact DOM trees are the way browsers represent 
+      web pages in memory). Also, building on the idea that <i>most web applications use only a few 
+      dozen templates</i>, that these are not big files and that they don't normally change while 
+      the application is running, Thymeleaf's usage of an in-memory LRU cache of parsed template 
+      DOMs allows it to be fast in production environments, because very little I/O is needed 
+      (if any) for most template processing operations.
+    </p> 
+    <p>
+      Of course, this architecture also requires the use of bigger amounts of memory space for 
+      each template execution than other XML parsing/processing approaches (like for example SAX), 
+      which means that you should not use the library for creating big <i>data XML documents</i> (as opposed 
+      to <i>web documents</i>). As a general rule of thumb (and always depending on the memory size of your 
+      JVM), if you are generating XML files with sizes around the tens of megabytes in a single 
+      template execution, you should not be using Thymeleaf.
+    </p>
+    <p>
+      The reason <i>we consider this restriction only applies to data XML files and not web XHTML/HTML5</i> 
+      is that you should never generate web documents so big that your users' browsers set ablaze and/or 
+      explode – remember that these browsers will also have to create DOM trees for your pages!
+    </p>    
     
    </div>
    
