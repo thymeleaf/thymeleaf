@@ -19,16 +19,12 @@
  */
 package thymeleafexamples.sayhello.dialect;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.processor.applicability.AttrApplicability;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
-import org.thymeleaf.processor.value.IValueProcessor;
-import org.thymeleaf.standard.processor.value.StandardValueProcessor;
-import org.thymeleaf.standard.syntax.StandardSyntax;
-import org.thymeleaf.standard.syntax.StandardSyntax.Value;
+import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -58,16 +54,6 @@ public class SayToPlanetAttrProcessor
     }
 
 
-    @Override
-    public Set<Class<? extends IValueProcessor>> getValueProcessorDependencies() {
-        // This attribute processor needs the StandardValueProcessor (declared
-        // in the dialect class).
-        final Set<Class<? extends IValueProcessor>> dependencies = new HashSet<Class<? extends IValueProcessor>>();
-        dependencies.add(StandardValueProcessor.class);
-        return dependencies;
-    }
-
-
     
     @Override
     protected String getText(final Arguments arguments,
@@ -75,13 +61,8 @@ public class SayToPlanetAttrProcessor
             final Element element, final Attr attribute, final String attributeName,
             final String attributeValue) {
 
-        final StandardValueProcessor valueProcessor =
-            arguments.getConfiguration().getValueProcessorByClass(this,StandardValueProcessor.class);
-        
-        final Value planetValue = 
-            StandardSyntax.parseValue(attributeValue, valueProcessor, arguments, templateResolution);
-        
-        final String planet = (String) valueProcessor.getValue(arguments, templateResolution, planetValue); 
+        final String planet =
+            (String) StandardExpressionProcessor.processExpression(arguments, templateResolution, attributeValue);
 
         /*
          * This 'getMessage(...)' method will first try to resolve the
