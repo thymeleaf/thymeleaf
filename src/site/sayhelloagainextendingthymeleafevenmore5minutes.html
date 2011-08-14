@@ -156,80 +156,23 @@
     </code>
 
 
-    <h2>Using expressions as attribute values</h2>
-    
+    <h2>Adding a new processor to our dialect</h2>
+
     <p>
-      The first thing we want to do is adding to our attributes the ability of parsing and 
-      executing expressions in the same way we can do in the <i>SpringStandard Dialect</i>, this is: 
-    </p>
-    <ul>
-      <li><tt>${...}</tt> Spring EL variable expressions.</li>
-      <li><tt>#{...}</tt> externalization of messages.</li>
-      <li><tt>@{...}</tt> link specifications.</li>
-      <li><tt>(cond)? (then) : (else)</tt> conditional/default expressions.</li>
-      <li>etc...</li>
-    </ul>
-    <p>
-      In order to achieve this, we will need to declare in our Dialect the <i>value processors</i>
-      from the <i>SpringStandard Dialect</i>, which are the ones able to process this syntax.
-      That's easily done, like this:
+      The first thing we want to do is add a new <i>attribute processor</i> to our existing <tt>HelloDialect</tt>. For
+      this we modify the dialect's <tt>getAttrProcessors()</tt> method in order to include
+      our new <tt>SayToPlanetAttrProcessor</tt> class: 
     </p>
 
-    <code>
-
+<code>
 
 <br />
 <b>public</b>&nbsp;<b>class</b>&nbsp;HelloDialect&nbsp;<b>extends</b>&nbsp;AbstractDialect&nbsp;{
 <br />
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;HelloDialect()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;All&nbsp;of&nbsp;this&nbsp;dialect&#39;s&nbsp;attributes&nbsp;and/or&nbsp;tags
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;will&nbsp;start&nbsp;with&nbsp;&#39;hello:*&#39;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;getPrefix()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;hello&quot;</span>;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Non-lenient:&nbsp;if&nbsp;a&nbsp;tag&nbsp;starting&nbsp;with&nbsp;&#39;hello:&#39;&nbsp;is
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;found&nbsp;but&nbsp;no&nbsp;processor&nbsp;exists&nbsp;in&nbsp;this&nbsp;dialect&nbsp;for&nbsp;it,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;throw&nbsp;an&nbsp;exception.&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>boolean</b>&nbsp;isLenient()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<b>false</b>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
+&nbsp;&nbsp;&nbsp;&nbsp;...
 
 <br />
 
@@ -259,50 +202,37 @@
 <br />
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Value&nbsp;processors:&nbsp;we&nbsp;will&nbsp;be&nbsp;using&nbsp;the&nbsp;set&nbsp;of&nbsp;value
+&nbsp;&nbsp;&nbsp;&nbsp;...
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;processors&nbsp;from&nbsp;the&nbsp;SpringStandard&nbsp;dialect,&nbsp;and&nbsp;so&nbsp;we&nbsp;will
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;benefit&nbsp;from&nbsp;all&nbsp;its&nbsp;syntax&nbsp;features&nbsp;(${...},&nbsp;#{...},&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;SpringEL&nbsp;evaluation,&nbsp;etc.)
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IValueProcessor&gt;&nbsp;getValueProcessors()&nbsp;{
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;SpringStandardDialect.createSpringStandardValueProcessorsSet();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
 <br />
 }
 <br />
 <br />
     
-    </code>
-    
+</code>
+
+
+
+
+    <h2>Using expressions as attribute values</h2>
     
     <p>
-      Notice the <tt>getValueProcessors()</tt> method in which we declare all the set of <i>value processors</i>
-      coming from the SpringStandard Dialect. And also a new line in the <tt>getAttrProcessors()</tt> method
-      in which we declare our new attribute processors
+      Now we want to add to our attribute processor the ability of parsing and 
+      executing expressions in the same way we can do in the <i>Standard</i> and 
+      <i>SpringStandard</i> dialects, this is, <i>Thymeleaf standard expressions</i>: 
     </p>
+    <ul>
+      <li><tt>${...}</tt> Spring EL variable expressions.</li>
+      <li><tt>#{...}</tt> externalization of messages.</li>
+      <li><tt>@{...}</tt> link specifications.</li>
+      <li><tt>(cond)? (then) : (else)</tt> conditional/default expressions.</li>
+      <li>etc...</li>
+    </ul>
     <p>
-      And now for the attribute processor class. As we did in the previous article, we will
-      use the <tt>AbstractTextChildModifierAttrProcessor</tt> convenience abstract class
-      in order to simplify the development of our processor, simply computing the text
-      that will be inserted as body of the processed tag.
+      In order to achieve this, we will need to make use of the special 
+      <tt>StandardExpressionProcessor</tt> utility class, which contains the required
+      logic to process these <i>standard expressions</i>:
     </p>
     
     <code>
@@ -351,29 +281,6 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;@Override
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;Class&lt;?&nbsp;<b>extends</b>&nbsp;IValueProcessor&gt;&gt;&nbsp;getValueProcessorDependencies()&nbsp;{
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;This&nbsp;attribute&nbsp;processor&nbsp;needs&nbsp;the&nbsp;StandardValueProcessor&nbsp;(declared
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;in&nbsp;the&nbsp;dialect&nbsp;class).
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;Class&lt;?&nbsp;<b>extends</b>&nbsp;IValueProcessor&gt;&gt;&nbsp;dependencies&nbsp;=&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>new</b>&nbsp;HashSet&lt;Class&lt;?&nbsp;<b>extends</b>&nbsp;IValueProcessor&gt;&gt;();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dependencies.add(StandardValueProcessor.<b>class</b>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;dependencies;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
 &nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
@@ -385,22 +292,9 @@
 <br />
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,StandardValueProcessor.<b>class</b>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Value&nbsp;planetValue&nbsp;=&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;planetValue);&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
 
 <br />
 
@@ -418,46 +312,15 @@
 <br />
     
     </code>
-    
+
+
     <p>
-      Note that we had to implement the <tt>getValueProcessorDependencies()</tt> in order to tell
-      Thymeleaf that this attribute processor depends on the <i>Standard Value Processor</i>.
-      This is a validation mechanism that checks every processor in a dialect has all it
-      needs at dialect initialization time.
+      Note that, as we did in the previous article, we
+      used the <tt>AbstractTextChildModifierAttrProcessor</tt> convenience abstract class
+      in order to simplify the development of our processor, simply computing the text
+      that will be inserted as body of the processed tag.
     </p>
-    <p>
-      Also, our <tt>getText(...)</tt> method now takes care of the attribute value and evaluates
-      it as an expression in the Standard Syntax in three steps:
-    </p>
-    <p>
-      1. Obtain the <i>value processor</i> from configuration, referenced by class:
-    </p>
-    <code>
-<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,StandardValueProcessor.<b>class</b>);
-<br />
-    </code>
-    <p>
-      2. Parse the attribute value into a standard syntax's <tt>Value</tt> object. This object
-      only represents the (parsed) expression, but still contains no resolved values:
-    </p>
-    <code>
-<b>final</b>&nbsp;Value&nbsp;planetValue&nbsp;=&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
-<br />
-    </code>
-    <p>
-      3. Use the <i>value processor</i> for resolving the obtained <tt>Value</tt> object &dash;which
-      specifies the expression to be used&dash; on the current context (or <i>model attributes</i>):
-    </p>
-    <code>
-<b>final</b>&nbsp;String&nbsp;planet&nbsp;=&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;planetValue);&nbsp;
-<br />
-    </code>    
+
 
 
     <h2>Adding internationalization</h2>
@@ -577,25 +440,11 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
 <br />
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,StandardValueProcessor.<b>class</b>);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Value&nbsp;planetValue&nbsp;=&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;planetValue);&nbsp;
-<br />
-
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
 <br />

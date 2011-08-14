@@ -61,10 +61,7 @@
     </p>
     <ul>
       <li><b>Processing logic</b> specified via <i>tags</i> and <i>attributes</i>, which are
-          executed by <i>tag / attribute processors</i>. These tag or attribute processors
-          can also use a third type of processor also present in dialects: <i>value processors</i>, which are in
-          charge of performing computations needed throughout the dialect (e.g. processing
-          the dialect's expression language).</li>
+          executed by <i>tag / attribute processors</i>.</li>
       <li><b>DOCTYPE transformations</b> which allow the automatic conversion of the template's
           DOCTYPE declaration into a target one, thus allowing validation both before processing
           --against a DTD including the dialect's tags and attributes-- and after processing
@@ -312,8 +309,8 @@
 
     </code>
     <p>
-      As you can see, we didn't need to set any <i>DOCTYPE resolution entries</i> or <i>translations</i>, nor
-      we specify any <i>value processors</i>. We didn't need any of that because our dialect
+      As you can see, we didn't need to set any <i>DOCTYPE resolution entries</i> or <i>translations</i>. 
+      We didn't need any of those because our dialect
       is meant to be used together with the SpringStandard dialect, which already includes
       a useful set of all those things (although we could have defined them here also if for some reason we wanted 
       to be more exhaustive). All our dialect does is specify a prefix (<tt>hello</tt>), a <i>leniency</i>,
