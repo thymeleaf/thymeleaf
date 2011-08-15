@@ -25,8 +25,6 @@ import java.util.Set;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.processor.attr.IAttrProcessor;
 import org.thymeleaf.processor.tag.ITagProcessor;
-import org.thymeleaf.processor.value.IValueProcessor;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 
 public class ScoreDialect extends AbstractDialect {
 
@@ -41,7 +39,7 @@ public class ScoreDialect extends AbstractDialect {
 
     /*
      * Non-lenient: if a tag or attribute with its prefix ('score') appears on
-     * the template and there is no value or tag/attribute processor 
+     * the template and there is no tag/attribute processor 
      * associated with it, an exception is thrown.
      */
     public boolean isLenient() {
@@ -50,10 +48,7 @@ public class ScoreDialect extends AbstractDialect {
     
     /*
      * Two attribute processors are declared: 'classforposition' and
-     * 'remarkforposition'. Both of them make use of the SpringStandard
-     * Dialect's value processors for evaluating Spring EL expressions,
-     * so these value processors must also be declared at 
-     * 'getValueProcessors()'.  
+     * 'remarkforposition'.  
      */
     @Override
     public Set<IAttrProcessor> getAttrProcessors() {
@@ -71,17 +66,6 @@ public class ScoreDialect extends AbstractDialect {
         final Set<ITagProcessor> tagProcessors = new HashSet<ITagProcessor>();
         tagProcessors.add(new HeadlinesTagProcessor());
         return tagProcessors;
-    }
-    
-    /*
-     * Some of the processors declared for the dialect need to make use of
-     * expression evaluation (for example, Spring EL expressions declared
-     * with ${...}). For doing so, this dialect needs to declare the set 
-     * of value processors coming from the SpringStandard Dialect.
-     */
-    @Override
-    public Set<IValueProcessor> getValueProcessors() {
-        return SpringStandardDialect.createSpringStandardValueProcessorsSet();
     }
 
 }

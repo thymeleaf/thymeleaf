@@ -20,17 +20,13 @@
 package thymeleafexamples.extrathyme.dialects.score;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.processor.applicability.AttrApplicability;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
-import org.thymeleaf.processor.value.IValueProcessor;
-import org.thymeleaf.standard.processor.value.StandardValueProcessor;
-import org.thymeleaf.standard.syntax.StandardSyntax;
-import org.thymeleaf.standard.syntax.StandardSyntax.Value;
+import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -58,14 +54,6 @@ public class ClassForPositionAttrProcessor
     public Integer getPrecedence() {
         return Integer.valueOf(12000);
     }
-
-
-    @Override
-    public Set<Class<? extends IValueProcessor>> getValueProcessorDependencies() {
-        final Set<Class<? extends IValueProcessor>> dependencies = new HashSet<Class<? extends IValueProcessor>>();
-        dependencies.add(StandardValueProcessor.class);
-        return dependencies;
-    }
     
     
 
@@ -76,27 +64,12 @@ public class ClassForPositionAttrProcessor
             final String attributeValue) {
 
         /*
-         * Obtain the value processor, required for executing the expression specified
-         * as attribute value.
+         * Process (parse and execute) the attribute value, specified as a
+         * Thymeleaf Standard Expression.
          */
-        final StandardValueProcessor valueProcessor =
-            arguments.getConfiguration().getValueProcessorByClass(this,StandardValueProcessor.class);
-
-        /*
-         * Parse the attribute value into a Value object. Value objects are objectual
-         * representations of expressions, ready to be executed but not containing any 
-         * specific values yet.
-         */
-        final Value positionValue = 
-            StandardSyntax.parseValue(attributeValue, valueProcessor, arguments, templateResolution);
-
-        /*
-         * Execute the previously parsed expression (Value object) by specifying the values
-         * that should be applied (variables coming from the context contained in the
-         * execution arguments).
-         */
-        final Integer position = 
-            (Integer) valueProcessor.getValue(arguments, templateResolution, positionValue); 
+        final Integer position =
+            (Integer) StandardExpressionProcessor.processExpression(
+                    arguments, templateResolution, attributeValue);
 
         /*
          * Obtain the remark corresponding to this position in the league table.
