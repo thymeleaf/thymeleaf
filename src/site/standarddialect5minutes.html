@@ -77,10 +77,11 @@
       being more specific.
     </p>
 
-    <h2>Expression syntax</h2>
+    <h2>Standard Expression syntax</h2>
     
     <p>
-       Most Thymeleaf attributes allow their values to be set as or containing <i>expressions</i>.
+       Most Thymeleaf attributes allow their values to be set as or containing <i>expressions</i>,
+       which we will call <i>Standard Expressions</i> because of the dialects they are used in.
        These can be of four types:
     </p>
     <ul>
@@ -210,6 +211,35 @@
       and at the same time with <tt>th:href</tt> we can specify the URL that will be set as 
       <tt>href</tt> when Thymeleaf really executes the template.   
     </p>
+
+    <h3>Literals and operations</h3>
+    
+    <p>
+      Some operations are also available, as well as text and numeric literals:
+    </p>
+    <ul>
+      <li>Literals: <tt>'Development'</tt>, <tt>2</tt>, <tt>12.1</tt>,...</li>
+      <li>String concatenation: <tt>+</tt>
+        <ul>
+          <li>Example: <tt>'Value is ' + ${myVar}</tt></li>
+        </ul>
+      </li>
+      <li>Arithmetic operations: <tt>+</tt>, <tt>-</tt>, <tt>*</tt>, <tt>/</tt>, <tt>%</tt>
+        <ul>
+          <li>Example: <tt>${listStat.count} + 1</tt></li>
+        </ul>
+      </li>
+      <li>Comparisons: <tt>==</tt>, <tt>!=</tt>, <tt>&lt;</tt>, <tt>&lt;=</tt>, <tt>&gt;</tt>, <tt>&gt;=</tt>
+        <ul>
+          <li>Example: <tt>(${event.number} % 2) == 0</tt></li>
+        </ul>
+      </li>
+      <li>Boolean operators: <tt>and</tt>, <tt>or</tt>
+        <ul>
+          <li>Example: <tt>${user.isAdmin()} and ${server.name == 'dev021'}</tt></li>
+        </ul>
+      </li>
+    </ul>
 
     <h3>Expression preprocessing</h3>
     
