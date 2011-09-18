@@ -26,7 +26,7 @@
             <li th:each="type : ${allTypes}">
               <input type="radio" th:field="*{subscriptionType}" th:value="${type}" />
               <label th:for="${#ids.prev('subscriptionType')}" 
-                     th:text="#{subscriptionType.__${type}__}">First type</label>
+                     th:text="#{'subscriptionType.'+${type}}">First type</label>
             </li>
             <li th:remove="all"><input type="radio" /> <label>Second Type</label></li>
           </ul>
