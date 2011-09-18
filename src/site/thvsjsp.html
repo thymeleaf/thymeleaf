@@ -208,7 +208,7 @@
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;type&nbsp;:&nbsp;${allTypes}&quot;</span>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;radio&quot;</span>&nbsp;th:field=<span class="string">&quot;*{subscriptionType}&quot;</span>&nbsp;th:value=<span class="string">&quot;${type}&quot;</span>&nbsp;/&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;th:for=<span class="string">&quot;${#ids.prev('subscriptionType')}&quot;</span>&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;#{subscriptionType.__${type}__}&quot;</span>&gt;First&nbsp;type&lt;<b>/label</b>&gt;
+<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;#{'subscriptionType.'+${type}}&quot;</span>&gt;First&nbsp;type&lt;<b>/label</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;radio&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>label</b>&gt;Second&nbsp;Type&lt;<b>/label</b>&gt;&lt;<b>/li</b>&gt;
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
