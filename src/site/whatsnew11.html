@@ -63,6 +63,17 @@
       <li>Equality checks: <tt>==</tt>, <tt>!=</tt></li>
     </ul>
 
+    <p>
+      For example, now you can concatenate Strings easily in your expressions, like:
+    </p>
+    
+    <code>
+    
+    &lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;#{title.username} + ': ' + ${user.name}&quot;</span>&gt;
+    
+    </code>
+
+
     <h2>No more Value Processors</h2>
 
     <p>
@@ -113,39 +124,220 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
     </code>    
-    
 
-    <h2>---</h2>
     
-- Modified condition evaluation: now the Strings "false", "no" and "off" return false.
-- Deprecated IValueProcessor interface and related all infrastructure.
-- New Standard Expression evaluation system, based on static methods from the 
-  org.thymeleaf.standard.expression.StandardExpressionProcessor class instead of the
-  StandardValueProcessor from Thymeleaf 1.0.x.
-- Added "hour", "minute", "second" and "millisecond" functions to expression utility
-  objects "#dates" and "#calendars".
-- Created new "th:substituteby" attribute, equivalent to "th:include" but actually 
-  substituting its host tag by the fragment's.
-- Created new versions (v2) of the set of thymeleaf-specific XHTML DTDs, including the new
-  "th:substituteby" attribute:
-    * http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd
-    * http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd
-    * http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd
-    * http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd
-- Fixed: children nodes not being correctly removed from th:text and th:utext.
-- Modified input parsing system to avoid substitution of XML/XHTML/HTML5 entities
-  like "&nbsp;", "&euro;", "&pound;", etc. by their corresponding characters. Now
-  these entities are transmitted to the template engine output directly without
-  substitution.
-- Substituted the TemplateEngine.THYMELEAF_NON_EXECUTABLE_NODE constant (used as
-  user data in DOM Nodes for avoiding their execution) by static methods for controlling
-  node execution in the org.thymeleaf.DOMExecution class.
-- Performance optimization: added a scanning step prior to storing a template into 
-  the cache that will detect all DOM nodes (and entire node trees) that should not 
-  be executed (because there is no processor applicable to them) and mark these 
-  nodes so that they are not queried at all during normal template execution.
-- Fixed: allow comments between DOCTYPE and root element node.
+    
+    
+    <h2>New <tt>th:substituteby</tt> attribute in the standard dialects</h2>
 
+    
+    <p>
+      Thymeleaf 1.1 adds a new attribute to both the Standard and SpringStandard dialects
+      called <tt>th:substituteby</tt>, which works very similarly to the already
+      existing <tt>th:include</tt> for including a fragment from an external template, 
+      but actually substitutes the host tag by the fragment's, instead of only substituting
+      its contents &ndash; which is what <tt>th:include</tt> does. 
+    </p>
+    
+    <p>
+      In order to see the differences between these tags, the following fragment:
+    </p>
+    
+    <code>
+&lt;<b>footer</b>&nbsp;th:fragment=<span class="string">&quot;copy&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&amp;copy;&nbsp;2011&nbsp;The&nbsp;Good&nbsp;Thymes&nbsp;Virtual&nbsp;Grocery
+<br />
+&lt;/<b>footer</b>&gt;
+    </code>
+
+    <p>
+      Referenced in your template with both a <tt>th:include</tt> and a <tt>th:substituteby</tt>:
+    </p>
+    
+    <code>
+    
+&lt;<b>body</b>&gt;
+<br />
+&nbsp;&nbsp;...
+<br />
+&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;footer&nbsp;::&nbsp;copy&quot;</span>&gt;&lt;/<b>div</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:substituteby=<span class="string">&quot;footer&nbsp;::&nbsp;copy&quot;</span>&gt;&lt;/<b>div</b>&gt;
+<br />
+&nbsp;&nbsp;...
+<br />
+&lt;/<b>body</b>&gt;
+    
+    </code>
+    
+    <p>
+      The results will be slightly different, because <tt>th:include</tt> will only
+      copy the fragment's contents whereas <tt>th:substituteby</tt> will actually
+      replace the host tag by the whole fragment:
+    </p>
+
+    <code>
+    
+&lt;<b>body</b>&gt;
+<br />
+&nbsp;&nbsp;...
+<br />
+&nbsp;&nbsp;&lt;<b>div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&amp;copy;&nbsp;2011&nbsp;The&nbsp;Good&nbsp;Thymes&nbsp;Virtual&nbsp;Grocery
+<br />
+&nbsp;&nbsp;&lt;/<b>div</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>footer</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&amp;copy;&nbsp;2011&nbsp;The&nbsp;Good&nbsp;Thymes&nbsp;Virtual&nbsp;Grocery
+<br />
+&nbsp;&nbsp;&lt;/<b>footer</b>&gt;
+<br />
+&nbsp;&nbsp;...
+<br />
+&lt;/<b>body</b>&gt;
+    
+    </code>
+
+    
+    
+    
+    
+    <h2>New XHTML DTDs for the standard dialects</h2>
+
+
+    <p>
+      The new <tt>th:substituteby</tt> attribute requires a change in the existing
+      Thymeleaf DTDs (those specified with a <tt>DOCTYPE SYSTEM</tt> clause), in order
+      to include this new attribute and allow its validation.
+    </p>
+
+    <p>
+      New versions of the DTDs for the Standard and SpringStandard dialects
+      have been created, so that the old <tt>DOCTYPE</tt> declarations:
+    </p>
+    
+    <code>
+    
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-1.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-1.dtd&quot;</span>&gt;
+    <br />
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-1.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-1.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-1.dtd&quot;</span>&gt;
+    
+    </code>
+
+    <p>
+      Can now be substituted by new versions containing the new attribute:
+    </p>
+    
+    <code>
+    
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    
+    </code>
+
+
+    <h2>New date utility functions</h2>
+    
+    <p>
+      Thymeleaf 1.1 adds new functions to the <tt>#dates</tt> and <tt>#calendars</tt>
+      utility function objects, which can be used in variable expressions as usual:
+    </p>
+    <code>
+      #dates.hour(now)
+      <br />
+      #dates.minute(now)
+      <br />
+      #dates.second(now)
+      <br />
+      #dates.millisecond(now)
+    </code>
+
+
+    <h2>Changes in condition evaluation</h2>
+
+    <p>
+      Condition evaluation &ndash;used in <tt>th:if</tt> or <tt>th:unless</tt> attributes, for
+      example&ndash; changes a bit in Thymeleaf 1.1 so that the Strings
+      <tt>"false"</tt>, <tt>"no"</tt> and <tt>"off"</tt> now evaluate as
+      <b>false</b>, instead of <i>true</i> as they did before (Thymeleaf 1.0 evaluated
+      as <i>true</i> any non-null String). 
+    </p>
+
+
+    <h2>Performance optimization</h2>
+    
+    <p>
+      When a template is stored into the cache, Thymeleaf 1.1 now scans its whole DOM tree
+      in order to determine which nodes &ndash;and also entire trees&ndash;
+      are <i>not executable</i> (because no attribute or tag processor can be applied to them),
+      and marks those DOM nodes so that they are skipped when actually processing the template.
+    </p>
+    <p>
+      This improves performance by allowing the engine to focus only on those nodes that
+      trigger real execution logic once it retrieves a template from the cache. 
+    </p>
+
+  
+    <h2>Fixed HTML entity processing</h2>
+
+    <p>
+      Thymeleaf 1.1 fixes a behaviour in version 1.0 regarding HTML entities 
+      (<tt>&amp;nbsp;</tt>, <tt>&amp;pound;</tt>, <tt>&amp;aacute;</tt>, etc.)
+      that made the engine raise an
+      exception like this: 
+    </p>
+    
+    <code>
+      The entity "nbsp" was referenced, but not declared.
+    </code>
+    
+    <p>
+      ...in the following cases:
+    </p>
+    
+    <ul>
+      <li>When <tt>th:utext</tt> was used for writing a String containing
+          one of such entities.</li>
+      <li>In HTML5 templates, every time an HTML entity was used.</li>
+    </ul>
+    
+    <p>
+      Thymeleaf 1.1 fixes this so that not only the presence of these entities
+      does not cause an error, but also they are preserved as they are 
+      (this is, in <i>escaped</i> form) in output.
+    </p>
+
+
+
+    <h2>Some minor fixing</h2>
+
+    <ul>
+      <li><i>Fixed</i>: children nodes not being correctly removed from th:text and th:utext.</li>
+      <li><i>Fixed</i>: allow comments between DOCTYPE and root element node.</li>
+    </ul>
+    
 
    </div>
    
