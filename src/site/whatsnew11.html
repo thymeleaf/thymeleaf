@@ -43,9 +43,109 @@
 
     <h1>What's new in Thymeleaf 1.1</h1>
 
+    <h2>A new expression system: the <i>Standard Expressions</i></h2>
+
     <p>
-      Hello!
+      The old <i>value expression</i> system had a series of limitations, especially
+      regarding to operators to be applied between expressions. In Thymeleaf 1.1 this system
+      is substituted in both the Standard and SpringStandard dialects
+      by a new <i>Standard Expression</i> system, which builds on the
+      previous one and keeps all of its syntax &ndash; so that all your templates still
+      work alright &ndash; and adds the following new features:
     </p>
+    <ul>
+      <li>Numeric literals: <tt>1</tt>, <tt>32</tt>, <tt>42.3</tt>, <tt>11.34</tt>, etc.</li>
+      <li>Unary operators: <tt>!</tt> (boolean negation), <tt>-</tt> (numeric minus sign)</li>
+      <li>String operators: <tt>+</tt> (String concatenation)</li>
+      <li>Numeric binary operators and comparators: <tt>+</tt>, <tt>-</tt>, <tt>*</tt>, 
+          <tt>/</tt>, <tt>%</tt>, <tt>&gt;</tt>, <tt>&lt;</tt>, <tt>&gt;=</tt>,<tt>&lt;=</tt></li>
+      <li>Boolean binary operators: <tt>and</tt>, <tt>or</tt></li>
+      <li>Equality checks: <tt>==</tt>, <tt>!=</tt></li>
+    </ul>
+
+    <h2>No more Value Processors</h2>
+
+    <p>
+      Thymeleaf 1.0 defined three types of <i>processors</i>: <i>attribute processors</i>,
+      <i>tag processors</i> and <i>value processors</i>. The latter type, value processors,
+      were defined as utility objects that executed commons logic needed to process
+      expressions, usually called from attribute or tag processors.
+    </p>
+    <p>
+      This resulted in code similar to this in order to execute an expression from an
+      attribute value:
+    </p>
+    
+    <code>
+
+<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,&nbsp;StandardValueProcessor.<b>class</b>);
+<br />
+<br />
+<b>final</b>&nbsp;Value&nbsp;value&nbsp;=&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
+<br />
+<br />
+<b>final</b>&nbsp;String&nbsp;result&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;value);&nbsp;
+
+<br />
+
+    </code>
+    
+    <p>
+      Thymeleaf 1.1 completely removes the concept of <i>value processor</i> from its API, so that
+      it allows each dialect to implement expression resolution in the way preferred by its
+      developers.  
+    </p>
+    <p>
+      For example, the <i>Standard</i> and <i>SpringStandard</i> dialects now implement
+      the resolution of <i>Standard Expressions</i> using the <tt>StandardExpressionProcessor</tt> class,
+      so that all the code above can now be written in a much more concise way:  
+    </p>
+    
+    <code>
+<b>final</b>&nbsp;String&nbsp;result&nbsp;=
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
+    </code>    
+    
+
+    <h2>---</h2>
+    
+- Modified condition evaluation: now the Strings "false", "no" and "off" return false.
+- Deprecated IValueProcessor interface and related all infrastructure.
+- New Standard Expression evaluation system, based on static methods from the 
+  org.thymeleaf.standard.expression.StandardExpressionProcessor class instead of the
+  StandardValueProcessor from Thymeleaf 1.0.x.
+- Added "hour", "minute", "second" and "millisecond" functions to expression utility
+  objects "#dates" and "#calendars".
+- Created new "th:substituteby" attribute, equivalent to "th:include" but actually 
+  substituting its host tag by the fragment's.
+- Created new versions (v2) of the set of thymeleaf-specific XHTML DTDs, including the new
+  "th:substituteby" attribute:
+    * http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd
+- Fixed: children nodes not being correctly removed from th:text and th:utext.
+- Modified input parsing system to avoid substitution of XML/XHTML/HTML5 entities
+  like "&nbsp;", "&euro;", "&pound;", etc. by their corresponding characters. Now
+  these entities are transmitted to the template engine output directly without
+  substitution.
+- Substituted the TemplateEngine.THYMELEAF_NON_EXECUTABLE_NODE constant (used as
+  user data in DOM Nodes for avoiding their execution) by static methods for controlling
+  node execution in the org.thymeleaf.DOMExecution class.
+- Performance optimization: added a scanning step prior to storing a template into 
+  the cache that will detect all DOM nodes (and entire node trees) that should not 
+  be executed (because there is no processor applicable to them) and mark these 
+  nodes so that they are not queried at all during normal template execution.
+- Fixed: allow comments between DOCTYPE and root element node.
+
 
    </div>
    
