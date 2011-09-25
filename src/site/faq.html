@@ -62,6 +62,7 @@
           <li><a href="#no-spring-can-I-use">I don't use Spring at all. Can I still use Thymeleaf?</a></li>
           <li><a href="#can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></li>
           <li><a href="#DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></li>
+          <li><a href="#use-snapshot">How can I use a SNAPSHOT release of Thymeleaf?</a></li>
         </ul>
       </li>
     </ul>
@@ -249,6 +250,56 @@
       is that you should never generate web documents so big that your users' browsers set ablaze and/or 
       explode – remember that these browsers will also have to create DOM trees for your pages!
     </p>    
+
+
+    <h3><a id="use-snapshot">How can I use a SNAPSHOT release of Thymeleaf?</a></h3>
+    
+    <p>    
+      From time to time, Thymeleaf will produce a <i>snapshot</i> release that will allow
+      you to test new or being-developed features. These are <b>non production ready</b>
+      releases, but will be stable enough for most testing purposes, and will enable you
+      to try new features before they are generally available.
+    </p> 
+    <p>
+      In order to use snapshot releases, you need to add the Sonatype OSS Snapshots
+      repository in your Maven <tt>pom.xml</tt> file, like this:
+    </p>
+    
+    <code>
+
+  &lt;repositories&gt;<br />
+  &nbsp;&nbsp;&lt;repository&gt;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;id&gt;sonatype-nexus-snapshots&lt;/id&gt;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;name&gt;Sonatype Nexus Snapshots&lt;/name&gt;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;url&gt;<b>https://oss.sonatype.org/content/repositories/snapshots</b>&lt;/url&gt;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;snapshots&gt;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;enabled&gt;true&lt;/enabled&gt;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;/snapshots&gt;<br />
+  &nbsp;&nbsp;&lt;/repository&gt;<br />
+  &lt;/repositories&gt;
+    
+    </code>
+    
+    <p>
+      Also, you will have to modify your Thymeleaf dependency/ies to use a 
+      <i>snapshot version</i>, which usually consists of the version number of the
+      <b>next</b> release (not the current one), followed by <tt>-SNAPSHOT</tt>.
+      For example, while <tt>1.1.1</tt> is the latest published stable release,
+      snapshots will probably appear under the <tt>1.1.2-SNAPSHOT</tt> or
+      maybe <tt>1.2.0-SNAPSHOT</tt> version numbers:
+    </p>
+
+    <code>
+    
+    &lt;dependency&gt;<br />
+    &nbsp;&nbsp;&lt;groupId&gt;org.thymeleaf&lt;/groupId&gt;<br />
+    &nbsp;&nbsp;&lt;artifactId&gt;thymeleaf&lt;/artifactId&gt;<br />
+    &nbsp;&nbsp;&lt;version&gt;<b>1.1.2-SNAPSHOT</b>&lt;/version&gt;<br />
+    &nbsp;&nbsp;&lt;scope&gt;compile&lt;/scope&gt;<br />
+    &lt;/dependency&gt;
+        
+    </code>
+    
     
    </div>
    
