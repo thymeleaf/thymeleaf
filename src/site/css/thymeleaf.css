@@ -298,3 +298,18 @@ div.widetable {
 }
 
 
+
+/* ---------------------- */
+/* TEAM TABLE             */
+/* ---------------------- */
+#teamTable th {
+  font-size: 13px; 
+} 
+#teamTable td {
+  font-size: 12px; 
+}
+
+#workingOn {
+  margin-top: 80px;
+  font-size: 11px; 
+}
