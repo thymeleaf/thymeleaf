@@ -273,6 +273,22 @@
       <br />
       #dates.millisecond(now)
     </code>
+    <p>
+      <i>Since 1.1.2, also:</i>
+    </p>
+    <code>
+      #dates.createNow()
+      <br />
+      #dates.createToday()
+      <br />
+      #dates.create(year,month,day)
+      <br />
+      #dates.create(year,month,day,hour,minute)
+      <br />
+      #dates.create(year,month,day,hour,minute,second)
+      <br />
+      #dates.create(year,month,day,hour,minute,second,millisecond)
+    </code>
 
 
     <h2>Changes in condition evaluation</h2>
@@ -329,14 +345,31 @@
       (this is, in <i>escaped</i> form) in output.
     </p>
 
+  
+    <h2>Modified LEGACYHTML5 mode (since 1.1.2)</h2>
+
+    <p>
+      For performance and reliability reasons, the <tt>LEGACYHTML5</tt> mode now uses 
+      <b>nekoHTML 1.9.15</b> or newer as an auxiliary library instead of <b>htmlcleaner</b>, 
+      which was used in previous versions.
+    </p>
+
+  
+    <h2>Dart inlining mode (since 1.1.2)</h2>
+
+    <p>
+      Thymeleaf 1.1.2 adds a new "<tt>dart</tt>" inlining mode to its Standard Dialects 
+      (besides <tt>text</tt> and <tt>javascript</tt>) which allows you to inline your data 
+      in your Dart scripts in the same way as you can currently do with JavaScript..
+    </p>
 
 
-    <h2>Some minor fixing</h2>
+    <h2>Minor modifications and bug fixing</h2>
 
-    <ul>
-      <li><i>Fixed</i>: children nodes not being correctly removed from th:text and th:utext.</li>
-      <li><i>Fixed</i>: allow comments between DOCTYPE and root element node.</li>
-    </ul>
+    <p>
+      Of course, many minor modifications and bug fixes have been applied too. In order to know
+      more, <a href="download.html">have a look at the changelogs</a>.
+    </p>
     
 
    </div>
