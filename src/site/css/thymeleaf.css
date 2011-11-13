@@ -175,6 +175,11 @@ h3 {
   border-left: 3px dotted #99cc33;
   padding: 3px 10px;
 }
+#author {
+  font-size: 12px;
+  text-align:right;
+  margin-bottom: 50px;
+}
 
 
 /* ---------------------- */

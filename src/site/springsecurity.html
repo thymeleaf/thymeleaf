@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Spring MVC view layer: Thymeleaf vs. JSP - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="features.html" title="Features">Features</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      articles
+      ::
+      <span class="current">login and error pages using thymeleaf and spring security</span>
+   </div>
+
+
+   <div id="content">
+
+
+     <h1>Login and error pages using Thymeleaf and Spring Security</h1>
+
+     <p id="author">
+       <i>By Jos&eacute; Miguel Samper &lt;jmiguelsamper AT users.sourceforge.net&gt;</i>
+     </p>
+
+     <p>
+         Have you switched to Thymeleaf but your login and error pages are still using JSP? <br />
+         In this article we will see how to configure your Spring application to use Thymeleaf for
+         login and error pages.
+     </p>
+
+     <h2>Prerequisites</h2>
+
+     <p>
+         We asume you are familiar with Thymeleaf and Spring Security, and you have a working application using
+         these technologies.
+         If you don't know Spring Security, you could be interested on reading the
+         <a href="http://static.springsource.org/spring-security/site/reference.html">Spring Security Documentation</a>.
+     </p>
+
+     <h2>Login pages</h2>
+
+     <p>
+         With Spring security you could specify any URL to act as a login page, so we simply set URLs for
+         login page and login error page as <b>&lt;form-login&gt;</b> element attributes into the Spring-Security
+         configuration file (usually <b>applicationContext-security.xml</b>):
+     </p>
+
+<code>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>http</b>&nbsp;auto-config=<span class="string">"true"</span>&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>form-login</b>&nbsp;login-page=<span class="string">"/login.html"</span>&nbsp;authentication-failure-url=<span class="string">"/login-error.html"</span>&nbsp;/&gt;
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>logout</b>&nbsp;/&gt;
+
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/http</b>&gt;
+</code>
+
+    <p>
+        Now we have to match these pages inside a Spring Controller:
+    </p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;@Controller
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>class</b>&nbsp;MainController&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**&nbsp;Login&nbsp;form.&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(<span class="string">&quot;/login.html&quot;</span>)
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;login()&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;login.html&quot;</span>;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**&nbsp;Login&nbsp;form&nbsp;with&nbsp;error.&nbsp;*/</span>
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(<span class="string">&quot;/login-error.html&quot;</span>)
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;loginError(Model&nbsp;model)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(<span class="string">&quot;loginError&quot;</span>,&nbsp;<b>true</b>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;login.html&quot;</span>;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+</code>
+
+
+    <p>
+        Note that we are using the same template <b>login.html</b> for both pages, but when there is an error,
+        we set a boolean attribute into the model.
+    </p>
+
+    <p>
+        Our <b>login.html</b> template is as follows:
+    </p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>html</b>&nbsp;xmlns=<span class="string">&quot;http://www.w3.org/1999/xhtml&quot;</span>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Login&nbsp;page&lt;<b>/title</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/head</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h1</b>&gt;Login&nbsp;page&lt;<b>/h1</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${loginError}&quot;</span>&gt;Wrong&nbsp;user&nbsp;or&nbsp;password&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>form</b>&nbsp;th:action=<span class="string">&quot;@{/j_spring_security_check}&quot;</span>&nbsp;method=<span class="string">&quot;post&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;j_username&quot;</span>&gt;Username&lt;<b>/label</b>&gt;:
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;text&quot;</span>&nbsp;id=<span class="string">&quot;j_username&quot;</span>&nbsp;name=<span class="string">&quot;j_username&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;j_password&quot;</span>&gt;Password&lt;<b>/label</b>&gt;:
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;password&quot;</span>&nbsp;id=<span class="string">&quot;j_password&quot;</span>&nbsp;name=<span class="string">&quot;j_password&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;submit&quot;</span>&nbsp;value=<span class="string">&quot;Log&nbsp;in&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/form</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/body</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/html</b>&gt;
+
+<br />
+
+</code>
+
+
+    <h2>Error page</h2>
+
+    <p>
+        We also can configure a Thymeleaf error page. In this case Spring Security is not involved at all, we
+        should simply modify our <b>web.xml</b> adding error <b>&lt;error-page&gt;</b> elements like:
+    </p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;...
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>error-page</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Throwable&lt;<b>/exception-type</b>&gt;
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/error.html&lt;<b>/location</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/error-page</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>error-page</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>error-code</b>&gt;500&lt;<b>/error-code</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/error.html&lt;<b>/location</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/error-page</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;...
+
+</code>
+
+
+    <p>
+        Then, we have to map the <b>/error.html</b> in our Spring Controller:
+    </p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;@Controller
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>class</b>&nbsp;HomeController&nbsp;{
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**&nbsp;Error&nbsp;page.&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(<span class="string">&quot;/error.html&quot;</span>)
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;error(HttpServletRequest&nbsp;request,&nbsp;Model&nbsp;model)&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(<span class="string">&quot;errorCode&quot;</span>,&nbsp;request.getAttribute(<span class="string">&quot;javax.servlet.error.status_code&quot;</span>));
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Throwable&nbsp;throwable&nbsp;=&nbsp;(Throwable)&nbsp;request.getAttribute(<span class="string">&quot;javax.servlet.error.exception&quot;</span>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;errorMessage&nbsp;=&nbsp;null;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(throwable&nbsp;!=&nbsp;null)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errorMessage&nbsp;=&nbsp;throwable.getMessage();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(<span class="string">&quot;errorMessage&quot;</span>,&nbsp;errorMessage.toString());
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;error.html&quot;</span>;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
+</code>
+
+
+    <p>
+        Note that we store error code and error message into the model to show some information in the error page.
+    </p>
+
+    <p>
+        The <b>error.html</b> template could be like:
+    </p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>html</b>&nbsp;xmlns=<span class="string">&quot;http://www.w3.org/1999/xhtml&quot;</span>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Error&nbsp;page&lt;<b>/title</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/head</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h1</b>&nbsp;th:text=<span class="string">&quot;${errorCode}&quot;</span>&gt;500&lt;<b>/h1</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;${errorMessage}&quot;</span>&gt;java.lang.NullPointerException&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/body</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/html</b>&gt;
+
+</code>
+
+
+<h2>Download example</h2>
+
+<p>
+    The full working example code used in this article is available for download at 
+    the <a href="documentation.html">project's documentation page</a>.
+</p>
+
+
+
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+  
+</html>
