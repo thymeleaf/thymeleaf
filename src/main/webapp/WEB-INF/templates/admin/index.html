@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Thymeleafexamples - Spring security</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="css/main.css" th:href="@{/css/main.css}" />
+    </head>
+    <body>
+        <div th:substituteby="index.html::logout"></div>
+        <h1>Thymeleafexamples - Spring security</h1>
+        <p>This is the <b>administration</b> zone</p>
+        <p>Only authenticated users with role <b>ADMIN</b> are allowed to see this page.</p>
+        <p><a href="../index.html" th:href="@{/index.html}">Back to home page</a></p>
+    </body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Login page</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="css/main.css" th:href="@{/css/main.css}" />
+	</head>
+    <body>
+        <h1>Login page</h1>
+        <p>Example user: bob / demo</p>
+        <p>Example administrator: jim / demo</p>
+        <p th:if="${loginError}" class="error">Wrong user or password</p>
+        <form th:action="@{/j_spring_security_check}" method="post">
+            <label for="j_username">Username</label>:
+            <input type="text" id="j_username" name="j_username" autofocus="autofocus" /> <br />
+            <label for="j_password">Password</label>:
+            <input type="password" id="j_password" name="j_password" /> <br />
+            <input type="submit" value="Log in" />
+        </form>
+        <p><a href="../index.html" th:href="@{/index.html}">Back to home page</a></p>
+    </body>
+</html>
