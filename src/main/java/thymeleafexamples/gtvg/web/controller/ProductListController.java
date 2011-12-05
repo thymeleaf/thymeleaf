@@ -19,8 +19,10 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
+import java.io.Writer;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,17 +40,18 @@ public class ProductListController implements IGTVGController {
     }
     
     
-    public String process(
+    public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final TemplateEngine templateEngine) {
+            final ServletContext servletContext, final TemplateEngine templateEngine, 
+            final Writer writer) {
         
         final ProductService productService = new ProductService();
         final List<Product> allProducts = productService.findAll(); 
         
-        final WebContext ctx = new WebContext(request, request.getLocale());
+        final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
         ctx.setVariable("prods", allProducts);
         
-        return templateEngine.process("product/list", ctx);
+        templateEngine.process("product/list", ctx, writer);
         
     }
 

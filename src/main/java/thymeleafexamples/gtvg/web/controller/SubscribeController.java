@@ -19,6 +19,9 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
+import java.io.Writer;
+
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,12 +36,13 @@ public class SubscribeController implements IGTVGController {
     }
     
     
-    public String process(
-            HttpServletRequest request, HttpServletResponse response,
-            TemplateEngine templateEngine) {
+    public void process(
+            final HttpServletRequest request, final HttpServletResponse response,
+            final ServletContext servletContext, final TemplateEngine templateEngine, 
+            final Writer writer) {
         
-        WebContext ctx = new WebContext(request, request.getLocale());
-        return templateEngine.process("subscribe", ctx);
+        WebContext ctx = new WebContext(request, servletContext, request.getLocale());
+        templateEngine.process("subscribe", ctx, writer);
         
     }
 

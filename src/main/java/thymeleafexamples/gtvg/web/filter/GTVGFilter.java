@@ -39,8 +39,6 @@ import thymeleafexamples.gtvg.web.controller.IGTVGController;
 
 public class GTVGFilter implements Filter {
 
-    private static final long serialVersionUID = -2976485624834964853L;
-
     
     
     public GTVGFilter() {
@@ -103,20 +101,20 @@ public class GTVGFilter implements Filter {
             TemplateEngine templateEngine = GTVGApplication.getTemplateEngine();
 
             /*
-             * Execute the controller and process view template,
-             * obtaining an HTML String. 
-             */
-            String result = controller.process(request, response, templateEngine);
-
-            /*
              * Write the response
              */
             response.setContentType("text/html;charset=UTF-8");
             response.setHeader("Pragma", "no-cache");
             response.setHeader("Cache-Control", "no-cache");
             response.setDateHeader("Expires", 0);
-            
-            response.getWriter().write(result);
+
+            /*
+             * Execute the controller and process view template,
+             * obtaining an HTML String. 
+             */
+            controller.process(request, response, 
+                    request.getSession(true).getServletContext(), 
+                    templateEngine, response.getWriter());
             
             return true;
             
