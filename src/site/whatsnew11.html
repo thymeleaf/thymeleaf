@@ -6,7 +6,9 @@
 	<title>What's new in Thymeleaf 1.1 - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -54,13 +56,13 @@
       work alright &ndash; and adds the following new features:
     </p>
     <ul>
-      <li>Numeric literals: <tt>1</tt>, <tt>32</tt>, <tt>42.3</tt>, <tt>11.34</tt>, etc.</li>
-      <li>Unary operators: <tt>!</tt> (boolean negation), <tt>-</tt> (numeric minus sign)</li>
-      <li>String operators: <tt>+</tt> (String concatenation)</li>
-      <li>Numeric binary operators and comparators: <tt>+</tt>, <tt>-</tt>, <tt>*</tt>, 
-          <tt>/</tt>, <tt>%</tt>, <tt>&gt;</tt>, <tt>&lt;</tt>, <tt>&gt;=</tt>,<tt>&lt;=</tt></li>
-      <li>Boolean binary operators: <tt>and</tt>, <tt>or</tt></li>
-      <li>Equality checks: <tt>==</tt>, <tt>!=</tt></li>
+      <li>Numeric literals: <kbd>1</kbd>, <kbd>32</kbd>, <kbd>42.3</kbd>, <kbd>11.34</kbd>, etc.</li>
+      <li>Unary operators: <kbd>!</kbd> (boolean negation), <kbd>-</kbd> (numeric minus sign)</li>
+      <li>String operators: <kbd>+</kbd> (String concatenation)</li>
+      <li>Numeric binary operators and comparators: <kbd>+</kbd>, <kbd>-</kbd>, <kbd>*</kbd>, 
+          <kbd>/</kbd>, <kbd>%</kbd>, <kbd>&gt;</kbd>, <kbd>&lt;</kbd>, <kbd>&gt;=</kbd>,<kbd>&lt;=</kbd></li>
+      <li>Boolean binary operators: <kbd>and</kbd>, <kbd>or</kbd></li>
+      <li>Equality checks: <kbd>==</kbd>, <kbd>!=</kbd></li>
     </ul>
 
     <p>
@@ -115,7 +117,7 @@
     </p>
     <p>
       For example, the <i>Standard</i> and <i>SpringStandard</i> dialects now implement
-      the resolution of <i>Standard Expressions</i> using the <tt>StandardExpressionProcessor</tt> class,
+      the resolution of <i>Standard Expressions</i> using the <kbd>StandardExpressionProcessor</kbd> class,
       so that all the code above can now be written in a much more concise way:  
     </p>
     
@@ -128,15 +130,15 @@
     
     
     
-    <h2>New <tt>th:substituteby</tt> attribute in the standard dialects</h2>
+    <h2>New <kbd>th:substituteby</kbd> attribute in the standard dialects</h2>
 
     
     <p>
       Thymeleaf 1.1 adds a new attribute to both the Standard and SpringStandard dialects
-      called <tt>th:substituteby</tt>, which works very similarly to the already
-      existing <tt>th:include</tt> for including a fragment from an external template, 
+      called <kbd>th:substituteby</kbd>, which works very similarly to the already
+      existing <kbd>th:include</kbd> for including a fragment from an external template, 
       but actually substitutes the host tag by the fragment's, instead of only substituting
-      its contents &ndash; which is what <tt>th:include</tt> does. 
+      its contents &ndash; which is what <kbd>th:include</kbd> does. 
     </p>
     
     <p>
@@ -152,7 +154,7 @@
     </code>
 
     <p>
-      Referenced in your template with both a <tt>th:include</tt> and a <tt>th:substituteby</tt>:
+      Referenced in your template with both a <kbd>th:include</kbd> and a <kbd>th:substituteby</kbd>:
     </p>
     
     <code>
@@ -172,8 +174,8 @@
     </code>
     
     <p>
-      The results will be slightly different, because <tt>th:include</tt> will only
-      copy the fragment's contents whereas <tt>th:substituteby</tt> will actually
+      The results will be slightly different, because <kbd>th:include</kbd> will only
+      copy the fragment's contents whereas <kbd>th:substituteby</kbd> will actually
       replace the host tag by the whole fragment:
     </p>
 
@@ -209,14 +211,14 @@
 
 
     <p>
-      The new <tt>th:substituteby</tt> attribute requires a change in the existing
-      Thymeleaf DTDs (those specified with a <tt>DOCTYPE SYSTEM</tt> clause), in order
+      The new <kbd>th:substituteby</kbd> attribute requires a change in the existing
+      Thymeleaf DTDs (those specified with a <kbd>DOCTYPE SYSTEM</kbd> clause), in order
       to include this new attribute and allow its validation.
     </p>
 
     <p>
       New versions of the DTDs for the Standard and SpringStandard dialects
-      have been created, so that the old <tt>DOCTYPE</tt> declarations:
+      have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
     </p>
     
     <code>
@@ -261,7 +263,7 @@
     <h2>New date utility functions</h2>
     
     <p>
-      Thymeleaf 1.1 adds new functions to the <tt>#dates</tt> and <tt>#calendars</tt>
+      Thymeleaf 1.1 adds new functions to the <kbd>#dates</kbd> and <kbd>#calendars</kbd>
       utility function objects, which can be used in variable expressions as usual:
     </p>
     <code>
@@ -294,9 +296,9 @@
     <h2>Changes in condition evaluation</h2>
 
     <p>
-      Condition evaluation &ndash;used in <tt>th:if</tt> or <tt>th:unless</tt> attributes, for
+      Condition evaluation &ndash;used in <kbd>th:if</kbd> or <kbd>th:unless</kbd> attributes, for
       example&ndash; changes a bit in Thymeleaf 1.1 so that the Strings
-      <tt>"false"</tt>, <tt>"no"</tt> and <tt>"off"</tt> now evaluate as
+      <kbd>"false"</kbd>, <kbd>"no"</kbd> and <kbd>"off"</kbd> now evaluate as
       <b>false</b>, instead of <i>true</i> as they did before (Thymeleaf 1.0 evaluated
       as <i>true</i> any non-null String). 
     </p>
@@ -320,7 +322,7 @@
 
     <p>
       Thymeleaf 1.1 fixes a behaviour in version 1.0 regarding HTML entities 
-      (<tt>&amp;nbsp;</tt>, <tt>&amp;pound;</tt>, <tt>&amp;aacute;</tt>, etc.)
+      (<kbd>&amp;nbsp;</kbd>, <kbd>&amp;pound;</kbd>, <kbd>&amp;aacute;</kbd>, etc.)
       that made the engine raise an
       exception like this: 
     </p>
@@ -334,7 +336,7 @@
     </p>
     
     <ul>
-      <li>When <tt>th:utext</tt> was used for writing a String containing
+      <li>When <kbd>th:utext</kbd> was used for writing a String containing
           one of such entities.</li>
       <li>In HTML5 templates, every time an HTML entity was used.</li>
     </ul>
@@ -349,7 +351,7 @@
     <h2>Modified LEGACYHTML5 mode (since 1.1.2)</h2>
 
     <p>
-      For performance and reliability reasons, the <tt>LEGACYHTML5</tt> mode now uses 
+      For performance and reliability reasons, the <kbd>LEGACYHTML5</kbd> mode now uses 
       <b>nekoHTML 1.9.15</b> or newer as an auxiliary library instead of <b>htmlcleaner</b>, 
       which was used in previous versions.
     </p>
@@ -358,8 +360,8 @@
     <h2>Dart inlining mode (since 1.1.2)</h2>
 
     <p>
-      Thymeleaf 1.1.2 adds a new "<tt>dart</tt>" inlining mode to its Standard Dialects 
-      (besides <tt>text</tt> and <tt>javascript</tt>) which allows you to inline your data 
+      Thymeleaf 1.1.2 adds a new "<kbd>dart</kbd>" inlining mode to its Standard Dialects 
+      (besides <kbd>text</kbd> and <kbd>javascript</kbd>) which allows you to inline your data 
       in your Dart scripts in the same way as you can currently do with JavaScript..
     </p>
 
@@ -377,7 +379,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

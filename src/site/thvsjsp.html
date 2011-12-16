@@ -6,7 +6,9 @@
 	<title>Spring MVC view layer: Thymeleaf vs. JSP - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -67,25 +69,25 @@
     </ul>
     <p>
       We will also need this page to be HTML5 and completely internationalizable, extracting all texts and messages
-      from resource files already configured in our <tt>MessageSource</tt> objects in our Spring 
+      from resource files already configured in our <kbd>MessageSource</kbd> objects in our Spring 
       infrastructure.
     </p>
     <p>
-      Our application will have two <tt>@Controller</tt>s, which will contain exactly the same code
+      Our application will have two <kbd>@Controller</kbd>s, which will contain exactly the same code
       but will forward to different view names:
     </p>
     <ul>
-      <li><tt>SubscribeJsp</tt> for the JSP page (the <tt>subscribejsp</tt> view).
-      <li><tt>SubscribeTh</tt> for the Thymeleaf page (the <tt>subscribeth</tt> view).
+      <li><kbd>SubscribeJsp</kbd> for the JSP page (the <kbd>subscribejsp</kbd> view).
+      <li><kbd>SubscribeTh</kbd> for the Thymeleaf page (the <kbd>subscribeth</kbd> view).
     </ul>
     <p>
       We will have the following classes in our model:
     </p>
     <ul>
-      <li><tt>Subscription</tt> form-backing bean with two fields: <tt>String email</tt> and
-          <tt>SubscriptionType subscriptionType</tt>.</li>
-      <li><tt>SubscriptionType</tt> an enum modeling the <tt>subscriptionType</tt> field of the form,
-          with values <tt>ALL_EMAILS</tt> and <tt>DAILY_DIGEST</tt>.</li> 
+      <li><kbd>Subscription</kbd> form-backing bean with two fields: <kbd>String email</kbd> and
+          <kbd>SubscriptionType subscriptionType</kbd>.</li>
+      <li><kbd>SubscriptionType</kbd> an enum modeling the <kbd>subscriptionType</kbd> field of the form,
+          with values <kbd>ALL_EMAILS</kbd> and <kbd>DAILY_DIGEST</kbd>.</li> 
     </ul>
     <p>
       <i>(In this article we will just focus on the JSP/Thymeleaf template code. If you want
@@ -105,8 +107,8 @@
     </div>
 
     <p>
-      And this is our JSP code, making use of both JSTL (<tt>core</tt>) and Spring (<tt>tags</tt> and 
-      <tt>form</tt>) JSP tag libraries:
+      And this is our JSP code, making use of both JSTL (<kbd>core</kbd>) and Spring (<kbd>tags</kbd> and 
+      <kbd>form</kbd>) JSP tag libraries:
     </p>
     <code>
     
@@ -234,16 +236,16 @@
     <ul>
       <li>This looks much more HTML-ish than the JSP version &ndash; no strange tags, just some 
           meaningful attributes.</li>
-      <li>Variable expressions (<tt>${...}</tt>) are Spring EL and execute on model attributes, asterisk expressions
-          (<tt>*{...}</tt>) execute on the form backing bean, hash expressions (<tt>#{...}</tt>)
-          are for internationalization and link expressions (<tt>@{...}</tt>) rewrite URLs.
+      <li>Variable expressions (<kbd>${...}</kbd>) are Spring EL and execute on model attributes, asterisk expressions
+          (<kbd>*{...}</kbd>) execute on the form backing bean, hash expressions (<kbd>#{...}</kbd>)
+          are for internationalization and link expressions (<kbd>@{...}</kbd>) rewrite URLs.
           (<i>If you want to know more about this, have a look at the 
           <a href="standarddialect5minutes.html">"Getting started with the Standard Dialect in 5 minutes"</a>
           guide</i>).</li>
-      <li>We are allowed to have prototype code there: for example, we can set an <tt>Email:</tt> text in the label
+      <li>We are allowed to have prototype code there: for example, we can set an <kbd>Email:</kbd> text in the label
           for the first field, knowing that Thymeleaf will substitute it with the internationalized
-          text with key <tt>subscription.email</tt> when it executes the page.</li> 
-      <li>We have even been able to add an <tt>&lt;li&gt;</tt> for a second radiobutton
+          text with key <kbd>subscription.email</kbd> when it executes the page.</li> 
+      <li>We have even been able to add an <kbd>&lt;li&gt;</kbd> for a second radiobutton
           just for prototyping pleasure. It will be removed when Thymeleaf executes our page.</li>
     </ul>
 
@@ -299,7 +301,7 @@
     <h3>Changing the page style using Thymeleaf</h3>    
     
     <p>
-      <b>Step 1</b>: <i>Double-click on the <tt>.html</tt> template file itself and
+      <b>Step 1</b>: <i>Double-click on the <kbd>.html</kbd> template file itself and
       let our browser open it</i>. Being a Thymeleaf template, it will show just fine, only
       with template/prototype data (note the subscription type options):
     </p>
@@ -309,10 +311,10 @@
     </div>
     
     <p>
-      <b>Step 2</b>: <i>Open the <tt>.css</tt> file with our favourite text editor</i>. The 
-      template file statically links to the CSS in its <tt>&lt;link rel="stylesheet" ...&gt;</tt> tag
-      (with an <tt>href</tt> that Thymeleaf substitutes when executing the template by the one
-      generated by <tt>th:href</tt>). So any changes we make to that CSS will be applied
+      <b>Step 2</b>: <i>Open the <kbd>.css</kbd> file with our favourite text editor</i>. The 
+      template file statically links to the CSS in its <kbd>&lt;link rel="stylesheet" ...&gt;</kbd> tag
+      (with an <kbd>href</kbd> that Thymeleaf substitutes when executing the template by the one
+      generated by <kbd>th:href</kbd>). So any changes we make to that CSS will be applied
       to the static page our browser is displaying.
     </p>
     
@@ -361,7 +363,7 @@
     </p>
     <p>
       But let's try anyway: of course, we will have to rename our file so that its name ends
-      in <tt>.html</tt> instead of <tt>.jsp</tt>, but let's see what happens when we
+      in <kbd>.html</kbd> instead of <kbd>.jsp</kbd>, but let's see what happens when we
       open our browser:
     </p>
 
@@ -397,9 +399,9 @@
     </p>
     
     <p>
-      For example, there is now an <tt>&lt;input type="email" ...&gt;</tt>, which will
+      For example, there is now an <kbd>&lt;input type="email" ...&gt;</kbd>, which will
       make our browser check that the text input by users has the shape of an email address. And
-      also, there is a new property for all inputs called <tt>placeholder</tt> which shows a
+      also, there is a new property for all inputs called <kbd>placeholder</kbd> which shows a
       text in the field that automatically dissapears when the input gains focus (usually by
       the user clicking on it).
     </p>
@@ -407,17 +409,17 @@
     <p>
       Sounds good, doesn't it? Unfortunately not all browsers support this yet (as of 2011,
       Opera 11 and Firefox 4 do), but we are safe using these features anyway because all 
-      browsers will treat an input of a type they do not understand (<tt>email</tt>) as a 
-      <tt>text</tt> input, and will silently ignore the <tt>placeholder</tt> attribute in
-      the same way they ignore Thymeleaf's <tt>th:*</tt> ones.
+      browsers will treat an input of a type they do not understand (<kbd>email</kbd>) as a 
+      <kbd>text</kbd> input, and will silently ignore the <kbd>placeholder</kbd> attribute in
+      the same way they ignore Thymeleaf's <kbd>th:*</kbd> ones.
     </p>
 
     <h3>Doing HTML5 with JSP</h3>    
 
     <p>
       Unfortunately, Spring MVC's JSP tag libraries still have no support for HTML5, so there isn't
-      an <tt>&lt;sf:email ...&gt;</tt> tag at our disposal. This means that we will have to 
-      write it in plain HTML code, emulating the results of executing an imaginary <tt>&lt;sf:email&gt;</tt> tag:
+      an <kbd>&lt;sf:email ...&gt;</kbd> tag at our disposal. This means that we will have to 
+      write it in plain HTML code, emulating the results of executing an imaginary <kbd>&lt;sf:email&gt;</kbd> tag:
     </p>
 
     <code>
@@ -426,10 +428,10 @@
 
     <p>
       But this is not correct! In Spring MVC we should never write a JSP input field like that,
-      because we wouldn't be correctly <i>binding</i> our input to the <tt>email</tt> property of
-      the form-backing bean. In order to do so, we would need to use an <tt>&lt;s:eval/&gt;</tt> tag, which
+      because we wouldn't be correctly <i>binding</i> our input to the <kbd>email</kbd> property of
+      the form-backing bean. In order to do so, we would need to use an <kbd>&lt;s:eval/&gt;</kbd> tag, which
       will apply all the required transformations (like <i>property editors</i>) and make our
-      plain-HTML tag work as if an <tt>&lt;sf:email/&gt;</tt> tag existed:
+      plain-HTML tag work as if an <kbd>&lt;sf:email/&gt;</kbd> tag existed:
     </p>
 
     <code>
@@ -441,7 +443,7 @@
     
     <p>
       Thymeleaf, on the other hand, has complete support for HTML5, so we will only have to
-      change the <tt>type</tt> of our input and add a <tt>placeholder</tt>, and it will work
+      change the <kbd>type</kbd> of our input and add a <kbd>placeholder</kbd>, and it will work
       out of the box, even correctly binding our property and integrating with Spring MVCs
       <i>property editors</i>: 
     </p>
@@ -464,7 +466,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

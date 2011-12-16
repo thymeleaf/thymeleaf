@@ -6,7 +6,9 @@
 	<title>Getting started with the Standard dialects in 5 minutes - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -64,7 +66,7 @@
       (named <i>Standard</i> and <i>SpringStandard</i>) that
       define a set of features which should be more than enough for most scenarios. You can identify
       when these standard dialects are being used in a template because it will contain attributes
-      starting with the <tt>th</tt> prefix, like <tt>&lt;span&nbsp;th:text="..."&gt;</tt>. 
+      starting with the <kbd>th</kbd> prefix, like <kbd>&lt;span&nbsp;th:text="..."&gt;</kbd>. 
     </p>
     <p>
       Note that the <i>Standard</i> and the <i>SpringStandard</i> dialects are almost 
@@ -126,7 +128,7 @@
     </code>
 
     <p>
-      The object they act on is specified by a <tt>th:object</tt> attribute: 
+      The object they act on is specified by a <kbd>th:object</kbd> attribute: 
     </p>
     
     <code>
@@ -141,7 +143,7 @@
     
     <p>
       Text externalization (often called <i>internationalization</i>) allows us to
-      retrieve locale-specific messages from external sources (<tt>.properties</tt> files), referencing
+      retrieve locale-specific messages from external sources (<kbd>.properties</kbd> files), referencing
       them by a key and (optionally) applying a set of parameters. 
     </p>
     
@@ -206,10 +208,10 @@
     </code>
 
     <p>
-      From this last example, see how Thymleaf allows us to set an <tt>href</tt> value for static 
+      From this last example, see how Thymleaf allows us to set an <kbd>href</kbd> value for static 
       prototyping, letting our templates link to each other nicely when directly open in a browser, 
-      and at the same time with <tt>th:href</tt> we can specify the URL that will be set as 
-      <tt>href</tt> when Thymeleaf really executes the template.   
+      and at the same time with <kbd>th:href</kbd> we can specify the URL that will be set as 
+      <kbd>href</kbd> when Thymeleaf really executes the template.   
     </p>
 
     <h3>Literals and operations</h3>
@@ -218,25 +220,25 @@
       Some operations are also available, as well as text and numeric literals:
     </p>
     <ul>
-      <li>Literals: <tt>'Development'</tt>, <tt>2</tt>, <tt>12.1</tt>,...</li>
-      <li>String concatenation: <tt>+</tt>
+      <li>Literals: <kbd>'Development'</kbd>, <kbd>2</kbd>, <kbd>12.1</kbd>,...</li>
+      <li>String concatenation: <kbd>+</kbd>
         <ul>
-          <li>Example: <tt>'Value is ' + ${myVar}</tt></li>
+          <li>Example: <kbd>'Value is ' + ${myVar}</kbd></li>
         </ul>
       </li>
-      <li>Arithmetic operations: <tt>+</tt>, <tt>-</tt>, <tt>*</tt>, <tt>/</tt>, <tt>%</tt>
+      <li>Arithmetic operations: <kbd>+</kbd>, <kbd>-</kbd>, <kbd>*</kbd>, <kbd>/</kbd>, <kbd>%</kbd>
         <ul>
-          <li>Example: <tt>${listStat.count} + 1</tt></li>
+          <li>Example: <kbd>${listStat.count} + 1</kbd></li>
         </ul>
       </li>
-      <li>Comparisons: <tt>==</tt>, <tt>!=</tt>, <tt>&lt;</tt>, <tt>&lt;=</tt>, <tt>&gt;</tt>, <tt>&gt;=</tt>
+      <li>Comparisons: <kbd>==</kbd>, <kbd>!=</kbd>, <kbd>&lt;</kbd>, <kbd>&lt;=</kbd>, <kbd>&gt;</kbd>, <kbd>&gt;=</kbd>
         <ul>
-          <li>Example: <tt>(${event.number} % 2) == 0</tt></li>
+          <li>Example: <kbd>(${event.number} % 2) == 0</kbd></li>
         </ul>
       </li>
-      <li>Boolean operators: <tt>and</tt>, <tt>or</tt>
+      <li>Boolean operators: <kbd>and</kbd>, <kbd>or</kbd>
         <ul>
-          <li>Example: <tt>${user.isAdmin()} and ${server.name == 'dev021'}</tt></li>
+          <li>Example: <kbd>${user.isAdmin()} and ${server.name == 'dev021'}</kbd></li>
         </ul>
       </li>
     </ul>
@@ -245,7 +247,7 @@
     
     <p>
       One last thing to know about expressions is there is something called <i>expression 
-      preprocessing</i>, specified between <tt>__</tt>, which looks like this:
+      preprocessing</i>, specified between <kbd>__</kbd>, which looks like this:
     </p>
 
     <code>
@@ -253,10 +255,10 @@
     </code>
 
     <p>
-      What we are seeing there is a variable expression (<tt>${sel.code}</tt>) that will be
-      executed first and which result &ndash; let's say, "<tt>ALL</tt>" &ndash; will be used
+      What we are seeing there is a variable expression (<kbd>${sel.code}</kbd>) that will be
+      executed first and which result &ndash; let's say, "<kbd>ALL</kbd>" &ndash; will be used
       as a part of the real expression to be executed afterwards, in this case an 
-      internationalization one (which would look for the message with key <tt>selection.ALL</tt>). 
+      internationalization one (which would look for the message with key <kbd>selection.ALL</kbd>). 
     </p>
 
 
@@ -264,7 +266,7 @@
     
     <p>
       Let's have a look at a couple of the most basic attributes in the Standard Dialect.
-      Starting with <tt>th:text</tt>, which just replaces the body of a tag
+      Starting with <kbd>th:text</kbd>, which just replaces the body of a tag
       (notice again the prototyping abilities here):
     </p>
     
@@ -273,7 +275,7 @@
     </code>
     
     <p>
-      Now <tt>th:each</tt>, which repeats the element it's in as many times as specified
+      Now <kbd>th:each</kbd>, which repeats the element it's in as many times as specified
       by the array or list returned by its expression, creating also an inner variable for
       the iteration element with a syntax equivalent to that of a Java <i>foreach</i> expression:
     </p>
@@ -283,7 +285,7 @@
     </code>
     
     <p>
-      Lastly, Thymeleaf includes lots of <tt>th</tt> attributes for specific XHTML and HTML5 
+      Lastly, Thymeleaf includes lots of <kbd>th</kbd> attributes for specific XHTML and HTML5 
       attributes which just evaluate their expressions and set the value of these attributes
       to their result. Their names mimic those of the attributes which values they set:
     </p>
@@ -312,7 +314,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

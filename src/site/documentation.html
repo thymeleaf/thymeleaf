@@ -6,7 +6,9 @@
 	<title>Documentation - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -55,8 +57,8 @@
       </li>
       <li>
         <b>Thymeleaf + Spring 3</b> (12 November 2011) 
-          [<a href="doc/Tutorial - Thymeleaf + Spring 3 20111112.pdf"">Download PDF</a>]
-          [<a href="thymeleafspring3.html"">Read online</a>]
+          [<a href="doc/Tutorial - Thymeleaf + Spring 3 20111112.pdf">Download PDF</a>]
+          [<a href="thymeleafspring3.html">Read online</a>]
         <ul>
           <li>Example Application: Spring Thyme Seed Starter Manager (12 November 2011) [<a href="doc/thymeleafexamples-stsm-20111112-sources.zip">SOURCES ZIP</a>]</li>
         </ul>
@@ -135,8 +137,8 @@
       anonymous access to the repositories:
     </p>
     <ul>
-      <li><b>thymeleaf</b>: <tt>https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf</tt></li>
-      <li><b>thymeleaf-spring3</b>: <tt>https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-spring3</tt></li>
+      <li><b>thymeleaf</b>: <kbd>https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf</kbd></li>
+      <li><b>thymeleaf-spring3</b>: <kbd>https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-spring3</kbd></li>
     </ul>
     
     <h2>Artwork</h2>
@@ -164,7 +166,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

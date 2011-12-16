@@ -6,7 +6,9 @@
 	<title>From HTML to HTML (via HTML) - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -81,11 +83,11 @@
     <p>
       HTTP used text <em>headers</em> for defining what
       was being served to clients and how, one of which was extremely
-      important: the <tt>Content-Type</tt>
+      important: the <kbd>Content-Type</kbd>
       header. This header explained to browsers what type of content was
       being served to them in a language called <em>MIME (Multipurpose
       Internet Mail Extensions)</em>. And the MIME type used for serving
-      HTML documents was <tt>text/html</tt>:
+      HTML documents was <kbd>text/html</kbd>:
     </p>
     <code>
       <b>Content-Type</b>: text/html
@@ -104,7 +106,7 @@
       version of HTML, and HTML documents had to declare the DTD (and
       therefore the version of HTML) they conformed to by means of a clause
       that should appear as their first line, the <em>Document Type
-      Declaration</em> or <tt>DOCTYPE</tt> clause:
+      Declaration</em> or <kbd>DOCTYPE</kbd> clause:
     </p>
     <code>
       &lt;!<b>DOCTYPE</b> <b>HTML</b> <b>PUBLIC</b> <span class="string">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="string">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span>&gt;
@@ -227,10 +229,10 @@
     </p>
     <p>
       For validation, the XHTML 1.0 specification
-      defined a set of DTDs that could be used in <tt>DOCTYPE</tt>
-      clauses: <tt>XHTML 1.0 Strict</tt>,
-      <tt>XHTML 1.0 Transitional</tt>
-      and <tt>XHTML 1.0 Frameset</tt>.
+      defined a set of DTDs that could be used in <kbd>DOCTYPE</kbd>
+      clauses: <kbd>XHTML 1.0 Strict</kbd>,
+      <kbd>XHTML 1.0 Transitional</kbd>
+      and <kbd>XHTML 1.0 Frameset</kbd>.
       The first one was meant for <em>pure</em> XHTML documents that didn't
       use any deprecated tags coming from HTML, the second one for
       transitional documents that still made use of deprecated tags and
@@ -244,7 +246,7 @@
       that it also introduced a new MIME type, which was the one that every
       web server was supposed to use for serving XHTML so that  browsers
       knew that they had to use their XHTML parser and engine instead of
-      their HTML equivalents. This was <tt>application/xhtml+xml</tt>:
+      their HTML equivalents. This was <kbd>application/xhtml+xml</kbd>:
     </p>
     <code>
       <b>Content-Type</b>: application/xhtml+xml
@@ -263,7 +265,7 @@
     </p>
     <p>
       What happened was that one specific browser simply
-      denied implementing support for the <tt>application/xhtml+xml</tt>
+      denied implementing support for the <kbd>application/xhtml+xml</kbd>
       content type. Guess which one. Yeah, exactly, that one. Internet
       Explorer.
     </p>
@@ -277,10 +279,10 @@
     <p>
       Fortunately &ndash; or maybe unfortunately &ndash;
       The XHTML 1.0 specification included an appendix that stated that
-      XHTML 1.0 content could also be served using the old <tt>text/html</tt>
+      XHTML 1.0 content could also be served using the old <kbd>text/html</kbd>
       content type from the HTML times, in order to ease the transition.
       And that's exactly what most of us have been doing the past several
-      years: creating XHTML 1.0 content, and then serving it as <tt>text/html</tt>.
+      years: creating XHTML 1.0 content, and then serving it as <kbd>text/html</kbd>.
       Given that the XHTML 1.0 specification was published in 2000, the
       <em>transition</em> has taken long.
     </p>
@@ -309,17 +311,17 @@
       How about that?
     </p>
     <p>
-      But it went worse, because in 2002 <tt>XHTML
-      1.1</tt> removed the possibility of using of the HTML content type,
-      therefore allowing only <tt>application/xhtml+xml</tt>.
+      But it went worse, because in 2002 <kbd>XHTML
+      1.1</kbd> removed the possibility of using of the HTML content type,
+      therefore allowing only <kbd>application/xhtml+xml</kbd>.
       The problem was that, instead of this forcing Internet Explorer to
-      support <tt>application/xhtml+xml</tt>,
+      support <kbd>application/xhtml+xml</kbd>,
       which didn't happen, this restriction simply turned XHTML 1.1 into as
       much a mythological creature as Nessie. Almost no one ever used it.
     </p>
     <p>
       In 2009, the W3C allowed again the use of
-      <tt>text/html</tt> with XHTML
+      <kbd>text/html</kbd> with XHTML
       1.1 but, again, it was too late.
     </p>
     
@@ -377,8 +379,8 @@
       But the fact is, all of this didn't sound quite as
       well to W3C back in 2004, and they rejected the proposal and decided
       to go strictly the XHTML way. HTML was dead for them, there was no
-      reason to resurrect it, and <tt>XHTML
-      2.0</tt> was the future.
+      reason to resurrect it, and <kbd>XHTML
+      2.0</kbd> was the future.
     </p>
     <p>
       This led to divorce. The proponents of this new
@@ -432,7 +434,7 @@
     <p>
       From a practical point of view, this means that
       (probably all of) your current HTML and XHTML code will be considered
-      valid HTML5 just by changing your <tt>DOCTYPE</tt>
+      valid HTML5 just by changing your <kbd>DOCTYPE</kbd>
       to the HTML5 one:
     </p>
     <code>
@@ -440,14 +442,14 @@
     </code>
     <p>
       And by serving your content with content type
-      <tt>text/html</tt>:
+      <kbd>text/html</kbd>:
     </p>
     <code>
       <b>Content-Type</b>: text/html
     </code>
     <p>
       And here you might be thinking: why does that
-      <tt>DOCTYPE</tt> specify no
+      <kbd>DOCTYPE</kbd> specify no
       DTD at all? Because there isn't one. HTML5 has no DTD because the
       rules that define whether a document is valid HTML5 or not are
       defined as human-readable text in the specification itself, but
@@ -466,8 +468,8 @@
       But if there is no DTD, then why have a DOCTYPE
       clause at all? Because a DOCTYPE clause is needed in order to make
       browsers display documents in <em>Standards Mode</em> (as opposed to
-      <em>Quirks Mode</em>). The clause <tt>&lt;!DOCTYPE
-      html&gt;</tt> is the minimum valid DOCTYPE declaration possible,
+      <em>Quirks Mode</em>). The clause <kbd>&lt;!DOCTYPE
+      html&gt;</kbd> is the minimum valid DOCTYPE declaration possible,
       and that is exactly all we need. It just acts as a switch.
     </p>
     
@@ -557,7 +559,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

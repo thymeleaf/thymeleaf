@@ -6,7 +6,10 @@
 	<title>Contributing - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
+    
   </head>
 
 
@@ -110,7 +113,7 @@
          even if it is after months and you have already coded thousands of lines.
        </li>
        <li>
-         You will be <tt>@author</tt> for any new classes that you code and also 
+         You will be <kbd>@author</kbd> for any new classes that you code and also 
          co-author to any existing classes to which you make <i>significant</i> 
          changes. Of course you can say "no" to this, but unless you do, it 
          is a matter of basic fairness to give the credit and merit to the person 
@@ -176,7 +179,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

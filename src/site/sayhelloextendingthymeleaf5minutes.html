@@ -6,7 +6,9 @@
 	<title>Say Hello! Extending Thymeleaf in 5 minutes - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -73,11 +75,11 @@
     <p>
       All of these features are optional, and a dialect can specify only some of them. For example,
       neither the Standard nor the SpringStandard dialects include any <i>tag processors</i>, which
-      is why all template features are written into <tt>th:*</tt> attributes when using any of these
+      is why all template features are written into <kbd>th:*</kbd> attributes when using any of these
       dialects.
     </p>
     <p>
-      By the way, that "<tt>th</tt>" in <tt>th:*</tt> is called the <b>dialect prefix</b>, and it
+      By the way, that "<kbd>th</kbd>" in <kbd>th:*</kbd> is called the <b>dialect prefix</b>, and it
       means that all tags and attributes processed by that dialect will start with
       such prefix.
     </p>
@@ -107,11 +109,11 @@
     <p>
       First, we will have to create the attribute processor that will take care of displaying
       our salutation message. All attribute processors implement the
-      <tt>org.thymeleaf.processor.attr.IAttrProcessor</tt> interface, but several convenience
+      <kbd>org.thymeleaf.processor.attr.IAttrProcessor</kbd> interface, but several convenience
       abstract implementations exist that ease the development of each type of processor. 
     </p>
     <p>
-      Specifically, the <tt>AbstractTextChildModifierAttrProcessor</tt>
+      Specifically, the <kbd>AbstractTextChildModifierAttrProcessor</kbd>
       class specializes in attributes that substitute the body of the tag they sit on by
       a text (which is exactly what we want). So we will extend this class for our attribute
       processor:
@@ -214,9 +216,9 @@
       which will be in charge of telling Thymeleaf that our processor is available. 
     </p>
     <p>
-      We could make our dialect implement the <tt>org.thymeleaf.dialect.IDialect</tt> interface (which is the one
+      We could make our dialect implement the <kbd>org.thymeleaf.dialect.IDialect</kbd> interface (which is the one
       every dialect should implement), but instead we will extend a convenience abstract class 
-      called <tt>AbstractDialect</tt> that
+      called <kbd>AbstractDialect</kbd> that
       already implements all methods from that interface, returning empty values for all of them (so
       that we only have to override the ones we require).
     </p>
@@ -313,7 +315,7 @@
       We didn't need any of those because our dialect
       is meant to be used together with the SpringStandard dialect, which already includes
       a useful set of all those things (although we could have defined them here also if for some reason we wanted 
-      to be more exhaustive). All our dialect does is specify a prefix (<tt>hello</tt>), a <i>leniency</i>,
+      to be more exhaustive). All our dialect does is specify a prefix (<kbd>hello</kbd>), a <i>leniency</i>,
       and our <i>"sayto"</i> attribute processor.
     </p>
     
@@ -375,7 +377,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

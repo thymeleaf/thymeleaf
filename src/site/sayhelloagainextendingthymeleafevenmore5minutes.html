@@ -6,7 +6,9 @@
 	<title>Say Hello Again! Extending Thymeleaf even more in 5 more minutes - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -55,7 +57,7 @@
     <h2>Some improvements for our 'hello' dialect</h2>
     
     <p>
-      To the moment, our <tt>HelloDialect</tt> allowed us to turn this:
+      To the moment, our <kbd>HelloDialect</kbd> allowed us to turn this:
     </p>
     
     <code>
@@ -75,13 +77,13 @@
     </p>
     <ul>
       <li>Allow Spring EL expressions as attribute values, like in most tags in the <i>Spring
-          Thymeleaf Dialect</i>. For example: <tt>hello:sayto="${user.name}"</tt></li>
+          Thymeleaf Dialect</i>. For example: <kbd>hello:sayto="${user.name}"</kbd></li>
       <li>Internationalize output: say <i>Hello</i> for English, <i>Hola</i> for Spanish, <i>Olá</i> for
           Portuguese, etc.</li>
     </ul>
     <p>
       And we will need all that because we want to be able to create a new attribute, called
-      "<tt>saytoplanet</tt>" and salute all the planets in the solar system, with a template
+      "<kbd>saytoplanet</kbd>" and salute all the planets in the solar system, with a template
       like this:
     </p>
     
@@ -102,7 +104,7 @@
 
     <p>
       ...backed by a Spring MVC controller that includes all those planets as a model attribute
-      called <tt>planets</tt>:
+      called <kbd>planets</kbd>:
     </p>
     
     <code>
@@ -159,9 +161,9 @@
     <h2>Adding a new processor to our dialect</h2>
 
     <p>
-      The first thing we want to do is add a new <i>attribute processor</i> to our existing <tt>HelloDialect</tt>. For
-      this we modify the dialect's <tt>getAttrProcessors()</tt> method in order to include
-      our new <tt>SayToPlanetAttrProcessor</tt> class: 
+      The first thing we want to do is add a new <i>attribute processor</i> to our existing <kbd>HelloDialect</kbd>. For
+      this we modify the dialect's <kbd>getAttrProcessors()</kbd> method in order to include
+      our new <kbd>SayToPlanetAttrProcessor</kbd> class: 
     </p>
 
 <code>
@@ -223,15 +225,15 @@
       <i>SpringStandard</i> dialects, this is, <i>Thymeleaf standard expressions</i>: 
     </p>
     <ul>
-      <li><tt>${...}</tt> Spring EL variable expressions.</li>
-      <li><tt>#{...}</tt> externalization of messages.</li>
-      <li><tt>@{...}</tt> link specifications.</li>
-      <li><tt>(cond)? (then) : (else)</tt> conditional/default expressions.</li>
+      <li><kbd>${...}</kbd> Spring EL variable expressions.</li>
+      <li><kbd>#{...}</kbd> externalization of messages.</li>
+      <li><kbd>@{...}</kbd> link specifications.</li>
+      <li><kbd>(cond)? (then) : (else)</kbd> conditional/default expressions.</li>
       <li>etc...</li>
     </ul>
     <p>
       In order to achieve this, we will need to make use of the special 
-      <tt>StandardExpressionProcessor</tt> utility class, which contains the required
+      <kbd>StandardExpressionProcessor</kbd> utility class, which contains the required
       logic to process these <i>standard expressions</i>:
     </p>
     
@@ -316,7 +318,7 @@
 
     <p>
       Note that, as we did in the previous article, we
-      used the <tt>AbstractTextChildModifierAttrProcessor</tt> convenience abstract class
+      used the <kbd>AbstractTextChildModifierAttrProcessor</kbd> convenience abstract class
       in order to simplify the development of our processor, simply computing the text
       that will be inserted as body of the processed tag.
     </p>
@@ -334,7 +336,7 @@
     </code>
     <p>
       ...by a message built from an externalized String that we must somehow obtain from our
-      code. The abstract parent class <tt>AbstractAttrProcessor</tt> offers three methods we 
+      code. The abstract parent class <kbd>AbstractAttrProcessor</kbd> offers three methods we 
       can use for this:
     </p>
     <code>
@@ -369,34 +371,34 @@
       Each of them has a different meaning, let's start by the last two:
     </p>
     <ul>
-      <li><tt>getMessageForTemplate(...)</tt> uses the Template Engine's currently registered
+      <li><kbd>getMessageForTemplate(...)</kbd> uses the Template Engine's currently registered
           internationalization mechanisms to look for the desired message. For example:
           <ul>
             <li>In a Spring application, we will probably be using specific <i>Message Resolvers</i> that
-                query the Spring <tt>MessageSource</tt> objects registered for the application.
+                query the Spring <kbd>MessageSource</kbd> objects registered for the application.
             <li>When not in a Spring application, we will probably be using Thymeleaf's
-                <i>Standard Message Resolver</i> that looks for <tt>.properties</tt> files with the
+                <i>Standard Message Resolver</i> that looks for <kbd>.properties</kbd> files with the
                 same name as the template being processed.
           </ul>
       </li>
-      <li><tt>getMessageForProcessor(...)</tt> uses a message resolution mechanism created for allowing
-          the <i>componentization</i> &dash;or, if you prefer, <i>encapsulation</i>&dash; of dialects.  
+      <li><kbd>getMessageForProcessor(...)</kbd> uses a message resolution mechanism created for allowing
+          the <i>componentization</i> &ndash;or, if you prefer, <i>encapsulation</i>&ndash; of dialects.  
           This mechanism consists in allowing <i>tag</i> and <i>attribute processors</i> to specify
           their own messages, whichever the application their dialects are used on. These are
-          read from <tt>.properties</tt> files with the same name and living in the
-          same package as the processor class (or any of its superclasses). For example, the <tt>thymeleafexamples.sayhello.dialect</tt>
+          read from <kbd>.properties</kbd> files with the same name and living in the
+          same package as the processor class (or any of its superclasses). For example, the <kbd>thymeleafexamples.sayhello.dialect</kbd>
           package in our example could contain:
           <ul>
-            <li><tt>SayToPlanetAttrProcessor.java</tt>: the <i>attribute processor</i>.</li>
-            <li><tt>SayToPlanetAttrProcessor_en_GB.properties</tt>: externalized messages for English (UK) language.</li>
-            <li><tt>SayToPlanetAttrProcessor_en.properties</tt>: externalized messages for English (rest of countries) language.</li>
-            <li><tt>SayToPlanetAttrProcessor.properties</tt>: default externalized messages.</li>
+            <li><kbd>SayToPlanetAttrProcessor.java</kbd>: the <i>attribute processor</i>.</li>
+            <li><kbd>SayToPlanetAttrProcessor_en_GB.properties</kbd>: externalized messages for English (UK) language.</li>
+            <li><kbd>SayToPlanetAttrProcessor_en.properties</kbd>: externalized messages for English (rest of countries) language.</li>
+            <li><kbd>SayToPlanetAttrProcessor.properties</kbd>: default externalized messages.</li>
           </ul>
       </li> 
     </ul>
     
     <p>
-      Finally, the first method of the three, <tt>getMessage(...)</tt> acts as a combination of the
+      Finally, the first method of the three, <kbd>getMessage(...)</kbd> acts as a combination of the
       other two: first it tries to resolve the required message as a <i>template message</i>
       (defined in the application messages files) and if it doesn't exist tries to resolve it
       as a <i>processor message</i>. This way, applications can override if needed any messages
@@ -404,14 +406,14 @@
     </p>
 
     <p>
-      Enough about theory, let's put all this into practice. First we will need some <tt>.properties</tt>
-      files, like <tt>SayToPlanetAttrProcessor_es.properties</tt> for Spanish:
+      Enough about theory, let's put all this into practice. First we will need some <kbd>.properties</kbd>
+      files, like <kbd>SayToPlanetAttrProcessor_es.properties</kbd> for Spanish:
     </p>
     <code>
 msg.helloplanet=&iexcl;Hola, planeta {0}!
     </code>
     <p>
-      <tt>SayToPlanetAttrProcessor_pt.properties</tt> for Portuguese:
+      <kbd>SayToPlanetAttrProcessor_pt.properties</kbd> for Portuguese:
     </p>
     <code>
 msg.helloplanet=Ol&aacute;, planeta {0}!
@@ -420,7 +422,7 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
       ...etc.
     </p>
     <p>
-      And now we will have to modify the <tt>getText()</tt> method in our <tt>SayToPlanetAttrProcessor</tt>
+      And now we will have to modify the <kbd>getText()</kbd> method in our <kbd>SayToPlanetAttrProcessor</kbd>
       class to make use of these messages:
     </p>
     <code>
@@ -496,11 +498,9 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
       And that's it! Let's have a look at the results of executing our template with Spanish locale:
     </p>
 
-    <code>
     <ul>
       <li>¡Hola, planeta Mercury!</li><li>¡Hola, planeta Venus!</li><li>¡Hola, planeta Earth!</li><li>¡Hola, planeta Mars!</li><li>¡Hola, planeta Jupiter!</li><li>¡Hola, planeta Saturn!</li><li>¡Hola, planeta Uranus!</li><li>¡Hola, planeta Neptune!</li>
     </ul>
-    </code>
    
     <h2>Exercise for the reader: internationalize the planet names</h2>
     
@@ -510,7 +510,7 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
       our context (in Spring language, <i>model attributes</i>).
     </p> 
     <p>
-      So, how about internationalizing those planet names? The <tt>#{...}</tt> expressions we
+      So, how about internationalizing those planet names? The <kbd>#{...}</kbd> expressions we
       can use in this attribute now should make this quite easy, and there are also some examples in articles
       like <a href="standarddialect5minutes.html"><i>"Getting started with the Standard Dialect in 5 minutes"</i></a>
       and the <a href="documentation.html">tutorials</a> quite similar to this scenario.
@@ -523,7 +523,10 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

@@ -223,10 +223,10 @@ h3 {
 /* ---------------------- */
 /* TT, CODE && STRINGS    */
 /* ---------------------- */
-tt, code {
+kbd, tt, code {
   font-family: 'DejaVu Sans Mono', 'Courier New', Courier, monospace;
 }
-tt {
+kbd, tt {
   color: #707070;
   font-weight: bold;
 }

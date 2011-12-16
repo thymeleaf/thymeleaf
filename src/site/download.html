@@ -6,7 +6,9 @@
 	<title>Download - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -60,14 +62,14 @@
     <h2>Maven info</h2>
 
     <ul>
-      <li>groupId: <tt>org.thymeleaf</tt></li>
-      <li>artifactId: <tt>thymeleaf</tt></li>
-      <li>version: <tt>1.1.2</tt>
+      <li>groupId: <kbd>org.thymeleaf</kbd></li>
+      <li>artifactId: <kbd>thymeleaf</kbd></li>
+      <li>version: <kbd>1.1.2</kbd>
     </ul>
     <ul>
-      <li>groupId: <tt>org.thymeleaf</tt></li>
-      <li>artifactId: <tt>thymeleaf-spring3</tt></li>
-      <li>version: <tt>1.1.2</tt>
+      <li>groupId: <kbd>org.thymeleaf</kbd></li>
+      <li>artifactId: <kbd>thymeleaf-spring3</kbd></li>
+      <li>version: <kbd>1.1.2</kbd>
     </ul>
 
     <h2>Dependencies</h2>
@@ -82,7 +84,7 @@
       <li><b>slf4j 1.6.1</b> or later</li>
     </ul>
     <p>
-      Additionally, if you use the <tt>LEGACYHTML5</tt> template mode, you will need:
+      Additionally, if you use the <kbd>LEGACYHTML5</kbd> template mode, you will need:
     </p>
     <ul>
       <li><b>nekoHTML 1.9.15</b> or later</li>
@@ -93,7 +95,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>

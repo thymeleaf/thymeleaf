@@ -6,7 +6,9 @@
 	<title>Features - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
   </head>
 
 
@@ -74,7 +76,7 @@
       <li>Complete substitute for view-layer web technologies such as <b>JSP</b>.</li>
       <li>Easy-to-use, elegant syntax based on attributes only (these dialects include no tags).
         <ul>
-          <li>Great for web templates: <tt>&lt;input type="text" th:field="*{name}" /&gt;</tt> instead of <tt>&lt;mylib:text field="name" /&gt;</tt></li>
+          <li>Great for web templates: <kbd>&lt;input type="text" th:field="*{name}" /&gt;</kbd> instead of <kbd>&lt;mylib:text field="name" /&gt;</kbd></li>
         </ul>
       </li>
       <li><b>Natural templating</b> for easy prototyping: display your templates statically in a browser (without running your app server).</li>
@@ -110,8 +112,8 @@
         <ul>
           <li>Out-of-the-box:
             <ul>
-              <li><i>Standard dialect</i>: Resolution of messages from <tt>.properties</tt> files for each template.</li>
-              <li><i>SpringStandard dialect</i>: Resolution of messages from Spring <tt>MessageSource</tt> objects.</li>
+              <li><i>Standard dialect</i>: Resolution of messages from <kbd>.properties</kbd> files for each template.</li>
+              <li><i>SpringStandard dialect</i>: Resolution of messages from Spring <kbd>MessageSource</kbd> objects.</li>
             </ul>
           </li>
           <li>Custom message resolvers can be developed.</li>
@@ -139,7 +141,10 @@
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
