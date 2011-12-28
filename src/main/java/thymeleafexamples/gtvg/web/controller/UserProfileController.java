@@ -19,8 +19,6 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
-import java.io.Writer;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,13 +34,12 @@ public class UserProfileController implements IGTVGController {
     }
     
     
-    public void process(
+    public String process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine, 
-            final Writer writer) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) {
         
         final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
-        templateEngine.process("userprofile", ctx, writer);
+        return templateEngine.process("userprofile", ctx);
         
     }
 

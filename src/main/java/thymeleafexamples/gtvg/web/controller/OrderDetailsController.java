@@ -19,8 +19,6 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
-import java.io.Writer;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,10 +37,9 @@ public class OrderDetailsController implements IGTVGController {
     }
     
     
-    public void process(
+    public String process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine, 
-            final Writer writer) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) {
         
         final Integer orderId = Integer.valueOf(request.getParameter("orderId"));
         
@@ -52,7 +49,7 @@ public class OrderDetailsController implements IGTVGController {
         final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
         ctx.setVariable("order", order);
         
-        templateEngine.process("order/details", ctx, writer);
+        return templateEngine.process("order/details", ctx);
         
     }
 

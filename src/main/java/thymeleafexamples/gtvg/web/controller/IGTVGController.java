@@ -19,8 +19,6 @@
  */
 package thymeleafexamples.gtvg.web.controller;
 
-import java.io.Writer;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,9 +28,9 @@ import org.thymeleaf.TemplateEngine;
 public interface IGTVGController {
 
     
-    public void process(
+    public String process(
             HttpServletRequest request, HttpServletResponse response,
-            ServletContext servletContext, TemplateEngine templateEngine, Writer writer);
+            ServletContext servletContext, TemplateEngine templateEngine);
     
     
 }
