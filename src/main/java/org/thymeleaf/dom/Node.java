@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.util.CacheMap;
 import org.thymeleaf.util.Validate;
 
 
@@ -45,13 +46,22 @@ public abstract class Node {
     
     private Map<String,Object> nodeLocalVariables;
 
+    private static CacheMap<String,String> NORMALIZED_NAMES = 
+            new CacheMap<String, String>("Node.normalizedNames", true, 500);
+    
 
     
     public static String normalizeName(final String name) {
         if (name == null) {
             return null;
         }
-        return name.toLowerCase();
+        final String normalizedName = NORMALIZED_NAMES.get(name);
+        if (normalizedName != null) {
+            return normalizedName;
+        }
+        final String newValue = name.toLowerCase();
+        NORMALIZED_NAMES.put(name,  newValue);
+        return newValue;
     }
 
     
