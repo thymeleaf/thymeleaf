@@ -315,13 +315,13 @@ public final class Tag extends NestableNode {
                  * modified anymore... maybe allow processors to mark nodes for re-processing (second, third...
                  * processing iterations).
                  */
-//                if (processor.getApplicability().isApplicableTo(this)) {
+                if (processor.matches(this)) {
                     // We need to check that processor is still applicable, because a previously excecuted
                     // processor could have changed the node's conditions.
                     final ProcessorResult attrProcessorResult = 
                             processor.getProcessor().process(executionArguments, processor.getContext(), this);
                     executionArguments = attrProcessorResult.computeNewArguments(executionArguments);
-//                }
+                }
                 
             }
             

@@ -19,7 +19,10 @@
  */
 package org.thymeleaf.processor.tag;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.processor.AbstractProcessor;
@@ -37,6 +40,8 @@ import org.thymeleaf.processor.TagNameProcessorMatcher;
  *
  */
 public abstract class AbstractTagProcessor extends AbstractProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTagProcessor.class);
 
     
     private final ITagNameProcessorMatcher matcher; 
@@ -59,6 +64,11 @@ public abstract class AbstractTagProcessor extends AbstractProcessor {
     
     public final ProcessorResult process(final Arguments arguments, final Node node) {
         // Because of the type of applicability being used, this cast will not fail
+        if (logger.isTraceEnabled()) {
+            final String tagName = ((Tag)node).getNormalizedName();
+            logger.trace("[THYMELEAF][{}][{}] Processing tag \"{}\"",
+                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), tagName});
+        }
         return processTag(arguments, (Tag)node);
     }
     
