@@ -26,11 +26,6 @@ import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.processor.applicability.AndApplicabilityFilter;
-import org.thymeleaf.processor.applicability.AttrValueApplicabilityFilter;
-import org.thymeleaf.processor.applicability.IApplicabilityFilter;
-import org.thymeleaf.processor.applicability.OrApplicabilityFilter;
-import org.thymeleaf.processor.applicability.TagNameApplicabilityFilter;
 
 
 
@@ -62,58 +57,47 @@ public final class SpringInputGeneralFieldAttrProcessor
     public static final String SEARCH_INPUT_TYPE_ATTR_VALUE = "search";
     public static final String TEL_INPUT_TYPE_ATTR_VALUE = "tel";
     public static final String COLOR_INPUT_TYPE_ATTR_VALUE = "color";
+    
+    
+    private static final String[] ALL_TYPE_ATTR_VALUES =
+            new String[] {
+                TEXT_INPUT_TYPE_ATTR_VALUE,
+                HIDDEN_INPUT_TYPE_ATTR_VALUE,
+                DATETIME_INPUT_TYPE_ATTR_VALUE,
+                DATETIMELOCAL_INPUT_TYPE_ATTR_VALUE,
+                DATE_INPUT_TYPE_ATTR_VALUE,
+                MONTH_INPUT_TYPE_ATTR_VALUE,
+                TIME_INPUT_TYPE_ATTR_VALUE,
+                WEEK_INPUT_TYPE_ATTR_VALUE,
+                NUMBER_INPUT_TYPE_ATTR_VALUE,
+                RANGE_INPUT_TYPE_ATTR_VALUE,
+                EMAIL_INPUT_TYPE_ATTR_VALUE,
+                URL_INPUT_TYPE_ATTR_VALUE,
+                SEARCH_INPUT_TYPE_ATTR_VALUE,
+                TEL_INPUT_TYPE_ATTR_VALUE,
+                COLOR_INPUT_TYPE_ATTR_VALUE
+            };
 
     
+    public static final SpringInputGeneralFieldAttrProcessor[] PROCESSORS;
     
-    public SpringInputGeneralFieldAttrProcessor() {
-        super();
+    
+    
+    
+    static {
+        PROCESSORS = new SpringInputGeneralFieldAttrProcessor[ALL_TYPE_ATTR_VALUES.length];
+        for (int i = 0; i < ALL_TYPE_ATTR_VALUES.length; i++) {
+            PROCESSORS[i] = 
+                    new SpringInputGeneralFieldAttrProcessor(ALL_TYPE_ATTR_VALUES[i]);
+        }
     }
-
+    
     
 
 
-    @Override
-    protected IApplicabilityFilter getApplicabilityFilter() {
-        
-        final IApplicabilityFilter tagApplicabilityFilter = new TagNameApplicabilityFilter(INPUT_TAG_NAME);
-        
-        final IApplicabilityFilter typeTextApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, TEXT_INPUT_TYPE_ATTR_VALUE); 
-        final IApplicabilityFilter typeHiddenApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, HIDDEN_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeDatetimeApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, DATETIME_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeDatetimeLocalApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, DATETIMELOCAL_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeDateApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, DATE_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeMonthApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, MONTH_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeTimeApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, TIME_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeWeekApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, WEEK_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeNumberApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, NUMBER_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeRangeApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, RANGE_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeEmailApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, EMAIL_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeUrlApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, URL_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeSearchApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, SEARCH_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeTelApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, TEL_INPUT_TYPE_ATTR_VALUE);
-        final IApplicabilityFilter typeColorApplicabilityFilter = new AttrValueApplicabilityFilter(INPUT_TYPE_ATTR_NAME, COLOR_INPUT_TYPE_ATTR_VALUE);
-        
-        final IApplicabilityFilter typesApplicabilityFilter = 
-            new OrApplicabilityFilter(
-                    typeTextApplicabilityFilter, 
-                    typeHiddenApplicabilityFilter,
-                    typeDatetimeApplicabilityFilter,
-                    typeDatetimeLocalApplicabilityFilter,
-                    typeDateApplicabilityFilter,
-                    typeMonthApplicabilityFilter,
-                    typeTimeApplicabilityFilter,
-                    typeWeekApplicabilityFilter,
-                    typeNumberApplicabilityFilter,
-                    typeRangeApplicabilityFilter,
-                    typeEmailApplicabilityFilter,
-                    typeUrlApplicabilityFilter,
-                    typeSearchApplicabilityFilter,
-                    typeTelApplicabilityFilter,
-                    typeColorApplicabilityFilter);
-        
-        return new AndApplicabilityFilter(tagApplicabilityFilter, typesApplicabilityFilter);
+    private SpringInputGeneralFieldAttrProcessor(final String hostFilterAttributeValue) {
+        super(ATTR_NAME, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, hostFilterAttributeValue);
     }
-
 
 
 
