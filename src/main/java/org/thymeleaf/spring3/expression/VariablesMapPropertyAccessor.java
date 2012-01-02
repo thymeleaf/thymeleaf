@@ -71,6 +71,13 @@ class VariablesMapPropertyAccessor extends ReflectivePropertyAccessor {
         if (target == null) {
             throw new AccessException("Cannot read property of null target");
         }
+        if (!(target instanceof VariablesMap)) {
+            // This can happen simply because we're applying the same
+            // AST tree on a different class (Spring internally caches property accessors).
+            // So this exception might be considered "normal" by Spring AST evaluator and
+            // just use it to refresh the property accessor cache.
+            throw new AccessException("Cannot read target of class " + target.getClass().getName());
+        }
         return new TypedValue(((VariablesMap<String,?>)target).get(name));
     }
 
@@ -95,6 +102,13 @@ class VariablesMapPropertyAccessor extends ReflectivePropertyAccessor {
             throws AccessException {
         if (target == null) {
             throw new AccessException("Cannot write property of null target");
+        }
+        if (!(target instanceof VariablesMap)) {
+            // This can happen simply because we're applying the same
+            // AST tree on a different class (Spring internally caches property accessors).
+            // So this exception might be considered "normal" by Spring AST evaluator and
+            // just use it to refresh the property accessor cache.
+            throw new AccessException("Cannot write target of class " + target.getClass().getName());
         }
         ((VariablesMap<String,Object>)target).put(name, newValue);
     }
