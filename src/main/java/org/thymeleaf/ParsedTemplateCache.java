@@ -48,7 +48,7 @@ final class ParsedTemplateCache {
         if (cacheSize > 0) {
             this.cache = 
                     new CacheMap<String,ParsedTemplate>(
-                           "ParsedTemplateCache.cache", true, 16, cacheSize,
+                           "ParsedTemplateCache.PARSED_TEMPLATE_CACHE", true, 16, cacheSize,
                            new ParsedTemplateEntryValidator());
         } else {
             this.cache = null;
