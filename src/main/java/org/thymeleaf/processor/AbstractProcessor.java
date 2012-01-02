@@ -154,7 +154,7 @@ public abstract class AbstractProcessor implements IProcessor {
     
     
     
-    protected abstract int getPrecedence();
+    public abstract int getPrecedence();
 
 
 
