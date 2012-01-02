@@ -148,8 +148,7 @@ public final class Arguments {
             final Map<String,Object> localVariables,
             final SelectionTarget selectionTarget,
             final Map<String,Integer> idCounts,
-            final ITextInliner textInliner,
-            final Map<String,Object> baseContextVariables) {
+            final ITextInliner textInliner) {
         
         super();
         
@@ -167,7 +166,8 @@ public final class Arguments {
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
         this.textInliner = textInliner;
-        this.baseContextVariables = baseContextVariables;
+        this.baseContextVariables = 
+                ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
     }
     
@@ -559,7 +559,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.textInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.textInliner);
         return arguments;
     }
     
@@ -574,7 +574,7 @@ public final class Arguments {
      */
     public Arguments setSelectionTarget(final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, this.textInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, this.textInliner);
         return arguments;
     }
 
@@ -597,7 +597,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.textInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.textInliner);
         return arguments;
     }
 
@@ -613,7 +613,7 @@ public final class Arguments {
      */
     public Arguments setTextInliner(final ITextInliner newTextInliner) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, this.selectionTarget, this.idCounts, newTextInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, this.selectionTarget, this.idCounts, newTextInliner);
         return arguments;
     }
 
@@ -636,7 +636,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, newTextInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, newTextInliner);
         return arguments;
     }
     
@@ -653,7 +653,7 @@ public final class Arguments {
      */
     public Arguments setTextInlinerAndSetSelectionTarget(final ITextInliner newTextInliner, final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, newTextInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, newTextInliner);
         return arguments;
     }
     
@@ -677,7 +677,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, newTextInliner, this.baseContextVariables);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, newTextInliner);
         return arguments;
     }
 
