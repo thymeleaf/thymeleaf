@@ -19,13 +19,22 @@
  */
 package org.thymeleaf;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
+import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.processor.AbstractProcessor;
+import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
@@ -123,107 +132,110 @@ final class ConfigurationPrinterHelper {
             final ConfigLogBuilder logBuilder, final DialectConfiguration dialectConfiguration) {
 
         
-//        final Map<String,Map<TagNameProcessorMatcher,ITagProcessor>> tagProcessorsByTagName =
-//            dialectConfiguration.unsafeGetTagProcessorsByTagName();
-//        final Map<String,Map<AttributeNameProcessorMatcher,IAttrProcessor>> attrProcessorsByAttrName =
-//            dialectConfiguration.unsafeGetAttrProcessorsByAttrName();
-//        final Map<String,Object> executionAttributes = dialectConfiguration.getExecutionAttributes();
-//        final boolean lenient = dialectConfiguration.isLenient();
-//        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = dialectConfiguration.getDialect().getDocTypeResolutionEntries();
-//        final Set<IDocTypeTranslation> docTypeTranslations = dialectConfiguration.getDialect().getDocTypeTranslations();
-//        
-//        
-//        final Map<String,Map<TagNameProcessorMatcher,ITagProcessor>> tagProcessors = new LinkedHashMap<String,Map<TagNameProcessorMatcher,ITagProcessor>>();
-//        final List<String> tagNames = new ArrayList<String>(tagProcessorsByTagName.keySet());
-//        Collections.sort(tagNames);
-//        for (final String tagName : tagNames) {
-//            tagProcessors.put(tagName, tagProcessorsByTagName.get(tagName));
-//        }
-//        
-//        final Map<String,Map<AttributeNameProcessorMatcher,IAttrProcessor>> attrProcessors = new LinkedHashMap<String,Map<AttributeNameProcessorMatcher,IAttrProcessor>>();
-//        final List<String> attrNames = new ArrayList<String>(attrProcessorsByAttrName.keySet());
-//        Collections.sort(attrNames);
-//        for (final String attrName : attrNames) {
-//            attrProcessors.put(attrName, attrProcessorsByAttrName.get(attrName));
-//        }
-//        
-//        logBuilder.line("[THYMELEAF]     * Lenient: {}", Boolean.valueOf(lenient));
-//        if (!tagProcessors.isEmpty()) {
-//            logBuilder.line("[THYMELEAF]     * Tag Processors:");
-//            for (final Map.Entry<String,Map<TagNameProcessorMatcher,ITagProcessor>> tagApplicabilityEntry : tagProcessors.entrySet()) {
-//                final String tagName = tagApplicabilityEntry.getKey();
-//                for (final Map.Entry<TagNameProcessorMatcher,ITagProcessor> tagProcessorEntry : tagApplicabilityEntry.getValue().entrySet()) {
-//                    final TagNameProcessorMatcher tagApplicability = tagProcessorEntry.getKey();
-//                    final ITagProcessor tagProcessor = tagProcessorEntry.getValue();
-//                    if (tagApplicability.hasFilter()) {
-//                        logBuilder.line("[THYMELEAF]         * \"{}[{}]\" : {}", new Object[] {tagName, tagApplicability.getFilterStringRepresentation(), tagProcessor.getClass().getName()});
-//                    } else {
-//                        logBuilder.line("[THYMELEAF]         * \"{}\" : {}", new Object[] {tagName, tagProcessor.getClass().getName()});
-//                    }
-//                }
-//            }
-//        }
-//        if (!attrProcessors.isEmpty()) {
-//            logBuilder.line("[THYMELEAF]     * Attribute Processors with precedence:");
-//            for (final Map.Entry<String,Map<AttributeNameProcessorMatcher,IAttrProcessor>> attrApplicabilityEntry : attrProcessors.entrySet()) {
-//                final String attrName = attrApplicabilityEntry.getKey();
-//                for (final Map.Entry<AttributeNameProcessorMatcher,IAttrProcessor> attrProcessorEntry : attrApplicabilityEntry.getValue().entrySet()) {
-//                    final AttributeNameProcessorMatcher attrApplicability = attrProcessorEntry.getKey();
-//                    final IAttrProcessor attrProcessor = attrProcessorEntry.getValue();
-//                    if (attrApplicability.hasFilter()) {
-//                        logBuilder.line("[THYMELEAF]         * \"{}[{}]\" [{}]: {}", new Object[] {attrName, attrApplicability.getFilterStringRepresentation(), attrProcessor.getPrecedence(), attrProcessor.getClass().getName()});
-//                    } else {
-//                        logBuilder.line("[THYMELEAF]         * \"{}\" [{}]: {}", new Object[] {attrName, attrProcessor.getPrecedence(), attrProcessor.getClass().getName()});
-//                    }
-//                }
-//            }
-//        }
-//        if (!executionAttributes.isEmpty()) {
-//            logBuilder.line("[THYMELEAF]     * Execution Attributes:");
-//            for (final Map.Entry<String,Object> executionAttributesEntry : executionAttributes.entrySet()) {
-//                final String attrName = executionAttributesEntry.getKey();
-//                final String attrValue = 
-//                    (executionAttributesEntry.getValue() == null? null : executionAttributesEntry.getValue().toString());
-//                logBuilder.line("[THYMELEAF]         * \"{}\": {}", new Object[] {attrName, attrValue});
-//            }
-//        }
-//        logBuilder.line("[THYMELEAF]     * DOCTYPE translations:");
-//        for (final IDocTypeTranslation translation : docTypeTranslations) {
-//            logBuilder.line("[THYMELEAF]         * DOCTYPE Translation:");
-//            if (translation.getSourcePublicID().isNone()) {
-//                logBuilder.line("[THYMELEAF]             * Source: SYSTEM \"{}\"", 
-//                        new Object[] {
-//                            (translation.getSourceSystemID().isAny()? "*" : translation.getSourceSystemID())});
-//            } else {
-//                logBuilder.line("[THYMELEAF]             * Source: PUBLIC \"{}\" \"{}\"", 
-//                        new Object[] {
-//                            (translation.getSourcePublicID().isAny()? "*" : translation.getSourcePublicID()), 
-//                            (translation.getSourceSystemID().isAny()? "*" : translation.getSourceSystemID())});
-//            }
-//            if (translation.getTargetPublicID().isNone()) {
-//                logBuilder.line("[THYMELEAF]             * Target: SYSTEM \"{}\"", 
-//                        new Object[] {
-//                            (translation.getTargetSystemID().isAny()? "*" : translation.getTargetSystemID())});
-//            } else {
-//                logBuilder.line("[THYMELEAF]             * Target: PUBLIC \"{}\" \"{}\"", 
-//                        new Object[] {
-//                            (translation.getTargetPublicID().isAny()? "*" : translation.getTargetPublicID()), 
-//                            (translation.getTargetSystemID().isAny()? "*" : translation.getTargetSystemID())});
-//            }
-//        }
-//        logBuilder.line("[THYMELEAF]     * DOCTYPE resolution entries:");
-//        for (final IDocTypeResolutionEntry entry : docTypeResolutionEntries) {
-//            if (entry.getPublicID().isNone()) {
-//                logBuilder.line("[THYMELEAF]         * SYSTEM \"{}\"", 
-//                        new Object[] {
-//                            (entry.getSystemID().isAny()? "*" : entry.getSystemID())});
-//            } else {
-//                logBuilder.line("[THYMELEAF]         * PUBLIC \"{}\" \"{}\"", 
-//                        new Object[] {
-//                            (entry.getPublicID().isAny()? "*" : entry.getPublicID()), 
-//                            (entry.getSystemID().isAny()? "*" : entry.getSystemID())});
-//            }
-//        }
+        final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName = dialectConfiguration.unsafeGetSpecificProcessorsByTagName();
+        final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = dialectConfiguration.unsafeGetSpecificProcessorsByAttributeName();
+        final Set<ProcessorAndContext> nonspecificProcessors = dialectConfiguration.unsafeGetNonSpecificProcessors();
+        
+        final Map<String,Object> executionAttributes = dialectConfiguration.getExecutionAttributes();
+        final boolean lenient = dialectConfiguration.isLenient();
+        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = dialectConfiguration.getDialect().getDocTypeResolutionEntries();
+        final Set<IDocTypeTranslation> docTypeTranslations = dialectConfiguration.getDialect().getDocTypeTranslations();
+        
+        
+        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByTagName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
+        final List<String> tagNames = new ArrayList<String>(specificProcessorsByTagName.keySet());
+        Collections.sort(tagNames);
+        for (final String tagName : tagNames) {
+            orderedSpecificProcessorsByTagName.put(tagName, specificProcessorsByTagName.get(tagName));
+        }
+        
+        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByAttributeName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
+        final List<String> attributeNames = new ArrayList<String>(specificProcessorsByAttributeName.keySet());
+        Collections.sort(attributeNames);
+        for (final String attrName : attributeNames) {
+            orderedSpecificProcessorsByAttributeName.put(attrName, specificProcessorsByAttributeName.get(attrName));
+        }
+        
+        logBuilder.line("[THYMELEAF]     * Lenient: {}", Boolean.valueOf(lenient));
+        if (!orderedSpecificProcessorsByTagName.isEmpty()) {
+            logBuilder.line("[THYMELEAF]     * Processors matching nodes by tag name [precedence]:");
+            for (final Map.Entry<String,Set<ProcessorAndContext>> tagApplicabilityEntry : orderedSpecificProcessorsByTagName.entrySet()) {
+                final String tagName = tagApplicabilityEntry.getKey();
+                for (final ProcessorAndContext tagProcessorEntry : tagApplicabilityEntry.getValue()) {
+                    final IProcessor tagProcessor = tagProcessorEntry.getProcessor();
+                    final String precedence = 
+                            (tagProcessor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)tagProcessor).getPrecedence()).toString() : "-");
+                    logBuilder.line("[THYMELEAF]         * \"{}\" [{}]: {}", new Object[] {tagName, precedence, tagProcessor.getClass().getName()});
+                }
+            }
+        }
+        if (!orderedSpecificProcessorsByAttributeName.isEmpty()) {
+            logBuilder.line("[THYMELEAF]     * Processors matching nodes by tag attribute [precedence]:");
+            for (final Map.Entry<String,Set<ProcessorAndContext>> attrApplicabilityEntry : orderedSpecificProcessorsByAttributeName.entrySet()) {
+                final String attrName = attrApplicabilityEntry.getKey();
+                for (final ProcessorAndContext attrProcessorEntry : attrApplicabilityEntry.getValue()) {
+                    final IProcessor attrProcessor = attrProcessorEntry.getProcessor();
+                    final String precedence = 
+                            (attrProcessor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)attrProcessor).getPrecedence()).toString() : "-");
+                    logBuilder.line("[THYMELEAF]         * \"{}\" [{}]: {}", new Object[] {attrName, precedence, attrProcessor.getClass().getName()});
+                }
+            }
+        }
+        if (!nonspecificProcessors.isEmpty()) {
+            logBuilder.line("[THYMELEAF]     * Processors with non-specific matching methods [precedence]:");
+            for (final ProcessorAndContext attrProcessorEntry : nonspecificProcessors) {
+                final IProcessor processor = attrProcessorEntry.getProcessor();
+                final String precedence = 
+                        (processor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)processor).getPrecedence()).toString() : "-");
+                logBuilder.line("[THYMELEAF]         * \"[*]\" [{}]: {}", new Object[] {precedence, processor.getClass().getName()});
+            }
+        }
+        if (!executionAttributes.isEmpty()) {
+            logBuilder.line("[THYMELEAF]     * Execution Attributes:");
+            for (final Map.Entry<String,Object> executionAttributesEntry : executionAttributes.entrySet()) {
+                final String attrName = executionAttributesEntry.getKey();
+                final String attrValue = 
+                    (executionAttributesEntry.getValue() == null? null : executionAttributesEntry.getValue().toString());
+                logBuilder.line("[THYMELEAF]         * \"{}\": {}", new Object[] {attrName, attrValue});
+            }
+        }
+        logBuilder.line("[THYMELEAF]     * DOCTYPE translations:");
+        for (final IDocTypeTranslation translation : docTypeTranslations) {
+            logBuilder.line("[THYMELEAF]         * DOCTYPE Translation:");
+            if (translation.getSourcePublicID().isNone()) {
+                logBuilder.line("[THYMELEAF]             * Source: SYSTEM \"{}\"", 
+                        new Object[] {
+                            (translation.getSourceSystemID().isAny()? "*" : translation.getSourceSystemID())});
+            } else {
+                logBuilder.line("[THYMELEAF]             * Source: PUBLIC \"{}\" \"{}\"", 
+                        new Object[] {
+                            (translation.getSourcePublicID().isAny()? "*" : translation.getSourcePublicID()), 
+                            (translation.getSourceSystemID().isAny()? "*" : translation.getSourceSystemID())});
+            }
+            if (translation.getTargetPublicID().isNone()) {
+                logBuilder.line("[THYMELEAF]             * Target: SYSTEM \"{}\"", 
+                        new Object[] {
+                            (translation.getTargetSystemID().isAny()? "*" : translation.getTargetSystemID())});
+            } else {
+                logBuilder.line("[THYMELEAF]             * Target: PUBLIC \"{}\" \"{}\"", 
+                        new Object[] {
+                            (translation.getTargetPublicID().isAny()? "*" : translation.getTargetPublicID()), 
+                            (translation.getTargetSystemID().isAny()? "*" : translation.getTargetSystemID())});
+            }
+        }
+        logBuilder.line("[THYMELEAF]     * DOCTYPE resolution entries:");
+        for (final IDocTypeResolutionEntry entry : docTypeResolutionEntries) {
+            if (entry.getPublicID().isNone()) {
+                logBuilder.line("[THYMELEAF]         * SYSTEM \"{}\"", 
+                        new Object[] {
+                            (entry.getSystemID().isAny()? "*" : entry.getSystemID())});
+            } else {
+                logBuilder.line("[THYMELEAF]         * PUBLIC \"{}\" \"{}\"", 
+                        new Object[] {
+                            (entry.getPublicID().isAny()? "*" : entry.getPublicID()), 
+                            (entry.getSystemID().isAny()? "*" : entry.getSystemID())});
+            }
+        }
 
     }
     
