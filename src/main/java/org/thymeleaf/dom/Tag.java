@@ -23,18 +23,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
-import org.thymeleaf.processor.ProcessorAndContext;
-import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.DOMUtils;
+import org.thymeleaf.util.IdentityCounter;
 import org.thymeleaf.util.Validate;
 
 
@@ -58,8 +54,6 @@ public final class Tag extends NestableNode {
     private Map<String,String> attributeNames;
     private Map<String,String> attributeValues;
     private int attributesLen;
-
-    private List<ProcessorAndContext> processors;
     
     private boolean hasXmlnsAttributes;
 
@@ -82,8 +76,6 @@ public final class Tag extends NestableNode {
         
         setChildren(null);
         setAttributes(null);
-        
-        this.processors = null;
         
         this.hasXmlnsAttributes = false;
         
@@ -226,136 +218,30 @@ public final class Tag extends NestableNode {
 
 
 
-
     
-    /*
-     * -------------------
-     * PRECOMPUTING
-     * -------------------
-     */
-    
-    /*
-     * TODO AS IProcessor objects process Nodes, this should be made at Node and not here!!
-     */
     
     @Override
-    public void precomputeNode(final Configuration configuration) {
-
-        if (!isPrecomputed()) {
-
-            /*
-             * Compute the processors that are applicable to this node
-             */
-            this.processors = configuration.computeProcessorsForNode(this);
-
-            
-            /*
-             * Set skippability
-             */
-            if (this.processors == null || this.processors.size() == 0) {
-                // We only set this specific node as skippable. If we executed
-                // "setSkippable", the whole tree would be set as skippable, which
-                // is unnecessary due to the fact that we are going to precompute
-                // all of this node's children in a moment.
-                setSkippableNode(true);
-            } else {
-                // This time we execute "setSkippable" so that all parents at all
-                // levels are also set to "false"
-                setSkippable(false);
-            }
-
-            
-            /*
-             * Set the "precomputed" flag to true 
-             */
-            setPrecomputed(true);
-
-        }
-        
-        
-        /*
-         * Precompute children
-         */
-        if (this.childrenLen > 0) {
-            for (final Node child : this.children) {
-                child.precomputeNode(configuration);
-            }
-        }
-     
-        
-    }
-
-    
-
-
-    
-    /*
-     * ---------------
-     * NODE PROCESSING
-     * ---------------
-     */
-    
-    
-
-    @Override
-    protected void doProcessNode(final Arguments arguments) {
-        
-        Arguments executionArguments = arguments;
-        
-        if (this.processors != null && this.processors.size() > 0) {
-            
-            for (final ProcessorAndContext processor : this.processors) {
-
-                if (!hasParent()) {
-                    // If a node were removed, it would have no parent --> stop processor execution
-                    break;
-                }
-                    
-                /*
-                 * TODO refreshing applicability here is not performant. A decision has to be taken between
-                 * preprocessing, not doing it, and preprocessing but mark Nodes so that they are not
-                 * modified anymore... maybe allow processors to mark nodes for re-processing (second, third...
-                 * processing iterations).
-                 */
-                if (processor.matches(this)) {
-                    // We need to check that processor is still applicable, because a previously excecuted
-                    // processor could have changed the node's conditions.
-                    final ProcessorResult attrProcessorResult = 
-                            processor.getProcessor().process(executionArguments, processor.getContext(), this);
-                    executionArguments = attrProcessorResult.computeNewArguments(executionArguments);
-                    // If we have added local variables, we should update the node's map for them in
-                    // order to keep them synchronized
-                    if (attrProcessorResult.hasLocalVariables()) {
-                        setNodeLocalVariables(executionArguments.getLocalVariables());
-                    }
-                }
-                
-            }
-            
-        }
-        
-        
+    final void doAdditionalProcess(final Arguments arguments) {
         if (hasParent() && this.childrenLen > 0) {
-            final Set<Node> alreadyComputed = new HashSet<Node>();
-            while (hasParent() && computeNextChild(executionArguments, this, alreadyComputed)) { /* Nothing to be done here */ }
+            final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(10);
+            while (hasParent() && computeNextChild(arguments, this, alreadyProcessed)) { /* Nothing to be done here */ }
         }
-    
-        
     }
     
 
     
-    private static boolean computeNextChild(
-            final Arguments arguments, final Tag tag, final Set<Node> alreadyComputed) {
+    
+    private static final boolean computeNextChild(
+            final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed) {
         
         // This method scans the whole array of children each time
         // it tries to execute one so that it executes all sister nodes
         // that might be created by, for example, iteration processors.
-        if (tag.childrenLen > 0) {
-            for (final Node child : tag.children) {
-                if (!alreadyComputed.contains(child)) {
-                    child.processNode(arguments);
-                    alreadyComputed.add(child);
+        if (node.childrenLen > 0) {
+            for (final Node child : node.children) {
+                if (!alreadyProcessed.isAlreadyCounted(child)) {
+                    child.process(arguments);
+                    alreadyProcessed.count(child);
                     return true;
                 }
             }
@@ -363,8 +249,9 @@ public final class Tag extends NestableNode {
         return false;
         
     }
-    
-    
+
+
+
 
     
     /*
@@ -380,7 +267,7 @@ public final class Tag extends NestableNode {
      */
     
     @Override
-    public void write(final Arguments arguments, final Writer writer) throws IOException {
+    final void write(final Arguments arguments, final Writer writer) throws IOException {
         writer.write('<');
         writer.write(this.name);
         if (hasAttributes()) {
@@ -448,10 +335,24 @@ public final class Tag extends NestableNode {
     
     
 
+    public final Tag cloneTagWithNewName(final NestableNode newParent, final String newTagName, final boolean cloneProcessors) {
+        final Tag clonedTag = new Tag(newTagName);
+        cloneNodeInternals(clonedTag, newParent, cloneProcessors);
+        return clonedTag;
+    }
+    
+    
+
     @Override
-    protected Node doCloneNode(final NestableNode newParent, final boolean cloneProcessors) {
+    Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
+        return new Tag(this.name);
+    }
+    
+
+    @Override
+    void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
         
-        final Tag tag = new Tag(this.name);
+        final Tag tag = (Tag) node;
         
         if (this.attributesLen > 0) {
             tag.attributeNames = new LinkedHashMap<String, String>(this.attributeNames);
@@ -467,12 +368,6 @@ public final class Tag extends NestableNode {
             }
             tag.setChildren(tagChildren);
         }
-        
-        if (cloneProcessors) {
-            tag.processors = this.processors;
-        }
-        
-        return tag;
         
     }
 

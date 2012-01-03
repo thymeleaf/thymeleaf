@@ -20,6 +20,7 @@
 package org.thymeleaf.dom;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.util.Validate;
 
 
@@ -68,10 +69,22 @@ public abstract class AbstractTextNode extends Node {
     
 
     
-
-
     @Override
-    protected final void doProcessNode(final Arguments arguments) {
+    final void doAdditionalSkippableComputing(final boolean skippable) {
+        // Nothing to be done here!
+    }
+
+    
+    
+    @Override
+    final void doAdditionalPrecompute(final Configuration configuration) {
+        // Nothing to be done here!
+    }
+
+    
+    
+    @Override
+    final void doAdditionalProcess(final Arguments arguments) {
         if (arguments.hasTextInliner()) {
             arguments.getTextInliner().inline(arguments, this);
         }

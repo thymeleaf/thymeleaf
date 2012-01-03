@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 
 
 
@@ -51,24 +50,26 @@ public final class CDATASection extends AbstractTextNode {
 
 
     
-    @Override
-    protected void precomputeNode(final Configuration configuration) {
-        // Nothing to be done
-    }
+    
 
-    
-    
-    
     @Override
-    protected Node doCloneNode(final NestableNode newParent, final boolean cloneProcessors) {
+    Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
         return new CDATASection(this.content);
     }
+    
+
+    
+    
+    @Override
+    void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
+        // Nothing to be done here
+    }
 
 
     
     
     @Override
-    public void write(final Arguments arguments, final Writer writer) throws IOException {
+    void write(final Arguments arguments, final Writer writer) throws IOException {
         writer.write(CDATA_PREFIX);
         writer.write(this.content);
         writer.write(CDATA_SUFFIX);

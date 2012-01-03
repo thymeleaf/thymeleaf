@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.thymeleaf.Configuration;
 import org.thymeleaf.util.Validate;
 
 
@@ -302,6 +303,24 @@ public abstract class NestableNode extends Node {
 
 
     
+    /*
+     * ------------
+     * PRE-PROCESSING AND EXECUTION
+     * ------------
+     */
+    
+    @Override
+    final void doAdditionalPrecompute(final Configuration configuration) {
+        /*
+         * Precompute children
+         */
+        if (this.childrenLen > 0) {
+            for (final Node child : this.children) {
+                child.precompute(configuration);
+            }
+        }
+    }
+
     
     
     
@@ -314,8 +333,7 @@ public abstract class NestableNode extends Node {
     
     
     @Override
-    public void setSkippable(final boolean skippable) {
-        super.setSkippable(skippable);
+    public void doAdditionalSkippableComputing(final boolean skippable) {
         if (skippable && this.childrenLen > 0) {
             // If this node is marked as skippable, all of its
             // children should be marked skippable too.

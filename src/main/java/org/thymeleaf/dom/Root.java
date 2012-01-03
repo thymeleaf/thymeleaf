@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 
 
 
@@ -45,20 +44,14 @@ public final class Root extends NestableNode {
 
 
     
-    /*
-     * ---------------
-     * NODE PROCESSING
-     * ---------------
-     */
     
     
-
     @Override
-    protected void doProcessNode(final Arguments arguments) {
+    final void doAdditionalProcess(final Arguments arguments) {
         
         if (this.childrenLen > 0) {
             for (final Node child : this.children) {
-                child.processNode(arguments);
+                child.process(arguments);
             }
         }
         
@@ -78,7 +71,7 @@ public final class Root extends NestableNode {
     
     
     @Override
-    public void write(final Arguments arguments, final Writer writer) throws IOException {
+    void write(final Arguments arguments, final Writer writer) throws IOException {
         if (hasChildren()) {
             for (final Node child : this.children) {
                 child.write(arguments, writer);
@@ -87,28 +80,6 @@ public final class Root extends NestableNode {
     }
 
 
-
-    
-    /*
-     * -------------------
-     * PRECOMPUTING
-     * -------------------
-     */
-    
-    
-    @Override
-    public void precomputeNode(final Configuration configuration) {
-
-        /*
-         * Precompute children
-         */
-        if (this.childrenLen > 0) {
-            for (final Node child : this.children) {
-                child.precomputeNode(configuration);
-            }
-        }
-        
-    }
 
     
     
@@ -122,12 +93,19 @@ public final class Root extends NestableNode {
      * *********************************
      */
     
+
+
+    @Override
+    Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
+        return new Root();
+    }
+
     
 
     @Override
-    public Node doCloneNode(final NestableNode newParent, final boolean cloneProcessors) {
+    void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
         
-        final Root root = new Root();
+        final Root root = (Root) node; 
         
         if (this.childrenLen > 0) {
             final Node[] tagChildren = new Node[this.childrenLen];
@@ -137,9 +115,9 @@ public final class Root extends NestableNode {
             root.setChildren(tagChildren);
         }
         
-        return root;
-        
     }
+
+
 
 
     

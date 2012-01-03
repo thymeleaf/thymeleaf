@@ -27,6 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
+import org.thymeleaf.exceptions.TagProcessorException;
 import org.thymeleaf.processor.ITagNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.ObjectUtils;
@@ -73,6 +74,9 @@ public abstract class AbstractIterationTagProcessor
         final boolean removeHostIterationTag = 
                 removeHostIterationTag(arguments, tag);
         
+        final String iteratedTagName = 
+                getIteratedTagName(arguments, tag);
+        
         final String iterVar = iterationSpec.getIterVarName();
         final String statusVar = iterationSpec.getStatusVarName();
         final Object iteratedObject = iterationSpec.getIteratedObject();
@@ -84,8 +88,29 @@ public abstract class AbstractIterationTagProcessor
         int index = 0;
         for (final Object obj : list) {
             
-            final Tag clonedTag = (Tag) tag.cloneNode(parentNode, true);
-            parentNode.insertBefore(tag, clonedTag);
+            Tag iterTag = null;
+            
+            if (removeHostIterationTag) {
+                
+                // We can safely clone the host tag because we will remove it below
+                iterTag = (Tag) tag.cloneNode(parentNode, false);
+                
+            } else {
+                
+                // We do not clone the iteration tag with the same name because that 
+                // would probably result in an infinite loop as the iteration processor 
+                // would be applied once and again. Instead, we create iterated tags
+                // with a new name (iteratedTagName).
+                
+                if (iteratedTagName == null) {
+                    throw new TagProcessorException(
+                            "Cannot specify null iterated tag name if the host iteration tag is not being removed");
+                }
+                
+                iterTag = tag.cloneTagWithNewName(parentNode, iteratedTagName, false);
+                
+            }
+            parentNode.insertBefore(tag, iterTag);
             
             /*
              * Prepare local variables that will be available for each iteration item
@@ -102,13 +127,14 @@ public abstract class AbstractIterationTagProcessor
             
             
             if (removeHostIterationTag) {
-                final List<Node> children = clonedTag.getChildren();
+                final List<Node> children = iterTag.getChildren();
                 for (final Node child : children) {
                     child.addNodeLocalVariables(nodeLocalVariables);
                 }
-                parentNode.extractChild(clonedTag);
+                parentNode.extractChild(iterTag);
             } else {
-                clonedTag.addNodeLocalVariables(nodeLocalVariables);
+                iterTag.addNodeLocalVariables(nodeLocalVariables);
+                processClonedHostIterationTag(arguments, iterTag);
             }
             
             index++;
@@ -128,6 +154,12 @@ public abstract class AbstractIterationTagProcessor
 
     
     protected abstract boolean removeHostIterationTag(final Arguments arguments, final Tag tag);
+
+    
+    protected abstract String getIteratedTagName(final Arguments arguments, final Tag tag);
+    
+    
+    protected abstract void processClonedHostIterationTag(final Arguments arguments, final Tag iteratedChild);
 
     
     

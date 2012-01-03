@@ -83,7 +83,7 @@ public final class Document {
     public final void precompute(final Configuration configuration) {
         Validate.notNull(configuration, "Configuration cannot be null");
         this.docType.process(configuration);
-        this.root.precomputeNode(configuration);
+        this.root.precompute(configuration);
     }
 
     
@@ -94,7 +94,7 @@ public final class Document {
         Validate.notNull(arguments, "Arguments cannot be null");
         
         this.precompute(arguments.getConfiguration());
-        this.root.processNode(arguments);
+        this.root.process(arguments);
     }
     
     

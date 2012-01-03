@@ -82,7 +82,10 @@ public abstract class AbstractIterationAttrProcessor
         int index = 0;
         for (final Object obj : list) {
             
-            final Tag clonedTag = (Tag) tag.cloneNode(parentNode, true);
+            // We choose not to clone processors because the host tag
+            // has at least one processor that is not valid for the 
+            // new cloned tags: the iteration processor.
+            final Tag clonedTag = (Tag) tag.cloneNode(parentNode, false);
             clonedTag.removeAttribute(attributeName);
             
             /*
@@ -99,6 +102,8 @@ public abstract class AbstractIterationAttrProcessor
             
             parentNode.insertBefore(tag, clonedTag);
 
+            processClonedHostIterationTag(arguments, clonedTag, attributeName);
+            
             index++;
             
         }
@@ -113,10 +118,12 @@ public abstract class AbstractIterationAttrProcessor
 
     
     protected abstract IterationSpec getIterationSpec(
-            final Arguments arguments, final Tag tag, 
-            final String attributeName);
+            final Arguments arguments, final Tag tag, final String attributeName);
     
 
+    
+    protected abstract void processClonedHostIterationTag(final Arguments arguments, final Tag iteratedChild, final String attributeName);
+    
     
     /**
      * 

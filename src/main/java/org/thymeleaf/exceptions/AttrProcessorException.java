@@ -32,6 +32,11 @@ public class AttrProcessorException extends TemplateProcessingException {
     private static final long serialVersionUID = -7949514923440702749L;
 
     
+    /*
+     * TODO AttrProcessorException and TagProcessorException should be merged into one!
+     */
+    
+    
     public AttrProcessorException(final String message) {
         super(message);
     }

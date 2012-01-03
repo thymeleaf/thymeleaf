@@ -70,23 +70,29 @@ public class Comment extends Node {
 
     
     @Override
-    protected void precomputeNode(final Configuration configuration) {
-        // Nothing to be done
+    final void doAdditionalSkippableComputing(final boolean skippable) {
+        // Nothing to be done here!
     }
+
 
     
     
+    @Override
+    final void doAdditionalPrecompute(final Configuration configuration) {
+        // Nothing to be done here!
+    }
+
 
 
     @Override
-    protected void doProcessNode(final Arguments arguments) {
+    final void doAdditionalProcess(final Arguments arguments) {
         // Nothing to be done here
     }
 
     
     
     @Override
-    public void write(final Arguments arguments, final Writer writer) throws IOException {
+    void write(final Arguments arguments, final Writer writer) throws IOException {
         writer.write(COMMENT_PREFIX);
         writer.write(this.content);
         writer.write(COMMENT_SUFFIX);
@@ -94,9 +100,19 @@ public class Comment extends Node {
 
     
     
+    
+
     @Override
-    protected Node doCloneNode(final NestableNode newParent, final boolean cloneProcessors) {
+    Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
         return new Comment(this.content);
+    }
+    
+
+    
+    
+    @Override
+    void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
+        // Nothing to be done here
     }
 
 

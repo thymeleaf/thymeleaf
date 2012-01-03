@@ -28,6 +28,7 @@ import org.thymeleaf.dom.Tag;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.IProcessorMatcher;
 import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.ProcessorMatchingContext;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.TagNameProcessorMatcher;
 
@@ -62,7 +63,7 @@ public abstract class AbstractTagProcessor extends AbstractProcessor {
     }
 
     
-    public final ProcessorResult process(final Arguments arguments, final Node node) {
+    public final ProcessorResult process(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
         // Because of the type of applicability being used, this cast will not fail
         if (logger.isTraceEnabled()) {
             final String tagName = ((Tag)node).getNormalizedName();

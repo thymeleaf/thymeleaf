@@ -51,7 +51,12 @@ public abstract class AbstractStandardIterationAttrProcessor
 
     
 
-
+    @Override
+    protected void processClonedHostIterationTag(final Arguments arguments, final Tag iteratedChild, final String attributeName) {
+        // Nothing to be done here, no additional processings for iterated tags
+    }
+    
+    
 
     @Override
     protected final IterationSpec getIterationSpec(
