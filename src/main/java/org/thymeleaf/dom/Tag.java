@@ -48,6 +48,8 @@ import org.thymeleaf.util.Validate;
  */
 public final class Tag extends NestableNode {
 
+    private static final int DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE = 3;
+    
     private final String name;
     private final String normalizedName;
     
@@ -166,8 +168,8 @@ public final class Tag extends NestableNode {
         Validate.notNull(name, "Attribute name cannot be null");
         Validate.notNull(value, "Attribute value (" + name + ") cannot be null");
         if (this.attributesLen == 0) {
-            this.attributeNames = new LinkedHashMap<String,String>();
-            this.attributeValues = new LinkedHashMap<String,String>();
+            this.attributeNames = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
+            this.attributeValues = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
         }
         final String normalizedAttributeName = Node.normalizeName(name);
         this.attributeNames.put(normalizedAttributeName, name);
@@ -182,8 +184,8 @@ public final class Tag extends NestableNode {
     public void setAttributes(final Map<String,String> newAttributes) {
         if (newAttributes != null && newAttributes.size() > 0) {
             if (this.attributesLen == 0) {
-                this.attributeNames = new LinkedHashMap<String,String>();
-                this.attributeValues = new LinkedHashMap<String,String>();
+                this.attributeNames = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
+                this.attributeValues = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
             }
             for (final Map.Entry<String,String> newAttributesEntry : newAttributes.entrySet()) {
                 final String newAttributeName = newAttributesEntry.getKey();
