@@ -132,6 +132,7 @@ public final class SpringSelectFieldAttrProcessor
                         
                     } else {
                         childTag.setAttribute(selectAttrName, selectAttrValue);
+                        childTag.setRecomputeProcessorsImmediately(true);
                     }
                     
                 } else if (childTagName != null && childTagName.equals("optgroup")) {
