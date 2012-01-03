@@ -155,6 +155,14 @@ public abstract class Node {
         }
     }
 
+    protected final void setNodeLocalVariables(final Map<String,Object> variables) {
+        if (variables != null) {
+            this.nodeLocalVariables = new LinkedHashMap<String,Object>(variables);
+        } else { 
+            this.nodeLocalVariables = null;
+        }
+    }
+
 
 
     
@@ -182,10 +190,22 @@ public abstract class Node {
         }
 
         if (!isSkippable()) {
+            
+            // If there are local variables at the node, add them to the ones at the
+            // Arguments object.
             final Arguments executionArguments =
                     (this.nodeLocalVariables != null && this.nodeLocalVariables.size() > 0?
                             arguments.addLocalVariables(this.nodeLocalVariables) : arguments);
+            
+            // If the Arguments object has local variables, synchronize the node-local
+            // variables map.
+            if (executionArguments.hasLocalVariables()) {
+                setNodeLocalVariables(executionArguments.getLocalVariables());
+            }
+            
+            // Process the node
             doProcessNode(executionArguments);
+            
         }
     
     }

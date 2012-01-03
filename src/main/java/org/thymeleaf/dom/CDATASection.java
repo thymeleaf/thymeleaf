@@ -36,7 +36,7 @@ import org.thymeleaf.Configuration;
  */
 public final class CDATASection extends AbstractTextNode {
 
-    private static final char[] CDATA_PREFIX = "<[CDATA[".toCharArray();
+    private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
     private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
     
     

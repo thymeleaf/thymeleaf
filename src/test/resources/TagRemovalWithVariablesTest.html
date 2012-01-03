@@ -1,0 +1,10 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd">
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>th:remove w/ variables test</title>
+</head>
+<body>
+    <div id="1" th:remove="tag" th:with="x=${'1.1'}"><p th:id="${x}">1</p></div>
+</body>
+</html>

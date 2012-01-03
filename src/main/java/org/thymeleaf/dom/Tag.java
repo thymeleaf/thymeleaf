@@ -321,6 +321,11 @@ public final class Tag extends NestableNode {
                     final ProcessorResult attrProcessorResult = 
                             processor.getProcessor().process(executionArguments, processor.getContext(), this);
                     executionArguments = attrProcessorResult.computeNewArguments(executionArguments);
+                    // If we have added local variables, we should update the node's map for them in
+                    // order to keep them synchronized
+                    if (attrProcessorResult.hasLocalVariables()) {
+                        setNodeLocalVariables(executionArguments.getLocalVariables());
+                    }
                 }
                 
             }
