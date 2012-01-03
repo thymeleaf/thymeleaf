@@ -72,6 +72,10 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
         
         tag.setAttribute(targetAttributeName, targetAttributeFixedValue);
         
+        if (recomputeProcessorsAfterExecution(arguments, tag, attributeName)) {
+            tag.setRecomputeProcessorsImmediately(true);
+        }
+        
         return ProcessorResult.OK;
         
     }
@@ -91,5 +95,7 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
     protected abstract String getTargetAttributeFixedValue(final Arguments arguments, 
             final Tag tag, final String attributeName);
     
+    protected abstract boolean recomputeProcessorsAfterExecution(
+            final Arguments arguments, final Tag tag, final String attributeName);
     
 }

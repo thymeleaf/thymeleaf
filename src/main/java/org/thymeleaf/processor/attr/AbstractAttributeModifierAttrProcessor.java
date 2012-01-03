@@ -123,6 +123,10 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
         
         tag.removeAttribute(attributeName);
         
+        if (recomputeProcessorsAfterExecution(arguments, tag, attributeName)) {
+            tag.setRecomputeProcessorsImmediately(true);
+        }
+        
         return ProcessorResult.OK;
         
     }
@@ -140,5 +144,10 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
     
     protected abstract boolean removeAttributeIfEmpty(final Arguments arguments, 
             final Tag tag, final String attributeName, final String newAttributeName);
+
+    
+    protected abstract boolean recomputeProcessorsAfterExecution(
+            final Arguments arguments, final Tag tag, final String attributeName);
+    
     
 }
