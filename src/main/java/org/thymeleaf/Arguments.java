@@ -467,7 +467,7 @@ public final class Arguments {
      *   evaluation operation (whenever variable evaluation is available).
      * </p>
      * 
-     * @since 1.2.0
+     * @since 2.0.0
      * @return the map of variables (a new object, mutable, safe to use as a context variables base)
      */
     public Map<String,Object> getBaseContextVariables() {

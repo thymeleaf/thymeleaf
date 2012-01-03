@@ -29,7 +29,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.2
+ * @since 2.0.0
  *
  */
 public abstract class AbstractTextNode extends Node {

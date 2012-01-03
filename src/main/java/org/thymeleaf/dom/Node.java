@@ -38,7 +38,7 @@ import org.thymeleaf.util.IdentityCounter;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.2
+ * @since 2.0.0
  *
  */
 public abstract class Node {

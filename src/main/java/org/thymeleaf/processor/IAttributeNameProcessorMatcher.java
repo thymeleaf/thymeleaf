@@ -29,7 +29,7 @@ package org.thymeleaf.processor;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.2.0
+ * @since 2.0.0
  *
  */
 public interface IAttributeNameProcessorMatcher extends IProcessorMatcher {

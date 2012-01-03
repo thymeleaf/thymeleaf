@@ -35,7 +35,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.2.0
+ * @since 2.0.0
  *
  */
 public final class TagNameProcessorMatcher implements ITagNameProcessorMatcher {

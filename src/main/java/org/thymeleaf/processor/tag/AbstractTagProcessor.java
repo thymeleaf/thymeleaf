@@ -37,7 +37,7 @@ import org.thymeleaf.processor.TagNameProcessorMatcher;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.2.0
+ * @since 2.0.0
  *
  */
 public abstract class AbstractTagProcessor extends AbstractProcessor {
