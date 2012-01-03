@@ -88,5 +88,13 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
 
 
+
+    @Override
+    protected boolean recomputeProcessorsAfterExecution(final Arguments arguments,
+            final Tag tag, final String attributeName) {
+        return false;
+    }
+
+
     
 }

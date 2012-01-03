@@ -52,10 +52,15 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
     
 
 
-    
-    
-    
 
+    @Override
+    protected boolean recomputeProcessorsAfterExecution(final Arguments arguments,
+            final Tag tag, final String attributeName) {
+        return false;
+    }
+
+
+    
     @Override
     protected final boolean isVisible(
             final Arguments arguments, final Tag tag, final String attributeName) {
