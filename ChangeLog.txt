@@ -1,3 +1,15 @@
+2.0.0
+=====
+
+
+1.1.4
+=====
+- Solved bug regarding evaluation of the same SpEL expression two times over two objects
+  of different classes. Spring AST infrastructure was caching PropertyAccessors and this
+  caused ClassCastExceptions. This error appeared on 1.1.3 because of the introduction of
+  SpEL expression caching.
+  
+
 1.1.3
 =====
 - Modified SpringWebContext constructors so that they require now the ServletContex 
