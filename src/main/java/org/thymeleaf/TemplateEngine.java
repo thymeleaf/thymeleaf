@@ -712,7 +712,7 @@ public class TemplateEngine {
     }
     
 
-    private synchronized static void setThreadLocale(final Locale locale) {
+    private static void setThreadLocale(final Locale locale) {
         currentProcessLocale.set(locale);
     }
 
@@ -734,7 +734,7 @@ public class TemplateEngine {
     }
 
     
-    private synchronized static void setThreadTemplateName(final String templateName) {
+    private static void setThreadTemplateName(final String templateName) {
         currentProcessTemplateName.set(templateName);
     }
 

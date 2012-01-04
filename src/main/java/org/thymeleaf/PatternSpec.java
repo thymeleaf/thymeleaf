@@ -42,7 +42,7 @@ public final class PatternSpec {
     private final LinkedHashSet<String> patternStrs = new LinkedHashSet<String>();
     private final LinkedHashSet<Pattern> patterns = new LinkedHashSet<Pattern>();
 
-    private boolean initialized;
+    private volatile boolean initialized;
     
     
     
@@ -58,7 +58,7 @@ public final class PatternSpec {
     }
 
     
-    public final synchronized void initialize() {
+    public final void initialize() {
         
         if (!isInitialized()) {
             this.initialized = true;

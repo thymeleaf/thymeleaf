@@ -512,13 +512,12 @@ public final class CacheMap<K, V> implements Serializable {
 
             if (cachedValue == null) {
                 // The soft reference has been cleared by GC -> Memory could be running low
-                CacheMap.logger.warn(
-                        "[THYMELEAF][{}][*][CACHE_MEMHIGH] Some entries at cache map \"{}\" " +
-                        "seem to have been sacrificed by the Garbage Collector, and this " +
-                        "could mean JVM memory is running low (although this depends on your VM's " +
-                        "specific implementation). Please check your memory settings and, if you are using" +
-                        "the HotSpot VM, check that you are running it in 'server' mode.",
-                        cacheMapName, TemplateEngine.threadIndex());
+                if (CacheMap.logger.isTraceEnabled()) {
+                    CacheMap.logger.trace(
+                            "[THYMELEAF][{}][*][{}][CACHE_DELETED_REFERENCES] Some entries at cache map \"{}\" " +
+                            "seem to have been sacrificed by the Garbage Collector (soft references).",
+                            new Object[] {TemplateEngine.threadIndex(), cacheMapName, cacheMapName});
+                }
                 return null;
             }
             if (checker == null || checker.checkIsValueStillValid(key, cachedValue, this.creationTimeInMillis)) {
