@@ -19,7 +19,11 @@
  */
 package org.thymeleaf.processor.attr;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.exceptions.AttrProcessorException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
@@ -40,6 +44,7 @@ public abstract class AbstractRemovalAttrProcessor
     
     
     private final String removeAll; 
+    private final String removeAllButFirst; 
     private final String removeTag; 
     private final String removeBody; 
     
@@ -53,6 +58,7 @@ public abstract class AbstractRemovalAttrProcessor
         super(matcher);
         
         this.removeAll = getRemoveAllAttrValue();
+        this.removeAllButFirst = getRemoveAllButFirstAttrValue();
         this.removeTag = getRemoveTagAttrValue();
         this.removeBody = getRemoveBodyAttrValue();
         
@@ -70,6 +76,7 @@ public abstract class AbstractRemovalAttrProcessor
         super(attributeName);
         
         this.removeAll = getRemoveAllAttrValue();
+        this.removeAllButFirst = getRemoveAllButFirstAttrValue();
         this.removeTag = getRemoveTagAttrValue();
         this.removeBody = getRemoveBodyAttrValue();
         
@@ -85,6 +92,7 @@ public abstract class AbstractRemovalAttrProcessor
     private void validateValues() {
         
         Validate.notEmpty(this.removeAll, "Attribute value for \"remove all\" cannot be null or empty in processor " + this.getClass().getName());
+        Validate.notEmpty(this.removeAllButFirst, "Attribute value for \"remove all but first\" cannot be null or empty in processor " + this.getClass().getName());
         Validate.notEmpty(this.removeTag, "Attribute value for \"remove tag\" cannot be null or empty in processor " + this.getClass().getName());
         Validate.notEmpty(this.removeBody, "Attribute value for \"remove body\" cannot be null or empty in processor " + this.getClass().getName());
         
@@ -109,6 +117,26 @@ public abstract class AbstractRemovalAttrProcessor
                 tag.getParent().removeChild(tag);
                 return ProcessorResult.OK;
             }
+            if (this.removeAllButFirst.equals(value)) {
+                final List<Node> newChildren = new ArrayList<Node>();
+                final List<Node> children = tag.getChildren();
+                final int childrenLen = children.size();
+                int childTagsFound = 0;
+                for (int i = 0; i < childrenLen && childTagsFound < 2; i++) {
+                    final Node child = children.get(i);
+                    if (child instanceof Tag) {
+                        childTagsFound++;
+                        if (childTagsFound == 1) {
+                            newChildren.add(child);
+                        }
+                    } else {
+                        newChildren.add(child);
+                    }
+                }
+                tag.setChildren(newChildren.toArray(new Node[newChildren.size()]));
+                tag.removeAttribute(attributeName);
+                return ProcessorResult.OK;
+            }
             if (this.removeTag.equals(value)) {
                 tag.getParent().extractChild(tag);
                 return ProcessorResult.OK;
@@ -128,6 +156,8 @@ public abstract class AbstractRemovalAttrProcessor
 
 
     protected abstract String getRemoveAllAttrValue();
+
+    protected abstract String getRemoveAllButFirstAttrValue();
     
     protected abstract String getRemoveBodyAttrValue();
     

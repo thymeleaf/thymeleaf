@@ -35,6 +35,7 @@ public final class StandardRemoveAttrProcessor
     public static final String ATTR_NAME = "remove";
 
     public static final String VALUE_ALL = "all";
+    public static final String VALUE_ALL_BUT_FIRST = "all-but-first";
     public static final String VALUE_TAG = "tag";
     public static final String VALUE_BODY = "body";
     
@@ -58,6 +59,13 @@ public final class StandardRemoveAttrProcessor
     @Override
     protected String getRemoveAllAttrValue() {
         return VALUE_ALL;
+    }
+
+
+    
+    @Override
+    protected String getRemoveAllButFirstAttrValue() {
+        return VALUE_ALL_BUT_FIRST;
     }
 
 
