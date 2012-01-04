@@ -61,11 +61,11 @@ public final class DialectConfiguration {
     
     private Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName;
     private Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName;
-    private Set<ProcessorAndContext> nonSpecificProcessors;
+    private Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass;
     
     private Map<String,Object> executionAttributes;
     
-    private boolean initialized;
+    private volatile boolean initialized;
 
     
     
@@ -115,7 +115,7 @@ public final class DialectConfiguration {
             
             final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByTagName = new HashMap<String,Set<ProcessorAndContext>>();
             final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByAttributeName = new HashMap<String,Set<ProcessorAndContext>>();
-            final Set<ProcessorAndContext> newNonSpecificProcessors = new HashSet<ProcessorAndContext>();
+            final Map<Class<? extends Node>, Set<ProcessorAndContext>> newNonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
             
             for (final IProcessor processor : this.processors) {
 
@@ -170,7 +170,24 @@ public final class DialectConfiguration {
                 }
                 
                 if (!(processorMatcher instanceof ITagNameProcessorMatcher) && !(processorMatcher instanceof IAttributeNameProcessorMatcher)) {
-                    newNonSpecificProcessors.add(new ProcessorAndContext(processor,context));
+                    
+                    final Class<? extends Node>[] appliesTo = processorMatcher.appliesTo();
+                    if (appliesTo != null && appliesTo.length > 0) {
+                        
+                        for (final Class<? extends Node> appliesToElement : appliesTo) {
+                            
+                            Set<ProcessorAndContext> elementProcessorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesToElement);
+                            if (elementProcessorsForNodeClass == null) {
+                                elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>();
+                                newNonSpecificProcessorsByNodeClass.put(appliesToElement, elementProcessorsForNodeClass);
+                            }
+                            
+                            elementProcessorsForNodeClass.add(new ProcessorAndContext(processor,context));
+                            
+                        }
+                        
+                    }
+
                 }
                 
                 
@@ -179,8 +196,7 @@ public final class DialectConfiguration {
             
             this.specificProcessorsByTagName = Collections.unmodifiableMap(newSpecificProcessorsByTagName);
             this.specificProcessorsByAttributeName = Collections.unmodifiableMap(newSpecificProcessorsByAttributeName);
-            this.nonSpecificProcessors = Collections.unmodifiableSet(newNonSpecificProcessors);
-            
+            this.nonSpecificProcessorsByNodeClass = Collections.unmodifiableMap(newNonSpecificProcessorsByNodeClass);            
 
             
             /*
@@ -265,8 +281,8 @@ public final class DialectConfiguration {
         return this.specificProcessorsByTagName;
     }
     
-    final Set<ProcessorAndContext> unsafeGetNonSpecificProcessors() {
-        return this.nonSpecificProcessors;
+    final Map<Class<? extends Node>, Set<ProcessorAndContext>> unsafeGetNonSpecificProcessorsByNodeClass() {
+        return this.nonSpecificProcessorsByNodeClass;
     }
     
     

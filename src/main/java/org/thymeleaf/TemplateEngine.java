@@ -214,7 +214,7 @@ public class TemplateEngine {
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
     
-    private static long processIndex = 0L;
+    private static volatile long processIndex = 0L;
     private static ThreadLocal<Long> currentProcessIndex = new ThreadLocal<Long>();
     private static ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
     private static ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
@@ -223,7 +223,7 @@ public class TemplateEngine {
     private final Configuration configuration;
     private TemplateParser templateParser;
 
-    private boolean initialized;
+    private volatile boolean initialized;
     
 
 
@@ -707,7 +707,7 @@ public class TemplateEngine {
     }
 
     
-    private synchronized static void newThreadIndex() {
+    private static void newThreadIndex() {
         currentProcessIndex.set(Long.valueOf(processIndex++));
     }
     

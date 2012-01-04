@@ -66,8 +66,8 @@ public final class Configuration {
     
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByTagName;
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByAttributeName;
-    private Set<ProcessorAndContext> mergedNonSpecificProcessors;
-    private boolean hasNonSpecificProcessors;
+    private Map<Class<? extends Node>, Set<ProcessorAndContext>> mergedNonSpecificProcessorsByNodeClass;
+
     private Map<String,Object> mergedExecutionAttributes = new LinkedHashMap<String, Object>();
     private Map<String,Boolean> mergedLenienciesByPrefix = null;
     private Set<IDocTypeResolutionEntry> mergedDocTypeResolutionEntries = null;
@@ -79,7 +79,7 @@ public final class Configuration {
     
     private Map<String,String> prefixesByXmlnsAttributeName = null;
     
-    private boolean initialized;
+    private volatile boolean initialized;
     
     
     
@@ -153,9 +153,8 @@ public final class Configuration {
                 Collections.unmodifiableMap(mergedDialectArtifacts.getSpecificProcessorsByTagName());
             this.mergedSpecificProcessorsByAttributeName =
                 Collections.unmodifiableMap(mergedDialectArtifacts.getSpecificProcessorsByAttributeName());
-            this.mergedNonSpecificProcessors =
-                Collections.unmodifiableSet(mergedDialectArtifacts.getNonSpecificProcessors());
-            this.hasNonSpecificProcessors = !this.mergedNonSpecificProcessors.isEmpty();
+            this.mergedNonSpecificProcessorsByNodeClass =
+                Collections.unmodifiableMap(mergedDialectArtifacts.getMergedNonSpecificProcessorsByNodeClass());
             this.mergedExecutionAttributes =
                 Collections.unmodifiableMap(mergedDialectArtifacts.getExecutionAttributes());
             this.mergedLenienciesByPrefix = 
@@ -443,9 +442,11 @@ public final class Configuration {
                     }
                 }
             }
-            
-            if (this.hasNonSpecificProcessors) {
-                for (final ProcessorAndContext processorAndContext : this.mergedNonSpecificProcessors) {
+        
+            final Set<ProcessorAndContext> applicableNonSpecificProcessors = 
+                    getApplicableNonSpecificProcessorsToNodeClass(Tag.class);
+            if (applicableNonSpecificProcessors != null) {
+                for (final ProcessorAndContext processorAndContext : applicableNonSpecificProcessors) {
                     if (processorAndContext.matches(node)) {
                         processors.add(processorAndContext);
                     }
@@ -458,8 +459,32 @@ public final class Configuration {
             return processors;
             
         }
+
+        //
+        // NODE IS NOT A TAG...
+        //
+
+        final Set<ProcessorAndContext> applicableNonSpecificProcessors = 
+                getApplicableNonSpecificProcessorsToNodeClass(node.getClass());
         
-        // Currently, only tags can be processed
+        if (applicableNonSpecificProcessors != null) {
+        
+            final List<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
+        
+            for (final ProcessorAndContext processorAndContext : applicableNonSpecificProcessors) {
+                if (processorAndContext.matches(node)) {
+                    processors.add(processorAndContext);
+                }
+            }
+
+            // Order (usually by precedence)
+            Collections.sort(processors);
+            
+            return processors;
+            
+        }
+        
+        // No processors to be returned
         return null;
         
     }
@@ -508,6 +533,22 @@ public final class Configuration {
 
     
     
+    private Set<ProcessorAndContext> getApplicableNonSpecificProcessorsToNodeClass(final Class<? extends Node> nodeClass) {
+        
+        Set<ProcessorAndContext> result = null;
+        for (final Map.Entry<Class<? extends Node>, Set<ProcessorAndContext>> entry : this.mergedNonSpecificProcessorsByNodeClass.entrySet()) {
+            final Class<? extends Node> entryNodeClass = entry.getKey();
+            if (entryNodeClass.isAssignableFrom(nodeClass)) {
+                if (result == null) {
+                    result = new HashSet<ProcessorAndContext>();
+                }
+                result.addAll(entry.getValue());
+            }
+        }
+        return result;
+        
+    }
+
 
     
     
@@ -519,7 +560,7 @@ public final class Configuration {
         
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName = new HashMap<String, Set<ProcessorAndContext>>();
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = new HashMap<String, Set<ProcessorAndContext>>();
-        final Set<ProcessorAndContext> nonSpecificProcessors = new HashSet<ProcessorAndContext>();
+        final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
         final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
         final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new HashSet<IDocTypeResolutionEntry>();
         final Set<IDocTypeTranslation> docTypeTranslations = new HashSet<IDocTypeTranslation>();
@@ -533,7 +574,7 @@ public final class Configuration {
 
             specificProcessorsByTagName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByTagName());
             specificProcessorsByAttributeName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByAttributeName());
-            nonSpecificProcessors.addAll(dialectConfiguration.unsafeGetNonSpecificProcessors());
+            nonSpecificProcessorsByNodeClass.putAll(dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass());
 
             executionAttributes.putAll(dialectConfiguration.getExecutionAttributes());
             leniencyByPrefix.put(dialectConfiguration.getPrefix(), Boolean.valueOf(dialectConfiguration.isLenient()));
@@ -541,7 +582,7 @@ public final class Configuration {
             docTypeTranslations.addAll(dialect.getDocTypeTranslations());
             
             return new MergedDialectArtifacts(
-                    specificProcessorsByTagName, specificProcessorsByAttributeName, nonSpecificProcessors,
+                    specificProcessorsByTagName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
                     executionAttributes, leniencyByPrefix, dialect.getDocTypeResolutionEntries(), dialect.getDocTypeTranslations());
             
         }
@@ -584,7 +625,7 @@ public final class Configuration {
             /*
              * Aggregate all the processors not assigned to a specific attribute or tag name
              */
-            nonSpecificProcessors.addAll(dialectConfiguration.unsafeGetNonSpecificProcessors());
+            nonSpecificProcessorsByNodeClass.putAll(dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass());
             
 
             /*
@@ -742,7 +783,7 @@ public final class Configuration {
         }
         
         return new MergedDialectArtifacts(
-                specificProcessorsByTagName, specificProcessorsByAttributeName, nonSpecificProcessors,
+                specificProcessorsByTagName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
                 executionAttributes, leniencyByPrefix, docTypeResolutionEntries, docTypeTranslations);
         
     }
@@ -754,7 +795,7 @@ public final class Configuration {
         
         private final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName;
         private final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName;
-        private final Set<ProcessorAndContext> nonSpecificProcessors;
+        private final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass;
         private final Map<String,Object> executionAttributes;
         private final Map<String,Boolean> leniencyByPrefix;
         private final Set<IDocTypeResolutionEntry> docTypeResolutionEntries;
@@ -764,7 +805,7 @@ public final class Configuration {
         public MergedDialectArtifacts(
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName,
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName,
-                final Set<ProcessorAndContext> nonSpecificProcessors,
+                final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass,
                 final Map<String,Object> executionAttributes,
                 final Map<String,Boolean> leniencyByPrefix,
                 final Set<IDocTypeResolutionEntry> docTypeResolutionEntries,
@@ -772,7 +813,7 @@ public final class Configuration {
             super();
             this.specificProcessorsByTagName = specificProcessorsByTagName;
             this.specificProcessorsByAttributeName = specificProcessorsByAttributeName;
-            this.nonSpecificProcessors = nonSpecificProcessors;
+            this.nonSpecificProcessorsByNodeClass = nonSpecificProcessorsByNodeClass;
             this.executionAttributes = executionAttributes;
             this.leniencyByPrefix = leniencyByPrefix;
             this.docTypeResolutionEntries = docTypeResolutionEntries;
@@ -787,8 +828,8 @@ public final class Configuration {
             return this.specificProcessorsByAttributeName;
         }
 
-        public Set<ProcessorAndContext> getNonSpecificProcessors() {
-            return this.nonSpecificProcessors;
+        public Map<Class<? extends Node>, Set<ProcessorAndContext>> getMergedNonSpecificProcessorsByNodeClass() {
+            return this.nonSpecificProcessorsByNodeClass;
         }
 
         public Map<String,Object> getExecutionAttributes() {

@@ -36,4 +36,6 @@ public interface IProcessorMatcher {
     
     public boolean matches(final Node node, final ProcessorMatchingContext context);
     
+    public Class<? extends Node>[] appliesTo();
+    
 }

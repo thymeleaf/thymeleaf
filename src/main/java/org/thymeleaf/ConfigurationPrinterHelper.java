@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.IProcessor;
@@ -134,7 +135,7 @@ final class ConfigurationPrinterHelper {
         
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName = dialectConfiguration.unsafeGetSpecificProcessorsByTagName();
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = dialectConfiguration.unsafeGetSpecificProcessorsByAttributeName();
-        final Set<ProcessorAndContext> nonspecificProcessors = dialectConfiguration.unsafeGetNonSpecificProcessors();
+        final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass();
         
         final Map<String,Object> executionAttributes = dialectConfiguration.getExecutionAttributes();
         final boolean lenient = dialectConfiguration.isLenient();
@@ -181,13 +182,18 @@ final class ConfigurationPrinterHelper {
                 }
             }
         }
-        if (!nonspecificProcessors.isEmpty()) {
-            logBuilder.line("[THYMELEAF]     * Processors with non-specific matching methods [precedence]:");
-            for (final ProcessorAndContext attrProcessorEntry : nonspecificProcessors) {
-                final IProcessor processor = attrProcessorEntry.getProcessor();
-                final String precedence = 
-                        (processor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)processor).getPrecedence()).toString() : "-");
-                logBuilder.line("[THYMELEAF]         * \"[*]\" [{}]: {}", new Object[] {precedence, processor.getClass().getName()});
+        if (!nonSpecificProcessorsByNodeClass.isEmpty()) {
+            logBuilder.line("[THYMELEAF]     * Processors with non-tag-specific matching methods [precedence]:");
+            for (final Map.Entry<Class<? extends Node>,Set<ProcessorAndContext>> nonSpecificProcessorEntry : nonSpecificProcessorsByNodeClass.entrySet()) {
+                final Class<? extends Node> nodeClass = nonSpecificProcessorEntry.getKey();
+                for (final ProcessorAndContext processorEntry : nonSpecificProcessorEntry.getValue()) {
+                    final IProcessor processor = processorEntry.getProcessor();
+                    final String precedence = 
+                            (processor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)processor).getPrecedence()).toString() : "-");
+                    logBuilder.line(
+                            "[THYMELEAF]         * [{}] [{}]: {}", 
+                            new Object[] {nodeClass.getSimpleName(), precedence, processor.getClass().getName()});
+                }
             }
         }
         if (!executionAttributes.isEmpty()) {
