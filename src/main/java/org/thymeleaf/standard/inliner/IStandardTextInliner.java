@@ -26,7 +26,7 @@ import org.thymeleaf.dom.AbstractTextNode;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 2.0.0
  *
  */
 public interface IStandardTextInliner {
