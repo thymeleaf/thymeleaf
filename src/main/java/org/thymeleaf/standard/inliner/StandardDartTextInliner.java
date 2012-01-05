@@ -29,13 +29,13 @@ import org.thymeleaf.util.DartUtils;
  * @since 1.1.2
  *
  */
-public class StandardDartInliner extends AbstractStandardScriptingInliner {
+public class StandardDartTextInliner extends AbstractStandardScriptingTextInliner {
     
     
-    public static final StandardDartInliner INSTANCE = new StandardDartInliner();
+    public static final StandardDartTextInliner INSTANCE = new StandardDartTextInliner();
     
     
-    private StandardDartInliner() {
+    private StandardDartTextInliner() {
         super();
     }
 

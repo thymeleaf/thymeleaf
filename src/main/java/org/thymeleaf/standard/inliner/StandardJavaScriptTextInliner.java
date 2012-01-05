@@ -17,25 +17,34 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor;
+package org.thymeleaf.standard.inliner;
 
-import org.thymeleaf.dom.Tag;
-
-
-
-
-
-
+import org.thymeleaf.util.JavaScriptUtils;
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.0
+ * @since 1.1.2
  *
  */
-public interface ITagNameProcessorMatcher extends IProcessorMatcher<Tag> {
-
-    public String getTagName(final ProcessorMatchingContext context);
+public class StandardJavaScriptTextInliner extends AbstractStandardScriptingTextInliner {
     
+    
+    public static final StandardJavaScriptTextInliner INSTANCE = new StandardJavaScriptTextInliner();
+    
+    
+    private StandardJavaScriptTextInliner() {
+        super();
+    }
+
+    
+    
+    
+    @Override
+    protected String formatEvaluationResult(final Object result) {
+        return JavaScriptUtils.print(result);
+    }
+
+
 }

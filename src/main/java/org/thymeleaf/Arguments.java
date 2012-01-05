@@ -29,7 +29,6 @@ import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
-import org.thymeleaf.inliner.ITextInliner;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
@@ -60,7 +59,8 @@ import org.thymeleaf.util.Validate;
  *         <li>For selected evaluation (<tt>*{...}</tt> in standard dialect): {@link #getExpressionSelectionEvaluationRoot()}</li>
  *       </ul>
  *   </li>
- *   <li>The currently selected <i>text inliner</i> {@link ITextInliner}, if it exists: {@link #getTextInliner()}</li>
+ *   <li>Information about whether processing non-tag nodes is allowed at a specific point of a template
+ *       execution or not (default is to process only tags).</li>
  * </ul>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -86,7 +86,7 @@ public final class Arguments {
     private final Object evaluationRoot;
     private final Object selectionEvaluationRoot;
     
-    private final ITextInliner textInliner;
+    private final boolean processOnlyTags;
     private final Map<String, Object> baseContextVariables;
 
     
@@ -132,7 +132,7 @@ public final class Arguments {
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
-        this.textInliner = null;
+        this.processOnlyTags = true;
         this.baseContextVariables = 
             ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
@@ -148,7 +148,7 @@ public final class Arguments {
             final Map<String,Object> localVariables,
             final SelectionTarget selectionTarget,
             final Map<String,Integer> idCounts,
-            final ITextInliner textInliner) {
+            final boolean processOnlyTags) {
         
         super();
         
@@ -165,7 +165,7 @@ public final class Arguments {
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
-        this.textInliner = textInliner;
+        this.processOnlyTags = processOnlyTags;
         this.baseContextVariables = 
                 ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
@@ -323,26 +323,14 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Returns whether a <i>text inliner</i> has been set for the fragment
-     *   of code currently being processed (e.g. with <tt>th:inline</tt> in
-     *   standard dialect).
+     *   Returns whether only tag nodes should be processed (as opposed
+     *   to texts, CDATAs, comments, etc.). Default is true.
      * </p>
      * 
-     * @return true if there is a text inliner set, false if not
+     * @return whether only tags will be processed
      */
-    public boolean hasTextInliner() {
-        return this.textInliner != null;
-    }
-    
-    /**
-     * <p>
-     *   Returns the currently set <i>text inliner</i> (if any).
-     * </p>
-     * 
-     * @return the text inliner, or null if none has been set
-     */
-    public ITextInliner getTextInliner() {
-        return this.textInliner;
+    public boolean getProcessOnlyTags() {
+        return this.processOnlyTags;
     }
     
 
@@ -559,7 +547,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.textInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.processOnlyTags);
         return arguments;
     }
     
@@ -574,7 +562,7 @@ public final class Arguments {
      */
     public Arguments setSelectionTarget(final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, this.textInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, this.processOnlyTags);
         return arguments;
     }
 
@@ -597,7 +585,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.textInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.processOnlyTags);
         return arguments;
     }
 
@@ -605,15 +593,15 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting a new text inliner.
+     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyTags</tt> flag.
      * </p>
      * 
-     * @param newTextInliner the new text inliner
+     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
      * @return the new Arguments object
      */
-    public Arguments setTextInliner(final ITextInliner newTextInliner) {
+    public Arguments setProcessOnlyTags(final boolean shouldProcessOnlyTags) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, this.selectionTarget, this.idCounts, newTextInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
 
@@ -621,14 +609,14 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting new local variables and a new text inliner.
+     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processOnlyTags</tt> flag.
      * </p>
      * 
      * @param newVariables the new local variables
-     * @param newTextInliner the new text inliner
+     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
      * @return the new Arguments object
      */
-    public Arguments addLocalVariablesAndTextInliner(final Map<String,Object> newVariables, final ITextInliner newTextInliner) {
+    public Arguments addLocalVariablesAndProcessOnlyTags(final Map<String,Object> newVariables, final boolean shouldProcessOnlyTags) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
@@ -636,7 +624,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, newTextInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
     
@@ -644,16 +632,16 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting a new text inliner and a selection target.
+     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyTags</tt> flag and a selection target.
      * </p>
      * 
-     * @param newTextInliner the new text inliner
+     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
      * @param target the new selection target object
      * @return the new Arguments object
      */
-    public Arguments setTextInlinerAndSetSelectionTarget(final ITextInliner newTextInliner, final Object target) {
+    public Arguments setProcessOnlyTagsAndSetSelectionTarget(final boolean shouldProcessOnlyTags, final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, newTextInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
     
@@ -661,15 +649,15 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by adding new local variables, a text inliner and a selection target. 
+     *   Creates a new Arguments object by adding new local variables, a new value for the <tt>processOnlyTags</tt> flag and a selection target. 
      * </p>
      * 
      * @param newVariables the new local variables
-     * @param newTextInliner the new text inliner
+     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
      * @param target the new selection target object
      * @return the new Arguments object
      */
-    public Arguments addLocalVariablesAndTextInlinerAndSetSelectionTarget(final Map<String,Object> newVariables, final ITextInliner newTextInliner, final Object target) {
+    public Arguments addLocalVariablesAndProcessOnlyTagsAndSetSelectionTarget(final Map<String,Object> newVariables, final boolean shouldProcessOnlyTags, final Object target) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
@@ -677,7 +665,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, newTextInliner);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
 

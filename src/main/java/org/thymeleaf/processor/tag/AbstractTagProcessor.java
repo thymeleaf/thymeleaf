@@ -58,7 +58,7 @@ public abstract class AbstractTagProcessor extends AbstractProcessor {
     }
 
     
-    public IProcessorMatcher getMatcher() {
+    public IProcessorMatcher<? extends Tag> getMatcher() {
         return this.matcher;
     }
 

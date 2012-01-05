@@ -119,7 +119,7 @@ public final class DialectConfiguration {
             
             for (final IProcessor processor : this.processors) {
 
-                final IProcessorMatcher processorMatcher = processor.getMatcher();
+                final IProcessorMatcher<? extends Node> processorMatcher = processor.getMatcher();
                 if (processorMatcher == null) {
                     throw new ConfigurationException(
                             "Processor of class \"" + processor.getClass().getName() + "\" " +
@@ -171,22 +171,15 @@ public final class DialectConfiguration {
                 
                 if (!(processorMatcher instanceof ITagNameProcessorMatcher) && !(processorMatcher instanceof IAttributeNameProcessorMatcher)) {
                     
-                    final Class<? extends Node>[] appliesTo = processorMatcher.appliesTo();
-                    if (appliesTo != null && appliesTo.length > 0) {
+                    final Class<? extends Node> appliesTo = processorMatcher.appliesTo();
                         
-                        for (final Class<? extends Node> appliesToElement : appliesTo) {
-                            
-                            Set<ProcessorAndContext> elementProcessorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesToElement);
-                            if (elementProcessorsForNodeClass == null) {
-                                elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>();
-                                newNonSpecificProcessorsByNodeClass.put(appliesToElement, elementProcessorsForNodeClass);
-                            }
-                            
-                            elementProcessorsForNodeClass.add(new ProcessorAndContext(processor,context));
-                            
-                        }
-                        
+                    Set<ProcessorAndContext> elementProcessorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesTo);
+                    if (elementProcessorsForNodeClass == null) {
+                        elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>();
+                        newNonSpecificProcessorsByNodeClass.put(appliesTo, elementProcessorsForNodeClass);
                     }
+                    
+                    elementProcessorsForNodeClass.add(new ProcessorAndContext(processor,context));
 
                 }
                 

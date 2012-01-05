@@ -40,9 +40,6 @@ import org.thymeleaf.util.Validate;
  */
 public final class AttributeNameProcessorMatcher implements IAttributeNameProcessorMatcher {
     
-    @SuppressWarnings("unchecked")
-    private static final Class<? extends Node>[] APPLIES_TO =
-            (Class<? extends Node>[]) new Class<?>[] { Tag.class };
     
     private final String attributeName;
     private final String tagNameFilter;
@@ -154,8 +151,8 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
 
     
-    public final Class<? extends Node>[] appliesTo() {
-        return APPLIES_TO;
+    public final Class<? extends Tag> appliesTo() {
+        return Tag.class;
     }
     
     

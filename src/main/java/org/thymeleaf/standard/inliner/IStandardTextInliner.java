@@ -19,32 +19,18 @@
  */
 package org.thymeleaf.standard.inliner;
 
-import org.thymeleaf.util.JavaScriptUtils;
+import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.AbstractTextNode;
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1.2
+ * @since 1.0
  *
  */
-public class StandardJavaScriptInliner extends AbstractStandardScriptingInliner {
-    
-    
-    public static final StandardJavaScriptInliner INSTANCE = new StandardJavaScriptInliner();
-    
-    
-    private StandardJavaScriptInliner() {
-        super();
-    }
+public interface IStandardTextInliner {
 
+    public void inline(final Arguments arguments, final AbstractTextNode text);
     
-    
-    
-    @Override
-    protected String formatEvaluationResult(final Object result) {
-        return JavaScriptUtils.print(result);
-    }
-
-
 }

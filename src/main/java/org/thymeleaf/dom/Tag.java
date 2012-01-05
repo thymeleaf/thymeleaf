@@ -66,9 +66,6 @@ public final class Tag extends NestableNode {
         
         Validate.notNull(name, "Tag name cannot be null");
         
-        // Tags should not be considered "precomputed" by default
-        setPrecomputed(false);
-        
         this.name = name;
         this.normalizedName = Node.normalizeName(name);
         this.minimizableIfWeb = 

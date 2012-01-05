@@ -89,9 +89,7 @@ public abstract class Node {
     protected Node() {
         super();
         this.skippable = false;
-        // Most types of node are not precomputable, so we set this to true as default to avoid
-        // constant precomputations
-        this.precomputed = true;
+        this.precomputed = false;
         this.recomputeProcessorsAfterEachExecution = false;
         this.recomputeProcessorsImmediately = false;
         this.nodeLocalVariables = null;
@@ -252,6 +250,10 @@ public abstract class Node {
     
     
     final void process(final Arguments arguments) {
+        
+        if (!(this instanceof Tag || this instanceof Root) && arguments.getProcessOnlyTags()) {
+            return;
+        }
         
         if (!isPrecomputed()) {
             precompute(arguments.getConfiguration());

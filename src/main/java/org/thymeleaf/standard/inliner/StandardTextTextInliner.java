@@ -28,7 +28,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.ExpressionParsingException;
-import org.thymeleaf.inliner.ITextInliner;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 
 /**
@@ -38,11 +37,11 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  * @since 1.0
  *
  */
-public class StandardTextInliner implements ITextInliner {
+public class StandardTextTextInliner implements IStandardTextInliner {
     
-    private static final Logger logger = LoggerFactory.getLogger(StandardTextInliner.class);
+    private static final Logger logger = LoggerFactory.getLogger(StandardTextTextInliner.class);
 
-    public static final StandardTextInliner INSTANCE = new StandardTextInliner();
+    public static final StandardTextTextInliner INSTANCE = new StandardTextTextInliner();
 
     
     public static final String TEXT_INLINE_EVAL = "\\[\\[(.*?)\\]\\]";
@@ -51,7 +50,7 @@ public class StandardTextInliner implements ITextInliner {
     
     
     
-    private StandardTextInliner() {
+    private StandardTextTextInliner() {
         super();
     }
     

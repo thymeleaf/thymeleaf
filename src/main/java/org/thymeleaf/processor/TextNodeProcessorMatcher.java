@@ -19,9 +19,8 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dom.Tag;
-
-
+import org.thymeleaf.dom.AbstractTextNode;
+import org.thymeleaf.dom.Node;
 
 
 
@@ -34,8 +33,24 @@ import org.thymeleaf.dom.Tag;
  * @since 2.0.0
  *
  */
-public interface ITagNameProcessorMatcher extends IProcessorMatcher<Tag> {
+public final class TextNodeProcessorMatcher implements ITextNodeProcessorMatcher {
+    
+    
+    
+    public TextNodeProcessorMatcher() {
+        super();
+    }
+    
 
-    public String getTagName(final ProcessorMatchingContext context);
+    public boolean matches(final Node node, final ProcessorMatchingContext context) {
+        return (node instanceof AbstractTextNode);
+    }
+
+
+    
+    public final Class<? extends AbstractTextNode> appliesTo() {
+        return AbstractTextNode.class;
+    }
+    
     
 }

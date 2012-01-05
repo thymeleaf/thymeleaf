@@ -31,7 +31,7 @@ import org.thymeleaf.dom.Node;
  */
 public interface IProcessor extends Comparable<IProcessor> {
 
-    public IProcessorMatcher getMatcher();
+    public IProcessorMatcher<? extends Node> getMatcher();
 
     public ProcessorResult process(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node);
     

@@ -17,20 +17,25 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.inliner;
+package org.thymeleaf.processor;
 
-import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.AbstractTextNode;
+
+
+
+
+
+
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 2.0.0
  *
  */
-public interface ITextInliner {
+public interface ITextNodeProcessorMatcher extends IProcessorMatcher<AbstractTextNode> {
 
-    public void inline(final Arguments arguments, final AbstractTextNode text);
+    // Marker interface: no additional methods at the moment
     
 }

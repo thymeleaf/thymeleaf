@@ -19,15 +19,23 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.NestableNode;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.inliner.ITextInliner;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
-import org.thymeleaf.processor.attr.AbstractTextInlinerAttrProcessor;
-import org.thymeleaf.standard.inliner.StandardDartInliner;
-import org.thymeleaf.standard.inliner.StandardJavaScriptInliner;
-import org.thymeleaf.standard.inliner.StandardTextInliner;
+import org.thymeleaf.processor.ProcessorResult;
+import org.thymeleaf.processor.attr.AbstractAttrProcessor;
+import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.inliner.IStandardTextInliner;
+import org.thymeleaf.standard.inliner.StandardDartTextInliner;
+import org.thymeleaf.standard.inliner.StandardJavaScriptTextInliner;
+import org.thymeleaf.standard.inliner.StandardTextTextInliner;
 
 /**
  * 
@@ -37,7 +45,7 @@ import org.thymeleaf.standard.inliner.StandardTextInliner;
  *
  */
 public abstract class AbstractStandardTextInlinerAttrProcessor 
-        extends AbstractTextInlinerAttrProcessor {
+        extends AbstractAttrProcessor {
     
     
     public static final String TEXT_INLINE = "text";
@@ -61,20 +69,36 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
     
 
     
-
-
+    
     @Override
-    protected ITextInliner getTextInliner(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+
+        
+        final IStandardTextInliner textInliner = getTextInliner(tag, attributeName);
+
+        final Map<String,Object> localVariables = new HashMap<String,Object>();
+        localVariables.put(StandardDialect.INLINER_LOCAL_VARIABLE, textInliner);
+        
+        clearSkippability(tag);
+        
+        tag.removeAttribute(attributeName);
+        
+        return ProcessorResult.setLocalVariablesAndProcessOnlyTags(localVariables, false);
+        
+    }
+    
+    
+
+    protected static IStandardTextInliner getTextInliner(final Tag tag, final String attributeName) {
         
         final String attributeValue = tag.getAttributeValue(attributeName);
         
         if (JAVASCRIPT_INLINE.equals(attributeValue.toLowerCase())) {
-            return StandardJavaScriptInliner.INSTANCE;
+            return StandardJavaScriptTextInliner.INSTANCE;
         } else if (DART_INLINE.equals(attributeValue.toLowerCase())) {
-            return StandardDartInliner.INSTANCE;
+            return StandardDartTextInliner.INSTANCE;
         } else if (TEXT_INLINE.equals(attributeValue.toLowerCase())) {
-            return StandardTextInliner.INSTANCE;
+            return StandardTextTextInliner.INSTANCE;
         } else if (NONE_INLINE.equals(attributeValue.toLowerCase())) {
             return null;
         }
@@ -88,5 +112,19 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
     
     
 
+    
+    private static void clearSkippability(final Node node) {
+        if (node != null) {
+            node.setSkippable(false);
+            if (node instanceof NestableNode) {
+                final List<Node> children = ((NestableNode)node).getChildren();
+                for (final Node child : children) {
+                    clearSkippability(child);
+                }
+            }
+        }
+    }
+
+    
     
 }

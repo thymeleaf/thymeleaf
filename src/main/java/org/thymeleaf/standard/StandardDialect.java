@@ -65,6 +65,7 @@ import org.thymeleaf.standard.processor.attr.StandardWithAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor;
+import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
 
 /**
  * <p>
@@ -124,11 +125,11 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     
     public static final String PREFIX = "th";
-
     public static final boolean LENIENT = false;
-
     
-    public static final String STANDARD_VARIABLE_EXPRESSION_EVALUATOR = "StandardVariable";
+    
+    public static final String INLINER_LOCAL_VARIABLE = "%STANDARD_INLINER%";
+    
     
     
     public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF1_SYSTEMID = 
@@ -446,6 +447,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.add(new StandardXmlBaseAttrProcessor());
         processors.add(new StandardXmlLangAttrProcessor());
         processors.add(new StandardXmlSpaceAttrProcessor());
+        processors.add(new StandardTextInliningTextProcessor());
         return processors;
     }
 

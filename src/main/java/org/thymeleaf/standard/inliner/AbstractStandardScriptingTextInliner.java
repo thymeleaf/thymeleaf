@@ -28,7 +28,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.ExpressionParsingException;
-import org.thymeleaf.inliner.ITextInliner;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 
 /**
@@ -38,7 +37,7 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  * @since 1.1.2
  *
  */
-public abstract class AbstractStandardScriptingInliner implements ITextInliner {
+public abstract class AbstractStandardScriptingTextInliner implements IStandardTextInliner {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
@@ -58,7 +57,7 @@ public abstract class AbstractStandardScriptingInliner implements ITextInliner {
     
     
     
-    protected AbstractStandardScriptingInliner() {
+    protected AbstractStandardScriptingTextInliner() {
         super();
     }
     

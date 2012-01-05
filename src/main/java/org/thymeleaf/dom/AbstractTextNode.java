@@ -85,9 +85,7 @@ public abstract class AbstractTextNode extends Node {
     
     @Override
     final void doAdditionalProcess(final Arguments arguments) {
-        if (arguments.hasTextInliner()) {
-            arguments.getTextInliner().inline(arguments, this);
-        }
+        // Nothing to be done here
     }
     
     

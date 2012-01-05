@@ -17,18 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.attr;
+package org.thymeleaf.processor.text;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
 import org.thymeleaf.processor.AbstractProcessor;
-import org.thymeleaf.processor.AttributeNameProcessorMatcher;
-import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.IProcessorMatcher;
+import org.thymeleaf.processor.ITextNodeProcessorMatcher;
 import org.thymeleaf.processor.ProcessorMatchingContext;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -40,40 +39,36 @@ import org.thymeleaf.processor.ProcessorResult;
  * @since 2.0.0
  *
  */
-public abstract class AbstractAttrProcessor extends AbstractProcessor {
+public abstract class AbstractTextNodeProcessor extends AbstractProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAttrProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTextNodeProcessor.class);
     
-    private final IAttributeNameProcessorMatcher matcher; 
+    private final ITextNodeProcessorMatcher matcher; 
     
     
-    public AbstractAttrProcessor(final String attributeName) {
-        this(new AttributeNameProcessorMatcher(attributeName));
-    }
-    
-    public AbstractAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+    public AbstractTextNodeProcessor(final ITextNodeProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }
 
     
-    public final IProcessorMatcher<? extends Tag> getMatcher() {
+    public final IProcessorMatcher<? extends AbstractTextNode> getMatcher() {
         return this.matcher;
     }
 
     
     public final ProcessorResult process(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
-        // Because of the type of applicability being used, casts to Tag here will not fail
         if (logger.isTraceEnabled()) {
-            final String attributeName = this.matcher.getAttributeName(processorMatchingContext);
-            final String attributeValue = ((Tag)node).getAttributeValue(attributeName);
-            logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in tag \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, attributeValue, ((Tag)node).getNormalizedName()});
+            final String content = ((AbstractTextNode)node).getContent();
+            logger.trace("[THYMELEAF][{}][{}] Processing text node of type \"{}\" with content \"{}\"",
+                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), node.getClass().getSimpleName(), content});
         }
-        return processAttribute(arguments, (Tag)node, this.matcher.getAttributeName(processorMatchingContext));
+        // Because of the type of applicability being used, this cast will not fail
+        return processTextNode(arguments, (AbstractTextNode)node);
     }
     
-    protected abstract ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName);
+    protected abstract ProcessorResult processTextNode(final Arguments arguments, final AbstractTextNode textNode);
     
     
 }

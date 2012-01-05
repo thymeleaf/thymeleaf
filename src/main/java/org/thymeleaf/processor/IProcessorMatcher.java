@@ -32,10 +32,10 @@ import org.thymeleaf.dom.Node;
  * @since 2.0.0
  *
  */
-public interface IProcessorMatcher {
+public interface IProcessorMatcher<T extends Node> {
     
     public boolean matches(final Node node, final ProcessorMatchingContext context);
     
-    public Class<? extends Node>[] appliesTo();
+    public Class<? extends T> appliesTo();
     
 }
