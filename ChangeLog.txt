@@ -2,6 +2,9 @@
 =====
 - Substituted the Java standard DOM API (org.w3c.dom.*) by Thymeleaf's own tailor-made
   DOM representation (org.thymeleaf.dom)
+- Created a DOM precomputation system that allows caching some information about the processors
+  that are applicable to each node in the tree, so that this information does not always
+  have to be computed during cached template execution.
 - Refactored Processor system: generalized "Attribute Processors" and "Tag Processors"
   and created IProcessor, the interface implemented by any processor object of any kind
   (which can now apply of any type of DOM node, and not only Tags). "Attribute Processors"
@@ -12,7 +15,8 @@
   and general IProcessorMatcher interface and implementations.
 - (differences in Template resolver and resource resolver APIs)
 - (differences in Arguments)
-- 
+- Added a new "all-but-first" value to "th:remove" that removes all children tags
+  except the first one.
 
 
 1.1.4
