@@ -1,3 +1,27 @@
+2.0.0
+=====
+- Substituted the Java standard DOM API (org.w3c.dom.*) by Thymeleaf's own tailor-made
+  DOM representation (org.thymeleaf.dom)
+- Refactored Processor system: generalized "Attribute Processors" and "Tag Processors"
+  and created IProcessor, the interface implemented by any processor object of any kind
+  (which can now apply of any type of DOM node, and not only Tags). "Attribute Processors"
+  and "Tag Processors" are now specializations of IProcessors.
+- Redefined ITextInliner objects (text, javascript, dart inliners) as Processors for
+  Text and CDATASection nodes.
+- Removed the IApplicability class hierarchy and substituted by a much simpler 
+  and general IProcessorMatcher interface and implementations.
+- (differences in Template resolver and resource resolver APIs)
+- (differences in Arguments)
+- 
+
+
+1.1.4
+=====
+- Solved bug regarding the initialization of expression utility objects that prevented
+  the "#object" variable to change accordingly when a th:object attribute was specified,
+  thus raising an exception when executing valid expressions on it.
+
+
 1.1.3
 =====
 - Modified WebContext constructors so that they require now the ServletContext 
