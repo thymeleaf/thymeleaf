@@ -58,7 +58,7 @@ public final class PatternSpec {
     }
 
     
-    public final void initialize() {
+    public final synchronized void initialize() {
         
         if (!isInitialized()) {
             this.initialized = true;

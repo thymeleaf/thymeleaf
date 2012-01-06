@@ -10,12 +10,20 @@
   (which can now apply of any type of DOM node, and not only Tags). "Attribute Processors"
   and "Tag Processors" are now specializations of IProcessors.
 - Redefined ITextInliner objects (text, javascript, dart inliners) as Processors for
-  Text and CDATASection nodes. "Inlining" is now a Standard-Dialect feature and not a Thymeleaf
-  core engine one.
+  Text and CDATASection nodes. Inlining is now a Standard-Dialect feature and not a Thymeleaf
+  core engine one. Main interface is now called IStandardTextInliner.
 - Removed the IApplicability class hierarchy and substituted by a much simpler 
   and general IProcessorMatcher interface and implementations.
-- (differences in Template resolver and resource resolver APIs)
-- (differences in Arguments)
+- Created the TemplateProcessingParameters class containing all the info available for the
+  processing of the template before its resolution and parsing.
+- Made Arguments objects include the corresponding TemplateResolution object created after
+  resolving and parsing the template. Arguments is still immutable, so this means that
+  the Arguments object used at the Processors is now created after template resolution and
+  parsing. 
+- Modified IResourceResolver interface so that Resource Resolver objects now receive a
+  TemplateProcessingParameters object instead of an Arguments one.
+- Modified ITemplateResolver interface so that Template Resolver objects now receive a
+  TemplateProcessingParameters object instead of an Arguments one.
 - Added a new "all-but-first" value to "th:remove" that removes all children tags
   except the first one.
   

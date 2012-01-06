@@ -70,7 +70,7 @@ public class StandardMessageResolver
      * 
      * @return the default messages
      */
-    public synchronized Properties getDefaultMessages() {
+    public Properties getDefaultMessages() {
         final Properties properties = new Properties();
         properties.putAll(this.defaultMessages);
         return properties;
@@ -79,7 +79,7 @@ public class StandardMessageResolver
     
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Unsafe method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the default messages
@@ -97,7 +97,7 @@ public class StandardMessageResolver
      * 
      * @param defaultMessages the new default messages
      */
-    public synchronized void setDefaultMessages(final Properties defaultMessages) {
+    public void setDefaultMessages(final Properties defaultMessages) {
         checkNotInitialized();
         if (defaultMessages != null) {
             this.defaultMessages.putAll(defaultMessages);
@@ -113,7 +113,7 @@ public class StandardMessageResolver
      * @param key the message key
      * @param value the message value (text)
      */
-    public synchronized void addDefaultMessage(final String key, final String value) {
+    public void addDefaultMessage(final String key, final String value) {
         checkNotInitialized();
         Validate.notNull(key, "Key for default message cannot be null");
         Validate.notNull(value, "Value for default message cannot be null");
@@ -126,7 +126,7 @@ public class StandardMessageResolver
      *   Clears the set of default messages.
      * </p>
      */
-    public synchronized void clearDefaultMessages() {
+    public void clearDefaultMessages() {
         checkNotInitialized();
         this.defaultMessages.clear();
     }

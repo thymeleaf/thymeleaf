@@ -44,7 +44,7 @@ public abstract class AbstractMessageResolver
     private String name = null;
     private Integer order = null;
     
-    private boolean initialized;
+    private volatile boolean initialized;
     
     
     
@@ -127,14 +127,15 @@ public abstract class AbstractMessageResolver
     
 
 
-    public final synchronized String getName() {
+    public final String getName() {
+        checkInitialized();
         return this.name;
     }
 
     
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the name
@@ -151,20 +152,21 @@ public abstract class AbstractMessageResolver
      * 
      * @param name the new name
      */
-    public synchronized void setName(final String name) {
+    public void setName(final String name) {
         checkNotInitialized();
         this.name = name;
     }
     
     
-    public final synchronized Integer getOrder() {
+    public final Integer getOrder() {
+        checkInitialized();
         return this.order;
     }
 
     
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the order
@@ -181,7 +183,7 @@ public abstract class AbstractMessageResolver
      * 
      * @param order the new order
      */
-    public synchronized void setOrder(final Integer order) {
+    public void setOrder(final Integer order) {
         checkNotInitialized();
         this.order = order;
     }
