@@ -251,7 +251,7 @@ public final class Configuration {
     
     
     
-    synchronized void printConfiguration() {
+    void printConfiguration() {
         ConfigurationPrinterHelper.printConfiguration(
                 this.dialectConfigurations, this.mergedLenienciesByPrefix,
                 this.templateResolvers, this.messageResolvers, 
@@ -264,7 +264,7 @@ public final class Configuration {
     
     
     
-    public synchronized Map<String,IDialect> getDialects() {
+    public Map<String,IDialect> getDialects() {
         final Map<String,IDialect> dialects = new LinkedHashMap<String,IDialect>();
         for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
             dialects.put(dialectConfiguration.getPrefix(), dialectConfiguration.getDialect());
@@ -272,7 +272,7 @@ public final class Configuration {
         return dialects;
     }
     
-    synchronized void setDialects(final Map<String,IDialect> dialects) {
+    void setDialects(final Map<String,IDialect> dialects) {
         checkNotInitialized();
         Validate.notNull(dialects, "Dialect set cannot be null");
         Validate.isTrue(dialects.size() > 0, "Dialect set cannot be empty");
@@ -282,20 +282,20 @@ public final class Configuration {
         }
     }
     
-    synchronized void setDialect(final IDialect dialect) {
+    void setDialect(final IDialect dialect) {
         checkNotInitialized();
         Validate.notNull(dialect, "Dialect set cannot be null");
         this.dialectConfigurations.clear();
         this.dialectConfigurations.add(new DialectConfiguration(dialect.getPrefix(), dialect));
     }
     
-    synchronized void addDialect(final String prefix, final IDialect dialect) {
+    void addDialect(final String prefix, final IDialect dialect) {
         checkNotInitialized();
         Validate.notNull(dialect, "Dialect set cannot be null");
         this.dialectConfigurations.add(new DialectConfiguration(prefix, dialect));
     }
     
-    synchronized void clearDialects() {
+    void clearDialects() {
         checkNotInitialized();
         this.dialectConfigurations.clear();
     }
@@ -303,11 +303,11 @@ public final class Configuration {
     
     
     
-    public synchronized Set<ITemplateResolver> getTemplateResolvers() {
+    public Set<ITemplateResolver> getTemplateResolvers() {
         return Collections.unmodifiableSet(this.templateResolvers);
     }
     
-    synchronized void setTemplateResolvers(final Set<? extends ITemplateResolver> templateResolvers) {
+    void setTemplateResolvers(final Set<? extends ITemplateResolver> templateResolvers) {
         checkNotInitialized();
         Validate.notNull(templateResolvers, "Template Resolver set cannot be null");
         Validate.isTrue(templateResolvers.size() > 0, "Template Resolver set cannot be empty");
@@ -315,13 +315,13 @@ public final class Configuration {
         this.templateResolvers = new LinkedHashSet<ITemplateResolver>(templateResolvers);
     }
     
-    synchronized void addTemplateResolver(final ITemplateResolver templateResolver) {
+    void addTemplateResolver(final ITemplateResolver templateResolver) {
         checkNotInitialized();
         Validate.notNull(templateResolver, "Template Resolver cannot be null");
         this.templateResolvers.add(templateResolver);
     }
     
-    synchronized void setTemplateResolver(final ITemplateResolver templateResolver) {
+    void setTemplateResolver(final ITemplateResolver templateResolver) {
         checkNotInitialized();
         Validate.notNull(templateResolver, "Template Resolver cannot be null");
         this.templateResolvers = Collections.singleton(templateResolver);
@@ -331,11 +331,11 @@ public final class Configuration {
     
     
     
-    public synchronized Set<IMessageResolver> getMessageResolvers() {
+    public Set<IMessageResolver> getMessageResolvers() {
         return Collections.unmodifiableSet(this.messageResolvers);
     }
     
-    synchronized void setMessageResolvers(final Set<? extends IMessageResolver> messageResolvers) {
+    void setMessageResolvers(final Set<? extends IMessageResolver> messageResolvers) {
         checkNotInitialized();
         Validate.notNull(messageResolvers, "Message Resolver set cannot be null");
         Validate.isTrue(messageResolvers.size() > 0, "Message Resolver set cannot be empty");
@@ -343,13 +343,13 @@ public final class Configuration {
         this.messageResolvers = new LinkedHashSet<IMessageResolver>(messageResolvers);
     }
     
-    synchronized void addMessageResolver(final IMessageResolver messageResolver) {
+    void addMessageResolver(final IMessageResolver messageResolver) {
         checkNotInitialized();
         Validate.notNull(messageResolver, "Message Resolver cannot be null");
         this.messageResolvers.add(messageResolver);
     }
     
-    synchronized void setMessageResolver(final IMessageResolver messageResolver) {
+    void setMessageResolver(final IMessageResolver messageResolver) {
         checkNotInitialized();
         Validate.notNull(messageResolver, "Message Resolver cannot be null");
         this.messageResolvers = Collections.singleton(messageResolver);
@@ -358,7 +358,7 @@ public final class Configuration {
     
     
     
-    synchronized void setDefaultMessageResolvers(final Set<? extends IMessageResolver> defaultMessageResolvers) {
+    void setDefaultMessageResolvers(final Set<? extends IMessageResolver> defaultMessageResolvers) {
         checkNotInitialized();
         Validate.notNull(defaultMessageResolvers, "Default Message Resolver set cannot be null");
         Validate.isTrue(defaultMessageResolvers.size() > 0, "Default Message Resolver set cannot be empty");
@@ -371,11 +371,11 @@ public final class Configuration {
     
     
     
-    public synchronized int getParsedTemplateCacheSize() {
+    public int getParsedTemplateCacheSize() {
         return this.parsedTemplateCacheSize;
     }
     
-    synchronized void setParsedTemplateCacheSize(final int parsedTemplateCacheSize) {
+    void setParsedTemplateCacheSize(final int parsedTemplateCacheSize) {
         checkNotInitialized();
         this.parsedTemplateCacheSize = parsedTemplateCacheSize;
     }

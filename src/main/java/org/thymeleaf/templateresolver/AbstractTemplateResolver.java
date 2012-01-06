@@ -62,7 +62,7 @@ public abstract class AbstractTemplateResolver
     private final PatternSpec resolvablePatternSpec = new PatternSpec();
     
 
-    private boolean initialized;
+    private volatile boolean initialized;
     
                    
     public AbstractTemplateResolver() {
@@ -97,7 +97,7 @@ public abstract class AbstractTemplateResolver
                 this.name = this.getClass().getName();
             }
             
-            logger.info("[THYMELEAF] INITIALIZING TEMPLATE RESOLVER: " + this.getName());
+            logger.info("[THYMELEAF] INITIALIZING TEMPLATE RESOLVER: " + this.name);
             
             /*
              *  Initialize pattern specs to avoid further modifications
@@ -167,14 +167,15 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the name of the template resolver
      */
-    public synchronized String getName() {
+    public String getName() {
+        checkInitialized();
         return this.name;
     }
 
     
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the name
@@ -191,7 +192,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @param name the new name
      */
-    public synchronized void setName(final String name) {
+    public void setName(final String name) {
         checkNotInitialized();
         this.name = name;
     }
@@ -208,7 +209,8 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the order in which this template resolver will be called in the chain.
      */
-    public synchronized Integer getOrder() {
+    public Integer getOrder() {
+        checkInitialized();
         return this.order;
     }
 
@@ -232,7 +234,7 @@ public abstract class AbstractTemplateResolver
      * 
      * @param order the new order.
      */
-    public synchronized void setOrder(final Integer order) {
+    public void setOrder(final Integer order) {
         checkNotInitialized();
         this.order = order;
     }
@@ -254,7 +256,8 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the pattern spec
      */
-    public synchronized PatternSpec getResolvablePatternSpec() {
+    public PatternSpec getResolvablePatternSpec() {
+        checkInitialized();
         return this.resolvablePatternSpec;
     }
     
@@ -275,7 +278,8 @@ public abstract class AbstractTemplateResolver
      * 
      * @return the pattern spec
      */
-    public synchronized Set<String> getResolvablePatterns() {
+    public Set<String> getResolvablePatterns() {
+        checkInitialized();
         return this.resolvablePatternSpec.getPatterns();
     }
 
@@ -296,7 +300,8 @@ public abstract class AbstractTemplateResolver
      * 
      * @param resolvablePatterns the new patterns
      */
-    public synchronized void setResolvablePatterns(final Set<String> resolvablePatterns) {
+    public void setResolvablePatterns(final Set<String> resolvablePatterns) {
+        checkNotInitialized();
         this.resolvablePatternSpec.setPatterns(resolvablePatterns);
     }
     

@@ -63,7 +63,7 @@ public class FileTemplateResolver
      * @param resourceResolver the new resource resolver
      */
     @Override
-    public synchronized void setResourceResolver(final IResourceResolver resourceResolver) {
+    public void setResourceResolver(final IResourceResolver resourceResolver) {
         throw new ConfigurationException(
                 "Cannot set a resource resolver on " + this.getClass().getName() + ". If " +
                 "you want to set your own resource resolver, use " + TemplateResolver.class.getName() + 

@@ -174,14 +174,15 @@ public class TemplateResolver
      * 
      * @return the prefix.
      */
-    public final synchronized String getPrefix() {
+    public final String getPrefix() {
+        checkInitialized();
         return this.prefix;
     }
     
     
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the prefix
@@ -199,7 +200,7 @@ public class TemplateResolver
      * 
      * @param prefix the prefix to be set.
      */
-    public synchronized void setPrefix(final String prefix) {
+    public void setPrefix(final String prefix) {
         checkNotInitialized();
         this.prefix = prefix;
     }
@@ -213,14 +214,15 @@ public class TemplateResolver
      * 
      * @return the suffix.
      */
-    public final synchronized String getSuffix() {
+    public final String getSuffix() {
+        checkInitialized();
         return this.suffix;
     }
 
 
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the suffix
@@ -238,7 +240,7 @@ public class TemplateResolver
      * 
      * @param suffix the suffix to be set.
      */
-    public synchronized void setSuffix(final String suffix) {
+    public void setSuffix(final String suffix) {
         checkNotInitialized();
         this.suffix = suffix;
     }
@@ -252,14 +254,15 @@ public class TemplateResolver
      * 
      * @return the character encoding.
      */
-    public final synchronized String getCharacterEncoding() {
+    public final String getCharacterEncoding() {
+        checkInitialized();
         return this.characterEncoding;
     }
 
 
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the character encoding
@@ -276,7 +279,7 @@ public class TemplateResolver
      * 
      * @param characterEncoding the character encoding to be used.
      */
-    public synchronized void setCharacterEncoding(final String characterEncoding) {
+    public void setCharacterEncoding(final String characterEncoding) {
         checkNotInitialized();
         this.characterEncoding = characterEncoding;
     }
@@ -295,14 +298,15 @@ public class TemplateResolver
      * 
      * @return the template mode to be used.
      */
-    public final synchronized TemplateMode getTemplateMode() {
+    public final TemplateMode getTemplateMode() {
+        checkInitialized();
         return this.templateMode;
     }
 
 
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the template mode
@@ -324,7 +328,7 @@ public class TemplateResolver
      * 
      * @param templateMode the template mode.
      */
-    public synchronized void setTemplateMode(final TemplateMode templateMode) {
+    public void setTemplateMode(final TemplateMode templateMode) {
         checkNotInitialized();
         Validate.notNull(templateMode, "Cannot set a null template mode value");
         this.templateMode = templateMode;
@@ -344,14 +348,15 @@ public class TemplateResolver
      * 
      * @return whether templates resolved are cacheable or not.
      */
-    public final synchronized boolean isCacheable() {
+    public final boolean isCacheable() {
+        checkInitialized();
         return this.cacheable;
     }
 
 
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return whether templates resolved are cacheable or not. 
@@ -373,7 +378,7 @@ public class TemplateResolver
      * 
      * @param cacheable whether resolved patterns should be considered cacheable or not.
      */
-    public synchronized void setCacheable(final boolean cacheable) {
+    public void setCacheable(final boolean cacheable) {
         checkNotInitialized();
         this.cacheable = cacheable;
     }
@@ -392,14 +397,15 @@ public class TemplateResolver
      * 
      * @return the cache TTL for resolved templates.
      */
-    public final synchronized Long getCacheTTLMs() {
+    public final Long getCacheTTLMs() {
+        checkInitialized();
         return this.cacheTTLMs;
     }
 
 
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the cache TTl for resolved templates. 
@@ -421,7 +427,7 @@ public class TemplateResolver
      * 
      * @param cacheTTLMs the new cache TTL, or null for using natural LRU eviction.
      */
-    public synchronized void setCacheTTLMs(final Long cacheTTLMs) {
+    public void setCacheTTLMs(final Long cacheTTLMs) {
         checkNotInitialized();
         this.cacheTTLMs = cacheTTLMs;
     }
@@ -441,7 +447,8 @@ public class TemplateResolver
      * 
      * @return the map of template aliases.
      */
-    public final synchronized Map<String, String> getTemplateAliases() {
+    public final Map<String, String> getTemplateAliases() {
+        checkInitialized();
         return Collections.unmodifiableMap(this.templateAliases);
     }
 
@@ -460,7 +467,7 @@ public class TemplateResolver
      * 
      * @param templateAliases the new template aliases.
      */
-    public synchronized void setTemplateAliases(final Map<String,String> templateAliases) {
+    public void setTemplateAliases(final Map<String,String> templateAliases) {
         checkNotInitialized();
         if (templateAliases != null) {
             this.templateAliases.putAll(templateAliases);
@@ -476,7 +483,7 @@ public class TemplateResolver
      * @param alias the new alias name
      * @param templateName the name of the template the alias will be applied to
      */
-    public synchronized void addTemplateAlias(final String alias, final String templateName) {
+    public void addTemplateAlias(final String alias, final String templateName) {
         checkNotInitialized();
         Validate.notNull(alias, "Alias cannot be null");
         Validate.notNull(templateName, "Template name cannot be null");
@@ -489,7 +496,7 @@ public class TemplateResolver
      *   Removes all currently configured template aliases.
      * </p>
      */
-    public synchronized void clearTemplateAliases() {
+    public void clearTemplateAliases() {
         checkNotInitialized();
         this.templateAliases.clear();
     }
@@ -506,7 +513,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getXmlTemplateModePatternSpec() {
+    public final PatternSpec getXmlTemplateModePatternSpec() {
+        checkInitialized();
         return this.xmlTemplateModePatternSpec;
     }
     
@@ -521,7 +529,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized Set<String> getXmlTemplateModePatterns() {
+    public final Set<String> getXmlTemplateModePatterns() {
+        checkInitialized();
         return this.xmlTemplateModePatternSpec.getPatterns();
     }
 
@@ -536,7 +545,8 @@ public class TemplateResolver
      * 
      * @param newXmlTemplatesModePatterns the new patterns
      */
-    public final synchronized void setXmlTemplateModePatterns(final Set<String> newXmlTemplatesModePatterns) {
+    public final void setXmlTemplateModePatterns(final Set<String> newXmlTemplatesModePatterns) {
+        checkNotInitialized();
         this.xmlTemplateModePatternSpec.setPatterns(newXmlTemplatesModePatterns);
     }
     
@@ -552,7 +562,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getValidXmlTemplateModePatternSpec() {
+    public final PatternSpec getValidXmlTemplateModePatternSpec() {
+        checkInitialized();
         return this.validXmlTemplateModePatternSpec;
     }
     
@@ -567,7 +578,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized Set<String> getValidXmlTemplateModePatterns() {
+    public final Set<String> getValidXmlTemplateModePatterns() {
+        checkInitialized();
         return this.validXmlTemplateModePatternSpec.getPatterns();
     }
 
@@ -582,7 +594,8 @@ public class TemplateResolver
      * 
      * @param newValidXmlTemplatesModePatterns the new patterns
      */
-    public final synchronized void setValidXmlTemplateModePatterns(final Set<String> newValidXmlTemplatesModePatterns) {
+    public final void setValidXmlTemplateModePatterns(final Set<String> newValidXmlTemplatesModePatterns) {
+        checkNotInitialized();
         this.validXmlTemplateModePatternSpec.setPatterns(newValidXmlTemplatesModePatterns);
     }
     
@@ -599,7 +612,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getXhtmlTemplateModePatternSpec() {
+    public final PatternSpec getXhtmlTemplateModePatternSpec() {
+        checkInitialized();
         return this.xhtmlTemplateModePatternSpec;
     }
     
@@ -614,7 +628,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized Set<String> getXhtmlTemplateModePatterns() {
+    public final Set<String> getXhtmlTemplateModePatterns() {
+        checkInitialized();
         return this.xhtmlTemplateModePatternSpec.getPatterns();
     }
 
@@ -629,7 +644,8 @@ public class TemplateResolver
      * 
      * @param newXhtmlTemplatesModePatterns the new patterns
      */
-    public final synchronized void setXhtmlTemplateModePatterns(final Set<String> newXhtmlTemplatesModePatterns) {
+    public final void setXhtmlTemplateModePatterns(final Set<String> newXhtmlTemplatesModePatterns) {
+        checkNotInitialized();
         this.xhtmlTemplateModePatternSpec.setPatterns(newXhtmlTemplatesModePatterns);
     }
     
@@ -647,7 +663,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getValidXhtmlTemplateModePatternSpec() {
+    public final PatternSpec getValidXhtmlTemplateModePatternSpec() {
+        checkInitialized();
         return this.validXhtmlTemplateModePatternSpec;
     }
     
@@ -662,7 +679,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized Set<String> getValidXhtmlTemplateModePatterns() {
+    public final Set<String> getValidXhtmlTemplateModePatterns() {
+        checkInitialized();
         return this.validXhtmlTemplateModePatternSpec.getPatterns();
     }
 
@@ -677,7 +695,8 @@ public class TemplateResolver
      * 
      * @param newValidXhtmlTemplatesModePatterns the new patterns
      */
-    public final synchronized void setValidXhtmlTemplateModePatterns(final Set<String> newValidXhtmlTemplatesModePatterns) {
+    public final void setValidXhtmlTemplateModePatterns(final Set<String> newValidXhtmlTemplatesModePatterns) {
+        checkNotInitialized();
         this.validXhtmlTemplateModePatternSpec.setPatterns(newValidXhtmlTemplatesModePatterns);
     }
     
@@ -696,7 +715,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getLegacyHtml5TemplateModePatternSpec() {
+    public final PatternSpec getLegacyHtml5TemplateModePatternSpec() {
+        checkInitialized();
         return this.legacyHtml5TemplateModePatternSpec;
     }
     
@@ -711,7 +731,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized Set<String> getLegacyHtml5TemplateModePatterns() {
+    public final Set<String> getLegacyHtml5TemplateModePatterns() {
+        checkInitialized();
         return this.legacyHtml5TemplateModePatternSpec.getPatterns();
     }
 
@@ -726,7 +747,8 @@ public class TemplateResolver
      * 
      * @param newLegacyHtml5TemplatesModePatterns the new patterns
      */
-    public final synchronized void setLegacyHtml5TemplateModePatterns(final Set<String> newLegacyHtml5TemplatesModePatterns) {
+    public final void setLegacyHtml5TemplateModePatterns(final Set<String> newLegacyHtml5TemplatesModePatterns) {
+        checkNotInitialized();
         this.legacyHtml5TemplateModePatternSpec.setPatterns(newLegacyHtml5TemplatesModePatterns);
     }
     
@@ -743,7 +765,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getHtml5TemplateModePatternSpec() {
+    public final PatternSpec getHtml5TemplateModePatternSpec() {
+        checkInitialized();
         return this.html5TemplateModePatternSpec;
     }
     
@@ -758,7 +781,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized Set<String> getHtml5TemplateModePatterns() {
+    public final Set<String> getHtml5TemplateModePatterns() {
+        checkInitialized();
         return this.html5TemplateModePatternSpec.getPatterns();
     }
 
@@ -773,7 +797,8 @@ public class TemplateResolver
      * 
      * @param newHtml5TemplatesModePatterns the new patterns
      */
-    public final synchronized void setHtml5TemplateModePatterns(final Set<String> newHtml5TemplatesModePatterns) {
+    public final void setHtml5TemplateModePatterns(final Set<String> newHtml5TemplatesModePatterns) {
+        checkNotInitialized();
         this.html5TemplateModePatternSpec.setPatterns(newHtml5TemplatesModePatterns);
     }
     
@@ -795,7 +820,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getCacheablePatternSpec() {
+    public final PatternSpec getCacheablePatternSpec() {
+        checkInitialized();
         return this.cacheablePatternSpec;
     }
     
@@ -816,7 +842,8 @@ public class TemplateResolver
      * 
      * @return the patterns
      */
-    public final synchronized Set<String> getCacheablePatterns() {
+    public final Set<String> getCacheablePatterns() {
+        checkInitialized();
         return this.cacheablePatternSpec.getPatterns();
     }
 
@@ -837,7 +864,8 @@ public class TemplateResolver
      * 
      * @param cacheablePatterns the new patterns
      */
-    public final synchronized void setCacheablePatterns(final Set<String> cacheablePatterns) {
+    public final void setCacheablePatterns(final Set<String> cacheablePatterns) {
+        checkNotInitialized();
         this.cacheablePatternSpec.setPatterns(cacheablePatterns);
     }
     
@@ -859,7 +887,8 @@ public class TemplateResolver
      * 
      * @return the pattern spec
      */
-    public final synchronized PatternSpec getNonCacheablePatternSpec() {
+    public final PatternSpec getNonCacheablePatternSpec() {
+        checkInitialized();
         return this.nonCacheablePatternSpec;
     }
     
@@ -880,7 +909,8 @@ public class TemplateResolver
      * 
      * @return the patterns
      */
-    public final synchronized Set<String> getNonCacheablePatterns() {
+    public final Set<String> getNonCacheablePatterns() {
+        checkInitialized();
         return this.nonCacheablePatternSpec.getPatterns();
     }
 
@@ -901,7 +931,8 @@ public class TemplateResolver
      * 
      * @param nonCacheablePatterns the new patterns
      */
-    public final synchronized void setNonCacheablePatterns(final Set<String> nonCacheablePatterns) {
+    public final void setNonCacheablePatterns(final Set<String> nonCacheablePatterns) {
+        checkNotInitialized();
         this.nonCacheablePatternSpec.setPatterns(nonCacheablePatterns);
     }
     
@@ -919,13 +950,14 @@ public class TemplateResolver
      * 
      * @return the resource resolver
      */
-    public synchronized IResourceResolver getResourceResolver() {
+    public IResourceResolver getResourceResolver() {
+        checkInitialized();
         return this.resourceResolver;
     }
 
     /**
      * <p>
-     *   Unsynchronized method <b>meant only for use by subclasses</b>. 
+     *   Uninitialized method <b>meant only for use by subclasses</b>. 
      * </p>
      * 
      * @return the resource resolver
@@ -941,7 +973,7 @@ public class TemplateResolver
      * 
      * @param resourceResolver the new resource resolver.
      */
-    public synchronized void setResourceResolver(final IResourceResolver resourceResolver) {
+    public void setResourceResolver(final IResourceResolver resourceResolver) {
         checkNotInitialized();
         this.resourceResolver = resourceResolver;
     }

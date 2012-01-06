@@ -77,12 +77,12 @@ public final class PatternSpec {
 
 
     
-    public final synchronized Set<String> getPatterns() {
+    public final Set<String> getPatterns() {
         return Collections.unmodifiableSet(this.patternStrs);
     }
 
 
-    public final synchronized void setPatterns(final Set<String> newPatterns) {
+    public final void setPatterns(final Set<String> newPatterns) {
         checkNotInitialized();
         if (newPatterns != null) {
             this.patternStrs.addAll(newPatterns);
@@ -93,7 +93,7 @@ public final class PatternSpec {
     }
     
     
-    public final synchronized void addPattern(final String pattern) {
+    public final void addPattern(final String pattern) {
         checkNotInitialized();
         Validate.notEmpty(pattern, "Pattern cannot be null or empty");
         this.patternStrs.add(pattern);
@@ -101,7 +101,7 @@ public final class PatternSpec {
     }
 
     
-    public final synchronized void clearPatterns() {
+    public final void clearPatterns() {
         checkNotInitialized();
         this.patternStrs.clear();
         this.patterns.clear();
