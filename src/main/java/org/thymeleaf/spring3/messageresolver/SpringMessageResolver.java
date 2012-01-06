@@ -106,14 +106,15 @@ public final class SpringMessageResolver
      * 
      * @return the message source
      */
-    public final synchronized MessageSource getMessageSource() {
+    public final MessageSource getMessageSource() {
+        checkInitialized();
         return this.messageSource;
     }
 
 
     /**
      * <p>
-     *   Unsynchronized method meant for use by subclasses.
+     *   Uninitialized method meant for use by subclasses.
      * </p>
      * 
      * @return the message source
@@ -130,7 +131,7 @@ public final class SpringMessageResolver
      * 
      * @param messageSource the message source
      */
-    public synchronized void setMessageSource(final MessageSource messageSource) {
+    public void setMessageSource(final MessageSource messageSource) {
         checkNotInitialized();
         this.messageSource = messageSource;
     }
