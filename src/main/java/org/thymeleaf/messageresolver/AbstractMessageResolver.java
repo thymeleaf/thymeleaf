@@ -69,7 +69,7 @@ public abstract class AbstractMessageResolver
                 this.name = this.getClass().getName();
             }
             
-            logger.info("[THYMELEAF] INITIALIZING MESSAGE RESOLVER: " + this.getName());
+            logger.info("[THYMELEAF] INITIALIZING MESSAGE RESOLVER: " + this.name);
             
             initializeSpecific();
             
