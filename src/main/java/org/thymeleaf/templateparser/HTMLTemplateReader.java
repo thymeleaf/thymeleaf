@@ -38,7 +38,7 @@ import org.thymeleaf.exceptions.TemplateInputException;
  * @since 1.1
  *
  */
-final class HTMLTemplateReader extends Reader {
+public final class HTMLTemplateReader extends Reader {
 
     
     private static final Logger readerLogger = LoggerFactory.getLogger(HTMLTemplateReader.class);
@@ -84,7 +84,7 @@ final class HTMLTemplateReader extends Reader {
 
 
     
-    HTMLTemplateReader(final Reader in, final int bufferSize, 
+    public HTMLTemplateReader(final Reader in, final int bufferSize, 
             final boolean processDoctype, final boolean processEntities, 
             final boolean processAttributeValues) {
         super();

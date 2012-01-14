@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import org.thymeleaf.TemplateMode;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -69,7 +68,7 @@ public class TestTemplateResolver implements ITemplateResolver {
         final TemplateResolution templateResolution = 
             new TemplateResolution(
                     templateName, "TEST", resourceResolver, 
-                    "UTF-8", TemplateMode.HTML5, 
+                    "UTF-8", "HTML5", 
                     new NonCacheableTemplateResolutionValidity());
         
         return templateResolution;

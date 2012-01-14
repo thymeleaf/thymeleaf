@@ -18,7 +18,7 @@ public class StringTemplateResolver implements ITemplateResolver
     private String resourceName = StringTemplateResolver.class.getName();
     private String content;
     private String characterEncoding = "utf-8";
-    private TemplateMode templateMode = TemplateMode.XHTML;
+    private String templateMode = "XHTML";
     private boolean cacheable = false;
     private Integer order = null;
     
@@ -46,7 +46,7 @@ public class StringTemplateResolver implements ITemplateResolver
         return this;
     }
     
-    public StringTemplateResolver setTemplateMode(TemplateMode templateMode)
+    public StringTemplateResolver setTemplateMode(String templateMode)
     {
         this.templateMode = templateMode;
         return this;
@@ -69,7 +69,7 @@ public class StringTemplateResolver implements ITemplateResolver
     protected IResourceResolver getResourceResolver()
     {
         return new IResourceResolver() {
-            @Override
+
             public InputStream getResourceAsStream(
                 TemplateProcessingParameters templateProcessingParameters,
                 String resourceName)
@@ -77,7 +77,6 @@ public class StringTemplateResolver implements ITemplateResolver
                 return new ReaderInputStream(new StringReader(content));
             }
             
-            @Override
             public String getName()
             {
                 return resourceName + "--ResourceResolver";
@@ -88,13 +87,12 @@ public class StringTemplateResolver implements ITemplateResolver
     protected ITemplateResolutionValidity getValidity()
     {
         return new ITemplateResolutionValidity() {
-            @Override
+
             public boolean isCacheable()
             {
                 return cacheable;
             }
             
-            @Override
             public boolean isCacheStillValid()
             {
                 return true;
@@ -102,26 +100,22 @@ public class StringTemplateResolver implements ITemplateResolver
         };
     }
 
-    @Override
     public String getName()
     {
         return resourceName;
     }
 
-    @Override
     public Integer getOrder()
     {
         return order;
     }
 
-    @Override
     public TemplateResolution resolveTemplate(TemplateProcessingParameters templateProcessingParameters)
     {
         return new TemplateResolution(resourceName, resourceName,
             getResourceResolver(), characterEncoding, templateMode, getValidity());
     }
 
-    @Override
     public void initialize()
     {
         // TODO Auto-generated method stub
