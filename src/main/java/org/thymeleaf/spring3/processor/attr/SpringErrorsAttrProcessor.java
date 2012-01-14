@@ -20,18 +20,20 @@
 package org.thymeleaf.spring3.processor.attr;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.NestableNode;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
+import org.thymeleaf.templateparser.ITemplateParser;
 
 
 
@@ -95,11 +97,16 @@ public final class SpringErrorsAttrProcessor
             tag.clearChildren();
             
             
+            final Configuration configuration = arguments.getConfiguration();
+            
+            final ITemplateParser templateParser =
+                    configuration.getTemplateModeHandler(
+                            arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
+            
             // Use the parser to obtain a DOM from the String
-            final NestableNode fragNode = 
-                arguments.getTemplateParser().parseXMLString(strBuilder.toString());
+            final List<Node> fragNodes = templateParser.parseFragment(configuration, strBuilder.toString());
 
-            for (final Node child : fragNode.getChildren()) {
+            for (final Node child : fragNodes) {
                 child.setSkippable(true);
                 tag.addChild(child);
             }
