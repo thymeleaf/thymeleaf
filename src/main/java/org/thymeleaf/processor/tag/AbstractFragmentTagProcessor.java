@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.ParsedTemplate;
+import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
@@ -144,7 +144,7 @@ public abstract class AbstractFragmentTagProcessor
                 new TemplateProcessingParameters(
                         arguments.getConfiguration(), fragmentTemplateName, arguments.getContext());
             
-            final ParsedTemplate parsedTemplate = arguments.getTemplateParser().parseDocument(fragmentTemplateProcessingParameters);
+            final Template parsedTemplate = arguments.getTemplateRepository().getTemplate(fragmentTemplateProcessingParameters);
             
             NestableNode fragmentNode = null; 
             if (fragmentSpec instanceof NamedFragmentSpec) {
@@ -155,7 +155,7 @@ public abstract class AbstractFragmentTagProcessor
                 final String fragmentAttributeValue = namedFragmentSpec.getFragmentAttributeValue();
                 
                 fragmentNode = 
-                    DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument().getRoot(), fragmentTagName, fragmentAttributeName, fragmentAttributeValue);
+                    DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentTagName, fragmentAttributeName, fragmentAttributeValue);
                                         
                 if (fragmentNode == null) {
                     throw new AttrProcessorException(
@@ -164,7 +164,7 @@ public abstract class AbstractFragmentTagProcessor
                 
             } else if (fragmentSpec instanceof CompleteTemplateFragmentSpec) {
                 
-                fragmentNode = parsedTemplate.getDocument().getRoot();
+                fragmentNode = parsedTemplate.getDocument();
                 
                 if (fragmentNode == null) {
                     throw new AttrProcessorException(

@@ -22,12 +22,13 @@ package org.thymeleaf.processor.tag;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.NestableNode;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.exceptions.AttrProcessorException;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.templateparser.ITemplateParser;
 
 /**
  * 
@@ -58,13 +59,20 @@ public abstract class AbstractUnescapedTextChildModifierTagProcessor
         
         try {
             
-            // Use the parser to obtain a DOM from the String
-            final NestableNode fragNode = 
-                arguments.getTemplateParser().parseXMLString(text);
+            final Configuration configuration = arguments.getConfiguration();
             
-            fragNode.setSkippable(true);
+            final ITemplateParser templateParser =
+                    configuration.getTemplateModeHandler(
+                            arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
+            
+            // Use the parser to obtain a DOM from the String
+            final List<Node> fragNodes = templateParser.parseFragment(configuration, text);
+            
+            for (final Node node : fragNodes) {
+                node.setSkippable(true);
+            }
 
-            return fragNode.getChildren();
+            return fragNodes;
             
         } catch (final TemplateEngineException e) {
             throw e;
@@ -74,6 +82,7 @@ public abstract class AbstractUnescapedTextChildModifierTagProcessor
         }
         
     }
+
 
     
     

@@ -42,6 +42,8 @@ import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.templatecache.ITemplateCache;
+import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.util.Validate;
 
@@ -55,7 +57,6 @@ import org.thymeleaf.util.Validate;
 public final class Configuration {
     
 
-    public static final int DEFAULT_PARSED_TEMPLATE_CACHE_SIZE = 20;
     public static final IDialect STANDARD_THYMELEAF_DIALECT = new StandardDialect();
 
     
@@ -63,6 +64,9 @@ public final class Configuration {
     
     private Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>();
     private Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>();
+    private Set<ITemplateModeHandler> templateModeHandlers = new LinkedHashSet<ITemplateModeHandler>();
+    
+    private ITemplateCache templateCache = null;
     
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByTagName;
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByAttributeName;
@@ -72,27 +76,26 @@ public final class Configuration {
     private Map<String,Boolean> mergedLenienciesByPrefix = null;
     private Set<IDocTypeResolutionEntry> mergedDocTypeResolutionEntries = null;
     private Set<IDocTypeTranslation> mergedDocTypeTranslations = null;
-    
-    private int parsedTemplateCacheSize;
+
+    private Map<String,ITemplateModeHandler> templateModeHandlersByName = new HashMap<String,ITemplateModeHandler>();
     
     private Set<IMessageResolver> defaultMessageResolvers = null;
+    private Set<ITemplateModeHandler> defaultTemplateModeHandlers = null;
     
     private Map<String,String> prefixesByXmlnsAttributeName = null;
     
     private volatile boolean initialized;
     
     
-    
 
     
-    Configuration() {
+    public Configuration() {
         
         super();
         
         this.dialectConfigurations = new LinkedHashSet<DialectConfiguration>();
         this.dialectConfigurations.add(
                 new DialectConfiguration(STANDARD_THYMELEAF_DIALECT.getPrefix(), STANDARD_THYMELEAF_DIALECT));
-        this.parsedTemplateCacheSize = DEFAULT_PARSED_TEMPLATE_CACHE_SIZE;
         this.initialized = false;
         
     }
@@ -226,6 +229,34 @@ public final class Configuration {
             }
 
             
+            /*
+             * Checking template mode handlers
+             */
+            if (this.templateModeHandlers == null) {
+                throw new ConfigurationException("Cannot initialize: template mode handlers set is null");
+            }
+            if (this.templateModeHandlers.size() == 0) {
+                // No message resolvers have been set, so default initialization will be performed
+                if (this.defaultTemplateModeHandlers == null || this.defaultTemplateModeHandlers.size() == 0) {
+                    throw new ConfigurationException(
+                            "Cannot initialize: no template mode handlers have been set and " +
+                            "no default template mode handlers have been set either.");
+                }
+                this.templateModeHandlers = this.defaultTemplateModeHandlers;
+            }
+
+            for (final ITemplateModeHandler handler : this.templateModeHandlers) {
+                if (this.templateModeHandlersByName.containsKey(handler.getTemplateModeName())) {
+                    throw new ConfigurationException(
+                            "More than one handler configured for template mode \"" + handler.getTemplateModeName() + "\"");
+                }
+                if (handler.getTemplateParser() == null) {
+                    throw new ConfigurationException(
+                            "Null parser returned by handler for template mode \"" + handler.getTemplateModeName() + "\"");
+                }
+                this.templateModeHandlersByName.put(handler.getTemplateModeName(), handler);
+            }
+            
             
             /*
              * Initialize xmlns attribute names
@@ -255,12 +286,27 @@ public final class Configuration {
         ConfigurationPrinterHelper.printConfiguration(
                 this.dialectConfigurations, this.mergedLenienciesByPrefix,
                 this.templateResolvers, this.messageResolvers, 
-                this.parsedTemplateCacheSize);
+                this.templateCache, this.templateModeHandlers);
     }
     
     
     
     
+    
+    
+    public ITemplateCache getTemplateCache() {
+        checkInitialized();
+        return this.templateCache;
+    }
+    
+    
+    void setTemplateCache(final ITemplateCache templateCache) {
+        // Can be set to null (= no cache)
+        checkNotInitialized();
+        this.templateCache = templateCache;
+    }
+
+ 
     
     
     
@@ -371,13 +417,35 @@ public final class Configuration {
     
     
     
-    public int getParsedTemplateCacheSize() {
-        return this.parsedTemplateCacheSize;
+    public Set<ITemplateModeHandler> getTemplateModeHandlers() {
+        return Collections.unmodifiableSet(this.templateModeHandlers);
     }
     
-    void setParsedTemplateCacheSize(final int parsedTemplateCacheSize) {
+    public ITemplateModeHandler getTemplateModeHandler(final String templateMode) {
+        return this.templateModeHandlersByName.get(templateMode);
+    }
+    
+    void setTemplateModeHandlers(final Set<? extends ITemplateModeHandler> templateModeHandlers) {
         checkNotInitialized();
-        this.parsedTemplateCacheSize = parsedTemplateCacheSize;
+        Validate.notNull(templateModeHandlers, "Template Mode Handler set cannot be null");
+        Validate.isTrue(templateModeHandlers.size() > 0, "Template Mode Handler set cannot be empty");
+        Validate.containsNoNulls(templateModeHandlers, "Template Mode Handler set cannot contain any nulls");
+        this.templateModeHandlers = new LinkedHashSet<ITemplateModeHandler>(templateModeHandlers);
+    }
+    
+    void addTemplateModeHandler(final ITemplateModeHandler templateModeHandler) {
+        checkNotInitialized();
+        Validate.notNull(templateModeHandler, "Template Mode Handler cannot be null");
+        this.templateModeHandlers.add(templateModeHandler);
+    }
+    
+    
+    void setDefaultTemplateModeHandlers(final Set<? extends ITemplateModeHandler> defaultTemplateModeHandlers) {
+        checkNotInitialized();
+        Validate.notNull(defaultTemplateModeHandlers, "Default Template Mode Handler set cannot be null");
+        Validate.isTrue(defaultTemplateModeHandlers.size() > 0, "Default Template Mode Handler set cannot be empty");
+        Validate.containsNoNulls(defaultTemplateModeHandlers, "Default Template Mode Handler set cannot contain any nulls");
+        this.defaultTemplateModeHandlers = new LinkedHashSet<ITemplateModeHandler>(defaultTemplateModeHandlers);
     }
     
     
@@ -548,8 +616,6 @@ public final class Configuration {
         return result;
         
     }
-
-
     
     
     private static MergedDialectArtifacts mergeDialects(final Set<DialectConfiguration> dialectConfigurations) {

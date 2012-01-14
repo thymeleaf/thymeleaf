@@ -24,7 +24,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.PatternSpec;
-import org.thymeleaf.TemplateMode;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.exceptions.NotInitializedException;
@@ -403,7 +402,7 @@ public abstract class AbstractTemplateResolver
      * @param templateProcessingParameters the template processing parameters
      * @return the template mode to be applied
      */
-    protected abstract TemplateMode computeTemplateMode(final TemplateProcessingParameters templateProcessingParameters);
+    protected abstract String computeTemplateMode(final TemplateProcessingParameters templateProcessingParameters);
     
     
     

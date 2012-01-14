@@ -34,13 +34,20 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
+import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.OutputCreationException;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.templatecache.ITemplateCache;
+import org.thymeleaf.templatecache.StandardTemplateCache;
+import org.thymeleaf.templatemode.ITemplateModeHandler;
+import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.templatewriter.ITemplateWriter;
 import org.thymeleaf.util.Validate;
 
 
@@ -221,7 +228,7 @@ public class TemplateEngine {
     
     
     private final Configuration configuration;
-    private TemplateParser templateParser;
+    private TemplateRepository templateRepository;
 
     private volatile boolean initialized;
     
@@ -242,7 +249,9 @@ public class TemplateEngine {
         super();
         this.configuration = new Configuration();
         this.initialized = false;
+        setTemplateCache(new StandardTemplateCache(20));
         setDefaultMessageResolvers(Collections.singleton(new StandardMessageResolver()));
+        setDefaultTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
     }
 
     
@@ -276,7 +285,22 @@ public class TemplateEngine {
         return this.configuration;
     }
     
+    
+    /**
+     * <p>
+     *   Returns the template repository.
+     * </p>
+     * 
+     * @return the template repository
+     */
+    public TemplateRepository getTemplateRepository() {
+        if (!isInitialized()) {
+            throw new NotInitializedException("Template Engine has not been initialized");
+        }
+        return this.templateRepository;
+    }
 
+    
     /**
      * <p>
      *   Returns the configured dialects, referenced by their prefixes.
@@ -471,9 +495,47 @@ public class TemplateEngine {
     public void setTemplateResolver(final ITemplateResolver templateResolver) {
         this.configuration.setTemplateResolver(templateResolver);
     }
-    
-    
 
+    
+    /**
+     * <p>
+     *   Returns the template cache in effect.
+     * </p>
+     * <p>
+     *   By default, an instance of {@link org.thymeleaf.templatecache.StandardTemplateCache}
+     *   with a size of 20 is set.
+     * </p>
+     * 
+     * @return the template cache
+     */
+    public ITemplateCache getTemplateCache() {
+        return this.configuration.getTemplateCache();
+    }
+    
+    /**
+     * <p>
+     *   Sets the Template Cache to be used. If set to null, no template cache will be used.
+     * </p>
+     * <p>
+     *   By default, an instance of {@link org.thymeleaf.templatecache.StandardTemplateCache}
+     *   with a size of 20 is set.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     * 
+     * @param parsedTemplateCache the template cache to be set.
+     * 
+     */
+    public void setTemplateCache(final ITemplateCache templateCache) {
+        // Can be set to null (= no cache)
+        this.configuration.setTemplateCache(templateCache);
+    }
+
+    
     /**
      * <p>
      *   Returns the set of Message Resolvers configured for this Template Engine.
@@ -510,7 +572,7 @@ public class TemplateEngine {
 
     /**
      * <p>
-     *   Sets a single messae resolver for this template engine.
+     *   Sets a single message resolver for this template engine.
      * </p>
      * <p>
      *   Calling this method is equivalent to calling {@link #setMessageResolvers(Set)}
@@ -541,34 +603,72 @@ public class TemplateEngine {
         this.configuration.setDefaultMessageResolvers(defaultMessageResolvers);
     }
 
-
+    
     /**
      * <p>
-     *   Returns the size of the LRU cach&eacute; of parsed templates.
+     *   Returns the set of Template Mode Handlers configured for this Template Engine.
+     * </p>
+     * <p>
+     *   By default, template mode handlers set are
+     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
      * </p>
      * 
-     * @return the current size of the cach&eacute;
+     * @return the set of Template Mode Handlers.
      */
-    public final int getParsedTemplateCacheSize() {
-        return this.configuration.getParsedTemplateCacheSize();
+    public final Set<ITemplateModeHandler> getTemplateModeHandlers() {
+        return this.configuration.getTemplateModeHandlers();
     }
 
-    
     /**
      * <p>
-     *   Sets the new size for the template cach&eacute;.
+     *   Sets the Template Mode Handlers to be used by this template engine.
      * </p>
      * <p>
-     *   This operation can only be executed before processing templates for the first
-     *   time. Once a template is processed, the template engine is considered to be
-     *   <i>initialized</i>, and from then on any attempt to change its configuration
-     *   will result in an exception.
+     *   By default, template mode handlers set are
+     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
      * </p>
      * 
-     * @param parsedTemplateCacheSize the new size for the cach&eacute;
+     * @param templateModeHandlers the Set of Template Mode Handlers.
      */
-    public void setParsedTemplateCacheSize(final int parsedTemplateCacheSize) {
-        this.configuration.setParsedTemplateCacheSize(parsedTemplateCacheSize);
+    public void setTemplateModeHandlers(final Set<? extends ITemplateModeHandler> templateModeHandlers) {
+        this.configuration.setTemplateModeHandlers(templateModeHandlers);
+    }
+    
+    /**
+     * <p>
+     *   Adds a Template Mode Handler to the set of Template Mode Handlers to be used
+     *   by the template engine.
+     * </p>
+     * <p>
+     *   By default, template mode handlers set are
+     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
+     * </p>
+     * 
+     * @param templateModeHandler the new Template Mode Handler to be added.
+     */
+    public void addTemplateModeHandler(final ITemplateModeHandler templateModeHandler) {
+        this.configuration.addTemplateModeHandler(templateModeHandler);
+    }
+
+    /**
+     * <p>
+     *   Sets the default Template Mode Handlers. These are used when no Template Mode Handlers
+     *   are set via the {@link #setTemplateModeHandlers(Set)} or 
+     *   {@link #addTemplateModeHandler(ITemplateModeHandler)} methods.
+     * </p>
+     * <p>
+     *   This method is useful for creating subclasses of <tt>TemplateEngine</tt> that
+     *   establish default configurations for Template Mode Handlers.
+     * </p>
+     * <p>
+     *   By default, template mode handlers set are
+     *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
+     * </p>
+     * 
+     * @param defaultTemplateModeHandlers the default Template Mode Handlers.
+     */
+    public void setDefaultTemplateModeHandlers(final Set<? extends ITemplateModeHandler> defaultTemplateModeHandlers) {
+        this.configuration.setDefaultTemplateModeHandlers(defaultTemplateModeHandlers);
     }
     
     
@@ -579,24 +679,24 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Completely clears the Parsed Template Cache.
+     *   Completely clears the Template Cache.
      * </p>
      * <p>
      *   If this method is called before the TemplateEngine has been initialized,
      *   it causes its initialization.
      * </p>
      */
-    public void clearParsedTemplateCache() {
+    public void clearTemplateCache() {
         if (!isInitialized()) {
             initialize();
         }
-        this.templateParser.clearParsedTemplateCache();
+        this.templateRepository.clearTemplateCache();
     }
 
 
     /**
      * <p>
-     *   Clears the entry in the Parsed Template Cache for the specified
+     *   Clears the entry in the Template Cache for the specified
      *   template, if it is currently cached.
      * </p>
      * <p>
@@ -606,12 +706,12 @@ public class TemplateEngine {
      * 
      * @param templateName the name of the template to be cleared from cache.
      */
-    public void clearParsedTemplateCacheFor(final String templateName) {
+    public void clearTemplateCacheFor(final String templateName) {
         Validate.notNull(templateName, "Template name cannot be null");
         if (!isInitialized()) {
             initialize();
         }
-        this.templateParser.clearParsedTemplateCacheFor(templateName);
+        this.templateRepository.clearTemplateCacheFor(templateName);
     }
     
     
@@ -636,7 +736,7 @@ public class TemplateEngine {
      *   be overridden.
      * </p>
      */
-    protected final synchronized void initialize() {
+    public final synchronized void initialize() {
         
         if (!isInitialized()) {
             
@@ -644,7 +744,7 @@ public class TemplateEngine {
 
             this.configuration.initialize();
             
-            this.templateParser = new TemplateParser(this.configuration);
+            this.templateRepository = new TemplateRepository(this.configuration);
             
             initializeSpecific();
             
@@ -832,14 +932,14 @@ public class TemplateEngine {
         
         final String templateName = templateProcessingParameters.getTemplateName();
         
-        final ParsedTemplate parsedTemplate = this.templateParser.parseDocument(templateProcessingParameters);
+        final Template template = this.templateRepository.getTemplate(templateProcessingParameters);
             
-        final TemplateResolution templateResolution = parsedTemplate.getTemplateResolution();
+        final TemplateResolution templateResolution = template.getTemplateResolution();
         
-        final Document document = parsedTemplate.getDocument();
+        final Document document = template.getDocument();
         
         final Arguments arguments = 
-            new Arguments(templateProcessingParameters, templateResolution, document, this.templateParser);
+            new Arguments(templateProcessingParameters, templateResolution, this.templateRepository, document);
         
         if (logger.isDebugEnabled()) {
             logger.debug("[THYMELEAF][{}] Starting DOM transformations on template \"{}\"", TemplateEngine.threadIndex(), templateName);
@@ -851,8 +951,19 @@ public class TemplateEngine {
             logger.debug("[THYMELEAF][{}] Finished DOM transformations on template \"{}\"", TemplateEngine.threadIndex(), templateName);
         }
         
+        final String templateMode = 
+                arguments.getTemplateResolution().getTemplateMode();
+        final ITemplateModeHandler templateModeHandler =
+                this.configuration.getTemplateModeHandler(templateMode);
+        final ITemplateWriter templateWriter = templateModeHandler.getTemplateWriter();
+
+        if (templateWriter == null) {
+            throw new ConfigurationException(
+                    "No template writer defined for template mode \"" + templateMode + "\"");
+        }
+        
         try {
-            document.write(arguments, writer);
+            templateWriter.write(arguments, writer, document);
         } catch (IOException e) {
             throw new OutputCreationException("Error during creation of output", e);
         }
@@ -860,6 +971,7 @@ public class TemplateEngine {
     }
 
     
+
 
     
     

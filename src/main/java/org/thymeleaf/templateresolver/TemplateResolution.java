@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.templateresolver;
 
-import org.thymeleaf.TemplateMode;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.util.Validate;
 
@@ -36,7 +35,7 @@ import org.thymeleaf.util.Validate;
  *       that will be passed to the included Resource Resolver in order to read the template.</li>
  *   <li>The Resource Resolver (implementation of {@link org.thymeleaf.resourceresolver.IResourceResolver})
  *       to be used for trying to read this template.</li>
- *   <li>The Template Mode to be applied to this template: XML, VALIDXML, XHTML, VALIDXHTML, HTML5 or LEGACYHTML5.</li>
+ *   <li>The Template Mode to be applied to this template.</li>
  *   <li>The character encoding to be used when reading this template.</li>
  *   <li>The validity of this template resolution, indicating whether this template can be included
  *       in cache once resolved, and the logic that will determine for how long and in which
@@ -59,7 +58,7 @@ public final class TemplateResolution {
     private final String resourceName;
     private final IResourceResolver resourceResolver;
     private final String characterEncoding;
-    private final TemplateMode templateMode;
+    private final String templateMode;
     private final ITemplateResolutionValidity validity;
 
 
@@ -67,7 +66,7 @@ public final class TemplateResolution {
     public TemplateResolution(
             final String templateName, final String resourceName, 
             final IResourceResolver resourceResolver, final String characterEncoding, 
-            final TemplateMode templateMode,
+            final String templateMode,
             final ITemplateResolutionValidity validity) {
         super();
         Validate.notNull(templateName, "Template name cannot be null");
@@ -152,14 +151,14 @@ public final class TemplateResolution {
 
     /**
      * <p>
-     *   Returns the template mode to be applied. This template mode ({@link TemplateMode})
-     *   determines whether the template is to be considered XML, VALIDXML, XHTML,
-     *   VALIDXHTML, HTML5 or LEGACYHTML5.
+     *   Returns the template mode to be applied. This template mode should be
+     *   resolvable to a configured Template Mode Handler 
+     *   ({@link org.thymeleaf.templatemode.ITemplateModeHandler}).
      * </p>
      * 
      * @return the template mode.
      */
-    public TemplateMode getTemplateMode() {
+    public String getTemplateMode() {
         return this.templateMode;
     }
 

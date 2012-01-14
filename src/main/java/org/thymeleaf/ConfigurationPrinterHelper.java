@@ -36,6 +36,8 @@ import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.ProcessorAndContext;
+import org.thymeleaf.templatecache.ITemplateCache;
+import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
@@ -59,13 +61,17 @@ final class ConfigurationPrinterHelper {
     
     static void printConfiguration(
             final Set<DialectConfiguration> dialectConfigurations, final Map<String,Boolean> lenienciesByPrefix, 
-            final Set<ITemplateResolver> templateResolvers, final Set<IMessageResolver> messageResolvers, 
-            final int parsedTemplateCacheSize) {
+            final Set<ITemplateResolver> templateResolvers, final Set<IMessageResolver> messageResolvers,
+            final ITemplateCache templateCache, final Set<ITemplateModeHandler> templateModeHandlers) {
 
         final ConfigLogBuilder logBuilder = new ConfigLogBuilder();
         
         logBuilder.line("[THYMELEAF] TEMPLATE ENGINE CONFIGURATION:");
-        logBuilder.line("[THYMELEAF] * Parsed template cache size: {}", Integer.valueOf(parsedTemplateCacheSize));
+        logBuilder.line("[THYMELEAF] * Template cache implementation: {}", (templateCache == null? "[no cache]" : templateCache.getClass().getName()));
+        logBuilder.line("[THYMELEAF] * Template modes:");
+        for (final ITemplateModeHandler templateModeHandler : templateModeHandlers) {
+            logBuilder.line("[THYMELEAF]     * {}", templateModeHandler.getTemplateModeName());
+        }
         logBuilder.line("[THYMELEAF] * Template resolvers (in order):");
         for (final ITemplateResolver templateResolver : templateResolvers) {
             if (templateResolver.getOrder() != null) {

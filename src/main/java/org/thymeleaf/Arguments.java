@@ -51,7 +51,6 @@ import org.thymeleaf.util.Validate;
  *   <li>The Template Engine configuration ({@link Configuration}): {@link #getConfiguration()}</li>
  *   <li>The template name: {@link #getTemplateName()}</li>
  *   <li>The Context ({@link IContext}): {@link #getContext()}</li>
- *   <li>The Template Parser being used ({@link TemplateParser}): {@link #getTemplateParser()}</li>
  *   <li>The current map of ID Counts (used for adding a unique index to repeated <tt>id</tt> attributes): {@link #getIdCounts()}</li>
  *   <li>The Expression roots:
  *       <ul>
@@ -75,9 +74,9 @@ public final class Arguments {
     
     private final TemplateProcessingParameters templateProcessingParameters;
     private final Configuration configuration;
-    private final TemplateParser templateParser;
     private final Document document;
     private final TemplateResolution templateResolution;
+    private final TemplateRepository templateRepository;
     private final IContext context;
     private final Map<String,Object> localVariables;
     private final SelectionTarget selectionTarget;
@@ -103,26 +102,27 @@ public final class Arguments {
      * 
      * @param templateProcessingParameters the template processing parameters
      * @param templateResolution the template resolution object
+     * @param templateRepository the template repository in use
      * @param templateParser the template parser
      * @param context the context
      */
     Arguments(
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
-            final Document document,
-            final TemplateParser templateParser) {
+            final TemplateRepository templateRepository,
+            final Document document) {
         
         super();
         
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
-        Validate.notNull(templateParser, "Template parser cannot be null");
         Validate.notNull(templateResolution, "Template resolution cannot be null");
+        Validate.notNull(templateRepository, "Template repository cannot be null");
         Validate.notNull(document, "Document cannot be null");
         
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration = this.templateProcessingParameters.getConfiguration();
-        this.templateParser = templateParser;
         this.templateResolution = templateResolution;
+        this.templateRepository = templateRepository;
         this.document = document;
         this.context = this.templateProcessingParameters.getContext();
         this.localVariables = EMPTY_LOCAL_VARIABLES;
@@ -143,8 +143,8 @@ public final class Arguments {
     private Arguments(
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
+            final TemplateRepository templateRepository,
             final Document document,
-            final TemplateParser templateParser,
             final Map<String,Object> localVariables,
             final SelectionTarget selectionTarget,
             final Map<String,Integer> idCounts,
@@ -154,8 +154,8 @@ public final class Arguments {
         
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration = this.templateProcessingParameters.getConfiguration();
-        this.templateParser = templateParser;
         this.templateResolution = templateResolution;
+        this.templateRepository = templateRepository;
         this.document = document;
         this.context = this.templateProcessingParameters.getContext();
         this.localVariables = localVariables;
@@ -228,17 +228,6 @@ public final class Arguments {
     
     /**
      * <p>
-     *   Returns the template parser being used for parsing templates.
-     * </p>
-     * 
-     * @return the template parser
-     */
-    public TemplateParser getTemplateParser() {
-        return this.templateParser;
-    }
-    
-    /**
-     * <p>
      *   Returns the template resolution object corresponding to the
      *   template currently being processed.
      * </p>
@@ -247,6 +236,17 @@ public final class Arguments {
      */
     public TemplateResolution getTemplateResolution() {
         return this.templateResolution;
+    }
+    
+    /**
+     * <p>
+     *   Returns the template repository in use.
+     * </p>
+     * 
+     * @return the Template Repository object
+     */
+    public TemplateRepository getTemplateRepository() {
+        return this.templateRepository;
     }
     
     /**
@@ -547,7 +547,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.processOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.processOnlyTags);
         return arguments;
     }
     
@@ -562,7 +562,7 @@ public final class Arguments {
      */
     public Arguments setSelectionTarget(final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, this.processOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, this.processOnlyTags);
         return arguments;
     }
 
@@ -585,7 +585,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.processOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.processOnlyTags);
         return arguments;
     }
 
@@ -601,7 +601,7 @@ public final class Arguments {
      */
     public Arguments setProcessOnlyTags(final boolean shouldProcessOnlyTags) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
 
@@ -624,7 +624,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
     
@@ -641,7 +641,7 @@ public final class Arguments {
      */
     public Arguments setProcessOnlyTagsAndSetSelectionTarget(final boolean shouldProcessOnlyTags, final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, this.localVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
     
@@ -665,7 +665,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.document, this.templateParser, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
         return arguments;
     }
 
