@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +45,9 @@ public abstract class Node {
     private static CacheMap<String,String> NORMALIZED_NAMES = 
             new CacheMap<String, String>("Node.normalizedNames", true, 500);
 
+    
+    private final String documentName;
+    private final Integer lineNumber;
     
     protected NestableNode parent;
     private boolean skippable;
@@ -86,8 +87,10 @@ public abstract class Node {
     
     
     
-    protected Node() {
+    protected Node(final String documentName, final Integer lineNumber) {
         super();
+        this.documentName = documentName;
+        this.lineNumber = lineNumber;
         this.skippable = false;
         this.precomputed = false;
         this.recomputeProcessorsAfterEachExecution = false;
@@ -95,6 +98,18 @@ public abstract class Node {
         this.nodeLocalVariables = null;
         this.processors = null;
     }
+
+
+    
+    public String getDocumentName() {
+        return this.documentName;
+    }
+    
+
+    public Integer getLineNumber() {
+        return this.lineNumber;
+    }
+
     
     
     public final boolean hasParent() {
@@ -105,6 +120,9 @@ public abstract class Node {
         return this.parent;
     }
     
+    public final void setParent(final NestableNode parent) {
+        this.parent = parent;
+    }
     
 
     public final boolean getRecomputeProcessorsAfterEachExecution() {
@@ -137,7 +155,7 @@ public abstract class Node {
     
     public final void setSkippable(final boolean skippable) {
         this.skippable = skippable;
-        if (!skippable && this.parent != null) {
+        if (!skippable && hasParent()) {
             // If this node is marked as non-skippable, set its parent as
             // non-skippable too.
             if (this.parent.isSkippable()) {
@@ -149,7 +167,13 @@ public abstract class Node {
     
     abstract void doAdditionalSkippableComputing(final boolean isSkippable);
 
-    
+
+    protected boolean isDetached() {
+        if (this instanceof Document) {
+            return false;
+        }
+        return !hasParent();
+    }
     
     
     final boolean isPrecomputed() {
@@ -198,7 +222,7 @@ public abstract class Node {
 
 
     
-    final void precompute(final Configuration configuration) {
+    final void precomputeNode(final Configuration configuration) {
 
         if (!isPrecomputed()) {
 
@@ -238,34 +262,34 @@ public abstract class Node {
         /*
          * Let subclasses add their own preprocessing
          */
-        doAdditionalPrecompute(configuration);
+        doAdditionalPrecomputeNode(configuration);
      
     }
     
     
-    abstract void doAdditionalPrecompute(final Configuration configuration);
+    abstract void doAdditionalPrecomputeNode(final Configuration configuration);
 
     
     
     
     
-    final void process(final Arguments arguments) {
-        
-        if (!(this instanceof Tag || this instanceof Root) && arguments.getProcessOnlyTags()) {
+    void processNode(final Arguments arguments) {
+
+        if (!(this instanceof Tag || this instanceof Document) && arguments.getProcessOnlyTags()) {
             return;
         }
         
-        if (!isPrecomputed()) {
-            precompute(arguments.getConfiguration());
+        if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
+            precomputeNode(arguments.getConfiguration());
+            this.recomputeProcessorsImmediately = false;
         }
         
-        if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
-            precompute(arguments.getConfiguration());
-            this.recomputeProcessorsImmediately = false;
+        if (!isPrecomputed()) {
+            precomputeNode(arguments.getConfiguration());
         }
 
         if (!isSkippable()) {
-            
+                        
             /*
              *  If there are local variables at the node, add them to the ones at the
              *  Arguments object.
@@ -285,12 +309,12 @@ public abstract class Node {
             /*
              * Perform the actual processing
              */
-            if (hasParent() && this.processors != null && this.processors.size() > 0) {
+            if (!isDetached() && this.processors != null && this.processors.size() > 0) {
                 
                 final IdentityCounter<ProcessorAndContext> alreadyExecuted = new IdentityCounter<ProcessorAndContext>(3);
                 Arguments processingArguments = executionArguments;
-                
-                while (hasParent() && processingArguments != null) {
+
+                while (!isDetached() && processingArguments != null) {
                     
                     // This way of executing processors allows processors to perform updates
                     // that might change which processors should be applied (for example, by
@@ -305,7 +329,7 @@ public abstract class Node {
                     }
                     
                     if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
-                        precompute(arguments.getConfiguration());
+                        precomputeNode(arguments.getConfiguration());
                         this.recomputeProcessorsImmediately = false;
                     }
                     
@@ -325,7 +349,7 @@ public abstract class Node {
     
     private static final Arguments applyNextProcessor(final Arguments arguments, final Node node, final IdentityCounter<ProcessorAndContext> alreadyExecuted) {
 
-        if (node.hasParent() && node.processors != null && node.processors.size() > 0) {
+        if (!node.isDetached() && node.processors != null && node.processors.size() > 0) {
 
             for (final ProcessorAndContext processor : node.processors) {
                 
@@ -367,9 +391,6 @@ public abstract class Node {
     abstract void doAdditionalProcess(final Arguments arguments);
     
     
-    
-    abstract void write(final Arguments arguments, final Writer writer) throws IOException;
-    
 
     
     public final Node cloneNode(final NestableNode newParent, final boolean cloneProcessors) {
@@ -405,27 +426,9 @@ public abstract class Node {
     
     
     
-    
-    
-    public static final Node translateDOMNode(final org.w3c.dom.Node domNode, final NestableNode parentNode) {
-        
-        if (domNode instanceof org.w3c.dom.Element) {
-            return Tag.translateDOMTag((org.w3c.dom.Element)domNode, parentNode);
-        } else if (domNode instanceof org.w3c.dom.Comment) {
-            return Comment.translateDOMComment((org.w3c.dom.Comment)domNode, parentNode);
-        } else if (domNode instanceof org.w3c.dom.CDATASection) {
-            return CDATASection.translateDOMCDATASection((org.w3c.dom.CDATASection)domNode, parentNode);
-        } else if (domNode instanceof org.w3c.dom.Text) {
-            return Text.translateDOMText((org.w3c.dom.Text)domNode, parentNode);
-        } else {
-            throw new IllegalArgumentException(
-                    "Node " + domNode.getNodeName() + " of type " + domNode.getNodeType() + 
-                    " and class " + domNode.getClass().getName() + " cannot be translated to " +
-                    "Thymeleaf's DOM representation.");
-        }
-        
-    }
-    
-    
-}
+    public abstract void visit(final DOMVisitor visitor);
 
+    
+    
+
+}

@@ -19,18 +19,14 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
-import org.thymeleaf.util.DOMUtils;
-import org.thymeleaf.util.IdentityCounter;
 import org.thymeleaf.util.Validate;
 
 
@@ -58,11 +54,19 @@ public final class Tag extends NestableNode {
     private boolean hasXmlnsAttributes;
 
 
+    public Tag(final String name) {
+        this(name, null, null);
+    }
+
+
+    public Tag(final String name, final String documentName) {
+        this(name, documentName, null);
+    }
     
 
-    public Tag(final String name) {
+    public Tag(final String name, final String documentName, final Integer lineNumber) {
         
-        super();
+        super(documentName, lineNumber);
         
         Validate.notNull(name, "Tag name cannot be null");
         
@@ -70,8 +74,8 @@ public final class Tag extends NestableNode {
         this.normalizedName = Node.normalizeName(name);
         this.minimizableIfWeb = 
                 Arrays.binarySearch(Standards.MINIMIZABLE_XHTML_TAGS, this.normalizedName) >= 0;
-        
-        setChildren(null);
+                
+        setChildren((Node[])null);
         setAttributes(null);
         
         this.hasXmlnsAttributes = false;
@@ -96,8 +100,15 @@ public final class Tag extends NestableNode {
         return Node.normalizeName(comparedName).equals(this.normalizedName);
     }
 
-
-
+    public boolean isMinimizableIfWeb() {
+        return this.minimizableIfWeb;
+    }
+    
+    public boolean getHasXmlnsAttributes() {
+        return this.hasXmlnsAttributes;
+    }
+    
+    
     
 
     
@@ -108,8 +119,8 @@ public final class Tag extends NestableNode {
      * ************************
      * ************************
      */
-    
-    
+
+
     public boolean hasAttributes() {
         return this.attributesLen != 0;
     }
@@ -133,6 +144,22 @@ public final class Tag extends NestableNode {
             return this.attributeValues.keySet();
         }
         return Collections.emptySet();
+    }
+    
+    
+    public String getAttributeOriginalNameFromNormalizedName(final String normalizedAttributeName) {
+        if (this.attributesLen > 0) {
+            return this.attributeNames.get(normalizedAttributeName);
+        }
+        return null;
+    }
+    
+    
+    public String getAttributeValueFromNormalizedName(final String normalizedAttributeName) {
+        if (this.attributesLen > 0) {
+            return this.attributeValues.get(normalizedAttributeName);
+        }
+        return null;
     }
     
     
@@ -214,111 +241,20 @@ public final class Tag extends NestableNode {
     }
 
 
-
     
-    
-    @Override
-    final void doAdditionalProcess(final Arguments arguments) {
-        if (hasParent() && this.childrenLen > 0) {
-            final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(10);
-            while (hasParent() && computeNextChild(arguments, this, alreadyProcessed)) { /* Nothing to be done here */ }
-        }
-    }
-    
-
-    
-    
-    private static final boolean computeNextChild(
-            final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed) {
-        
-        // This method scans the whole array of children each time
-        // it tries to execute one so that it executes all sister nodes
-        // that might be created by, for example, iteration processors.
-        if (node.childrenLen > 0) {
-            for (final Node child : node.children) {
-                if (!alreadyProcessed.isAlreadyCounted(child)) {
-                    child.process(arguments);
-                    alreadyProcessed.count(child);
-                    return true;
-                }
-            }
-        }
-        return false;
-        
-    }
-
-
-
-
     
     /*
-     * *********************************
-     * *********************************
-     *        OUTPUT HANDLING
-     * *********************************
+     * --------------------
+     * PREPROCESSING
      * *********************************
      */
     
-    /*
-     * TODO ALL LENIENCY ISSUES (tag name and attr name) SHOULD BE CHECKED HERE DURING OUTPUT
-     */
-    
+
     @Override
-    final void write(final Arguments arguments, final Writer writer) throws IOException {
-        writer.write('<');
-        writer.write(this.name);
-        if (hasAttributes()) {
-            for (final String normalizedAttributeName : this.attributeNames.keySet()) {
-                boolean writeAttribute = true;
-                if (this.hasXmlnsAttributes) {
-                    final String prefix = 
-                            arguments.getConfiguration().getPrefixIfXmlnsAttribute(normalizedAttributeName);
-                    if (prefix != null) {
-                        writeAttribute = arguments.getConfiguration().isLenient(prefix);
-                    }
-                }
-                if (writeAttribute) {
-                    writer.write(' ');
-                    writer.write(this.attributeNames.get(normalizedAttributeName));
-                    writer.write('=');
-                    writer.write('\"');
-                    DOMUtils.writeXmlEscaped(this.attributeValues.get(normalizedAttributeName), writer, true);
-                    writer.write('\"');
-                }
-            }
-        }
-        if (hasChildren()) {
-            writer.write('>');
-            for (final Node child : this.children) {
-                child.write(arguments, writer);
-            }
-            writer.write('<');
-            writer.write('/');
-            writer.write(this.name);
-            writer.write('>');
-        } else {
-            if (arguments.getTemplateResolution().getTemplateMode().isWeb()) {
-                if (this.minimizableIfWeb) {
-                    writer.write(' ');
-                    writer.write('/');
-                    writer.write('>');
-                } else {
-                    writer.write('>');
-                    writer.write('<');
-                    writer.write('/');
-                    writer.write(this.name);
-                    writer.write('>');
-                }
-            } else {
-                writer.write('/');
-                writer.write('>');
-            }
-        }
+    void doAdditionalPrecomputeNestableNode(final Configuration configuration) {
+        // Nothing to be done here
     }
 
-
-
-    
     
     
 
@@ -342,12 +278,12 @@ public final class Tag extends NestableNode {
 
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        return new Tag(this.name);
+        return new Tag(this.name, getDocumentName(), getLineNumber());
     }
     
 
     @Override
-    void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
+    void doCloneNestableNodeInternals(final NestableNode node, final NestableNode newParent, final boolean cloneProcessors) {
         
         final Tag tag = (Tag) node;
         
@@ -358,47 +294,8 @@ public final class Tag extends NestableNode {
         }
         tag.hasXmlnsAttributes = this.hasXmlnsAttributes;
         
-        if (this.childrenLen > 0) {
-            final Node[] tagChildren = new Node[this.childrenLen];
-            for (int i = 0; i < this.childrenLen; i++) {
-                tagChildren[i] = this.children[i].cloneNode(tag, cloneProcessors);
-            }
-            tag.setChildren(tagChildren);
-        }
-        
     }
 
 
 
-    
-    
-    
-    public static final Tag translateDOMTag(final org.w3c.dom.Element domNode, final NestableNode parentNode) {
-        
-        final String tagName = domNode.getTagName();
-        final Tag tag = new Tag(tagName);
-        tag.parent = parentNode;
-        
-        final org.w3c.dom.NamedNodeMap attributes = domNode.getAttributes();
-        final int attributesLen = attributes.getLength();
-        for (int i = 0; i < attributesLen; i++) {
-            final org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attributes.item(i);
-            tag.setAttribute(attr.getName(), attr.getValue());
-        }
-        
-        final org.w3c.dom.NodeList children = domNode.getChildNodes();
-        final int childrenLen = children.getLength();
-        for (int i = 0; i < childrenLen; i++) {
-            final org.w3c.dom.Node child = children.item(i);
-            tag.addChild(Node.translateDOMNode(child, tag));
-        }
-        
-        return tag;
-        
-    }
-    
-    
-
-    
-    
 }

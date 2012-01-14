@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import org.thymeleaf.Arguments;
 
 
 
@@ -34,24 +30,47 @@ import org.thymeleaf.Arguments;
  *
  */
 public final class CDATASection extends AbstractTextNode {
-
-    private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
-    private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
+    
+    
     
     
     public CDATASection(final String content) {
-        super(content);
+        this(content, null, null);
     }
+    
     
     public CDATASection(final char[] content) {
-        super(content);
+        this(content, null, null);
+    }
+    
+    
+    public CDATASection(final String content, final String documentName) {
+        this(content, documentName, null);
+    }
+    
+    
+    public CDATASection(final char[] content, final String documentName) {
+        this(content, documentName, null);
+    }
+    
+    
+    public CDATASection(final String content, final String documentName, final Integer lineNumber) {
+        super(content, documentName, lineNumber);
+    }
+    
+    public CDATASection(final char[] content, final String documentName, final Integer lineNumber) {
+        super(content, documentName, lineNumber);
     }
     
 
 
-    
-    
+    @Override
+    public final void visit(final DOMVisitor visitor) {
+        visitor.visit(this);
+    }
 
+    
+    
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
         return new CDATASection(this.content);
@@ -65,15 +84,6 @@ public final class CDATASection extends AbstractTextNode {
         // Nothing to be done here
     }
 
-
-    
-    
-    @Override
-    void write(final Arguments arguments, final Writer writer) throws IOException {
-        writer.write(CDATA_PREFIX);
-        writer.write(this.content);
-        writer.write(CDATA_SUFFIX);
-    }
 
 
     

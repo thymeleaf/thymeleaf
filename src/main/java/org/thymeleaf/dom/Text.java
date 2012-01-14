@@ -19,11 +19,6 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import org.thymeleaf.Arguments;
-import org.thymeleaf.util.DOMUtils;
 
 
 
@@ -36,17 +31,35 @@ import org.thymeleaf.util.DOMUtils;
  */
 public final class Text extends AbstractTextNode {
 
+
     
     public Text(final String content) {
-        super(content);
-    }
-
-    public Text(final char[] content) {
-        super(content);
+        this(content, null, null);
     }
     
-
-
+    
+    public Text(final char[] content) {
+        this(content, null, null);
+    }
+    
+    
+    public Text(final String content, final String documentName) {
+        this(content, documentName, null);
+    }
+    
+    
+    public Text(final char[] content, final String documentName) {
+        this(content, documentName, null);
+    }
+    
+    
+    public Text(final String content, final String documentName, final Integer lineNumber) {
+        super(content, documentName, lineNumber);
+    }
+    
+    public Text(final char[] content, final String documentName, final Integer lineNumber) {
+        super(content, documentName, lineNumber);
+    }
     
     
     
@@ -66,22 +79,11 @@ public final class Text extends AbstractTextNode {
 
 
 
-
-    
     @Override
-    void write(final Arguments arguments, final Writer writer) throws IOException {
-        DOMUtils.writeXmlEscaped(this.content, writer, false);
+    public final void visit(final DOMVisitor visitor) {
+        visitor.visit(this);
     }
 
-
-
-    
-
-    public static final Text translateDOMText(final org.w3c.dom.Text domNode, final NestableNode parentNode) {
-        final Text text = new Text(domNode.getData());
-        text.parent = parentNode;
-        return text;
-    }
     
     
 }

@@ -37,14 +37,14 @@ public abstract class AbstractTextNode extends Node {
     protected char[] content;
 
     
-    public AbstractTextNode(final String content) {
-        super();
+    protected AbstractTextNode(final String content, final String documentName, final Integer lineNumber) {
+        super(documentName, lineNumber);
         Validate.notNull(content, "Content cannot be null");
         this.content = content.toCharArray();
     }
 
-    public AbstractTextNode(final char[] content) {
-        super();
+    protected AbstractTextNode(final char[] content, final String documentName, final Integer lineNumber) {
+        super(documentName, lineNumber);
         Validate.notNull(content, "Content cannot be null");
         this.content = content;
     }
@@ -54,7 +54,7 @@ public abstract class AbstractTextNode extends Node {
         return new String(this.content);
     }
     
-    char[] unsafeGetContentCharArray() {
+    public char[] unsafeGetContentCharArray() {
         return this.content;
     }
 
@@ -77,7 +77,7 @@ public abstract class AbstractTextNode extends Node {
     
     
     @Override
-    final void doAdditionalPrecompute(final Configuration configuration) {
+    final void doAdditionalPrecomputeNode(final Configuration configuration) {
         // Nothing to be done here!
     }
 
@@ -88,5 +88,5 @@ public abstract class AbstractTextNode extends Node {
         // Nothing to be done here
     }
     
-    
+
 }

@@ -1,8 +1,5 @@
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.thymeleaf.Configuration;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
@@ -53,7 +50,21 @@ public final class DocType {
         return this.systemId;
     }
     
+    public DocTypeIdentifier getProcessedPublicId() {
+        return this.processedPublicId;
+    }
+
+
+    public DocTypeIdentifier getProcessedSystemId() {
+        return this.processedSystemId;
+    }
+
+    public boolean isProcessed() {
+        return this.processed;
+    }
+
     
+
     public void process(final Configuration configuration) {
         if (!this.processed) {
             final IDocTypeTranslation translation =
@@ -67,36 +78,6 @@ public final class DocType {
     }
 
     
-    public void write(final Writer writer) throws IOException {
-        
-        DocTypeIdentifier writablePublicId = this.processedPublicId;
-        DocTypeIdentifier writableSystemId = this.processedSystemId;
-        
-        if (!this.processed) {
-            writablePublicId = DocTypeIdentifier.forValue(this.publicId);
-            writableSystemId = DocTypeIdentifier.forValue(this.systemId);
-        }
-        
-        writer.write("<!DOCTYPE ");
-        writer.write(this.rootElementName);
-        if (!writablePublicId.isNone()) {
-            writer.write(" PUBLIC \"");
-            writablePublicId.write(writer);
-            writer.write("\"");
-        }
-        if (!writableSystemId.isNone()) {
-            if (writablePublicId.isNone()) {
-                writer.write(" SYSTEM");
-            }
-            writer.write(" \"");
-            writableSystemId.write(writer);
-            writer.write("\"");
-        }
-        writer.write(">");
-    }
-    
-    
-
 
     @Override
     public int hashCode() {

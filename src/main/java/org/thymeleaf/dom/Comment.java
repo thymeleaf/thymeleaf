@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.util.Validate;
@@ -35,33 +32,54 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
-public class Comment extends Node {
-
-    private static final char[] COMMENT_PREFIX = "<!--".toCharArray();
-    private static final char[] COMMENT_SUFFIX = "-->".toCharArray();
+public final class Comment extends Node {
     
     
     private final char[] content;
 
+
     
     public Comment(final String content) {
-        super();
+        this(content, null, null);
+    }
+    
+    
+    public Comment(final char[] content) {
+        this(content, null, null);
+    }
+    
+    
+    public Comment(final String content, final String documentName) {
+        this(content, documentName, null);
+    }
+    
+    
+    public Comment(final char[] content, final String documentName) {
+        this(content, documentName, null);
+    }
+    
+    
+    public Comment(final String content, final String documentName, final Integer lineNumber) {
+        super(documentName, lineNumber);
         Validate.notNull(content, "Comment content cannot be null");
         this.content = content.toCharArray();
     }
-
-    public Comment(final char[] content) {
-        super();
+    
+    
+    public Comment(final char[] content, final String documentName, final Integer lineNumber) {
+        super(documentName, lineNumber);
         Validate.notNull(content, "Comment content cannot be null");
         this.content = content;
     }
+    
+    
     
     
     public String getContent() {
         return new String(this.content);
     }
     
-    char[] unsafeGetContentCharArray() {
+    public char[] unsafeGetContentCharArray() {
         return this.content;
     }
 
@@ -74,14 +92,12 @@ public class Comment extends Node {
         // Nothing to be done here!
     }
 
-
     
     
     @Override
-    final void doAdditionalPrecompute(final Configuration configuration) {
+    final void doAdditionalPrecomputeNode(final Configuration configuration) {
         // Nothing to be done here!
     }
-
 
 
     @Override
@@ -89,15 +105,14 @@ public class Comment extends Node {
         // Nothing to be done here
     }
 
-    
-    
-    @Override
-    void write(final Arguments arguments, final Writer writer) throws IOException {
-        writer.write(COMMENT_PREFIX);
-        writer.write(this.content);
-        writer.write(COMMENT_SUFFIX);
-    }
 
+
+
+    @Override
+    public final void visit(final DOMVisitor visitor) {
+        visitor.visit(this);
+    }
+    
     
     
     
@@ -114,17 +129,6 @@ public class Comment extends Node {
     void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
         // Nothing to be done here
     }
-
-
-
-    
-    
-    public static final Comment translateDOMComment(final org.w3c.dom.Comment domNode, final NestableNode parentNode) {
-        final Comment comment = new Comment(domNode.getData());
-        comment.parent = parentNode;
-        return comment;
-    }
-    
 
     
 }

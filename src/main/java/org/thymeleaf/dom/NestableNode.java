@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.util.IdentityCounter;
 import org.thymeleaf.util.Validate;
 
 
@@ -38,15 +40,17 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class NestableNode extends Node {
     
-    protected Node[] children;
-    protected int childrenLen;
+    private Node[] children;
+    private int childrenLen;
     
 
-    
-    protected NestableNode() {
-        super();
-        setChildren(null);
+
+
+    protected NestableNode(final String documentName, final Integer lineNumber) {
+        super(documentName, lineNumber);
+        setChildren((Node[])null);
     }
+    
     
 
     /*
@@ -76,7 +80,20 @@ public abstract class NestableNode extends Node {
     }
     
     
-    public final void addChild(final Node newChild) {
+    public final Node[] unsafeGetChildrenNodeArray() {
+        return this.children;
+    }
+    
+    
+    public final Node getFirstChild() {
+        if (this.childrenLen == 0) {
+            return null;
+        }
+        return this.children[0];
+    }
+    
+    
+    public void addChild(final Node newChild) {
         
         if (newChild != null) {
             
@@ -213,10 +230,29 @@ public abstract class NestableNode extends Node {
         }
         
     }
+
+    
+    public final void setChildren(final List<Node> newChildren) {
+        
+        if (this.children != null) {
+            for (final Node child : this.children) {
+                child.parent = null;
+            }
+            this.children = null;
+            this.childrenLen = 0;
+        }
+        
+        if (newChildren != null && newChildren.size() > 0) {
+            for (final Node newChild : newChildren) {
+                addChild(newChild);
+            }
+        }
+        
+    }
     
     
     public final void clearChildren() {
-        setChildren(null);
+        setChildren((Node[])null);
     }
     
     
@@ -310,17 +346,21 @@ public abstract class NestableNode extends Node {
      */
     
     @Override
-    final void doAdditionalPrecompute(final Configuration configuration) {
+    final void doAdditionalPrecomputeNode(final Configuration configuration) {
         /*
          * Precompute children
          */
         if (this.childrenLen > 0) {
             for (final Node child : this.children) {
-                child.precompute(configuration);
+                child.precomputeNode(configuration);
             }
         }
+        doAdditionalPrecomputeNestableNode(configuration);
     }
 
+    
+    
+    abstract void doAdditionalPrecomputeNestableNode(final Configuration configuration);
     
     
     
@@ -333,7 +373,7 @@ public abstract class NestableNode extends Node {
     
     
     @Override
-    public void doAdditionalSkippableComputing(final boolean skippable) {
+    final void doAdditionalSkippableComputing(final boolean skippable) {
         if (skippable && this.childrenLen > 0) {
             // If this node is marked as skippable, all of its
             // children should be marked skippable too.
@@ -343,7 +383,96 @@ public abstract class NestableNode extends Node {
         }
     }
 
-       
+    
+    
+
+    
+    /*
+     * ------------
+     * CLONING
+     * ------------
+     */
+    
+    
+    
+    @Override
+    final void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
+        
+        final NestableNode nestableNode = (NestableNode) node;
+        
+        if (this.childrenLen > 0) {
+            final Node[] tagChildren = new Node[this.childrenLen];
+            for (int i = 0; i < this.childrenLen; i++) {
+                tagChildren[i] = this.children[i].cloneNode(nestableNode, cloneProcessors);
+            }
+            nestableNode.setChildren(tagChildren);
+        }
+        
+        doCloneNestableNodeInternals(nestableNode, newParent, cloneProcessors);
+    }
+    
+    
+    
+    abstract void doCloneNestableNodeInternals(final NestableNode node, final NestableNode newParent, final boolean cloneProcessors);
+    
+
+    
+
+    
+    /*
+     * ------------
+     * PROCESSING
+     * ------------
+     */
+    
+    
+    
+    
+    @Override
+    final void doAdditionalProcess(final Arguments arguments) {
+        if (!isDetached() && this.childrenLen > 0) {
+            final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(10);
+            while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed)) { /* Nothing to be done here */ }
+        }
+    }
+    
+
+    
+    
+    private static final boolean computeNextChild(
+            final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed) {
+        
+        // This method scans the whole array of children each time
+        // it tries to execute one so that it executes all sister nodes
+        // that might be created by, for example, iteration processors.
+        if (node.childrenLen > 0) {
+            for (final Node child : node.children) {
+                if (!alreadyProcessed.isAlreadyCounted(child)) {
+                    child.processNode(arguments);
+                    alreadyProcessed.count(child);
+                    return true;
+                }
+            }
+        }
+        return false;
+        
+    }
+
+    
+    
+    
+    
+    @Override
+    public final void visit(final DOMVisitor visitor) {
+        visitor.visit(this);
+        if (this.childrenLen > 0) {
+            for(final Node child : this.children) {
+                child.visit(visitor);
+            }
+        }
+    }
+
+
     
 
 }

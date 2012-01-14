@@ -19,12 +19,8 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.IOException;
-import java.io.Writer;
-
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.Standards;
 import org.thymeleaf.util.Validate;
 
 
@@ -36,114 +32,79 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
-public final class Document {
+public final class Document extends NestableNode {
 
     private DocType docType;
-    private DocType translatedDocType;
-    
-    private final Root root;
     
     
     
-    public Document(final Root root) {
-        this(null, root);
+    public Document() {
+        this(null, null);
     }
     
-    public Document(final DocType docType, final Root root) {
-        super();
-        Validate.notNull(root, "Root elements cannot be null");
+    
+    public Document(final DocType docType) {
+        this(null, docType);
+    }
+    
+    public Document(final String documentName) {
+        this(documentName, null);
+    }
+    
+    
+    public Document(final String documentName, final DocType docType) {
+        super(documentName, null);
         this.docType = docType;
-        this.translatedDocType = null;
-        this.root = root;
     }
     
-    
-    private boolean hasTranslatedDocType() {
-        return this.translatedDocType != null;
+
+    public DocType getDocType() {
+        return this.docType;
     }
-    
-    
+
     public boolean hasDocType() {
         return this.docType != null;
     }
     
-    
-    public void setDocType(final DocType docType) {
-        this.docType = docType;
-        this.translatedDocType = null;
-    }
-    
-    
-    public Root getRoot() {
-        return this.root;
-    }
-    
 
 
+    @Override
+    final void doAdditionalPrecomputeNestableNode(final Configuration configuration) {
+        this.docType.process(configuration);
+    }
+
+    
     public final void precompute(final Configuration configuration) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        this.docType.process(configuration);
-        this.root.precompute(configuration);
+        precomputeNode(configuration);
     }
-
-    
-    
     
     public final void process(final Arguments arguments) {
-        
         Validate.notNull(arguments, "Arguments cannot be null");
-        
-        this.precompute(arguments.getConfiguration());
-        this.root.process(arguments);
+        processNode(arguments);
     }
-    
     
     
     
     
     public Document clone(final boolean cloneProcessors) {
-        final Root newRoot = (Root) this.root.cloneNode(null, cloneProcessors);
-        return new Document(this.docType, newRoot);
+        return (Document) cloneNode(null, cloneProcessors);
     }
-    
-    
-    
-    public void write(final Arguments arguments, final Writer writer) throws IOException {
-        if (arguments.getTemplateResolution().getTemplateMode().isXML()) {
-            writer.write(Standards.XML_DECLARATION);
-            writer.write('\n');
-        }
-        if (hasTranslatedDocType()) {
-            this.translatedDocType.write(writer);
-            writer.write('\n');
-        } else if (hasDocType()) {
-            this.docType.write(writer);
-            writer.write('\n');
-        }
-        this.root.write(arguments, writer);
-    }
-    
-    
-    
-    
-    public static final Document translateDOMDocument(final org.w3c.dom.Document domDocument) {
 
-        final org.w3c.dom.DocumentType domDocumentType = domDocument.getDoctype();
-        
-        final Root root = new Root();
-        
-        final org.w3c.dom.NodeList children = domDocument.getChildNodes();
-        final int childrenLen = children.getLength();
-        for (int i = 0; i < childrenLen; i++) {
-            final org.w3c.dom.Node child = children.item(i);
-            if (!(child instanceof org.w3c.dom.DocumentType)) {
-                root.addChild(Node.translateDOMNode(child, root));
-            }
-        }
-        
-        return new Document(DocType.translateDOMDocumentType(domDocumentType), root);
 
+    
+    @Override
+    Node createClonedInstance(final NestableNode newParent, boolean cloneProcessors) {
+        return new Document(this.docType);
+    }
+    
+
+    
+    @Override
+    void doCloneNestableNodeInternals(final NestableNode node, final NestableNode newParent, final boolean cloneProcessors) {
+        // Nothing to be done here
     }
     
     
+
 }
