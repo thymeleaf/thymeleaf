@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.PatternSpec;
-import org.thymeleaf.TemplateMode;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
 import org.thymeleaf.util.Validate;
 
 
@@ -64,7 +64,8 @@ public class TemplateResolver
      *   Default template mode: XHTML
      * </p>
      */
-    public static final TemplateMode DEFAULT_TEMPLATE_MODE = TemplateMode.XHTML;
+    public static final String DEFAULT_TEMPLATE_MODE = 
+            StandardTemplateModeHandlers.XHTML.getTemplateModeName();
     
     /**
      * <p>
@@ -85,7 +86,7 @@ public class TemplateResolver
     private String prefix = null;
     private String suffix = null;
     private String characterEncoding = null;
-    private TemplateMode templateMode = DEFAULT_TEMPLATE_MODE;
+    private String templateMode = DEFAULT_TEMPLATE_MODE;
     private boolean cacheable = DEFAULT_CACHEABLE;
     private Long cacheTTLMs = null;
     private IResourceResolver resourceResolver = null;
@@ -298,7 +299,7 @@ public class TemplateResolver
      * 
      * @return the template mode to be used.
      */
-    public final TemplateMode getTemplateMode() {
+    public final String getTemplateMode() {
         checkInitialized();
         return this.templateMode;
     }
@@ -311,7 +312,7 @@ public class TemplateResolver
      * 
      * @return the template mode
      */
-    protected final TemplateMode unsafeGetTemplateMode() {
+    protected final String unsafeGetTemplateMode() {
         return this.templateMode;
     }
 
@@ -328,7 +329,7 @@ public class TemplateResolver
      * 
      * @param templateMode the template mode.
      */
-    public void setTemplateMode(final TemplateMode templateMode) {
+    public void setTemplateMode(final String templateMode) {
         checkNotInitialized();
         Validate.notNull(templateMode, "Cannot set a null template mode value");
         this.templateMode = templateMode;
@@ -1016,27 +1017,27 @@ public class TemplateResolver
     
 
     @Override
-    protected TemplateMode computeTemplateMode(final TemplateProcessingParameters templateProcessingParameters) {
+    protected String computeTemplateMode(final TemplateProcessingParameters templateProcessingParameters) {
     
         final String templateName = templateProcessingParameters.getTemplateName();
         
         if (this.xmlTemplateModePatternSpec.matches(templateName)) {
-            return TemplateMode.XML;
+            return StandardTemplateModeHandlers.XML.getTemplateModeName();
         }
         if (this.validXmlTemplateModePatternSpec.matches(templateName)) {
-            return TemplateMode.VALIDXML;
+            return StandardTemplateModeHandlers.VALIDXML.getTemplateModeName();
         }
         if (this.xhtmlTemplateModePatternSpec.matches(templateName)) {
-            return TemplateMode.XHTML;
+            return StandardTemplateModeHandlers.XHTML.getTemplateModeName();
         }
         if (this.validXhtmlTemplateModePatternSpec.matches(templateName)) {
-            return TemplateMode.VALIDXHTML;
+            return StandardTemplateModeHandlers.VALIDXHTML.getTemplateModeName();
         }
         if (this.legacyHtml5TemplateModePatternSpec.matches(templateName)) {
-            return TemplateMode.LEGACYHTML5;
+            return StandardTemplateModeHandlers.LEGACYHTML5.getTemplateModeName();
         }
         if (this.html5TemplateModePatternSpec.matches(templateName)) {
-            return TemplateMode.HTML5;
+            return StandardTemplateModeHandlers.HTML5.getTemplateModeName();
         }
         return unsafeGetTemplateMode();
     }

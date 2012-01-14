@@ -133,7 +133,7 @@ public abstract class AbstractRemovalAttrProcessor
                         newChildren.add(child);
                     }
                 }
-                tag.setChildren(newChildren.toArray(new Node[newChildren.size()]));
+                tag.setChildren(newChildren);
                 tag.removeAttribute(attributeName);
                 return ProcessorResult.OK;
             }
@@ -142,7 +142,7 @@ public abstract class AbstractRemovalAttrProcessor
                 return ProcessorResult.OK;
             }
             if (this.removeBody.equals(value)) {
-                tag.setChildren(null);
+                tag.setChildren((Node[])null);
                 tag.removeAttribute(attributeName);
                 return ProcessorResult.OK;
             }

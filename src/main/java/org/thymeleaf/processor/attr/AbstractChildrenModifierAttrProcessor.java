@@ -61,7 +61,7 @@ public abstract class AbstractChildrenModifierAttrProcessor
         tag.clearChildren();
         
         if (modifiedChildren != null) {
-            tag.setChildren(modifiedChildren.toArray(new Node[modifiedChildren.size()]));
+            tag.setChildren(modifiedChildren);
         }
         
         tag.removeAttribute(attributeName);
