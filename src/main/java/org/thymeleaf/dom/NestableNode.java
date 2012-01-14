@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.dom;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -78,6 +79,20 @@ public abstract class NestableNode extends Node {
         }
         return Arrays.asList(this.children);
     }
+
+    
+    public final List<Tag> getTagChildren() {
+        if (this.childrenLen == 0) {
+            return Collections.emptyList();
+        }
+        final List<Tag> tagChildren = new ArrayList<Tag>();
+        for (final Node child : this.children) {
+            if (child instanceof Tag) {
+                tagChildren.add((Tag)child);
+            }
+        }
+        return Collections.unmodifiableList(tagChildren);
+    }
     
     
     public final Node[] unsafeGetChildrenNodeArray() {
@@ -90,6 +105,19 @@ public abstract class NestableNode extends Node {
             return null;
         }
         return this.children[0];
+    }
+
+    
+    public final Tag getFirstTagChild() {
+        if (this.childrenLen == 0) {
+            return null;
+        }
+        for (final Node child : this.children) {
+            if (child instanceof Tag) {
+                return (Tag) child;
+            }
+        }
+        return null;
     }
     
     
