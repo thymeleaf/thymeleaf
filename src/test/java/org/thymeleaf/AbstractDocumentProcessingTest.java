@@ -3,6 +3,8 @@ package org.thymeleaf;
 import junit.framework.TestCase;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.dom.parser.EntityResolver;
+import org.thymeleaf.templateparser.HTMLTemplateReader;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 import org.w3c.dom.Document;

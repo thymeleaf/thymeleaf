@@ -32,6 +32,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
+import org.thymeleaf.templateparser.HTMLTemplateReader;
 
 /**
  * 
