@@ -26,7 +26,6 @@ import java.nio.CharBuffer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Standards;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateInputException;
 
@@ -38,11 +37,12 @@ import org.thymeleaf.exceptions.TemplateInputException;
  * @since 1.1
  *
  */
-public final class HTMLTemplateReader extends Reader {
+public final class EntitySubstitutionTemplateReader extends Reader {
 
     
-    private static final Logger readerLogger = LoggerFactory.getLogger(HTMLTemplateReader.class);
+    private static final Logger readerLogger = LoggerFactory.getLogger(EntitySubstitutionTemplateReader.class);
     
+    public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
     
     private static final char CHAR_WHITESPACE_WILDCARD = '\u01F7';
     private static final char CHAR_ALPHANUMERIC_WILDCARD = '\u0234';
@@ -50,51 +50,36 @@ public final class HTMLTemplateReader extends Reader {
     
     private static final char[] COMMENT_START = "<!--".toCharArray(); 
     private static final char[] COMMENT_END = "-->".toCharArray(); 
-    private static final char[] DOCTYPE_START = "<!DOCTYPE\u01F7html\u01F7>".toCharArray();
     private static final char[] ENTITY = "&\u0234;".toCharArray();
     
-    private static final char[] DOCTYPE_HTML5_ENTITIES = Standards.HTML_STANDARD_ENTITIES_DOCTYPE.toCharArray();
-    private static final char[] ENTITY_START_SUBSTITUTE = new char[] { TemplateEngine.CHAR_ENTITY_START_SUBSTITUTE };
+    private static final char[] ENTITY_START_SUBSTITUTE = new char[] { CHAR_ENTITY_START_SUBSTITUTE };
     
     private final BufferedReader bufferedReader;
-    private final boolean processDoctype;
-    private final boolean processEntities;
-    private final boolean processAttributeValues;
     
     private char[] buffer;
     private char[] overflow;
     private int overflowIndex;
     
-    private boolean inTag = false;
     private boolean inComment = false;
-    private boolean inAttributeValue = false;
-    private char attributeValueLiteralChar = 0;
     
-    private boolean firstRead = true;
     private boolean noMoreToRead = false;
     
 
     
     /*
      * 
-     * TODO Check what happens with CDATA sections!
      * TODO Add exceptions for not substituting anything inside [[...]]
      * 
      */
 
 
     
-    public HTMLTemplateReader(final Reader in, final int bufferSize, 
-            final boolean processDoctype, final boolean processEntities, 
-            final boolean processAttributeValues) {
+    public EntitySubstitutionTemplateReader(final Reader in, final int bufferSize) {
         super();
         this.bufferedReader = new BufferedReader(in, bufferSize);
         this.buffer = new char[bufferSize + 1024]; 
         this.overflow = new char[bufferSize + 2048];
         this.overflowIndex = 0;
-        this.processDoctype = processDoctype;
-        this.processEntities = processEntities;
-        this.processAttributeValues = processAttributeValues;
     }
 
     
@@ -212,21 +197,6 @@ public final class HTMLTemplateReader extends Reader {
         int buffi = 0;
         while (cbufi < last && buffi < bufferSize) {
 
-            if (!this.processAttributeValues && this.inAttributeValue) {
-                if (this.buffer[buffi] == this.attributeValueLiteralChar) {
-                    this.inAttributeValue = false;
-                    this.attributeValueLiteralChar = 0;
-                }
-                cbuf[cbufi++] = this.buffer[buffi++];
-                totalRead++;
-                continue;
-            }
-            
-            
-            final int matchedDocType = 
-                (!this.processDoctype || !this.firstRead || buffi > 10 || this.inComment? 
-                        -2 : match(DOCTYPE_START, 0, DOCTYPE_START.length, this.buffer, buffi, bufferSize));
-
             final int matchedStartOfComment = 
                 (this.inComment? 
                         -2 : match(COMMENT_START, 0, COMMENT_START.length, this.buffer, buffi, bufferSize));
@@ -235,22 +205,8 @@ public final class HTMLTemplateReader extends Reader {
                         match(COMMENT_END, 0, COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
 
             final int matchedEntity = 
-                (!this.processEntities || this.inComment? 
+                (this.inComment? 
                         -2 : match(ENTITY, 0, ENTITY.length, this.buffer, buffi, bufferSize));
-            
-            
-            if (matchedDocType > 0) {
-
-                final int copied =
-                    copyToResult(
-                            DOCTYPE_HTML5_ENTITIES, 0, DOCTYPE_HTML5_ENTITIES.length, 
-                            cbuf, cbufi, last);
-                cbufi += copied;
-                totalRead += copied;
-                buffi += matchedDocType;
-                continue;
-                
-            }
             
             if (matchedStartOfComment > 0) {
                 
@@ -292,21 +248,6 @@ public final class HTMLTemplateReader extends Reader {
                 continue;
                 
             }
-                
-            if (!this.inComment) {
-                if (this.inTag) {
-                    if (this.buffer[buffi] == '>') {
-                        this.inTag = false;
-                    } else if (!this.processAttributeValues && this.buffer[buffi] == '\"' || this.buffer[buffi] == '\'') {
-                        this.inAttributeValue = true;
-                        this.attributeValueLiteralChar = this.buffer[buffi];
-                    }
-                } else {
-                    if (this.buffer[buffi] == '<') {
-                        this.inTag = true;
-                    }
-                }
-            }
             
             cbuf[cbufi++] = this.buffer[buffi++];
             totalRead++;
@@ -342,8 +283,6 @@ public final class HTMLTemplateReader extends Reader {
             
         }
 
-
-        this.firstRead = false;
 
         if (readerLogger.isTraceEnabled()) {
             final char[] result = new char[totalRead];
@@ -587,6 +526,45 @@ public final class HTMLTemplateReader extends Reader {
         
     }
 
+
+    
+    
+    public static final String removeEntitySubstitutions(final String text) {
+
+        if (text == null) {
+            return null;
+        }
+        final int textLen = text.length();
+        for (int i = 0; i < textLen; i++) {
+            if (text.charAt(i) == EntitySubstitutionTemplateReader.CHAR_ENTITY_START_SUBSTITUTE) {
+                final char[] textCharArray = text.toCharArray();
+                for (int j = 0; j < textLen; j++) {
+                    if (textCharArray[j] == EntitySubstitutionTemplateReader.CHAR_ENTITY_START_SUBSTITUTE) {
+                        textCharArray[j] = '&';
+                    }
+                }
+                return new String(textCharArray);
+            }
+        }
+        return text;
         
+    }
+        
+
+    
+    
+    public static final void removeEntitySubstitutions(final char[] text, final int off, final int len) {
+
+        if (text == null) {
+            return;
+        }
+        final int finalPos = off + len;
+        for (int i = off; i < finalPos; i++) {
+            if (text[i] == EntitySubstitutionTemplateReader.CHAR_ENTITY_START_SUBSTITUTE) {
+                text[i] = '&';
+            }
+        }
+        
+    }
     
 }

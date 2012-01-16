@@ -7,7 +7,6 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -65,20 +64,6 @@ public interface ITemplateParser {
      * @return the parsed Document.
      */
     public Document parseTemplate(final Configuration configuration, final String documentName, final Reader source);
-    
-
-    
-    /**
-     * <p>
-     *   Parses the document contained in the given <tt>InputSource</tt> object.
-     * </p>
-     * 
-     * @param configuration the Configuration object
-     * @param documentName the document name (optional).
-     * @param source the InputSource on the document to be parsed (required).
-     * @return the parsed Document.
-     */
-    public Document parseTemplate(final Configuration configuration, final String documentName, final InputSource source);
     
 
     

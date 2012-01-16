@@ -500,19 +500,6 @@ public final class Standards {
     
     
     
-    
-    public static final String HTML_STANDARD_ENTITIES_DOCTYPE =
-        "<!DOCTYPE html [\n" +
-        " <!ENTITY % HTMLlat1 PUBLIC \"-//W3C//ENTITIES Latin 1 for XHTML//EN\" \"xhtml-lat1.ent\">\n" +
-        " %HTMLlat1;\n" +
-        " <!ENTITY % HTMLsymbol PUBLIC \"-//W3C//ENTITIES Symbols for XHTML//EN\" \"xhtml-symbol.ent\">\n" +
-        " %HTMLsymbol;\n" +
-        " <!ENTITY % HTMLspecial PUBLIC \"-//W3C//ENTITIES Special for XHTML//EN\" \"xhtml-special.ent\">\n" +
-        " %HTMLspecial;\n" +
-        "]>";
-    
-    
-    
     public static final String XMLNS_PREFIX = "xmlns:";
     
     

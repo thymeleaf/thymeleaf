@@ -1,6 +1,7 @@
 package org.thymeleaf.templateparser.xmldom;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.thymeleaf.exceptions.ParsingException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
+import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.util.ResourcePool;
 import org.thymeleaf.util.StandardDOMTranslator;
@@ -101,23 +103,27 @@ public abstract class AbstractNonValidatingDOMTemplateParser extends AbstractTem
 
     
     
-    public final Document parseTemplate(final Configuration configuration, final String documentName, final InputSource source) {
-        return parseTemplateUsingPool(configuration, documentName, source, getPool());
+    public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
+        return parseTemplateUsingPool(configuration, documentName, reader, getPool());
     }
 
 
     
     protected static final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
-            final InputSource source, final ResourcePool<DocumentBuilder> pool) {
+            final Reader reader, final ResourcePool<DocumentBuilder> pool) {
         
         final DocumentBuilder docBuilder = pool.allocate();
+
+        final Reader templateReader = 
+                (reader instanceof EntitySubstitutionTemplateReader? 
+                        reader : new EntitySubstitutionTemplateReader(reader, 8192));
         
         try {
             
             docBuilder.setEntityResolver(new EntityResolver(configuration));
             docBuilder.setErrorHandler(ErrorHandler.INSTANCE);
             
-            final org.w3c.dom.Document domDocument = docBuilder.parse(source);
+            final org.w3c.dom.Document domDocument = docBuilder.parse(new InputSource(templateReader));
             docBuilder.reset();
             
             return StandardDOMTranslator.translateDocument(domDocument, documentName);
@@ -156,7 +162,7 @@ public abstract class AbstractNonValidatingDOMTemplateParser extends AbstractTem
                 parseTemplateUsingPool(
                         configuration, 
                         null, // documentName 
-                        new InputSource(new StringReader(wrappedFragment)), 
+                        new StringReader(wrappedFragment), 
                         getNonValidatingPool());
         return unwrapFragment(document);
     }

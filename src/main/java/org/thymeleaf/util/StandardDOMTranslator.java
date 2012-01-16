@@ -8,6 +8,7 @@ import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.dom.Text;
+import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 
 /**
  * <p>
@@ -92,7 +93,9 @@ public class StandardDOMTranslator {
         final int attributesLen = attributes.getLength();
         for (int i = 0; i < attributesLen; i++) {
             final org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attributes.item(i);
-            tag.setAttribute(attr.getName(), attr.getValue());
+            tag.setAttribute(
+                    attr.getName(), 
+                    EntitySubstitutionTemplateReader.removeEntitySubstitutions(attr.getValue()));
         }
         
         final org.w3c.dom.NodeList children = domNode.getChildNodes();
@@ -119,7 +122,8 @@ public class StandardDOMTranslator {
     
     
     public static final CDATASection translateCDATASection(final org.w3c.dom.CDATASection domNode, final NestableNode parentNode, final String documentName) {
-        final CDATASection cdata = new CDATASection(domNode.getData(), documentName);
+        final CDATASection cdata = 
+                new CDATASection(EntitySubstitutionTemplateReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
         cdata.setParent(parentNode);
         return cdata;
     }
@@ -128,7 +132,8 @@ public class StandardDOMTranslator {
     
     public static final Text translateText(final org.w3c.dom.Text domNode, final NestableNode parentNode, final String documentName) {
         
-        final Text text = new Text(domNode.getData(), documentName);
+        final Text text = 
+                new Text(EntitySubstitutionTemplateReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
         text.setParent(parentNode);
         return text;
         

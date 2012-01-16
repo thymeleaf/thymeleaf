@@ -201,23 +201,6 @@ public class TemplateEngine {
     public static final String TIMER_LOGGER_NAME = TemplateEngine.class.getName() + ".TIMER";
     
 
-    /**
-     * <p>
-     *   Constant containing the char that is used for substituting the &amp; character
-     *   in entities present in DOM Text nodes. These symbols are substituted so that
-     *   Thymeleaf can output entities in Text nodes in exactly the way they are written
-     *   in templates, without resolving or re-escaping them. 
-     * </p>
-     * <p>
-     *   Developers should never have the need to use this constant unless they are manually
-     *   processing Text nodes that might contain ampersand ('&') symbols.
-     * </p>
-     * 
-     * @since 1.1
-     */
-    public static final char CHAR_ENTITY_START_SUBSTITUTE = '\u0194';
-
-    
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
     

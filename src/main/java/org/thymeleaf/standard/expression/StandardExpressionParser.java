@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.exceptions.ExpressionParsingException;
+import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -66,7 +67,7 @@ public final class StandardExpressionParser {
     public Expression parseExpression(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpression(arguments, input, true);
+        return parseExpression(arguments, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -74,7 +75,7 @@ public final class StandardExpressionParser {
     public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseAssignationSequence(arguments, input, true);
+        return parseAssignationSequence(arguments, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -82,7 +83,7 @@ public final class StandardExpressionParser {
     public ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpressionSequence(arguments, input, true);
+        return parseExpressionSequence(arguments, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -90,7 +91,7 @@ public final class StandardExpressionParser {
     public Each parseEach(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseEach(arguments, input, true);
+        return parseEach(arguments, DOMUtils.unescapeXml(input, true), true);
     }
     
 
@@ -98,7 +99,7 @@ public final class StandardExpressionParser {
     public FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseFragmentSelection(arguments, input, true);
+        return parseFragmentSelection(arguments, DOMUtils.unescapeXml(input, true), true);
     }
 
     

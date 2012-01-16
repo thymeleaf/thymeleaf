@@ -32,7 +32,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
-import org.thymeleaf.templateparser.HTMLTemplateReader;
+import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 
 /**
  * 
@@ -63,28 +63,26 @@ public class HTMLTemplateReaderTest extends TestCase {
         for (int i = 0; i < 100; i++) {
             for (int readerBufferSize : BUFFER_SIZES) {
                 for (int bufferSize : BUFFER_SIZES) {
-                    check(TEMPLATE_TEST1_FILENAME, readerBufferSize, bufferSize, true, false);
-                    check(TEMPLATE_TEST2_FILENAME, readerBufferSize, bufferSize, true, false);
-                    check(TEMPLATE_TEST3_FILENAME, readerBufferSize, bufferSize, true, false);
-                    check(TEMPLATE_TEST4_FILENAME, readerBufferSize, bufferSize, false, false);
-                    check(TEMPLATE_TEST5_FILENAME, readerBufferSize, bufferSize, true, false);
-                    check(TEMPLATE_TEST6_FILENAME, readerBufferSize, bufferSize, true, true);
+                    check(TEMPLATE_TEST1_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST2_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST3_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST4_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST5_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST6_FILENAME, readerBufferSize, bufferSize);
                 }
             }
         }
-        
+
     }
     
     
-    
     private static void check(
-            final String name, final int readerBufferSize, final int bufferSize,
-            final boolean processHtml5Doctype, final boolean processAttributeValues) 
+            final String name, final int readerBufferSize, final int bufferSize) 
             throws Exception{
         
         final InputStream is = getFile(name + ".html");
-        final HTMLTemplateReader reader = 
-            new HTMLTemplateReader(new InputStreamReader(is, "UTF-8"), readerBufferSize, processHtml5Doctype, true, processAttributeValues);
+        final EntitySubstitutionTemplateReader reader = 
+            new EntitySubstitutionTemplateReader(new InputStreamReader(is, "UTF-8"), readerBufferSize);
         
         final StringBuilder strBuilder = new StringBuilder();
         
@@ -104,6 +102,11 @@ public class HTMLTemplateReaderTest extends TestCase {
             
             while ((read = reader.read(buffer, off, len)) > 0) {
                 final char[] readResult = new char[read];
+                for (int i = off; i < off + read; i++) {
+                    if (buffer[i] == '\uFFF8') {
+                        buffer[i] = '^';
+                    }
+                }
                 System.arraycopy(buffer, off, readResult, 0, read);
                 strBuilder.append(readResult);
                 offsets.add(Integer.valueOf(off));

@@ -499,7 +499,7 @@ public final class Configuration {
                 }
             }
 
-            for (final String attributeName : tag.getAttributeNames()) {
+            for (final String attributeName : tag.getAttributeNormalizedNames()) {
                 final Set<ProcessorAndContext> processorsForAttributeName = 
                         this.mergedSpecificProcessorsByAttributeName.get(attributeName);
                 if (processorsForAttributeName != null) {

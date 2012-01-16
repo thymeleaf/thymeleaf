@@ -35,31 +35,41 @@ public final class CDATASection extends AbstractTextNode {
     
     
     public CDATASection(final String content) {
-        this(content, null, null);
+        this(content, true, null, null);
     }
     
     
     public CDATASection(final char[] content) {
-        this(content, null, null);
+        this(content, true, null, null);
     }
     
     
-    public CDATASection(final String content, final String documentName) {
-        this(content, documentName, null);
+    public CDATASection(final String content, final boolean escapeXml) {
+        this(content, escapeXml, null, null);
     }
     
     
-    public CDATASection(final char[] content, final String documentName) {
-        this(content, documentName, null);
+    public CDATASection(final char[] content, final boolean escapeXml) {
+        this(content, escapeXml, null, null);
     }
     
     
-    public CDATASection(final String content, final String documentName, final Integer lineNumber) {
-        super(content, documentName, lineNumber);
+    public CDATASection(final String content, final boolean escapeXml, final String documentName) {
+        this(content, escapeXml, documentName, null);
     }
     
-    public CDATASection(final char[] content, final String documentName, final Integer lineNumber) {
-        super(content, documentName, lineNumber);
+    
+    public CDATASection(final char[] content, final boolean escapeXml, final String documentName) {
+        this(content, escapeXml, documentName, null);
+    }
+    
+    
+    public CDATASection(final String content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
+        super(content, escapeXml, documentName, lineNumber);
+    }
+    
+    public CDATASection(final char[] content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
+        super(content, escapeXml, documentName, lineNumber);
     }
     
 
@@ -73,7 +83,8 @@ public final class CDATASection extends AbstractTextNode {
     
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        return new CDATASection(this.content);
+        // escapeXML is false because there's no reason to escape content again (if it already has been)
+        return new CDATASection(this.content, false);
     }
     
 
@@ -82,16 +93,6 @@ public final class CDATASection extends AbstractTextNode {
     @Override
     void doCloneNodeInternals(final Node node, final NestableNode newParent, final boolean cloneProcessors) {
         // Nothing to be done here
-    }
-
-
-
-    
-    
-    public static final CDATASection translateDOMCDATASection(final org.w3c.dom.CDATASection domNode, final NestableNode parentNode) {
-        final CDATASection cdata = new CDATASection(domNode.getData());
-        cdata.parent = parentNode;
-        return cdata;
     }
     
     

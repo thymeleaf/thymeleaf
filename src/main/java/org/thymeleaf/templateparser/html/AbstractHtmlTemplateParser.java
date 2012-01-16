@@ -1,5 +1,6 @@
 package org.thymeleaf.templateparser.html;
 
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.ParsingException;
 import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
+import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.util.ResourcePool;
 import org.thymeleaf.util.StandardDOMTranslator;
@@ -56,7 +58,7 @@ public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser 
 
     
     
-    public final Document parseTemplate(final Configuration configuration, final String documentName, final InputSource source) {
+    public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
         if (!this.nekoInClasspath) {
             throw new ConfigurationException(
                     "Cannot perform conversion to XML from legacy HTML: The nekoHTML library " +
@@ -65,7 +67,7 @@ public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser 
                     "\"net.sourceforge.nekohtml::nekohtml::1.9.15\". IMPORTANT: DO NOT use versions of " +
                     "nekoHTML older than 1.9.15.");
         }
-        return this.parser.parseTemplate(configuration, documentName, source);
+        return this.parser.parseTemplate(configuration, documentName, reader);
     }
 
 
@@ -77,7 +79,7 @@ public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser 
                 parseTemplate(
                         configuration, 
                         null, // documentName 
-                        new InputSource(new StringReader(wrappedFragment)));
+                        new StringReader(wrappedFragment));
         return unwrapFragment(document);
     }
     
@@ -122,6 +124,7 @@ public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser 
                     
                     config.setFeature("http://xml.org/sax/features/namespaces", false);
                     config.setFeature("http://cyberneko.org/html/features/override-doctype", true);
+                    config.setFeature("http://cyberneko.org/html/features/scanner/cdata-sections", true);
                     config.setProperty("http://cyberneko.org/html/properties/doctype/pubid", ""); 
                     config.setProperty("http://cyberneko.org/html/properties/doctype/sysid", ""); 
                     config.setProperty("http://cyberneko.org/html/properties/names/elems", "match");
@@ -142,16 +145,20 @@ public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser 
         
         
         
-        public final Document parseTemplate(final Configuration configuration, final String documentName, final InputSource source) {
+        public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
             
             final org.apache.xerces.parsers.DOMParser domParser = (org.apache.xerces.parsers.DOMParser) this.pool.allocate();
+
+            final Reader templateReader = 
+                    (reader instanceof EntitySubstitutionTemplateReader? 
+                            reader : new EntitySubstitutionTemplateReader(reader, 8192));
             
             try {
                 
                 domParser.setErrorHandler(ErrorHandler.INSTANCE);
                 domParser.setEntityResolver(new EntityResolver(configuration));
                 
-                domParser.parse(source);
+                domParser.parse(new InputSource(templateReader));
                 final org.w3c.dom.Document domDocument = domParser.getDocument();
                 domParser.reset();
                 

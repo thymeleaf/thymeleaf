@@ -13,7 +13,6 @@ import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -102,7 +101,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
 
     
     
-    protected void writeNode(final Arguments arguments, final Writer writer, final Node node) 
+    public void writeNode(final Arguments arguments, final Writer writer, final Node node) 
             throws IOException {
     
         if (node instanceof Tag) {
@@ -113,6 +112,8 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
             writeComment(arguments, writer, (Comment)node);
         } else if (node instanceof CDATASection) {
             writeCDATASection(arguments, writer, (CDATASection)node);
+        } else if (node instanceof Document) {
+            writeDocument(arguments, writer, (Document)node);
         } else {
             throw new IllegalStateException("Cannot write node of class \"" + node.getClass().getName());
         }
@@ -129,7 +130,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
         writer.write('<');
         writer.write(tag.getName());
         if (tag.hasAttributes()) {
-            for (final String normalizedAttributeName : tag.getAttributeNames()) {
+            for (final String normalizedAttributeName : tag.getAttributeNormalizedNames()) {
                 boolean writeAttribute = true;
                 if (tag.getHasXmlnsAttributes()) {
                     final String prefix = 
@@ -143,7 +144,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                     writer.write(tag.getAttributeOriginalNameFromNormalizedName(normalizedAttributeName));
                     writer.write('=');
                     writer.write('\"');
-                    DOMUtils.writeXmlEscaped(tag.getAttributeValueFromNormalizedName(normalizedAttributeName), writer, true);
+                    writer.write(tag.getAttributeValueFromNormalizedName(normalizedAttributeName));
                     writer.write('\"');
                 }
             }
@@ -202,7 +203,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     @SuppressWarnings("unused")
     protected void writeText(final Arguments arguments, final Writer writer, final Text text) 
             throws IOException {
-        DOMUtils.writeXmlEscaped(text.unsafeGetContentCharArray(), writer, false);
+        writer.write(text.unsafeGetContentCharArray());
     }
     
 

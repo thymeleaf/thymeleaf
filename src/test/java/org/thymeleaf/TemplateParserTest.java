@@ -1,96 +1,170 @@
 package org.thymeleaf;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.thymeleaf.dom.Document;
+import org.thymeleaf.dom.Tag;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
+import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.xmldom.XhtmlAndHtml5NonValidatingDOMTemplateParser;
+import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
 import org.thymeleaf.templatewriter.ITemplateWriter;
 
 /**
  * <p>
- * Tests the new ITemplateParser implementation, backed by the new
- * IDocumentParser implementation, agains the old template parser.
+ * Tests IDocumentParser implementations agains the result obtained from
+ * the original template parser implementation.
+ * </p>
+ * 
+ * <p>
+ * Tests the newly introduced location information (document name and line number)
+ * supports of IDocumentParser implementations.
  * </p>
  * 
  * @author guvend
  */
-public class TemplateParserTest
-{
-//    private static final String DT_T1 = "<!DOCTYPE html SYSTEM " +
-//        "\"http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd\">";
-//
-//    // -----
-//    
-//    private Configuration configuration;
-//    private TemplateProcessingParameters templateProcessingParameters;
-//    
-//    private StringTemplateResolver templateResolver;
-//    private ITemplateWriter originalParser;
-//    private ITemplateWriter newParser;
-//    
-//    // -----
-//    
-//    @Before
-//    public void initialize()
-//    {
-//        templateResolver = new StringTemplateResolver("!!!");
-//
-//        configuration = new Configuration();
-//        configuration.setTemplateResolver(templateResolver);
-//        configuration.setMessageResolver(new StandardMessageResolver());
-//        configuration.initialize();
-//        
-//        templateProcessingParameters = new TemplateProcessingParameters(
-//            configuration, "test", new TestContext());
-//
-//        // -----
-//        
-//        originalParser = new OriginalTemplateParser(configuration);
-//        
-//        newParser = new TemplateRepository(configuration,
-//            new XmlSaxDocumentParser(configuration, 2),
-//            new NopParsedTemplateCache());
-//    }
-//    
-//    @Test
-//    public void testBasics()
-//    {
-//        test(DT_T1 +
-//            "<html><body><p class='myClass'>basics</p></body></html>");
-//        
-//        test(DT_T1 +
-//            "<html><!--c1--><head><script><![CDATA[cd1]]></script></head>" +
-//            "<body><!--c2--><p><![CDATA[cd2]]></p></body></html>");
-//        
-//        test(DT_T1 +
-//            "<html><body><div th:remove='tag'>remove me</div></body></html>");
-//    }
-//
-//    // -----
-//    
-//    private void test(String xml)
-//    {
-//        Document originalDocument = parse(xml, originalParser);
-//        Document newDocument = parse(xml, newParser);
-//        
-//        boolean equals = newDocument.equals(originalDocument);
-//        
-//        assertTrue("Document parsed with DOM parser must be the same " +
-//            "as parsed with the original parser", equals);
-//    }
-//    
-//    /**
-//     * Warning: This method is NOT re-entrant, it mutates the templateResolver
-//     */
-//    private Document parse(String xml, ITemplateWriter parser)
-//    {
-//        templateResolver.setContent(xml);
-//        
-//        Template template = parser.parseDocument(
-//            templateProcessingParameters);
-//        
-//        return template.getDocument();
-//    }
+public class TemplateParserTest {
+    
+    private static final String DT_T1 = "<!DOCTYPE html SYSTEM " +
+		"\"http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd\">";
+    
+    private Configuration configuration;
+    
+    private StringTemplateResolver templateResolver;
+    private ITemplateParser xmlDomDocumentParser;
+    private ITemplateParser xmlSaxDocumentParser;
+    
+    // -----
+    
+    @Before
+    public void initialize() {
+        
+        this.templateResolver = new StringTemplateResolver("!!!");
+
+        this.configuration = new Configuration();
+        this.configuration.setTemplateResolver(this.templateResolver);
+        this.configuration.setMessageResolver(new StandardMessageResolver());
+        this.configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
+        this.configuration.initialize();
+        
+        this.xmlDomDocumentParser = new XhtmlAndHtml5NonValidatingDOMTemplateParser(2);
+        this.xmlSaxDocumentParser = new XhtmlAndHtml5NonValidatingSAXTemplateParser(2);
+        
+    }
+    
+    // -----
+    
+    @Test
+    public void testBasics() throws Exception {
+        
+        parseAndTest(DT_T1 +
+            "<html><body><p class='myClass'>basics</p></body></html>");
+        
+        parseAndTest(DT_T1 +
+            "<html><!--c1--><head><script><![CDATA[cd1]]></script></head>" +
+            "<body><!--c2--><p><![CDATA[cd2]]></p></body></html>");
+        
+        parseAndTest(DT_T1 +
+            "<html><body><div th:remove='tag'>remove me</div></body></html>");
+        
+    }
+    
+    
+    @Test
+    public void testLocation() {
+        
+        String template =
+            /* 1 */ DT_T1 + "\n" +
+            /* 2 */ "\n" +
+            /* 3 */ "<html>" + "\n" +
+            /* 4 */ "    <body>" + "\n" +
+            /* 5 */ "        <p class='myClass'>first paragraph</p>" + "\n" +
+            /* 6 */ "        <p class='anotherClass'>second paragraph</p>" + "\n" +
+            /* 7 */ "    </body>" + "\n" +
+            /* 8 */ "</html>" + "\n"
+            ;
+        
+        String documentName = "my-document";
+        
+        Document saxDoc = 
+                this.xmlSaxDocumentParser.parseTemplate(this.configuration, documentName, template);
+        Document domDoc = 
+                this.xmlDomDocumentParser.parseTemplate(this.configuration, documentName, template);
+
+        checkLocations("SAX [ORIGINAL] ", saxDoc, documentName, false);
+        checkLocations("SAX [CLONED] ", saxDoc.clone(true), documentName, false);
+
+        checkLocations("DOM [ORIGINAL] ", domDoc, documentName, true);
+        checkLocations("DOM [CLONED] ", domDoc.clone(true), documentName, true);
+        
+    }
+
+    
+    private void checkLocations(final String msg, final Document doc, 
+            final String documentName, final boolean nullLineNumbers) {
+        
+        Tag html = (Tag) doc.getFirstChild();
+        Tag body = html.getFirstTagChild();
+        Tag p1 = body.getTagChildren().get(0);
+        Tag p2 = body.getTagChildren().get(1);
+        
+        assertEquals(msg + "document name of html", documentName, html.getDocumentName());
+        assertEquals(msg + "document name of body", documentName, body.getDocumentName());
+        assertEquals(msg + "document name of p1", documentName, p1.getDocumentName());
+        assertEquals(msg + "document name of p2", documentName, p2.getDocumentName());
+
+        if(!nullLineNumbers) {
+            assertEquals(msg + "linenumber of html", Integer.valueOf(3), html.getLineNumber());
+            assertEquals(msg + "linenumber of body", Integer.valueOf(4), body.getLineNumber());
+            assertEquals(msg + "linenumber of p1", Integer.valueOf(5), p1.getLineNumber());
+            assertEquals(msg + "linenumber of p2", Integer.valueOf(6), p2.getLineNumber());
+        } else {
+            assertEquals(msg + "linenumber of html", null, html.getLineNumber());
+            assertEquals(msg + "linenumber of body", null, body.getLineNumber());
+            assertEquals(msg + "linenumber of p1", null, p1.getLineNumber());
+            assertEquals(msg + "linenumber of p2", null, p2.getLineNumber());
+        }
+    }
+    
+    // -----
+    
+    /**
+     * Warning: This method is NOT re-entrant, it mutates the templateResolver
+     */
+    private void parseAndTest(final String xml) throws IOException {
+        
+        this.templateResolver.setContent(xml);
+        
+        final Document domDocument = 
+                this.xmlDomDocumentParser.parseTemplate(this.configuration, null, xml);
+        final Document saxDocument = 
+                this.xmlSaxDocumentParser.parseTemplate(this.configuration, null, xml);
+        
+        final String domDocumentOutput = createOutput(domDocument);
+        final String saxDocumentOutput = createOutput(saxDocument);
+        
+        System.out.println("DOM: \n" + domDocumentOutput);
+        System.out.println("SAX: \n" + domDocumentOutput);
+        
+        Assert.assertEquals(saxDocumentOutput, domDocumentOutput);
+        
+    }
+
+    
+    private String createOutput(final Document document) throws IOException {
+        final StringWriter stringWriter = new StringWriter();
+        final ITemplateWriter templateWriter = 
+                this.configuration.getTemplateModeHandler("XHTML").getTemplateWriter();
+        templateWriter.write(null, stringWriter, document);
+        return stringWriter.toString();
+    }
+    
 }

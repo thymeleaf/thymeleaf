@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -52,14 +51,8 @@ public abstract class AbstractTemplateParser implements ITemplateParser {
             reader = new InputStreamReader(source);
         }
         
-        return parseTemplate(configuration, documentName, new InputSource(reader));
+        return parseTemplate(configuration, documentName, reader);
         
-    }
-
-    
-    
-    public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader source) {
-        return parseTemplate(configuration, documentName, new InputSource(source));
     }
 
     

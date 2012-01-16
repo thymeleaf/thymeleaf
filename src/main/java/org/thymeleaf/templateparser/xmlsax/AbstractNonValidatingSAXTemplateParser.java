@@ -1,6 +1,7 @@
 package org.thymeleaf.templateparser.xmlsax;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.thymeleaf.exceptions.ParsingException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
+import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.util.ResourcePool;
 import org.xml.sax.Attributes;
@@ -97,20 +99,24 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
 
 
     
-    public final Document parseTemplate(final Configuration configuration, final String documentName, final InputSource source) {
-        return parseTemplateUsingPool(configuration, documentName, source, getPool());
+    public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
+        return parseTemplateUsingPool(configuration, documentName, reader, getPool());
     }
 
 
     
     private static final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
-            final InputSource source, final ResourcePool<SAXParser> pool) {
+            final Reader reader, final ResourcePool<SAXParser> pool) {
 
         final SAXParser saxParser = pool.allocate();
+
+        final Reader templateReader = 
+                (reader instanceof EntitySubstitutionTemplateReader? 
+                        reader : new EntitySubstitutionTemplateReader(reader, 8192));
         
         try {
             
-            return doParse(configuration, documentName, source, saxParser);
+            return doParse(configuration, documentName, new InputSource(templateReader), saxParser);
             
         } catch(IOException e) {
             throw new TemplateInputException("Exception parsing document", e);
@@ -163,7 +169,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
                 parseTemplateUsingPool(
                         configuration, 
                         null, // documentName 
-                        new InputSource(new StringReader(wrappedFragment)), 
+                        new StringReader(wrappedFragment), 
                         getNonValidatingPool());
         return unwrapFragment(document);
     }
@@ -228,6 +234,14 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             return this.rootNodes;
         }
 
+
+
+
+        @Override
+        public void endDocument() throws SAXException {
+            super.endDocument();
+            flushBuffer();
+        }
         
 
         /*
@@ -253,7 +267,8 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             
             this.cdataMode = false;
             if(this.cdataBufferLen > 0) {
-                Node cdata = new CDATASection(Arrays.copyOf(this.cdataBuffer, this.cdataBufferLen));
+                Node cdata = 
+                        new CDATASection(Arrays.copyOf(this.cdataBuffer, this.cdataBufferLen), false);
                 this.elementStack.peek().addChild(cdata);
                 this.cdataBufferLen = 0;
             }
@@ -273,6 +288,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
         @Override
         public void characters(final char ch[], final int start, final int length) {
             
+            EntitySubstitutionTemplateReader.removeEntitySubstitutions(ch, start, length);
             if (this.cdataMode) {
                 
                 while (this.cdataBufferLen + length > this.cdataBuffer.length) {
@@ -346,12 +362,15 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             final Tag tag = new Tag(qName, this.documentName, lineNumber);
             
             for (int i = 0; i < attributes.getLength(); i++) {
-                tag.setAttribute(attributes.getQName(i), attributes.getValue(i));
+                tag.setAttribute(
+                        attributes.getQName(i), 
+                        EntitySubstitutionTemplateReader.removeEntitySubstitutions(attributes.getValue(i)));
             }
             
             this.elementStack.push(tag);
             
         }
+        
 
         
         @Override
@@ -409,7 +428,8 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             if (this.textBufferLen > 0) {
 
                 final Tag tag = this.elementStack.peek();
-                final Node textNode = new Text(Arrays.copyOf(this.textBuffer, this.textBufferLen));
+                final Node textNode = 
+                        new Text(Arrays.copyOf(this.textBuffer, this.textBufferLen), false);
                 tag.addChild(textNode);
             
                 this.textBufferLen = 0;

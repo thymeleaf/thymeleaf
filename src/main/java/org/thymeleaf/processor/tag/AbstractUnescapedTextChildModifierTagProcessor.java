@@ -78,7 +78,7 @@ public abstract class AbstractUnescapedTextChildModifierTagProcessor
             throw e;
         } catch (final Exception e) {
             throw new AttrProcessorException(
-                    "An error happened during parsing of unescaped text: \"" + tag.getName() + "\"");
+                    "An error happened during parsing of unescaped text: \"" + tag.getName() + "\"", e);
         }
         
     }

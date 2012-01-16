@@ -34,31 +34,41 @@ public final class Text extends AbstractTextNode {
 
     
     public Text(final String content) {
-        this(content, null, null);
+        this(content, true, null, null);
     }
     
     
     public Text(final char[] content) {
-        this(content, null, null);
+        this(content, true, null, null);
     }
     
     
-    public Text(final String content, final String documentName) {
-        this(content, documentName, null);
+    public Text(final String content, final boolean escapeXml) {
+        this(content, escapeXml, null, null);
     }
     
     
-    public Text(final char[] content, final String documentName) {
-        this(content, documentName, null);
+    public Text(final char[] content, final boolean escapeXml) {
+        this(content, escapeXml, null, null);
     }
     
     
-    public Text(final String content, final String documentName, final Integer lineNumber) {
-        super(content, documentName, lineNumber);
+    public Text(final String content, final boolean escapeXml, final String documentName) {
+        this(content, escapeXml, documentName, null);
     }
     
-    public Text(final char[] content, final String documentName, final Integer lineNumber) {
-        super(content, documentName, lineNumber);
+    
+    public Text(final char[] content, final boolean escapeXml, final String documentName) {
+        this(content, escapeXml, documentName, null);
+    }
+    
+    
+    public Text(final String content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
+        super(content, escapeXml, documentName, lineNumber);
+    }
+    
+    public Text(final char[] content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
+        super(content, escapeXml, documentName, lineNumber);
     }
     
     
@@ -66,7 +76,8 @@ public final class Text extends AbstractTextNode {
 
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        return new Text(this.content);
+        // escapeXML is false because there's no reason to escape content again (if it already has been)
+        return new Text(this.content, false);
     }
     
 

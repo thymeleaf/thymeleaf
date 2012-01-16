@@ -139,7 +139,7 @@ public final class Tag extends NestableNode {
     }
     
     
-    public Set<String> getAttributeNames() {
+    public Set<String> getAttributeNormalizedNames() {
         if (this.attributesLen > 0) {
             return this.attributeValues.keySet();
         }

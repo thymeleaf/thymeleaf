@@ -18,7 +18,7 @@ import org.thymeleaf.dom.Node;
 public final class LegacyHtml5TemplateParser extends AbstractHtmlTemplateParser {
     
 
-    private static final String FRAGMENT_WRAP_START = "<!DOCTYPE html>\n<html><body><div>";
+    private static final String FRAGMENT_WRAP_START = "<!DOCTYPE html>\n<html><head></head><body><div>";
     private static final String FRAGMENT_WRAP_END = "</div></body></html>";
     
     
@@ -36,7 +36,7 @@ public final class LegacyHtml5TemplateParser extends AbstractHtmlTemplateParser 
     
     @Override
     protected final List<Node> unwrapFragment(final Document document) {
-        return ((NestableNode)((NestableNode)((NestableNode)document.getFirstChild()).getFirstChild()).getFirstChild()).getChildren();
+        return ((NestableNode)((NestableNode)((NestableNode)document.getFirstChild()).getChildren().get(1)).getFirstChild()).getChildren();
     }
 
     
