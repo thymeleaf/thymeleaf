@@ -178,7 +178,7 @@ public final class CacheMap<K, V> implements Serializable {
         this.hitCount = new AtomicLong(0);
         this.missCount = new AtomicLong(0);
         
-        this.lock = new ReentrantReadWriteLock();
+        this.lock = new ReentrantReadWriteLock(true);
         this.rLock = this.lock.readLock();
         this.wLock = this.lock.writeLock();
 
