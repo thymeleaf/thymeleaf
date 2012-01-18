@@ -21,20 +21,11 @@ package org.thymeleaf.util;
 
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 
 
@@ -86,13 +77,13 @@ public final class CacheMap<K, V> implements Serializable {
     private static final long serialVersionUID = 4399112135561524032L;
 
     
-    public static final String CACHE_LOGGER_NAME = TemplateEngine.class.getName() + ".CACHE";
-    protected static final Logger logger = LoggerFactory.getLogger(CACHE_LOGGER_NAME);
+//    public static final String CACHE_LOGGER_NAME = TemplateEngine.class.getName() + ".CACHE";
+//    protected static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class.getName() + ".CACHE");
 
     private static final long REPORT_INTERVAL = 300000L; // 5 minutes
-    private static long lastExecution = System.currentTimeMillis();
-
-    private static final List<WeakReference<CacheMap<?, ?>>> caches = new ArrayList<WeakReference<CacheMap<?,?>>>();
+    private static final String REPORT_FORMAT = 
+            "[THYMELEAF][*][*][*][CACHE_REPORT] %12s elements | %8s puts | %12s gets | %12s hits | %12s misses - [%s]";
+    private volatile long lastExecution = System.currentTimeMillis();
     
     private final String name;
     private final boolean useSoftReferences;
@@ -100,14 +91,13 @@ public final class CacheMap<K, V> implements Serializable {
     private final CacheDataContainer<K,V> dataContainer;
     private final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker;
 
+    private final boolean traceExecution;
+    private final Logger logger;
+    
     private final AtomicLong getCount;
     private final AtomicLong putCount;
     private final AtomicLong hitCount;
     private final AtomicLong missCount;
-
-    private final ReadWriteLock lock;
-    private final Lock rLock;
-    private final Lock wLock;
     
     
 
@@ -117,46 +107,53 @@ public final class CacheMap<K, V> implements Serializable {
     
 
     public CacheMap(final String name, final boolean useSoftReferences, 
-            final int initialCapacity) {
-        this(name, useSoftReferences, initialCapacity, -1, null);
+            final int initialCapacity, final boolean traceExecution,
+            final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, -1, null, traceExecution, logger);
     }
 
     public CacheMap(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker) {
-        this(name, useSoftReferences, initialCapacity, -1, entryValidityChecker);
-    }
-
-    public CacheMap(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final int maxSize) {
-        this(name, useSoftReferences, initialCapacity, maxSize, null);
+            final int initialCapacity, final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
+            final boolean traceExecution, final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, -1, entryValidityChecker, traceExecution, logger);
     }
 
     public CacheMap(final String name, final boolean useSoftReferences, 
             final int initialCapacity, final int maxSize, 
-            final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker) {
-        this(name, useSoftReferences, initialCapacity, 0.75f, maxSize, entryValidityChecker);
+            final boolean traceExecution, final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, maxSize, null, traceExecution, logger);
     }
 
     public CacheMap(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor) {
-        this(name, useSoftReferences, initialCapacity, loadFactor, -1, null);
+            final int initialCapacity, final int maxSize, 
+            final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
+            final boolean traceExecution, final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, 0.75f, maxSize, entryValidityChecker, traceExecution, logger);
     }
 
     public CacheMap(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor,
-            final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker) {
-        this(name, useSoftReferences, initialCapacity, loadFactor, -1, entryValidityChecker);
-    }
-
-    public CacheMap(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor,
-            final int maxSize) {
-        this(name, useSoftReferences, initialCapacity, loadFactor, maxSize, null);
+            final int initialCapacity, final float loadFactor, 
+            final boolean traceExecution, final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, loadFactor, -1, null, traceExecution, logger);
     }
 
     public CacheMap(final String name, final boolean useSoftReferences, 
             final int initialCapacity, final float loadFactor,
-            final int maxSize, final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker) {
+            final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
+            final boolean traceExecution, final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, loadFactor, -1, entryValidityChecker, traceExecution, logger);
+    }
+
+    public CacheMap(final String name, final boolean useSoftReferences, 
+            final int initialCapacity, final float loadFactor,
+            final int maxSize, final boolean traceExecution, final Logger logger) {
+        this(name, useSoftReferences, initialCapacity, loadFactor, maxSize, null, traceExecution, logger);
+    }
+
+    public CacheMap(final String name, final boolean useSoftReferences, 
+            final int initialCapacity, final float loadFactor,
+            final int maxSize, final ICacheMapEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
+            final boolean traceExecution, final Logger logger) {
         
         super();
 
@@ -164,47 +161,34 @@ public final class CacheMap<K, V> implements Serializable {
         Validate.isTrue(initialCapacity > 0, "Initial capacity must be > 0");
         Validate.isTrue(loadFactor >= 0.0f && loadFactor <= 1.0f, "Load factor must be between 0 and 1");
         Validate.isTrue(maxSize != 0, "Cache Map max size must be either -1 (no limit) or > 0");
+        if (traceExecution) {
+            Validate.notNull(logger, "If the 'trace execution' flag is set, logger cannot be null");
+        }
         
         this.name = name;
         this.useSoftReferences = useSoftReferences;
         this.maxSize = maxSize;
         this.entryValidityChecker = entryValidityChecker;
         
-        this.dataContainer =
-                new CacheDataContainer<K,V>(this.name, initialCapacity, loadFactor, maxSize);
-                
+        this.traceExecution = traceExecution;
+        this.logger = logger;
+        
+        this.dataContainer = 
+                new CacheDataContainer<K,V>(this.name, initialCapacity, loadFactor, maxSize, this.traceExecution, this.logger);
+        
         this.getCount = new AtomicLong(0);
         this.putCount = new AtomicLong(0);
         this.hitCount = new AtomicLong(0);
         this.missCount = new AtomicLong(0);
-        
-        this.lock = new ReentrantReadWriteLock(true);
-        this.rLock = this.lock.readLock();
-        this.wLock = this.lock.writeLock();
 
-        synchronized(CacheMap.class) {
-            caches.add(new WeakReference<CacheMap<?,?>>(this));
-            Collections.sort(caches, new Comparator<WeakReference<CacheMap<?,?>>>() {
-                public int compare(final WeakReference<CacheMap<?, ?>> o1Ref, final WeakReference<CacheMap<?, ?>> o2Ref) {
-                    final CacheMap<?,?> o1 = o1Ref.get();
-                    final CacheMap<?,?> o2 = o2Ref.get();
-                    if (o1 == null) {
-                        return -1;
-                    }
-                    if (o2 == null) {
-                        return 1;
-                    }
-                    return o1.getName().compareToIgnoreCase(o2.getName());
-                }
-            });
-        }
-        
-        if (this.maxSize < 0) {
-            logger.debug("[THYMELEAF][CACHE_INITIALIZE] Initializing cache map {}. Soft references {}.", 
-                    this.name, (this.useSoftReferences? "are used" : "not used"));
-        } else {
-            logger.debug("[THYMELEAF][CACHE_INITIALIZE] Initializing cache map {}. Max size: {}. Soft references {}.", 
-                    new Object[] {this.name, Integer.valueOf(this.maxSize), (this.useSoftReferences? "are used" : "not used")});
+        if (this.logger != null) {
+            if (this.maxSize < 0) {
+                this.logger.debug("[THYMELEAF][CACHE_INITIALIZE] Initializing cache map {}. Soft references {}.", 
+                        this.name, (this.useSoftReferences? "are used" : "not used"));
+            } else {
+                this.logger.debug("[THYMELEAF][CACHE_INITIALIZE] Initializing cache map {}. Max size: {}. Soft references {}.", 
+                        new Object[] {this.name, Integer.valueOf(this.maxSize), (this.useSoftReferences? "are used" : "not used")});
+            }
         }
         
     }
@@ -216,28 +200,22 @@ public final class CacheMap<K, V> implements Serializable {
 
     
     
-    public V put(final K key, final V value) {
+    public void put(final K key, final V value) {
 
         incrementReportEntity(this.putCount);
         
         final CacheEntry<V> entry = new CacheEntry<V>(value, this.useSoftReferences);
-        Integer newSize = null;
-        this.wLock.lock();
-        try {
-            this.dataContainer.put(key, entry);
-            newSize = Integer.valueOf(this.dataContainer.size());
-        } finally {
-            this.wLock.unlock();
-        }
         
-        if (logger.isTraceEnabled()) {
-            logger.trace(
+        // newSize will be -1 if traceExecution is false
+        int newSize = this.dataContainer.put(key, entry);
+        
+        if (this.traceExecution) {
+            this.logger.trace(
                     "[THYMELEAF][{}][{}][{}][CACHE_ADD][{}] Adding cache entry in cache map \"{}\" for key \"{}\". New size is {}.", 
-                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, newSize, this.name, key, newSize});
+                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
         }
         
-        checkReportExecution();
-        return value;
+        outputReportIfNeeded();
         
     }
     
@@ -253,57 +231,44 @@ public final class CacheMap<K, V> implements Serializable {
         
         incrementReportEntity(this.getCount);
         
-        this.rLock.lock();
-        CacheEntry<V> resultEntry = null;
-        try {
-            resultEntry = this.dataContainer.get(key);
-        } finally {
-            this.rLock.unlock();
-        }
+        final CacheEntry<V> resultEntry = this.dataContainer.get(key);
         
         if (resultEntry == null) {
             incrementReportEntity(this.missCount);
-            if (logger.isTraceEnabled()) {
-                logger.trace(
+            if (this.traceExecution) {
+                this.logger.trace(
                         "[THYMELEAF][{}][{}][{}][CACHE_MISS] Cache miss in cache map \"{}\" for key \"{}\".", 
                         new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
             }
-            checkReportExecution();
+            outputReportIfNeeded();
             return null;
         }
 
         final V resultValue = 
-                resultEntry.getValueIfStillValid(this.name, key, validityChecker);
+                resultEntry.getValueIfStillValid(this.name, key, validityChecker, this.traceExecution, this.logger);
         if (resultValue == null) {
-            Integer newSize = null;
-            this.wLock.lock();
-            try {
-                this.dataContainer.remove(key);
-                newSize = Integer.valueOf(this.dataContainer.size());
-            } finally {
-                this.wLock.unlock();
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace(
+            final int newSize = this.dataContainer.remove(key);
+            if (this.traceExecution) {
+                this.logger.trace(
                         "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Removing cache entry in cache map \"{}\" (Entry \"{}\" is not valid anymore). New size is {}.",
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, newSize, this.name, key, newSize});
-                logger.trace(
+                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
+                this.logger.trace(
                         "[THYMELEAF][{}][{}][{}][CACHE_MISS] Cache miss in cache map \"{}\" for key \"{}\".", 
                         new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
             }
             incrementReportEntity(this.missCount);
-            checkReportExecution();
+            outputReportIfNeeded();
             return null;
         }
         
-        if (logger.isTraceEnabled()) {
-            logger.trace(
+        if (this.traceExecution) {
+            this.logger.trace(
                     "[THYMELEAF][{}][{}][{}][CACHE_HIT] Cache hit in cache map \"{}\" for key \"{}\".", 
                     new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
         }
         
         incrementReportEntity(this.hitCount);
-        checkReportExecution();
+        outputReportIfNeeded();
         return resultValue;
         
     }
@@ -312,15 +277,10 @@ public final class CacheMap<K, V> implements Serializable {
 
     public void clear() {
         
-        this.wLock.lock();
-        try {
-            this.dataContainer.clear();
-        } finally {
-            this.wLock.unlock();
-        }
+        this.dataContainer.clear();
         
-        if (logger.isTraceEnabled()) {
-            logger.trace(
+        if (this.traceExecution) {
+            this.logger.trace(
                     "[THYMELEAF][{}][*][{}][CACHE_REMOVE][0] Removing ALL cache entries in cache map \"{}\". New size is 0.", 
                     new Object[] {TemplateEngine.threadIndex(), this.name, this.name});
         }
@@ -331,20 +291,12 @@ public final class CacheMap<K, V> implements Serializable {
     
     public void clearKey(final K key) {
 
-        CacheEntry<V> e = null;
-        Integer newSize = null;
-        this.wLock.lock();
-        try {
-            e = this.dataContainer.remove(key);
-            newSize = Integer.valueOf(this.dataContainer.size());
-        } finally {
-            this.wLock.unlock();
-        }
+        final int newSize = this.dataContainer.remove(key);
         
-        if (logger.isTraceEnabled() && null != e) {
-            logger.trace(
+        if (this.traceExecution && newSize != -1) {
+            this.logger.trace(
                     "[THYMELEAF][{}][*][{}][CACHE_REMOVE][{}] Removed cache entry in cache map \"{}\" for key \"{}\". New size is {}.", 
-                    new Object[] {TemplateEngine.threadIndex(), this.name, newSize, this.name, key, newSize});
+                    new Object[] {TemplateEngine.threadIndex(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
         }
         
     }
@@ -380,23 +332,30 @@ public final class CacheMap<K, V> implements Serializable {
     // -----
 
     
-    private static void incrementReportEntity(final AtomicLong entity) {
-        if (logger.isTraceEnabled()) {
+    private void incrementReportEntity(final AtomicLong entity) {
+        if (this.traceExecution) {
             entity.incrementAndGet();
         }
     }
 
     
-    private static void checkReportExecution() {
+    private void outputReportIfNeeded() {
         
-        if (logger.isTraceEnabled()) { // fail fast
+        if (this.traceExecution) { // fail fast
             
             final long currentTime = System.currentTimeMillis();
-            if ((currentTime - lastExecution) >= REPORT_INTERVAL) { // first check without need to sync
-                synchronized (CacheMap.class) {
-                    if ((currentTime - lastExecution) >= REPORT_INTERVAL) {
-                        outputReport();
-                        lastExecution = currentTime;
+            if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // first check without need to sync
+                synchronized (this) {
+                    if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // double-checking OK thanks to volatile
+                        this.logger.trace(
+                                String.format(REPORT_FORMAT,
+                                        Integer.valueOf(size()),
+                                        Long.valueOf(this.putCount.get()),
+                                        Long.valueOf(this.getCount.get()),
+                                        Long.valueOf(this.hitCount.get()),
+                                        Long.valueOf(this.missCount.get()),
+                                        this.name));
+                        this.lastExecution = currentTime;
                     }
                 }
             }
@@ -406,80 +365,147 @@ public final class CacheMap<K, V> implements Serializable {
     }
     
     
-    
-    // Should be called from a synchronized block on the class's semaphore
-    private static void outputReport() {
-            
-        // Size, Puts, Gets, Hits, Misses, Name
-        final String format = "\n%12s  %8s  %12s  %12s  %12s  %s";
 
-        final StringBuilder sb = new StringBuilder("===== CacheMap Report =====");
 
-        sb.append(String.format(format, "Size", "Puts", "Gets", "Hits", "Misses", "Name"));
 
-        for(final WeakReference<CacheMap<?, ?>> ref : caches) {
-            
-            final CacheMap<?, ?> cacheMap = ref.get();
-            if(cacheMap == null) {
-                continue;
-            }
-            
-            sb.append(String.format(format,
-                Integer.valueOf(cacheMap.size()),
-                Long.valueOf(cacheMap.putCount.get()),
-                Long.valueOf(cacheMap.getCount.get()),
-                Long.valueOf(cacheMap.hitCount.get()),
-                Long.valueOf(cacheMap.missCount.get()),
-                cacheMap.name));
 
-        }
+    final static class CacheDataContainer<K,V> implements Serializable {
 
-        sb.append("\n=====================");
-
-        logger.trace(sb.toString());
+        private static final long serialVersionUID = -7836660946715420768L;
         
-    }
-    
-
-
-
-
-
-    final static class CacheDataContainer<K,V> extends LinkedHashMap<K,CacheEntry<V>> {
-
-        private static final long serialVersionUID = -5181808911951171469L;
-
-        private final String cacheMapName;
+        private final String name;
         private final boolean sizeLimit;
         private final int maxSize;
+        private final boolean traceExecution;
+        private final Logger logger;
+        
+        private final ConcurrentHashMap<K,CacheEntry<V>> container;
+        private final Object[] fifo;
+        private int fifoPointer;
 
 
-        public CacheDataContainer(final String cacheMapName, 
-                final int initialCapacity, final float loadFactor, final int maxSize) {
-            super(initialCapacity, loadFactor, true);
-            this.cacheMapName = cacheMapName;
+        public CacheDataContainer(final String name, final int initialCapacity, final float loadFactor, 
+                final int maxSize, final boolean traceExecution, final Logger logger) {
+            
+            super();
+
+            this.name = name;
+            this.container = new ConcurrentHashMap<K,CacheEntry<V>>(initialCapacity, loadFactor);
             this.maxSize = maxSize;
             this.sizeLimit = (maxSize < 0? false : true);
+            if (this.sizeLimit) {
+                this.fifo = new Object[this.maxSize];
+                Arrays.fill(this.fifo, null);
+            } else {
+                this.fifo = null;
+            }
+            this.fifoPointer = 0;
+            this.traceExecution = traceExecution;
+            this.logger = logger;
+            
         }
 
 
-        @Override
-        protected boolean removeEldestEntry(final Map.Entry<K,CacheEntry<V>> eldest) {
-            if (!this.sizeLimit) {
-                return false;
-            }
-            final boolean shouldRemove = size() > this.maxSize;
-            if (shouldRemove && CacheMap.logger.isTraceEnabled()) {
-                logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Max size exceeded for cache map \"{}\". Removing entry for key \"{}\". New size is {}.", 
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.cacheMapName, Integer.valueOf(size() - 1), this.cacheMapName, eldest.getKey(), Integer.valueOf(size() - 1)});
-            }
-            return shouldRemove;
+        public CacheEntry<V> get(final Object key) {
+            // FIFO is not used for this --> better performance, but no LRU (only insertion order will apply)
+            return this.container.get(key);
         }
 
+
+        public int put(final K key, final CacheEntry<V> value) {
+            if (this.traceExecution) {
+                return putWithTracing(key, value); 
+            }
+            return putWithoutTracing(key, value);
+        }
+
+        
+        private int putWithoutTracing(final K key, final CacheEntry<V> value) {
+            // If we are not tracing, it's better to avoid the size() operation which has
+            // some performance implications in ConcurrentHashMap (iteration and counting these maps
+            // is slow if they are big)
+            
+            final CacheEntry<V> existing = this.container.putIfAbsent(key, value);
+            if (existing != null) {
+                // When not in 'trace' mode, will always return -1
+                return -1;
+            }
+                    
+            if (this.sizeLimit) {
+                synchronized (this.fifo) {
+                    final Object removedKey = this.fifo[this.fifoPointer]; 
+                    if (removedKey != null) {
+                        this.container.remove(removedKey);
+                    }
+                    this.fifo[this.fifoPointer] = key;
+                    this.fifoPointer = (this.fifoPointer + 1) % this.maxSize;
+                }
+            }
+            
+            return -1;
+            
+        }
+
+        private synchronized int putWithTracing(final K key, final CacheEntry<V> value) {
+
+            final CacheEntry<V> existing = this.container.putIfAbsent(key, value);
+            if (existing == null) {
+                if (this.sizeLimit) {
+                    final Object removedKey = this.fifo[this.fifoPointer]; 
+                    if (removedKey != null) {
+                        final CacheEntry<V> removed = this.container.remove(removedKey);
+                        if (removed != null) {
+                            final Integer newSize = Integer.valueOf(this.container.size());
+                            this.logger.trace(
+                                    "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Max size exceeded for cache map \"{}\". Removing entry for key \"{}\". New size is {}.", 
+                                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, newSize, this.name, removedKey, newSize});
+                        }
+                    }
+                    this.fifo[this.fifoPointer] = key;
+                    this.fifoPointer = (this.fifoPointer + 1) % this.maxSize;
+                }
+            }
+            return this.container.size();
+            
+        }
+
+        
+        public int remove(final K key) {
+            if (this.traceExecution) {
+                return removeWithTracing(key); 
+            }
+            return removeWithoutTracing(key);
+        }
+
+        
+        private int removeWithoutTracing(final K key) {
+            // FIFO is not updated, not a real benefit in doing it.
+            this.container.remove(key);
+            return -1;
+        }
+
+        
+        private synchronized int removeWithTracing(final K key) {
+            // FIFO is not updated, not a real benefit in doing it.
+            final CacheEntry<V> removed = this.container.remove(key);
+            if (removed == null) {
+                // When tracing is active, this means nothing was removed
+                return -1;
+            }
+            return this.container.size();
+        }
+
+
+        public void clear() {
+            this.container.clear();
+        }
+        
+        
+        public int size() {
+            return this.container.size();
+        }
+        
     }
-
-
 
 
 
@@ -506,14 +532,16 @@ public final class CacheMap<K, V> implements Serializable {
 
         }
 
-        public <K> V getValueIfStillValid(final String cacheMapName, final K key, final ICacheMapEntryValidityChecker<? super K, ? super V> checker) {
+        public <K> V getValueIfStillValid(final String cacheMapName, 
+                final K key, final ICacheMapEntryValidityChecker<? super K, ? super V> checker,
+                final boolean traceExecution, final Logger logger) {
 
             final V cachedValue = this.cachedValueReference.get();
 
             if (cachedValue == null) {
                 // The soft reference has been cleared by GC -> Memory could be running low
-                if (CacheMap.logger.isTraceEnabled()) {
-                    CacheMap.logger.trace(
+                if (traceExecution) {
+                    logger.trace(
                             "[THYMELEAF][{}][*][{}][CACHE_DELETED_REFERENCES] Some entries at cache map \"{}\" " +
                             "seem to have been sacrificed by the Garbage Collector (soft references).",
                             new Object[] {TemplateEngine.threadIndex(), cacheMapName, cacheMapName});

@@ -50,7 +50,7 @@ public final class StandardMessageResolutionUtils {
     private static final int MESSAGES_CACHE_MAX_SIZE = 20;
     private static final CacheMap<String,CacheMap<Locale, Properties>> messagesByTemplateName = 
             new CacheMap<String,CacheMap<Locale, Properties>>(
-                    "StandardMessageResolutionUtils.messagesByTemplateName", false, 10, MESSAGES_CACHE_MAX_SIZE);
+                    "StandardMessageResolutionUtils.messagesByTemplateName", false, 10, MESSAGES_CACHE_MAX_SIZE, false, null);
     
     
     private static final String THYMELEAF_MARKUP_SUFFIX = ".thtml";
@@ -81,7 +81,7 @@ public final class StandardMessageResolutionUtils {
         CacheMap<Locale, Properties> propertiesByLocale = messagesByTemplateName.get(templateName);
         if (propertiesByLocale == null) {
             propertiesByLocale = 
-                    new CacheMap<Locale, Properties>("StandardMessageResolutionUtils.messages." + templateName, true, 3);
+                    new CacheMap<Locale, Properties>("StandardMessageResolutionUtils.messages." + templateName, true, 3, false, null);
             messagesByTemplateName.put(templateName, propertiesByLocale);
         }
         

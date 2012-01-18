@@ -60,7 +60,7 @@ public final class MessageResolutionUtils {
     private static final CacheMap<String,CacheMap<Locale, Properties>> messagesByClass = 
                 new CacheMap<String, CacheMap<Locale, Properties>>(
                         "MessageResolutionUtils.messagesByClass", 
-                        false, 16, MESSAGES_CACHE_MAX_SIZE);
+                        false, 16, MESSAGES_CACHE_MAX_SIZE, false, null);
     
     
     private static final String PROPERTIES_SUFFIX = ".properties";
@@ -136,7 +136,7 @@ public final class MessageResolutionUtils {
         CacheMap<Locale, Properties> propertiesByLocale = messagesByClass.get(className);
         if (propertiesByLocale == null) {
             propertiesByLocale = 
-                    new CacheMap<Locale, Properties>("MessageResolutionUtils.messages." + className, true, 3);
+                    new CacheMap<Locale, Properties>("MessageResolutionUtils.messages." + className, true, 3, false, null);
             messagesByClass.put(className, propertiesByLocale);
         }
         

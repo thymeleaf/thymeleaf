@@ -39,19 +39,19 @@ final class ExpressionCache {
 
     
     private final CacheMap<String, Expression> expressionCache = 
-            new CacheMap<String, Expression>("ExpressionCache.expressionCache", true, 100, EXPRESSION_CACHE_SIZE);
+            new CacheMap<String, Expression>("ExpressionCache.expressionCache", true, 100, EXPRESSION_CACHE_SIZE, false, null);
 
     private final CacheMap<String, AssignationSequence> assignationSequenceCache = 
-            new CacheMap<String, AssignationSequence>("ExpressionCache.assignationSequenceCache", true, 100, ASSIGNATION_SEQUENCE_CACHE_SIZE);
+            new CacheMap<String, AssignationSequence>("ExpressionCache.assignationSequenceCache", true, 100, ASSIGNATION_SEQUENCE_CACHE_SIZE, false, null);
 
     private final CacheMap<String, ExpressionSequence> expressionSequenceCache = 
-            new CacheMap<String, ExpressionSequence>("ExpressionCache.expressionSequenceCache", true, 100, EXPRESSION_SEQUENCE_CACHE_SIZE);
+            new CacheMap<String, ExpressionSequence>("ExpressionCache.expressionSequenceCache", true, 100, EXPRESSION_SEQUENCE_CACHE_SIZE, false, null);
 
     private final CacheMap<String, Each> eachCache = 
-            new CacheMap<String, Each>("ExpressionCache.eachCache", true, 100, EACH_CACHE_SIZE);
+            new CacheMap<String, Each>("ExpressionCache.eachCache", true, 100, EACH_CACHE_SIZE, false, null);
 
     private final CacheMap<String, FragmentSelection> fragmentSelectionCache = 
-            new CacheMap<String, FragmentSelection>("ExpressionCache.fragmentSelectionCache", true, 100, FRAGMENT_SELECTION_CACHE_SIZE);
+            new CacheMap<String, FragmentSelection>("ExpressionCache.fragmentSelectionCache", true, 100, FRAGMENT_SELECTION_CACHE_SIZE, false, null);
 
 
     

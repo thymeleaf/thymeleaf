@@ -50,7 +50,7 @@ public class OgnlExpressionEvaluator
     private static final int CACHE_MAX_SIZE = 500;
     
     private static final CacheMap<String, Object> CACHE = 
-            new CacheMap<String, Object>("OgnlExpressionEvaluator.CACHE", true, 100, CACHE_MAX_SIZE);
+            new CacheMap<String, Object>("OgnlExpressionEvaluator.CACHE", true, 100, CACHE_MAX_SIZE, false, null);
 
 
     

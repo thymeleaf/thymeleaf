@@ -51,7 +51,7 @@ public final class StandardTemplateCache implements ITemplateCache {
             this.cache = 
                     new CacheMap<String,Template>(
                            "ParsedTemplateCache.PARSED_TEMPLATE_CACHE", true, 16, cacheSize,
-                           new ParsedTemplateEntryValidator());
+                           new ParsedTemplateEntryValidator(), false, null);
         } else {
             this.cache = null;
         }

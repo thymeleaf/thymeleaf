@@ -43,7 +43,7 @@ public abstract class Node {
 
     
     private static CacheMap<String,String> NORMALIZED_NAMES = 
-            new CacheMap<String, String>("Node.normalizedNames", true, 500);
+            new CacheMap<String, String>("Node.normalizedNames", true, 500, false, null);
 
     
     private final String documentName;
