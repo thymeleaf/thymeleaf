@@ -28,10 +28,12 @@ import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.ExpressionEvaluationException;
 import org.thymeleaf.standard.expression.IStandardExpressionEvaluator;
-import org.thymeleaf.util.CacheMap;
 
 /**
  * 
@@ -46,17 +48,13 @@ public class SpelExpressionEvaluator
 
 
     public static final SpelExpressionEvaluator INSTANCE = new SpelExpressionEvaluator();
+    private static final String SPEL_CACHE_PREFIX = "{spel}";
     
     
     public static final String FIELDS_EVALUATION_VARIABLE_NAME = "fields";
     
     
     private static final Logger logger = LoggerFactory.getLogger(SpelExpressionEvaluator.class);
-    
-    private static final int EXPRESSION_CACHE_SIZE = 500;
-
-    private static final CacheMap<String, SpelExpression> CACHE =
-        new CacheMap<String, SpelExpression>("SpelExpressionEvaluator.CACHE", true, 100, EXPRESSION_CACHE_SIZE);
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
     private static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT;
@@ -100,7 +98,7 @@ public class SpelExpressionEvaluator
             final SpelEvaluationContext context = 
                     new SpelEvaluationContext(DEFAULT_EVALUATION_CONTEXT, contextVariables);
 
-            final SpelExpression exp = getExpression(spelExpression);
+            final SpelExpression exp = getExpression(arguments.getConfiguration(), spelExpression);
             
             return exp.getValue(context, root);
             
@@ -114,16 +112,28 @@ public class SpelExpressionEvaluator
     }
 
 
-    private static SpelExpression getExpression(final String spelExpression) {
-        final SpelExpression cachedExpression = CACHE.get(spelExpression);
-        if (cachedExpression != null) {
-            return cachedExpression;
+    private static SpelExpression getExpression(final Configuration configuration, final String spelExpression) {
+        
+        SpelExpression exp = null;
+        ICache<String, Object> cache = null;
+        
+        final ICacheManager cacheManager = configuration.getCacheManager();
+        if (cacheManager != null) {
+            cache = cacheManager.getExpressionCache();
+            if (cache != null) {
+                exp = (SpelExpression) cache.get(SPEL_CACHE_PREFIX + spelExpression);
+            }
         }
-        final SpelExpression exp = (SpelExpression) PARSER.parseExpression(spelExpression);
-        if (null != exp) {
-            CACHE.put(spelExpression, exp);
+        
+        if (exp == null) {
+            exp = (SpelExpression) PARSER.parseExpression(spelExpression);
+            if (cache != null && null != exp) {
+                cache.put(SPEL_CACHE_PREFIX + spelExpression, exp);
+            }
         }
+
         return exp;
+        
     }
 
 
