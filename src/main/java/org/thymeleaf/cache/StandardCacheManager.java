@@ -115,7 +115,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     }
     
     protected ICacheEntryValidityChecker<String,Template> getTemplateValidityChecker() {
-        return new ParsedTemplateEntryValidator();
+        return new StandardParsedTemplateEntryValidator();
     }
 
     
@@ -168,27 +168,6 @@ public class StandardCacheManager extends AbstractCacheManager {
     
     protected ICacheEntryValidityChecker<String,Object> getExpressionValidityChecker() {
         return null;
-    }
-
-    
-    
-    
-
-    
-    public final static class ParsedTemplateEntryValidator 
-            implements ICacheEntryValidityChecker<String,Template> {
-        
-        private static final long serialVersionUID = -5853535204141790247L;
-
-        public ParsedTemplateEntryValidator() {
-            super();
-        }
-
-        public boolean checkIsValueStillValid(
-                final String key, final Template value, final long entryCreationTimestamp) {
-            return value.getTemplateResolution().getValidity().isCacheStillValid();
-        }
-        
     }
     
     
