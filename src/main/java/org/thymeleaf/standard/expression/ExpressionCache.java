@@ -19,7 +19,9 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.util.CacheMap;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 
 /**
  * 
@@ -29,30 +31,12 @@ import org.thymeleaf.util.CacheMap;
  *
  */
 final class ExpressionCache {
-    
-    
-    private static final int EXPRESSION_CACHE_SIZE = 500;
-    private static final int ASSIGNATION_SEQUENCE_CACHE_SIZE = 100;
-    private static final int EXPRESSION_SEQUENCE_CACHE_SIZE = 100;
-    private static final int EACH_CACHE_SIZE = 100;
-    private static final int FRAGMENT_SELECTION_CACHE_SIZE = 200;
 
-    
-    private final CacheMap<String, Expression> expressionCache = 
-            new CacheMap<String, Expression>("ExpressionCache.expressionCache", true, 100, EXPRESSION_CACHE_SIZE, false, null);
-
-    private final CacheMap<String, AssignationSequence> assignationSequenceCache = 
-            new CacheMap<String, AssignationSequence>("ExpressionCache.assignationSequenceCache", true, 100, ASSIGNATION_SEQUENCE_CACHE_SIZE, false, null);
-
-    private final CacheMap<String, ExpressionSequence> expressionSequenceCache = 
-            new CacheMap<String, ExpressionSequence>("ExpressionCache.expressionSequenceCache", true, 100, EXPRESSION_SEQUENCE_CACHE_SIZE, false, null);
-
-    private final CacheMap<String, Each> eachCache = 
-            new CacheMap<String, Each>("ExpressionCache.eachCache", true, 100, EACH_CACHE_SIZE, false, null);
-
-    private final CacheMap<String, FragmentSelection> fragmentSelectionCache = 
-            new CacheMap<String, FragmentSelection>("ExpressionCache.fragmentSelectionCache", true, 100, FRAGMENT_SELECTION_CACHE_SIZE, false, null);
-
+    private static final String EXPRESSION_CACHE_PREFIX = "{expression}";
+    private static final String ASSIGNATION_SEQUENCE_CACHE_PREFIX = "{assignation_sequence}";
+    private static final String EXPRESSION_SEQUENCE_CACHE_PREFIX = "{expression_sequence}";
+    private static final String EACH_CACHE_PREFIX = "{each}";
+    private static final String FRAGMENT_SELECTION_CACHE_PREFIX = "{fragment_selection}";
 
     
     
@@ -60,51 +44,76 @@ final class ExpressionCache {
         super();
     }
     
+
     
-    
-    
-    Expression getExpressionFromCache(final String input) {
-        return this.expressionCache.get(input);
-    }
-    
-    void putExpressionIntoCache(final String input, final Expression value) {
-        this.expressionCache.put(input, value);
+    private static Object getFromCache(final Configuration configuration, final String input, final String prefix) {
+        final ICacheManager cacheManager = configuration.getCacheManager();
+        if (cacheManager != null) {
+            final ICache<String,Object> cache = cacheManager.getExpressionCache();
+            if (cache != null) {
+                return cache.get(prefix + input);
+            }
+        }
+        return null;
     }
 
-    AssignationSequence getAssignationSequenceFromCache(final String input) {
-        return this.assignationSequenceCache.get(input);
+    
+    private static <V> void putIntoCache(final Configuration configuration, final String input, final V value, final String prefix) {
+        final ICacheManager cacheManager = configuration.getCacheManager();
+        if (cacheManager != null) {
+            final ICache<String,Object> cache = cacheManager.getExpressionCache();
+            if (cache != null) {
+                cache.put(prefix + input, value);
+            }
+        }
     }
     
-    void putAssignationSequenceIntoCache(final String input, final AssignationSequence value) {
-        this.assignationSequenceCache.put(input, value);
+    
+    
+    
+    
+    Expression getExpressionFromCache(final Configuration configuration, final String input) {
+        return (Expression) getFromCache(configuration, input, EXPRESSION_CACHE_PREFIX);
+    }
+    
+    void putExpressionIntoCache(final Configuration configuration, final String input, final Expression value) {
+        putIntoCache(configuration, input, value, EXPRESSION_CACHE_PREFIX);
+    }
+
+    AssignationSequence getAssignationSequenceFromCache(final Configuration configuration, final String input) {
+        return (AssignationSequence) getFromCache(configuration, input, ASSIGNATION_SEQUENCE_CACHE_PREFIX);
+    }
+    
+    void putAssignationSequenceIntoCache(final Configuration configuration, final String input, final AssignationSequence value) {
+        putIntoCache(configuration, input, value, ASSIGNATION_SEQUENCE_CACHE_PREFIX);
     }
     
     
     
-    ExpressionSequence getExpressionSequenceFromCache(final String input) {
-        return this.expressionSequenceCache.get(input);
+    ExpressionSequence getExpressionSequenceFromCache(final Configuration configuration, final String input) {
+        return (ExpressionSequence) getFromCache(configuration, input, EXPRESSION_SEQUENCE_CACHE_PREFIX);
     }
     
-    void putExpressionSequenceIntoCache(final String input, final ExpressionSequence value) {
-        this.expressionSequenceCache.put(input, value);
+    void putExpressionSequenceIntoCache(final Configuration configuration, final String input, final ExpressionSequence value) {
+        putIntoCache(configuration, input, value, EXPRESSION_SEQUENCE_CACHE_PREFIX);
     }
     
 
-    Each getEachFromCache(final String input) {
-        return this.eachCache.get(input);
+    Each getEachFromCache(final Configuration configuration, final String input) {
+        return (Each) getFromCache(configuration, input, EACH_CACHE_PREFIX);
     }
     
-    void putEachIntoCache(final String input, final Each value) {
-        this.eachCache.put(input, value);
+    void putEachIntoCache(final Configuration configuration, final String input, final Each value) {
+        putIntoCache(configuration, input, value, EACH_CACHE_PREFIX);
     }
     
 
-    FragmentSelection getFragmentSelectionFromCache(final String input) {
-        return this.fragmentSelectionCache.get(input);
+    FragmentSelection getFragmentSelectionFromCache(final Configuration configuration, final String input) {
+        return (FragmentSelection) getFromCache(configuration, input, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
     
-    void putFragmentSelectionIntoCache(final String input, final FragmentSelection value) {
-        this.fragmentSelectionCache.put(input, value);
+    void putFragmentSelectionIntoCache(final Configuration configuration, final String input, final FragmentSelection value) {
+        putIntoCache(configuration, input, value, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
 
 }

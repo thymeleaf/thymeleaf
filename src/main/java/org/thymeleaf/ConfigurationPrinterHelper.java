@@ -28,6 +28,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
@@ -36,7 +37,6 @@ import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.ProcessorAndContext;
-import org.thymeleaf.templatecache.ITemplateCache;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
@@ -62,12 +62,12 @@ final class ConfigurationPrinterHelper {
     static void printConfiguration(
             final Set<DialectConfiguration> dialectConfigurations, final Map<String,Boolean> lenienciesByPrefix, 
             final Set<ITemplateResolver> templateResolvers, final Set<IMessageResolver> messageResolvers,
-            final ITemplateCache templateCache, final Set<ITemplateModeHandler> templateModeHandlers) {
+            final ICacheManager cacheFactory, final Set<ITemplateModeHandler> templateModeHandlers) {
 
         final ConfigLogBuilder logBuilder = new ConfigLogBuilder();
         
         logBuilder.line("[THYMELEAF] TEMPLATE ENGINE CONFIGURATION:");
-        logBuilder.line("[THYMELEAF] * Template cache implementation: {}", (templateCache == null? "[no cache]" : templateCache.getClass().getName()));
+        logBuilder.line("[THYMELEAF] * Cache Factory implementation: {}", (cacheFactory == null? "[no caches]" : cacheFactory.getClass().getName()));
         logBuilder.line("[THYMELEAF] * Template modes:");
         for (final ITemplateModeHandler templateModeHandler : templateModeHandlers) {
             logBuilder.line("[THYMELEAF]     * {}", templateModeHandler.getTemplateModeName());

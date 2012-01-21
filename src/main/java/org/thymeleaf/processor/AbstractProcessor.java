@@ -71,7 +71,8 @@ public abstract class AbstractProcessor implements IProcessor {
         
         final String processorMessage =
             MessageResolutionUtils.resolveMessageForClass(
-                    this.getClass(), arguments.getContext().getLocale(), messageKey, 
+                    arguments.getConfiguration(), this.getClass(), 
+                    arguments.getContext().getLocale(), messageKey, 
                     messageParameters, false);
         
         if (processorMessage != null) {
@@ -149,7 +150,8 @@ public abstract class AbstractProcessor implements IProcessor {
             final Arguments arguments, final String messageKey, final Object[] messageParameters) {
         Validate.notNull(arguments.getContext().getLocale(), "Locale in context cannot be null");
         return MessageResolutionUtils.resolveMessageForClass(
-                this.getClass(), arguments.getContext().getLocale(), messageKey, messageParameters);
+                arguments.getConfiguration(), this.getClass(), 
+                arguments.getContext().getLocale(), messageKey, messageParameters);
     }
     
     

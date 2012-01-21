@@ -26,10 +26,11 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.templatecache.ITemplateCache;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -48,14 +49,23 @@ public final class TemplateRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateRepository.class);
 
-    private final ITemplateCache templateCache; // might be null! (= no cache)
+    private final ICache<String,Template> templateCache; // might be null! (= no cache)
     private final Map<String,ITemplateParser> parsersByTemplateMode;
     
     
     TemplateRepository(final Configuration configuration) {
+        
         super();
+        
         Validate.notNull(configuration, "Configuration object cannot be null");
-        this.templateCache = configuration.getTemplateCache();
+        
+        final ICacheManager cacheManager = configuration.getCacheManager();
+        if (cacheManager == null) {
+            this.templateCache = null;
+        } else {
+            this.templateCache = cacheManager.getTemplateCache();
+        }
+            
         this.parsersByTemplateMode = new HashMap<String,ITemplateParser>();
         for (final ITemplateModeHandler handler : configuration.getTemplateModeHandlers()) {
             this.parsersByTemplateMode.put(handler.getTemplateModeName(), handler.getTemplateParser());
@@ -69,14 +79,14 @@ public final class TemplateRepository {
     
     public void clearTemplateCache() {
         if (this.templateCache != null) {
-            this.templateCache.clearParsedTemplateCache();
+            this.templateCache.clear();
         }
     }
 
     
     public void clearTemplateCacheFor(final String templateName) {
         if (this.templateCache != null) {
-            this.templateCache.clearParsedTemplateCacheFor(templateName);
+            this.templateCache.clearKey(templateName);
         }
     }
     
@@ -93,7 +103,7 @@ public final class TemplateRepository {
 
         if (this.templateCache != null) {
             final Template cached = 
-                this.templateCache.getParsedTemplate(templateName);
+                this.templateCache.get(templateName);
             if (cached != null) {
                 return cached.clone();
             }
@@ -177,7 +187,7 @@ public final class TemplateRepository {
 
         if (this.templateCache != null) {
             if (templateResolution.getValidity().isCacheable()) {
-                this.templateCache.putParsedTemplate(template);
+                this.templateCache.put(templateName, template);
                 return template.clone();
             }
         }

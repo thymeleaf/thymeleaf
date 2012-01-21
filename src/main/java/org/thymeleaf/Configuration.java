@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
@@ -42,7 +43,6 @@ import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.templatecache.ITemplateCache;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.util.Validate;
@@ -66,7 +66,7 @@ public final class Configuration {
     private Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>();
     private Set<ITemplateModeHandler> templateModeHandlers = new LinkedHashSet<ITemplateModeHandler>();
     
-    private ITemplateCache templateCache = null;
+    private ICacheManager cacheManager = null;
     
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByTagName;
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByAttributeName;
@@ -286,7 +286,7 @@ public final class Configuration {
         ConfigurationPrinterHelper.printConfiguration(
                 this.dialectConfigurations, this.mergedLenienciesByPrefix,
                 this.templateResolvers, this.messageResolvers, 
-                this.templateCache, this.templateModeHandlers);
+                this.cacheManager, this.templateModeHandlers);
     }
     
     
@@ -294,16 +294,16 @@ public final class Configuration {
     
     
     
-    public ITemplateCache getTemplateCache() {
+    public ICacheManager getCacheManager() {
         checkInitialized();
-        return this.templateCache;
+        return this.cacheManager;
     }
     
     
-    void setTemplateCache(final ITemplateCache templateCache) {
-        // Can be set to null (= no cache)
+    void setCacheManager(final ICacheManager cacheManager) {
+        // Can be set to null (= no caches)
         checkNotInitialized();
-        this.templateCache = templateCache;
+        this.cacheManager = cacheManager;
     }
 
  

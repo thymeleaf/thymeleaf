@@ -27,7 +27,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.util.CacheMap;
 import org.thymeleaf.util.IdentityCounter;
 
 
@@ -40,10 +39,6 @@ import org.thymeleaf.util.IdentityCounter;
  *
  */
 public abstract class Node {
-
-    
-    private static CacheMap<String,String> NORMALIZED_NAMES = 
-            new CacheMap<String, String>("Node.normalizedNames", true, 500, false, null);
 
     
     private final String documentName;
@@ -65,13 +60,7 @@ public abstract class Node {
         if (name == null) {
             return null;
         }
-        final String normalizedName = NORMALIZED_NAMES.get(name);
-        if (normalizedName != null) {
-            return normalizedName;
-        }
-        final String newValue = name.toLowerCase();
-        NORMALIZED_NAMES.put(name,  newValue);
-        return newValue;
+        return name.toLowerCase();
     }
 
     

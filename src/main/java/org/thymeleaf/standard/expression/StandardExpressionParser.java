@@ -117,7 +117,7 @@ public final class StandardExpressionParser {
                     preprocess(arguments, trimmedInput) :
                     trimmedInput);
 
-        final Expression cachedExpression = CACHE.getExpressionFromCache(preprocessedInput);
+        final Expression cachedExpression = CACHE.getExpressionFromCache(arguments.getConfiguration(), preprocessedInput);
         if (cachedExpression != null) {
             return cachedExpression;
         }
@@ -128,7 +128,7 @@ public final class StandardExpressionParser {
             throw new ExpressionParsingException("Could not parse as expression: \"" + input + "\"");
         }
         
-        CACHE.putExpressionIntoCache(preprocessedInput, expression);
+        CACHE.putExpressionIntoCache(arguments.getConfiguration(), preprocessedInput, expression);
         
         return expression;
         
@@ -145,7 +145,7 @@ public final class StandardExpressionParser {
                     preprocess(arguments, trimmedInput) :
                     trimmedInput);
 
-        final AssignationSequence cachedAssignationSequence = CACHE.getAssignationSequenceFromCache(preprocessedInput);
+        final AssignationSequence cachedAssignationSequence = CACHE.getAssignationSequenceFromCache(arguments.getConfiguration(), preprocessedInput);
         if (cachedAssignationSequence != null) {
             return cachedAssignationSequence;
         }
@@ -156,7 +156,7 @@ public final class StandardExpressionParser {
             throw new ExpressionParsingException("Could not parse as assignation sequence: \"" + input + "\"");
         }
         
-        CACHE.putAssignationSequenceIntoCache(preprocessedInput, assignationSequence);
+        CACHE.putAssignationSequenceIntoCache(arguments.getConfiguration(), preprocessedInput, assignationSequence);
         
         return assignationSequence;
 
@@ -173,7 +173,7 @@ public final class StandardExpressionParser {
                     preprocess(arguments, trimmedInput) :
                     trimmedInput);
 
-        final ExpressionSequence cachedExpressionSequence = CACHE.getExpressionSequenceFromCache(preprocessedInput);
+        final ExpressionSequence cachedExpressionSequence = CACHE.getExpressionSequenceFromCache(arguments.getConfiguration(), preprocessedInput);
         if (cachedExpressionSequence != null) {
             return cachedExpressionSequence;
         }
@@ -184,7 +184,7 @@ public final class StandardExpressionParser {
             throw new ExpressionParsingException("Could not parse as expression sequence: \"" + input + "\"");
         }
         
-        CACHE.putExpressionSequenceIntoCache(preprocessedInput, expressionSequence);
+        CACHE.putExpressionSequenceIntoCache(arguments.getConfiguration(), preprocessedInput, expressionSequence);
         
         return expressionSequence;
 
@@ -201,7 +201,7 @@ public final class StandardExpressionParser {
                     preprocess(arguments, trimmedInput) :
                     trimmedInput);
 
-        final Each cachedEach = CACHE.getEachFromCache(preprocessedInput);
+        final Each cachedEach = CACHE.getEachFromCache(arguments.getConfiguration(), preprocessedInput);
         if (cachedEach != null) {
             return cachedEach;
         }
@@ -212,7 +212,7 @@ public final class StandardExpressionParser {
             throw new ExpressionParsingException("Could not parse as each: \"" + input + "\"");
         }
         
-        CACHE.putEachIntoCache(preprocessedInput, each);
+        CACHE.putEachIntoCache(arguments.getConfiguration(), preprocessedInput, each);
         
         return each;
 
@@ -229,7 +229,7 @@ public final class StandardExpressionParser {
                     preprocess(arguments, trimmedInput) :
                     trimmedInput);
 
-        final FragmentSelection cachedFragmentSelection = CACHE.getFragmentSelectionFromCache(preprocessedInput);
+        final FragmentSelection cachedFragmentSelection = CACHE.getFragmentSelectionFromCache(arguments.getConfiguration(), preprocessedInput);
         if (cachedFragmentSelection != null) {
             return cachedFragmentSelection;
         }
@@ -240,7 +240,7 @@ public final class StandardExpressionParser {
             throw new ExpressionParsingException("Could not parse as fragment selection: \"" + input + "\"");
         }
         
-        CACHE.putFragmentSelectionIntoCache(preprocessedInput, fragmentSelection);
+        CACHE.putFragmentSelectionIntoCache(arguments.getConfiguration(), preprocessedInput, fragmentSelection);
         
         return fragmentSelection;
 

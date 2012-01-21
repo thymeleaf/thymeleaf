@@ -32,7 +32,10 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.InvalidLocaleException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.messageresolver.IMessageResolver;
@@ -54,23 +57,12 @@ public final class MessageResolutionUtils {
 
     
     private static final Logger logger = LoggerFactory.getLogger(MessageResolutionUtils.class);
-    
 
-    private static final int MESSAGES_CACHE_MAX_SIZE = 20;
-    private static final CacheMap<String,CacheMap<Locale, Properties>> messagesByClass = 
-                new CacheMap<String, CacheMap<Locale, Properties>>(
-                        "MessageResolutionUtils.messagesByClass", 
-                        false, 16, MESSAGES_CACHE_MAX_SIZE, false, null);
-    
-    
     private static final String PROPERTIES_SUFFIX = ".properties";
-
-    
     private static final String SUFFIX_FOR_DEFAULT = "";
-    
-    
     private static final Pattern CLASS_NAME_SEPARATOR_PATTERN = Pattern.compile("\\.");
 
+    private static final String CLASS_CACHE_PREFIX = "{class_msg}";
 
     
     public static String resolveMessageForTemplate(
@@ -115,38 +107,47 @@ public final class MessageResolutionUtils {
     
     
     public static String resolveMessageForClass(
+            final Configuration configuration, 
             final Class<?> targetClass, final Locale locale,
             final String messageKey, final Object[] messageParameters) {
-        return resolveMessageForClass(targetClass, locale, messageKey, messageParameters, true);
+        return resolveMessageForClass(configuration, targetClass, locale, messageKey, messageParameters, true);
     }
     
     
     
     public static String resolveMessageForClass(
+            final Configuration configuration, 
             final Class<?> targetClass, final Locale locale,
             final String messageKey, final Object[] messageParameters, 
             final boolean returnStringAlways) {
         
+        Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(targetClass, "Target class cannot be null");
         Validate.notNull(locale, "Locale in context cannot be null");
         Validate.notNull(messageKey, "Message key cannot be null");
 
         final String className = targetClass.getName();
-
-        CacheMap<Locale, Properties> propertiesByLocale = messagesByClass.get(className);
-        if (propertiesByLocale == null) {
-            propertiesByLocale = 
-                    new CacheMap<Locale, Properties>("MessageResolutionUtils.messages." + className, true, 3, false, null);
-            messagesByClass.put(className, propertiesByLocale);
+        final String cacheKey = CLASS_CACHE_PREFIX + className + "_" + locale.toString();
+        
+        ICache<String,Properties> messagesCache = null;
+        Properties properties = null;
+        
+        final ICacheManager cacheManager = configuration.getCacheManager();
+        if (cacheManager != null) {
+            messagesCache = cacheManager.getMessageCache();
+            if (messagesCache != null) {
+                properties = messagesCache.get(cacheKey);
+            }
         }
         
-        Properties properties = propertiesByLocale.get(locale);
         if (properties == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] Resolving uncached messages for class \"{}\" and locale \"{}\". Messages will be retrieved from files", new Object[] {TemplateEngine.threadIndex(), targetClass.getName(), locale});
             }
             properties = loadMessagesForClass(targetClass, locale);
-            propertiesByLocale.put(locale, properties);
+            if (messagesCache != null) {
+                messagesCache.put(cacheKey, properties);
+            }
         } else {
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] Resolving messages for class \"{}\" and locale \"{}\". Messages are CACHED", new Object[] {TemplateEngine.threadIndex(), targetClass.getName(), locale});

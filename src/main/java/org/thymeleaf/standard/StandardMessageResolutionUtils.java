@@ -27,8 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.util.CacheMap;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -46,11 +47,6 @@ public final class StandardMessageResolutionUtils {
     
     private static final Logger logger = LoggerFactory.getLogger(StandardMessageResolutionUtils.class);
     
-
-    private static final int MESSAGES_CACHE_MAX_SIZE = 20;
-    private static final CacheMap<String,CacheMap<Locale, Properties>> messagesByTemplateName = 
-            new CacheMap<String,CacheMap<Locale, Properties>>(
-                    "StandardMessageResolutionUtils.messagesByTemplateName", false, 10, MESSAGES_CACHE_MAX_SIZE, false, null);
     
     
     private static final String THYMELEAF_MARKUP_SUFFIX = ".thtml";
@@ -60,9 +56,8 @@ public final class StandardMessageResolutionUtils {
     private static final String HTM_SUFFIX = ".htm";
     private static final String JSP_SUFFIX = ".jsp";
     
+    private static final String TEMPLATE_CACHE_PREFIX = "{template_msg}";
 
-
-    
     
     
     
@@ -73,25 +68,31 @@ public final class StandardMessageResolutionUtils {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(arguments.getContext().getLocale(), "Locale in context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
-
-        final String templateName = arguments.getTemplateResolution().getTemplateName();
         
         final Locale locale = arguments.getContext().getLocale();
 
-        CacheMap<Locale, Properties> propertiesByLocale = messagesByTemplateName.get(templateName);
-        if (propertiesByLocale == null) {
-            propertiesByLocale = 
-                    new CacheMap<Locale, Properties>("StandardMessageResolutionUtils.messages." + templateName, true, 3, false, null);
-            messagesByTemplateName.put(templateName, propertiesByLocale);
+        final String templateName = arguments.getTemplateResolution().getTemplateName();
+        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + "_" + locale.toString();
+
+        Properties properties = null;
+        ICache<String,Properties> messagesCache = null;
+        
+        final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
+        if (cacheManager != null) {
+            messagesCache = cacheManager.getMessageCache();
+            if (messagesCache != null) {
+                properties = messagesCache.get(cacheKey);
+            }
         }
         
-        Properties properties = propertiesByLocale.get(locale);
         if (properties == null) {
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] Resolving uncached messages for template \"{}\" and locale \"{}\". Messages will be retrieved from files", new Object[] {TemplateEngine.threadIndex(), templateName, locale});
             }
             properties = loadMessagesForTemplate(arguments, defaultMessages);
-            propertiesByLocale.put(locale, properties);
+            if (messagesCache != null) {
+                messagesCache.put(cacheKey, properties);
+            }
         } else {
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] Resolving messages for template \"{}\" and locale \"{}\". Messages are CACHED", new Object[] {TemplateEngine.threadIndex(), templateName, locale});

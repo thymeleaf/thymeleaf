@@ -28,8 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.ExpressionEvaluationException;
-import org.thymeleaf.util.CacheMap;
 
 /**
  * 
@@ -43,16 +44,12 @@ public class OgnlExpressionEvaluator
     
 
     public static final OgnlExpressionEvaluator INSTANCE = new OgnlExpressionEvaluator();
-
+    private static final String OGNL_CACHE_PREFIX = "{ognl}";
     
     private static final Logger logger = LoggerFactory.getLogger(OgnlExpressionEvaluator.class);
-    
-    private static final int CACHE_MAX_SIZE = 500;
-    
-    private static final CacheMap<String, Object> CACHE = 
-            new CacheMap<String, Object>("OgnlExpressionEvaluator.CACHE", true, 100, CACHE_MAX_SIZE, false, null);
 
 
+    
     
     public final Object evaluate(final Arguments arguments, final String expression, final Object root) {
        
@@ -61,13 +58,27 @@ public class OgnlExpressionEvaluator
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
             }
+
             
-            Object expressionTree = CACHE.get(expression);
+            Object expressionTree = null;
+            ICache<String, Object> cache = null;
+            
+            final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
+            if (cacheManager != null) {
+                cache = cacheManager.getExpressionCache();
+                if (cache != null) {
+                    expressionTree = cache.get(OGNL_CACHE_PREFIX + expression);
+                }
+            }
+            
             if (expressionTree == null) {
                 expressionTree = ognl.Ognl.parseExpression(expression);
-                CACHE.put(expression, expressionTree);
+                if (cache != null && null != expressionTree) {
+                    cache.put(OGNL_CACHE_PREFIX + expression, expressionTree);
+                }
             }
-
+            
+            
             final Map<String,Object> contextVariables = arguments.getBaseContextVariables();
             
             final Map<String,Object> additionalContextVariables =

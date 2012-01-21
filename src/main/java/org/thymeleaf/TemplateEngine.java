@@ -31,6 +31,8 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
@@ -41,8 +43,6 @@ import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
-import org.thymeleaf.templatecache.ITemplateCache;
-import org.thymeleaf.templatecache.StandardTemplateCache;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -232,7 +232,7 @@ public class TemplateEngine {
         super();
         this.configuration = new Configuration();
         this.initialized = false;
-        setTemplateCache(new StandardTemplateCache(20));
+        setCacheManager(new StandardCacheManager());
         setDefaultMessageResolvers(Collections.singleton(new StandardMessageResolver()));
         setDefaultTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
     }
@@ -482,26 +482,27 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Returns the template cache in effect.
+     *   Returns the cache factory in effect. This factory is in charge of creating
+     *   the various caches needed by the system during its process.
      * </p>
      * <p>
-     *   By default, an instance of {@link org.thymeleaf.templatecache.StandardTemplateCache}
-     *   with a size of 20 is set.
+     *   By default, an instance of {@link org.thymeleaf.cache.StandardCacheManager}
+     *   is set.
      * </p>
      * 
-     * @return the template cache
+     * @return the cache manager
      */
-    public ITemplateCache getTemplateCache() {
-        return this.configuration.getTemplateCache();
+    public ICacheManager getCacheManager() {
+        return this.configuration.getCacheManager();
     }
     
     /**
      * <p>
-     *   Sets the Template Cache to be used. If set to null, no template cache will be used.
+     *   Sets the Cache Manager to be used. If set to null, no caches will be used throughout the engine.
      * </p>
      * <p>
-     *   By default, an instance of {@link org.thymeleaf.templatecache.StandardTemplateCache}
-     *   with a size of 20 is set.
+     *   By default, an instance of {@link org.thymeleaf.cache.StandardCacheManager}
+     *   is set.
      * </p>
      * <p>
      *   This operation can only be executed before processing templates for the first
@@ -510,12 +511,12 @@ public class TemplateEngine {
      *   will result in an exception.
      * </p>
      * 
-     * @param parsedTemplateCache the template cache to be set.
+     * @param cacheManager the cache manager to be set.
      * 
      */
-    public void setTemplateCache(final ITemplateCache templateCache) {
-        // Can be set to null (= no cache)
-        this.configuration.setTemplateCache(templateCache);
+    public void setCacheManager(final ICacheManager cacheManager) {
+        // Can be set to null (= no caches at all)
+        this.configuration.setCacheManager(cacheManager);
     }
 
     
