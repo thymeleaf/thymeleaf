@@ -1,12 +1,12 @@
-package org.thymeleaf.util;
+package org.thymeleaf.dom;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 final class DOMSelector {
@@ -26,6 +26,9 @@ final class DOMSelector {
     private final DOMSelector next;
     
     
+    /*
+     * TODO ATTRIBUTES GO ALWAYS BEFORE INDEX.
+     */
     
     public DOMSelector(final String selectorSpec) {
         
@@ -125,8 +128,6 @@ final class DOMSelector {
             
         }
         
-        System.out.println(toString());
-        
     }
     
     
@@ -183,22 +184,130 @@ final class DOMSelector {
                 throw new TemplateProcessingException(
                         "Invalid syntax in DOM selector: \"" + selectorSpec + "\"");
             }
-            attributes.put(attName.substring(1), attValue.substring(1, attValue.length() - 1));
+            attributes.put(Node.normalizeName(attName.substring(1)), attValue.substring(1, attValue.length() - 1));
         } else {
             final String attName = attributeSpec.trim();
             if (!attName.startsWith("@")) {
                 throw new TemplateProcessingException(
                         "Invalid syntax in DOM selector: \"" + selectorSpec + "\"");
             }
-            attributes.put(attName.substring(1), null);
+            attributes.put(Node.normalizeName(attName.substring(1)), null);
         }
     }
 
     
-    final List<Node> select(final Node node) {
-        return null;
-    }
+    
+    
+    private final boolean checkChildrenSelection(final List<Node> selectedNodes, final Node node) {
+        // will return true if any nodes are added to selectedNodes
+        
+        
+            if (node instanceof NestableNode) {
+                
+                final List<List<Node>> selectedNodesForChildren = new ArrayList<List<Node>>();
+                
+                final NestableNode nestableNode = (NestableNode) node;
+                if (nestableNode.hasChildren()) {
+                    for (final Node child : nestableNode.getChildren()) {
+                        final List<Node> childSelectedNodes = new ArrayList<Node>();
+                        if (doCheckNodeSelection(childSelectedNodes, child)) {
+                            selectedNodesForChildren.add(childSelectedNodes);
+                        }
+                    }
+                }
+                
+                if (this.index == null) {
+                    if (selectedNodesForChildren.size() == 0) {
+                        return false;
+                    }
+                    for (final List<Node> selectedNodesForChild : selectedNodesForChildren) {
+                        selectedNodes.addAll(selectedNodesForChild);
+                    }
+                    return true;
+                }
+                    
+                // There is an index
+                
+                if (this.index.intValue() >= selectedNodesForChildren.size()) {
+                    return false;
+                }
+                selectedNodes.addAll(selectedNodesForChildren.get(this.index.intValue()));
+                return true;
+                
+            }
 
+            return false;
+            
+    }
+    
+    
+    
+    
+    private final boolean doCheckNodeSelection(final List<Node> selectedNodes, final Node node) {
+        
+        if (!doCheckSpecificNodeSelection(node)) {
+            // if more depth, check children!
+            return false;
+        }
+        
+        if (this.next == null) {
+            selectedNodes.add(node);
+            return true;
+        }
+        
+        if (node instanceof NestableNode) {
+            
+            final NestableNode nestableNode = (NestableNode) node;
+            if (nestableNode.hasChildren()) {
+                return this.next.checkChildrenSelection(selectedNodes, node);
+            }
+            
+        }
+        
+        return false;
+        
+    }
+    
+    private final boolean doCheckSpecificNodeSelection(final Node node) {
+        
+        // This method checks all aspects except index (index can only
+        // be applied from the superior level)
+        
+        if (this.text) {
+            return node instanceof AbstractTextNode;
+        }
+            
+        if (node instanceof Tag) {
+            final Tag tag = (Tag)node;
+            final String normalizedName = tag.getNormalizedName();
+            if (!normalizedName.equals(this.selectorName)) {
+                return false;
+            }
+            if (this.attributes == null || this.attributes.size() == 0) {
+                return true;
+            }
+            for (final Map.Entry<String,String> attributeEntry : this.attributes.entrySet()) {
+                final String selectedAttributeName = attributeEntry.getKey();
+                final String selectedAttributeValue = attributeEntry.getValue();
+                if (selectedAttributeValue == null) {
+                    if (!tag.hasAttribute(selectedAttributeName)) {
+                        return false;
+                    }
+                } else {
+                    final String attributeValue = tag.getAttributeValueFromNormalizedName(selectedAttributeName);
+                    if (attributeValue == null || !attributeValue.equals(selectedAttributeValue)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
+        
+    }
+    
+    
+    
     
     @Override
     public final String toString() {
