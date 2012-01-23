@@ -1,6 +1,5 @@
 package org.thymeleaf.templateparser;
 
-import java.io.InputStream;
 import java.io.Reader;
 import java.util.List;
 
@@ -26,32 +25,6 @@ import org.thymeleaf.dom.Node;
  */
 public interface ITemplateParser {
     
-    /**
-     * <p>
-     *   Parses the document contained in the given String object.
-     * </p>
-     * 
-     * @param configuration the Configuration object
-     * @param documentName the document name (optional).
-     * @param source the String containing the document to be parsed (required).
-     * @return the parsed Document.
-     */
-    public Document parseTemplate(final Configuration configuration, final String documentName, final String source);
-
-
-    /**
-     * <p>
-     *   Parses the document contained in the given <tt>InputStream</tt> object.
-     * </p>
-     * 
-     * @param configuration the Configuration object
-     * @param documentName the document name (optional).
-     * @param source the InputStream on the document to be parsed (required).
-     * @param characterEncoding the character encoding that must be used for reading the input stream.
-     * @return the parsed Document.
-     */
-    public Document parseTemplate(final Configuration configuration, final String documentName, final InputStream source, final String characterEncoding);
-
 
     /**
      * <p>
@@ -66,7 +39,6 @@ public interface ITemplateParser {
     public Document parseTemplate(final Configuration configuration, final String documentName, final Reader source);
     
 
-    
     /**
      * <p>
      *   Parses the document fragment contained in the given <tt>String</tt> object.

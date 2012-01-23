@@ -3,6 +3,7 @@ package org.thymeleaf;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import junit.framework.Assert;
@@ -95,9 +96,9 @@ public class TemplateParserTest {
         String documentName = "my-document";
         
         Document saxDoc = 
-                this.xmlSaxDocumentParser.parseTemplate(this.configuration, documentName, template);
+                this.xmlSaxDocumentParser.parseTemplate(this.configuration, documentName, new StringReader(template));
         Document domDoc = 
-                this.xmlDomDocumentParser.parseTemplate(this.configuration, documentName, template);
+                this.xmlDomDocumentParser.parseTemplate(this.configuration, documentName, new StringReader(template));
 
         checkLocations("SAX [ORIGINAL] ", saxDoc, documentName, false);
         checkLocations("SAX [CLONED] ", saxDoc.clone(true), documentName, false);
@@ -144,9 +145,9 @@ public class TemplateParserTest {
         this.templateResolver.setContent(xml);
         
         final Document domDocument = 
-                this.xmlDomDocumentParser.parseTemplate(this.configuration, null, xml);
+                this.xmlDomDocumentParser.parseTemplate(this.configuration, null, new StringReader(xml));
         final Document saxDocument = 
-                this.xmlSaxDocumentParser.parseTemplate(this.configuration, null, xml);
+                this.xmlSaxDocumentParser.parseTemplate(this.configuration, null, new StringReader(xml));
         
         final String domDocumentOutput = createOutput(domDocument);
         final String saxDocumentOutput = createOutput(saxDocument);
