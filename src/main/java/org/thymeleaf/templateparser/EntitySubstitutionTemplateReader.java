@@ -93,7 +93,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
                     new Object[] {TemplateEngine.threadIndex(),Integer.valueOf(off), Integer.valueOf(len)});
         }
         
-        if ((len * 2) > this.buffer.length) {
+        if ((len * 2) > this.overflow.length) {
             // Resize buffer and overflow
             
             this.buffer = new char[len + 1024];

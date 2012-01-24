@@ -89,7 +89,7 @@ public abstract class AbstractStandardFragmentAttrProcessor
             
             if (fragmentSelection.isXPath()) {
                 
-                return new XPathFragmentSpec(
+                return new DOMSelectorFragmentSpec(
                         templateName,
                         fragmentSelector);
                 

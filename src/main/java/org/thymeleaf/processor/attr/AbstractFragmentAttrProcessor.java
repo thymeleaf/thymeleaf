@@ -25,6 +25,9 @@ import java.util.List;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.cache.ICache;
+import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
@@ -45,7 +48,7 @@ public abstract class AbstractFragmentAttrProcessor
         extends AbstractAttrProcessor {
 
     
-    
+    private static final String DOM_SELECTOR_EXPRESSION_PREFIX = "{dom_selector}";
     
     
     
@@ -106,7 +109,7 @@ public abstract class AbstractFragmentAttrProcessor
             throw new AttrProcessorException("Null value for \"" + attributeName + "\" fragment specification not allowed");
         }
         
-        final NestableNode fragmentNode = getFragment(arguments, attributeName, fragmentSpec); 
+        final Node fragmentNode = getFragment(arguments, attributeName, fragmentSpec); 
         
         if (fragmentNode == null) {
             throw new AttrProcessorException(
@@ -116,10 +119,15 @@ public abstract class AbstractFragmentAttrProcessor
         try {
             
             if (substituteInclusionNode) {
-                return Collections.singletonList((Node)fragmentNode);
+                return Collections.singletonList(fragmentNode);
             }
             
-            return fragmentNode.getChildren();
+            if (!(fragmentNode instanceof NestableNode)) {
+                throw new AttrProcessorException(
+                        "An error happened during parsing of include: \"" + attributeValue + "\": selected fragment has no children " +
+                        "and therefore is not suitable for use in an inclusion operation -- maybe a substitution operation should be used instead?");
+            }
+            return ((NestableNode)fragmentNode).getChildren();
             
         } catch (final Exception e) {
             throw new AttrProcessorException(
@@ -130,7 +138,7 @@ public abstract class AbstractFragmentAttrProcessor
 
     
     
-    private static NestableNode getFragment(
+    private static Node getFragment(
             final Arguments arguments, final String attributeName, final AbstractFragmentSpec fragmentSpec) {
 
         
@@ -152,7 +160,7 @@ public abstract class AbstractFragmentAttrProcessor
             
             final Template parsedTemplate = arguments.getTemplateRepository().getTemplate(fragmentTemplateProcessingParameters);
             
-            NestableNode fragmentNode = null; 
+            Node fragmentNode = null; 
             if (fragmentSpec instanceof NamedFragmentSpec) {
                 
                 final NamedFragmentSpec namedFragmentSpec = (NamedFragmentSpec) fragmentSpec;
@@ -177,27 +185,36 @@ public abstract class AbstractFragmentAttrProcessor
                             "Root node in template \"" + fragmentTemplateName + "\" could not be found");
                 }
                 
-            } else if (fragmentSpec instanceof XPathFragmentSpec) {
+            } else if (fragmentSpec instanceof DOMSelectorFragmentSpec) {
 
-throw new IllegalStateException("XPath evaluation has been temporarily deactivated!"); 
-// TODO Uncomment this and apply XPath by taking the nodes, converting them to String,
-// feeding this String to xpathExpr.evaluate, obtaining a DOM NodeList as a result and
-// applying Node.translateDomNode on exprResult.item(0).
+                final DOMSelectorFragmentSpec domSelectorFragmentSpec = (DOMSelectorFragmentSpec) fragmentSpec;
+                final String domSelectorExpression = domSelectorFragmentSpec.getSelectorExpression();
+
+                DOMSelector selector = null;
+                ICache<String,Object> expressionCache = null;
                 
-//                final XPathFragmentSpec xpathFragmentSpec = (XPathFragmentSpec) fragmentSpec;
-//                
-//                final XPath xpath = XPathFactory.newInstance().newXPath();
-//                final XPathExpression xpathExpr = xpath.compile(xpathFragmentSpec.getXPathExpression());
-//                
-//                final NodeList exprResult = 
-//                    (NodeList) xpathExpr.evaluate(parsedTemplate.getDocument(), XPathConstants.NODESET);
-//                
-//                fragmentNode = exprResult.item(0);
-//                
-//                if (fragmentNode == null) {
-//                    throw new AttrProcessorException(
-//                            "No result for XPath expression \"" + xpathFragmentSpec.getXPathExpression() +"\" in template \"" + fragmentTemplateName + "\" could be found");
-//                }
+                final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
+                if (cacheManager != null) {
+                    expressionCache = cacheManager.getExpressionCache();
+                    if (expressionCache != null) {
+                        selector = (DOMSelector) expressionCache.get(DOM_SELECTOR_EXPRESSION_PREFIX + domSelectorExpression);
+                    }
+                }
+                
+                if (selector == null) {
+                    selector = new DOMSelector(domSelectorExpression);
+                    if (expressionCache != null) {
+                        expressionCache.put(DOM_SELECTOR_EXPRESSION_PREFIX + domSelectorExpression, selector);
+                    }
+                }
+                
+                final List<Node> selectedNodes = selector.select(parsedTemplate.getDocument().getChildren());
+                if (selectedNodes == null || selectedNodes.size() == 0) {
+                    throw new AttrProcessorException(
+                            "No result for DOM selector expression \"" + domSelectorExpression +"\" in template \"" + fragmentTemplateName + "\" could be found");
+                }
+                    
+                fragmentNode = selectedNodes.get(0);
                 
             }
             
@@ -321,22 +338,22 @@ throw new IllegalStateException("XPath evaluation has been temporarily deactivat
      * 
      * @author Daniel Fern&aacute;ndez
      * 
-     * @since 1.0
+     * @since 2.0.0
      *
      */
-    protected static final class XPathFragmentSpec extends AbstractFragmentSpec {
+    protected static final class DOMSelectorFragmentSpec extends AbstractFragmentSpec {
         
-        private final String xpathExpression;
+        private final String selectorExpression;
 
-        public XPathFragmentSpec(final String fragmentTemplateName, 
-                final String xpathExpression) {
+        public DOMSelectorFragmentSpec(final String fragmentTemplateName, 
+                final String selectorExpression) {
             super(fragmentTemplateName);
-            Validate.notEmpty(xpathExpression, "XPath expression cannot be null or empty");
-            this.xpathExpression = xpathExpression;
+            Validate.notEmpty(selectorExpression, "DOM selector expression cannot be null or empty");
+            this.selectorExpression = selectorExpression;
         }
         
-        public String getXPathExpression() {
-            return this.xpathExpression;
+        public String getSelectorExpression() {
+            return this.selectorExpression;
         }
         
 

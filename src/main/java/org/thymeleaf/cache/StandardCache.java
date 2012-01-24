@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.cache;
 
-import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,8 +41,6 @@ import org.thymeleaf.util.Validate;
  * @param <V> The type of the cache values
  */
 public final class StandardCache<K, V> implements ICache<K,V> {
-
-    private static final long serialVersionUID = 4399112135561524032L;
 
     
 //    public static final String CACHE_LOGGER_NAME = TemplateEngine.class.getName() + ".CACHE";
@@ -332,9 +329,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
 
 
-    final static class CacheDataContainer<K,V> implements Serializable {
-
-        private static final long serialVersionUID = -7836660946715420768L;
+    final static class CacheDataContainer<K,V> {
         
         private final String name;
         private final boolean sizeLimit;

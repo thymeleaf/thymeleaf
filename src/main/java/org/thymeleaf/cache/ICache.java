@@ -19,10 +19,9 @@
  */
 package org.thymeleaf.cache;
 
-import java.io.Serializable;
 
 
-public interface ICache<K, V> extends Serializable {
+public interface ICache<K, V> {
 
     public void put(final K key, final V value);
     public V get(final K key);
