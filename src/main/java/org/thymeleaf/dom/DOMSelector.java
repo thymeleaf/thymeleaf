@@ -185,7 +185,7 @@ public final class DOMSelector {
                 throw new TemplateProcessingException(
                         "Invalid syntax in DOM selector: \"" + selectorSpec + "\"");
             }
-            if (!attValue.startsWith("\"") || !attValue.endsWith("\"")) {
+            if (!(attValue.startsWith("\"") && attValue.endsWith("\"")) && !(attValue.startsWith("'") && attValue.endsWith("'"))) {
                 throw new TemplateProcessingException(
                         "Invalid syntax in DOM selector: \"" + selectorSpec + "\"");
             }
