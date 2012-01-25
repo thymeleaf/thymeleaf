@@ -113,7 +113,7 @@ public abstract class AbstractFragmentAttrProcessor
         
         if (fragmentNode == null) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of include: \"" + attributeValue + "\": fragment node is null");
+                    "An error happened during inclusion/substitution of \"" + attributeValue + "\": fragment node is null");
         }
 
         try {
@@ -129,9 +129,11 @@ public abstract class AbstractFragmentAttrProcessor
             }
             return ((NestableNode)fragmentNode).getChildren();
             
+        } catch (final TemplateProcessingException e) {
+            throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of include: \"" + attributeValue + "\"", e);
+                    "An error happened during inclusion/substitution of \"" + attributeValue + "\"", e);
         }
         
     }

@@ -38,7 +38,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -225,7 +225,7 @@ public final class LinkExpression extends SimpleExpression {
             Expression.execute(arguments, baseExpression, expressionEvaluator);
         base = LiteralValue.unwrap(base);
         if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Base for message resolution must be a non-null and non-empty String " +
                     "(currently: " + (base == null? null : base.getClass().getName()) + ")");
         }
@@ -233,7 +233,7 @@ public final class LinkExpression extends SimpleExpression {
         final String linkBase = (String) base;
         
         if (!isWebContext(arguments.getContext()) && !isLinkBaseAbsolute(linkBase)) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Link base \"" + linkBase + "\" is not absolute. Non-absolute links " +
                     "can only be processed if context implements the " + 
                     IWebContext.class.getName() + " interface (context is of class: " +
@@ -266,7 +266,7 @@ public final class LinkExpression extends SimpleExpression {
                 try {
                     parametersBuffer.append(parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8"));
                 } catch (UnsupportedEncodingException e) {
-                    throw new ExpressionEvaluationException("Exception while processing link parameters", e);
+                    throw new TemplateProcessingException("Exception while processing link parameters", e);
                 }
             }
         }

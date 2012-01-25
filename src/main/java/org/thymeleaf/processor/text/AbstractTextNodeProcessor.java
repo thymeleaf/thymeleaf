@@ -58,7 +58,8 @@ public abstract class AbstractTextNodeProcessor extends AbstractProcessor {
     }
 
     
-    public final ProcessorResult process(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
+    @Override
+    protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
         if (logger.isTraceEnabled()) {
             final String content = ((AbstractTextNode)node).getContent();
             logger.trace("[THYMELEAF][{}][{}] Processing text node of type \"{}\" with content \"{}\"",

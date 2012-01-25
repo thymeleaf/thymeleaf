@@ -36,8 +36,8 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.exceptions.InvalidLocaleException;
 import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.MessageResolution;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
@@ -305,7 +305,7 @@ public final class MessageResolutionUtils {
         final List<String> propertiesFileNames = new ArrayList<String>();
         
         if (locale.getLanguage() == null || locale.getLanguage().trim().equals("")) {
-            throw new InvalidLocaleException(
+            throw new TemplateProcessingException(
                     "Locale \"" + locale.toString() + "\" " +
                     "cannot be used as it does not specify a language.");
         }

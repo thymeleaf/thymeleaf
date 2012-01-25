@@ -28,7 +28,7 @@ import java.util.List;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.OutputCreationException;
+import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.templatewriter.XhtmlHtml5TemplateWriter;
 import org.thymeleaf.templatewriter.XmlTemplateWriter;
 
@@ -291,7 +291,7 @@ public final class DOMUtils {
             templateWriter.writeNode(null, writer, node);
             return writer.toString();
         } catch (final IOException e) {
-            throw new OutputCreationException(
+            throw new TemplateOutputException(
                     "Exception during creation of XML output for node", e);
         }
     }
@@ -304,8 +304,8 @@ public final class DOMUtils {
             templateWriter.writeNode(null, writer, node);
             return writer.toString();
         } catch (final IOException e) {
-            throw new OutputCreationException(
-                    "Exception during creation of XML output for node", e);
+            throw new TemplateOutputException(
+                    "Exception during creation of XHTML/HTML5 output for node", e);
         }
     }
     

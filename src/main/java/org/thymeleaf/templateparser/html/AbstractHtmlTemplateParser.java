@@ -9,7 +9,8 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.exceptions.ParsingException;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
@@ -164,8 +165,10 @@ public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser 
                 
                 return StandardDOMTranslator.translateDocument(domDocument, documentName);
                 
-            } catch(final Exception e) {
-                throw new ParsingException("Exception parsing document", e);
+            } catch (final TemplateProcessingException e) {
+                throw e;
+            } catch (final Exception e) {
+                throw new TemplateInputException("Exception parsing document", e);
             } finally {
                 this.pool.release(domParser);
             }

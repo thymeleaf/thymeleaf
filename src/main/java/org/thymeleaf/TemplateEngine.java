@@ -38,7 +38,7 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
-import org.thymeleaf.exceptions.OutputCreationException;
+import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
@@ -897,7 +897,7 @@ public class TemplateEngine {
                                 templateName, context.getLocale(), elapsed});
             }
             
-        } catch (final OutputCreationException e) {
+        } catch (final TemplateOutputException e) {
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw e;
         } catch (final TemplateEngineException e) {
@@ -949,7 +949,7 @@ public class TemplateEngine {
         try {
             templateWriter.write(arguments, writer, document);
         } catch (IOException e) {
-            throw new OutputCreationException("Error during creation of output", e);
+            throw new TemplateOutputException("Error during creation of output", e);
         }
     
     }

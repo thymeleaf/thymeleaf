@@ -34,56 +34,69 @@ public class TemplateProcessingException extends TemplateEngineException {
 
     private static final long serialVersionUID = 5985749439214775193L;
 
-    private final String templateName;
-    private final Integer lineNumber;
-    private final String expression;
+    private String templateName;
+    private Integer lineNumber;
     
     
     
     public TemplateProcessingException(final String message) {
-        this(message, TemplateEngine.threadTemplateName(), (String)null, (Integer)null);
+        this(message, TemplateEngine.threadTemplateName(), (Integer)null);
     }
     
     public TemplateProcessingException(final String message, final Throwable cause) {
-        this(message, TemplateEngine.threadTemplateName(), null, null, cause);
+        this(message, TemplateEngine.threadTemplateName(), (Integer)null, cause);
     }
     
     public TemplateProcessingException(final String message, final String templateName) {
-        this(message, templateName, (String)null, (Integer)null);
+        this(message, templateName, (Integer)null);
     }
     
     public TemplateProcessingException(final String message, final String templateName, final Throwable cause) {
-        this(message, templateName, null, null, cause);
-    }
-
-    public TemplateProcessingException(final String message, final String templateName, final String expression) {
-        this(message, templateName, expression, (Integer)null);
-    }
-    
-    public TemplateProcessingException(final String message, final String templateName, final String expression, final Throwable cause) {
-        this(message, templateName, expression, null, cause);
-    }
-
-    public TemplateProcessingException(final String message, final String templateName, final Integer lineNumber) {
-        this(message, templateName, null, lineNumber);
-    }
-    
-    public TemplateProcessingException(final String message, final String templateName, final Integer lineNumber, final Throwable cause) {
-        this(message, templateName, null, lineNumber, cause);
-    }
-
-    public TemplateProcessingException(final String message, final String templateName, final String expression, final Integer lineNumber) {
-        this(message, templateName, expression, lineNumber, null);
+        this(message, templateName, (Integer)null, cause);
     }
     
     public TemplateProcessingException(
-            final String message, final String templateName, final String expression, final Integer lineNumber, final Throwable cause) {
+            final String message, final String templateName, final Integer lineNumber) {
+        super(message);
+        this.templateName = templateName;
+        this.lineNumber = lineNumber;
+    }
+    
+    public TemplateProcessingException(
+            final String message, final String templateName, final Integer lineNumber, final Throwable cause) {
         super(message, cause);
         this.templateName = templateName;
-        this.expression = expression;
         this.lineNumber = lineNumber;
     }
 
+    
+    
+    
+    public String getTemplateName() {
+        return this.templateName;
+    }
+    
+    public boolean hasTemplateName() {
+        return this.templateName != null;
+    }
+
+    public Integer getLineNumber() {
+        return this.lineNumber;
+    }
+    
+    public boolean hasLineNumber() {
+        return this.lineNumber != null;
+    }
+
+    public void setTemplateName(final String templateName) {
+        this.templateName = templateName;
+    }
+
+    public void setLineNumber(final Integer lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+    
+    
     
 
     @Override
@@ -94,59 +107,16 @@ public class TemplateProcessingException extends TemplateEngineException {
         sb.append(super.getMessage());
         
         if (this.templateName != null) {
-            sb.append(" [");
-            if(this.expression != null || this.lineNumber != null) {
-                if (this.expression != null) {
-                    sb.append("evaluating \"").append(this.expression).append("\" ");
-                    if (this.lineNumber != null) {
-                        sb.append(" ");
-                    }
-                }
-                if (this.lineNumber != null) {
-                    sb.append("at line ").append(this.lineNumber).append(" of template ");
-                } else {
-                    sb.append("at template ");
-                }
-            }
-            sb.append("\"");
+            sb.append(" (");
             sb.append(this.templateName);
-            sb.append("\"]");
+            if (this.lineNumber != null) {
+                sb.append(":").append(this.lineNumber);
+            }
+            sb.append(")");
         }
         
         return sb.toString();
         
-    }
-    
-    
-    
-    public String getTemplateName() {
-        return this.templateName;
-    }
-
-    public Integer getLineNumber() {
-        return this.lineNumber;
-    }
-    
-    public String getExpression() {
-        return this.expression;
-    }
-
-    
-    
-    
-    public TemplateProcessingException specifyExpression(final String newExpression) {
-        return specifyExpressionAndLineNumber(newExpression, this.lineNumber);
-    }
-    
-    
-    public TemplateProcessingException specifyLineNumber(final Integer newLineNumber) {
-        return specifyExpressionAndLineNumber(this.expression, newLineNumber);
-    }
-    
-    
-    public TemplateProcessingException specifyExpressionAndLineNumber(final String newExpression, final Integer newLineNumber) {
-        return new TemplateProcessingException(
-                super.getMessage(), this.templateName, newExpression, newLineNumber, getCause());
     }
     
     

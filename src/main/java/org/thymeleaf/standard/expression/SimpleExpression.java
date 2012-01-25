@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
 
@@ -402,7 +402,7 @@ public abstract class SimpleExpression extends Expression {
             return SelectionVariableExpression.executeSelectionVariable(arguments, (SelectionVariableExpression)expression, expressionEvaluator);
         }
         
-        throw new ExpressionEvaluationException("Unrecognized simple expression: " + expression.getClass().getName());
+        throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());
         
     }
     

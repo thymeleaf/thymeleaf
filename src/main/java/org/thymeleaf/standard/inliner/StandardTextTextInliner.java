@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
-import org.thymeleaf.exceptions.ExpressionParsingException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 
 /**
@@ -96,7 +96,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                     
                     strBuilder.append(result);
                     
-                } catch (final ExpressionParsingException e) {
+                } catch (final TemplateProcessingException e) {
                     
                     strBuilder.append(match);
                     

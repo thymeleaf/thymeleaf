@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.NumberPointType;
 import org.thymeleaf.util.NumberUtils;
 import org.thymeleaf.util.Validate;
@@ -53,7 +53,8 @@ public final class Numbers {
         try {
             return NumberUtils.format(target, minIntegerDigits, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException("Error formatting integer", e);
+            throw new TemplateProcessingException(
+                    "Error formatting integer with minimum integer digits = " + minIntegerDigits, e);
         }
     }
 
@@ -90,14 +91,15 @@ public final class Numbers {
     public String formatInteger(final Number target, final Integer minIntegerDigits, final String thousandsPointType) {
         final NumberPointType thousandsNumberPointType = NumberPointType.match(thousandsPointType);
         if (thousandsNumberPointType == null) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Unrecognized point format \"" + thousandsPointType + "\"");
         }
         try {
             return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Error formatting integer", e);
+            throw new TemplateProcessingException(
+                    "Error formatting integer with minimum integer digits = " + 
+                    minIntegerDigits + " and thousands point type = " + thousandsPointType, e);
         }
     }
 
@@ -137,8 +139,9 @@ public final class Numbers {
         try {
             return NumberUtils.format(target, minIntegerDigits, decimalDigits, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Error formatting decimal", e);
+            throw new TemplateProcessingException(
+                    "Error formatting decimal with minimum integer digits = " + minIntegerDigits + 
+                    " and decimal digits " + decimalDigits, e);
         }
     }
 
@@ -178,14 +181,15 @@ public final class Numbers {
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
         final NumberPointType decimalNumberPointType = NumberPointType.match(decimalPointType);
         if (decimalNumberPointType == null) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Unrecognized point format \"" + decimalPointType + "\"");
         }
         try {
             return NumberUtils.format(target, minIntegerDigits, decimalDigits, decimalNumberPointType, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Error formatting decimal", e);
+            throw new TemplateProcessingException(
+                    "Error formatting decimal with minimum integer digits = " + minIntegerDigits +
+                    ", decimal digits = " + decimalDigits + " and decimal point type = " + decimalPointType, e);
         }
     }
 
@@ -225,19 +229,21 @@ public final class Numbers {
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
         final NumberPointType decimalNumberPointType = NumberPointType.match(decimalPointType);
         if (decimalNumberPointType == null) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Unrecognized point format \"" + decimalPointType + "\"");
         }
         final NumberPointType thousandsNumberPointType = NumberPointType.match(thousandsPointType);
         if (thousandsNumberPointType == null) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Unrecognized point format \"" + thousandsPointType + "\"");
         }
         try {
             return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, decimalDigits, decimalNumberPointType, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Error formatting decimal", e);
+            throw new TemplateProcessingException(
+                    "Error formatting decimal with minimum integer digits = " + minIntegerDigits + 
+                    ", thousands point type = " + thousandsPointType + ", decimal digits = " + decimalDigits +
+                    " and decimal point type = " + decimalPointType, e);
         }
     }
 

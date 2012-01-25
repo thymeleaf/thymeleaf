@@ -26,27 +26,26 @@ package org.thymeleaf.exceptions;
  * @since 1.0
  *
  */
-public class ParsingException extends TemplateProcessingException {
+public class TemplateOutputException extends TemplateProcessingException {
+    
+    private static final long serialVersionUID = -247484715700490790L;
 
     
-    private static final long serialVersionUID = -1052201847013968876L;
-
-
-    
-    public ParsingException(final String message) {
+    public TemplateOutputException(final String message) {
         super(message);
     }
     
-    public ParsingException(final String message, final Throwable cause) {
+    public TemplateOutputException(final String message, final Throwable cause) {
         super(message, cause);
     }
     
-    public ParsingException(final String message, final String templateName, final Throwable cause) {
+    public TemplateOutputException(final String message, final String templateName, final Throwable cause) {
         super(message, templateName, cause);
     }
 
-    public ParsingException(final String message, final String templateName) {
+    public TemplateOutputException(final String message, final String templateName) {
         super(message, templateName);
     }
+    
     
 }

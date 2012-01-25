@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -215,7 +215,7 @@ public final class MessageExpression extends SimpleExpression {
             messageKey = messageKey.toString();
         }
         if (messageKey == null || ((String)messageKey).trim().equals("")) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Message key for message resolution must be a non-null and non-empty String");
         }
         

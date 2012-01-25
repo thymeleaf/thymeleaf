@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
 
@@ -230,7 +230,7 @@ public abstract class Expression implements Serializable {
             return ComplexExpression.executeComplex(arguments, (ComplexExpression)expression, expressionEvaluator);
         }
         
-        throw new ExpressionEvaluationException("Unrecognized expression: " + expression.getClass().getName());
+        throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
         
     }
     

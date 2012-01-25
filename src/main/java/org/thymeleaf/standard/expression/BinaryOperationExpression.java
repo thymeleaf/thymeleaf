@@ -21,7 +21,7 @@ package org.thymeleaf.standard.expression;
 
 import java.util.List;
 
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -219,8 +219,10 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
                             newInstance(leftExpr, rightExpr);
             result.set(inputIndex, new ExpressionParsingNode(operationExpression));
             
+        } catch (final TemplateProcessingException e) {
+            throw e;
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Error during creation of Binary Operation expression for operator: \"" + operator + "\"", e);
         }
         

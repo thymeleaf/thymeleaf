@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
 
@@ -99,7 +99,7 @@ public final class StandardExpressionProcessor {
         final Object parser =
             arguments.getExecutionAttribute(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
         if (parser == null || (!(parser instanceof StandardExpressionParser))) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "No Standard Expression Parser has been registered as an execution argument. " +
                     "This is a requirement for using " + StandardExpressionProcessor.class.getSimpleName() + ", and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
@@ -117,7 +117,7 @@ public final class StandardExpressionProcessor {
         final Object executor =
             arguments.getExecutionAttribute(STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME);
         if (executor == null || (!(executor instanceof StandardExpressionExecutor))) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "No Standard Expression Executor has been registered as an execution argument. " +
                     "This is a requirement for using " + StandardExpressionProcessor.class.getSimpleName() + ", and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +

@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -75,7 +75,7 @@ public final class LessThanExpression extends GreaterLesserExpression {
             Expression.execute(arguments, expression.getRight(), expressionEvaluator);
 
         if (leftValue == null || rightValue == null) {
-            throw new ExpressionEvaluationException(
+            throw new TemplateProcessingException(
                     "Cannot execute LESS THAN comparison: operands are \"" + LiteralValue.unwrap(leftValue) + "\" and \"" + LiteralValue.unwrap(rightValue) + "\"");
         }
 
@@ -95,7 +95,7 @@ public final class LessThanExpression extends GreaterLesserExpression {
                     Comparable.class.isAssignableFrom(leftValue.getClass())) {
                 result = Boolean.valueOf(((Comparable<Object>)leftValue).compareTo(rightValue) == -1);
             } else {
-                throw new ExpressionEvaluationException(
+                throw new TemplateProcessingException(
                         "Cannot execute LESS THAN from Expression \"" + 
                         expression.getStringRepresentation() + "\". Left is \"" + 
                         leftValue + "\", right is \"" + rightValue + "\"");

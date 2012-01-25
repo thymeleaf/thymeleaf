@@ -14,8 +14,8 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ParserInitializationException;
-import org.thymeleaf.exceptions.ParsingException;
 import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
@@ -128,23 +128,27 @@ public abstract class AbstractNonValidatingDOMTemplateParser extends AbstractTem
             
             return StandardDOMTranslator.translateDocument(domDocument, documentName);
             
-        } catch(final SAXException e) {
+        } catch (final SAXException e) {
             
             if(e.getMessage() != null &&
                 e.getMessage().contains(SAXPARSEEXCEPTION_BAD_ELEMENT_CONTENT)) {
-                throw new ParsingException(
+                throw new TemplateInputException(
                     SAXPARSEEXCEPTION_BAD_ELEMENT_CONTENT_EXPLANATION, e);
             }
             
-            throw new ParsingException("An exception happened during parsing", e);
+            throw new TemplateInputException("An exception happened during parsing", e);
             
-        } catch(IOException e) {
+        } catch (final IOException e) {
             
             throw new TemplateInputException("Exception parsing document", e);
             
-        } catch(Exception e) {
+        } catch (final TemplateProcessingException e) {
             
-            throw new ParsingException("Exception parsing document", e);
+            throw e;
+            
+        } catch (final Exception e) {
+            
+            throw new TemplateInputException("Exception parsing document", e);
             
         } finally {
             

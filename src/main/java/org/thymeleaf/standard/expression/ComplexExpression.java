@@ -22,7 +22,7 @@ package org.thymeleaf.standard.expression;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
 
@@ -247,7 +247,7 @@ public abstract class ComplexExpression extends Expression {
             return LessOrEqualToExpression.executeLessOrEqualTo(arguments, (LessOrEqualToExpression)expression, expressionEvaluator);
         }
         
-        throw new ExpressionEvaluationException("Unrecognized complex expression: " + expression.getClass().getName());
+        throw new TemplateProcessingException("Unrecognized complex expression: " + expression.getClass().getName());
         
     }
     

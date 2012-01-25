@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DateUtils;
 import org.thymeleaf.util.Validate;
 
@@ -113,8 +113,8 @@ public final class Calendars {
         try {
             return DateUtils.format(target, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Error formatting calendar", e);
+            throw new TemplateProcessingException(
+                    "Error formatting calendar with standard format for locale " + getLocale(), e);
         }
     }
     
@@ -152,8 +152,8 @@ public final class Calendars {
         try {
             return DateUtils.format(target, pattern, getLocale());
         } catch (final Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Error formatting calendar", e);
+            throw new TemplateProcessingException(
+                    "Error formatting calendar with format pattern \"" + pattern + "\"", e);
         }
     }
     

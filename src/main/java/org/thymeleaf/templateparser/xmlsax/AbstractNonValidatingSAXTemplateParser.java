@@ -21,8 +21,8 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.ParserInitializationException;
-import org.thymeleaf.exceptions.ParsingException;
 import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
@@ -118,10 +118,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             
             return doParse(configuration, documentName, new InputSource(templateReader), saxParser);
             
-        } catch(IOException e) {
+        } catch (final IOException e) {
             throw new TemplateInputException("Exception parsing document", e);
-        } catch(SAXException e) {
-            throw new ParsingException("Exception parsing document", e);
+        } catch (final TemplateProcessingException e) {
+            throw e;
+        } catch (final SAXException e) {
+            throw new TemplateInputException("Exception parsing document", e);
         } finally {
             
             pool.release(saxParser);

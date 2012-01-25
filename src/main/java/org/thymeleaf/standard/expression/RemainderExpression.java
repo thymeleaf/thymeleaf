@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -91,7 +91,7 @@ public final class RemainderExpression extends MultiplicationDivisionRemainderEx
             return leftNumberValue.remainder(rightNumberValue);
         }
         
-        throw new ExpressionEvaluationException(
+        throw new TemplateProcessingException(
             "Cannot execute division: operands are \"" + LiteralValue.unwrap(leftValue) + "\" and \"" + LiteralValue.unwrap(rightValue) + "\"");
         
     }

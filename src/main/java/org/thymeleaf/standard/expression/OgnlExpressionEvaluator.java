@@ -30,7 +30,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * 
@@ -90,8 +90,8 @@ public class OgnlExpressionEvaluator
             return ognl.Ognl.getValue(expressionTree, contextVariables, root);
             
         } catch (final OgnlException e) {
-            throw new ExpressionEvaluationException(
-                    "Exception evaluating OGNL expression", arguments.getTemplateName(), expression, e);
+            throw new TemplateProcessingException(
+                    "Exception evaluating OGNL expression: \"" + expression + "\"", e);
         }
         
     }

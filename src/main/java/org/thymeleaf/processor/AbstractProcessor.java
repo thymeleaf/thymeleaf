@@ -20,6 +20,8 @@
 package org.thymeleaf.processor;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Node;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -193,6 +195,33 @@ public abstract class AbstractProcessor implements IProcessor {
         }
         return 0;
     }
+
+
+
+
+    public final ProcessorResult process(
+            final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
+        
+        try {
+            
+            return doProcess(arguments, processorMatchingContext, node);
+                
+        } catch (final TemplateProcessingException e) {
+            if (!e.hasLineNumber()) {
+                e.setLineNumber(node.getLineNumber());
+            }
+            throw e;
+        } catch (final Exception e) {
+            final TemplateProcessingException exception =
+                    new TemplateProcessingException("Error during execution of processor '" + this.getClass().getName() + "'", e);
+            exception.setLineNumber(node.getLineNumber());
+            throw exception;
+        }
+        
+    }
+    
+    
+    protected abstract ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node);
     
     
     

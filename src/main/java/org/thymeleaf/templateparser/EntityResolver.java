@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
-import org.thymeleaf.exceptions.EntityResolutionException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -69,7 +69,7 @@ public final class EntityResolver implements org.xml.sax.EntityResolver {
             }
         }
         
-        throw new EntityResolutionException(
+        throw new TemplateProcessingException(
                 "Unsupported entity requested with PUBLICID \"" + publicID + "\" and " +
         		"SYSTEMID \"" + systemID + "\". Make sure a corresponding " + 
 				IDocTypeResolutionEntry.class.getName() + " implementation is provided " +

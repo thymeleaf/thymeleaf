@@ -62,7 +62,8 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
     }
 
     
-    public final ProcessorResult process(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
+    @Override
+    protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
         // Because of the type of applicability being used, casts to Tag here will not fail
         if (logger.isTraceEnabled()) {
             final String attributeName = this.matcher.getAttributeName(processorMatchingContext);

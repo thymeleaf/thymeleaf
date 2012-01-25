@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.exceptions.ExpressionParsingException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
@@ -125,7 +125,7 @@ public final class StandardExpressionParser {
         final Expression expression = Expression.parse(preprocessedInput);
         
         if (expression == null) {
-            throw new ExpressionParsingException("Could not parse as expression: \"" + input + "\"");
+            throw new TemplateProcessingException("Could not parse as expression: \"" + input + "\"");
         }
         
         CACHE.putExpressionIntoCache(arguments.getConfiguration(), preprocessedInput, expression);
@@ -153,7 +153,7 @@ public final class StandardExpressionParser {
         final AssignationSequence assignationSequence = AssignationSequence.parse(preprocessedInput);
         
         if (assignationSequence == null) {
-            throw new ExpressionParsingException("Could not parse as assignation sequence: \"" + input + "\"");
+            throw new TemplateProcessingException("Could not parse as assignation sequence: \"" + input + "\"");
         }
         
         CACHE.putAssignationSequenceIntoCache(arguments.getConfiguration(), preprocessedInput, assignationSequence);
@@ -181,7 +181,7 @@ public final class StandardExpressionParser {
         final ExpressionSequence expressionSequence = ExpressionSequence.parse(preprocessedInput);
         
         if (expressionSequence == null) {
-            throw new ExpressionParsingException("Could not parse as expression sequence: \"" + input + "\"");
+            throw new TemplateProcessingException("Could not parse as expression sequence: \"" + input + "\"");
         }
         
         CACHE.putExpressionSequenceIntoCache(arguments.getConfiguration(), preprocessedInput, expressionSequence);
@@ -209,7 +209,7 @@ public final class StandardExpressionParser {
         final Each each = Each.parse(preprocessedInput);
         
         if (each == null) {
-            throw new ExpressionParsingException("Could not parse as each: \"" + input + "\"");
+            throw new TemplateProcessingException("Could not parse as each: \"" + input + "\"");
         }
         
         CACHE.putEachIntoCache(arguments.getConfiguration(), preprocessedInput, each);
@@ -237,7 +237,7 @@ public final class StandardExpressionParser {
         final FragmentSelection fragmentSelection = FragmentSelection.parse(preprocessedInput);
         
         if (fragmentSelection == null) {
-            throw new ExpressionParsingException("Could not parse as fragment selection: \"" + input + "\"");
+            throw new TemplateProcessingException("Could not parse as fragment selection: \"" + input + "\"");
         }
         
         CACHE.putFragmentSelectionIntoCache(arguments.getConfiguration(), preprocessedInput, fragmentSelection);
