@@ -26,7 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
@@ -97,7 +97,7 @@ public class FieldUtils {
         final RequestContext requestContext =
             (RequestContext) arguments.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
-            throw new AttrProcessorException("A request context has not been created");
+            throw new TemplateProcessingException("A request context has not been created");
         }
 
         if (allowAllFields && ALL_FIELDS_FIELD_EXPRESSION.equals(fieldExpression)) {

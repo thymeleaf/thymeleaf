@@ -28,7 +28,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
 
@@ -122,7 +122,7 @@ public final class SpringSelectFieldAttrProcessor
                         
                         if (selectAttrInChildValue != null) {
                             if (!selectAttrValue.equals(selectAttrInChildValue)) {
-                                throw new AttrProcessorException(
+                                throw new TemplateProcessingException(
                                         "If specified (which is not required), attribute " +
                                         "\"" + selectAttrName + "\" in \"option\" tag must have " +
                                         "exactly the same value as in its containing \"select\" " +

@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
@@ -74,7 +73,7 @@ public final class SpringObjectAttrProcessor
 
                 final String varExp = ((VariableExpression)expression).getExpression();
                 if (varExp.indexOf('.') >= 0 || varExp.indexOf('[') >= 0 || varExp.indexOf(']') >= 0) {
-                    throw new AttrProcessorException(
+                    throw new TemplateProcessingException(
                             "The expression used as a form " +
                             "model is " + expression + ", which is not allowed by " +
                             "Spring MVC. Target selection expressions used for forms in Spring have to be " +

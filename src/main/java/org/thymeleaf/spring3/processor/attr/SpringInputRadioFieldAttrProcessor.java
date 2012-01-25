@@ -25,7 +25,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
 
@@ -68,7 +68,7 @@ public final class SpringInputRadioFieldAttrProcessor
         
         final String value = tag.getAttributeValue("value");
         if (value == null) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"input(radio)\" tags");
         }
         
