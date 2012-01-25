@@ -21,7 +21,7 @@ package org.thymeleaf.standard.processor.text;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.AbstractTextNode;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.TextNodeProcessorMatcher;
 import org.thymeleaf.processor.text.AbstractTextNodeProcessor;
@@ -63,15 +63,15 @@ public final class StandardTextInliningTextProcessor
     public ProcessorResult processTextNode(final Arguments arguments, final AbstractTextNode textNode) {
         
         if (arguments.getProcessOnlyTags()) {
-            throw new AttrProcessorException("Cannot execute text inlining processor: Text processors are not active");
+            throw new TemplateProcessingException("Cannot execute text inlining processor: Text processors are not active");
         }
         
         final Object inliner = arguments.getLocalVariable(StandardDialect.INLINER_LOCAL_VARIABLE);
         if (inliner == null) {
-            throw new AttrProcessorException("Cannot execute text inlining processor: No inliner has been set as a local variable");
+            throw new TemplateProcessingException("Cannot execute text inlining processor: No inliner has been set as a local variable");
         }
         if (!(inliner instanceof IStandardTextInliner)) {
-            throw new AttrProcessorException("Cannot execute text inlining processor: Inliner set does not implement " + IStandardTextInliner.class.getName() + 
+            throw new TemplateProcessingException("Cannot execute text inlining processor: Inliner set does not implement " + IStandardTextInliner.class.getName() + 
                     " (it is an object of class " + inliner.getClass().getName() + ")");
         }
         

@@ -25,8 +25,8 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
 import org.thymeleaf.exceptions.TemplateEngineException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.templateparser.ITemplateParser;
 
@@ -81,7 +81,7 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
         } catch (final TemplateEngineException e) {
             throw e;
         } catch (final Exception e) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of unescaped text: \"" + tag.getAttributeValue(attributeName) + "\"", e);
         }
         

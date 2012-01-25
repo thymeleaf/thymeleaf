@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -61,7 +61,7 @@ public abstract class AbstractLocalVariableDefinitionAttrProcessor
         final Map<String,Object> newLocalVariables = 
             getNewLocalVariables(arguments, tag, attributeName);
         if (newLocalVariables == null) {
-            throw new AttrProcessorException("Null variables map for \"" + attributeName + "\" attribute not allowed");
+            throw new TemplateProcessingException("Null variables map for \"" + attributeName + "\" attribute not allowed");
         }
 
         tag.removeAttribute(attributeName);

@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -61,7 +61,7 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
         final Map<String,String> modifiedAttributeValues = 
             getModifiedAttributeValues(arguments, tag, attributeName); 
         if (modifiedAttributeValues == null) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "Null new attribute value map specified for: \"" + attributeName + "\"");
         }
         

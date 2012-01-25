@@ -31,7 +31,7 @@ import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.DOMUtils;
@@ -106,13 +106,13 @@ public abstract class AbstractFragmentAttrProcessor
         final AbstractFragmentSpec fragmentSpec =
             getFragmentSpec(arguments, tag, attributeName, attributeValue);
         if (fragmentSpec == null) {
-            throw new AttrProcessorException("Null value for \"" + attributeName + "\" fragment specification not allowed");
+            throw new TemplateProcessingException("Null value for \"" + attributeName + "\" fragment specification not allowed");
         }
         
         final Node fragmentNode = getFragment(arguments, attributeName, fragmentSpec); 
         
         if (fragmentNode == null) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of include: \"" + attributeValue + "\": fragment node is null");
         }
 
@@ -123,14 +123,14 @@ public abstract class AbstractFragmentAttrProcessor
             }
             
             if (!(fragmentNode instanceof NestableNode)) {
-                throw new AttrProcessorException(
+                throw new TemplateProcessingException(
                         "An error happened during parsing of include: \"" + attributeValue + "\": selected fragment has no children " +
                         "and therefore is not suitable for use in an inclusion operation -- maybe a substitution operation should be used instead?");
             }
             return ((NestableNode)fragmentNode).getChildren();
             
         } catch (final Exception e) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of include: \"" + attributeValue + "\"", e);
         }
         
@@ -146,7 +146,7 @@ public abstract class AbstractFragmentAttrProcessor
         final String fragmentTemplateName = fragmentSpec.getFragmentTemplateName();
         
         if (templateName.equals(fragmentTemplateName)) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "Template \"" + templateName + 
                     "\" references itself from a " +
                     "\"" + attributeName + "\" attribute, which is forbidden.");
@@ -172,7 +172,7 @@ public abstract class AbstractFragmentAttrProcessor
                     DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentTagName, fragmentAttributeName, fragmentAttributeValue);
                                         
                 if (fragmentNode == null) {
-                    throw new AttrProcessorException(
+                    throw new TemplateProcessingException(
                             "Fragment \"" + fragmentAttributeValue + "\" in template \"" + fragmentTemplateName + "\" could not be found");
                 }
                 
@@ -181,7 +181,7 @@ public abstract class AbstractFragmentAttrProcessor
                 fragmentNode = parsedTemplate.getDocument();
                 
                 if (fragmentNode == null) {
-                    throw new AttrProcessorException(
+                    throw new TemplateProcessingException(
                             "Root node in template \"" + fragmentTemplateName + "\" could not be found");
                 }
                 
@@ -210,7 +210,7 @@ public abstract class AbstractFragmentAttrProcessor
                 
                 final List<Node> selectedNodes = selector.select(parsedTemplate.getDocument().getChildren());
                 if (selectedNodes == null || selectedNodes.size() == 0) {
-                    throw new AttrProcessorException(
+                    throw new TemplateProcessingException(
                             "No result for DOM selector expression \"" + domSelectorExpression +"\" in template \"" + fragmentTemplateName + "\" could be found");
                 }
                     
@@ -220,10 +220,10 @@ public abstract class AbstractFragmentAttrProcessor
             
             return fragmentNode;
         
-        } catch (final AttrProcessorException e) {
+        } catch (final TemplateProcessingException e) {
             throw e;
         } catch (final Exception e) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of template: \"" + fragmentTemplateName + "\"", e);
         }
         

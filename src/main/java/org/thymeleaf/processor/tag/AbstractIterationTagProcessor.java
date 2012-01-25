@@ -27,7 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.TagProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ITagNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.ObjectUtils;
@@ -103,7 +103,7 @@ public abstract class AbstractIterationTagProcessor
                 // with a new name (iteratedTagName).
                 
                 if (iteratedTagName == null) {
-                    throw new TagProcessorException(
+                    throw new TemplateProcessingException(
                             "Cannot specify null iterated tag name if the host iteration tag is not being removed");
                 }
                 

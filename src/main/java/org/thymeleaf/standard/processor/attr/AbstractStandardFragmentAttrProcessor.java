@@ -21,7 +21,7 @@ package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentAttrProcessor;
 import org.thymeleaf.standard.expression.FragmentSelection;
@@ -67,7 +67,7 @@ public abstract class AbstractStandardFragmentAttrProcessor
         final Object templateNameObject = 
             StandardExpressionProcessor.executeExpression(arguments, fragmentSelection.getTemplateName());
         if (templateNameObject == null) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "Evaluation of template name from expression \"" + attributeValue + "\" " + 
                     "returned null.");
         }
@@ -80,7 +80,7 @@ public abstract class AbstractStandardFragmentAttrProcessor
             final Object fragmentSelectorObject = 
                 StandardExpressionProcessor.executeExpression(arguments, fragmentSelection.getFragmentSelector());
             if (fragmentSelectorObject == null) {
-                throw new AttrProcessorException(
+                throw new TemplateProcessingException(
                         "Evaluation of fragment selector from expression \"" + attributeValue + "\" " + 
                         "returned null.");
             }

@@ -25,7 +25,7 @@ import java.util.List;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.Validate;
@@ -148,7 +148,7 @@ public abstract class AbstractRemovalAttrProcessor
             }
         }
         
-        throw new AttrProcessorException(
+        throw new TemplateProcessingException(
                 "Unrecognized value for \"" + attributeName + "\": " +
         		"only \"" + this.removeTag + "\", \"" + this.removeBody + "\" and \"" + this.removeAll + "\" are allowed.");
         

@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
@@ -64,7 +64,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         final AssignationSequence assignations = 
             StandardExpressionProcessor.parseAssignationSequence(arguments, attributeValue);
         if (assignations == null) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
         

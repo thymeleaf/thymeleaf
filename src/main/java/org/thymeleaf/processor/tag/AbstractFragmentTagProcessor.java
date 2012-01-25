@@ -28,7 +28,7 @@ import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Tag;
-import org.thymeleaf.exceptions.AttrProcessorException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ITagNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.DOMUtils;
@@ -97,13 +97,13 @@ public abstract class AbstractFragmentTagProcessor
         final AbstractFragmentSpec fragmentSpec =
             getFragmentSpec(arguments, tag);
         if (fragmentSpec == null) {
-            throw new AttrProcessorException("Null value for \"" + tag.getName() + "\" fragment specification not allowed");
+            throw new TemplateProcessingException("Null value for \"" + tag.getName() + "\" fragment specification not allowed");
         }
         
         final NestableNode fragmentNode = getFragment(arguments, tag, fragmentSpec); 
         
         if (fragmentNode == null) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of include: \"" + tag.getName() + "\": fragment node is null");
         }
 
@@ -116,7 +116,7 @@ public abstract class AbstractFragmentTagProcessor
             return fragmentNode.getChildren();
             
         } catch (final Exception e) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of include: \"" + tag.getName() + "\"", e);
         }
         
@@ -132,7 +132,7 @@ public abstract class AbstractFragmentTagProcessor
         final String templateName = arguments.getTemplateResolution().getTemplateName();
         
         if (templateName.equals(fragmentTemplateName)) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "Template \"" + templateName + 
                     "\" references itself from a " +
                     "\"" + tag.getName() + "\" tag, which is forbidden.");
@@ -158,7 +158,7 @@ public abstract class AbstractFragmentTagProcessor
                     DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentTagName, fragmentAttributeName, fragmentAttributeValue);
                                         
                 if (fragmentNode == null) {
-                    throw new AttrProcessorException(
+                    throw new TemplateProcessingException(
                             "Fragment \"" + fragmentAttributeValue + "\" in template \"" + fragmentTemplateName + "\" could not be found");
                 }
                 
@@ -167,7 +167,7 @@ public abstract class AbstractFragmentTagProcessor
                 fragmentNode = parsedTemplate.getDocument();
                 
                 if (fragmentNode == null) {
-                    throw new AttrProcessorException(
+                    throw new TemplateProcessingException(
                             "Root node in template \"" + fragmentTemplateName + "\" could not be found");
                 }
                 
@@ -190,7 +190,7 @@ throw new IllegalStateException("XPath evaluation has been temporarily deactivat
 //                fragmentNode = exprResult.item(0);
 //                
 //                if (fragmentNode == null) {
-//                    throw new AttrProcessorException(
+//                    throw new TemplateProcessingException(
 //                            "No result for XPath expression \"" + xpathFragmentSpec.getXPathExpression() +"\" in template \"" + fragmentTemplateName + "\" could be found");
 //                }
                 
@@ -198,10 +198,10 @@ throw new IllegalStateException("XPath evaluation has been temporarily deactivat
             
             return fragmentNode;
         
-        } catch (final AttrProcessorException e) {
+        } catch (final TemplateProcessingException e) {
             throw e;
         } catch (final Exception e) {
-            throw new AttrProcessorException(
+            throw new TemplateProcessingException(
                     "An error happened during parsing of template: \"" + fragmentTemplateName + "\"", e);
         }
         
