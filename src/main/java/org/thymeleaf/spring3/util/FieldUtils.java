@@ -27,7 +27,6 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.SelectionVariableExpression;

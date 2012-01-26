@@ -32,7 +32,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.exceptions.ExpressionEvaluationException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.IStandardExpressionEvaluator;
 
 /**
@@ -102,11 +102,11 @@ public class SpelExpressionEvaluator
             
             return exp.getValue(context, root);
             
-        } catch(Exception e) {
-            throw new ExpressionEvaluationException(
-                    "Exception evaluating SpEL expression", 
-                    arguments.getTemplateResolution().getTemplateName(), 
-                    spelExpression, e);
+        } catch (final TemplateProcessingException e) {
+            throw e;
+        } catch(final Exception e) {
+            throw new TemplateProcessingException(
+                    "Exception evaluating SpEL expression: \"" + spelExpression + "\"", e);
         }
         
     }
