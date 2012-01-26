@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
@@ -52,17 +52,17 @@ public abstract class AbstractStandardIterationAttrProcessor
     
 
     @Override
-    protected void processClonedHostIterationTag(final Arguments arguments, final Tag iteratedChild, final String attributeName) {
-        // Nothing to be done here, no additional processings for iterated tags
+    protected void processClonedHostIterationElement(final Arguments arguments, final Element iteratedChild, final String attributeName) {
+        // Nothing to be done here, no additional processings for iterated elements
     }
     
     
 
     @Override
     protected final IterationSpec getIterationSpec(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
 
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final Each each = StandardExpressionProcessor.parseEach(arguments, attributeValue);
 

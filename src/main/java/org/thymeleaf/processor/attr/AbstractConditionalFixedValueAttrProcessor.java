@@ -20,7 +20,7 @@
 package org.thymeleaf.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -52,28 +52,28 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
     
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
         
-        final boolean visible = isVisible(arguments, tag, attributeName);
+        final boolean visible = isVisible(arguments, element, attributeName);
         
-        final String targetAttributeName = getTargetAttributeName(arguments, tag, attributeName);
+        final String targetAttributeName = getTargetAttributeName(arguments, element, attributeName);
 
         if (!visible) {
-            tag.removeAttribute(attributeName);
+            element.removeAttribute(attributeName);
             return ProcessorResult.OK;
         }
 
         // We remove the original attribute first just in case the 
         // attribute to be added has the same name.
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
 
         final String targetAttributeFixedValue = 
-                getTargetAttributeFixedValue(arguments, tag, attributeName);
+                getTargetAttributeFixedValue(arguments, element, attributeName);
         
-        tag.setAttribute(targetAttributeName, targetAttributeFixedValue);
+        element.setAttribute(targetAttributeName, targetAttributeFixedValue);
         
-        if (recomputeProcessorsAfterExecution(arguments, tag, attributeName)) {
-            tag.setRecomputeProcessorsImmediately(true);
+        if (recomputeProcessorsAfterExecution(arguments, element, attributeName)) {
+            element.setRecomputeProcessorsImmediately(true);
         }
         
         return ProcessorResult.OK;
@@ -84,18 +84,18 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
     
     
     protected abstract boolean isVisible(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
 
 
     
     
     protected abstract String getTargetAttributeName(final Arguments arguments, 
-            final Tag tag, final String attributeName);
+            final Element element, final String attributeName);
     
     protected abstract String getTargetAttributeFixedValue(final Arguments arguments, 
-            final Tag tag, final String attributeName);
+            final Element element, final String attributeName);
     
     protected abstract boolean recomputeProcessorsAfterExecution(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
     
 }

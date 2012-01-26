@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,9 +27,9 @@ import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
@@ -41,18 +41,18 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public abstract class AbstractFragmentTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractFragmentElementProcessor 
+        extends AbstractElementProcessor {
 
     
     
     
 
-    public AbstractFragmentTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractFragmentElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractFragmentTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractFragmentElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -61,18 +61,18 @@ public abstract class AbstractFragmentTagProcessor
     
     
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
         
         final boolean substituteInclusionNode =
-            getSubstituteInclusionNode(arguments, tag);
+            getSubstituteInclusionNode(arguments, element);
         
         final List<Node> newNodes = 
-            getNewNodes(arguments, tag, substituteInclusionNode);
+            getNewNodes(arguments, element, substituteInclusionNode);
 
-        tag.clearChildren();
+        element.clearChildren();
         
         for (final Node newNode : newNodes) {
-            tag.addChild(newNode);
+            element.addChild(newNode);
         }
         
         
@@ -80,8 +80,8 @@ public abstract class AbstractFragmentTagProcessor
             return ProcessorResult.OK;
         }
 
-        // Inclusion tag will be substituted by the new nodes
-        tag.getParent().extractChild(tag);
+        // Inclusion element will be substituted by the new nodes
+        element.getParent().extractChild(element);
         
         return ProcessorResult.OK;
             
@@ -91,20 +91,20 @@ public abstract class AbstractFragmentTagProcessor
     
     
     private final List<Node> getNewNodes(
-            final Arguments arguments, final Tag tag, final boolean substituteInclusionNode) {
+            final Arguments arguments, final Element element, final boolean substituteInclusionNode) {
         
 
         final AbstractFragmentSpec fragmentSpec =
-            getFragmentSpec(arguments, tag);
+            getFragmentSpec(arguments, element);
         if (fragmentSpec == null) {
-            throw new TemplateProcessingException("Null value for \"" + tag.getName() + "\" fragment specification not allowed");
+            throw new TemplateProcessingException("Null value for \"" + element.getName() + "\" fragment specification not allowed");
         }
         
-        final NestableNode fragmentNode = getFragment(arguments, tag, fragmentSpec); 
+        final NestableNode fragmentNode = getFragment(arguments, element, fragmentSpec); 
         
         if (fragmentNode == null) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of include: \"" + tag.getName() + "\": fragment node is null");
+                    "An error happened during parsing of include: \"" + element.getName() + "\": fragment node is null");
         }
 
         try {
@@ -117,7 +117,7 @@ public abstract class AbstractFragmentTagProcessor
             
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of include: \"" + tag.getName() + "\"", e);
+                    "An error happened during parsing of include: \"" + element.getName() + "\"", e);
         }
         
     }
@@ -125,7 +125,7 @@ public abstract class AbstractFragmentTagProcessor
     
     
     private static NestableNode getFragment(
-            final Arguments arguments, final Tag tag, final AbstractFragmentSpec fragmentSpec) {
+            final Arguments arguments, final Element element, final AbstractFragmentSpec fragmentSpec) {
 
         
         final String fragmentTemplateName = fragmentSpec.getFragmentTemplateName();
@@ -135,7 +135,7 @@ public abstract class AbstractFragmentTagProcessor
             throw new TemplateProcessingException(
                     "Template \"" + templateName + 
                     "\" references itself from a " +
-                    "\"" + tag.getName() + "\" tag, which is forbidden.");
+                    "\"" + element.getName() + "\" element, which is forbidden.");
         }
         
         try {
@@ -150,12 +150,12 @@ public abstract class AbstractFragmentTagProcessor
             if (fragmentSpec instanceof NamedFragmentSpec) {
                 
                 final NamedFragmentSpec namedFragmentSpec = (NamedFragmentSpec) fragmentSpec;
-                final String fragmentTagName = namedFragmentSpec.getFragmentTagName();
+                final String fragmentElementName = namedFragmentSpec.getFragmentElementName();
                 final String fragmentAttributeName = namedFragmentSpec.getFragmentAttributeName();
                 final String fragmentAttributeValue = namedFragmentSpec.getFragmentAttributeValue();
                 
                 fragmentNode = 
-                    DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentTagName, fragmentAttributeName, fragmentAttributeValue);
+                    DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentElementName, fragmentAttributeName, fragmentAttributeValue);
                                         
                 if (fragmentNode == null) {
                     throw new TemplateProcessingException(
@@ -209,9 +209,9 @@ throw new IllegalStateException("XPath evaluation has been temporarily deactivat
 
 
 
-    protected abstract boolean getSubstituteInclusionNode(final Arguments arguments, final Tag tag);
+    protected abstract boolean getSubstituteInclusionNode(final Arguments arguments, final Element element);
 
-    protected abstract AbstractFragmentSpec getFragmentSpec(final Arguments arguments, final Tag tag);
+    protected abstract AbstractFragmentSpec getFragmentSpec(final Arguments arguments, final Element element);
     
 
 
@@ -252,7 +252,7 @@ throw new IllegalStateException("XPath evaluation has been temporarily deactivat
      */
     protected static final class NamedFragmentSpec extends AbstractFragmentSpec {
         
-        private final String fragmentTagName;
+        private final String fragmentElementName;
         private final String fragmentAttributeName;
         private final String fragmentAttributeValue;
         
@@ -262,19 +262,19 @@ throw new IllegalStateException("XPath evaluation has been temporarily deactivat
         }
         
         public NamedFragmentSpec(final String fragmentTemplateName,
-                final String fragmentTagName,  final String fragmentAttributeName, final String fragmentAttributeValue) {
+                final String fragmentElementName,  final String fragmentAttributeName, final String fragmentAttributeValue) {
             super(fragmentTemplateName);
-            // Fragment Tag name CAN be null. In that case any tag name will be applicable
+            // Fragment Element name CAN be null. In that case any element name will be applicable
             Validate.notEmpty(fragmentAttributeName, "Fragment attribute name cannot be null or empty");
             Validate.notEmpty(fragmentAttributeValue, "Fragment attribute value cannot be null or empty");
-            this.fragmentTagName = fragmentTagName;
+            this.fragmentElementName = fragmentElementName;
             this.fragmentAttributeName = fragmentAttributeName;
             this.fragmentAttributeValue = fragmentAttributeValue;
         }
 
 
-        public String getFragmentTagName() {
-            return this.fragmentTagName;
+        public String getFragmentElementName() {
+            return this.fragmentElementName;
         }
 
         

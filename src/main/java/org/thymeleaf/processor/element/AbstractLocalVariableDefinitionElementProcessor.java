@@ -17,14 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
 /**
@@ -34,17 +34,17 @@ import org.thymeleaf.processor.ProcessorResult;
  * @since 1.0
  *
  */
-public abstract class AbstractLocalVariableDefinitionTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractLocalVariableDefinitionElementProcessor 
+        extends AbstractElementProcessor {
     
     
     
 
-    public AbstractLocalVariableDefinitionTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractLocalVariableDefinitionElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractLocalVariableDefinitionTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractLocalVariableDefinitionElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -54,21 +54,21 @@ public abstract class AbstractLocalVariableDefinitionTagProcessor
     
     
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
         
-        final boolean removeHostTag = 
-                removeHostTag(arguments, tag);
+        final boolean removeHostElement = 
+                removeHostElement(arguments, element);
         
         final Map<String,Object> newLocalVariables = 
-                getNewLocalVariables(arguments, tag);
+                getNewLocalVariables(arguments, element);
         
         if (newLocalVariables == null) {
             throw new TemplateProcessingException("Null variables map for \"" +
-                    tag.getName() + "\" tag not allowed");
+                    element.getName() + "\" element not allowed");
         }
         
-        if (removeHostTag) {
-            tag.getParent().extractChild(tag);
+        if (removeHostElement) {
+            element.getParent().extractChild(element);
         }
         
         return ProcessorResult.setLocalVariables(newLocalVariables);
@@ -77,11 +77,11 @@ public abstract class AbstractLocalVariableDefinitionTagProcessor
     
     
     
-    protected abstract Map<String,Object> getNewLocalVariables(final Arguments arguments, final Tag tag);
+    protected abstract Map<String,Object> getNewLocalVariables(final Arguments arguments, final Element element);
     
  
     
-    protected abstract boolean removeHostTag(final Arguments arguments, final Tag tag);
+    protected abstract boolean removeHostElement(final Arguments arguments, final Element element);
     
     
 }

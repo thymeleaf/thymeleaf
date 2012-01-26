@@ -11,7 +11,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
 import org.thymeleaf.templateparser.ITemplateParser;
@@ -112,10 +112,10 @@ public class TemplateParserTest {
     private void checkLocations(final String msg, final Document doc, 
             final String documentName, final boolean nullLineNumbers) {
         
-        Tag html = (Tag) doc.getFirstChild();
-        Tag body = html.getFirstTagChild();
-        Tag p1 = body.getTagChildren().get(0);
-        Tag p2 = body.getTagChildren().get(1);
+        Element html = (Element) doc.getFirstChild();
+        Element body = html.getFirstElementChild();
+        Element p1 = body.getElementChildren().get(0);
+        Element p2 = body.getElementChildren().get(1);
         
         assertEquals(msg + "document name of html", documentName, html.getDocumentName());
         assertEquals(msg + "document name of body", documentName, body.getDocumentName());

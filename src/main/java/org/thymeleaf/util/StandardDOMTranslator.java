@@ -6,7 +6,7 @@ import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 
@@ -83,17 +83,17 @@ public class StandardDOMTranslator {
 
     
     
-    public static final Tag translateElement(final org.w3c.dom.Element domNode, final NestableNode parentNode, final String documentName) {
+    public static final Element translateElement(final org.w3c.dom.Element domNode, final NestableNode parentNode, final String documentName) {
         
-        final String tagName = domNode.getTagName();
-        final Tag tag = new Tag(tagName, documentName);
-        tag.setParent(parentNode);
+        final String elementTagName = domNode.getTagName();
+        final Element element = new Element(elementTagName, documentName);
+        element.setParent(parentNode);
         
         final org.w3c.dom.NamedNodeMap attributes = domNode.getAttributes();
         final int attributesLen = attributes.getLength();
         for (int i = 0; i < attributesLen; i++) {
             final org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attributes.item(i);
-            tag.setAttribute(
+            element.setAttribute(
                     attr.getName(), 
                     EntitySubstitutionTemplateReader.removeEntitySubstitutions(attr.getValue()));
         }
@@ -102,10 +102,10 @@ public class StandardDOMTranslator {
         final int childrenLen = children.getLength();
         for (int i = 0; i < childrenLen; i++) {
             final org.w3c.dom.Node child = children.item(i);
-            tag.addChild(translateNode(child, tag, documentName));
+            element.addChild(translateNode(child, element, documentName));
         }
         
-        return tag;
+        return element;
         
     }
     

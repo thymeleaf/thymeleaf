@@ -43,8 +43,8 @@ public final class ProcessorResult {
     private final Map<String,Object> localVariables;
     private final Object selectionTarget;
     private final boolean selectionTargetSet;
-    private final boolean processOnlyTags;
-    private final boolean processOnlyTagsSet;
+    private final boolean processOnlyElementNodes;
+    private final boolean processOnlyElementNodesSet;
 
     
     
@@ -60,24 +60,24 @@ public final class ProcessorResult {
         return new ProcessorResult(null, target, true, false, false);
     }
     
-    public static ProcessorResult setProcessOnlyTags(final boolean processOnlyTags) {
-        return new ProcessorResult(null, null, false, processOnlyTags, true);
+    public static ProcessorResult setProcessOnlyElementNodes(final boolean processOnlyElementNodes) {
+        return new ProcessorResult(null, null, false, processOnlyElementNodes, true);
     }
     
     public static ProcessorResult setLocalVariablesAndSelectionTarget(final Map<String,Object> localVariables, final Object target) {
         return new ProcessorResult(localVariables, target, true, false, false);
     }
     
-    public static ProcessorResult setLocalVariablesAndProcessOnlyTags(final Map<String,Object> localVariables, final boolean processOnlyTags) {
-        return new ProcessorResult(localVariables, null, false, processOnlyTags, true);
+    public static ProcessorResult setLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> localVariables, final boolean processOnlyElementNodes) {
+        return new ProcessorResult(localVariables, null, false, processOnlyElementNodes, true);
     }
     
-    public static ProcessorResult setSelectionTargetAndProcessOnlyTags(final Object target, final boolean processOnlyTags) {
-        return new ProcessorResult(null, target, true, processOnlyTags, true);
+    public static ProcessorResult setSelectionTargetAndProcessOnlyElementNodes(final Object target, final boolean processOnlyElementNodes) {
+        return new ProcessorResult(null, target, true, processOnlyElementNodes, true);
     }
     
-    public static ProcessorResult setLocalVariablesAndSelectionTargetAndProcessOnlyTags(final Map<String,Object> localVariables, final Object target, final boolean processOnlyTags) {
-        return new ProcessorResult(localVariables, target, true, processOnlyTags, true);
+    public static ProcessorResult setLocalVariablesAndSelectionTargetAndProcessOnlyElementNodes(final Map<String,Object> localVariables, final Object target, final boolean processOnlyElementNodes) {
+        return new ProcessorResult(localVariables, target, true, processOnlyElementNodes, true);
     }
 
 
@@ -87,8 +87,8 @@ public final class ProcessorResult {
             final Map<String,Object> localVariables,
             final Object selectionTarget,
             final boolean selectionTargetSet,
-            final boolean processOnlyTags,
-            final boolean processOnlyTagsSet) {
+            final boolean processOnlyElementNodes,
+            final boolean processOnlyElementNodesSet) {
         super();
         this.localVariables =
             (localVariables == null?
@@ -96,8 +96,8 @@ public final class ProcessorResult {
                     Collections.unmodifiableMap(new HashMap<String, Object>(localVariables)));
         this.selectionTarget = selectionTarget;
         this.selectionTargetSet = selectionTargetSet;
-        this.processOnlyTags = processOnlyTags;
-        this.processOnlyTagsSet = processOnlyTagsSet;
+        this.processOnlyElementNodes = processOnlyElementNodes;
+        this.processOnlyElementNodesSet = processOnlyElementNodesSet;
     }
 
     
@@ -118,17 +118,17 @@ public final class ProcessorResult {
         return this.selectionTargetSet;
     }
     
-    public boolean getProcessOnlyTags() {
-        return this.processOnlyTags;
+    public boolean getProcessOnlyElementNodes() {
+        return this.processOnlyElementNodes;
     }
     
-    public boolean isProcessOnlyTagsSet() {
-        return this.processOnlyTagsSet;
+    public boolean isProcessOnlyElementNodesSet() {
+        return this.processOnlyElementNodesSet;
     }
     
     public boolean isOK() {
         return (this.localVariables == null || this.localVariables.size() == 0) &&
-               !this.selectionTargetSet && !this.processOnlyTagsSet; 
+               !this.selectionTargetSet && !this.processOnlyElementNodesSet; 
     }
     
 
@@ -144,17 +144,17 @@ public final class ProcessorResult {
         if (this.localVariables != null && this.localVariables.size() > 0) {
             if (this.selectionTargetSet) {
                 // A selection target has been set
-                if (this.processOnlyTagsSet) {
-                    // A new value has been set for processOnlyTags
-                    return arguments.addLocalVariablesAndProcessOnlyTagsAndSetSelectionTarget(this.localVariables, this.processOnlyTags, this.selectionTarget);
+                if (this.processOnlyElementNodesSet) {
+                    // A new value has been set for processOnlyElementNodes
+                    return arguments.addLocalVariablesAndProcessOnlyElementNodesAndSetSelectionTarget(this.localVariables, this.processOnlyElementNodes, this.selectionTarget);
                 }
                 // A text inliner has not been set
                 return arguments.addLocalVariablesAndSetSelectionTarget(this.localVariables, this.selectionTarget);
             }
             // A selection target has not been set
-            if (this.processOnlyTagsSet) {
+            if (this.processOnlyElementNodesSet) {
                 // A text inliner has been set
-                return arguments.addLocalVariablesAndProcessOnlyTags(this.localVariables, this.processOnlyTags);
+                return arguments.addLocalVariablesAndProcessOnlyElementNodes(this.localVariables, this.processOnlyElementNodes);
             }
             // A text inliner has not been set
             return arguments.addLocalVariables(this.localVariables);
@@ -162,17 +162,17 @@ public final class ProcessorResult {
         // There are no local variables
         if (this.selectionTargetSet) {
             // A selection target has been set
-            if (this.processOnlyTagsSet) {
+            if (this.processOnlyElementNodesSet) {
                 // A text inliner has been set
-                return arguments.setProcessOnlyTagsAndSetSelectionTarget(this.processOnlyTags, this.selectionTarget);
+                return arguments.setProcessOnlyElementNodesAndSetSelectionTarget(this.processOnlyElementNodes, this.selectionTarget);
             }
             // A text inliner has not been set
             return arguments.setSelectionTarget(this.selectionTarget);
         }
         // A selection target has not been set
-        if (this.processOnlyTagsSet) {
+        if (this.processOnlyElementNodesSet) {
             // A text inliner has been set
-            return arguments.setProcessOnlyTags(this.processOnlyTags);
+            return arguments.setProcessOnlyElementNodes(this.processOnlyElementNodes);
         }
         // A text inliner has not been set
         return arguments;

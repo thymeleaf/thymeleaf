@@ -18,7 +18,7 @@ import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.ParserInitializationException;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -187,7 +187,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
     private static final class XmlSAXHandler extends DefaultHandler2 {
 
         private final String documentName;
-        private final Stack<Tag> elementStack;
+        private final Stack<Element> elementStack;
         
         private char[] textBuffer;
         private int textBufferLen;
@@ -215,7 +215,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
 
             this.documentName = documentName;
             
-            this.elementStack = new Stack<Tag>();
+            this.elementStack = new Stack<Element>();
             this.rootNodes = new ArrayList<Node>();
             
             this.textBuffer = new char[512];
@@ -361,15 +361,15 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
                 lineNumber = Integer.valueOf(this.locator.getLineNumber());
             }
             
-            final Tag tag = new Tag(qName, this.documentName, lineNumber);
+            final Element element = new Element(qName, this.documentName, lineNumber);
             
             for (int i = 0; i < attributes.getLength(); i++) {
-                tag.setAttribute(
+                element.setAttribute(
                         attributes.getQName(i), 
                         EntitySubstitutionTemplateReader.removeEntitySubstitutions(attributes.getValue(i)));
             }
             
-            this.elementStack.push(tag);
+            this.elementStack.push(element);
             
         }
         
@@ -380,13 +380,13 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             
             flushBuffer();
             
-            final Tag tag = this.elementStack.pop();
+            final Element element = this.elementStack.pop();
             
             if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(tag);
+                this.rootNodes.add(element);
             } else {
-                final Tag parent = this.elementStack.peek();
-                parent.addChild(tag);
+                final Element parent = this.elementStack.peek();
+                parent.addChild(element);
             }
             
         }
@@ -429,10 +429,10 @@ public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTem
             
             if (this.textBufferLen > 0) {
 
-                final Tag tag = this.elementStack.peek();
+                final Element element = this.elementStack.peek();
                 final Node textNode = 
                         new Text(Arrays.copyOf(this.textBuffer, this.textBufferLen), false);
-                tag.addChild(textNode);
+                element.addChild(textNode);
             
                 this.textBufferLen = 0;
                 

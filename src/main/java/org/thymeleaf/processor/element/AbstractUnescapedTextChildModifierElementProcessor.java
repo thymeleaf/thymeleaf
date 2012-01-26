@@ -17,18 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
+import org.thymeleaf.TemplateRepository;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
-import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 
 /**
  * 
@@ -37,36 +36,30 @@ import org.thymeleaf.templateparser.ITemplateParser;
  * @since 1.0
  *
  */
-public abstract class AbstractUnescapedTextChildModifierTagProcessor 
-        extends AbstractMarkupSubstitutionTagProcessor {
+public abstract class AbstractUnescapedTextChildModifierElementProcessor 
+        extends AbstractMarkupSubstitutionElementProcessor {
     
     
 
-    public AbstractUnescapedTextChildModifierTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractUnescapedTextChildModifierElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractUnescapedTextChildModifierTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractUnescapedTextChildModifierElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
     
     
     @Override
-    protected List<Node> getMarkupSubstitutes(final Arguments arguments, final Tag tag) {
+    protected List<Node> getMarkupSubstitutes(final Arguments arguments, final Element element) {
         
-        final String text = getText(arguments, tag);
+        final String text = getText(arguments, element);
         
         try {
             
-            final Configuration configuration = arguments.getConfiguration();
-            
-            final ITemplateParser templateParser =
-                    configuration.getTemplateModeHandler(
-                            arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
-            
-            // Use the parser to obtain a DOM from the String
-            final List<Node> fragNodes = templateParser.parseFragment(configuration, text);
+            final TemplateRepository templateRepository = arguments.getTemplateRepository();
+            final List<Node> fragNodes = templateRepository.getFragment(arguments, text);
             
             for (final Node node : fragNodes) {
                 node.setSkippable(true);
@@ -78,7 +71,7 @@ public abstract class AbstractUnescapedTextChildModifierTagProcessor
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of unescaped text: \"" + tag.getName() + "\"", e);
+                    "An error happened during parsing of unescaped text: \"" + element.getName() + "\"", e);
         }
         
     }
@@ -86,7 +79,7 @@ public abstract class AbstractUnescapedTextChildModifierTagProcessor
 
     
     
-    protected abstract String getText(final Arguments arguments, final Tag tag);
+    protected abstract String getText(final Arguments arguments, final Element element);
     
     
     

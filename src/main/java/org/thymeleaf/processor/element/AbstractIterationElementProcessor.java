@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,9 +26,9 @@ import java.util.Map;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.Validate;
@@ -40,8 +40,8 @@ import org.thymeleaf.util.Validate;
  * @since 1.0
  *
  */
-public abstract class AbstractIterationTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractIterationElementProcessor 
+        extends AbstractElementProcessor {
 
     
     public static String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
@@ -49,11 +49,11 @@ public abstract class AbstractIterationTagProcessor
 
     
 
-    public AbstractIterationTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractIterationElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractIterationTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractIterationElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -63,19 +63,19 @@ public abstract class AbstractIterationTagProcessor
     
     
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
 
         
-        final NestableNode parentNode = tag.getParent();
+        final NestableNode parentNode = element.getParent();
         
         final IterationSpec iterationSpec = 
-            getIterationSpec(arguments, tag);
+            getIterationSpec(arguments, element);
 
-        final boolean removeHostIterationTag = 
-                removeHostIterationTag(arguments, tag);
+        final boolean removeHostIterationElement = 
+                removeHostIterationElement(arguments, element);
         
-        final String iteratedTagName = 
-                getIteratedTagName(arguments, tag);
+        final String iteratedElementName = 
+                getIteratedElementName(arguments, element);
         
         final String iterVar = iterationSpec.getIterVarName();
         final String statusVar = iterationSpec.getStatusVarName();
@@ -88,29 +88,29 @@ public abstract class AbstractIterationTagProcessor
         int index = 0;
         for (final Object obj : list) {
             
-            Tag iterTag = null;
+            Element iterElement = null;
             
-            if (removeHostIterationTag) {
+            if (removeHostIterationElement) {
                 
-                // We can safely clone the host tag because we will remove it below
-                iterTag = (Tag) tag.cloneNode(parentNode, false);
+                // We can safely clone the host element because we will remove it below
+                iterElement = (Element) element.cloneNode(parentNode, false);
                 
             } else {
                 
-                // We do not clone the iteration tag with the same name because that 
+                // We do not clone the iteration element with the same name because that 
                 // would probably result in an infinite loop as the iteration processor 
-                // would be applied once and again. Instead, we create iterated tags
-                // with a new name (iteratedTagName).
+                // would be applied once and again. Instead, we create iterated elements
+                // with a new name (iteratedElementName).
                 
-                if (iteratedTagName == null) {
+                if (iteratedElementName == null) {
                     throw new TemplateProcessingException(
-                            "Cannot specify null iterated tag name if the host iteration tag is not being removed");
+                            "Cannot specify null iterated element name if the host iteration element is not being removed");
                 }
                 
-                iterTag = tag.cloneTagWithNewName(parentNode, iteratedTagName, false);
+                iterElement = element.cloneElementNodeWithNewName(parentNode, iteratedElementName, false);
                 
             }
-            parentNode.insertBefore(tag, iterTag);
+            parentNode.insertBefore(element, iterElement);
             
             /*
              * Prepare local variables that will be available for each iteration item
@@ -126,22 +126,22 @@ public abstract class AbstractIterationTagProcessor
             }
             
             
-            if (removeHostIterationTag) {
-                final List<Node> children = iterTag.getChildren();
+            if (removeHostIterationElement) {
+                final List<Node> children = iterElement.getChildren();
                 for (final Node child : children) {
                     child.addNodeLocalVariables(nodeLocalVariables);
                 }
-                parentNode.extractChild(iterTag);
+                parentNode.extractChild(iterElement);
             } else {
-                iterTag.addNodeLocalVariables(nodeLocalVariables);
-                processClonedHostIterationTag(arguments, iterTag);
+                iterElement.addNodeLocalVariables(nodeLocalVariables);
+                processClonedHostIterationElement(arguments, iterElement);
             }
             
             index++;
             
         }
         
-        parentNode.removeChild(tag);
+        parentNode.removeChild(element);
         
         return ProcessorResult.OK;
         
@@ -150,16 +150,16 @@ public abstract class AbstractIterationTagProcessor
 
 
     
-    protected abstract IterationSpec getIterationSpec(final Arguments arguments, final Tag tag);
+    protected abstract IterationSpec getIterationSpec(final Arguments arguments, final Element element);
 
     
-    protected abstract boolean removeHostIterationTag(final Arguments arguments, final Tag tag);
+    protected abstract boolean removeHostIterationElement(final Arguments arguments, final Element element);
 
     
-    protected abstract String getIteratedTagName(final Arguments arguments, final Tag tag);
+    protected abstract String getIteratedElementName(final Arguments arguments, final Element element);
     
     
-    protected abstract void processClonedHostIterationTag(final Arguments arguments, final Tag iteratedChild);
+    protected abstract void processClonedHostIterationElement(final Arguments arguments, final Element iteratedChild);
 
     
     

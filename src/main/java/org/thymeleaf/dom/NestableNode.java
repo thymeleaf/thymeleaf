@@ -81,17 +81,17 @@ public abstract class NestableNode extends Node {
     }
 
     
-    public final List<Tag> getTagChildren() {
+    public final List<Element> getElementChildren() {
         if (this.childrenLen == 0) {
             return Collections.emptyList();
         }
-        final List<Tag> tagChildren = new ArrayList<Tag>();
+        final List<Element> elementChildren = new ArrayList<Element>();
         for (final Node child : this.children) {
-            if (child instanceof Tag) {
-                tagChildren.add((Tag)child);
+            if (child instanceof Element) {
+                elementChildren.add((Element)child);
             }
         }
-        return Collections.unmodifiableList(tagChildren);
+        return Collections.unmodifiableList(elementChildren);
     }
     
     
@@ -108,13 +108,13 @@ public abstract class NestableNode extends Node {
     }
 
     
-    public final Tag getFirstTagChild() {
+    public final Element getFirstElementChild() {
         if (this.childrenLen == 0) {
             return null;
         }
         for (final Node child : this.children) {
-            if (child instanceof Tag) {
-                return (Tag) child;
+            if (child instanceof Element) {
+                return (Element) child;
             }
         }
         return null;
@@ -429,11 +429,11 @@ public abstract class NestableNode extends Node {
         final NestableNode nestableNode = (NestableNode) node;
         
         if (this.childrenLen > 0) {
-            final Node[] tagChildren = new Node[this.childrenLen];
+            final Node[] elementChildren = new Node[this.childrenLen];
             for (int i = 0; i < this.childrenLen; i++) {
-                tagChildren[i] = this.children[i].cloneNode(nestableNode, cloneProcessors);
+                elementChildren[i] = this.children[i].cloneNode(nestableNode, cloneProcessors);
             }
-            nestableNode.setChildren(tagChildren);
+            nestableNode.setChildren(elementChildren);
         }
         
         doCloneNestableNodeInternals(nestableNode, newParent, cloneProcessors);

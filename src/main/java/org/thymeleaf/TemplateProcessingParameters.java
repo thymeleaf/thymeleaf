@@ -56,7 +56,7 @@ public final class TemplateProcessingParameters {
      * <p>
      *   <b>Mainly for internal use</b>. Should not be called directly except
      *   when processing a template (e.g. a fragment) using the {@link TemplateEngine}
-     *   from a tag/attribute processor.
+     *   from a element/attribute processor.
      * </p>
      * 
      * @param configuration the configuration

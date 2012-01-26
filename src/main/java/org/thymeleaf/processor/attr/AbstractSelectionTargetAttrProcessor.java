@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -55,15 +55,15 @@ public abstract class AbstractSelectionTargetAttrProcessor
     
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
 
         final Object newSelectionTarget = 
-            getNewSelectionTarget(arguments, tag, attributeName);
+            getNewSelectionTarget(arguments, element, attributeName);
         
         final Map<String,Object> additionalLocalVariables = 
-            getAdditionalLocalVariables(arguments, tag, attributeName);
+            getAdditionalLocalVariables(arguments, element, attributeName);
         
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         
         if (additionalLocalVariables == null || additionalLocalVariables.isEmpty()) {
             return ProcessorResult.setSelectionTarget(newSelectionTarget);
@@ -76,7 +76,7 @@ public abstract class AbstractSelectionTargetAttrProcessor
     
     @SuppressWarnings("unused")
     protected Map<String,Object> getAdditionalLocalVariables(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         // This method is meant to be overriden. By default, no local variables
         // will be set.
         return Collections.emptyMap();
@@ -85,7 +85,7 @@ public abstract class AbstractSelectionTargetAttrProcessor
     
     
     protected abstract Object getNewSelectionTarget(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
 
     
 }

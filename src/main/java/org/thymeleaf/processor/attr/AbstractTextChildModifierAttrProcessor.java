@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 
@@ -54,9 +54,9 @@ public abstract class AbstractTextChildModifierAttrProcessor
     
     @Override
     protected final List<Node> getModifiedChildren(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         
-        final String text = getText(arguments, tag, attributeName);
+        final String text = getText(arguments, element, attributeName);
         
         final Text newNode = new Text(text == null? "" : text);
         // Setting this allows avoiding text inliners processing already generated text,
@@ -69,6 +69,6 @@ public abstract class AbstractTextChildModifierAttrProcessor
 
     
     protected abstract String getText(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
     
 }

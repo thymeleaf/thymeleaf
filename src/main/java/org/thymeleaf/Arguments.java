@@ -39,12 +39,12 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   These objects are created internally by the Template Engine in order
- *   to provide to processors (attribute, tag or value) with all the information
+ *   to provide to processors (attribute, element or value) with all the information
  *   they might need for performing their tasks.
  * </p>
  * <p>
  *   Arguments include many attributes, among which some should be used internally
- *   only, and never by developers of attribute/tag processors. Public
+ *   only, and never by developers of attribute/element processors. Public
  *   attributes are:
  * </p>
  * <ul>
@@ -58,8 +58,8 @@ import org.thymeleaf.util.Validate;
  *         <li>For selected evaluation (<tt>*{...}</tt> in standard dialect): {@link #getExpressionSelectionEvaluationRoot()}</li>
  *       </ul>
  *   </li>
- *   <li>Information about whether processing non-tag nodes is allowed at a specific point of a template
- *       execution or not (default is to process only tags).</li>
+ *   <li>Information about whether processing non-element nodes is allowed at a specific point of a template
+ *       execution or not (default is to process only elements).</li>
  * </ul>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -85,7 +85,7 @@ public final class Arguments {
     private final Object evaluationRoot;
     private final Object selectionEvaluationRoot;
     
-    private final boolean processOnlyTags;
+    private final boolean processOnlyElementNodes;
     private final Map<String, Object> baseContextVariables;
 
     
@@ -97,7 +97,7 @@ public final class Arguments {
      * <p>
      *   <b>Mainly for internal use</b>. Should not be called directly except
      *   when processing a template (e.g. a fragment) using the {@link TemplateEngine}
-     *   from a tag/attribute processor.
+     *   from a element/attribute processor.
      * </p>
      * 
      * @param templateProcessingParameters the template processing parameters
@@ -132,7 +132,7 @@ public final class Arguments {
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
-        this.processOnlyTags = true;
+        this.processOnlyElementNodes = true;
         this.baseContextVariables = 
             ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
@@ -148,7 +148,7 @@ public final class Arguments {
             final Map<String,Object> localVariables,
             final SelectionTarget selectionTarget,
             final Map<String,Integer> idCounts,
-            final boolean processOnlyTags) {
+            final boolean processOnlyElementNodes) {
         
         super();
         
@@ -165,7 +165,7 @@ public final class Arguments {
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
-        this.processOnlyTags = processOnlyTags;
+        this.processOnlyElementNodes = processOnlyElementNodes;
         this.baseContextVariables = 
                 ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
@@ -323,14 +323,14 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Returns whether only tag nodes should be processed (as opposed
+     *   Returns whether only element nodes should be processed (as opposed
      *   to texts, CDATAs, comments, etc.). Default is true.
      * </p>
      * 
-     * @return whether only tags will be processed
+     * @return whether only element nodes will be processed
      */
-    public boolean getProcessOnlyTags() {
-        return this.processOnlyTags;
+    public boolean getProcessOnlyElementNodes() {
+        return this.processOnlyElementNodes;
     }
     
 
@@ -547,7 +547,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.processOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
     
@@ -562,7 +562,7 @@ public final class Arguments {
      */
     public Arguments setSelectionTarget(final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, this.processOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
 
@@ -585,7 +585,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.processOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
 
@@ -593,15 +593,15 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyTags</tt> flag.
+     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyElementNodes</tt> flag.
      * </p>
      * 
-     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
+     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
      * @return the new Arguments object
      */
-    public Arguments setProcessOnlyTags(final boolean shouldProcessOnlyTags) {
+    public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
 
@@ -609,14 +609,14 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processOnlyTags</tt> flag.
+     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processOnlyElementNodes</tt> flag.
      * </p>
      * 
      * @param newVariables the new local variables
-     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
+     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
      * @return the new Arguments object
      */
-    public Arguments addLocalVariablesAndProcessOnlyTags(final Map<String,Object> newVariables, final boolean shouldProcessOnlyTags) {
+    public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
@@ -624,7 +624,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
     
@@ -632,16 +632,16 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyTags</tt> flag and a selection target.
+     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyElementNodes</tt> flag and a selection target.
      * </p>
      * 
-     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
+     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
      * @param target the new selection target object
      * @return the new Arguments object
      */
-    public Arguments setProcessOnlyTagsAndSetSelectionTarget(final boolean shouldProcessOnlyTags, final Object target) {
+    public Arguments setProcessOnlyElementNodesAndSetSelectionTarget(final boolean shouldProcessOnlyElementNodes, final Object target) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
     
@@ -649,15 +649,15 @@ public final class Arguments {
 
     /**
      * <p>
-     *   Creates a new Arguments object by adding new local variables, a new value for the <tt>processOnlyTags</tt> flag and a selection target. 
+     *   Creates a new Arguments object by adding new local variables, a new value for the <tt>processOnlyElementNodes</tt> flag and a selection target. 
      * </p>
      * 
      * @param newVariables the new local variables
-     * @param shouldProcessOnlyTags whether only tags should be processed from this moment in template execution
+     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
      * @param target the new selection target object
      * @return the new Arguments object
      */
-    public Arguments addLocalVariablesAndProcessOnlyTagsAndSetSelectionTarget(final Map<String,Object> newVariables, final boolean shouldProcessOnlyTags, final Object target) {
+    public Arguments addLocalVariablesAndProcessOnlyElementNodesAndSetSelectionTarget(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes, final Object target) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
@@ -665,7 +665,7 @@ public final class Arguments {
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, shouldProcessOnlyTags);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
 

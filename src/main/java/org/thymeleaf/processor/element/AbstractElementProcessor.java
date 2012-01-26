@@ -17,20 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.IProcessorMatcher;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorMatchingContext;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.processor.TagNameProcessorMatcher;
+import org.thymeleaf.processor.ElementNameProcessorMatcher;
 
 
 /**
@@ -40,25 +40,25 @@ import org.thymeleaf.processor.TagNameProcessorMatcher;
  * @since 2.0.0
  *
  */
-public abstract class AbstractTagProcessor extends AbstractProcessor {
+public abstract class AbstractElementProcessor extends AbstractProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractTagProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractElementProcessor.class);
 
     
-    private final ITagNameProcessorMatcher matcher; 
+    private final IElementNameProcessorMatcher matcher; 
     
     
-    public AbstractTagProcessor(final String tagName) {
-        this(new TagNameProcessorMatcher(tagName));
+    public AbstractElementProcessor(final String elementName) {
+        this(new ElementNameProcessorMatcher(elementName));
     }
     
-    public AbstractTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractElementProcessor(final IElementNameProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }
 
     
-    public IProcessorMatcher<? extends Tag> getMatcher() {
+    public IProcessorMatcher<? extends Element> getMatcher() {
         return this.matcher;
     }
 
@@ -67,13 +67,13 @@ public abstract class AbstractTagProcessor extends AbstractProcessor {
     protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
         // Because of the type of applicability being used, this cast will not fail
         if (logger.isTraceEnabled()) {
-            final String tagName = ((Tag)node).getNormalizedName();
-            logger.trace("[THYMELEAF][{}][{}] Processing tag \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), tagName});
+            final String elementName = ((Element)node).getNormalizedName();
+            logger.trace("[THYMELEAF][{}][{}] Processing element \"{}\"",
+                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), elementName});
         }
-        return processTag(arguments, (Tag)node);
+        return processElement(arguments, (Element)node);
     }
     
-    protected abstract ProcessorResult processTag(final Arguments arguments, final Tag tag);
+    protected abstract ProcessorResult processElement(final Arguments arguments, final Element element);
 
 }

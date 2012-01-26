@@ -34,26 +34,23 @@ import org.thymeleaf.processor.IProcessor;
  *   A Dialect must define:
  * </p>
  * <ul>
- *   <li>A <b>default prefix</b> for the names of the attributes and tags that will be
+ *   <li>A <b>default prefix</b> for the names of the attributes and elements that will be
  *       processed by processors in this dialect. For example, the standard dialect
  *       defines a <tt>th</tt> prefix for its <tt>th:attr</tt>, <tt>th:value</tt>, etc.
- *       attributes. This prefix is optional, so that if prefix is <tt>null</tt> all tags and
+ *       attributes. This prefix is optional, so that if prefix is <tt>null</tt> all elements and
  *       attributes will be considered processable by processors in this dialect. This
  *       prefix can be overridden: the developer can select a different one when he/she adds a dialect to
  *       the template engine (note, though, that this might affect existing .DTD files for
  *       XML/XHTML validation). A prefix is not exclusive to a dialect, and several dialects
  *       can specify the same one (effectively acting as an <i>aggregate dialect</i>)</li>
  *   <li>A <b>leniency flag</b> indicating whether the existence of attributes or
- *       tags starting with the specified prefix but with no associated attribute or
- *       tag processor is considered an error (non-lenient) or not (lenient). When several
+ *       elements starting with the specified prefix but with no associated attribute or
+ *       element processor is considered an error (non-lenient) or not (lenient). When several
  *       dialects share the same prefix, leniency is computed by prefix (if at least one
  *       dialect for a prefix is lenient, then the whole prefix is considered to be so).</li>
- *   <li>A set of <b>attribute processors</b>, implementing the {@link IAttrProcessor}
- *       interface, that will be able to process and apply logic to attributes starting
- *       with the specified prefix.</li>
- *   <li>A set of <b>tag processors</b>, implementing the {@link ITagProcessor}
- *       interface, that will be able to process and apply logic to tags starting
- *       with the specified prefix.</li> 
+ *   <li>A set of <b>processors</b>, implementing the {@link IProcessor}
+ *       interface, that will be able to process and apply logic to DOM nodes (mainly elements
+ *       and their attributes) starting with the specified prefix.</li>
  *   <li>A map of <b>execution attributes</b>, referenced by name. These are objects that
  *       will be made available to processors during execution.</li>
  *   <li>A set of <b>DOCTYPE translations</b>, implementing the {@link IDocTypeTranslation}
@@ -64,8 +61,8 @@ import org.thymeleaf.processor.IProcessor;
  *       implementation of the interface.</li>
  * </ul>
  * <p>
- *   A template engine can be specified more than one dialect (each with its tag/attribute
- *   processors). In that case, dialects are first checked for conflicts so that, for example,
+ *   A template engine can be specified more than one dialect (each with its processors). 
+ *   In that case, dialects are first checked for conflicts so that, for example,
  *   they do not declare DOCTYPE translations or resolution entries conflicting with the ones
  *   in other dialect/s (although they can be equal). 
  * </p>
@@ -84,8 +81,9 @@ public interface IDialect {
      * </p>
      * <p>
      *   If <tt>null</tt> is returned, then every attribute
-     *   and/or tag is considered processable by the processors in the dialect, and not
-     *   only those that start with a specific prefix. 
+     *   and/or element is considered processable by the processors in the dialect that apply
+     *   to that kind of node (elements with their attributes), and not only those that start 
+     *   with a specific prefix. 
      * </p>
      * <p>
      *   Prefixes are <b>not</b> exclusive to a dialect: several dialects can declare the same
@@ -99,8 +97,8 @@ public interface IDialect {
     /**
      * <p>
      *   Returns whether the dialect is lenient or not. If the dialect is not lenient, then
-     *   the existence of attributes or tags starting with the dialect prefix for which
-     *   no attribute/tag processor exists is considered an error. 
+     *   the existence of attributes or elements starting with the dialect prefix for which
+     *   no attribute/element processor exists is considered an error. 
      * </p>
      * <p>
      *   For non-lenient dialects, any xmlns:{prefix} attributes in the document root or any

@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 
 
 /**
@@ -52,7 +52,7 @@ public final class StandardAttrprependAttrProcessor
     
     @Override
     protected ModificationType getModificationType(
-            final Arguments arguments, final Tag tag, final String attributeName, final String newAttributeName) {
+            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
         return ModificationType.PREPEND;
     }
 
@@ -60,7 +60,7 @@ public final class StandardAttrprependAttrProcessor
 
     @Override
     protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Tag tag, final String attributeName, final String newAttributeName) {
+            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
         return false;
     }
 

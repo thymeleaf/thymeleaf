@@ -24,7 +24,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -45,7 +45,7 @@ public abstract class AbstractRemovalAttrProcessor
     
     private final String removeAll; 
     private final String removeAllButFirst; 
-    private final String removeTag; 
+    private final String removeElement; 
     private final String removeBody; 
     
     
@@ -59,7 +59,7 @@ public abstract class AbstractRemovalAttrProcessor
         
         this.removeAll = getRemoveAllAttrValue();
         this.removeAllButFirst = getRemoveAllButFirstAttrValue();
-        this.removeTag = getRemoveTagAttrValue();
+        this.removeElement = getRemoveElementAttrValue();
         this.removeBody = getRemoveBodyAttrValue();
         
         validateValues();
@@ -77,7 +77,7 @@ public abstract class AbstractRemovalAttrProcessor
         
         this.removeAll = getRemoveAllAttrValue();
         this.removeAllButFirst = getRemoveAllButFirstAttrValue();
-        this.removeTag = getRemoveTagAttrValue();
+        this.removeElement = getRemoveElementAttrValue();
         this.removeBody = getRemoveBodyAttrValue();
         
         validateValues();
@@ -93,12 +93,12 @@ public abstract class AbstractRemovalAttrProcessor
         
         Validate.notEmpty(this.removeAll, "Attribute value for \"remove all\" cannot be null or empty in processor " + this.getClass().getName());
         Validate.notEmpty(this.removeAllButFirst, "Attribute value for \"remove all but first\" cannot be null or empty in processor " + this.getClass().getName());
-        Validate.notEmpty(this.removeTag, "Attribute value for \"remove tag\" cannot be null or empty in processor " + this.getClass().getName());
+        Validate.notEmpty(this.removeElement, "Attribute value for \"remove element\" cannot be null or empty in processor " + this.getClass().getName());
         Validate.notEmpty(this.removeBody, "Attribute value for \"remove body\" cannot be null or empty in processor " + this.getClass().getName());
         
-        Validate.isTrue(!this.removeAll.equals(this.removeTag), "All three attribute values for processor " + this.getClass().getName() + " must be different");
+        Validate.isTrue(!this.removeAll.equals(this.removeElement), "All three attribute values for processor " + this.getClass().getName() + " must be different");
         Validate.isTrue(!this.removeAll.equals(this.removeBody), "All three attribute values for processor " + this.getClass().getName() + " must be different");
-        Validate.isTrue(!this.removeTag.equals(this.removeBody), "All three attribute values for processor " + this.getClass().getName() + " must be different");
+        Validate.isTrue(!this.removeElement.equals(this.removeBody), "All three attribute values for processor " + this.getClass().getName() + " must be different");
         
     }
 
@@ -108,49 +108,49 @@ public abstract class AbstractRemovalAttrProcessor
     
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
 
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         if (attributeValue != null) {
             final String value = attributeValue.trim();
             if (this.removeAll.equals(value)) {
-                tag.getParent().removeChild(tag);
+                element.getParent().removeChild(element);
                 return ProcessorResult.OK;
             }
             if (this.removeAllButFirst.equals(value)) {
                 final List<Node> newChildren = new ArrayList<Node>();
-                final List<Node> children = tag.getChildren();
+                final List<Node> children = element.getChildren();
                 final int childrenLen = children.size();
-                int childTagsFound = 0;
-                for (int i = 0; i < childrenLen && childTagsFound < 2; i++) {
+                int childElementsFound = 0;
+                for (int i = 0; i < childrenLen && childElementsFound < 2; i++) {
                     final Node child = children.get(i);
-                    if (child instanceof Tag) {
-                        childTagsFound++;
-                        if (childTagsFound == 1) {
+                    if (child instanceof Element) {
+                        childElementsFound++;
+                        if (childElementsFound == 1) {
                             newChildren.add(child);
                         }
                     } else {
                         newChildren.add(child);
                     }
                 }
-                tag.setChildren(newChildren);
-                tag.removeAttribute(attributeName);
+                element.setChildren(newChildren);
+                element.removeAttribute(attributeName);
                 return ProcessorResult.OK;
             }
-            if (this.removeTag.equals(value)) {
-                tag.getParent().extractChild(tag);
+            if (this.removeElement.equals(value)) {
+                element.getParent().extractChild(element);
                 return ProcessorResult.OK;
             }
             if (this.removeBody.equals(value)) {
-                tag.setChildren((Node[])null);
-                tag.removeAttribute(attributeName);
+                element.setChildren((Node[])null);
+                element.removeAttribute(attributeName);
                 return ProcessorResult.OK;
             }
         }
         
         throw new TemplateProcessingException(
                 "Unrecognized value for \"" + attributeName + "\": " +
-        		"only \"" + this.removeTag + "\", \"" + this.removeBody + "\" and \"" + this.removeAll + "\" are allowed.");
+        		"only \"" + this.removeElement + "\", \"" + this.removeBody + "\" and \"" + this.removeAll + "\" are allowed.");
         
     }
 
@@ -161,7 +161,7 @@ public abstract class AbstractRemovalAttrProcessor
     
     protected abstract String getRemoveBodyAttrValue();
     
-    protected abstract String getRemoveTagAttrValue();
+    protected abstract String getRemoveElementAttrValue();
 
     
 }

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.dom.Element;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
 /**
@@ -36,17 +36,17 @@ import org.thymeleaf.processor.ProcessorResult;
  * @since 1.0
  *
  */
-public abstract class AbstractSelectionTargetTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractSelectionTargetElementProcessor 
+        extends AbstractElementProcessor {
     
     
     
 
-    public AbstractSelectionTargetTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractSelectionTargetElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractSelectionTargetTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractSelectionTargetElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -55,28 +55,28 @@ public abstract class AbstractSelectionTargetTagProcessor
     
     
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
 
         
         final Object newSelectionTarget = 
-            getNewSelectionTarget(arguments, tag);
+            getNewSelectionTarget(arguments, element);
 
-        final boolean removeHostTag = 
-                removeHostTag(arguments, tag);
+        final boolean removeHostElement = 
+                removeHostElement(arguments, element);
         
         final Map<String,Object> additionalLocalVariables = 
-            getAdditionalLocalVariables(arguments, tag);
+            getAdditionalLocalVariables(arguments, element);
 
-        if (removeHostTag) {
+        if (removeHostElement) {
             
             if (additionalLocalVariables != null) {
-                final List<Node> children = tag.getChildren();
+                final List<Node> children = element.getChildren();
                 for (final Node child : children) {
                     child.addNodeLocalVariables(additionalLocalVariables);
                 }
             }
     
-            tag.getParent().extractChild(tag);
+            element.getParent().extractChild(element);
             
             return ProcessorResult.setSelectionTarget(newSelectionTarget);
             
@@ -92,7 +92,7 @@ public abstract class AbstractSelectionTargetTagProcessor
     
     
     @SuppressWarnings("unused")
-    protected Map<String,Object> getAdditionalLocalVariables(final Arguments arguments, final Tag tag) {
+    protected Map<String,Object> getAdditionalLocalVariables(final Arguments arguments, final Element element) {
         // This method is meant to be overriden. By default, no local variables
         // will be set.
         return Collections.emptyMap();
@@ -100,11 +100,11 @@ public abstract class AbstractSelectionTargetTagProcessor
 
     
     
-    protected abstract Object getNewSelectionTarget(final Arguments arguments, final Tag tag);
+    protected abstract Object getNewSelectionTarget(final Arguments arguments, final Element element);
 
  
     
-    protected abstract boolean removeHostTag(final Arguments arguments, final Tag tag);
+    protected abstract boolean removeHostElement(final Arguments arguments, final Element element);
 
     
 }

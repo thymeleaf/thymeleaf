@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 
 
 
@@ -34,8 +34,8 @@ import org.thymeleaf.dom.Tag;
  * @since 2.0.0
  *
  */
-public interface ITagNameProcessorMatcher extends IProcessorMatcher<Tag> {
+public interface IElementNameProcessorMatcher extends IProcessorMatcher<Element> {
 
-    public String getTagName(final ProcessorMatchingContext context);
+    public String getElementName(final ProcessorMatchingContext context);
     
 }

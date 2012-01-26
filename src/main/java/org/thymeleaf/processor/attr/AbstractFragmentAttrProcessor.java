@@ -30,7 +30,7 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -66,30 +66,30 @@ public abstract class AbstractFragmentAttrProcessor
     
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
         
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final boolean substituteInclusionNode =
-            getSubstituteInclusionNode(arguments, tag, attributeName, attributeValue);
+            getSubstituteInclusionNode(arguments, element, attributeName, attributeValue);
         
         final List<Node> newNodes = 
-            getNewNodes(arguments, tag, attributeName, attributeValue, substituteInclusionNode);
+            getNewNodes(arguments, element, attributeName, attributeValue, substituteInclusionNode);
 
-        tag.clearChildren();
+        element.clearChildren();
         
         for (final Node newNode : newNodes) {
-            tag.addChild(newNode);
+            element.addChild(newNode);
         }
         
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         
         if (!substituteInclusionNode) {
             return ProcessorResult.OK;
         }
 
-        // Inclusion tag will be substituted by the new nodes
-        tag.getParent().extractChild(tag);
+        // Inclusion element will be substituted by the new nodes
+        element.getParent().extractChild(element);
         
         return ProcessorResult.OK;
             
@@ -99,12 +99,12 @@ public abstract class AbstractFragmentAttrProcessor
     
     
     private final List<Node> getNewNodes(
-            final Arguments arguments, final Tag tag, 
+            final Arguments arguments, final Element element, 
             final String attributeName, final String attributeValue,
             final boolean substituteInclusionNode) {
         
         final AbstractFragmentSpec fragmentSpec =
-            getFragmentSpec(arguments, tag, attributeName, attributeValue);
+            getFragmentSpec(arguments, element, attributeName, attributeValue);
         if (fragmentSpec == null) {
             throw new TemplateProcessingException("Null value for \"" + attributeName + "\" fragment specification not allowed");
         }
@@ -166,12 +166,12 @@ public abstract class AbstractFragmentAttrProcessor
             if (fragmentSpec instanceof NamedFragmentSpec) {
                 
                 final NamedFragmentSpec namedFragmentSpec = (NamedFragmentSpec) fragmentSpec;
-                final String fragmentTagName = namedFragmentSpec.getFragmentTagName();
+                final String fragmentElementName = namedFragmentSpec.getFragmentElementName();
                 final String fragmentAttributeName = namedFragmentSpec.getFragmentAttributeName();
                 final String fragmentAttributeValue = namedFragmentSpec.getFragmentAttributeValue();
                 
                 fragmentNode = 
-                    DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentTagName, fragmentAttributeName, fragmentAttributeValue);
+                    DOMUtils.extractFragmentByAttributeValue(parsedTemplate.getDocument(), fragmentElementName, fragmentAttributeName, fragmentAttributeValue);
                                         
                 if (fragmentNode == null) {
                     throw new TemplateProcessingException(
@@ -234,11 +234,11 @@ public abstract class AbstractFragmentAttrProcessor
 
 
     protected abstract boolean getSubstituteInclusionNode(
-            final Arguments arguments, final Tag tag, 
+            final Arguments arguments, final Element element, 
             final String attributeName, final String attributeValue);
 
     protected abstract AbstractFragmentSpec getFragmentSpec(
-            final Arguments arguments, final Tag tag, 
+            final Arguments arguments, final Element element, 
             final String attributeName, final String attributeValue);
     
 
@@ -280,7 +280,7 @@ public abstract class AbstractFragmentAttrProcessor
      */
     protected static final class NamedFragmentSpec extends AbstractFragmentSpec {
         
-        private final String fragmentTagName;
+        private final String fragmentElementName;
         private final String fragmentAttributeName;
         private final String fragmentAttributeValue;
         
@@ -290,19 +290,19 @@ public abstract class AbstractFragmentAttrProcessor
         }
         
         public NamedFragmentSpec(final String fragmentTemplateName,
-                final String fragmentTagName,  final String fragmentAttributeName, final String fragmentAttributeValue) {
+                final String fragmentElementName,  final String fragmentAttributeName, final String fragmentAttributeValue) {
             super(fragmentTemplateName);
-            // Fragment Tag name CAN be null. In that case any tag name will be applicable
+            // Fragment Element name CAN be null. In that case any element name will be applicable
             Validate.notEmpty(fragmentAttributeName, "Fragment attribute name cannot be null or empty");
             Validate.notEmpty(fragmentAttributeValue, "Fragment attribute value cannot be null or empty");
-            this.fragmentTagName = fragmentTagName;
+            this.fragmentElementName = fragmentElementName;
             this.fragmentAttributeName = fragmentAttributeName;
             this.fragmentAttributeValue = fragmentAttributeValue;
         }
 
 
-        public String getFragmentTagName() {
-            return this.fragmentTagName;
+        public String getFragmentElementName() {
+            return this.fragmentElementName;
         }
 
         

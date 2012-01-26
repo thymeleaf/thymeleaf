@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.standard.expression.Expression;
 
 /**
@@ -58,7 +58,7 @@ public final class StandardLangXmlLangAttrProcessor
 
     @Override
     protected Set<String> getModifiedAttributeNames(final Arguments arguments,
-            final Tag tag, final String attributeName, final String attributeValue, 
+            final Element element, final String attributeName, final String attributeValue, 
             final Expression expression) {
         return TARGET_ATTR_NAMES;
     }
@@ -67,7 +67,7 @@ public final class StandardLangXmlLangAttrProcessor
     @Override
     protected ModificationType getModificationType(
             final Arguments arguments, 
-            final Tag tag, final String attributeName, final String newAttributeName) {
+            final Element element, final String attributeName, final String newAttributeName) {
         return ModificationType.SUBSTITUTION;
     }
 
@@ -75,7 +75,7 @@ public final class StandardLangXmlLangAttrProcessor
 
     @Override
     protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Tag tag, final String attributeName, final String newAttributeName) {
+            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
         return true;
     }
 

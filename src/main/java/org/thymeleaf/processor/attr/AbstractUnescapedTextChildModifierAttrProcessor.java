@@ -22,13 +22,12 @@ package org.thymeleaf.processor.attr;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
+import org.thymeleaf.TemplateRepository;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
-import org.thymeleaf.templateparser.ITemplateParser;
 
 /**
  * 
@@ -57,20 +56,14 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
     
     @Override
     protected final List<Node> getModifiedChildren(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         
-        final String text = getText(arguments, tag, attributeName);
+        final String text = getText(arguments, element, attributeName);
         
         try {
             
-            final Configuration configuration = arguments.getConfiguration();
-            
-            final ITemplateParser templateParser =
-                    configuration.getTemplateModeHandler(
-                            arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
-            
-            // Use the parser to obtain a DOM from the String
-            final List<Node> fragNodes = templateParser.parseFragment(configuration, text);
+            final TemplateRepository templateRepository = arguments.getTemplateRepository();
+            final List<Node> fragNodes = templateRepository.getFragment(arguments, text);
             
             for (final Node node : fragNodes) {
                 node.setSkippable(true);
@@ -82,14 +75,14 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of unescaped text: \"" + tag.getAttributeValue(attributeName) + "\"", e);
+                    "An error happened during parsing of unescaped text: \"" + element.getAttributeValue(attributeName) + "\"", e);
         }
         
     }
 
     
     protected abstract String getText(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
     
     
     

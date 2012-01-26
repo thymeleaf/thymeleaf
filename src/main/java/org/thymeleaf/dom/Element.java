@@ -38,7 +38,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
-public final class Tag extends NestableNode {
+public final class Element extends NestableNode {
 
     private static final int DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE = 3;
     
@@ -54,21 +54,21 @@ public final class Tag extends NestableNode {
     private boolean hasXmlnsAttributes;
 
 
-    public Tag(final String name) {
+    public Element(final String name) {
         this(name, null, null);
     }
 
 
-    public Tag(final String name, final String documentName) {
+    public Element(final String name, final String documentName) {
         this(name, documentName, null);
     }
     
 
-    public Tag(final String name, final String documentName, final Integer lineNumber) {
+    public Element(final String name, final String documentName, final Integer lineNumber) {
         
         super(documentName, lineNumber);
         
-        Validate.notNull(name, "Tag name cannot be null");
+        Validate.notNull(name, "Element name cannot be null");
         
         this.name = name;
         this.normalizedName = Node.normalizeName(name);
@@ -268,31 +268,31 @@ public final class Tag extends NestableNode {
     
     
 
-    public final Tag cloneTagWithNewName(final NestableNode newParent, final String newTagName, final boolean cloneProcessors) {
-        final Tag clonedTag = new Tag(newTagName);
-        cloneNodeInternals(clonedTag, newParent, cloneProcessors);
-        return clonedTag;
+    public final Element cloneElementNodeWithNewName(final NestableNode newParent, final String newElementName, final boolean cloneProcessors) {
+        final Element clonedElement = new Element(newElementName);
+        cloneNodeInternals(clonedElement, newParent, cloneProcessors);
+        return clonedElement;
     }
     
     
 
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        return new Tag(this.name, getDocumentName(), getLineNumber());
+        return new Element(this.name, getDocumentName(), getLineNumber());
     }
     
 
     @Override
     void doCloneNestableNodeInternals(final NestableNode node, final NestableNode newParent, final boolean cloneProcessors) {
         
-        final Tag tag = (Tag) node;
+        final Element element = (Element) node;
         
         if (this.attributesLen > 0) {
-            tag.attributeNames = new LinkedHashMap<String, String>(this.attributeNames);
-            tag.attributeValues = new LinkedHashMap<String, String>(this.attributeValues);
-            tag.attributesLen = this.attributesLen;
+            element.attributeNames = new LinkedHashMap<String, String>(this.attributeNames);
+            element.attributeValues = new LinkedHashMap<String, String>(this.attributeValues);
+            element.attributesLen = this.attributesLen;
         }
-        tag.hasXmlnsAttributes = this.hasXmlnsAttributes;
+        element.hasXmlnsAttributes = this.hasXmlnsAttributes;
         
     }
 

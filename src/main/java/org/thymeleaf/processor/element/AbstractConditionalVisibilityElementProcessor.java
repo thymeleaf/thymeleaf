@@ -17,12 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
-import org.thymeleaf.dom.Tag;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.dom.Element;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
 /**
@@ -32,18 +32,18 @@ import org.thymeleaf.processor.ProcessorResult;
  * @since 1.0
  *
  */
-public abstract class AbstractConditionalVisibilityTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractConditionalVisibilityElementProcessor 
+        extends AbstractElementProcessor {
 
     
     
     
 
-    public AbstractConditionalVisibilityTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractConditionalVisibilityElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractConditionalVisibilityTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractConditionalVisibilityElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -53,24 +53,24 @@ public abstract class AbstractConditionalVisibilityTagProcessor
 
 
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
         
         final boolean visible = 
-            isVisible(arguments, tag);
+            isVisible(arguments, element);
 
-        final boolean removeHostTagIfVisible = 
-                removeHostTagIfVisible(arguments, tag);
+        final boolean removeHostElementIfVisible = 
+                removeHostElementIfVisible(arguments, element);
         
-        final NestableNode parent = tag.getParent();
+        final NestableNode parent = element.getParent();
         
         if (!visible) {
-            tag.clearChildren();
-            parent.removeChild(tag);
+            element.clearChildren();
+            parent.removeChild(element);
             return ProcessorResult.OK;
         }
         
-        if (removeHostTagIfVisible) {
-            parent.extractChild(tag);
+        if (removeHostElementIfVisible) {
+            parent.extractChild(element);
         }
         
         return ProcessorResult.OK;
@@ -80,11 +80,11 @@ public abstract class AbstractConditionalVisibilityTagProcessor
 
     
     
-    protected abstract boolean isVisible(final Arguments arguments, final Tag tag);
+    protected abstract boolean isVisible(final Arguments arguments, final Element element);
 
     
     
-    protected abstract boolean removeHostTagIfVisible(final Arguments arguments, final Tag tag);
+    protected abstract boolean removeHostElementIfVisible(final Arguments arguments, final Element element);
     
 
 }

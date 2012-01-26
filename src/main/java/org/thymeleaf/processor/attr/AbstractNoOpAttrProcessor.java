@@ -20,7 +20,7 @@
 package org.thymeleaf.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -51,9 +51,9 @@ public abstract class AbstractNoOpAttrProcessor
 
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
 
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         return ProcessorResult.OK;
         
     }

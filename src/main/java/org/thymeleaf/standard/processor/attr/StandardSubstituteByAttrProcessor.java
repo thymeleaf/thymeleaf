@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.util.PrefixUtils;
 
@@ -57,7 +57,7 @@ public class StandardSubstituteByAttrProcessor
     @Override
     protected String getFragmentAttributeName(
             final Arguments arguments,
-            final Tag tag, final String attributeName, final String attributeValue,
+            final Element element, final String attributeName, final String attributeValue,
             final FragmentSelection fragmentSelection) {
         
         if (attributeName != null) {
@@ -75,7 +75,7 @@ public class StandardSubstituteByAttrProcessor
     @Override
     protected boolean getSubstituteInclusionNode(
             final Arguments arguments, 
-            final Tag tag, final String attributeName, final String attributeValue) {
+            final Element element, final String attributeName, final String attributeValue) {
         // th:substituteby does substitute the inclusion node
         return true;
     }

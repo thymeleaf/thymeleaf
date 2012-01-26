@@ -36,7 +36,7 @@ import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
@@ -68,7 +68,7 @@ public final class Configuration {
     
     private ICacheManager cacheManager = null;
     
-    private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByTagName;
+    private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByElementName;
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByAttributeName;
     private Map<Class<? extends Node>, Set<ProcessorAndContext>> mergedNonSpecificProcessorsByNodeClass;
 
@@ -152,8 +152,8 @@ public final class Configuration {
              * Merge dialects
              */
             final MergedDialectArtifacts mergedDialectArtifacts = mergeDialects(this.dialectConfigurations);
-            this.mergedSpecificProcessorsByTagName =
-                Collections.unmodifiableMap(mergedDialectArtifacts.getSpecificProcessorsByTagName());
+            this.mergedSpecificProcessorsByElementName =
+                Collections.unmodifiableMap(mergedDialectArtifacts.getSpecificProcessorsByElementName());
             this.mergedSpecificProcessorsByAttributeName =
                 Collections.unmodifiableMap(mergedDialectArtifacts.getSpecificProcessorsByAttributeName());
             this.mergedNonSpecificProcessorsByNodeClass =
@@ -483,23 +483,23 @@ public final class Configuration {
     
     public List<ProcessorAndContext> computeProcessorsForNode(final Node node) {
         
-        if (node instanceof Tag) {
+        if (node instanceof Element) {
 
             final List<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
             
-            final Tag tag = (Tag) node;
+            final Element element = (Element) node;
 
-            final Set<ProcessorAndContext> processorsForTagName = 
-                    this.mergedSpecificProcessorsByTagName.get(tag.getNormalizedName());
-            if (processorsForTagName != null) {
-                for (final ProcessorAndContext processorAndContext : processorsForTagName) {
+            final Set<ProcessorAndContext> processorsForElementName = 
+                    this.mergedSpecificProcessorsByElementName.get(element.getNormalizedName());
+            if (processorsForElementName != null) {
+                for (final ProcessorAndContext processorAndContext : processorsForElementName) {
                     if (processorAndContext.matches(node)) {
                         processors.add(processorAndContext);
                     }
                 }
             }
 
-            for (final String attributeName : tag.getAttributeNormalizedNames()) {
+            for (final String attributeName : element.getAttributeNormalizedNames()) {
                 final Set<ProcessorAndContext> processorsForAttributeName = 
                         this.mergedSpecificProcessorsByAttributeName.get(attributeName);
                 if (processorsForAttributeName != null) {
@@ -512,7 +512,7 @@ public final class Configuration {
             }
         
             final Set<ProcessorAndContext> applicableNonSpecificProcessors = 
-                    getApplicableNonSpecificProcessorsToNodeClass(Tag.class);
+                    getApplicableNonSpecificProcessorsToNodeClass(Element.class);
             if (applicableNonSpecificProcessors != null) {
                 for (final ProcessorAndContext processorAndContext : applicableNonSpecificProcessors) {
                     if (processorAndContext.matches(node)) {
@@ -529,7 +529,7 @@ public final class Configuration {
         }
 
         //
-        // NODE IS NOT A TAG...
+        // NODE IS NOT AN ELEMENT...
         //
 
         final Set<ProcessorAndContext> applicableNonSpecificProcessors = 
@@ -624,7 +624,7 @@ public final class Configuration {
             throw new ConfigurationException("No dialect has been specified");
         }
         
-        final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName = new HashMap<String, Set<ProcessorAndContext>>();
+        final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName = new HashMap<String, Set<ProcessorAndContext>>();
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = new HashMap<String, Set<ProcessorAndContext>>();
         final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
         final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
@@ -638,7 +638,7 @@ public final class Configuration {
             final DialectConfiguration dialectConfiguration = dialectConfigurations.iterator().next();
             final IDialect dialect = dialectConfiguration.getDialect();
 
-            specificProcessorsByTagName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByTagName());
+            specificProcessorsByElementName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByElementName());
             specificProcessorsByAttributeName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByAttributeName());
             nonSpecificProcessorsByNodeClass.putAll(dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass());
 
@@ -648,7 +648,7 @@ public final class Configuration {
             docTypeTranslations.addAll(dialect.getDocTypeTranslations());
             
             return new MergedDialectArtifacts(
-                    specificProcessorsByTagName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
+                    specificProcessorsByElementName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
                     executionAttributes, leniencyByPrefix, dialect.getDocTypeResolutionEntries(), dialect.getDocTypeTranslations());
             
         }
@@ -675,9 +675,9 @@ public final class Configuration {
             
             
             /*
-             * Aggregate all the processors assigned to a specific tag name
+             * Aggregate all the processors assigned to a specific element name
              */
-            specificProcessorsByTagName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByTagName());
+            specificProcessorsByElementName.putAll(dialectConfiguration.unsafeGetSpecificProcessorsByElementName());
             
 
             
@@ -689,7 +689,7 @@ public final class Configuration {
 
             
             /*
-             * Aggregate all the processors not assigned to a specific attribute or tag name
+             * Aggregate all the processors not assigned to a specific attribute or element name
              */
             nonSpecificProcessorsByNodeClass.putAll(dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass());
             
@@ -849,7 +849,7 @@ public final class Configuration {
         }
         
         return new MergedDialectArtifacts(
-                specificProcessorsByTagName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
+                specificProcessorsByElementName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
                 executionAttributes, leniencyByPrefix, docTypeResolutionEntries, docTypeTranslations);
         
     }
@@ -859,7 +859,7 @@ public final class Configuration {
     
     private static final class MergedDialectArtifacts {
         
-        private final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName;
+        private final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName;
         private final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName;
         private final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass;
         private final Map<String,Object> executionAttributes;
@@ -869,7 +869,7 @@ public final class Configuration {
         
         
         public MergedDialectArtifacts(
-                final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName,
+                final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName,
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName,
                 final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass,
                 final Map<String,Object> executionAttributes,
@@ -877,7 +877,7 @@ public final class Configuration {
                 final Set<IDocTypeResolutionEntry> docTypeResolutionEntries,
                 final Set<IDocTypeTranslation> docTypeTranslations) {
             super();
-            this.specificProcessorsByTagName = specificProcessorsByTagName;
+            this.specificProcessorsByElementName = specificProcessorsByElementName;
             this.specificProcessorsByAttributeName = specificProcessorsByAttributeName;
             this.nonSpecificProcessorsByNodeClass = nonSpecificProcessorsByNodeClass;
             this.executionAttributes = executionAttributes;
@@ -886,8 +886,8 @@ public final class Configuration {
             this.docTypeTranslations = docTypeTranslations;
         }
         
-        public Map<String, Set<ProcessorAndContext>> getSpecificProcessorsByTagName() {
-            return this.specificProcessorsByTagName;
+        public Map<String, Set<ProcessorAndContext>> getSpecificProcessorsByElementName() {
+            return this.specificProcessorsByElementName;
         }
 
         public Map<String, Set<ProcessorAndContext>> getSpecificProcessorsByAttributeName() {

@@ -78,7 +78,7 @@ public final class StandardRemoveAttrProcessor
 
 
     @Override
-    protected String getRemoveTagAttrValue() {
+    protected String getRemoveElementAttrValue() {
         return VALUE_TAG;
     }
     

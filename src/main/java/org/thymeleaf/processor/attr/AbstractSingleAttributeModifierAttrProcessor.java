@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 
 /**
@@ -52,11 +52,11 @@ public abstract class AbstractSingleAttributeModifierAttrProcessor
 
     @Override
     protected final Map<String,String> getModifiedAttributeValues(
-            final Arguments arguments, final Tag tag, 
+            final Arguments arguments, final Element element, 
             final String attributeName) {
         
-        final String name = getTargetAttributeName(arguments, tag, attributeName);
-        final String value = getTargetAttributeValue(arguments, tag, attributeName);
+        final String name = getTargetAttributeName(arguments, element, attributeName);
+        final String value = getTargetAttributeValue(arguments, element, attributeName);
         
         final Map<String,String> valuesMap = new HashMap<String,String>();
         valuesMap.put(name, value);
@@ -67,13 +67,13 @@ public abstract class AbstractSingleAttributeModifierAttrProcessor
 
     
     protected abstract String getTargetAttributeName(
-            final Arguments arguments, final Tag tag, 
+            final Arguments arguments, final Element element, 
             final String attributeName);
     
     
     
     protected abstract String getTargetAttributeValue(
-            final Arguments arguments, final Tag tag, 
+            final Arguments arguments, final Element element, 
             final String attributeName);
     
     

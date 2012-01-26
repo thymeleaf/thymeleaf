@@ -36,7 +36,7 @@ import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.IProcessorMatcher;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorMatchingContext;
 import org.thymeleaf.util.Validate;
@@ -59,7 +59,7 @@ public final class DialectConfiguration {
     
     private Set<IProcessor> processors;
     
-    private Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName;
+    private Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName;
     private Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName;
     private Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass;
     
@@ -113,7 +113,7 @@ public final class DialectConfiguration {
             final ProcessorMatchingContext context = 
                     new ProcessorMatchingContext(this.dialect, this.prefix);
             
-            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByTagName = new HashMap<String,Set<ProcessorAndContext>>();
+            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByElementName = new HashMap<String,Set<ProcessorAndContext>>();
             final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByAttributeName = new HashMap<String,Set<ProcessorAndContext>>();
             final Map<Class<? extends Node>, Set<ProcessorAndContext>> newNonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
             
@@ -126,24 +126,24 @@ public final class DialectConfiguration {
                             "returned null processor matcher.");
                 }
                 
-                if (processorMatcher instanceof ITagNameProcessorMatcher) {
-                    // Processor will be indexed as "specific" for one or more tag names
+                if (processorMatcher instanceof IElementNameProcessorMatcher) {
+                    // Processor will be indexed as "specific" for one or more element names
                     
-                    final String tagName = ((ITagNameProcessorMatcher) processorMatcher).getTagName(context);
-                    if (tagName == null) {
+                    final String elementName = ((IElementNameProcessorMatcher) processorMatcher).getElementName(context);
+                    if (elementName == null) {
                         throw new ConfigurationException(
                                 "Processor of class \"" + processor.getClass().getName() + "\" " +
-                                "returned a null tag name as a part of its applicability specifications.");
+                                "returned a null element name as a part of its applicability specifications.");
                     }
-                    final String normalizedTagName = Node.normalizeName(tagName);
+                    final String normalizedElementName = Node.normalizeName(elementName);
                     
-                    Set<ProcessorAndContext> elementProcessorsForTagName = newSpecificProcessorsByTagName.get(normalizedTagName);
-                    if (elementProcessorsForTagName == null) {
-                        elementProcessorsForTagName = new HashSet<ProcessorAndContext>();
-                        newSpecificProcessorsByTagName.put(normalizedTagName, elementProcessorsForTagName);
+                    Set<ProcessorAndContext> elementProcessorsForElementName = newSpecificProcessorsByElementName.get(normalizedElementName);
+                    if (elementProcessorsForElementName == null) {
+                        elementProcessorsForElementName = new HashSet<ProcessorAndContext>();
+                        newSpecificProcessorsByElementName.put(normalizedElementName, elementProcessorsForElementName);
                     }
                     
-                    elementProcessorsForTagName.add(new ProcessorAndContext(processor,context));
+                    elementProcessorsForElementName.add(new ProcessorAndContext(processor,context));
                     
                 }
                 
@@ -169,7 +169,7 @@ public final class DialectConfiguration {
                     
                 }
                 
-                if (!(processorMatcher instanceof ITagNameProcessorMatcher) && !(processorMatcher instanceof IAttributeNameProcessorMatcher)) {
+                if (!(processorMatcher instanceof IElementNameProcessorMatcher) && !(processorMatcher instanceof IAttributeNameProcessorMatcher)) {
                     
                     final Class<? extends Node> appliesTo = processorMatcher.appliesTo();
                         
@@ -187,7 +187,7 @@ public final class DialectConfiguration {
                 
             }
             
-            this.specificProcessorsByTagName = Collections.unmodifiableMap(newSpecificProcessorsByTagName);
+            this.specificProcessorsByElementName = Collections.unmodifiableMap(newSpecificProcessorsByElementName);
             this.specificProcessorsByAttributeName = Collections.unmodifiableMap(newSpecificProcessorsByAttributeName);
             this.nonSpecificProcessorsByNodeClass = Collections.unmodifiableMap(newNonSpecificProcessorsByNodeClass);            
 
@@ -270,8 +270,8 @@ public final class DialectConfiguration {
         return this.specificProcessorsByAttributeName;
     }
     
-    final Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByTagName() {
-        return this.specificProcessorsByTagName;
+    final Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByElementName() {
+        return this.specificProcessorsByElementName;
     }
     
     final Map<Class<? extends Node>, Set<ProcessorAndContext>> unsafeGetNonSpecificProcessorsByNodeClass() {

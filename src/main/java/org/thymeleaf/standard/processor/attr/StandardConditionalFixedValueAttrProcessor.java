@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.util.PrefixUtils;
 
 /**
@@ -94,7 +94,7 @@ public final class StandardConditionalFixedValueAttrProcessor
 
     @Override
     protected String getTargetAttributeName(final Arguments arguments, 
-            final Tag tag, final String attributeName) {
+            final Element element, final String attributeName) {
         return PrefixUtils.getUnprefixed(attributeName);
     }
 
@@ -102,7 +102,7 @@ public final class StandardConditionalFixedValueAttrProcessor
 
     @Override
     protected String getTargetAttributeFixedValue(final Arguments arguments, 
-            final Tag tag, final String attributeName) {
+            final Element element, final String attributeName) {
         return PrefixUtils.getUnprefixed(attributeName);
     }
 

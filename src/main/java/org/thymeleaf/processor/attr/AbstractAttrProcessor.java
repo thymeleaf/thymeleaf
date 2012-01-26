@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.AttributeNameProcessorMatcher;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
@@ -57,24 +57,24 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
     }
 
     
-    public final IProcessorMatcher<? extends Tag> getMatcher() {
+    public final IProcessorMatcher<? extends Element> getMatcher() {
         return this.matcher;
     }
 
     
     @Override
     protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
-        // Because of the type of applicability being used, casts to Tag here will not fail
+        // Because of the type of applicability being used, casts to Element here will not fail
         if (logger.isTraceEnabled()) {
             final String attributeName = this.matcher.getAttributeName(processorMatchingContext);
-            final String attributeValue = ((Tag)node).getAttributeValue(attributeName);
-            logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in tag \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, attributeValue, ((Tag)node).getNormalizedName()});
+            final String attributeValue = ((Element)node).getAttributeValue(attributeName);
+            logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in element \"{}\"",
+                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, attributeValue, ((Element)node).getNormalizedName()});
         }
-        return processAttribute(arguments, (Tag)node, this.matcher.getAttributeName(processorMatchingContext));
+        return processAttribute(arguments, (Element)node, this.matcher.getAttributeName(processorMatchingContext));
     }
     
-    protected abstract ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName);
+    protected abstract ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName);
     
     
 }

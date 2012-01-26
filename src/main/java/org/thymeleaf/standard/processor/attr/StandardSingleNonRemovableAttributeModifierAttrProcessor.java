@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.util.PrefixUtils;
 
 /**
@@ -76,14 +76,14 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
 
     @Override
     protected String getTargetAttributeName(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         return PrefixUtils.getUnprefixed(attributeName);
     }
 
     
     @Override
     protected ModificationType getModificationType(
-            final Arguments arguments, final Tag tag, final String attributeName, final String newAttributeName) {
+            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
         return ModificationType.SUBSTITUTION;
     }
 
@@ -91,7 +91,7 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
 
     @Override
     protected boolean removeAttributeIfEmpty(
-            final Arguments arguments, final Tag tag, final String attributeName, final String newAttributeName) {
+            final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
         return false;
     }
 

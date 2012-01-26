@@ -17,11 +17,11 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.dom.Element;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
 /**
@@ -31,18 +31,18 @@ import org.thymeleaf.processor.ProcessorResult;
  * @since 1.0
  *
  */
-public abstract class AbstractNoOpTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractNoOpElementProcessor 
+        extends AbstractElementProcessor {
     
     
     
     
 
-    public AbstractNoOpTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractNoOpElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractNoOpTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractNoOpElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -52,13 +52,13 @@ public abstract class AbstractNoOpTagProcessor
     
     
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
 
-        final boolean removeHostTag =
-                removeHostTag(arguments, tag);
+        final boolean removeHostElement =
+                removeHostElement(arguments, element);
 
-        if (removeHostTag) {
-            tag.getParent().extractChild(tag);
+        if (removeHostElement) {
+            element.getParent().extractChild(element);
         }
         
         return ProcessorResult.OK;
@@ -67,7 +67,7 @@ public abstract class AbstractNoOpTagProcessor
 
  
     
-    protected abstract boolean removeHostTag(final Arguments arguments, final Tag tag);
+    protected abstract boolean removeHostElement(final Arguments arguments, final Element element);
 
 
     

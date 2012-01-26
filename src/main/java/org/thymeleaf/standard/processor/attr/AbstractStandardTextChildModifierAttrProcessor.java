@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 
@@ -53,9 +53,9 @@ public abstract class AbstractStandardTextChildModifierAttrProcessor
     
     @Override
     protected final String getText(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final Object result = 
             StandardExpressionProcessor.processExpression(arguments, attributeValue);

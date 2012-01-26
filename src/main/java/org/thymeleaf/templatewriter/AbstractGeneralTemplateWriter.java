@@ -11,7 +11,7 @@ import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.util.Validate;
 
@@ -104,8 +104,8 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     public void writeNode(final Arguments arguments, final Writer writer, final Node node) 
             throws IOException {
     
-        if (node instanceof Tag) {
-            writeTag(arguments, writer, (Tag)node);
+        if (node instanceof Element) {
+            writeElement(arguments, writer, (Element)node);
         } else if (node instanceof Text) {
             writeText(arguments, writer, (Text)node);
         } else if (node instanceof Comment) {
@@ -122,17 +122,17 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
 
     
     
-    protected void writeTag(final Arguments arguments, final Writer writer, final Tag tag) 
+    protected void writeElement(final Arguments arguments, final Writer writer, final Element element) 
             throws IOException {
         /*
-         * TODO ALL LENIENCY ISSUES (tag name and attr name) SHOULD BE CHECKED HERE DURING OUTPUT
+         * TODO ALL LENIENCY ISSUES (element name and attr name) SHOULD BE CHECKED HERE DURING OUTPUT
          */
         writer.write('<');
-        writer.write(tag.getName());
-        if (tag.hasAttributes()) {
-            for (final String normalizedAttributeName : tag.getAttributeNormalizedNames()) {
+        writer.write(element.getName());
+        if (element.hasAttributes()) {
+            for (final String normalizedAttributeName : element.getAttributeNormalizedNames()) {
                 boolean writeAttribute = true;
-                if (tag.getHasXmlnsAttributes()) {
+                if (element.getHasXmlnsAttributes()) {
                     final String prefix = 
                             arguments.getConfiguration().getPrefixIfXmlnsAttribute(normalizedAttributeName);
                     if (prefix != null) {
@@ -141,26 +141,26 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                 }
                 if (writeAttribute) {
                     writer.write(' ');
-                    writer.write(tag.getAttributeOriginalNameFromNormalizedName(normalizedAttributeName));
+                    writer.write(element.getAttributeOriginalNameFromNormalizedName(normalizedAttributeName));
                     writer.write('=');
                     writer.write('\"');
-                    writer.write(tag.getAttributeValueFromNormalizedName(normalizedAttributeName));
+                    writer.write(element.getAttributeValueFromNormalizedName(normalizedAttributeName));
                     writer.write('\"');
                 }
             }
         }
-        if (tag.hasChildren()) {
+        if (element.hasChildren()) {
             writer.write('>');
-            for (final Node child : tag.unsafeGetChildrenNodeArray()) {
+            for (final Node child : element.unsafeGetChildrenNodeArray()) {
                 writeNode(arguments, writer, child);
             }
             writer.write('<');
             writer.write('/');
-            writer.write(tag.getName());
+            writer.write(element.getName());
             writer.write('>');
         } else {
             if (useXhtmlTagMinimizationRules()) {
-                if (tag.isMinimizableIfWeb()) {
+                if (element.isMinimizableIfWeb()) {
                     writer.write(' ');
                     writer.write('/');
                     writer.write('>');
@@ -168,7 +168,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                     writer.write('>');
                     writer.write('<');
                     writer.write('/');
-                    writer.write(tag.getName());
+                    writer.write(element.getName());
                     writer.write('>');
                 }
             } else {

@@ -139,7 +139,7 @@ final class ConfigurationPrinterHelper {
             final ConfigLogBuilder logBuilder, final DialectConfiguration dialectConfiguration) {
 
         
-        final Map<String,Set<ProcessorAndContext>> specificProcessorsByTagName = dialectConfiguration.unsafeGetSpecificProcessorsByTagName();
+        final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName = dialectConfiguration.unsafeGetSpecificProcessorsByElementName();
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = dialectConfiguration.unsafeGetSpecificProcessorsByAttributeName();
         final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass();
         
@@ -149,11 +149,11 @@ final class ConfigurationPrinterHelper {
         final Set<IDocTypeTranslation> docTypeTranslations = dialectConfiguration.getDialect().getDocTypeTranslations();
         
         
-        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByTagName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
-        final List<String> tagNames = new ArrayList<String>(specificProcessorsByTagName.keySet());
-        Collections.sort(tagNames);
-        for (final String tagName : tagNames) {
-            orderedSpecificProcessorsByTagName.put(tagName, specificProcessorsByTagName.get(tagName));
+        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByElementName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
+        final List<String> elementNames = new ArrayList<String>(specificProcessorsByElementName.keySet());
+        Collections.sort(elementNames);
+        for (final String elementName : elementNames) {
+            orderedSpecificProcessorsByElementName.put(elementName, specificProcessorsByElementName.get(elementName));
         }
         
         final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByAttributeName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
@@ -164,20 +164,20 @@ final class ConfigurationPrinterHelper {
         }
         
         logBuilder.line("[THYMELEAF]     * Lenient: {}", Boolean.valueOf(lenient));
-        if (!orderedSpecificProcessorsByTagName.isEmpty()) {
-            logBuilder.line("[THYMELEAF]     * Processors matching nodes by tag name [precedence]:");
-            for (final Map.Entry<String,Set<ProcessorAndContext>> tagApplicabilityEntry : orderedSpecificProcessorsByTagName.entrySet()) {
-                final String tagName = tagApplicabilityEntry.getKey();
-                for (final ProcessorAndContext tagProcessorEntry : tagApplicabilityEntry.getValue()) {
-                    final IProcessor tagProcessor = tagProcessorEntry.getProcessor();
+        if (!orderedSpecificProcessorsByElementName.isEmpty()) {
+            logBuilder.line("[THYMELEAF]     * Processors matching nodes by element name [precedence]:");
+            for (final Map.Entry<String,Set<ProcessorAndContext>> elementApplicabilityEntry : orderedSpecificProcessorsByElementName.entrySet()) {
+                final String elementName = elementApplicabilityEntry.getKey();
+                for (final ProcessorAndContext elementProcessorEntry : elementApplicabilityEntry.getValue()) {
+                    final IProcessor elementProcessor = elementProcessorEntry.getProcessor();
                     final String precedence = 
-                            (tagProcessor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)tagProcessor).getPrecedence()).toString() : "-");
-                    logBuilder.line("[THYMELEAF]         * \"{}\" [{}]: {}", new Object[] {tagName, precedence, tagProcessor.getClass().getName()});
+                            (elementProcessor instanceof AbstractProcessor? Integer.valueOf(((AbstractProcessor)elementProcessor).getPrecedence()).toString() : "-");
+                    logBuilder.line("[THYMELEAF]         * \"{}\" [{}]: {}", new Object[] {elementName, precedence, elementProcessor.getClass().getName()});
                 }
             }
         }
         if (!orderedSpecificProcessorsByAttributeName.isEmpty()) {
-            logBuilder.line("[THYMELEAF]     * Processors matching nodes by tag attribute [precedence]:");
+            logBuilder.line("[THYMELEAF]     * Processors matching nodes by element attribute [precedence]:");
             for (final Map.Entry<String,Set<ProcessorAndContext>> attrApplicabilityEntry : orderedSpecificProcessorsByAttributeName.entrySet()) {
                 final String attrName = attrApplicabilityEntry.getKey();
                 for (final ProcessorAndContext attrProcessorEntry : attrApplicabilityEntry.getValue()) {
@@ -189,7 +189,7 @@ final class ConfigurationPrinterHelper {
             }
         }
         if (!nonSpecificProcessorsByNodeClass.isEmpty()) {
-            logBuilder.line("[THYMELEAF]     * Processors with non-tag-specific matching methods [precedence]:");
+            logBuilder.line("[THYMELEAF]     * Processors with non-element-specific matching methods [precedence]:");
             for (final Map.Entry<Class<? extends Node>,Set<ProcessorAndContext>> nonSpecificProcessorEntry : nonSpecificProcessorsByNodeClass.entrySet()) {
                 final Class<? extends Node> nodeClass = nonSpecificProcessorEntry.getKey();
                 for (final ProcessorAndContext processorEntry : nonSpecificProcessorEntry.getValue()) {

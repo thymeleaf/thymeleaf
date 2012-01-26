@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.templatewriter.XhtmlHtml5TemplateWriter;
 import org.thymeleaf.templatewriter.XmlTemplateWriter;
@@ -51,30 +51,30 @@ public final class DOMUtils {
     
     
     public static NestableNode extractFragmentByAttributeValue(
-            final Node root, final String tagName, final String attributeName, final String attributeValue) {
+            final Node root, final String elementName, final String attributeName, final String attributeValue) {
 
         Validate.notNull(root, "Root cannot be null");
-        // Tag name CAN be null (in that case, all tags will be searched)
+        // Element name CAN be null (in that case, all elements will be searched)
         Validate.notNull(attributeName, "Attribute name cannot be null");
         Validate.notNull(attributeValue, "Attribute value cannot be null");
         
-        return processNode(root, tagName, attributeName, attributeValue);
+        return processNode(root, elementName, attributeName, attributeValue);
         
     }
     
     
     private static NestableNode processNode(
-            final Node node, final String tagName, final String attributeName, final String attributeValue) {
+            final Node node, final String elementName, final String attributeName, final String attributeValue) {
         
         if (node instanceof NestableNode) {
 
             final NestableNode nestableNode = (NestableNode) node;
             
-            if (nestableNode instanceof Tag) {
-                final Tag tag = (Tag) nestableNode;
-                if (tag.hasAttribute(attributeName) && (tagName == null || tag.isName(tagName))) {
-                    final String tagAttrValue = tag.getAttributeValue(attributeName);
-                    if (tagAttrValue != null && tagAttrValue.trim().equals(attributeValue)) {
+            if (nestableNode instanceof Element) {
+                final Element element = (Element) nestableNode;
+                if (element.hasAttribute(attributeName) && (elementName == null || element.isName(elementName))) {
+                    final String elementAttrValue = element.getAttributeValue(attributeName);
+                    if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
                         return nestableNode;
                     }
                 }
@@ -83,7 +83,7 @@ public final class DOMUtils {
             final List<Node> children = nestableNode.getChildren();
             for (final Node child : children) {
                 final NestableNode childResult =
-                        processNode(child, tagName, attributeName, attributeValue);
+                        processNode(child, elementName, attributeName, attributeValue);
                 if (childResult != null) {
                     return childResult;
                 }

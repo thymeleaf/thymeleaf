@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
@@ -59,15 +59,15 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
     @Override
     protected final Map<String, String> getModifiedAttributeValues(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
 
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final Expression expression =
             StandardExpressionProcessor.parseExpression(arguments, attributeValue);
         
         final Set<String> newAttributeNames = 
-                getModifiedAttributeNames(arguments, tag, attributeName, attributeValue, expression);
+                getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
         final Object valueForAttributes = 
             StandardExpressionProcessor.executeExpression(arguments, expression);
@@ -83,7 +83,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
 
     protected abstract Set<String> getModifiedAttributeNames(final Arguments arguments,
-            final Tag tag, final String attributeName, final String attributeValue, final Expression expression);
+            final Element element, final String attributeName, final String attributeValue, final Expression expression);
 
 
 
@@ -91,7 +91,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
     @Override
     protected boolean recomputeProcessorsAfterExecution(final Arguments arguments,
-            final Tag tag, final String attributeName) {
+            final Element element, final String attributeName) {
         return false;
     }
 

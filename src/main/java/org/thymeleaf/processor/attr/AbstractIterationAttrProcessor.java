@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.ObjectUtils;
@@ -62,13 +62,13 @@ public abstract class AbstractIterationAttrProcessor
     
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
 
         
-        final NestableNode parentNode = tag.getParent();
+        final NestableNode parentNode = element.getParent();
         
         final IterationSpec iterationSpec = 
-            getIterationSpec(arguments, tag, attributeName);
+            getIterationSpec(arguments, element, attributeName);
         
         
         final String iterVar = iterationSpec.getIterVarName();
@@ -82,33 +82,33 @@ public abstract class AbstractIterationAttrProcessor
         int index = 0;
         for (final Object obj : list) {
             
-            // We choose not to clone processors because the host tag
+            // We choose not to clone processors because the host element
             // has at least one processor that is not valid for the 
-            // new cloned tags: the iteration processor.
-            final Tag clonedTag = (Tag) tag.cloneNode(parentNode, false);
-            clonedTag.removeAttribute(attributeName);
+            // new cloned elements: the iteration processor.
+            final Element clonedElement = (Element) element.cloneNode(parentNode, false);
+            clonedElement.removeAttribute(attributeName);
             
             /*
              * Prepare local variables that will be available for each iteration item
              */
-            clonedTag.addNodeLocalVariable(iterVar, obj);
+            clonedElement.addNodeLocalVariable(iterVar, obj);
             final StatusVar status = 
                 new StatusVar(index, index + 1, size, obj);
             if (statusVar != null) {
-                clonedTag.addNodeLocalVariable(statusVar, status);
+                clonedElement.addNodeLocalVariable(statusVar, status);
             } else {
-                clonedTag.addNodeLocalVariable(iterVar + DEFAULT_STATUS_VAR_SUFFIX, status);
+                clonedElement.addNodeLocalVariable(iterVar + DEFAULT_STATUS_VAR_SUFFIX, status);
             }
             
-            parentNode.insertBefore(tag, clonedTag);
+            parentNode.insertBefore(element, clonedElement);
 
-            processClonedHostIterationTag(arguments, clonedTag, attributeName);
+            processClonedHostIterationElement(arguments, clonedElement, attributeName);
             
             index++;
             
         }
         
-        parentNode.removeChild(tag);
+        parentNode.removeChild(element);
         
         return ProcessorResult.OK;
         
@@ -118,11 +118,11 @@ public abstract class AbstractIterationAttrProcessor
 
     
     protected abstract IterationSpec getIterationSpec(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
     
 
     
-    protected abstract void processClonedHostIterationTag(final Arguments arguments, final Tag iteratedChild, final String attributeName);
+    protected abstract void processClonedHostIterationElement(final Arguments arguments, final Element iteratedChild, final String attributeName);
     
     
     /**

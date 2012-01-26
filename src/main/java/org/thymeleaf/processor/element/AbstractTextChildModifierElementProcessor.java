@@ -17,16 +17,16 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 
 /**
  * 
@@ -35,16 +35,16 @@ import org.thymeleaf.processor.ITagNameProcessorMatcher;
  * @since 1.0
  *
  */
-public abstract class AbstractTextChildModifierTagProcessor 
-        extends AbstractMarkupSubstitutionTagProcessor {
+public abstract class AbstractTextChildModifierElementProcessor 
+        extends AbstractMarkupSubstitutionElementProcessor {
     
     
 
-    public AbstractTextChildModifierTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractTextChildModifierElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractTextChildModifierTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractTextChildModifierElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -52,9 +52,9 @@ public abstract class AbstractTextChildModifierTagProcessor
 
 
     @Override
-    protected List<Node> getMarkupSubstitutes(final Arguments arguments, final Tag tag) {
+    protected List<Node> getMarkupSubstitutes(final Arguments arguments, final Element element) {
 
-        final String text = getText(arguments, tag);
+        final String text = getText(arguments, element);
         
         final Text newNode = new Text(text == null? "" : text);
         // Setting this allows avoiding text inliners processing already generated text,
@@ -66,6 +66,6 @@ public abstract class AbstractTextChildModifierTagProcessor
     }
 
     
-    protected abstract String getText(final Arguments arguments, final Tag tag);
+    protected abstract String getText(final Arguments arguments, final Element element);
     
 }

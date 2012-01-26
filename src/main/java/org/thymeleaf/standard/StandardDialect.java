@@ -103,7 +103,7 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *           <li>{@link StandardXmlSpaceAttrProcessor}</li>
  *         </ul>
  *       </li>
- *   <li><b>Tag processors</b>: none</li>
+ *   <li><b>Element processors</b>: none</li>
  *   <li><b>Execution attributes</b>:
  *         <ul>
  *           <li>"StandardExpressionExecutor": {@link StandardExpressionExecutor} 

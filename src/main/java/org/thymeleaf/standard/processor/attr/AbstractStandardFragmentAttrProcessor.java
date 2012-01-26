@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentAttrProcessor;
@@ -58,7 +58,7 @@ public abstract class AbstractStandardFragmentAttrProcessor
     @Override
     protected final AbstractFragmentSpec getFragmentSpec(
             final Arguments arguments,
-            final Tag tag, final String attributeName, final String attributeValue) {
+            final Element element, final String attributeName, final String attributeValue) {
 
         
         final FragmentSelection fragmentSelection =
@@ -96,7 +96,7 @@ public abstract class AbstractStandardFragmentAttrProcessor
             }
             
             final String fragmentAttributeName = 
-                getFragmentAttributeName(arguments, tag, attributeName, attributeValue, fragmentSelection);
+                getFragmentAttributeName(arguments, element, attributeName, attributeValue, fragmentSelection);
             
             return new NamedFragmentSpec(
                     templateName,
@@ -113,7 +113,7 @@ public abstract class AbstractStandardFragmentAttrProcessor
     
     protected abstract String getFragmentAttributeName(
             final Arguments arguments,
-            final Tag tag, final String attributeName, final String attributeValue, 
+            final Element element, final String attributeName, final String attributeValue, 
             final FragmentSelection fragmentSelection);
 
     

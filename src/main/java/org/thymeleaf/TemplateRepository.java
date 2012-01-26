@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dom.Document;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
@@ -101,6 +103,8 @@ public final class TemplateRepository {
     
     
     public Template getTemplate(final TemplateProcessingParameters templateProcessingParameters) {
+        
+        Validate.notNull(templateProcessingParameters, "Template Processing Parameters cannot be null");
 
         final String templateName = templateProcessingParameters.getTemplateName();
 
@@ -211,6 +215,22 @@ public final class TemplateRepository {
         
     }
 
+    
+    
+    public List<Node> getFragment(final Arguments arguments, final String fragment) {
+        
+        Validate.notNull(arguments, "Arguments cannot be null");
+        Validate.notNull(fragment, "Fragment cannot be null");
+
+        final Configuration configuration = arguments.getConfiguration();
+        
+        final ITemplateParser templateParser =
+                configuration.getTemplateModeHandler(
+                        arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
+
+        return templateParser.parseFragment(configuration, fragment);
+        
+    }
     
     
 }

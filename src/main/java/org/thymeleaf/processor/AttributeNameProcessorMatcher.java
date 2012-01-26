@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.util.Validate;
 
 
@@ -42,7 +42,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
     
     
     private final String attributeName;
-    private final String tagNameFilter;
+    private final String elementNameFilter;
     private final Map<String,String> attributeValuesByNameFilter;
     
     
@@ -54,23 +54,23 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
     }
 
     
-    public AttributeNameProcessorMatcher(final String attributeName, final String tagNameFilter) {
-        this(attributeName, tagNameFilter, null);
+    public AttributeNameProcessorMatcher(final String attributeName, final String elementNameFilter) {
+        this(attributeName, elementNameFilter, null);
     }
 
     
     public AttributeNameProcessorMatcher(final String attributeName, 
-            final String tagNameFilter, final String filterAttributeName, final String filterAttributeValue) {
-        this(attributeName, tagNameFilter, Collections.singletonMap(filterAttributeName, filterAttributeValue));
+            final String elementNameFilter, final String filterAttributeName, final String filterAttributeValue) {
+        this(attributeName, elementNameFilter, Collections.singletonMap(filterAttributeName, filterAttributeValue));
     }
 
     
     public AttributeNameProcessorMatcher(final String attributeName, 
-            final String tagNameFilter, final Map<String,String> attributeValuesByNameFilter) {
+            final String elementNameFilter, final Map<String,String> attributeValuesByNameFilter) {
         super();
         Validate.notEmpty(attributeName, "Attribute name cannot be null or empty");
         this.attributeName = attributeName;
-        this.tagNameFilter = Node.normalizeName(tagNameFilter);
+        this.elementNameFilter = Node.normalizeName(elementNameFilter);
         if (attributeValuesByNameFilter == null || attributeValuesByNameFilter.size() == 0) {
             this.attributeValuesByNameFilter = null;
         } else {
@@ -88,8 +88,8 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
         return Node.applyDialectPrefix(this.attributeName, context.getDialectPrefix());
     }
 
-    public String getTagNameFilter() {
-        return this.tagNameFilter;
+    public String getElementNameFilter() {
+        return this.elementNameFilter;
     }
     
     public Map<String,String> getAttributeValuesByNameFilter() {
@@ -100,19 +100,19 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
     public boolean matches(final Node node, final ProcessorMatchingContext context) {
         
-        if (!(node instanceof Tag)) {
+        if (!(node instanceof Element)) {
             return false;
         }
         
-        final Tag tag = (Tag) node;
+        final Element element = (Element) node;
         final String completeAttributeName = getAttributeName(context); 
         
-        if (!tag.hasAttribute(completeAttributeName)) {
+        if (!element.hasAttribute(completeAttributeName)) {
             return false;
         }
         
-        if (this.tagNameFilter != null) {
-            if (!tag.getNormalizedName().equals(this.tagNameFilter)) {
+        if (this.elementNameFilter != null) {
+            if (!element.getNormalizedName().equals(this.elementNameFilter)) {
                 return false;
             }
         }
@@ -124,19 +124,19 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
                 final String filterAttributeName = filterAttributeEntry.getKey();
                 final String filterAttributeValue = filterAttributeEntry.getValue();
                 
-                if (!tag.hasAttribute(filterAttributeName)) {
+                if (!element.hasAttribute(filterAttributeName)) {
                     if (filterAttributeValue != null) {
                         return false;
                     }
                     continue;
                 }
-                final String tagAttributeValue = tag.getAttributeValue(filterAttributeName);
-                if (tagAttributeValue == null) {
+                final String elementAttributeValue = element.getAttributeValue(filterAttributeName);
+                if (elementAttributeValue == null) {
                     if (filterAttributeValue != null) {
                         return false;
                     }
                 } else {
-                    if (!tagAttributeValue.equals(filterAttributeValue)) {
+                    if (!elementAttributeValue.equals(filterAttributeValue)) {
                         return false;
                     }
                 }
@@ -151,8 +151,8 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
 
     
-    public final Class<? extends Tag> appliesTo() {
-        return Tag.class;
+    public final Class<? extends Element> appliesTo() {
+        return Element.class;
     }
     
     

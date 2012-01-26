@@ -264,7 +264,7 @@ public abstract class Node {
     
     void processNode(final Arguments arguments) {
 
-        if (!(this instanceof Tag || this instanceof Document) && arguments.getProcessOnlyTags()) {
+        if (!(this instanceof Element || this instanceof Document) && arguments.getProcessOnlyElementNodes()) {
             return;
         }
         

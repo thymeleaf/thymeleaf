@@ -312,9 +312,9 @@ public final class DOMSelector {
             return node instanceof AbstractTextNode;
         }
             
-        if (node instanceof Tag) {
-            final Tag tag = (Tag)node;
-            final String normalizedName = tag.getNormalizedName();
+        if (node instanceof Element) {
+            final Element element = (Element)node;
+            final String normalizedName = element.getNormalizedName();
             if (!normalizedName.equals(this.selectorName)) {
                 return false;
             }
@@ -325,11 +325,11 @@ public final class DOMSelector {
                 final String selectedAttributeName = attributeEntry.getKey();
                 final String selectedAttributeValue = attributeEntry.getValue();
                 if (selectedAttributeValue == null) {
-                    if (!tag.hasAttribute(selectedAttributeName)) {
+                    if (!element.hasAttribute(selectedAttributeName)) {
                         return false;
                     }
                 } else {
-                    final String attributeValue = tag.getAttributeValueFromNormalizedName(selectedAttributeName);
+                    final String attributeValue = element.getAttributeValueFromNormalizedName(selectedAttributeName);
                     if (attributeValue == null || !attributeValue.equals(selectedAttributeValue)) {
                         return false;
                     }

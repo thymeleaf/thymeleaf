@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor;
@@ -60,9 +60,9 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
 
     @Override
     protected final Map<String, Object> getNewLocalVariables(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
 
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final AssignationSequence assignations = 
             StandardExpressionProcessor.parseAssignationSequence(arguments, attributeValue);

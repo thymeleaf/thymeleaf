@@ -91,7 +91,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <ul>
  *   <li>One or more <b>Dialects</b> (instances of {@link IDialect}), defining the way in which templates
- *       will be processed: attributes, tags, value and expression processors, etc. If no
+ *       will be processed: attributes, elements, value and expression processors, etc. If no
  *       dialect is explicitly set, a unique instance of {@link org.thymeleaf.standard.StandardDialect}
  *       (the <i>Standard Dialect</i>) will be used.
  *       <ul>

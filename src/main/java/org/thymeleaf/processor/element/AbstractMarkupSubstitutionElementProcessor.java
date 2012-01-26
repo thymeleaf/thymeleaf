@@ -17,12 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.processor.tag;
+package org.thymeleaf.processor.element;
+
+import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
-import org.thymeleaf.dom.Tag;
-import org.thymeleaf.processor.ITagNameProcessorMatcher;
+import org.thymeleaf.dom.Node;
+import org.thymeleaf.dom.Element;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
 /**
@@ -32,55 +35,43 @@ import org.thymeleaf.processor.ProcessorResult;
  * @since 1.0
  *
  */
-public abstract class AbstractRemovalTagProcessor 
-        extends AbstractTagProcessor {
+public abstract class AbstractMarkupSubstitutionElementProcessor 
+        extends AbstractElementProcessor {
     
-    
-
     
     
 
-    public AbstractRemovalTagProcessor(final String tagName) {
-        super(tagName);
+    public AbstractMarkupSubstitutionElementProcessor(final String elementName) {
+        super(elementName);
     }
     
-    public AbstractRemovalTagProcessor(final ITagNameProcessorMatcher matcher) {
+    public AbstractMarkupSubstitutionElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
-
-
 
 
     
     
     
     @Override
-    public final ProcessorResult processTag(final Arguments arguments, final Tag tag) {
+    public final ProcessorResult processElement(final Arguments arguments, final Element element) {
 
-        final boolean removeHostTagIfChildNotRemoved =
-                removeHostTagIfChildNotRemoved(arguments, tag);
-
-        final NestableNode parent = tag.getParent();
+        final List<Node> substitutes = getMarkupSubstitutes(arguments, element);
         
-        if (getRemoveTagAndChildren(arguments, tag)) {
-            parent.removeChild(tag);
-            return ProcessorResult.OK;
-        }
+        final NestableNode parent = element.getParent();
         
-        if (removeHostTagIfChildNotRemoved) {
-            parent.extractChild(tag);
+        for (final Node node : substitutes) {
+            parent.insertBefore(element, node);
         }
+        parent.removeChild(element);
         
         return ProcessorResult.OK;
         
     }
 
-
-    protected abstract boolean getRemoveTagAndChildren(final Arguments arguments, final Tag tag);
-
- 
     
-    protected abstract boolean removeHostTagIfChildNotRemoved(final Arguments arguments, final Tag tag);
     
+    protected abstract List<Node> getMarkupSubstitutes(final Arguments arguments, final Element element);
+
     
 }

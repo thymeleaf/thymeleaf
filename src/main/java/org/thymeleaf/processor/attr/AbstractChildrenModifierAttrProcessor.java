@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -52,19 +52,19 @@ public abstract class AbstractChildrenModifierAttrProcessor
     
     
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
 
         
         final List<Node> modifiedChildren = 
-            getModifiedChildren(arguments, tag, attributeName);
+            getModifiedChildren(arguments, element, attributeName);
         
-        tag.clearChildren();
+        element.clearChildren();
         
         if (modifiedChildren != null) {
-            tag.setChildren(modifiedChildren);
+            element.setChildren(modifiedChildren);
         }
         
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         
         return ProcessorResult.OK;
         
@@ -73,7 +73,7 @@ public abstract class AbstractChildrenModifierAttrProcessor
     
     
     protected abstract List<Node> getModifiedChildren(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
 
     
 }

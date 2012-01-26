@@ -22,7 +22,7 @@ package org.thymeleaf.processor.attr;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -56,10 +56,10 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
 
 
     @Override
-    public final ProcessorResult processAttribute(final Arguments arguments, final Tag tag, final String attributeName) {
+    public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
         
         final Map<String,String> modifiedAttributeValues = 
-            getModifiedAttributeValues(arguments, tag, attributeName); 
+            getModifiedAttributeValues(arguments, element, attributeName); 
         if (modifiedAttributeValues == null) {
             throw new TemplateProcessingException(
                     "Null new attribute value map specified for: \"" + attributeName + "\"");
@@ -69,10 +69,10 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
 
             final String modifiedAttributeName = modifiedAttributeEntry.getKey();
             String modifiedAttributeValue = modifiedAttributeEntry.getValue();
-            String currentAttributeValue = tag.getAttributeValue(modifiedAttributeName);
+            String currentAttributeValue = element.getAttributeValue(modifiedAttributeName);
             
             final ModificationType modificationType =
-                    getModificationType(arguments, tag, attributeName, modifiedAttributeName);
+                    getModificationType(arguments, element, attributeName, modifiedAttributeName);
             
             if (currentAttributeValue == null) {
                 currentAttributeValue = "";
@@ -110,21 +110,21 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
 
 
             final boolean removeAttributeIfEmpty =
-                removeAttributeIfEmpty(arguments, tag, attributeName, modifiedAttributeName);
+                removeAttributeIfEmpty(arguments, element, attributeName, modifiedAttributeName);
             
             // Do NOT use trim() here! Non-thymeleaf attributes set to ' ' could have meaning!
             if (modifiedAttributeValue.equals("") && removeAttributeIfEmpty) {
-                tag.removeAttribute(modifiedAttributeName);
+                element.removeAttribute(modifiedAttributeName);
             } else {
-                tag.setAttribute(modifiedAttributeName, modifiedAttributeValue);
+                element.setAttribute(modifiedAttributeName, modifiedAttributeValue);
             }
             
         }
         
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         
-        if (recomputeProcessorsAfterExecution(arguments, tag, attributeName)) {
-            tag.setRecomputeProcessorsImmediately(true);
+        if (recomputeProcessorsAfterExecution(arguments, element, attributeName)) {
+            element.setRecomputeProcessorsImmediately(true);
         }
         
         return ProcessorResult.OK;
@@ -134,20 +134,20 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
     
     
     protected abstract Map<String,String> getModifiedAttributeValues(final Arguments arguments, 
-            final Tag tag, final String attributeName);
+            final Element element, final String attributeName);
     
 
     
     protected abstract ModificationType getModificationType(final Arguments arguments, 
-            final Tag tag, final String attributeName, final String newAttributeName);
+            final Element element, final String attributeName, final String newAttributeName);
     
     
     protected abstract boolean removeAttributeIfEmpty(final Arguments arguments, 
-            final Tag tag, final String attributeName, final String newAttributeName);
+            final Element element, final String attributeName, final String newAttributeName);
 
     
     protected abstract boolean recomputeProcessorsAfterExecution(
-            final Arguments arguments, final Tag tag, final String attributeName);
+            final Arguments arguments, final Element element, final String attributeName);
     
     
 }
