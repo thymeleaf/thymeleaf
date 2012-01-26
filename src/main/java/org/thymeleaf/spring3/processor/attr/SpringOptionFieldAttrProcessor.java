@@ -24,7 +24,7 @@ import java.util.Map;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -52,11 +52,11 @@ public final class SpringOptionFieldAttrProcessor
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Tag tag,
+    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
 
-        final String value = tag.getAttributeValue("value");
+        final String value = element.getAttributeValue("value");
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"input(radio)\" tags");
@@ -65,13 +65,13 @@ public final class SpringOptionFieldAttrProcessor
         final boolean selected = 
             SelectedValueComparatorWrapper.isSelected(bindStatus, value);
 
-        tag.setAttribute("value", value);
+        element.setAttribute("value", value);
         if (selected) {
-            tag.setAttribute("selected", "selected");
+            element.setAttribute("selected", "selected");
         } else {
-            tag.removeAttribute("selected");
+            element.removeAttribute("selected");
         }
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         
         
         return ProcessorResult.setLocalVariables(localVariables);

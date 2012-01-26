@@ -26,7 +26,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -59,13 +59,13 @@ public final class SpringInputCheckboxFieldAttrProcessor
 
     @Override
     protected ProcessorResult doProcess(final Arguments arguments,
-            final Tag tag, final String attributeName, final String attributeValue, 
+            final Element element, final String attributeName, final String attributeValue, 
             final BindStatus bindStatus, final Map<String, Object> localVariables) {
 
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, true);
+        final String id = computeId(arguments, element, name, true);
         
         String value = null;
         boolean checked = false;
@@ -85,7 +85,7 @@ public final class SpringInputCheckboxFieldAttrProcessor
             
         } else {
             
-            value = tag.getAttributeValue("value");
+            value = element.getAttributeValue("value");
             if (value == null) {
                 throw new TemplateProcessingException(
                         "Attribute \"value\" is required in \"input(checkbox)\" tags " +
@@ -96,9 +96,9 @@ public final class SpringInputCheckboxFieldAttrProcessor
             
         }
         
-        final NestableNode parent = tag.getParent();
+        final NestableNode parent = element.getParent();
         
-        final Tag inputElement = (Tag) tag.cloneNode(parent, false);
+        final Element inputElement = (Element) element.cloneNode(parent, false);
         inputElement.removeAttribute(attributeName);
         
         inputElement.setAttribute("id", id);
@@ -111,15 +111,15 @@ public final class SpringInputCheckboxFieldAttrProcessor
         }
         inputElement.addNodeLocalVariables(localVariables);
         
-        final Tag hiddenElement = new Tag("input");
+        final Element hiddenElement = new Element("input");
         hiddenElement.setAttribute("type", "hidden");
         hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
         hiddenElement.setAttribute("value", "on");
         hiddenElement.addNodeLocalVariables(localVariables);
 
-        parent.insertBefore(tag, inputElement);
-        parent.insertBefore(tag, hiddenElement);
-        parent.removeChild(tag);
+        parent.insertBefore(element, inputElement);
+        parent.insertBefore(element, hiddenElement);
+        parent.removeChild(element);
         
         return ProcessorResult.OK;         
         

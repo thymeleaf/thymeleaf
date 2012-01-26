@@ -28,7 +28,7 @@ import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
@@ -70,9 +70,9 @@ public final class SpringErrorsAttrProcessor
 
     @Override
     public ProcessorResult processAttribute(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final BindStatus bindStatus = 
             FieldUtils.getBindStatus(arguments, attributeValue, true);
@@ -93,8 +93,8 @@ public final class SpringErrorsAttrProcessor
                         ValueFormatterWrapper.getDisplayString(errorMsgs[i], false));
             }
             
-            // Remove previous tag children
-            tag.clearChildren();
+            // Remove previous element children
+            element.clearChildren();
             
             
             final Configuration configuration = arguments.getConfiguration();
@@ -108,16 +108,16 @@ public final class SpringErrorsAttrProcessor
 
             for (final Node child : fragNodes) {
                 child.setSkippable(true);
-                tag.addChild(child);
+                element.addChild(child);
             }
             
-            tag.removeAttribute(attributeName);
+            element.removeAttribute(attributeName);
             
             return ProcessorResult.setLocalVariables(localVariables);
             
         }
         
-        tag.getParent().removeChild(tag);
+        element.getParent().removeChild(element);
         
         return ProcessorResult.OK;
         

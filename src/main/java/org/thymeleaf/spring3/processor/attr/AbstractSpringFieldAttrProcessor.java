@@ -25,7 +25,7 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.AttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
@@ -89,9 +89,9 @@ public abstract class AbstractSpringFieldAttrProcessor
 
     @Override
     public final ProcessorResult processAttribute(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
         
-        final String attributeValue = tag.getAttributeValue(attributeName);
+        final String attributeValue = element.getAttributeValue(attributeName);
         
         final BindStatus bindStatus = 
             FieldUtils.getBindStatus(arguments, attributeValue, false);
@@ -99,14 +99,14 @@ public abstract class AbstractSpringFieldAttrProcessor
         final Map<String,Object> localVariables = new HashMap<String,Object>();
         localVariables.put(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
         
-        return doProcess(arguments, tag, attributeName, attributeValue, bindStatus, localVariables);
+        return doProcess(arguments, element, attributeName, attributeValue, bindStatus, localVariables);
         
     }
     
     
 
     protected abstract ProcessorResult doProcess(
-            final Arguments arguments, final Tag tag, final String attributeName, 
+            final Arguments arguments, final Element element, final String attributeName, 
             final String attributeValue, final BindStatus bindStatus, 
             final Map<String,Object> localVariables);
     
@@ -116,9 +116,9 @@ public abstract class AbstractSpringFieldAttrProcessor
     
     // This method is designed to be overridable
     protected String computeId(
-            final Arguments arguments, final Tag tag, final String name, final boolean sequence) {
+            final Arguments arguments, final Element element, final String name, final boolean sequence) {
         
-        String id = tag.getAttributeValue("id");
+        String id = element.getAttributeValue("id");
         if (id != null && !id.trim().equals("")) {
             String idString = id.toString();
             return (StringUtils.hasText(idString) ? idString : null);

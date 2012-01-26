@@ -24,7 +24,7 @@ import java.util.Map;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -57,16 +57,16 @@ public final class SpringInputRadioFieldAttrProcessor
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Tag tag,
+    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
         
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, true);
+        final String id = computeId(arguments, element, name, true);
         
-        final String value = tag.getAttributeValue("value");
+        final String value = element.getAttributeValue("value");
         if (value == null) {
             throw new TemplateProcessingException(
                     "Attribute \"value\" is required in \"input(radio)\" tags");
@@ -76,15 +76,15 @@ public final class SpringInputRadioFieldAttrProcessor
             SelectedValueComparatorWrapper.isSelected(bindStatus, value);
         
         
-        tag.setAttribute("id", id);
-        tag.setAttribute("name", name);
-        tag.setAttribute("value", value);
+        element.setAttribute("id", id);
+        element.setAttribute("name", name);
+        element.setAttribute("value", value);
         if (checked) {
-            tag.setAttribute("checked", "checked");
+            element.setAttribute("checked", "checked");
         } else {
-            tag.removeAttribute("checked");
+            element.removeAttribute("checked");
         }
-        tag.removeAttribute(attributeName);
+        element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         
         

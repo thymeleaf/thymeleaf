@@ -24,7 +24,7 @@ import java.util.Map;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 
 
@@ -102,23 +102,23 @@ public final class SpringInputGeneralFieldAttrProcessor
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Tag tag,
+    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
         
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, false);
+        final String id = computeId(arguments, element, name, false);
         
         // No escaping needed as attribute values are always escaped by default
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
         
-        tag.setAttribute("id", id);
-        tag.setAttribute("name", name);
+        element.setAttribute("id", id);
+        element.setAttribute("name", name);
         
-        tag.setAttribute("value", value);
-        tag.removeAttribute(attributeName);
+        element.setAttribute("value", value);
+        element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         
         

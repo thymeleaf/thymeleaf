@@ -27,7 +27,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -55,20 +55,20 @@ public final class SpringSelectFieldAttrProcessor
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Tag tag,
+    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
         
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, false);
+        final String id = computeId(arguments, element, name, false);
 
-        boolean multiple = tag.hasAttribute("multiple");
+        boolean multiple = element.hasAttribute("multiple");
         
-        final NestableNode parent = tag.getParent();
+        final NestableNode parent = element.getParent();
         
-        final Tag inputElement = (Tag) tag.cloneNode(parent, false);
+        final Element inputElement = (Element) element.cloneNode(parent, false);
         inputElement.removeAttribute(attributeName);
         
         inputElement.setAttribute("id", id);
@@ -77,13 +77,13 @@ public final class SpringSelectFieldAttrProcessor
 
         processOptionChildren(inputElement, attributeName, attributeValue);
         
-        parent.insertBefore(tag, inputElement);
-        parent.removeChild(tag);
+        parent.insertBefore(element, inputElement);
+        parent.removeChild(element);
         
 
         if (multiple) {
             
-            final Tag hiddenElement = new Tag("input");
+            final Element hiddenElement = new Element("input");
             hiddenElement.setAttribute("type", "hidden");
             hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
             hiddenElement.setAttribute("value", "1");
@@ -101,15 +101,15 @@ public final class SpringSelectFieldAttrProcessor
 
     
     private void processOptionChildren(
-            final Tag inputTag, final String selectAttrName, final String selectAttrValue) {
+            final Element inputTag, final String selectAttrName, final String selectAttrValue) {
         
         final List<Node> children = inputTag.getChildren();
         
         for (final Node child : children) {
             
-            if (child != null && child instanceof Tag) {
+            if (child != null && child instanceof Element) {
                 
-                final Tag childTag = (Tag) child;
+                final Element childTag = (Element) child;
                 final String childTagName = childTag.getNormalizedName();
 
                 childTag.setSkippable(false);

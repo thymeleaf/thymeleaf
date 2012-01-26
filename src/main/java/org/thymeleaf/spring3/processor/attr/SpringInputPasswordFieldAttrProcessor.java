@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 
 
@@ -59,20 +59,20 @@ public final class SpringInputPasswordFieldAttrProcessor
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Tag tag,
+    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
         
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, false);
+        final String id = computeId(arguments, element, name, false);
         
-        tag.setAttribute("id", id);
-        tag.setAttribute("name", name);
+        element.setAttribute("id", id);
+        element.setAttribute("name", name);
         
-        tag.setAttribute("value", "");
-        tag.removeAttribute(attributeName);
+        element.setAttribute("value", "");
+        element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         
         

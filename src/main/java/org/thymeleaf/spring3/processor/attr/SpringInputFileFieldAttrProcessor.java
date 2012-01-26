@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 
 
@@ -57,18 +57,18 @@ public final class SpringInputFileFieldAttrProcessor
 
     @Override
     protected ProcessorResult doProcess(final Arguments arguments,
-            final Tag tag, final String attributeName, 
+            final Element element, final String attributeName, 
             final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
         
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, false);
+        final String id = computeId(arguments, element, name, false);
         
-        tag.setAttribute("id", id);
-        tag.setAttribute("name", name);
-        tag.removeAttribute(attributeName);
+        element.setAttribute("id", id);
+        element.setAttribute("name", name);
+        element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         
         

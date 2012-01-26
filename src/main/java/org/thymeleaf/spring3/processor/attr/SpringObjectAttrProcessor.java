@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
@@ -64,10 +64,10 @@ public final class SpringObjectAttrProcessor
     
 
     @Override
-    protected void validateSelectionValue(final Arguments arguments, final Tag tag,
+    protected void validateSelectionValue(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final Expression expression) {
         
-        if ("form".equals(tag.getNormalizedName())) {
+        if ("form".equals(element.getNormalizedName())) {
             
             if (expression != null && expression instanceof VariableExpression) {
 
@@ -112,15 +112,15 @@ public final class SpringObjectAttrProcessor
 
     @Override
     protected Map<String, Object> getAdditionalLocalVariables(
-            final Arguments arguments, final Tag tag, final String attributeName) {
+            final Arguments arguments, final Element element, final String attributeName) {
 
         final Map<String,Object> additionalLocalVariables = new HashMap<String, Object>();
         additionalLocalVariables.putAll(
-                super.getAdditionalLocalVariables(arguments, tag, attributeName));
+                super.getAdditionalLocalVariables(arguments, element, attributeName));
         
-        if ("form".equals(tag.getNormalizedName())) {
+        if ("form".equals(element.getNormalizedName())) {
 
-            final String attributeValue = tag.getAttributeValue(attributeName);
+            final String attributeValue = element.getAttributeValue(attributeName);
             final VariableExpression varExpression =
                 (VariableExpression) StandardExpressionProcessor.parseExpression(arguments, attributeValue);
             additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);

@@ -39,7 +39,7 @@ import org.thymeleaf.context.WebContext;
  *       in the application context. This variable can be accessed like any other variable
  *       in the context: <tt>${beans.myBean.doSomething()}</tt>.</li>
  *   <li>A reference to the Application Context itself, that can be obtained and used from
- *       tag/attribute processors ({@link #getApplicationContext()}).</li>
+ *       element/attribute processors ({@link #getApplicationContext()}).</li>
  * </ul>
  * 
  * @author Daniel Fern&aacute;ndez

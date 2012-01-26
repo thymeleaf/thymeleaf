@@ -24,7 +24,7 @@ import java.util.Map;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Tag;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -52,25 +52,25 @@ public final class SpringTextareaFieldAttrProcessor
 
 
     @Override
-    protected ProcessorResult doProcess(final Arguments arguments, final Tag tag,
+    protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
         
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
-        final String id = computeId(arguments, tag, name, false);
+        final String id = computeId(arguments, element, name, false);
         
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
         
-        tag.setAttribute("id", id);
-        tag.setAttribute("name", name);
+        element.setAttribute("id", id);
+        element.setAttribute("name", name);
         
         final Text text = new Text(value == null? "" : value);
 
-        tag.clearChildren();
-        tag.addChild(text);
-        tag.removeAttribute(attributeName);
+        element.clearChildren();
+        element.addChild(text);
+        element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         
         
