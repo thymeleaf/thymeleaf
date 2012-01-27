@@ -17,16 +17,16 @@ import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.ParserInitializationException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
+import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.util.ResourcePool;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -51,7 +51,7 @@ import org.xml.sax.ext.DefaultHandler2;
  * @author Daniel Fern&aacute;ndez
  * 
  */
-public abstract class AbstractNonValidatingSAXTemplateParser extends AbstractTemplateParser {
+public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplateParser {
     
     
     private final ResourcePool<SAXParser> pool;

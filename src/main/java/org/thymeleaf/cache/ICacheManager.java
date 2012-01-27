@@ -19,15 +19,18 @@
  */
 package org.thymeleaf.cache;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.thymeleaf.Template;
+import org.thymeleaf.dom.Node;
 
 
 
 public interface ICacheManager {
     
     public ICache<String,Template> getTemplateCache();
+    public ICache<String,List<Node>> getFragmentCache();
     public ICache<String,Properties> getMessageCache();
     public ICache<String,Object> getExpressionCache();
 

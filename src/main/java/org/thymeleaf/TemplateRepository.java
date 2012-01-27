@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public final class TemplateRepository {
     private static final Logger logger = LoggerFactory.getLogger(TemplateRepository.class);
 
     private final ICache<String,Template> templateCache; // might be null! (= no cache)
+    private final ICache<String,List<Node>> fragmentCache; // might be null! (= no cache)
     private final Map<String,ITemplateParser> parsersByTemplateMode;
     
     
@@ -67,8 +69,10 @@ public final class TemplateRepository {
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager == null) {
             this.templateCache = null;
+            this.fragmentCache = null;
         } else {
             this.templateCache = cacheManager.getTemplateCache();
+            this.fragmentCache = cacheManager.getFragmentCache();
         }
             
         this.parsersByTemplateMode = new HashMap<String,ITemplateParser>();
@@ -95,6 +99,22 @@ public final class TemplateRepository {
         }
     }
     
+    
+    
+    
+    
+    public void clearFragmentCache() {
+        if (this.fragmentCache != null) {
+            this.fragmentCache.clear();
+        }
+    }
+
+    
+    public void clearFragmentCacheFor(final String fragment) {
+        if (this.fragmentCache != null) {
+            this.fragmentCache.clearKey(fragment);
+        }
+    }
     
     
     
@@ -222,15 +242,49 @@ public final class TemplateRepository {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(fragment, "Fragment cannot be null");
 
+        final String templateMode = arguments.getTemplateResolution().getTemplateMode();
+        final String cacheKey = computeFragmentCacheKey(templateMode, fragment);
+
+        if (this.fragmentCache != null) {
+            final List<Node> fragmentNodes = this.fragmentCache.get(cacheKey);
+            if (fragmentNodes != null) {
+                return cloneFragmentNodes(fragmentNodes);
+            }
+        }
+        
         final Configuration configuration = arguments.getConfiguration();
         
         final ITemplateParser templateParser =
-                configuration.getTemplateModeHandler(
-                        arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
+                configuration.getTemplateModeHandler(templateMode).getTemplateParser();
+      
+        final List<Node> fragmentNodes = templateParser.parseFragment(configuration, fragment);
+        
+        if (this.fragmentCache != null) {
+            this.fragmentCache.put(cacheKey, fragmentNodes);
+            return cloneFragmentNodes(fragmentNodes);
+        }
 
-        return templateParser.parseFragment(configuration, fragment);
+
+        return fragmentNodes;
         
     }
     
+    
+    
+    private static String computeFragmentCacheKey(final String templateMode, final String fragment) {
+        return "{" +  templateMode + "}" + fragment;
+    }
+    
+    
+    private static List<Node> cloneFragmentNodes(final List<Node> fragmentNodes) {
+        if (fragmentNodes == null) {
+            return null;
+        }
+        final List<Node> clonedNodes = new ArrayList<Node>();
+        for (final Node fragmentNode : fragmentNodes) {
+            clonedNodes.add(fragmentNode.cloneNode(null, false));
+        }
+        return clonedNodes;
+    }
     
 }

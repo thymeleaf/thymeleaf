@@ -19,9 +19,11 @@
  */
 package org.thymeleaf.cache;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.thymeleaf.Template;
+import org.thymeleaf.dom.Node;
 
 
 
@@ -41,6 +43,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
 
     private final ICache<String,Template> templateCache;
+    private final ICache<String,List<Node>> fragmentCache;
     private final ICache<String,Object> expressionCache;
     private final ICache<String,Properties> messageCache;
 
@@ -48,6 +51,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     public AbstractCacheManager() {
         super();
         this.templateCache = initializeTemplateCache();
+        this.fragmentCache = initializeFragmentCache();
         this.messageCache = initializeMessageCache();
         this.expressionCache = initializeExpressionCache();
     }
@@ -55,6 +59,10 @@ public abstract class AbstractCacheManager implements ICacheManager {
     
     public final ICache<String, Template> getTemplateCache() {
         return this.templateCache;
+    }
+    
+    public final ICache<String, List<Node>> getFragmentCache() {
+        return this.fragmentCache;
     }
 
     public final ICache<String, Properties> getMessageCache() {
@@ -72,6 +80,8 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
 
     protected abstract ICache<String,Template> initializeTemplateCache();
+
+    protected abstract ICache<String,List<Node>> initializeFragmentCache();
     
     protected abstract ICache<String,Properties> initializeMessageCache();
     

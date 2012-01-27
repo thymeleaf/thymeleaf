@@ -11,10 +11,10 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
+import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.util.ResourcePool;
 import org.thymeleaf.util.StandardDOMTranslator;
 import org.xml.sax.InputSource;
@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
  * 
  * @author Daniel Fern&aacute;ndez
  */
-public abstract class AbstractHtmlTemplateParser extends AbstractTemplateParser {
+public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
 
     private final String templateModeName;
     private final boolean nekoInClasspath;

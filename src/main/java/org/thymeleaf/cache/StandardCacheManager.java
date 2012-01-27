@@ -19,12 +19,14 @@
  */
 package org.thymeleaf.cache;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Template;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.dom.Node;
 
 
 
@@ -46,6 +48,11 @@ public class StandardCacheManager extends AbstractCacheManager {
     public static final int DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE = 10;
     public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 50;
     public static final boolean DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES = true;
+    
+    public static final String DEFAULT_FRAGMENT_CACHE_NAME = "FRAGMENT_CACHE";
+    public static final int DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE = 50;
+    public static final int DEFAULT_FRAGMENT_CACHE_MAX_SIZE = 300;
+    public static final boolean DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES = true;
     
     public static final String DEFAULT_MESSAGE_CACHE_NAME = "MESSAGE_CACHE";
     public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 50;
@@ -71,6 +78,14 @@ public class StandardCacheManager extends AbstractCacheManager {
                 getTemplateCacheName(), getTemplateCacheUseSoftReferences(), 
                 getTemplateCacheInitialSize(), getTemplateCacheMaxSize(), 
                 getTemplateValidityChecker(), getTemplateCacheLogger());
+    }
+    
+    @Override
+    protected final ICache<String, List<Node>> initializeFragmentCache() {
+        return new StandardCache<String, List<Node>>(
+                getFragmentCacheName(), getFragmentCacheUseSoftReferences(), 
+                getFragmentCacheInitialSize(), getFragmentCacheMaxSize(), 
+                getFragmentValidityChecker(), getFragmentCacheLogger());
     }
 
     
@@ -118,6 +133,32 @@ public class StandardCacheManager extends AbstractCacheManager {
         return new StandardParsedTemplateEntryValidator();
     }
 
+
+    
+    
+    protected String getFragmentCacheName() {
+        return DEFAULT_FRAGMENT_CACHE_NAME;
+    }
+    
+    protected boolean getFragmentCacheUseSoftReferences() {
+        return DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
+    }
+    
+    protected int getFragmentCacheInitialSize() {
+        return DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
+    }
+    
+    protected int getFragmentCacheMaxSize() {
+        return DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
+    }
+    
+    protected Logger getFragmentCacheLogger() {
+        return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getFragmentCacheName());
+    }
+    
+    protected ICacheEntryValidityChecker<String,List<Node>> getFragmentValidityChecker() {
+        return null;
+    }
     
     
     protected String getMessageCacheName() {

@@ -16,10 +16,10 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ParserInitializationException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.templateparser.AbstractTemplateParser;
 import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
+import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.util.ResourcePool;
 import org.thymeleaf.util.StandardDOMTranslator;
 import org.xml.sax.InputSource;
@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  * @author Daniel Fern&aacute;ndez
  * 
  */
-public abstract class AbstractNonValidatingDOMTemplateParser extends AbstractTemplateParser {
+public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplateParser {
     
     
     private static final String SAXPARSEEXCEPTION_BAD_ELEMENT_CONTENT =
