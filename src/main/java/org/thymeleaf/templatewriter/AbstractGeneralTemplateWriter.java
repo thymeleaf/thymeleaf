@@ -6,12 +6,13 @@ import java.io.Writer;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Standards;
 import org.thymeleaf.doctype.DocTypeIdentifier;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.util.Validate;
 
@@ -128,23 +129,19 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
          * TODO ALL LENIENCY ISSUES (element name and attr name) SHOULD BE CHECKED HERE DURING OUTPUT
          */
         writer.write('<');
-        writer.write(element.getName());
+        writer.write(element.getOriginalName());
         if (element.hasAttributes()) {
-            for (final String normalizedAttributeName : element.getAttributeNormalizedNames()) {
+            for (final Attribute attribute : element.getAttributeMap().values()) {
                 boolean writeAttribute = true;
-                if (element.getHasXmlnsAttributes()) {
-                    final String prefix = 
-                            arguments.getConfiguration().getPrefixIfXmlnsAttribute(normalizedAttributeName);
-                    if (prefix != null) {
-                        writeAttribute = arguments.getConfiguration().isLenient(prefix);
-                    }
+                if (attribute.isXmlnsAttribute()) {
+                    writeAttribute = arguments.getConfiguration().isLenient(attribute.getXmlnsPrefix());
                 }
                 if (writeAttribute) {
                     writer.write(' ');
-                    writer.write(element.getAttributeOriginalNameFromNormalizedName(normalizedAttributeName));
+                    writer.write(attribute.getOriginalName());
                     writer.write('=');
                     writer.write('\"');
-                    writer.write(element.getAttributeValueFromNormalizedName(normalizedAttributeName));
+                    writer.write(attribute.getValue());
                     writer.write('\"');
                 }
             }
@@ -156,7 +153,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
             }
             writer.write('<');
             writer.write('/');
-            writer.write(element.getName());
+            writer.write(element.getOriginalName());
             writer.write('>');
         } else {
             if (useXhtmlTagMinimizationRules()) {
@@ -168,7 +165,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                     writer.write('>');
                     writer.write('<');
                     writer.write('/');
-                    writer.write(element.getName());
+                    writer.write(element.getOriginalName());
                     writer.write('>');
                 }
             } else {

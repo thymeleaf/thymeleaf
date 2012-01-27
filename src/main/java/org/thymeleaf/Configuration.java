@@ -35,8 +35,8 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
@@ -81,8 +81,6 @@ public final class Configuration {
     
     private Set<IMessageResolver> defaultMessageResolvers = null;
     private Set<ITemplateModeHandler> defaultTemplateModeHandlers = null;
-    
-    private Map<String,String> prefixesByXmlnsAttributeName = null;
     
     private volatile boolean initialized;
     
@@ -255,19 +253,6 @@ public final class Configuration {
                             "Null parser returned by handler for template mode \"" + handler.getTemplateModeName() + "\"");
                 }
                 this.templateModeHandlersByName.put(handler.getTemplateModeName(), handler);
-            }
-            
-            
-            /*
-             * Initialize xmlns attribute names
-             */
-            this.prefixesByXmlnsAttributeName = new HashMap<String, String>();
-            for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
-                if (dialectConfiguration.getPrefix() != null) {
-                    this.prefixesByXmlnsAttributeName.put(
-                            Standards.XMLNS_PREFIX + dialectConfiguration.getPrefix(), 
-                            dialectConfiguration.getPrefix());
-                }
             }
             
             
@@ -588,15 +573,6 @@ public final class Configuration {
     
     public boolean isPrefixManaged(final String prefix) {
         return this.mergedLenienciesByPrefix.containsKey(prefix);
-    }
-    
-
-    
-    public final String getPrefixIfXmlnsAttribute(final String attributeName) {
-        if (attributeName != null) {
-            return this.prefixesByXmlnsAttributeName.get(attributeName);
-        }
-        return null;
     }
 
     

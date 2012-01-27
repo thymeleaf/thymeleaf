@@ -497,10 +497,8 @@ public final class Standards {
                 "FRAME", "HR", "IMG", "INPUT", "ISINDEX", "KEYGEN", "LINK", 
                 "META", "PARAM", "SOURCE", "WBR"
             };
-    
-    
-    
-    public static final String XMLNS_PREFIX = "xmlns:";
+
+
     
     
     

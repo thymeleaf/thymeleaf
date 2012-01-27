@@ -71,7 +71,7 @@ public abstract class AbstractUnescapedTextChildModifierElementProcessor
             throw e;
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "An error happened during parsing of unescaped text: \"" + element.getName() + "\"", e);
+                    "An error happened during parsing of unescaped text: \"" + element.getOriginalName() + "\"", e);
         }
         
     }

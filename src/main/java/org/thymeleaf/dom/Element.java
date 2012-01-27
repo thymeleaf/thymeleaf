@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
+import org.thymeleaf.util.PrefixUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -40,18 +41,18 @@ import org.thymeleaf.util.Validate;
  */
 public final class Element extends NestableNode {
 
-    private static final int DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE = 3;
+    private static final int DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE = 4;
     
-    private final String name;
+    private final String originalName;
     private final String normalizedName;
+    private final String normalizedPrefix;
+    private final String unprefixedNormalizedName;
+    private final boolean hasPrefix;
     
     private final boolean minimizableIfWeb;
     
-    private Map<String,String> attributeNames;
-    private Map<String,String> attributeValues;
+    private Map<String,Attribute> attributes;
     private int attributesLen;
-    
-    private boolean hasXmlnsAttributes;
 
 
     public Element(final String name) {
@@ -70,42 +71,48 @@ public final class Element extends NestableNode {
         
         Validate.notNull(name, "Element name cannot be null");
         
-        this.name = name;
+        this.originalName = name;
         this.normalizedName = Node.normalizeName(name);
+        this.normalizedPrefix = PrefixUtils.getPrefix(this.normalizedName);
+        this.unprefixedNormalizedName = PrefixUtils.getUnprefixed(this.normalizedName);
+        this.hasPrefix = this.normalizedPrefix != null;
+        
         this.minimizableIfWeb = 
                 Arrays.binarySearch(Standards.MINIMIZABLE_XHTML_TAGS, this.normalizedName) >= 0;
                 
         setChildren((Node[])null);
         setAttributes(null);
         
-        this.hasXmlnsAttributes = false;
-        
     }
     
 
     
-    public String getName() {
-        return this.name;
+    public String getOriginalName() {
+        return this.originalName;
     }
     
     public String getNormalizedName() {
         return this.normalizedName;
     }
     
-    
-    public boolean isName(final String comparedName) {
-        if (comparedName == null) {
-            return false;
-        }
-        return Node.normalizeName(comparedName).equals(this.normalizedName);
+    public String getNormalizedPrefix() {
+        return this.normalizedPrefix;
     }
 
+
+    public String getUnprefixedNormalizedName() {
+        return this.unprefixedNormalizedName;
+    }
+
+
+    public boolean getHasPrefix() {
+        return this.hasPrefix;
+    }
+
+    
+    
     public boolean isMinimizableIfWeb() {
         return this.minimizableIfWeb;
-    }
-    
-    public boolean getHasXmlnsAttributes() {
-        return this.hasXmlnsAttributes;
     }
     
     
@@ -133,15 +140,31 @@ public final class Element extends NestableNode {
     
     public boolean hasAttribute(final String attributeName) {
         if (this.attributesLen > 0) {
-            return this.attributeNames.containsKey(Node.normalizeName(attributeName));
+            return this.attributes.containsKey(Node.normalizeName(attributeName));
         }
         return false;
     }
     
     
+    public boolean hasNormalizedAttribute(final String normalizedAttributeName) {
+        if (this.attributesLen > 0) {
+            return this.attributes.containsKey(normalizedAttributeName);
+        }
+        return false;
+    }
+
+    
+    public Attribute getAttributeFromNormalizedName(final String normalizedAttributeName) {
+        if (this.attributesLen > 0) {
+            return this.attributes.get(normalizedAttributeName);
+        }
+        return null;
+    }
+
+    
     public Set<String> getAttributeNormalizedNames() {
         if (this.attributesLen > 0) {
-            return this.attributeValues.keySet();
+            return this.attributes.keySet();
         }
         return Collections.emptySet();
     }
@@ -149,7 +172,11 @@ public final class Element extends NestableNode {
     
     public String getAttributeOriginalNameFromNormalizedName(final String normalizedAttributeName) {
         if (this.attributesLen > 0) {
-            return this.attributeNames.get(normalizedAttributeName);
+            final Attribute attribute = this.attributes.get(normalizedAttributeName);
+            if (attribute == null) {
+                return null;
+            }
+            return attribute.getOriginalName();
         }
         return null;
     }
@@ -157,7 +184,11 @@ public final class Element extends NestableNode {
     
     public String getAttributeValueFromNormalizedName(final String normalizedAttributeName) {
         if (this.attributesLen > 0) {
-            return this.attributeValues.get(normalizedAttributeName);
+            final Attribute attribute = this.attributes.get(normalizedAttributeName);
+            if (attribute == null) {
+                return null;
+            }
+            return attribute.getValue();
         }
         return null;
     }
@@ -165,15 +196,19 @@ public final class Element extends NestableNode {
     
     public String getAttributeValue(final String attributeName) {
         if (this.attributesLen > 0) {
-            return this.attributeValues.get(Node.normalizeName(attributeName));
+            final Attribute attribute = this.attributes.get(Node.normalizeName(attributeName));
+            if (attribute == null) {
+                return null;
+            }
+            return attribute.getValue();
         }
         return null;
     }
     
     
-    public Map<String,String> getAttributeMap() {
-        if (this.attributeValues != null) {
-            return Collections.unmodifiableMap(this.attributeValues);
+    public Map<String,Attribute> getAttributeMap() {
+        if (this.attributes != null) {
+            return Collections.unmodifiableMap(this.attributes);
         }
         return Collections.emptyMap();
     }
@@ -184,45 +219,34 @@ public final class Element extends NestableNode {
         Validate.notNull(name, "Attribute name cannot be null");
         Validate.notNull(value, "Attribute value (" + name + ") cannot be null");
         if (this.attributesLen == 0) {
-            this.attributeNames = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
-            this.attributeValues = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
+            this.attributes = new LinkedHashMap<String,Attribute>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
         }
-        final String normalizedAttributeName = Node.normalizeName(name);
-        this.attributeNames.put(normalizedAttributeName, name);
-        this.attributeValues.put(normalizedAttributeName, value);
-        this.attributesLen = this.attributeValues.size();
-        if (normalizedAttributeName.startsWith(Standards.XMLNS_PREFIX)) {
-            this.hasXmlnsAttributes = true;
-        }
+        final Attribute attribute = new Attribute(name, value);
+        this.attributes.put(attribute.getNormalizedName(), attribute);
+        this.attributesLen = this.attributes.size();
     }
 
     
     public void setAttributes(final Map<String,String> newAttributes) {
         if (newAttributes != null && newAttributes.size() > 0) {
             if (this.attributesLen == 0) {
-                this.attributeNames = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
-                this.attributeValues = new LinkedHashMap<String,String>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
+                this.attributes = new LinkedHashMap<String,Attribute>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
             }
             for (final Map.Entry<String,String> newAttributesEntry : newAttributes.entrySet()) {
                 final String newAttributeName = newAttributesEntry.getKey();
                 final String newAttributeValue = newAttributesEntry.getValue();
                 Validate.notNull(newAttributeName, "Attribute name cannot be null");
                 Validate.notNull(newAttributeValue, "Attribute value (" + newAttributeName + ") cannot be null");
-                final String normalizedAttributeName = Node.normalizeName(newAttributeName);
-                this.attributeNames.put(normalizedAttributeName, newAttributeName);
-                this.attributeValues.put(normalizedAttributeName, newAttributeValue);
-                if (normalizedAttributeName.startsWith(Standards.XMLNS_PREFIX)) {
-                    this.hasXmlnsAttributes = true;
-                }
+                final Attribute attribute = new Attribute(newAttributeName, newAttributeValue);
+                this.attributes.put(attribute.getNormalizedName(), attribute);
             }
-            this.attributesLen = this.attributeValues.size();
+            this.attributesLen = this.attributes.size();
         }
     }
     
     
     public void clearAttributes() {
-        this.attributeValues = null;
-        this.attributeNames = null;
+        this.attributes = null;
         this.attributesLen = 0;
     }
     
@@ -233,9 +257,8 @@ public final class Element extends NestableNode {
 
         if (this.attributesLen > 0) {
             final String normalizedAttributeName = Node.normalizeName(attributeName);
-            this.attributeNames.remove(normalizedAttributeName);
-            this.attributeValues.remove(normalizedAttributeName);
-            this.attributesLen = this.attributeValues.size();
+            this.attributes.remove(normalizedAttributeName);
+            this.attributesLen = this.attributes.size();
         }
         
     }
@@ -278,7 +301,7 @@ public final class Element extends NestableNode {
 
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        return new Element(this.name, getDocumentName(), getLineNumber());
+        return new Element(this.originalName, getDocumentName(), getLineNumber());
     }
     
 
@@ -288,11 +311,9 @@ public final class Element extends NestableNode {
         final Element element = (Element) node;
         
         if (this.attributesLen > 0) {
-            element.attributeNames = new LinkedHashMap<String, String>(this.attributeNames);
-            element.attributeValues = new LinkedHashMap<String, String>(this.attributeValues);
+            element.attributes = new LinkedHashMap<String,Attribute>(this.attributes);
             element.attributesLen = this.attributesLen;
         }
-        element.hasXmlnsAttributes = this.hasXmlnsAttributes;
         
     }
 

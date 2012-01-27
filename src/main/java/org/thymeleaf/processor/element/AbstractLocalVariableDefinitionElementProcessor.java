@@ -64,7 +64,7 @@ public abstract class AbstractLocalVariableDefinitionElementProcessor
         
         if (newLocalVariables == null) {
             throw new TemplateProcessingException("Null variables map for \"" +
-                    element.getName() + "\" element not allowed");
+                    element.getOriginalName() + "\" element not allowed");
         }
         
         if (removeHostElement) {

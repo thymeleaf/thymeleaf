@@ -306,7 +306,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             final long currentTime = System.currentTimeMillis();
             if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // first check without need to sync
                 synchronized (this) {
-                    if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) { // double-checking OK thanks to volatile
+                    if ((currentTime - this.lastExecution) >= REPORT_INTERVAL) {
                         this.logger.trace(
                                 String.format(REPORT_FORMAT,
                                         Integer.valueOf(size()),

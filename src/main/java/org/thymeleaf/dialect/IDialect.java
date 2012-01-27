@@ -97,8 +97,8 @@ public interface IDialect {
     /**
      * <p>
      *   Returns whether the dialect is lenient or not. If the dialect is not lenient, then
-     *   the existence of attributes or elements starting with the dialect prefix for which
-     *   no attribute/element processor exists is considered an error. 
+     *   after execution of a template no attributes or elements should exist in the result
+     *   with the prefix specified by this dialect (an error is raised if such thing happens). 
      * </p>
      * <p>
      *   For non-lenient dialects, any xmlns:{prefix} attributes in the document root or any

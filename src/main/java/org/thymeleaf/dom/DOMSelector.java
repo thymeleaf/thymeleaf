@@ -325,7 +325,7 @@ public final class DOMSelector {
                 final String selectedAttributeName = attributeEntry.getKey();
                 final String selectedAttributeValue = attributeEntry.getValue();
                 if (selectedAttributeValue == null) {
-                    if (!element.hasAttribute(selectedAttributeName)) {
+                    if (!element.hasNormalizedAttribute(selectedAttributeName)) {
                         return false;
                     }
                 } else {
