@@ -128,19 +128,23 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     
     protected void writeElement(final Arguments arguments, final Writer writer, final Element element) 
             throws IOException {
-        /*
-         * TODO ALL LENIENCY ISSUES (element name and attr name) SHOULD BE CHECKED HERE DURING OUTPUT
-         */
+
         writer.write('<');
         writer.write(element.getOriginalName());
         if (element.hasAttributes()) {
             final Configuration configuration = arguments.getConfiguration();
             for (final Attribute attribute : element.getAttributeMap().values()) {
+                
                 boolean writeAttribute = true;
+                
                 if (attribute.isXmlnsAttribute()) {
-                    writeAttribute = configuration.isLenient(attribute.getXmlnsPrefix());
+                    final String xmlnsPrefix = attribute.getXmlnsPrefix();
+                    if (configuration.isPrefixManaged(xmlnsPrefix)) {
+                        writeAttribute = configuration.isLenient(xmlnsPrefix);
+                    }
                 } else if (attribute.hasPrefix()) {
-                    if (!configuration.isLenient(attribute.getNormalizedPrefix())) {
+                    final String prefix = attribute.getNormalizedPrefix();
+                    if (configuration.isPrefixManaged(prefix) && !configuration.isLenient(prefix)) {
                         throw new TemplateProcessingException(
                                 "Error processing template: dialect prefix \"" + attribute.getNormalizedPrefix() + "\" " +
                                 "is set as non-lenient but attribute \"" + attribute.getOriginalName() + "\" has not " +
