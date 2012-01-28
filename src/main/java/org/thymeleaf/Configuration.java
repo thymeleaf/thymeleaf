@@ -466,11 +466,11 @@ public final class Configuration {
     
     
     
-    public List<ProcessorAndContext> computeProcessorsForNode(final Node node) {
+    public ArrayList<ProcessorAndContext> computeProcessorsForNode(final Node node) {
         
         if (node instanceof Element) {
 
-            final List<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
+            final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
             
             final Element element = (Element) node;
 
@@ -522,7 +522,7 @@ public final class Configuration {
         
         if (applicableNonSpecificProcessors != null) {
         
-            final List<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
+            final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
         
             for (final ProcessorAndContext processorAndContext : applicableNonSpecificProcessors) {
                 if (processorAndContext.matches(node)) {
@@ -559,12 +559,12 @@ public final class Configuration {
     }
     
     
-    public boolean isLenient(final String prefix) {
+    public boolean isLenient(final String normalizedPrefix) {
         checkInitialized();
-        final Boolean leniency = this.mergedLenienciesByPrefix.get(prefix);
+        final Boolean leniency = this.mergedLenienciesByPrefix.get(normalizedPrefix);
         if (leniency == null) {
             throw new ConfigurationException(
-                    "Cannot compute leniency for prefix \"" + prefix + "\": No dialect/s " +
+                    "Cannot compute leniency for prefix \"" + normalizedPrefix + "\": No dialect/s " +
                     "have been configured for such prefix."); 
         }
         return leniency.booleanValue();

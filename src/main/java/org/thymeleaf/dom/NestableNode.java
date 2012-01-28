@@ -41,6 +41,9 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class NestableNode extends Node {
     
+    private static final long serialVersionUID = -5601217853971985055L;
+
+    
     private Node[] children;
     private int childrenLen;
     

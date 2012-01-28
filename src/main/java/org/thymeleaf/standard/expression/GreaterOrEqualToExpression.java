@@ -82,7 +82,7 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
             if (leftValue != null && rightValue != null &&
                     leftValue.getClass().equals(rightValue.getClass()) && 
                     Comparable.class.isAssignableFrom(leftValue.getClass())) {
-                result = Boolean.valueOf(((Comparable<Object>)leftValue).compareTo(rightValue) != -1);
+                result = Boolean.valueOf(((Comparable<Object>)leftValue).compareTo(rightValue) >= 0);
             } else {
                 throw new TemplateProcessingException(
                         "Cannot execute GREATER OR EQUAL TO from Expression \"" + 

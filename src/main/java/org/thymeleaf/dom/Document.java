@@ -34,6 +34,10 @@ import org.thymeleaf.util.Validate;
  */
 public final class Document extends NestableNode {
 
+
+    private static final long serialVersionUID = 8647371304942210133L;
+
+    
     private DocType docType;
     
     

@@ -32,8 +32,9 @@ package org.thymeleaf.dom;
 public final class CDATASection extends AbstractTextNode {
     
     
-    
-    
+    private static final long serialVersionUID = -3389597836166184694L;
+
+
     public CDATASection(final String content) {
         this(content, true, null, null);
     }

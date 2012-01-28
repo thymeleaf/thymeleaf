@@ -41,6 +41,9 @@ import org.thymeleaf.util.Validate;
  */
 public final class Element extends NestableNode {
 
+    private static final long serialVersionUID = -8434931215899913983L;
+
+    
     private static final int DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE = 4;
     
     private final String originalName;
@@ -51,7 +54,7 @@ public final class Element extends NestableNode {
     
     private final boolean minimizableIfWeb;
     
-    private Map<String,Attribute> attributes;
+    private LinkedHashMap<String,Attribute> attributes;
     private int attributesLen;
 
 

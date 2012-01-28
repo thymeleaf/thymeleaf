@@ -1,11 +1,11 @@
 package org.thymeleaf.doctype;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.Writer;
+import java.util.regex.Pattern;
 
 import org.thymeleaf.util.Validate;
-
-import java.util.regex.Pattern;
 
 /**
  * 
@@ -15,8 +15,11 @@ import java.util.regex.Pattern;
  * @since 1.0
  *
  */
-public final class DocTypeIdentifier {
+public final class DocTypeIdentifier implements Serializable {
 
+    private static final long serialVersionUID = -2899688477489960285L;
+
+    
     public static DocTypeIdentifier ANY = new DocTypeIdentifier(false, true, null);
     public static DocTypeIdentifier NONE = new DocTypeIdentifier(true, false, null);
     

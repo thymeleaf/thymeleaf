@@ -32,7 +32,10 @@ package org.thymeleaf.dom;
 public final class Text extends AbstractTextNode {
 
 
-    
+    private static final long serialVersionUID = 8715604048893435570L;
+
+
+
     public Text(final String content) {
         this(content, true, null, null);
     }

@@ -35,6 +35,8 @@ import org.thymeleaf.util.Validate;
 public final class Comment extends Node {
     
     
+    private static final long serialVersionUID = 1750478035496424682L;
+
     private final char[] content;
 
 

@@ -86,7 +86,7 @@ public final class Attribute {
     }
 
 
-    public boolean getHasPrefix() {
+    public boolean hasPrefix() {
         return this.hasPrefix;
     }
 

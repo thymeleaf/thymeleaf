@@ -1,5 +1,6 @@
 package org.thymeleaf.dom;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +11,11 @@ import java.util.regex.Pattern;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
-public final class DOMSelector {
+public final class DOMSelector implements Serializable {
 
+    private static final long serialVersionUID = -1680336779267140369L;
+
+    
     private static final String selectorPatternStr =
             "(/{1,2})([^/\\s]*?)(?:\\[(.*?)\\](?:\\[(.*?)\\])?)?";
     private static final Pattern selectorPattern =
@@ -21,7 +25,7 @@ public final class DOMSelector {
     private final boolean descendMoreThanOneLevel;
     private final String selectorName;
     private final boolean text;
-    private Map<String,String> attributes = null;
+    private HashMap<String,String> attributes = null;
     private Integer index = null; // will be -1 if last()
     
     private final DOMSelector next;
@@ -97,7 +101,7 @@ public final class DOMSelector {
             
             Integer ind = parseIndex(index1Group);
             if (ind == null) {
-                Map<String,String> attribs = parseAttributes(selectorSpec, index1Group);
+                HashMap<String,String> attribs = parseAttributes(selectorSpec, index1Group);
                 if (attribs == null) {
                     throw new TemplateProcessingException(
                             "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
@@ -150,14 +154,14 @@ public final class DOMSelector {
     
 
     
-    private static Map<String,String> parseAttributes(final String selectorSpec, final String indexGroup) {
-        final Map<String,String> attributes = new HashMap<String, String>();
+    private static HashMap<String,String> parseAttributes(final String selectorSpec, final String indexGroup) {
+        final HashMap<String,String> attributes = new HashMap<String, String>();
         parseAttributes(selectorSpec, attributes, indexGroup);
         return attributes;
     }
 
     
-    private static void parseAttributes(final String selectorSpec, final Map<String,String> attributes, final String indexGroup) {
+    private static void parseAttributes(final String selectorSpec, final HashMap<String,String> attributes, final String indexGroup) {
         
         String att = null;
         final int andPos = indexGroup.indexOf(" and "); 
@@ -175,7 +179,7 @@ public final class DOMSelector {
 
     
     
-    private static void parseAttribute(final String selectorSpec, final Map<String,String> attributes, final String attributeSpec) {
+    private static void parseAttribute(final String selectorSpec, final HashMap<String,String> attributes, final String attributeSpec) {
         
         final int eqPos = attributeSpec.indexOf("="); 
         if (eqPos != -1) {

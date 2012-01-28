@@ -19,8 +19,10 @@
  */
 package org.thymeleaf.dom;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
@@ -38,9 +40,10 @@ import org.thymeleaf.util.IdentityCounter;
  * @since 2.0.0
  *
  */
-public abstract class Node {
+public abstract class Node implements Serializable {
 
-    
+    private static final long serialVersionUID = 3082306990735650683L;
+
     private final String documentName;
     private final Integer lineNumber;
     
@@ -50,9 +53,9 @@ public abstract class Node {
     private boolean recomputeProcessorsAfterEachExecution;
     private boolean recomputeProcessorsImmediately;
     
-    private Map<String,Object> nodeLocalVariables;
+    private HashMap<String,Object> nodeLocalVariables;
 
-    private List<ProcessorAndContext> processors;
+    private ArrayList<ProcessorAndContext> processors;
     
 
     
@@ -406,7 +409,7 @@ public abstract class Node {
         }
         node.parent = newParent;
         if (this.nodeLocalVariables != null) {
-            node.nodeLocalVariables = new LinkedHashMap<String, Object>(this.nodeLocalVariables);
+            node.nodeLocalVariables = new HashMap<String, Object>(this.nodeLocalVariables);
         }
     }
 

@@ -1,5 +1,7 @@
 package org.thymeleaf.dom;
 
+import java.io.Serializable;
+
 import org.thymeleaf.Configuration;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
@@ -12,8 +14,9 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
-public final class DocType {
+public final class DocType implements Serializable {
     
+    private static final long serialVersionUID = -5122946925754578948L;
 
     private final String rootElementName;
     private final String publicId;

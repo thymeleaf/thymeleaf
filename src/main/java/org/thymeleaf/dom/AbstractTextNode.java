@@ -36,6 +36,8 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class AbstractTextNode extends Node {
 
+    private static final long serialVersionUID = -4406245492696671750L;
+
     protected char[] content;
     protected boolean escapeXml;
 

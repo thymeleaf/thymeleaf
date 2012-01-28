@@ -75,7 +75,7 @@ public final class DialectConfiguration {
         super();
         // Prefix CAN be null
         Validate.notNull(dialect, "Dialect cannot be null");
-        this.prefix = (prefix == null)? null : prefix.toLowerCase();
+        this.prefix = Node.normalizeName(prefix);
         this.dialect = dialect;
         this.initialized = false;
     }

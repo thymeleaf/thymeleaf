@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.CDATASection;
@@ -14,6 +16,7 @@ import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -131,10 +134,18 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
         writer.write('<');
         writer.write(element.getOriginalName());
         if (element.hasAttributes()) {
+            final Configuration configuration = arguments.getConfiguration();
             for (final Attribute attribute : element.getAttributeMap().values()) {
                 boolean writeAttribute = true;
                 if (attribute.isXmlnsAttribute()) {
-                    writeAttribute = arguments.getConfiguration().isLenient(attribute.getXmlnsPrefix());
+                    writeAttribute = configuration.isLenient(attribute.getXmlnsPrefix());
+                } else if (attribute.hasPrefix()) {
+                    if (!configuration.isLenient(attribute.getNormalizedPrefix())) {
+                        throw new TemplateProcessingException(
+                                "Error processing template: dialect prefix \"" + attribute.getNormalizedPrefix() + "\" " +
+                                "is set as non-lenient but attribute \"" + attribute.getOriginalName() + "\" has not " +
+                                "been removed during process", TemplateEngine.threadTemplateName(), element.getLineNumber());
+                    }
                 }
                 if (writeAttribute) {
                     writer.write(' ');
