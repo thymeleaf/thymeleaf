@@ -108,6 +108,8 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     public void writeNode(final Arguments arguments, final Writer writer, final Node node) 
             throws IOException {
     
+        Validate.notNull(arguments, "Arguments cannot be null");
+        
         if (node instanceof Element) {
             writeElement(arguments, writer, (Element)node);
         } else if (node instanceof Text) {
@@ -128,7 +130,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     
     protected void writeElement(final Arguments arguments, final Writer writer, final Element element) 
             throws IOException {
-
+        
         writer.write('<');
         writer.write(element.getOriginalName());
         if (element.hasAttributes()) {

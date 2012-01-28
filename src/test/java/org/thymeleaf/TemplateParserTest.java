@@ -10,13 +10,18 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.xmldom.XhtmlAndHtml5NonValidatingDOMTemplateParser;
 import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
+import org.thymeleaf.templateresolver.NonCacheableTemplateResolutionValidity;
+import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.templatewriter.ITemplateWriter;
 
 /**
@@ -51,6 +56,7 @@ public class TemplateParserTest {
         this.templateResolver = new StringTemplateResolver("!!!");
 
         this.configuration = new Configuration();
+        this.configuration.setDialect(new TestDialect());
         this.configuration.setTemplateResolver(this.templateResolver);
         this.configuration.setMessageResolver(new StandardMessageResolver());
         this.configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
@@ -74,7 +80,7 @@ public class TemplateParserTest {
             "<body><!--c2--><p><![CDATA[cd2]]></p></body></html>");
         
         parseAndTest(DT_T1 +
-            "<html><body><div th:remove='tag'>remove me</div></body></html>");
+            "<html><body><div th:remove='all'>remove me</div></body></html>");
         
     }
     
@@ -161,11 +167,35 @@ public class TemplateParserTest {
 
     
     private String createOutput(final Document document) throws IOException {
+        
+        final TemplateProcessingParameters templateProcessingParameters = 
+                new TemplateProcessingParameters(this.configuration, "test", new Context());
+        
+        final TemplateResolution templateResolution = 
+                new TemplateResolution("test", "test", new ClassLoaderResourceResolver(), "UTF-8", "XHTML", 
+                        new NonCacheableTemplateResolutionValidity());
+        
+        final Arguments arguments = 
+                new Arguments(templateProcessingParameters, templateResolution, 
+                        new TemplateRepository(this.configuration), document);
+        
         final StringWriter stringWriter = new StringWriter();
         final ITemplateWriter templateWriter = 
                 this.configuration.getTemplateModeHandler("XHTML").getTemplateWriter();
-        templateWriter.write(null, stringWriter, document);
+        templateWriter.write(arguments, stringWriter, document);
         return stringWriter.toString();
+    }
+    
+
+    
+    
+    static class TestDialect extends StandardDialect {
+
+        @Override
+        public boolean isLenient() {
+            return true;
+        }
+        
     }
     
 }
