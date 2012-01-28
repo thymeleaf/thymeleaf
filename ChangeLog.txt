@@ -26,7 +26,10 @@
   TemplateProcessingParameters object instead of an Arguments one.
 - Added a new "all-but-first" value to "th:remove" that removes all children tags
   except the first one.
-  
+- Modified javascript inlining of Enums so that no properties other than "$type" and "$name"
+  are output. This avoids problems with typical static and member fields containing
+  all the values of an enum and thus provoking stack overflow errors when performing inlining.
+
 
 
 1.1.4

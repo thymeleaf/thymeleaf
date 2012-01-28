@@ -22,7 +22,6 @@ package org.thymeleaf.dom;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
@@ -43,6 +42,8 @@ import org.thymeleaf.util.IdentityCounter;
 public abstract class Node implements Serializable {
 
     private static final long serialVersionUID = 3082306990735650683L;
+    
+    private static final int DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE = 3;
 
     private final String documentName;
     private final Integer lineNumber;
@@ -190,7 +191,7 @@ public abstract class Node implements Serializable {
 
     public final void addNodeLocalVariable(final String name, final Object value) {
         if (this.nodeLocalVariables == null) {
-            this.nodeLocalVariables = new LinkedHashMap<String, Object>();
+            this.nodeLocalVariables = new HashMap<String, Object>(DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE);
         }
         this.nodeLocalVariables.put(name,  value);
     }
@@ -205,7 +206,7 @@ public abstract class Node implements Serializable {
 
     final void setNodeLocalVariables(final Map<String,Object> variables) {
         if (variables != null) {
-            this.nodeLocalVariables = new LinkedHashMap<String,Object>(variables);
+            this.nodeLocalVariables = new HashMap<String,Object>(variables);
         } else { 
             this.nodeLocalVariables = null;
         }

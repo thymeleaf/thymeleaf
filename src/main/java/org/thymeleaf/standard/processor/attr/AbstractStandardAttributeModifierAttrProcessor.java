@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
@@ -68,7 +68,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
         
-        final Map<String,String> newAttributeValues = new LinkedHashMap<String,String>();
+        final Map<String,String> newAttributeValues = new HashMap<String,String>(assignations.size() + 1, 1.0f);
         
         for (final Assignation assignation : assignations) {
             

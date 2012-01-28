@@ -20,11 +20,11 @@
 package org.thymeleaf.processor;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.util.Validate;
 
 
@@ -66,7 +66,7 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
         if (attributeValuesByNameFilter == null || attributeValuesByNameFilter.size() == 0) {
             this.attributeValuesByNameFilter = null;
         } else {
-            final Map<String, String> newAttributeValuesByNameFilter = new LinkedHashMap<String, String>();
+            final Map<String, String> newAttributeValuesByNameFilter = new HashMap<String, String>(attributeValuesByNameFilter.size() + 1, 1.0f);
             newAttributeValuesByNameFilter.putAll(attributeValuesByNameFilter);
             this.attributeValuesByNameFilter = Collections.unmodifiableMap(newAttributeValuesByNameFilter);
         }

@@ -22,7 +22,7 @@ package org.thymeleaf.standard.expression;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +63,7 @@ public final class LinkExpression extends SimpleExpression {
     private static final Pattern LINK_PATTERN = 
         Pattern.compile("^\\s*\\@\\{(.+?)\\}\\s*$", Pattern.DOTALL);
     
+    private static final List<Object> EMPTY_PARAMETER_VALUE = Collections.singletonList((Object)"");
     
     
     private final Expression base;
@@ -240,10 +241,11 @@ public final class LinkExpression extends SimpleExpression {
                     arguments.getContext().getClass().getName() + ")");
         }
         
+        @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
                     resolveParameters(arguments, expression.getParameters(), expressionEvaluator) :
-                    new HashMap<String,List<Object>>());
+                    (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         
         final int questionMarkPosition = linkBase.indexOf("?"); 
@@ -329,7 +331,7 @@ public final class LinkExpression extends SimpleExpression {
             final Arguments arguments, final AssignationSequence assignationValues, 
             final IStandardExpressionEvaluator expressionEvaluator) {
         
-        final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>();
+        final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
             
             final String parameterName = assignationValue.getLeft().getValue();
@@ -337,7 +339,7 @@ public final class LinkExpression extends SimpleExpression {
             
             final Object value = Expression.execute(arguments, parameterExpression, expressionEvaluator);
             if (value == null) {
-                parameters.put(parameterName, convertParameterValueToList(""));
+                parameters.put(parameterName, EMPTY_PARAMETER_VALUE);
             } else {
                 parameters.put(parameterName, convertParameterValueToList(LiteralValue.unwrap(value)));
             }
@@ -352,12 +354,14 @@ public final class LinkExpression extends SimpleExpression {
     
     private static List<Object> convertParameterValueToList(final Object parameterValue) {
         
-        final List<Object> result = new ArrayList<Object>();
         if (parameterValue instanceof Iterable<?>) {
+            final List<Object> result = new ArrayList<Object>();
             for (final Object obj : (Iterable<?>) parameterValue) {
                 result.add(obj);
             }
+            return result;
         } else if (parameterValue.getClass().isArray()){
+            final List<Object> result = new ArrayList<Object>();
             if (parameterValue instanceof byte[]) {
                 for (final byte obj : (byte[]) parameterValue) {
                     result.add(Byte.valueOf(obj));
@@ -395,11 +399,10 @@ public final class LinkExpression extends SimpleExpression {
                     result.add(obj);
                 }
             }
+            return result;
         } else{
-            result.add(parameterValue);
+            return Collections.singletonList(parameterValue);
         }
-        
-        return result;
         
     }
     

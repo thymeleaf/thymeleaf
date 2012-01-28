@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.context;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -29,7 +29,7 @@ import java.util.Map;
  *   implementations.
  * </p>
  * <p>
- *   Constructors in this class mimic those in {@link LinkedHashMap} and
+ *   Constructors in this class mimic those in {@link HashMap} and
  *   have the same meaning.
  * </p>
  * 
@@ -38,7 +38,7 @@ import java.util.Map;
  * @since 1.0
  *
  */
-public class VariablesMap<K,V> extends LinkedHashMap<K,V> {
+public class VariablesMap<K,V> extends HashMap<K,V> {
 
     private static final long serialVersionUID = 6785956724279950873L;
     
@@ -46,11 +46,6 @@ public class VariablesMap<K,V> extends LinkedHashMap<K,V> {
 
     public VariablesMap() {
         super();
-    }
-
-    public VariablesMap(final int initialCapacity, 
-            final float loadFactor, final boolean accessOrder) {
-        super(initialCapacity, loadFactor, accessOrder);
     }
 
     public VariablesMap(final int initialCapacity, final float loadFactor) {

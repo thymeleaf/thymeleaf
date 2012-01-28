@@ -22,7 +22,6 @@ package org.thymeleaf;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -34,9 +33,9 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
+import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.IProcessorMatcher;
-import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorMatchingContext;
 import org.thymeleaf.util.Validate;
@@ -195,7 +194,7 @@ public final class DialectConfiguration {
             /*
              * Initializing execution arguments
              */
-            this.executionAttributes = new LinkedHashMap<String, Object>();
+            this.executionAttributes = new HashMap<String, Object>();
             this.executionAttributes.putAll(this.dialect.getExecutionAttributes());
 
             

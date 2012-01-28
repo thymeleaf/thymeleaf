@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
@@ -71,7 +71,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
         
-        final Map<String,Object> newLocalVariables = new LinkedHashMap<String,Object>();
+        final Map<String,Object> newLocalVariables = new HashMap<String,Object>(assignations.size() + 1, 1.0f);
         for (final Assignation assignation : assignations) {
             
             final String varName = assignation.getLeft().getValue();

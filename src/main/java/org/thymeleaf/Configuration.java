@@ -72,7 +72,7 @@ public final class Configuration {
     private Map<String,Set<ProcessorAndContext>> mergedSpecificProcessorsByAttributeName;
     private Map<Class<? extends Node>, Set<ProcessorAndContext>> mergedNonSpecificProcessorsByNodeClass;
 
-    private Map<String,Object> mergedExecutionAttributes = new LinkedHashMap<String, Object>();
+    private Map<String,Object> mergedExecutionAttributes = null;
     private Map<String,Boolean> mergedLenienciesByPrefix = null;
     private Set<IDocTypeResolutionEntry> mergedDocTypeResolutionEntries = null;
     private Set<IDocTypeTranslation> mergedDocTypeTranslations = null;
@@ -603,7 +603,7 @@ public final class Configuration {
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName = new HashMap<String, Set<ProcessorAndContext>>();
         final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = new HashMap<String, Set<ProcessorAndContext>>();
         final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
-        final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
+        final Map<String,Object> executionAttributes = new HashMap<String, Object>();
         final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new HashSet<IDocTypeResolutionEntry>();
         final Set<IDocTypeTranslation> docTypeTranslations = new HashSet<IDocTypeTranslation>();
         final Map<String,Boolean> leniencyByPrefix = new HashMap<String, Boolean>();

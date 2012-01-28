@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,7 +72,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
         final Object valueForAttributes = 
             StandardExpressionProcessor.executeExpression(arguments, expression);
         
-        final Map<String,String> result = new LinkedHashMap<String,String>();
+        final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {
             result.put(newAttributeName, (valueForAttributes == null? "" : valueForAttributes.toString()));
         }

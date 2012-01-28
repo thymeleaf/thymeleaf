@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.thymeleaf.Arguments;
@@ -40,7 +40,7 @@ public final class StandardAltTitleAttrProcessor
     public static final int ATTR_PRECEDENCE = 990;
     public static final String ATTR_NAME = "alt-title";
     public static final Set<String> TARGET_ATTR_NAMES = 
-        new LinkedHashSet<String>(Arrays.asList(new String[] {"alt", "title"}));
+        new HashSet<String>(Arrays.asList(new String[] {"alt", "title"}));
     
     
 

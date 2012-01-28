@@ -20,7 +20,7 @@
 package org.thymeleaf.templateresolver;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -91,7 +91,7 @@ public class TemplateResolver
     private Long cacheTTLMs = null;
     private IResourceResolver resourceResolver = null;
     
-    private final LinkedHashMap<String,String> templateAliases = new LinkedHashMap<String, String>();
+    private final HashMap<String,String> templateAliases = new HashMap<String, String>();
     
     private final PatternSpec xmlTemplateModePatternSpec = new PatternSpec();
     private final PatternSpec validXmlTemplateModePatternSpec = new PatternSpec();

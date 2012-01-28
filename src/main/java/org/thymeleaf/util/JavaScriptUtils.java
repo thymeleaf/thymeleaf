@@ -22,7 +22,6 @@ package org.thymeleaf.util;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -332,9 +331,9 @@ public final class JavaScriptUtils {
 
     private static void printObject(final StringBuilder output, final Object object) {
         try {
-            final Map<String,Object> properties = new LinkedHashMap<String, Object>();
             final PropertyDescriptor[] descriptors =
-                Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors();
+                    Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors();
+            final Map<String,Object> properties = new LinkedHashMap<String, Object>(descriptors.length + 1, 1.0f);
             for (final PropertyDescriptor descriptor : descriptors) {
                 final Method readMethod =  descriptor.getReadMethod();
                 if (readMethod != null) {
@@ -361,35 +360,12 @@ public final class JavaScriptUtils {
         
         final Enum<?> enumObject = (Enum<?>) object;
         final Class<?> enumClass = object.getClass();
-        final Field[] declaredFields = enumClass.getDeclaredFields();
         
-        try {
+        final Map<String,Object> properties = new LinkedHashMap<String, Object>(3, 1.0f);
+        properties.put("$type", enumClass.getSimpleName());
+        properties.put("$name", enumObject.name());
 
-            final Map<String,Object> properties = new LinkedHashMap<String, Object>();
-            properties.put("$type", enumClass.getSimpleName());
-            properties.put("$name", enumObject.name());
-            for (final Field field : declaredFields) {
-                if (!field.isEnumConstant()) {
-                    final String name = field.getName();
-                    if (!name.equals("ENUM$VALUES")) {
-                        final boolean isAccessible = field.isAccessible(); 
-                        if (!isAccessible) {
-                            field.setAccessible(true);
-                        }
-                        final Object value = field.get(object);
-                        properties.put(name, value);
-                        if (!isAccessible) {
-                            field.setAccessible(false);
-                        }
-                    }
-                }
-            }
-
-            printMap(output, properties);
-            
-        } catch (final IllegalAccessException e) {
-            throw new IllegalArgumentException("Could not perform introspection on object of class " + object.getClass().getName(), e);
-        }
+        printMap(output, properties);
         
     }
 

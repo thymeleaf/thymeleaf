@@ -22,7 +22,7 @@ package org.thymeleaf.standard;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -403,7 +403,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(OgnlExpressionEvaluator.INSTANCE);
         final StandardExpressionParser parser = StandardExpressionProcessor.createStandardExpressionParser(executor);
         
-        final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
+        final Map<String,Object> executionAttributes = new HashMap<String, Object>();
         executionAttributes.put(
                 StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(

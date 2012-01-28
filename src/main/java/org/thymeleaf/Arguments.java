@@ -21,7 +21,6 @@ package org.thymeleaf;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.IContext;
@@ -543,7 +542,8 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = new LinkedHashMap<String, Object>();
+        final Map<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
@@ -581,7 +581,8 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = new LinkedHashMap<String, Object>();
+        final Map<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
@@ -620,7 +621,8 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = new LinkedHashMap<String, Object>();
+        final Map<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
@@ -661,7 +663,8 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = new LinkedHashMap<String, Object>();
+        final Map<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
         cloneLocalVariables.putAll(this.localVariables);
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 

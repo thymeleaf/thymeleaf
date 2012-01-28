@@ -926,13 +926,15 @@ public class TemplateEngine {
             new Arguments(templateProcessingParameters, templateResolution, this.templateRepository, document);
         
         if (logger.isDebugEnabled()) {
-            logger.debug("[THYMELEAF][{}] Starting DOM transformations on template \"{}\"", TemplateEngine.threadIndex(), templateName);
+            logger.debug("[THYMELEAF][{}] Starting process on template \"{}\" using mode \"{}\"", 
+                    new Object[] { TemplateEngine.threadIndex(), templateName, templateResolution.getTemplateMode() });
         }
         
         document.process(arguments);
         
         if (logger.isDebugEnabled()) {
-            logger.debug("[THYMELEAF][{}] Finished DOM transformations on template \"{}\"", TemplateEngine.threadIndex(), templateName);
+            logger.debug("[THYMELEAF][{}] Finished process on template \"{}\" using mode \"{}\"", 
+                    new Object[] { TemplateEngine.threadIndex(), templateName, templateResolution.getTemplateMode() });
         }
         
         final String templateMode = 

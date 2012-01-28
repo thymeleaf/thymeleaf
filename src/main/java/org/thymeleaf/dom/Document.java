@@ -74,7 +74,9 @@ public final class Document extends NestableNode {
 
     @Override
     final void doAdditionalPrecomputeNestableNode(final Configuration configuration) {
-        this.docType.process(configuration);
+        if (this.docType != null) {
+            this.docType.process(configuration);
+        }
     }
 
     
