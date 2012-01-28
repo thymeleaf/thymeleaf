@@ -306,7 +306,8 @@ public abstract class Node implements Serializable {
              */
             if (!isDetached() && this.processors != null && this.processors.size() > 0) {
                 
-                final IdentityCounter<ProcessorAndContext> alreadyExecuted = new IdentityCounter<ProcessorAndContext>(3);
+                final IdentityCounter<ProcessorAndContext> alreadyExecuted = 
+                        new IdentityCounter<ProcessorAndContext>(this.processors.size());
                 Arguments processingArguments = executionArguments;
 
                 while (!isDetached() && processingArguments != null) {
@@ -332,7 +333,7 @@ public abstract class Node implements Serializable {
                 
             }
             
-            doAdditionalProcess(executionArguments, processOnlyElementNodes);
+            doAdditionalProcess(executionArguments, executionArguments.getProcessOnlyElementNodes());
             
         }
     

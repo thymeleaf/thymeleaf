@@ -20,7 +20,7 @@
 package org.thymeleaf.util;
 
 import java.io.Serializable;
-import java.util.IdentityHashMap;
+import java.util.Arrays;
 
 
 /**
@@ -28,7 +28,9 @@ import java.util.IdentityHashMap;
  *   Purpose-specific set that can tell whether an object (by reference)
  *   has already been added to it.
  * </p>
- * 
+ * <p>
+ *   Objects of this class are <b>not thread-safe</b>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -40,23 +42,35 @@ public final class IdentityCounter<T> implements Serializable {
 
     private static final long serialVersionUID = -6787140331913313991L;
 
-    private final IdentityHashMap<T,Object> map;
-    
-    private final static Object VALUE = new Object();
+    private Object[] counted;
+    private int countedSize;
+    private int countedLen;
+
     
     public IdentityCounter(final int expectedMaxSize) {
         super();
-        this.map = new IdentityHashMap<T,Object>(expectedMaxSize);
+        this.counted = new Object[expectedMaxSize];
+        this.countedSize = expectedMaxSize;
+        this.countedLen = 0;
     }
 
     
     public void count(final T object) {
-        this.map.put(object, VALUE);
+        if (this.countedLen >= this.countedSize) {
+            this.countedSize *= 2;
+            this.counted = Arrays.copyOf(this.counted, this.countedSize);
+        }
+        this.counted[this.countedLen++] = object;
     }
 
     
     public boolean isAlreadyCounted(final T object) {
-        return this.map.containsKey(object);
+        for (int i = 0; i < this.countedLen; i++) {
+            if (this.counted[i] == object) {
+                return true;
+            }
+        }
+        return false;
     }
     
     
