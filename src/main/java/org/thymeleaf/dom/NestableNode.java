@@ -460,10 +460,10 @@ public abstract class NestableNode extends Node {
     
     
     @Override
-    final void doAdditionalProcess(final Arguments arguments) {
+    final void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes) {
         if (!isDetached() && this.childrenLen > 0) {
             final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(10);
-            while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed)) { /* Nothing to be done here */ }
+            while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed, processOnlyElementNodes)) { /* Nothing to be done here */ }
         }
     }
     
@@ -471,7 +471,8 @@ public abstract class NestableNode extends Node {
     
     
     private static final boolean computeNextChild(
-            final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed) {
+            final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed, 
+            final boolean processOnlyElementNodes) {
         
         // This method scans the whole array of children each time
         // it tries to execute one so that it executes all sister nodes
@@ -479,7 +480,7 @@ public abstract class NestableNode extends Node {
         if (node.childrenLen > 0) {
             for (final Node child : node.children) {
                 if (!alreadyProcessed.isAlreadyCounted(child)) {
-                    child.processNode(arguments);
+                    child.processNode(arguments, processOnlyElementNodes);
                     alreadyProcessed.count(child);
                     return true;
                 }

@@ -97,7 +97,7 @@ public abstract class AbstractTextNode extends Node {
     
     
     @Override
-    final void doAdditionalProcess(final Arguments arguments) {
+    final void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes) {
         // Nothing to be done here
     }
     

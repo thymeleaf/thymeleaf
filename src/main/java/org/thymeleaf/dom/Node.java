@@ -48,6 +48,8 @@ public abstract class Node implements Serializable {
     private final String documentName;
     private final Integer lineNumber;
     
+    private final boolean shouldConsiderAsElementForProcessing;
+    
     protected NestableNode parent;
     private boolean skippable;
     private boolean precomputed;
@@ -57,7 +59,6 @@ public abstract class Node implements Serializable {
     private HashMap<String,Object> nodeLocalVariables;
 
     private ArrayList<ProcessorAndContext> processors;
-    
 
     
     public static String normalizeName(final String name) {
@@ -90,6 +91,7 @@ public abstract class Node implements Serializable {
         this.recomputeProcessorsImmediately = false;
         this.nodeLocalVariables = null;
         this.processors = null;
+        this.shouldConsiderAsElementForProcessing = (this instanceof Element || this instanceof Document);
     }
 
 
@@ -266,9 +268,9 @@ public abstract class Node implements Serializable {
     
     
     
-    void processNode(final Arguments arguments) {
+    void processNode(final Arguments arguments, final boolean processOnlyElementNodes) {
 
-        if (!(this instanceof Element || this instanceof Document) && arguments.getProcessOnlyElementNodes()) {
+        if (!this.shouldConsiderAsElementForProcessing && processOnlyElementNodes) {
             return;
         }
         
@@ -330,7 +332,7 @@ public abstract class Node implements Serializable {
                 
             }
             
-            doAdditionalProcess(executionArguments);
+            doAdditionalProcess(executionArguments, processOnlyElementNodes);
             
         }
     
@@ -381,7 +383,7 @@ public abstract class Node implements Serializable {
     
     
     
-    abstract void doAdditionalProcess(final Arguments arguments);
+    abstract void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes);
     
     
 
