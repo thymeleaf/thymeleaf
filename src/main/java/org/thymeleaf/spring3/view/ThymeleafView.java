@@ -211,9 +211,6 @@ public class ThymeleafView
         
         final TemplateEngine viewTemplateEngine = getTemplateEngine();
         
-        final String templateResult =
-            viewTemplateEngine.process(getTemplateName(), context);
-        
         final String templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
@@ -228,7 +225,7 @@ public class ThymeleafView
             response.setCharacterEncoding(templateCharacterEncoding);
         }
         
-        response.getWriter().write(templateResult);
+        viewTemplateEngine.process(getTemplateName(), context, response.getWriter());
         
     }
     
