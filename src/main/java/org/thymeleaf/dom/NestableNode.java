@@ -43,16 +43,16 @@ public abstract class NestableNode extends Node {
     
     private static final long serialVersionUID = -5601217853971985055L;
 
+    private static final int DEFAULT_CHILDREN_SIZE = 3;
     
-    private Node[] children;
-    private int childrenLen;
+    private Node[] children = null;
+    private int childrenLen = 0;
     
 
 
 
     protected NestableNode(final String documentName, final Integer lineNumber) {
         super(documentName, lineNumber);
-        setChildren((Node[])null);
     }
     
     
@@ -80,7 +80,7 @@ public abstract class NestableNode extends Node {
         if (this.childrenLen == 0) {
             return Collections.emptyList();
         }
-        return Arrays.asList(this.children);
+        return Arrays.asList(Arrays.copyOf(this.children, this.childrenLen));
     }
 
     
@@ -89,9 +89,9 @@ public abstract class NestableNode extends Node {
             return Collections.emptyList();
         }
         final List<Element> elementChildren = new ArrayList<Element>();
-        for (final Node child : this.children) {
-            if (child instanceof Element) {
-                elementChildren.add((Element)child);
+        for (int i = 0; i < this.childrenLen; i++) {
+            if (this.children[i] instanceof Element) {
+                elementChildren.add((Element)this.children[i]);
             }
         }
         return Collections.unmodifiableList(elementChildren);
@@ -115,9 +115,9 @@ public abstract class NestableNode extends Node {
         if (this.childrenLen == 0) {
             return null;
         }
-        for (final Node child : this.children) {
-            if (child instanceof Element) {
-                return (Element) child;
+        for (int i = 0; i < this.childrenLen; i++) {
+            if (this.children[i] instanceof Element) {
+                return (Element)this.children[i];
             }
         }
         return null;
@@ -130,22 +130,23 @@ public abstract class NestableNode extends Node {
             
             if (this.childrenLen == 0) {
                 
-                this.children = new Node[] { newChild };
+                this.children = new Node[DEFAULT_CHILDREN_SIZE];
+                this.children[0] = newChild;
                 this.childrenLen = 1;
                 
             } else {
                 
-                for (final Node child : this.children) {
-                    if (child == newChild) {
+                for (int i = 0; i < this.childrenLen; i++) {
+                    if (this.children[i] == newChild) {
                         return;
                     }
                 }
 
-                final Node[] auxChildren = this.children;
-                this.children = new Node[this.childrenLen + 1];
-                System.arraycopy(auxChildren, 0, this.children, 0, this.childrenLen);
-                this.children[this.childrenLen] = newChild;
-                this.childrenLen = this.children.length;
+                if (this.childrenLen >= this.children.length) {
+                    final Node[] newChildren = Arrays.copyOf(this.children, this.children.length * 2);
+                    this.children = newChildren;
+                }
+                this.children[this.childrenLen++] = newChild;
                 
             }
             
@@ -176,7 +177,7 @@ public abstract class NestableNode extends Node {
                         if (i == index) {
                             return;
                         }
-                        removeChild(i);
+                        unsafeRemoveChild(i);
                         break;
                     }
                 }
@@ -188,21 +189,22 @@ public abstract class NestableNode extends Node {
             
             if (this.childrenLen == 0) {
                 
-                this.children = new Node[] { newChild };
+                this.children = new Node[DEFAULT_CHILDREN_SIZE];
+                this.children[0] = newChild;
                 this.childrenLen = 1;
                 
             } else {
-                
-                final Node[] auxChildren = this.children;
-                this.children = new Node[this.childrenLen + 1];
-                if (index > 0) {
-                    System.arraycopy(auxChildren, 0, this.children, 0, index);
+
+                if (this.childrenLen >= this.children.length) {
+                    final Node[] newChildren = Arrays.copyOf(this.children, this.children.length * 2);
+                    this.children = newChildren;
+                }
+
+                for (int i = this.childrenLen; i > index; i--) {
+                    this.children[i] = this.children[i - 1];
                 }
                 this.children[index] = newChild;
-                if ((index + 1) < this.children.length) {
-                    System.arraycopy(auxChildren, index, this.children, index + 1, (this.childrenLen - index));
-                }
-                this.childrenLen = this.children.length;
+                this.childrenLen++;
                 
             }
             
@@ -215,65 +217,44 @@ public abstract class NestableNode extends Node {
 
     
     public final void insertBefore(final Node existingChild, final Node newChild) {
-        int pos = -1;
-        for (int i = 0; i < this.childrenLen && pos < 0; i++) {
+        for (int i = 0; i < this.childrenLen; i++) {
             if (this.children[i] == existingChild) {
-                pos = i;
+                insertChild(i, newChild);
+                return;
             }
         }
-        if (pos == -1) {
-            throw new IllegalArgumentException("Child does not exist: cannot execute 'insertAfter' operation");
-        }
-        insertChild(pos, newChild);
+        throw new IllegalArgumentException("Child does not exist: cannot execute 'insertBefore' operation");
+        
     }
 
 
     
     public final void insertAfter(final Node existingChild, final Node newChild) {
-        int pos = -1;
-        for (int i = 0; i < this.childrenLen && pos < 0; i++) {
+        for (int i = 0; i < this.childrenLen; i++) {
             if (this.children[i] == existingChild) {
-                pos = i;
+                insertChild(i + 1, newChild);
+                return;
             }
         }
-        if (pos == -1) {
-            throw new IllegalArgumentException("Child does not exist: cannot execute 'insertAfter' operation");
-        }
-        insertChild(pos + 1, newChild);
+        throw new IllegalArgumentException("Child does not exist: cannot execute 'insertAfter' operation");
     }
     
-    
-    
-    public final void setChildren(final Node[] newChildren) {
-        
-        if (this.children != null) {
-            for (final Node child : this.children) {
-                child.parent = null;
-            }
-            this.children = null;
-            this.childrenLen = 0;
-        }
-        
-        if (newChildren != null && newChildren.length > 0) {
-            for (final Node newChild : newChildren) {
-                addChild(newChild);
-            }
-        }
-        
-    }
 
     
     public final void setChildren(final List<Node> newChildren) {
         
         if (this.children != null) {
-            for (final Node child : this.children) {
-                child.parent = null;
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].parent = null;
             }
             this.children = null;
             this.childrenLen = 0;
         }
         
-        if (newChildren != null && newChildren.size() > 0) {
+        if (newChildren == null || newChildren.size() == 0) {
+            this.children = null;
+            this.childrenLen = 0;
+        } else {
             for (final Node newChild : newChildren) {
                 addChild(newChild);
             }
@@ -283,42 +264,49 @@ public abstract class NestableNode extends Node {
     
     
     public final void clearChildren() {
-        setChildren((Node[])null);
+        if (this.children != null) {
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].parent = null;
+            }
+            this.children = null;
+            this.childrenLen = 0;
+        }
     }
+    
     
     
     public final void removeChild(final int index) {
-        
         Validate.isTrue(index >= 0, "Index of child to remove must be >= 0");
         Validate.isTrue(index < this.childrenLen, "Index of child to be removed must be less than size (" + this.childrenLen + ")");
-
-        this.children[index].parent = null;
-        final Node[] auxChildren = this.children;
-        this.children = new Node[this.childrenLen - 1];
-        if (index > 0) {
-            System.arraycopy(auxChildren, 0, this.children, 0, index);
-        }
-        if (index + 1 < this.childrenLen) {
-            System.arraycopy(auxChildren, index + 1, this.children, index, this.childrenLen - (index + 1));
-        }
-        this.childrenLen = this.children.length;
-        
+        unsafeRemoveChild(index);
     }
     
     
+    final void unsafeRemoveChild(final int index) {
+        this.children[index].parent = null;
+        for (int i = index + 1; i < this.childrenLen; i++) {
+            this.children[i - 1] = this.children[i];
+        }
+        this.childrenLen--;
+    }
+    
+
+    
     public final void removeChild(final Node child) {
-        
         Validate.notNull(child, "Child cannot be null");
-        
+        unsafeRemoveChild(child);
+    }
+    
+    
+    final void unsafeRemoveChild(final Node child) {
         if (this.childrenLen > 0) {
             for (int i = 0; i < this.childrenLen; i++) {
                 if (this.children[i] == child) {
-                    removeChild(i);
+                    unsafeRemoveChild(i);
                     return;
                 }
             }
         }
-        
     }
 
     
@@ -331,6 +319,7 @@ public abstract class NestableNode extends Node {
                 newParent.addChild(this.children[i]);
             }
             this.children = null;
+            this.childrenLen = 0;
         }
         
     }
@@ -349,9 +338,9 @@ public abstract class NestableNode extends Node {
                 for (int i = 0; i < this.childrenLen; i++) {
                     
                     if (this.children[i] == nestableChild) {
-                        removeChild(i);
+                        unsafeRemoveChild(i);
                         for (int j = 0; j < nestableChild.childrenLen; j++) {
-                            insertChild(i+j, nestableChild.children[j]);
+                            insertChild(i + j, nestableChild.children[j]);
                             nestableChild.children[j].addNodeLocalVariables(nestableChildNodeLocalVariables);
                         }
                         return;
@@ -360,7 +349,7 @@ public abstract class NestableNode extends Node {
                 }
                 
             } else {
-                removeChild(child);
+                unsafeRemoveChild(child);
             }
 
         }
@@ -382,8 +371,8 @@ public abstract class NestableNode extends Node {
          * Precompute children
          */
         if (this.childrenLen > 0) {
-            for (final Node child : this.children) {
-                child.precomputeNode(configuration);
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].precomputeNode(configuration);
             }
         }
         doAdditionalPrecomputeNestableNode(configuration);
@@ -408,8 +397,8 @@ public abstract class NestableNode extends Node {
         if (skippable && this.childrenLen > 0) {
             // If this node is marked as skippable, all of its
             // children should be marked skippable too.
-            for (final Node child : this.children) {
-                child.setSkippable(true);
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].setSkippable(true);
             }
         }
     }
@@ -436,7 +425,8 @@ public abstract class NestableNode extends Node {
             for (int i = 0; i < this.childrenLen; i++) {
                 elementChildren[i] = this.children[i].cloneNode(nestableNode, cloneProcessors);
             }
-            nestableNode.setChildren(elementChildren);
+            nestableNode.children = elementChildren;
+            nestableNode.childrenLen = elementChildren.length;
         }
         
         doCloneNestableNodeInternals(nestableNode, newParent, cloneProcessors);
@@ -478,7 +468,8 @@ public abstract class NestableNode extends Node {
         // it tries to execute one so that it executes all sister nodes
         // that might be created by, for example, iteration processors.
         if (node.childrenLen > 0) {
-            for (final Node child : node.children) {
+            for (int i = 0; i < node.childrenLen; i++) {
+                final Node child = node.children[i];
                 if (!alreadyProcessed.isAlreadyCounted(child)) {
                     child.processNode(arguments, processOnlyElementNodes);
                     alreadyProcessed.count(child);
@@ -498,8 +489,8 @@ public abstract class NestableNode extends Node {
     public final void visit(final DOMVisitor visitor) {
         visitor.visit(this);
         if (this.childrenLen > 0) {
-            for(final Node child : this.children) {
-                child.visit(visitor);
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].visit(visitor);
             }
         }
     }

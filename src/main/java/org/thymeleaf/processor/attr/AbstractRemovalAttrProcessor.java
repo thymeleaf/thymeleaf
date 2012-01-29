@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -142,7 +142,7 @@ public abstract class AbstractRemovalAttrProcessor
                 return ProcessorResult.OK;
             }
             if (this.removeBody.equals(value)) {
-                element.setChildren((Node[])null);
+                element.clearChildren();
                 element.removeAttribute(attributeName);
                 return ProcessorResult.OK;
             }

@@ -83,7 +83,6 @@ public final class Element extends NestableNode {
         this.minimizableIfWeb = 
                 Arrays.binarySearch(Standards.MINIMIZABLE_XHTML_TAGS, this.normalizedName) >= 0;
                 
-        setChildren((Node[])null);
         setAttributes(null);
         
     }

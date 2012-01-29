@@ -64,8 +64,10 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
             writer.write('\n');
         }
         if (document.hasChildren()) {
-            for (final Node child : document.unsafeGetChildrenNodeArray()) {
-                writeNode(arguments, writer, child);
+            final Node[] children = document.unsafeGetChildrenNodeArray();
+            final int childrenLen = document.numChildren();
+            for (int i = 0; i < childrenLen; i++) {
+                writeNode(arguments, writer, children[i]);
             }
         }
         
@@ -165,8 +167,10 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
         }
         if (element.hasChildren()) {
             writer.write('>');
-            for (final Node child : element.unsafeGetChildrenNodeArray()) {
-                writeNode(arguments, writer, child);
+            final Node[] children = element.unsafeGetChildrenNodeArray();
+            final int childrenLen = element.numChildren();
+            for (int i = 0; i < childrenLen; i++) {
+                writeNode(arguments, writer, children[i]);
             }
             writer.write('<');
             writer.write('/');
