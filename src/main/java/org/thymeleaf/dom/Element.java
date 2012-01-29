@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
@@ -44,7 +43,7 @@ public final class Element extends NestableNode {
     private static final long serialVersionUID = -8434931215899913983L;
 
     
-    private static final int DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE = 4;
+    private static final int DEFAULT_ATTRIBUTES_SIZE = 4;
     
     private final String originalName;
     private final String normalizedName;
@@ -53,9 +52,10 @@ public final class Element extends NestableNode {
     private final boolean hasPrefix;
     
     private final boolean minimizableIfWeb;
-    
-    private LinkedHashMap<String,Attribute> attributes;
-    private int attributesLen;
+
+    private String[] attributeNormalizedNames = null;
+    private Attribute[] attributes = null;
+    private int attributesLen = 0;
 
 
     public Element(final String name) {
@@ -82,8 +82,6 @@ public final class Element extends NestableNode {
         
         this.minimizableIfWeb = 
                 Arrays.binarySearch(Standards.MINIMIZABLE_XHTML_TAGS, this.normalizedName) >= 0;
-                
-        setAttributes(null);
         
     }
     
@@ -142,55 +140,61 @@ public final class Element extends NestableNode {
     
     public boolean hasAttribute(final String attributeName) {
         if (this.attributesLen > 0) {
-            return this.attributes.containsKey(Node.normalizeName(attributeName));
+            final String normalizedAttributeName = Node.normalizeName(attributeName);
+            for (int i = 0; i < this.attributesLen; i++) {
+                if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                    return true;
+                }
+            }
         }
         return false;
     }
     
     
     public boolean hasNormalizedAttribute(final String normalizedAttributeName) {
-        if (this.attributesLen > 0) {
-            return this.attributes.containsKey(normalizedAttributeName);
+        for (int i = 0; i < this.attributesLen; i++) {
+            if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                return true;
+            }
         }
         return false;
     }
 
     
     public Attribute getAttributeFromNormalizedName(final String normalizedAttributeName) {
-        if (this.attributesLen > 0) {
-            return this.attributes.get(normalizedAttributeName);
+        for (int i = 0; i < this.attributesLen; i++) {
+            if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                return this.attributes[i];
+            }
         }
         return null;
     }
 
     
-    public Set<String> getAttributeNormalizedNames() {
-        if (this.attributesLen > 0) {
-            return this.attributes.keySet();
-        }
-        return Collections.emptySet();
+    public String[] unsafeGetAttributeNormalizedNames() {
+        return this.attributeNormalizedNames;
+    }
+    
+    public Attribute[] unsafeGetAttributes() {
+        return this.attributes;
     }
     
     
     public String getAttributeOriginalNameFromNormalizedName(final String normalizedAttributeName) {
-        if (this.attributesLen > 0) {
-            final Attribute attribute = this.attributes.get(normalizedAttributeName);
-            if (attribute == null) {
-                return null;
+        for (int i = 0; i < this.attributesLen; i++) {
+            if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                return this.attributes[i].getOriginalName();
             }
-            return attribute.getOriginalName();
         }
         return null;
     }
     
     
     public String getAttributeValueFromNormalizedName(final String normalizedAttributeName) {
-        if (this.attributesLen > 0) {
-            final Attribute attribute = this.attributes.get(normalizedAttributeName);
-            if (attribute == null) {
-                return null;
+        for (int i = 0; i < this.attributesLen; i++) {
+            if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                return this.attributes[i].getValue();
             }
-            return attribute.getValue();
         }
         return null;
     }
@@ -198,19 +202,24 @@ public final class Element extends NestableNode {
     
     public String getAttributeValue(final String attributeName) {
         if (this.attributesLen > 0) {
-            final Attribute attribute = this.attributes.get(Node.normalizeName(attributeName));
-            if (attribute == null) {
-                return null;
+            final String normalizedAttributeName = Node.normalizeName(attributeName);
+            for (int i = 0; i < this.attributesLen; i++) {
+                if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                    return this.attributes[i].getValue();
+                }
             }
-            return attribute.getValue();
         }
         return null;
     }
     
     
     public Map<String,Attribute> getAttributeMap() {
-        if (this.attributes != null) {
-            return Collections.unmodifiableMap(this.attributes);
+        if (this.attributesLen > 0) {
+            final Map<String,Attribute> attributeMap = new LinkedHashMap<String, Attribute>();
+            for (int i = 0; i < this.attributesLen; i++) {
+                attributeMap.put(this.attributeNormalizedNames[i], this.attributes[i]);
+            }
+            return attributeMap;
         }
         return Collections.emptyMap();
     }
@@ -218,49 +227,91 @@ public final class Element extends NestableNode {
     
     
     public void setAttribute(final String name, final String value) {
+        
         Validate.notNull(name, "Attribute name cannot be null");
         Validate.notNull(value, "Attribute value (" + name + ") cannot be null");
-        if (this.attributesLen == 0) {
-            this.attributes = new LinkedHashMap<String,Attribute>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
-        }
+        
         final Attribute attribute = new Attribute(name, value);
-        this.attributes.put(attribute.getNormalizedName(), attribute);
-        this.attributesLen = this.attributes.size();
+        final String attributeNormalizedName = attribute.getNormalizedName();
+        
+        if (this.attributesLen == 0) {
+            
+            this.attributeNormalizedNames = new String[DEFAULT_ATTRIBUTES_SIZE];
+            this.attributes = new Attribute[DEFAULT_ATTRIBUTES_SIZE];
+            
+            this.attributeNormalizedNames[0] = attributeNormalizedName;
+            this.attributes[0] = attribute;
+            
+            this.attributesLen = 1;
+            
+            return;
+            
+        }
+        
+        for (int i = 0; i < this.attributesLen; i++) {
+            // First, we will check if attribute already exists
+            if (this.attributeNormalizedNames[i].equals(attributeNormalizedName)) {
+                this.attributes[i] = attribute;
+                return;
+            }
+        }
+        
+        if (this.attributesLen >= this.attributes.length) {
+            final int newLength = this.attributesLen * 2;
+            final String[] newAttributeNormalizedNames = Arrays.copyOf(this.attributeNormalizedNames, newLength);
+            final Attribute[] newAttributes = Arrays.copyOf(this.attributes, newLength);
+            this.attributeNormalizedNames = newAttributeNormalizedNames;
+            this.attributes = newAttributes;
+        }
+        
+        this.attributeNormalizedNames[this.attributesLen] = attributeNormalizedName;
+        this.attributes[this.attributesLen] = attribute;
+        this.attributesLen++;
+        
     }
+
 
     
     public void setAttributes(final Map<String,String> newAttributes) {
+        clearAttributes();
         if (newAttributes != null && newAttributes.size() > 0) {
-            if (this.attributesLen == 0) {
-                this.attributes = new LinkedHashMap<String,Attribute>(DEFAULT_INITIAL_ATTRIBUTE_MAP_SIZE);
-            }
             for (final Map.Entry<String,String> newAttributesEntry : newAttributes.entrySet()) {
-                final String newAttributeName = newAttributesEntry.getKey();
-                final String newAttributeValue = newAttributesEntry.getValue();
-                Validate.notNull(newAttributeName, "Attribute name cannot be null");
-                Validate.notNull(newAttributeValue, "Attribute value (" + newAttributeName + ") cannot be null");
-                final Attribute attribute = new Attribute(newAttributeName, newAttributeValue);
-                this.attributes.put(attribute.getNormalizedName(), attribute);
+                setAttribute(newAttributesEntry.getKey(), newAttributesEntry.getValue());
             }
-            this.attributesLen = this.attributes.size();
         }
     }
     
+
     
     public void clearAttributes() {
+        this.attributeNormalizedNames = null;
         this.attributes = null;
         this.attributesLen = 0;
     }
     
+
     
     public void removeAttribute(final String attributeName) {
         
         Validate.notNull(attributeName, "Name of attribute to be removed cannot be null");
 
         if (this.attributesLen > 0) {
+            
             final String normalizedAttributeName = Node.normalizeName(attributeName);
-            this.attributes.remove(normalizedAttributeName);
-            this.attributesLen = this.attributes.size();
+            
+            for (int i = 0; i < this.attributesLen; i++) {
+                
+                if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
+                    for (int j = i + 1; j < this.attributesLen; j++) {
+                        this.attributeNormalizedNames[j - 1] = this.attributeNormalizedNames[j];
+                        this.attributes[j - 1] = this.attributes[j];
+                    }
+                    this.attributesLen--;
+                    return;
+                }
+                
+            }
+
         }
         
     }
@@ -313,7 +364,8 @@ public final class Element extends NestableNode {
         final Element element = (Element) node;
         
         if (this.attributesLen > 0) {
-            element.attributes = new LinkedHashMap<String,Attribute>(this.attributes);
+            element.attributeNormalizedNames = Arrays.copyOf(this.attributeNormalizedNames, this.attributesLen);
+            element.attributes = Arrays.copyOf(this.attributes, this.attributesLen);
             element.attributesLen = this.attributesLen;
         }
         

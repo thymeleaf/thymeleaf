@@ -484,9 +484,11 @@ public final class Configuration {
                 }
             }
 
-            for (final String attributeName : element.getAttributeNormalizedNames()) {
+            final String[] attributeNormalizedNames = element.unsafeGetAttributeNormalizedNames();
+            final int attributesLen = element.numAttributes();
+            for (int i = 0; i < attributesLen; i++) {
                 final Set<ProcessorAndContext> processorsForAttributeName = 
-                        this.mergedSpecificProcessorsByAttributeName.get(attributeName);
+                        this.mergedSpecificProcessorsByAttributeName.get(attributeNormalizedNames[i]);
                 if (processorsForAttributeName != null) {
                     for (final ProcessorAndContext processorAndContext : processorsForAttributeName) {
                         if (processorAndContext.matches(node)) {
@@ -506,8 +508,10 @@ public final class Configuration {
                 }
             }
 
-            // Order (usually by precedence)
-            Collections.sort(processors);
+            if (processors.size() > 1) {
+                // Order (usually by precedence)
+                Collections.sort(processors);
+            }
 
             return processors;
             

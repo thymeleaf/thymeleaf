@@ -136,9 +136,15 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
         writer.write('<');
         writer.write(element.getOriginalName());
         if (element.hasAttributes()) {
+            
             final Configuration configuration = arguments.getConfiguration();
-            for (final Attribute attribute : element.getAttributeMap().values()) {
+            
+            final Attribute[] attributes = element.unsafeGetAttributes();
+            final int attributesLen = element.numAttributes();
+            
+            for (int i = 0; i < attributesLen; i++) {
                 
+                final Attribute attribute = attributes[i];
                 boolean writeAttribute = true;
                 
                 if (attribute.isXmlnsAttribute()) {
