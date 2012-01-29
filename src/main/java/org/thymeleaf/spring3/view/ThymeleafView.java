@@ -20,7 +20,7 @@
 package org.thymeleaf.spring3.view;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -64,7 +64,7 @@ public class ThymeleafView
     private TemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
-    private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>();
+    private Map<String, Object> staticVariables = null;
 
 
 	protected ThymeleafView() {
@@ -142,20 +142,27 @@ public class ThymeleafView
     
 
     public Map<String,Object> getStaticVariables() {
+        if (this.staticVariables == null) {
+            return Collections.emptyMap();
+        }
         return Collections.unmodifiableMap(this.staticVariables);
     }
 
 
     public void addStaticVariable(final String name, final Object value) {
+        if (this.staticVariables == null) {
+            this.staticVariables = new HashMap<String, Object>();
+        }
         this.staticVariables.put(name, value);
     }
 
 
     public void setStaticVariables(final Map<String, ?> variables) {
         if (variables != null) {
-            for (Map.Entry<String, ?> entry : variables.entrySet()) {
-                addStaticVariable(entry.getKey(), entry.getValue());
+            if (this.staticVariables == null) {
+                this.staticVariables = new HashMap<String, Object>();
             }
+            this.staticVariables.putAll(variables);
         }
     }
 
@@ -181,8 +188,10 @@ public class ThymeleafView
             throw new IllegalArgumentException("Property 'templateEngine' is required");
         }
         
-        final Map<String, Object> mergedModel = new LinkedHashMap<String, Object>();
-        mergedModel.putAll(getStaticVariables());
+        final Map<String, Object> mergedModel = new HashMap<String, Object>();
+        if (this.staticVariables != null) {
+            mergedModel.putAll(this.staticVariables);
+        }
         if (model != null) {
             mergedModel.putAll(model);
         }

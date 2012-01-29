@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.spring3.context;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -72,7 +72,7 @@ public class SpringWebContext
 
         final Map<String,Object> newVariables =
             (variables == null?
-                    new LinkedHashMap<String, Object>() : new LinkedHashMap<String, Object>(variables));
+                    new HashMap<String, Object>() : new HashMap<String, Object>(variables));
         
         final Beans beans = new Beans(appctx);
         
