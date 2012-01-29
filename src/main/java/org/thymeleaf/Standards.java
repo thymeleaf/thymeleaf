@@ -493,9 +493,9 @@ public final class Standards {
      */
     public static final String[] MINIMIZABLE_XHTML_TAGS =
         new String[] {
-                "AREA", "BASE", "BASEFONT", "BR", "COL", "COMMAND", "EMBED", 
-                "FRAME", "HR", "IMG", "INPUT", "ISINDEX", "KEYGEN", "LINK", 
-                "META", "PARAM", "SOURCE", "WBR"
+                "area", "base", "basefont", "br", "col", "command", "embed", 
+                "frame", "hr", "img", "input", "isindex", "keygen", "link", 
+                "meta", "param", "source", "wbr"
             };
 
 
