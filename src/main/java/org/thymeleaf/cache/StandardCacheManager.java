@@ -50,18 +50,18 @@ public class StandardCacheManager extends AbstractCacheManager {
     public static final boolean DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES = true;
     
     public static final String DEFAULT_FRAGMENT_CACHE_NAME = "FRAGMENT_CACHE";
-    public static final int DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE = 50;
+    public static final int DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE = 20;
     public static final int DEFAULT_FRAGMENT_CACHE_MAX_SIZE = 300;
     public static final boolean DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES = true;
-    
+   
     public static final String DEFAULT_MESSAGE_CACHE_NAME = "MESSAGE_CACHE";
-    public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 50;
+    public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 20;
     public static final int DEFAULT_MESSAGE_CACHE_MAX_SIZE = 300;
     public static final boolean DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES = true;
     
     public static final String DEFAULT_EXPRESSION_CACHE_NAME = "EXPRESSION_CACHE";
-    public static final int DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE = 300;
-    public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 800;
+    public static final int DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE = 100;
+    public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
     public static final boolean DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES = true;
         
     
