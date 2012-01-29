@@ -43,12 +43,9 @@ import org.thymeleaf.util.Validate;
 public final class StandardCache<K, V> implements ICache<K,V> {
 
     
-//    public static final String CACHE_LOGGER_NAME = TemplateEngine.class.getName() + ".CACHE";
-//    protected static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class.getName() + ".CACHE");
-
     private static final long REPORT_INTERVAL = 300000L; // 5 minutes
     private static final String REPORT_FORMAT = 
-            "[THYMELEAF][*][*][*][CACHE_REPORT] %12s elements | %8s puts | %12s gets | %12s hits | %12s misses - [%s]";
+            "[THYMELEAF][*][*][*][CACHE_REPORT] %8s elements | %12s puts | %12s gets | %12s hits | %12s misses - [%s]";
     private volatile long lastExecution = System.currentTimeMillis();
     
     private final String name;
