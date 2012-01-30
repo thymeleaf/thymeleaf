@@ -1,0 +1,82 @@
+1.1.5
+=====
+
+
+1.1.4
+=====
+- Solved bug regarding evaluation of the same SpEL expression two times over two objects
+  of different classes. Spring AST infrastructure was caching PropertyAccessors and this
+  caused ClassCastExceptions. This error appeared on 1.1.3 because of the introduction of
+  SpEL expression caching.
+  
+
+1.1.3
+=====
+- Modified SpringWebContext constructors so that they require now the ServletContex 
+  object. This enables Thymeleaf to operate without depending at all
+  on creating an HTTP session object for the user executing the template.
+- Created cache for SpEL evaluation and optimized use of SpEL contexts.
+
+
+1.1.2
+=====
+- Fixed: potential case-sensitivity problem in select tags.
+- Fixed: bad initialization of th:field on option tags contained within <optgroup>
+
+
+1.1.1
+=====
+- Fixed: avoid non-minimizable tags like <script>, <textarea>, <div>, etc. to be
+  minimized (appear as <script />, <textarea />, div /> without an end tag).
+
+
+1.1.0
+=====
+- Deprecated IValueProcessor interface and related all infrastructure. 
+- Created new versions (v2) of the set of thymeleaf-spring3-specific XHTML DTDs, including 
+  the new "th:substituteby" attribute:
+    * http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-spring3-2.dtd
+
+
+1.0.1
+=====
+- (No changes)
+
+
+1.0.0
+=====
+- Added "getApplicationContext()" method to SpringWebContext in order to being able to
+  obtain the Application Context from attribute/tag processors.
+- Renamed SpringThymeleafTemplateEngine to SpringTemplateEngine
+- Renamed SpringThymeleafDialect to SpringStandardDialect
+
+
+1.0.0-beta5
+===========
+- (No changes)
+
+
+1.0.0-beta4
+===========
+- (No changes)
+
+
+1.0.0-beta3
+===========
+- Adapted Spring Thymeleaf Template Engine to MULTI-DIALECT support.
+- Improved JAVADOC documentation. 
+
+
+1.0.0-beta2
+===========
+- Solved bug regarding template character encodings.
+- Added setCharacterEncoding() method to ThymeleafViewResolver and ThymeleafView
+- Correctly honored template locale in ThymeleafView
+
+
+1.0.0-beta1
+===========
+- First release of thymeleaf-spring3
