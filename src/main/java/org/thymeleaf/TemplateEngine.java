@@ -22,6 +22,8 @@ package org.thymeleaf;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -38,8 +40,8 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
-import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateEngineException;
+import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
@@ -863,7 +865,7 @@ public class TemplateEngine {
             Validate.notNull(context, "Context cannot be null");
             
             
-            final long startMs = System.currentTimeMillis();
+            final long startMs = System.nanoTime();
 
             setThreadTemplateName(templateName);
             
@@ -882,19 +884,20 @@ public class TemplateEngine {
             
             process(templateProcessingParameters, writer);
             
-            final long endMs = System.currentTimeMillis();
+            final long endMs = System.nanoTime();
             
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
             }
             
             if (timerLogger.isDebugEnabled()) {
-                final Long elapsed = Long.valueOf(endMs - startMs);
+                final BigDecimal elapsed = BigDecimal.valueOf(endMs - startMs);
+                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
                 timerLogger.debug(
-                        "[THYMELEAF][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {}ms", 
+                        "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)", 
                         new Object[] {TemplateEngine.threadIndex(), 
-                                templateName, context.getLocale(), elapsed, 
-                                templateName, context.getLocale(), elapsed});
+                                templateName, context.getLocale(), elapsed, elapsedMs,
+                                templateName, context.getLocale(), elapsed, elapsedMs});
             }
             
         } catch (final TemplateOutputException e) {
