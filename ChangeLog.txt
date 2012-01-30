@@ -1,0 +1,197 @@
+1.1.5
+=====
+- Fixed bug related to template reading through the entity-substitution filter
+  (ArrayIndexOutOfBounds).
+- Modified javascript inlining of Enums so that no properties other than "$type" and "$name"
+  are output. This avoids problems with typical static and member fields containing
+  all the values of an enum and thus provoking stack overflow errors when performing inlining.
+- Modified TIMER logger for outputting execution times in nanoseconds and milliseconds (instead 
+  of only milliseconds).
+
+
+1.1.4
+=====
+- Solved bug regarding the initialization of expression utility objects that prevented
+  the "#object" variable to change accordingly when a th:object attribute was specified,
+  thus raising an exception when executing valid expressions on it.
+
+
+1.1.3
+=====
+- Modified WebContext constructors so that they require now the ServletContext 
+  object. This enables Thymeleaf to operate without depending at all
+  on creating an HTTP session object for the user executing the template.
+- Modified TemplateProcessingException exception hierarchy in order to include
+  template information and (future) location data.
+- Created org.thymeleaf.util.CacheMap generic cache class and refactored all other
+  caches throughout the library to use this class. Also, a new logger called
+  org.thymeleaf.TemplateEngine.CACHE has been declared for this class.
+- Refactored Parsed Template Cache as an org.thymeleaf.util.CacheMap object.
+- Solved bug related to '&' symbol substitution in entities in template mode XML.
+
+
+1.1.2
+=====
+- Minor fixing in StandardTextInliner for empty Text nodes.
+- Fixed DOMDocumentProcessor and Tag/Attribute applicabilities so that execution of
+  a Thymeleaf template is now case-insensitive.
+- Modifications to the LEGACYHTML5 parsing system. Substituted HtmlCleaner by
+  nekoHTML as a tag-balancing library.
+- Fixed bug in HTMLTemplateReader provoking incomplete reads of templates resolved
+  from a remote URL.
+- Minor fixes to HTMLTemplateReader to avoid parsing exceptions in some uncommon
+  scenarios.
+- Class org.thymeleaf.utils.FragmentUtils renamed as org.thymeleaf.utils.DOMUtils
+- Added utility method #numbers.sequence(x,y) returning an array with a sequence
+  of integer numbers going from x to y, useful for creating th:each expressions for
+  a fixed number of iterations.
+- Added #httpServletRequest and #httpSession objects to expression evaluations,
+  representing the HttpServletRequest and HttpSession objects related to a WebContext,
+  respectively.
+- Added javascript representation for enums in javascript inlining, and fixed
+  infinite loop happening when inlining them. Enums are now represented in
+  javascript as objects with at least two properties called "$type" and "$name" 
+  (respectively, the enum class name --without package-- and the enum constant name).
+- Solved bug that raised an IllegalArgumentException when an internationalization
+  message was not found (only when used without Spring).
+- Added "dart" inlining method for Dart language.
+- Added "create*" methods to Calendars (#calendars) and Dates (#dates) for creating 
+  Calendar or Date objects from its components: year, month, day, hour, minute, etc.
+- Added "create*" methods to Calendars (#calendars) and Dates (#dates) for creating 
+  Calendar or Date objects for the current date ("today") and the current date+time
+  ("now").
+- Modified equality (==) and inequality (!=) expression operators so that they first
+  query the "compareTo(...)" method if both objects being compared implement Comparable.
+- Added new methods to expression utility class "Strings" (#strings): "capitalize",
+  "capitalizeWords", "unCapitalize"
+
+
+
+1.1.1
+=====
+- Fixed: avoid non-minimizable tags like <script>, <textarea>, <div>, etc. to be
+  minimized (appear as <script />, <textarea />, div /> without an end tag).
+
+
+1.1.0
+=====
+- Modified condition evaluation: now the Strings "false", "no" and "off" return false.
+- Deprecated IValueProcessor interface and related all infrastructure.
+- New Standard Expression evaluation system, based on static methods from the 
+  org.thymeleaf.standard.expression.StandardExpressionProcessor class instead of the
+  StandardValueProcessor from Thymeleaf 1.0.x.
+- Added new features to Standard Expression syntax:
+    * Numeric literals: 1, 32, 42.3, 11.34, etc.
+    * Unary operators: ! (boolean negation), - (numeric minus sign)
+    * String operators: + (String concatenation)
+    * Numeric binary operators and comparators: +, -, *, /, %, >, <, >=,<=  
+    * Boolean binary operators: and, or
+    * Equality checks: ==, !=
+- Added "hour", "minute", "second" and "millisecond" functions to expression utility
+  objects "#dates" and "#calendars".
+- Created new "th:substituteby" attribute, equivalent to "th:include" but actually 
+  substituting its host tag by the fragment's.
+- Created new versions (v2) of the set of thymeleaf-specific XHTML DTDs, including the new
+  "th:substituteby" attribute:
+    * http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd
+- Fixed: children nodes not being correctly removed from th:text and th:utext.
+- Modified input parsing system to avoid substitution of XML/XHTML/HTML5 entities
+  like "&nbsp;", "&euro;", "&pound;", etc. by their corresponding characters. Now
+  these entities are transmitted to the template engine output directly without
+  substitution.
+- Substituted the TemplateEngine.THYMELEAF_NON_EXECUTABLE_NODE constant (used as
+  user data in DOM Nodes for avoiding their execution) by static methods for controlling
+  node execution in the org.thymeleaf.DOMExecution class.
+- Performance optimization: added a scanning step prior to storing a template into 
+  the cache that will detect all DOM nodes (and entire node trees) that should not 
+  be executed (because there is no processor applicable to them) and mark these 
+  nodes so that they are not queried at all during normal template execution.
+- Fixed: allow comments between DOCTYPE and root element node.
+    
+
+1.0.1
+=====
+- Fixed: URLs containing a fragment selector (http://url#fragment) were not correctly recognized
+  by link expressions in standard syntax (@{...}).
+- Modification on parsed template cache system: now based on SoftReferences, making it memory-sensitive.
+  Before throwing an OutOfMemoryException, the garbage collector is now allowed to avoid it by cleaning
+  any existing cache entries. In such case, a warning will be issued via the log system noticing a 
+  possible bad configuration in cache size and/or JVM heap size. 
+- Fixed: "last" property in iteration status variables returned always true.
+
+
+1.0.0
+=====
+- Modified th:attr so that attributes resulting in empty values are removed (removeIfEmpty = true).
+
+
+1.0.0-beta5
+===========
+- Fixed bug regarding case-sensitivity of dialect and attribute names/processors.
+- Added hierarchy of abstract classes for tag processors.
+- Added "msgOrNull", "arrayMsgOrNull", "listMsgOrNull" and "setMsgOrNull" methods to the
+  #messages expression utility object, so that a null can be returned if the desired message
+  is not found (instead of a default message).
+- Refactored org.thymeleaf.templateresolver.TemplateResolver and created abstract class
+  org.thymeleaf.templateresolver.AbstractTemplateResolver.
+- Substituted "cacheable" flag and "cacheTTLMs" property in TemplateResolution by
+  ITemplateResolutionValidity objects, which can implement more complex strategies for defining
+  when a template must be considered cacheable, and when its cache entry can still be considered
+  valid.
+
+
+1.0.0-beta4
+===========
+- Added support for externalized "processor messages", messages that will be accompanying
+  not the template/s, but the tag/attribute processors themselves, so that they can be
+  referred wherever those processors are used (and packaged along with them into a .jar
+  file in order to create "UI components").
+- Added the "getMessageForTemplate(...)" method to AbstractAttrProcessor and
+  AbstractTagProcessor for easier resolution of template messages from tag/attribute
+  processors.
+- Added the "getMessageForProcessor(...)" method to AbstractAttrProcessor and
+  AbstractTagProcessor for easier resolution of processor messages from tag/attribute
+  processors.
+- Added the "getMessage(...)" method to AbstractAttrProcessor and AbstractTagProcessor
+  for trying to resolve messages as "template messages" first and then (if not found) as
+  "processor messages".
+
+
+1.0.0-beta3
+===========
+- ADDED MULTI-DIALECT SUPPORT. TemplateEngines can now be specified several dialects to 
+  be applied at the same time for template processing. Each of these dialects can have 
+  different prefix (it is also allowed that several dialects can have the same prefix).
+- Added the possibility of including expressions in "th:include" attributes.
+- Added cache TTL configuration to TemplateResolver (templateResolver.setCacheTTLMs(Long)).
+- Refactored pattern system in TemplateResolver and subclasses.
+- Avoid URLs with "jsessionid" to be cached to avoid the possibility of filling the cache
+  with the same template resolved for many session IDs. 
+- Add "resolvable patterns" to TemplateResolver so that template resolvers can 
+  quickly determine that a template is not resolvable by them (without needing resource
+  resolution).
+- Added "execInfo" bean to expression evaluation, containing the current timestamp and
+  the template name.
+- Cache parsed values in Standard syntax for better template execution performance.
+- Improved JAVADOC documentation. 
+
+
+1.0.0-beta2
+===========
+- Added UrlResourceResolver for resolving resources as URLs (including remote URLs)
+- Added UrlTemplateResolver for resolving templates as URLs (including remote URLs)
+- Modified th:include syntax from "fragment@template" to "template::fragment"
+- Added the possibility to include complete templates as fragments with th:include when
+  a fragment is not specified
+- Added the possibility to include the result of executing XPath expressions on templates as 
+  fragments with th:include with the "template::[xpathexpr]" syntax
+- Added methods in TemplateEngine to clear the template cache (selectively or not):
+  templateEngine.clearParsedTemplateCache() and templateEngine.clearParsedTemplateCacheFor(templateName)
+
+
+1.0.0-beta1
+===========
+- First release of thymeleaf

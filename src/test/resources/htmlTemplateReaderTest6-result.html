@@ -1,0 +1,75 @@
+<!DOCTYPE html [
+ <!ENTITY % HTMLlat1 PUBLIC "-//W3C//ENTITIES Latin 1 for XHTML//EN" "xhtml-lat1.ent">
+ %HTMLlat1;
+ <!ENTITY % HTMLsymbol PUBLIC "-//W3C//ENTITIES Symbols for XHTML//EN" "xhtml-symbol.ent">
+ %HTMLsymbol;
+ <!ENTITY % HTMLspecial PUBLIC "-//W3C//ENTITIES Special for XHTML//EN" "xhtml-special.ent">
+ %HTMLspecial;
+]>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>HTML Template Reader Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/test.css" th:href="@{/css/test.css}"/>
+  </head>
+
+  <body>
+
+    <h1>
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </h1>
+    
+    <p th:text="'The currency of Europe is the Ɣeuro;'">
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p th:if="${a} Ɣlt; 3">
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p class="Ɣpound;">
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p>
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p>
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p>
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p>
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+    <p>
+      Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣnbsp;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;
+      Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣeuro;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;Ɣlt;
+      Ɣpound;Ɣquot;Ɣyen;Ɣuml;Ɣuml;Ɣshy;
+    </p>
+
+  </body>
+</html>

@@ -1,0 +1,5 @@
+<!--
+  Wildcard HTML5 DTD, designed to allow HTML5 non-validating parsing when 
+  SYSTEMID "about:legacy-compat" is specified (which is a possibility allowed by the standard).
+-->
+<!ELEMENT html ANY>
