@@ -256,6 +256,36 @@ public class SpringStandardDialect extends StandardDialect {
                 XHTML11_THYMELEAFSPRING3_2_SYSTEMID, // SYSTEMID
                 Standards.XHTML_11_PUBLICID, 
                 Standards.XHTML_11_SYSTEMID);
+
+    
+    
+    public static final IDocTypeTranslation SPRING3_XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_STRICT_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_1_STRICT_PUBLICID, 
+                Standards.XHTML_1_STRICT_SYSTEMID);
+    
+    public static final IDocTypeTranslation SPRING3_XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_TRANSITIONAL_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_1_TRANSITIONAL_PUBLICID, 
+                Standards.XHTML_1_TRANSITIONAL_SYSTEMID);
+    
+    public static final IDocTypeTranslation SPRING3_XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_FRAMESET_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_1_FRAMESET_PUBLICID, 
+                Standards.XHTML_1_FRAMESET_SYSTEMID);
+    
+    public static final IDocTypeTranslation SPRING3_XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML11_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_11_PUBLICID, 
+                Standards.XHTML_11_SYSTEMID);
     
     
 
@@ -267,7 +297,15 @@ public class SpringStandardDialect extends StandardDialect {
                                 SPRING3_XHTML1_STRICT_THYMELEAF_1_DOC_TYPE_TRANSLATION, 
                                 SPRING3_XHTML1_TRANSITIONAL_THYMELEAF_1_DOC_TYPE_TRANSLATION, 
                                 SPRING3_XHTML1_FRAMESET_THYMELEAF_1_DOC_TYPE_TRANSLATION, 
-                                SPRING3_XHTML11_THYMELEAF_1_DOC_TYPE_TRANSLATION
+                                SPRING3_XHTML11_THYMELEAF_1_DOC_TYPE_TRANSLATION,
+                                SPRING3_XHTML1_STRICT_THYMELEAF_2_DOC_TYPE_TRANSLATION, 
+                                SPRING3_XHTML1_TRANSITIONAL_THYMELEAF_2_DOC_TYPE_TRANSLATION, 
+                                SPRING3_XHTML1_FRAMESET_THYMELEAF_2_DOC_TYPE_TRANSLATION, 
+                                SPRING3_XHTML11_THYMELEAF_2_DOC_TYPE_TRANSLATION,
+                                SPRING3_XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
+                                SPRING3_XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
+                                SPRING3_XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
+                                SPRING3_XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION
                                 })));
     
     
