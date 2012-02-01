@@ -11,21 +11,21 @@
   
   <fileSets>
     <fileSet>
-      <directory>${basedir}/../thymeleaf/target/checkout/target/apidocs/</directory>
+      <directory>${basedir}/../thymeleaf-1.x/target/checkout/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring3/target/checkout/target/apidocs/</directory>
+      <directory>${basedir}/../thymeleaf-spring3-1.x/target/checkout/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-spring3/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf/target/checkout/target/</directory>
+      <directory>${basedir}/../thymeleaf-1.x/target/checkout/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-${project.version}.jar</include>
@@ -34,7 +34,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring3/target/checkout/target/</directory>
+      <directory>${basedir}/../thymeleaf-spring3-1.x/target/checkout/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-spring3-${project.version}.jar</include>
