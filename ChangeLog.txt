@@ -5,15 +5,39 @@
 - Created a DOM precomputation system that allows caching some information about the processors
   that are applicable to each node in the tree, so that this information does not always
   have to be computed during cached template execution.
-- Refactored Processor system: generalized "Attribute Processors" and "Tag Processors"
-  and created IProcessor, the interface implemented by any processor object of any kind
-  (which can now apply of any type of DOM node, and not only Tags). "Attribute Processors"
-  and "Tag Processors" are now specializations of IProcessors.
+- Renamed "Tag Processors" as "Element Processors" in order to keep coherence with DOM.
+- Refactored Processor system: generalized "Attribute Processors" and "Element Processors"
+  by creating the IProcessor interface, This interface will be implemented by any processor 
+  object of any kind (which can now apply of any type of DOM node, and not only Elements). 
+  "Attribute Processors" and "Element Processors" are now specializations of IProcessors.
 - Redefined ITextInliner objects (text, javascript, dart inliners) as Processors for
   Text and CDATASection nodes. Inlining is now a Standard-Dialect feature and not a Thymeleaf
-  core engine one. Main interface is now called IStandardTextInliner.
-- Removed the IApplicability class hierarchy and substituted by a much simpler 
-  and general IProcessorMatcher interface and implementations.
+  core engine one.
+- Template modes have been generalized, along with template parsers and output creation 
+  infrastructure. Instead of the previous fixed set of template modes (XML, VALIDXML, XHTML, 
+  VALIDXML, HTML5 and LEGACYHTML5), now any number of template modes can be configured at the
+  Template Engine as long as an implementation of ITemplateModeHandler is provided for each of
+  them (by default, the old ones are provided out-of-the-box). This "Template Mode Handlers" specify 
+  the parser (implementation of ITemplateParser) to be used for templates using this mode 
+  (template -> DOM) and also the writer (implementation of ITemplateWriter) to be used for writing 
+  the results of processing (DOM -> result). This effectively allows Thymeleaf to process any kind 
+  of template --and not only XML/XHTML/HTML-- as long as these templates can be somehow converted 
+  to and from a DOM representation.
+- Created a new SAX parser implementation of ITemplateParser, now used by default for reading templates
+  in all template modes except LEGACYHTML5 (which requires previous tag balancing by nekoHTML).
+- Added position information to DOM nodes, so that template execution errors now display along with
+  the number of the line in the template where they occur.
+- Cache infrastructure has been generalized. The ICacheManager interface now allows the specification
+  of tailor-made implementations for template, fragment, message and expression caches. All of these
+  caches now implement a new interface called ICache.
+- Reimplemented the standard (default) cache strategies for templates, fragments, messages and 
+  expressions based on ConcurrentHashMaps.
+- Adapted the parsing and DOM handling infrastructure in order to enable Thymeleaf to process fragmentary
+  templates instead of complete documents. For example, no DOCTYPE or document root is now required
+  (template could be just a '<div>' block, for instance).
+- Removed the old IApplicability class hierarchy and substituted by a much simpler
+  IProcessorMatcher interface and a set of simple implementations for matching a processor
+  by element name, attribute name, etc.
 - Created the TemplateProcessingParameters class containing all the info available for the
   processing of the template before its resolution and parsing.
 - Made Arguments objects include the corresponding TemplateResolution object created after
@@ -24,14 +48,28 @@
   TemplateProcessingParameters object instead of an Arguments one.
 - Modified ITemplateResolver interface so that Template Resolver objects now receive a
   TemplateProcessingParameters object instead of an Arguments one.
+- Created org.thymeleaf.TemplateRepository for processing obtention of the parsed templates and 
+  parsable fragments by applying the cache (if it exists).
 - Added a new "all-but-first" value to "th:remove" that removes all children tags
   except the first one.
+- Downgraded the XPath support in th:include attributes by substituting full XPath support by more 
+  efficient DOMSelector objects that can be created by using a subset of the XPath syntax: '//', 
+  '/', indexes and attribute specification.
+- Optimized use of Collections and Maps wherever possible.
+- Updated documentation and example applications
+  
+  
+1.1.5
+=====
+- Fixed bug related to template reading through the entity-substitution filter
+  (ArrayIndexOutOfBounds).
 - Modified javascript inlining of Enums so that no properties other than "$type" and "$name"
   are output. This avoids problems with typical static and member fields containing
   all the values of an enum and thus provoking stack overflow errors when performing inlining.
-
-
-
+- Modified TIMER logger for outputting execution times in nanoseconds and milliseconds (instead 
+  of only milliseconds).  
+  
+  
 1.1.4
 =====
 - Solved bug regarding the initialization of expression utility objects that prevented
