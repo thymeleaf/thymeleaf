@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf</artifactId>
   <packaging>jar</packaging>
-  <version>1.1.5</version>
+  <version>1.1.6-SNAPSHOT</version>
   <name>thymeleaf</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -44,9 +44,9 @@
   </organization>
   
   <scm>
-    <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/tags/thymeleaf/thymeleaf-1.1.5</url>
-    <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/tags/thymeleaf/thymeleaf-1.1.5</connection>
-    <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/tags/thymeleaf/thymeleaf-1.1.5</developerConnection>
+    <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-1.x</url>
+    <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-1.x</connection>
+    <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-1.x</developerConnection>
   </scm>
   
   <developers>
