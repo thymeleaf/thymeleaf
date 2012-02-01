@@ -61,7 +61,7 @@ public final class VariableExpression extends SimpleExpression {
     
     
     
-    private VariableExpression(final String expression) {
+    public VariableExpression(final String expression) {
         super();
         Validate.notNull(expression, "Expression cannot be null");
         this.expression = expression;

@@ -46,7 +46,7 @@ public final class LessOrEqualToExpression extends GreaterLesserExpression {
     
 
     
-    LessOrEqualToExpression(final Expression left, final Expression right) {
+    public LessOrEqualToExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 

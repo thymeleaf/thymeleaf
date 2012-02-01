@@ -45,7 +45,7 @@ public final class LessThanExpression extends GreaterLesserExpression {
     private static final Logger logger = LoggerFactory.getLogger(LessThanExpression.class);
     
     
-    LessThanExpression(final Expression left, final Expression right) {
+    public LessThanExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 

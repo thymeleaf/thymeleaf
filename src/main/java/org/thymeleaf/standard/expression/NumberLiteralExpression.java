@@ -49,7 +49,7 @@ public final class NumberLiteralExpression extends SimpleExpression {
     private final BigDecimal value;
 
     
-    NumberLiteralExpression(final String value) {
+    public NumberLiteralExpression(final String value) {
         super();
         Validate.notNull(value, "Value cannot be null");
         this.value = new BigDecimal(value);

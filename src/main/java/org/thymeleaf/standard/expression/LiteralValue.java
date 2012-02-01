@@ -43,7 +43,7 @@ public final class LiteralValue implements Serializable {
     private final String value;
 
     
-    LiteralValue(final String value) {
+    public LiteralValue(final String value) {
         super();
         this.value = value;
     }

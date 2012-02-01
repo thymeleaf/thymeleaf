@@ -52,7 +52,7 @@ public final class DefaultExpression extends ComplexExpression {
     private final Expression defaultExpression;
 
     
-    private DefaultExpression(final Expression queriedExpression, final Expression defaultExpression) {
+    public DefaultExpression(final Expression queriedExpression, final Expression defaultExpression) {
         super();
         Validate.notNull(queriedExpression, "Queried expression cannot be null");
         Validate.notNull(defaultExpression, "Default expression cannot be null");

@@ -45,7 +45,7 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
     
     private final List<Expression> expressions;
          
-    private ExpressionSequence(final List<? extends Expression> expressions) {
+    public ExpressionSequence(final List<? extends Expression> expressions) {
         super();
         Validate.notNull(expressions, "Expression list cannot be null");
         Validate.containsNoNulls(expressions, "Expression list cannot contain any nulls");

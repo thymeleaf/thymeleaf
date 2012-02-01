@@ -44,7 +44,7 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
     private static final Logger logger = LoggerFactory.getLogger(GreaterOrEqualToExpression.class);
 
     
-    GreaterOrEqualToExpression(final Expression left, final Expression right) {
+    public GreaterOrEqualToExpression(final Expression left, final Expression right) {
         super(left, right);
     }
     

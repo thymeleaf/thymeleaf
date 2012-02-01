@@ -49,7 +49,7 @@ public final class SubtractionExpression extends AdditionSubtractionExpression {
 
 
     
-    SubtractionExpression(final Expression left, final Expression right) {
+    public SubtractionExpression(final Expression left, final Expression right) {
         super(left, right);
     }
     

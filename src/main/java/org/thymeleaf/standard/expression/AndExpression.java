@@ -51,7 +51,7 @@ public final class AndExpression extends BinaryOperationExpression {
         (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { AndExpression.class };
 
     
-    AndExpression(final Expression left, final Expression right) {
+    public AndExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 

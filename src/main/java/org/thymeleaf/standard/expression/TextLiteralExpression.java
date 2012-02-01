@@ -51,7 +51,7 @@ public final class TextLiteralExpression extends SimpleExpression {
     private final LiteralValue value;
 
     
-    private TextLiteralExpression(final String value) {
+    public TextLiteralExpression(final String value) {
         super();
         Validate.notNull(value, "Value cannot be null");
         this.value = new LiteralValue(unwrapLiteral(value));

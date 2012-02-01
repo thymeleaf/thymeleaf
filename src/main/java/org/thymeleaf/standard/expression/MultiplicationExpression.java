@@ -49,7 +49,7 @@ public final class MultiplicationExpression extends MultiplicationDivisionRemain
 
 
     
-    MultiplicationExpression(final Expression left, final Expression right) {
+    public MultiplicationExpression(final Expression left, final Expression right) {
         super(left, right);
     }
     

@@ -52,7 +52,7 @@ public final class NegationExpression extends ComplexExpression {
     private final Expression operand;
 
     
-    private NegationExpression(final Expression operand) {
+    public NegationExpression(final Expression operand) {
         super();
         Validate.notNull(operand, "Operand cannot be null");
         this.operand = operand;

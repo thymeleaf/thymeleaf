@@ -54,7 +54,7 @@ public final class MinusExpression extends ComplexExpression {
     private final Expression operand;
 
     
-    protected MinusExpression(final Expression operand) {
+    public MinusExpression(final Expression operand) {
         super();
         Validate.notNull(operand, "Operand cannot be null");
         this.operand = operand;

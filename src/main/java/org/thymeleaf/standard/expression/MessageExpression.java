@@ -61,7 +61,7 @@ public final class MessageExpression extends SimpleExpression {
          
     
     
-    private MessageExpression(final Expression base, final ExpressionSequence parameters) {
+    public MessageExpression(final Expression base, final ExpressionSequence parameters) {
         super();
         Validate.notNull(base, "Base cannot be null");
         this.base = base;

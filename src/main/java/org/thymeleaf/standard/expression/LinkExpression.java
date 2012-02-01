@@ -72,7 +72,7 @@ public final class LinkExpression extends SimpleExpression {
     
     
     
-    private LinkExpression(final Expression base, final AssignationSequence parameters) {
+    public LinkExpression(final Expression base, final AssignationSequence parameters) {
         super();
         Validate.notNull(base, "Base cannot be null");
         this.base = base;

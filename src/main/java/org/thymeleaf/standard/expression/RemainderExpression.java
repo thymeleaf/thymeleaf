@@ -50,7 +50,7 @@ public final class RemainderExpression extends MultiplicationDivisionRemainderEx
 
 
     
-    RemainderExpression(final Expression left, final Expression right) {
+    public RemainderExpression(final Expression left, final Expression right) {
         super(left, right);
     }
     

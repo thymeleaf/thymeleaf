@@ -55,7 +55,7 @@ public final class ConditionalExpression extends ComplexExpression {
     private final Expression elseExpression;
 
     
-    private ConditionalExpression(final Expression conditionExpression, 
+    public ConditionalExpression(final Expression conditionExpression, 
             final Expression thenExpression, final Expression elseExpression) {
         super();
         Validate.notNull(conditionExpression, "Condition expression cannot be null");

@@ -55,7 +55,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     
     
-    private SelectionVariableExpression(final String expression) {
+    public SelectionVariableExpression(final String expression) {
         super();
         Validate.notNull(expression, "Expression cannot be null");
         this.expression = expression;

@@ -51,7 +51,7 @@ public final class OrExpression extends BinaryOperationExpression {
         (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { OrExpression.class };
 
     
-    OrExpression(final Expression left, final Expression right) {
+    public OrExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 
