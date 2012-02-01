@@ -304,6 +304,36 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                 Standards.XHTML_11_PUBLICID, 
                 Standards.XHTML_11_SYSTEMID);
 
+    
+    
+    public static final IDocTypeTranslation XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_STRICT_THYMELEAF3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_1_STRICT_PUBLICID, 
+                Standards.XHTML_1_STRICT_SYSTEMID);
+    
+    public static final IDocTypeTranslation XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_TRANSITIONAL_THYMELEAF3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_1_TRANSITIONAL_PUBLICID, 
+                Standards.XHTML_1_TRANSITIONAL_SYSTEMID);
+    
+    public static final IDocTypeTranslation XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_FRAMESET_THYMELEAF3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_1_FRAMESET_PUBLICID, 
+                Standards.XHTML_1_FRAMESET_SYSTEMID);
+    
+    public static final IDocTypeTranslation XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION = 
+        new DocTypeTranslation(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML11_THYMELEAF3_SYSTEMID, // SYSTEMID
+                Standards.XHTML_11_PUBLICID, 
+                Standards.XHTML_11_SYSTEMID);
+
 
     
     public static final Set<IDocTypeTranslation> DOC_TYPE_TRANSLATIONS =
@@ -317,7 +347,11 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                                 XHTML1_STRICT_THYMELEAF_2_DOC_TYPE_TRANSLATION, 
                                 XHTML1_TRANSITIONAL_THYMELEAF_2_DOC_TYPE_TRANSLATION, 
                                 XHTML1_FRAMESET_THYMELEAF_2_DOC_TYPE_TRANSLATION, 
-                                XHTML11_THYMELEAF_2_DOC_TYPE_TRANSLATION
+                                XHTML11_THYMELEAF_2_DOC_TYPE_TRANSLATION,
+                                XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
+                                XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
+                                XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
+                                XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION
                                 })));
 
     
