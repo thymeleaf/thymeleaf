@@ -45,7 +45,7 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
 
     
     
-    NotEqualsExpression(final Expression left, final Expression right) {
+    public NotEqualsExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 

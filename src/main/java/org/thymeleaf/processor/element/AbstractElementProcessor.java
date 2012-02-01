@@ -42,7 +42,7 @@ import org.thymeleaf.processor.ElementNameProcessorMatcher;
  */
 public abstract class AbstractElementProcessor extends AbstractProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractElementProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     
     private final IElementNameProcessorMatcher matcher; 
@@ -66,9 +66,9 @@ public abstract class AbstractElementProcessor extends AbstractProcessor {
     @Override
     protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
         // Because of the type of applicability being used, this cast will not fail
-        if (logger.isTraceEnabled()) {
+        if (this.logger.isTraceEnabled()) {
             final String elementName = ((Element)node).getNormalizedName();
-            logger.trace("[THYMELEAF][{}][{}] Processing element \"{}\"",
+            this.logger.trace("[THYMELEAF][{}][{}] Processing element \"{}\"",
                     new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), elementName});
         }
         return processElement(arguments, (Element)node);

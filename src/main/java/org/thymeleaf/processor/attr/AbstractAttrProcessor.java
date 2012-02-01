@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.AttributeNameProcessorMatcher;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
@@ -42,7 +42,7 @@ import org.thymeleaf.processor.ProcessorResult;
  */
 public abstract class AbstractAttrProcessor extends AbstractProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractAttrProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private final IAttributeNameProcessorMatcher matcher; 
     
@@ -65,10 +65,10 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
     @Override
     protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
         // Because of the type of applicability being used, casts to Element here will not fail
-        if (logger.isTraceEnabled()) {
+        if (this.logger.isTraceEnabled()) {
             final String attributeName = this.matcher.getAttributeName(processorMatchingContext);
             final String attributeValue = ((Element)node).getAttributeValue(attributeName);
-            logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in element \"{}\"",
+            this.logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in element \"{}\"",
                     new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, attributeValue, ((Element)node).getNormalizedName()});
         }
         return processAttribute(arguments, (Element)node, this.matcher.getAttributeName(processorMatchingContext));

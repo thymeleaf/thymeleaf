@@ -44,7 +44,7 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
     private static final Logger logger = LoggerFactory.getLogger(EqualsExpression.class);
 
     
-    EqualsExpression(final Expression left, final Expression right) {
+    public EqualsExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 

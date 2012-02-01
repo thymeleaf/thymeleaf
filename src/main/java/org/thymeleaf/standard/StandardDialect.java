@@ -44,6 +44,7 @@ import org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardAttrAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardAttrappendAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardAttrprependAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardCaseAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardClassappendAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardConditionalFixedValueAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardDOMEventAttributeModifierAttrProcessor;
@@ -58,6 +59,7 @@ import org.thymeleaf.standard.processor.attr.StandardRemoveAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSingleNonRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSubstituteByAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardSwitchAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardTextAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardUnlessAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardUtextAttrProcessor;
@@ -80,6 +82,7 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *           <li>{@link StandardAttrAttrProcessor}</li>
  *           <li>{@link StandardAttrappendAttrProcessor}</li>
  *           <li>{@link StandardAttrprependAttrProcessor}</li>
+ *           <li>{@link StandardCaseAttrProcessor}</li>
  *           <li>{@link StandardClassappendAttrProcessor}</li>
  *           <li>{@link StandardConditionalFixedValueAttrProcessor}</li>
  *           <li>{@link StandardDOMEventAttributeModifierAttrProcessor}</li>
@@ -95,6 +98,7 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *           <li>{@link StandardSingleNonRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSingleRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSubstituteByAttrProcessor}</li>
+ *           <li>{@link StandardSwitchAttrProcessor}</li>
  *           <li>{@link StandardTextAttrProcessor}</li>
  *           <li>{@link StandardUtextAttrProcessor}</li>
  *           <li>{@link StandardWithAttrProcessor}</li>
@@ -149,6 +153,15 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd");
     public static final DocTypeIdentifier XHTML11_THYMELEAF2_SYSTEMID = 
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd");
+
+    public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd");
+    public static final DocTypeIdentifier XHTML1_TRANSITIONAL_THYMELEAF3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd");
+    public static final DocTypeIdentifier XHTML1_FRAMESET_THYMELEAF3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd");
+    public static final DocTypeIdentifier XHTML11_THYMELEAF3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-3.dtd");
     
     
     public static final IDocTypeResolutionEntry XHTML1_STRICT_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY =
@@ -200,6 +213,32 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                 DocTypeIdentifier.NONE, // PUBLICID
                 XHTML11_THYMELEAF2_SYSTEMID, // SYSTEMID
                 "org/thymeleaf/dtd/thymeleaf/xhtml11-thymeleaf-2.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+
+    
+    
+    public static final IDocTypeResolutionEntry XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_STRICT_THYMELEAF3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml1-strict-thymeleaf-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+    
+    public static final IDocTypeResolutionEntry XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_TRANSITIONAL_THYMELEAF3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml1-transitional-thymeleaf-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+    
+    public static final IDocTypeResolutionEntry XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_FRAMESET_THYMELEAF3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml1-frameset-thymeleaf-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+
+    public static final IDocTypeResolutionEntry XHTML11_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML11_THYMELEAF3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml11-thymeleaf-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
     
 
     
@@ -297,6 +336,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAF_2_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAF_2_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML11_THYMELEAF_2_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML11_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
         DOC_TYPE_RESOLUTION_ENTRIES = Collections.unmodifiableSet(newDocTypeResolutionEntries);
         
     }
@@ -426,6 +469,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.add(new StandardAttrAttrProcessor());
         processors.add(new StandardAttrappendAttrProcessor());
         processors.add(new StandardAttrprependAttrProcessor());
+        processors.add(new StandardCaseAttrProcessor());
         processors.add(new StandardClassappendAttrProcessor());
         processors.addAll(Arrays.asList(StandardConditionalFixedValueAttrProcessor.PROCESSORS));
         processors.addAll(Arrays.asList(StandardDOMEventAttributeModifierAttrProcessor.PROCESSORS));
@@ -441,6 +485,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.addAll(Arrays.asList(StandardSingleNonRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.addAll(Arrays.asList(StandardSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.add(new StandardSubstituteByAttrProcessor());
+        processors.add(new StandardSwitchAttrProcessor());
         processors.add(new StandardTextAttrProcessor());
         processors.add(new StandardUtextAttrProcessor());
         processors.add(new StandardWithAttrProcessor());

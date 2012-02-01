@@ -41,7 +41,7 @@ import org.thymeleaf.processor.ProcessorResult;
  */
 public abstract class AbstractTextNodeProcessor extends AbstractProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractTextNodeProcessor.class);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private final ITextNodeProcessorMatcher matcher; 
     
@@ -60,9 +60,9 @@ public abstract class AbstractTextNodeProcessor extends AbstractProcessor {
     
     @Override
     protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
-        if (logger.isTraceEnabled()) {
+        if (this.logger.isTraceEnabled()) {
             final String content = ((AbstractTextNode)node).getContent();
-            logger.trace("[THYMELEAF][{}][{}] Processing text node of type \"{}\" with content \"{}\"",
+            this.logger.trace("[THYMELEAF][{}][{}] Processing text node of type \"{}\" with content \"{}\"",
                     new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), node.getClass().getSimpleName(), content});
         }
         // Because of the type of applicability being used, this cast will not fail
