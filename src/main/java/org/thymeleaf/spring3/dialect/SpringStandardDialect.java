@@ -105,6 +105,15 @@ public class SpringStandardDialect extends StandardDialect {
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd");
     public static final DocTypeIdentifier XHTML11_THYMELEAFSPRING3_2_SYSTEMID = 
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-spring3-2.dtd");
+
+    public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAFSPRING3_3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd");
+    public static final DocTypeIdentifier XHTML1_TRANSITIONAL_THYMELEAFSPRING3_3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-3.dtd");
+    public static final DocTypeIdentifier XHTML1_FRAMESET_THYMELEAFSPRING3_3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-3.dtd");
+    public static final DocTypeIdentifier XHTML11_THYMELEAFSPRING3_3_SYSTEMID = 
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-spring3-3.dtd");
     
     
     public static final IDocTypeResolutionEntry XHTML1_STRICT_THYMELEAFSPRING3_1_DOC_TYPE_RESOLUTION_ENTRY =
@@ -156,6 +165,32 @@ public class SpringStandardDialect extends StandardDialect {
                 DocTypeIdentifier.NONE, // PUBLICID
                 XHTML11_THYMELEAFSPRING3_2_SYSTEMID, // SYSTEMID
                 "org/thymeleaf/dtd/thymeleaf-spring3/xhtml11-thymeleaf-spring3-2.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+
+
+    
+    public static final IDocTypeResolutionEntry XHTML1_STRICT_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_STRICT_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf-spring3/xhtml1-strict-thymeleaf-spring3-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+    
+    public static final IDocTypeResolutionEntry XHTML1_TRANSITIONAL_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_TRANSITIONAL_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf-spring3/xhtml1-transitional-thymeleaf-spring3-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+    
+    public static final IDocTypeResolutionEntry XHTML1_FRAMESET_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_FRAMESET_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf-spring3/xhtml1-frameset-thymeleaf-spring3-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
+
+    public static final IDocTypeResolutionEntry XHTML11_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML11_THYMELEAFSPRING3_3_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf-spring3/xhtml11-thymeleaf-spring3-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
     
     
     
@@ -251,6 +286,10 @@ public class SpringStandardDialect extends StandardDialect {
         newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAFSPRING3_2_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAFSPRING3_2_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML11_THYMELEAFSPRING3_2_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_STRICT_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML11_THYMELEAFSPRING3_3_DOC_TYPE_RESOLUTION_ENTRY);
         SPRING3_DOC_TYPE_RESOLUTION_ENTRIES = Collections.unmodifiableSet(newDocTypeResolutionEntries);
     }
     
