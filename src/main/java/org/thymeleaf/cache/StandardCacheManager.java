@@ -63,7 +63,28 @@ public class StandardCacheManager extends AbstractCacheManager {
     public static final int DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE = 100;
     public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
     public static final boolean DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES = true;
-        
+
+    
+    public String templateCacheName = DEFAULT_TEMPLATE_CACHE_NAME;
+    public int templateCacheInitialSize = DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;
+    public int templateCacheMaxSize = DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
+    public boolean templateCacheUseSoftReferences = DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
+    
+    public String fragmentCacheName = DEFAULT_FRAGMENT_CACHE_NAME;
+    public int fragmentCacheInitialSize = DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
+    public int fragmentCacheMaxSize = DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
+    public boolean fragmentCacheUseSoftReferences = DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
+   
+    public String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
+    public int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
+    public int messageCacheMaxSize = DEFAULT_MESSAGE_CACHE_MAX_SIZE;
+    public boolean messageCacheUseSoftReferences = DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES;
+    
+    public String expressionCacheName = DEFAULT_EXPRESSION_CACHE_NAME;
+    public int expressionCacheInitialSize = DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
+    public int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
+    public boolean expressionCacheUseSoftReferences = DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
+    
     
     
     public StandardCacheManager() {

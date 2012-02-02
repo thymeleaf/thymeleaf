@@ -5,7 +5,6 @@ import java.io.Writer;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.Standards;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.dom.Attribute;
@@ -35,6 +34,9 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
 
     private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
     private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
+    
+    private static final char[] XML_DECLARATION_PREFIX = "<?xml version=\"1.0\"".toCharArray();
+    private static final char[] XML_DECLARATION_SUFFIX = "?>\n".toCharArray();
 
     
     
@@ -45,7 +47,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     }
 
     
-    protected abstract boolean writeXmlDeclaration();
+    protected abstract boolean shouldWriteXmlDeclaration();
     
     protected abstract boolean useXhtmlTagMinimizationRules();
     
@@ -55,9 +57,8 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     protected void writeDocument(final Arguments arguments, final Writer writer, final Document document) 
                 throws IOException {
         
-        if (writeXmlDeclaration()) {
-            writer.write(Standards.XML_DECLARATION);
-            writer.write('\n');
+        if (shouldWriteXmlDeclaration()) {
+            writeXmlDeclaration(writer, document);
         }
         if (document.hasDocType()) {
             writeDocType(arguments, writer, document.getDocType());
@@ -72,6 +73,30 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
         }
         
     }
+    
+    
+    
+    protected void writeXmlDeclaration(final Writer writer, final Document document) 
+            throws IOException {
+        writer.write(XML_DECLARATION_PREFIX);
+        if (document.hasNodeProperty(Node.NODE_PROPERTY_XML_ENCODING)) {
+            final String xmlEncoding = (String) document.getNodeProperty(Node.NODE_PROPERTY_XML_ENCODING);
+            if (xmlEncoding != null) {
+                writer.write(" encoding=\"");
+                writer.write(xmlEncoding);
+                writer.write("\"");
+            }
+        }
+        if (document.hasNodeProperty(Node.NODE_PROPERTY_XML_STANDALONE)) {
+            final Boolean xmlStandalone = (Boolean) document.getNodeProperty(Node.NODE_PROPERTY_XML_STANDALONE);
+            if (xmlStandalone != null && xmlStandalone.booleanValue()) {
+                writer.write(" standalone=\"true\"");
+            }
+        }
+        writer.write(XML_DECLARATION_SUFFIX);
+    }
+    
+    
     
     
     @SuppressWarnings("unused")

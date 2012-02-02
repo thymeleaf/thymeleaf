@@ -17,7 +17,7 @@ public final class XmlTemplateWriter extends AbstractGeneralTemplateWriter {
     }
 
     @Override
-    protected boolean writeXmlDeclaration() {
+    protected boolean shouldWriteXmlDeclaration() {
         return true;
     }
 

@@ -17,7 +17,7 @@ public final class XhtmlHtml5TemplateWriter extends AbstractGeneralTemplateWrite
     }
 
     @Override
-    protected boolean writeXmlDeclaration() {
+    protected boolean shouldWriteXmlDeclaration() {
         return false;
     }
 

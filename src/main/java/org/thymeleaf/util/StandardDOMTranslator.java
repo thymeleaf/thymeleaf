@@ -4,9 +4,9 @@ import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 
@@ -54,6 +54,22 @@ public class StandardDOMTranslator {
         final org.w3c.dom.DocumentType domDocumentType = domDocument.getDoctype();
         final org.w3c.dom.NodeList children = domDocument.getChildNodes();
         final Document document = new Document(documentName, translateDocumentType(domDocumentType));
+        
+        final String xmlVersion = domDocument.getXmlVersion();
+        if (xmlVersion != null) {
+            document.setNodeProperty(Node.NODE_PROPERTY_XML_VERSION, xmlVersion);
+        }
+        
+        final String xmlEncoding = domDocument.getXmlEncoding();
+        if (xmlEncoding != null) {
+            document.setNodeProperty(Node.NODE_PROPERTY_XML_ENCODING, xmlEncoding);
+        }
+        
+        final boolean xmlStandalone = domDocument.getXmlStandalone();
+        if (xmlStandalone) {
+            document.setNodeProperty(Node.NODE_PROPERTY_XML_STANDALONE, Boolean.TRUE);
+        }
+        
         final int childrenLen = children.getLength();
         for (int i = 0; i < childrenLen; i++) {
             final org.w3c.dom.Node child = children.item(i);

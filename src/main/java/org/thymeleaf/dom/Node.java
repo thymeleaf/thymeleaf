@@ -21,14 +21,17 @@ package org.thymeleaf.dom;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.IdentityCounter;
+import org.thymeleaf.util.Validate;
 
 
 
@@ -45,6 +48,10 @@ public abstract class Node implements Serializable {
     
     private static final int DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE = 3;
 
+    public static final String NODE_PROPERTY_XML_ENCODING = "XML_ENCODING";
+    public static final String NODE_PROPERTY_XML_VERSION = "XML_VERSION";
+    public static final String NODE_PROPERTY_XML_STANDALONE = "XML_STANDALONE";
+    
     private final String documentName;
     private final Integer lineNumber;
     
@@ -60,6 +67,8 @@ public abstract class Node implements Serializable {
 
     private ArrayList<ProcessorAndContext> processors;
 
+    private HashMap<String,Object> nodeProperties;
+    
     
     public static String normalizeName(final String name) {
         if (name == null) {
@@ -92,6 +101,7 @@ public abstract class Node implements Serializable {
         this.nodeLocalVariables = null;
         this.processors = null;
         this.shouldConsiderAsElementForProcessing = (this instanceof Element || this instanceof Document);
+        this.nodeProperties = null;
     }
 
 
@@ -104,6 +114,49 @@ public abstract class Node implements Serializable {
     public Integer getLineNumber() {
         return this.lineNumber;
     }
+
+
+    
+    
+    public final void setNodeProperty(final String name, final Object value) {
+        Validate.notNull(name, "Property name cannot be null");
+        if (this.nodeProperties == null) {
+            this.nodeProperties = new HashMap<String,Object>();
+        }
+        this.nodeProperties.put(name, value);
+    }
+
+    
+    public final boolean hasNodeProperty(final String name) {
+        Validate.notNull(name, "Property name cannot be null");
+        if (this.nodeProperties == null) {
+            return false;
+        }
+        return this.nodeProperties.containsKey(name);
+    }
+    
+    
+    public final Object getNodeProperty(final String name) {
+        Validate.notNull(name, "Property name cannot be null");
+        if (this.nodeProperties == null) {
+            return null;
+        }
+        return this.nodeProperties.get(name);
+    }
+    
+    
+    public final Set<String> getNodePropertyNames() {
+        if (this.nodeProperties == null) {
+            return Collections.emptySet();
+        }
+        return Collections.synchronizedSet(this.nodeProperties.keySet());
+    }
+    
+    
+    public final Map<String,Object> unsafeGetNodeProperties() {
+        return this.nodeProperties;
+    }
+    
 
     
     
@@ -413,7 +466,10 @@ public abstract class Node implements Serializable {
         }
         node.parent = newParent;
         if (this.nodeLocalVariables != null) {
-            node.nodeLocalVariables = new HashMap<String, Object>(this.nodeLocalVariables);
+            node.nodeLocalVariables = new HashMap<String,Object>(this.nodeLocalVariables);
+        }
+        if (this.nodeProperties != null) {
+            node.nodeProperties = new HashMap<String,Object>(this.nodeProperties);
         }
     }
 

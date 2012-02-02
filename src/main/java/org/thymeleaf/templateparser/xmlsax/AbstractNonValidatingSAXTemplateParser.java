@@ -34,6 +34,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ext.DefaultHandler2;
+import org.xml.sax.ext.Locator2;
 
 /**
  * <p>
@@ -146,13 +147,33 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         saxParser.setProperty(
             "http://xml.org/sax/properties/lexical-handler", handler);
+        saxParser.setProperty(
+                "http://xml.org/sax/properties/declaration-handler", handler);
+        
         
         saxParser.parse(inputSource, handler);
         
         final DocType docType = handler.getDocType();
         final List<Node> rootNodes = handler.getRootNodes();
         
+        final String xmlVersion = handler.getXmlVersion();
+        final String xmlEncoding = handler.getXmlEncoding();
+        final boolean xmlStandalone = handler.isXmlStandalone();
+        
         final Document document = new Document(documentName, docType);
+
+        if (xmlVersion != null) {
+            document.setNodeProperty(Node.NODE_PROPERTY_XML_VERSION, xmlVersion);
+        }
+        
+        if (xmlEncoding != null) {
+            document.setNodeProperty(Node.NODE_PROPERTY_XML_ENCODING, xmlEncoding);
+        }
+        
+        if (xmlStandalone) {
+            document.setNodeProperty(Node.NODE_PROPERTY_XML_STANDALONE, Boolean.TRUE);
+        }
+        
         document.setChildren(rootNodes);
         
         saxParser.reset();
@@ -204,7 +225,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         private boolean cdataMode = false;
         private boolean dtdMode = false;
+        
+        private String xmlEncoding = null;
+        private String xmlVersion = null;
+        private boolean xmlStandalone = false;
 
+        private boolean xmlDeclarationComputed = false;
         
         
         public XmlSAXHandler(final String documentName,
@@ -236,6 +262,17 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             return this.rootNodes;
         }
 
+        public String getXmlEncoding() {
+            return this.xmlEncoding;
+        }
+
+        public String getXmlVersion() {
+            return this.xmlVersion;
+        }
+
+        public boolean isXmlStandalone() {
+            return this.xmlStandalone;
+        }
 
 
 
@@ -353,6 +390,29 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         @Override
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) 
                 throws SAXException {
+            
+            
+            if (!this.xmlDeclarationComputed) {
+                
+                // SAX specification says the "getEncoding()" method in Locator2 can only
+                // be called AFTER startDocument has returned and BEFORE endDocument is called.
+                
+                if (this.locator != null && this.locator instanceof Locator2) {
+                    
+                    final Locator2 loc = (Locator2) this.locator;
+                    
+                    this.xmlVersion = loc.getXMLVersion();
+                    this.xmlEncoding = loc.getEncoding();
+
+                    // There seems to be no way of obtaining the "standalone" property
+                    // from the XML declaration.
+                    
+                }
+                
+                this.xmlDeclarationComputed = true;
+
+            }
+            
             
             flushBuffer();
 
