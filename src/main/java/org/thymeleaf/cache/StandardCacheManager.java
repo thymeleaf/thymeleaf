@@ -112,7 +112,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     @Override
     protected final ICache<String, Template> initializeTemplateCache() {
         final int maxSize = getTemplateCacheMaxSize();
-        if (maxSize <= 0) {
+        if (maxSize == 0) {
             return null;
         }
         return new StandardCache<String, Template>(
@@ -124,7 +124,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     @Override
     protected final ICache<String, List<Node>> initializeFragmentCache() {
         final int maxSize = getFragmentCacheMaxSize();
-        if (maxSize <= 0) {
+        if (maxSize == 0) {
             return null;
         }
         return new StandardCache<String, List<Node>>(
@@ -137,7 +137,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     @Override
     protected final ICache<String, Properties> initializeMessageCache() {
         final int maxSize = getMessageCacheMaxSize();
-        if (maxSize <= 0) {
+        if (maxSize == 0) {
             return null;
         }
         return new StandardCache<String, Properties>(
@@ -150,7 +150,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     @Override
     protected final ICache<String, Object> initializeExpressionCache() {
         final int maxSize = getExpressionCacheMaxSize();
-        if (maxSize <= 0) {
+        if (maxSize == 0) {
             return null;
         }
         return new StandardCache<String, Object>(
