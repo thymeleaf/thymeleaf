@@ -106,7 +106,7 @@ public class SpelExpressionEvaluator
             throw e;
         } catch(final Exception e) {
             throw new TemplateProcessingException(
-                    "Exception evaluating SpEL expression: \"" + spelExpression + "\"", e);
+                    "Exception evaluating SpringEL expression: \"" + spelExpression + "\"", e);
         }
         
     }
