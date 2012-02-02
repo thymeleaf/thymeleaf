@@ -42,37 +42,75 @@ import org.thymeleaf.dom.Node;
 public abstract class AbstractCacheManager implements ICacheManager {
 
 
-    private final ICache<String,Template> templateCache;
-    private final ICache<String,List<Node>> fragmentCache;
-    private final ICache<String,Object> expressionCache;
-    private final ICache<String,Properties> messageCache;
+    private volatile ICache<String,Template> templateCache;
+    private volatile boolean templateCacheInitialized = false;
+    
+    private volatile ICache<String,List<Node>> fragmentCache;
+    private volatile boolean fragmentCacheInitialized = false;
+    
+    private volatile ICache<String,Object> expressionCache;
+    private volatile boolean expressionCacheInitialized = false;
+    
+    private volatile ICache<String,Properties> messageCache;
+    private volatile boolean messageCacheInitialized = false;
 
     
     public AbstractCacheManager() {
         super();
-        this.templateCache = initializeTemplateCache();
-        this.fragmentCache = initializeFragmentCache();
-        this.messageCache = initializeMessageCache();
-        this.expressionCache = initializeExpressionCache();
     }
     
     
     public final ICache<String, Template> getTemplateCache() {
+        if (!this.templateCacheInitialized) {
+            synchronized(this) {
+                if (!this.templateCacheInitialized) {
+                    this.templateCache = initializeTemplateCache();
+                    this.templateCacheInitialized = true;
+                }
+            }
+        }
         return this.templateCache;
     }
+
     
     public final ICache<String, List<Node>> getFragmentCache() {
+        if (!this.fragmentCacheInitialized) {
+            synchronized(this) {
+                if (!this.fragmentCacheInitialized) {
+                    this.fragmentCache = initializeFragmentCache();
+                    this.fragmentCacheInitialized = true;
+                }
+            }
+        }
         return this.fragmentCache;
     }
 
+    
     public final ICache<String, Properties> getMessageCache() {
+        if (!this.messageCacheInitialized) {
+            synchronized(this) {
+                if (!this.messageCacheInitialized) {
+                    this.messageCache = initializeMessageCache();
+                    this.messageCacheInitialized = true;
+                }
+            }
+        }
         return this.messageCache;
     }
 
     public final ICache<String, Object> getExpressionCache() {
+        if (!this.expressionCacheInitialized) {
+            synchronized(this) {
+                if (!this.expressionCacheInitialized) {
+                    this.expressionCache = initializeExpressionCache();
+                    this.expressionCacheInitialized = true;
+                }
+            }
+        }
         return this.expressionCache;
     }
 
+    
     public <K, V> ICache<K, V> getSpecificCache(String name) {
         // No specific caches are used by default
         return null;

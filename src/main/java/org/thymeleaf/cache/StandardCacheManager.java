@@ -48,42 +48,58 @@ public class StandardCacheManager extends AbstractCacheManager {
     public static final int DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE = 10;
     public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 50;
     public static final boolean DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES = true;
+    public static final String DEFAULT_TEMPLATE_CACHE_LOGGER_NAME = null;
+    public static final ICacheEntryValidityChecker<String,Template> DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER = new StandardParsedTemplateEntryValidator();
     
     public static final String DEFAULT_FRAGMENT_CACHE_NAME = "FRAGMENT_CACHE";
     public static final int DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE = 20;
     public static final int DEFAULT_FRAGMENT_CACHE_MAX_SIZE = 300;
     public static final boolean DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES = true;
+    public static final String DEFAULT_FRAGMENT_CACHE_LOGGER_NAME = null;
+    public static final ICacheEntryValidityChecker<String,List<Node>> DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER = null;
    
     public static final String DEFAULT_MESSAGE_CACHE_NAME = "MESSAGE_CACHE";
     public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 20;
     public static final int DEFAULT_MESSAGE_CACHE_MAX_SIZE = 300;
     public static final boolean DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES = true;
+    public static final String DEFAULT_MESSAGE_CACHE_LOGGER_NAME = null;
+    public static final ICacheEntryValidityChecker<String,Properties> DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER = null;
     
     public static final String DEFAULT_EXPRESSION_CACHE_NAME = "EXPRESSION_CACHE";
     public static final int DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE = 100;
     public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
     public static final boolean DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES = true;
+    public static final String DEFAULT_EXPRESSION_CACHE_LOGGER_NAME = null;
+    public static final ICacheEntryValidityChecker<String,Object> DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER = null;
 
     
-    public String templateCacheName = DEFAULT_TEMPLATE_CACHE_NAME;
-    public int templateCacheInitialSize = DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;
-    public int templateCacheMaxSize = DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
-    public boolean templateCacheUseSoftReferences = DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
+    private String templateCacheName = DEFAULT_TEMPLATE_CACHE_NAME;
+    private int templateCacheInitialSize = DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;
+    private int templateCacheMaxSize = DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
+    private boolean templateCacheUseSoftReferences = DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
+    private String templateCacheLoggerName = DEFAULT_TEMPLATE_CACHE_LOGGER_NAME;
+    private ICacheEntryValidityChecker<String,Template> templateCacheValidityChecker = DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER;
     
-    public String fragmentCacheName = DEFAULT_FRAGMENT_CACHE_NAME;
-    public int fragmentCacheInitialSize = DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
-    public int fragmentCacheMaxSize = DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
-    public boolean fragmentCacheUseSoftReferences = DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
+    private String fragmentCacheName = DEFAULT_FRAGMENT_CACHE_NAME;
+    private int fragmentCacheInitialSize = DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
+    private int fragmentCacheMaxSize = DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
+    private boolean fragmentCacheUseSoftReferences = DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
+    private String fragmentCacheLoggerName = DEFAULT_FRAGMENT_CACHE_LOGGER_NAME;
+    private ICacheEntryValidityChecker<String,List<Node>> fragmentCacheValidityChecker = DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER;
    
-    public String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
-    public int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
-    public int messageCacheMaxSize = DEFAULT_MESSAGE_CACHE_MAX_SIZE;
-    public boolean messageCacheUseSoftReferences = DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES;
+    private String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
+    private int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
+    private int messageCacheMaxSize = DEFAULT_MESSAGE_CACHE_MAX_SIZE;
+    private boolean messageCacheUseSoftReferences = DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES;
+    private String messageCacheLoggerName = DEFAULT_MESSAGE_CACHE_LOGGER_NAME;
+    private ICacheEntryValidityChecker<String,Properties> messageCacheValidityChecker = DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER;
     
-    public String expressionCacheName = DEFAULT_EXPRESSION_CACHE_NAME;
-    public int expressionCacheInitialSize = DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
-    public int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
-    public boolean expressionCacheUseSoftReferences = DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
+    private String expressionCacheName = DEFAULT_EXPRESSION_CACHE_NAME;
+    private int expressionCacheInitialSize = DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
+    private int expressionCacheMaxSize = DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
+    private boolean expressionCacheUseSoftReferences = DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
+    private String expressionCacheLoggerName = DEFAULT_EXPRESSION_CACHE_LOGGER_NAME;
+    private ICacheEntryValidityChecker<String,Object> expressionCacheValidityChecker = DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER;
     
     
     
@@ -95,142 +111,302 @@ public class StandardCacheManager extends AbstractCacheManager {
     
     @Override
     protected final ICache<String, Template> initializeTemplateCache() {
+        final int maxSize = getTemplateCacheMaxSize();
+        if (maxSize <= 0) {
+            return null;
+        }
         return new StandardCache<String, Template>(
                 getTemplateCacheName(), getTemplateCacheUseSoftReferences(), 
-                getTemplateCacheInitialSize(), getTemplateCacheMaxSize(), 
-                getTemplateValidityChecker(), getTemplateCacheLogger());
+                getTemplateCacheInitialSize(), maxSize, 
+                getTemplateCacheValidityChecker(), getTemplateCacheLogger());
     }
     
     @Override
     protected final ICache<String, List<Node>> initializeFragmentCache() {
+        final int maxSize = getFragmentCacheMaxSize();
+        if (maxSize <= 0) {
+            return null;
+        }
         return new StandardCache<String, List<Node>>(
                 getFragmentCacheName(), getFragmentCacheUseSoftReferences(), 
-                getFragmentCacheInitialSize(), getFragmentCacheMaxSize(), 
-                getFragmentValidityChecker(), getFragmentCacheLogger());
+                getFragmentCacheInitialSize(), maxSize, 
+                getFragmentCacheValidityChecker(), getFragmentCacheLogger());
     }
 
     
     @Override
     protected final ICache<String, Properties> initializeMessageCache() {
+        final int maxSize = getMessageCacheMaxSize();
+        if (maxSize <= 0) {
+            return null;
+        }
         return new StandardCache<String, Properties>(
                 getMessageCacheName(), getMessageCacheUseSoftReferences(), 
-                getMessageCacheInitialSize(), getMessageCacheMaxSize(), 
-                getMessageValidityChecker(), getMessageCacheLogger());
+                getMessageCacheInitialSize(), maxSize, 
+                getMessageCacheValidityChecker(), getMessageCacheLogger());
     }
 
     
     @Override
     protected final ICache<String, Object> initializeExpressionCache() {
+        final int maxSize = getExpressionCacheMaxSize();
+        if (maxSize <= 0) {
+            return null;
+        }
         return new StandardCache<String, Object>(
                 getExpressionCacheName(), getExpressionCacheUseSoftReferences(), 
-                getExpressionCacheInitialSize(), getExpressionCacheMaxSize(), 
-                getExpressionValidityChecker(), getExpressionCacheLogger());
+                getExpressionCacheInitialSize(), maxSize, 
+                getExpressionCacheValidityChecker(), getExpressionCacheLogger());
     }
     
     
     
     
-    protected String getTemplateCacheName() {
-        return DEFAULT_TEMPLATE_CACHE_NAME;
+    public String getTemplateCacheName() {
+        return this.templateCacheName;
     }
     
-    protected boolean getTemplateCacheUseSoftReferences() {
-        return DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES;
+    public boolean getTemplateCacheUseSoftReferences() {
+        return this.templateCacheUseSoftReferences;
     }
     
-    protected int getTemplateCacheInitialSize() {
-        return DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;
+    public int getTemplateCacheInitialSize() {
+        return this.templateCacheInitialSize;
     }
     
-    protected int getTemplateCacheMaxSize() {
-        return DEFAULT_TEMPLATE_CACHE_MAX_SIZE;
+    public int getTemplateCacheMaxSize() {
+        return this.templateCacheMaxSize;
     }
     
-    protected Logger getTemplateCacheLogger() {
+    public String getTemplateCacheLoggerName() {
+        return this.templateCacheLoggerName;
+    }
+    
+    public ICacheEntryValidityChecker<String,Template> getTemplateCacheValidityChecker() {
+        return this.templateCacheValidityChecker;
+    }
+    
+    public final Logger getTemplateCacheLogger() {
+        final String loggerName = getTemplateCacheLoggerName();
+        if (loggerName != null) {
+            return LoggerFactory.getLogger(loggerName);
+        }
         return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getTemplateCacheName());
     }
-    
-    protected ICacheEntryValidityChecker<String,Template> getTemplateValidityChecker() {
-        return new StandardParsedTemplateEntryValidator();
-    }
 
 
     
     
-    protected String getFragmentCacheName() {
-        return DEFAULT_FRAGMENT_CACHE_NAME;
+    public String getFragmentCacheName() {
+        return this.fragmentCacheName;
     }
     
-    protected boolean getFragmentCacheUseSoftReferences() {
-        return DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
+    public boolean getFragmentCacheUseSoftReferences() {
+        return this.fragmentCacheUseSoftReferences;
     }
     
-    protected int getFragmentCacheInitialSize() {
-        return DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE;
+    public int getFragmentCacheInitialSize() {
+        return this.fragmentCacheInitialSize;
     }
     
-    protected int getFragmentCacheMaxSize() {
-        return DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
+    public int getFragmentCacheMaxSize() {
+        return this.fragmentCacheMaxSize;
     }
     
-    protected Logger getFragmentCacheLogger() {
+    public String getFragmentCacheLoggerName() {
+        return this.fragmentCacheLoggerName;
+    }
+    
+    public ICacheEntryValidityChecker<String,List<Node>> getFragmentCacheValidityChecker() {
+        return this.fragmentCacheValidityChecker;
+    }
+    
+    public final Logger getFragmentCacheLogger() {
+        final String loggerName = getFragmentCacheLoggerName();
+        if (loggerName != null) {
+            return LoggerFactory.getLogger(loggerName);
+        }
         return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getFragmentCacheName());
     }
+
     
-    protected ICacheEntryValidityChecker<String,List<Node>> getFragmentValidityChecker() {
-        return null;
+    
+    
+    public String getMessageCacheName() {
+        return this.messageCacheName;
     }
     
-    
-    protected String getMessageCacheName() {
-        return DEFAULT_MESSAGE_CACHE_NAME;
+    public boolean getMessageCacheUseSoftReferences() {
+        return this.messageCacheUseSoftReferences;
     }
     
-    protected boolean getMessageCacheUseSoftReferences() {
-        return DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES;
+    public int getMessageCacheInitialSize() {
+        return this.messageCacheInitialSize;
     }
     
-    protected int getMessageCacheInitialSize() {
-        return DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
+    public int getMessageCacheMaxSize() {
+        return this.messageCacheMaxSize;
     }
     
-    protected int getMessageCacheMaxSize() {
-        return DEFAULT_MESSAGE_CACHE_MAX_SIZE;
+    public String getMessageCacheLoggerName() {
+        return this.messageCacheLoggerName;
     }
     
-    protected Logger getMessageCacheLogger() {
+    public ICacheEntryValidityChecker<String,Properties> getMessageCacheValidityChecker() {
+        return this.messageCacheValidityChecker;
+    }
+
+    public final Logger getMessageCacheLogger() {
+        final String loggerName = getMessageCacheLoggerName();
+        if (loggerName != null) {
+            return LoggerFactory.getLogger(loggerName);
+        }
         return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getMessageCacheName());
-    }
-    
-    protected ICacheEntryValidityChecker<String,Properties> getMessageValidityChecker() {
-        return null;
     }
 
     
     
-    protected String getExpressionCacheName() {
-        return DEFAULT_EXPRESSION_CACHE_NAME;
+    
+    public String getExpressionCacheName() {
+        return this.expressionCacheName;
     }
     
-    protected boolean getExpressionCacheUseSoftReferences() {
-        return DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES;
+    public boolean getExpressionCacheUseSoftReferences() {
+        return this.expressionCacheUseSoftReferences;
     }
     
-    protected int getExpressionCacheInitialSize() {
-        return DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE;
+    public int getExpressionCacheInitialSize() {
+        return this.expressionCacheInitialSize;
     }
     
-    protected int getExpressionCacheMaxSize() {
-        return DEFAULT_EXPRESSION_CACHE_MAX_SIZE;
+    public int getExpressionCacheMaxSize() {
+        return this.expressionCacheMaxSize;
     }
     
-    protected Logger getExpressionCacheLogger() {
+    public String getExpressionCacheLoggerName() {
+        return this.expressionCacheLoggerName;
+    }
+    
+    public ICacheEntryValidityChecker<String,Object> getExpressionCacheValidityChecker() {
+        return this.expressionCacheValidityChecker;
+    }
+
+    public final Logger getExpressionCacheLogger() {
+        final String loggerName = getExpressionCacheLoggerName();
+        if (loggerName != null) {
+            return LoggerFactory.getLogger(loggerName);
+        }
         return LoggerFactory.getLogger(TemplateEngine.class.getName() + ".cache." + getExpressionCacheName());
     }
+
+
+
     
-    protected ICacheEntryValidityChecker<String,Object> getExpressionValidityChecker() {
-        return null;
+    
+    public void setTemplateCacheName(final String templateCacheName) {
+        this.templateCacheName = templateCacheName;
     }
+
+    public void setTemplateCacheInitialSize(final int templateCacheInitialSize) {
+        this.templateCacheInitialSize = templateCacheInitialSize;
+    }
+
+    public void setTemplateCacheMaxSize(final int templateCacheMaxSize) {
+        this.templateCacheMaxSize = templateCacheMaxSize;
+    }
+
+    public void setTemplateCacheUseSoftReferences(final boolean templateCacheUseSoftReferences) {
+        this.templateCacheUseSoftReferences = templateCacheUseSoftReferences;
+    }
+
+    public void setTemplateCacheLoggerName(final String templateCacheLoggerName) {
+        this.templateCacheLoggerName = templateCacheLoggerName;
+    }
+
+    public void setTemplateCacheValidityChecker(final ICacheEntryValidityChecker<String, Template> templateCacheValidityChecker) {
+        this.templateCacheValidityChecker = templateCacheValidityChecker;
+    }
+
+    
+    
+    public void setFragmentCacheName(final String fragmentCacheName) {
+        this.fragmentCacheName = fragmentCacheName;
+    }
+
+    public void setFragmentCacheInitialSize(final int fragmentCacheInitialSize) {
+        this.fragmentCacheInitialSize = fragmentCacheInitialSize;
+    }
+
+    public void setFragmentCacheMaxSize(final int fragmentCacheMaxSize) {
+        this.fragmentCacheMaxSize = fragmentCacheMaxSize;
+    }
+
+    public void setFragmentCacheUseSoftReferences(final boolean fragmentCacheUseSoftReferences) {
+        this.fragmentCacheUseSoftReferences = fragmentCacheUseSoftReferences;
+    }
+
+    public void setFragmentCacheLoggerName(final String fragmentCacheLoggerName) {
+        this.fragmentCacheLoggerName = fragmentCacheLoggerName;
+    }
+    
+    public void setFragmentCacheValidityChecker(final ICacheEntryValidityChecker<String, List<Node>> fragmentCacheValidityChecker) {
+        this.fragmentCacheValidityChecker = fragmentCacheValidityChecker;
+    }
+
+
+
+    public void setMessageCacheName(final String messageCacheName) {
+        this.messageCacheName = messageCacheName;
+    }
+
+    public void setMessageCacheInitialSize(final int messageCacheInitialSize) {
+        this.messageCacheInitialSize = messageCacheInitialSize;
+    }
+
+    public void setMessageCacheMaxSize(final int messageCacheMaxSize) {
+        this.messageCacheMaxSize = messageCacheMaxSize;
+    }
+
+    public void setMessageCacheUseSoftReferences(final boolean messageCacheUseSoftReferences) {
+        this.messageCacheUseSoftReferences = messageCacheUseSoftReferences;
+    }
+
+    public void setMessageCacheLoggerName(final String messageCacheLoggerName) {
+        this.messageCacheLoggerName = messageCacheLoggerName;
+    }
+    
+    public void setMessageCacheValidityChecker(final ICacheEntryValidityChecker<String, Properties> messageCacheValidityChecker) {
+        this.messageCacheValidityChecker = messageCacheValidityChecker;
+    }
+
+    
+    
+    public void setExpressionCacheName(final String expressionCacheName) {
+        this.expressionCacheName = expressionCacheName;
+    }
+
+    public void setExpressionCacheInitialSize(final int expressionCacheInitialSize) {
+        this.expressionCacheInitialSize = expressionCacheInitialSize;
+    }
+
+    public void setExpressionCacheMaxSize(final int expressionCacheMaxSize) {
+        this.expressionCacheMaxSize = expressionCacheMaxSize;
+    }
+
+    public void setExpressionCacheUseSoftReferences(final boolean expressionCacheUseSoftReferences) {
+        this.expressionCacheUseSoftReferences = expressionCacheUseSoftReferences;
+    }
+
+    public void setExpressionCacheLoggerName(final String expressionCacheLoggerName) {
+        this.expressionCacheLoggerName = expressionCacheLoggerName;
+    }
+
+    public void setExpressionCacheValidityChecker(final ICacheEntryValidityChecker<String, Object> expressionCacheValidityChecker) {
+        this.expressionCacheValidityChecker = expressionCacheValidityChecker;
+    }
+
+    
+    
     
     
 }
