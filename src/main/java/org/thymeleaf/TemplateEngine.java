@@ -93,7 +93,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <ul>
  *   <li>One or more <b>Dialects</b> (instances of {@link IDialect}), defining the way in which templates
- *       will be processed: attributes, elements, value and expression processors, etc. If no
+ *       will be processed: DOM processors, expression parsers, etc. If no
  *       dialect is explicitly set, a unique instance of {@link org.thymeleaf.standard.StandardDialect}
  *       (the <i>Standard Dialect</i>) will be used.
  *       <ul>
@@ -117,11 +117,17 @@ import org.thymeleaf.util.Validate;
  *       can be used for this. If more resolvers are to be set, both the
  *       {@link #setMessageResolvers(Set)} and {@link #addMessageResolver(IMessageResolver)} methods
  *       can be used.</li>
- *   <li>The <b>size of the template cach&eacute;</b>, set by means of the
- *       {@link #setParsedTemplateCacheSize(int)} method. This cach&eacute; will be used to store the
- *       parsed DOM trees of templates in order to reduce the amount of input/output operations
- *       needed. It uses the LRU (Least Recently Used) algorithm. If not set, this parameter
- *       will default to {@link Configuration#DEFAULT_PARSED_TEMPLATE_CACHE_SIZE}.</li>
+ *   <li>A set of <b>Template Mode Handlers</b> (instances of {@link ITemplateModeHandler}, which will
+ *       take care of reading/parsing templates and also writing the results of processing them for a 
+ *       specific template mode. The presence of these template mode handlers defines which are the valid
+ *       values for the <tt>templateMode</tt> attribute of template resolution results 
+ *       ({@link TemplateResolution#getTemplateMode()}). If not explicitly set, template mode handlers
+ *       will be initialized to {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}. 
+ *   <li>A <b>Cache Manager</b> (instance of {@link ICacheManager}. The Cache Manager is in charge of
+ *       providing the cache objects (instances of {@link org.thymeleaf.cache.ICache}) to be used for
+ *       caching (at least) templates, fragments, messages and expressions. By default, a 
+ *       {@link StandardCacheManager} instance is used. If a null cache manager is specified by calling
+ *       {@link #setCacheManager(ICacheManager)}, no caches will be used throughout the system at all.</li>
  * </ul>
  * 
  * <h3>Template Execution</h3>
@@ -157,11 +163,12 @@ import org.thymeleaf.util.Validate;
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
- *   A {@link org.thymeleaf.context.WebContext} will also need an 
- *   {@link javax.servlet.http.HttpServletRequest} object as a constructor argument: 
+ *   A {@link org.thymeleaf.context.WebContext} would also need 
+ *   {@link javax.servlet.http.HttpServletRequest} and 
+ *   {@link javax.servlet.ServletContext} objects as constructor arguments: 
  * </p>
  * <code>
- *   final IContext ctx = new WebContext(request);<br />
+ *   final IContext ctx = new WebContext(request, servletContext);<br />
  *   ctx.setVariable("allItems", items);
  * </code>
  * <p>
@@ -170,11 +177,23 @@ import org.thymeleaf.util.Validate;
  * 
  * <h4>2. Template Processing</h4>
  * <p>
- *   In order to execute templates, the {@link #process(String, IContext)} method
- *   will be used:
+ *   In order to execute templates, the {@link #process(String, IContext)} and
+ *   {@link #process(String, IContext, Writer)} methods can be used:
+ * </p>
+ * <p>
+ *   Without a writer, the processing result will be returned as a String:
  * </p>
  * <code>
  *   final String result = templateEngine.process("mytemplate", ctx);
+ * </code>
+ * <p>
+ *   By specifying a writer, we can avoid the creation of a String containing the
+ *   whole processing result by writing this result into the output stream as soon 
+ *   as it is produced from the processed DOM. This is specially useful in web 
+ *   scenarios:
+ * </p>
+ * <code>
+ *   templateEngine.process("mytemplate", ctx, httpServletResponse.getWriter());
  * </code>
  * <p>
  *   The <tt>"mytemplate"</tt> String argument is the <i>template name</i>, and it
@@ -249,6 +268,9 @@ public class TemplateEngine {
      *   or not. A <tt>TemplateEngine</tt> is initialized when the {@link #initialize()}
      *   method is called the first time a template is processed.
      * </p>
+     * <p>
+     *   Normally, there is no good reason why users would need to call this method.
+     * </p>
      * 
      * @return <tt>true</tt> if the template engine has already been initialized,
      *         <tt>false</tt> if not.
@@ -273,7 +295,9 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Returns the template repository.
+     *   Returns the template repository. Normally there is no reason why users
+     *   would want to obtain or use this object directly (and it is not recommended
+     *   behaviour).
      * </p>
      * 
      * @return the template repository
@@ -484,7 +508,7 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Returns the cache factory in effect. This factory is in charge of creating
+     *   Returns the cache manager in effect. This manager is in charge of providing
      *   the various caches needed by the system during its process.
      * </p>
      * <p>
@@ -500,7 +524,8 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Sets the Cache Manager to be used. If set to null, no caches will be used throughout the engine.
+     *   Sets the Cache Manager to be used. If set to null, no caches will be used 
+     *   throughout the engine.
      * </p>
      * <p>
      *   By default, an instance of {@link org.thymeleaf.cache.StandardCacheManager}
@@ -537,6 +562,12 @@ public class TemplateEngine {
      * <p>
      *   Sets the message resolvers to be used by this template engine.
      * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
      * 
      * @param messageResolvers the Set of template resolvers.
      */
@@ -548,6 +579,12 @@ public class TemplateEngine {
      * <p>
      *   Adds a message resolver to the set of message resolvers to be used
      *   by the template engine.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
      * </p>
      * 
      * @param messageResolver the new message resolver to be added.
@@ -563,6 +600,12 @@ public class TemplateEngine {
      * <p>
      *   Calling this method is equivalent to calling {@link #setMessageResolvers(Set)}
      *   passing a Set with only one message resolver.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
      * </p>
      * 
      * @param messageResolver the message resolver to be set.
@@ -582,6 +625,12 @@ public class TemplateEngine {
      *   This method is useful for creating subclasses of <tt>TemplateEngine</tt> that
      *   establish default configurations for message resolvers.
      * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
      * 
      * @param defaultMessageResolvers the default message resolvers.
      */
@@ -592,7 +641,8 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Returns the set of Template Mode Handlers configured for this Template Engine.
+     *   Returns the set of Template Mode Handlers configured for this 
+     *   Template Engine.
      * </p>
      * <p>
      *   By default, template mode handlers set are
@@ -608,10 +658,17 @@ public class TemplateEngine {
     /**
      * <p>
      *   Sets the Template Mode Handlers to be used by this template engine.
+     *   Every available template mode must have its corresponding handler.
      * </p>
      * <p>
      *   By default, template mode handlers set are
      *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
      * </p>
      * 
      * @param templateModeHandlers the Set of Template Mode Handlers.
@@ -624,10 +681,17 @@ public class TemplateEngine {
      * <p>
      *   Adds a Template Mode Handler to the set of Template Mode Handlers to be used
      *   by the template engine.
+     *   Every available template mode must have its corresponding handler.
      * </p>
      * <p>
      *   By default, template mode handlers set are
      *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
      * </p>
      * 
      * @param templateModeHandler the new Template Mode Handler to be added.
@@ -649,6 +713,12 @@ public class TemplateEngine {
      * <p>
      *   By default, template mode handlers set are
      *   {@link StandardTemplateModeHandlers#ALL_TEMPLATE_MODE_HANDLERS}
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
      * </p>
      * 
      * @param defaultTemplateModeHandlers the default Template Mode Handlers.
@@ -852,7 +922,30 @@ public class TemplateEngine {
     }
     
 
-    
+
+    /**
+     * <p>
+     *   Process a template. This method receives a <i>template name</i>, a <i>context</i> and
+     *   also a {@link Writer}, so that there is no need to create a String object containing the
+     *   whole processing results because these will be written to the specified writer as
+     *   soon as they are generated from the processed DOM tree. This is specially useful for
+     *   web environments (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * </p>
+     * <p>
+     *   The template name will be used as input for the template resolvers, queried in chain
+     *   until one of them resolves the template, which will then be executed.
+     * </p>
+     * <p>
+     *   The context will contain the variables that will be available for the execution of
+     *   expressions inside the template.
+     * </p>
+     * 
+     * @param templateName the name of the template.
+     * @param context the context.
+     * @param writer the writer the results will be output to.
+     * 
+     * @since 2.0.0 
+     */
     public final void process(final String templateName, final IContext context, final Writer writer) {
         
         if (!isInitialized()) {
