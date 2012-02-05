@@ -21,12 +21,72 @@ package org.thymeleaf.cache;
 
 
 
+/**
+ * <p>
+ *   Common interface for all the cache objects used by the template engine.
+ * </p>
+ * <p>
+ *   This is the interface that must be implemented by all cache objects managed
+ *   by {@link ICacheManager} implementations.
+ * </p>
+ * 
+ * @author Daniel Fern&aacute;ndez
+ * 
+ * @since 2.0.0
+ *
+ * @param <K> the type of the cache keys
+ * @param <V> the type of the cache values
+ */
 public interface ICache<K, V> {
 
+    /**
+     * <p>
+     *   Insert a new value into the cache.
+     * </p>
+     * 
+     * @param key the key of the new entry
+     * @param value the value to be cached
+     */
     public void put(final K key, final V value);
+    
+    /**
+     * <p>
+     *   Retrieve a value from the cache.
+     * </p>
+     * 
+     * @param key the key of the value to be retrieved
+     * @return the retrieved value, or null if no value exists for the specified key.
+     */
     public V get(final K key);
+    
+    /**
+     * <p>
+     *   Retrieve a value from the cache, using the specified validity checker
+     *   to ensure the entry is still valid. If the cache already has a default validity
+     *   checker, this method should override this setting and use the one specified
+     *   instead.
+     * </p>
+     * 
+     * @param key the key of the value to be retrieved
+     * @param validityChecker the validity checker to be used to ensure the entry is still valid.
+     * @return the retrieved value, or null if no value exists for the specified key.
+     */
     public V get(final K key, final ICacheEntryValidityChecker<? super K, ? super V> validityChecker);
+    
+    /**
+     * <p>
+     *   Clear the entire cache.   
+     * </p>
+     */
     public void clear();
+    
+    /**
+     * <p>
+     *   Clears a specific entry in the cache.
+     * </p>
+     * 
+     * @param key the key of the entry to be cleared.
+     */
     public void clearKey(final K key);
 
 }

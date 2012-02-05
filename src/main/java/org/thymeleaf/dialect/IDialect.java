@@ -44,8 +44,8 @@ import org.thymeleaf.processor.IProcessor;
  *       XML/XHTML validation). A prefix is not exclusive to a dialect, and several dialects
  *       can specify the same one (effectively acting as an <i>aggregate dialect</i>)</li>
  *   <li>A <b>leniency flag</b> indicating whether the existence of attributes or
- *       elements starting with the specified prefix but with no associated attribute or
- *       element processor is considered an error (non-lenient) or not (lenient). When several
+ *       elements starting with the specified prefix after the template has been processed
+ *       is considered an error (non-lenient) or not (lenient). When several
  *       dialects share the same prefix, leniency is computed by prefix (if at least one
  *       dialect for a prefix is lenient, then the whole prefix is considered to be so).</li>
  *   <li>A set of <b>processors</b>, implementing the {@link IProcessor}

@@ -23,6 +23,13 @@ import org.thymeleaf.dom.Document;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
+ * <p>
+ *   A read and parsed template.
+ * </p>
+ * <p>
+ *   <tt>Template</tt> objects model templates as they are needed by the {@link TemplateEngine},
+ *   including its name, {@link TemplateResolution} objects and DOM tree.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

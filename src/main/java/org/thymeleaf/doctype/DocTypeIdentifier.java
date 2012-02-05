@@ -8,6 +8,10 @@ import java.util.regex.Pattern;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   This class represents each of the components of a complete
+ *   DOCTYPE declaration: <tt>PUBLICID</tt> or <tt>SYSTEMID</tt>.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Guven Demir

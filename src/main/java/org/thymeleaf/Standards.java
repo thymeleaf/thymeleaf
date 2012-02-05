@@ -30,6 +30,10 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 
 
 /**
+ * <p>
+ *   Utility constant class for holding important XML / XHTML and HTML5 names and
+ *   identifiers.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

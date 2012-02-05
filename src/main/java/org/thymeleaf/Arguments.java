@@ -19,7 +19,6 @@
  */
 package org.thymeleaf;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * </p>
  * <p>
  *   These objects are created internally by the Template Engine in order
- *   to provide to processors (attribute, element or value) with all the information
+ *   to provide processors with all the information
  *   they might need for performing their tasks.
  * </p>
  * <p>
@@ -68,8 +67,6 @@ import org.thymeleaf.util.Validate;
  */
 public final class Arguments {
 
-    @SuppressWarnings({ "cast", "unchecked" })
-    private static final Map<String,Object> EMPTY_LOCAL_VARIABLES = (Map<String,Object>) Collections.EMPTY_MAP;
     
     private final TemplateProcessingParameters templateProcessingParameters;
     private final Configuration configuration;
@@ -77,7 +74,7 @@ public final class Arguments {
     private final TemplateResolution templateResolution;
     private final TemplateRepository templateRepository;
     private final IContext context;
-    private final Map<String,Object> localVariables;
+    private final HashMap<String,Object> localVariables;
     private final SelectionTarget selectionTarget;
     private final Map<String,Integer> idCounts;
     
@@ -124,7 +121,7 @@ public final class Arguments {
         this.templateRepository = templateRepository;
         this.document = document;
         this.context = this.templateProcessingParameters.getContext();
-        this.localVariables = EMPTY_LOCAL_VARIABLES;
+        this.localVariables = null;
         this.selectionTarget = null;
         this.idCounts = new HashMap<String,Integer>();
         
@@ -144,7 +141,7 @@ public final class Arguments {
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,
             final Document document,
-            final Map<String,Object> localVariables,
+            final HashMap<String,Object> localVariables,
             final SelectionTarget selectionTarget,
             final Map<String,Integer> idCounts,
             final boolean processOnlyElementNodes) {
@@ -291,7 +288,7 @@ public final class Arguments {
      * @return true if there are local variables, false if not
      */
     public boolean hasLocalVariables() {
-        return this.localVariables.size() > 0;
+        return this.localVariables != null && this.localVariables.size() > 0;
     }
 
     
@@ -305,18 +302,54 @@ public final class Arguments {
      * 
      */
     public Object getLocalVariable(final String variableName) {
+        if (this.localVariables == null) {
+            return null;
+        }
         return this.localVariables.get(variableName);
     }
     
+    
     /**
      * <p>
-     *   Returns the map of local variables.
+     *   Returns whether a specific local variable is defined or not.
      * </p>
      * 
-     * @return the local variabes
+     * @return true if the variable is currently defined, false if not.
+     */
+    public boolean hasLocalVariable(final String variableName) {
+        if (this.localVariables == null) {
+            return false;
+        }
+        return this.localVariables.containsKey(variableName);
+    }
+    
+    
+    /**
+     * <p>
+     *   Returns the real inner map of local variables. This
+     *   method should not be called directly.
+     * </p>
+     * 
+     * @return the local variables map, which could be null if no variables are defined
+     */
+    public HashMap<String,Object> unsafeGetLocalVariables() {
+        return this.localVariables;
+    }
+
+    
+    /**
+     * <p>
+     *   Returns a safe copy of the map of local variables.
+     * </p>
+     * 
+     * @return the local variables
      */
     public Map<String,Object> getLocalVariables() {
-        return this.localVariables;
+        final HashMap<String,Object> vars = new HashMap<String, Object>();
+        if (this.localVariables != null) {
+            vars.putAll(this.localVariables);
+        }
+        return vars;
     }
 
 
@@ -542,12 +575,15 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = 
-                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
-        cloneLocalVariables.putAll(this.localVariables);
+        final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
+        final HashMap<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
+        if (this.localVariables != null) {
+            cloneLocalVariables.putAll(this.localVariables);
+        }
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, this.processOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, this.selectionTarget, this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
     
@@ -581,12 +617,15 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = 
-                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
-        cloneLocalVariables.putAll(this.localVariables);
+        final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
+        final HashMap<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
+        if (this.localVariables != null) {
+            cloneLocalVariables.putAll(this.localVariables);
+        }
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, this.processOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, new SelectionTarget(target), this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
 
@@ -621,12 +660,15 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = 
-                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
-        cloneLocalVariables.putAll(this.localVariables);
+        final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
+        final HashMap<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
+        if (this.localVariables != null) {
+            cloneLocalVariables.putAll(this.localVariables);
+        }
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), this.selectionTarget, this.idCounts, shouldProcessOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
     
@@ -663,12 +705,15 @@ public final class Arguments {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Map<String,Object> cloneLocalVariables = 
-                new HashMap<String, Object>(this.localVariables.size() + newVariables.size() + 1, 1.0f);
-        cloneLocalVariables.putAll(this.localVariables);
+        final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
+        final HashMap<String,Object> cloneLocalVariables = 
+                new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
+        if (this.localVariables != null) {
+            cloneLocalVariables.putAll(this.localVariables);
+        }
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, Collections.unmodifiableMap(cloneLocalVariables), new SelectionTarget(target), this.idCounts, shouldProcessOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
 

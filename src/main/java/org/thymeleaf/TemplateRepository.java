@@ -45,6 +45,14 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   The template repository is an internal utility class that is responsible before the
+ *   Template Engine of retrieving templates (parsed) and fragments, performing all the necessary
+ *   operations against the caches in order to obtain the required data.
+ * </p>
+ * <p>
+ *   Each {@link TemplateEngine} uses a single object of this class.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -85,7 +93,11 @@ public final class TemplateRepository {
     
     
     
-    
+    /**
+     * <p>
+     *   Clears the template cache.
+     * </p>
+     */
     public void clearTemplateCache() {
         if (this.templateCache != null) {
             this.templateCache.clear();
@@ -93,6 +105,14 @@ public final class TemplateRepository {
     }
 
     
+    /**
+     * <p>
+     *   Clears any existing entries for template of the specified
+     *   name at the template cache.
+     * </p>
+     * 
+     * @param templateName the name of the template whose entries have to be cleared.
+     */
     public void clearTemplateCacheFor(final String templateName) {
         if (this.templateCache != null) {
             this.templateCache.clearKey(templateName);
@@ -103,6 +123,11 @@ public final class TemplateRepository {
     
     
     
+    /**
+     * <p>
+     *   Clears the fragments cache.
+     * </p>
+     */
     public void clearFragmentCache() {
         if (this.fragmentCache != null) {
             this.fragmentCache.clear();
@@ -110,6 +135,13 @@ public final class TemplateRepository {
     }
 
     
+    /**
+     * <p>
+     *   Clears a specific entry at the fragment cache.
+     * </p>
+     * 
+     * @param fragment the fragment to be cleared.
+     */
     public void clearFragmentCacheFor(final String fragment) {
         if (this.fragmentCache != null) {
             this.fragmentCache.clearKey(fragment);
@@ -121,7 +153,29 @@ public final class TemplateRepository {
     
     
     
-    
+
+    /**
+     * <p>
+     *   Obtains a template. This method is responsible of providing a {@link Template} to the 
+     *   {@link TemplateEngine} by following these steps:
+     * </p>
+     * <ul>
+     *   <li>Try to get the template from the cache (if it exists).</li>
+     *   <li>Querying all the configured {@link ITemplateResolver} objects until one of them resolves
+     *       the template.</li>
+     *   <li>If resolved, use the associated {@link IResourceResolver} object to obtain an {@link InputStream}
+     *       on it.</li>
+     *   <li>Obtain the {@link ITemplateModeHandler} object associated to the template mode assigned
+     *       to the resolved template (by the template resolver).</li>
+     *   <li>Use the {@link ITemplateParser} of the selected {@link ITemplateModeHandler} to read and
+     *       parse the template into a {@link Document}.</li>
+     *   <li>If required and allowed by configuration, put the resolved template into the cache.</li>
+     * </ul>
+     * 
+     * @param templateProcessingParameters the parameters object containing all the necessary pieces of
+     *                                     data in order to adequately resolve the template.
+     * @return the resolved and parsed Template.
+     */
     public Template getTemplate(final TemplateProcessingParameters templateProcessingParameters) {
         
         Validate.notNull(templateProcessingParameters, "Template Processing Parameters cannot be null");
@@ -236,7 +290,23 @@ public final class TemplateRepository {
     }
 
     
-    
+
+    /**
+     * <p>
+     *   Obtains a fragment. A <tt>fragment</tt> is a piece of template code that is usually
+     *   read from a different source and needs parsing for converting it into a DOM subtree.
+     * </p>
+     * <p>
+     *   Common examples of <i>fragments</i> are the messages in a <tt>Messages.properties</tt>
+     *   file that contain tags like &lt;strong&gt; &lt;u&gt;, etc. and are included in thymeleaf
+     *   templates via an attribute like <tt>th:utext</tt>.
+     * </p>
+     * 
+     * @param arguments the execution arguments
+     * @param fragment the fragment to be processed
+     * @return the result of processing the fragment: a list of {@link Node} that can be linked
+     *         to the DOM being processed.
+     */
     public List<Node> getFragment(final Arguments arguments, final String fragment) {
         
         Validate.notNull(arguments, "Arguments cannot be null");

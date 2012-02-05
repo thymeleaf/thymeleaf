@@ -30,6 +30,13 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Utility class of internal use for holding the patterns that certain artifacts
+ *   (usually template names) must match for obtaining some consideration. For
+ *   example, it is used at many {@link org.thymeleaf.templateresolver.ITemplateResolver}
+ *   implementations for holding the patterns that match a template to a specific
+ *   template mode.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

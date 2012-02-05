@@ -129,11 +129,11 @@ public abstract class AbstractIterationElementProcessor
             if (removeHostIterationElement) {
                 final List<Node> children = iterElement.getChildren();
                 for (final Node child : children) {
-                    child.addNodeLocalVariables(nodeLocalVariables);
+                    child.setAllNodeLocalVariables(nodeLocalVariables);
                 }
                 parentNode.extractChild(iterElement);
             } else {
-                iterElement.addNodeLocalVariables(nodeLocalVariables);
+                iterElement.setAllNodeLocalVariables(nodeLocalVariables);
                 processClonedHostIterationElement(arguments, iterElement);
             }
             

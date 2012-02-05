@@ -20,6 +20,10 @@
 package org.thymeleaf;
 
 /**
+ * <p>
+ *   Old enum class for template modes. This enum is not used anymore for
+ *   specifying template modes, as these are now specified as a String.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

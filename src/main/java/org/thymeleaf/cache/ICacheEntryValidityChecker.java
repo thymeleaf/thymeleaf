@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 /**
  * <p>
- *   Defines the logic needed to (optionally) validate an entry living in a
- *   {@link CacheMap} before returning it as the result of a <tt>get</tt>
+ *   Defines the logic needed to (optionally) validate an entry living in an
+ *   {@link ICache} object before returning it as the result of a <tt>get</tt>
  *   operation. If not valid, the entry will be removed
  *   from the cache (and null will be returned).
  * </p>

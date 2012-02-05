@@ -33,6 +33,10 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Base abstract class for all nodes in a Thymeleaf DOM tree which have
+ *   children.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -51,7 +55,7 @@ public abstract class NestableNode extends Node {
 
 
 
-    protected NestableNode(final String documentName, final Integer lineNumber) {
+    NestableNode(final String documentName, final Integer lineNumber) {
         super(documentName, lineNumber);
     }
     
@@ -66,24 +70,56 @@ public abstract class NestableNode extends Node {
      */
     
     
+    /**
+     * <p>
+     *   Returns whether this node has any children.
+     * </p>
+     * 
+     * @return true if the node as any children, false if not.
+     */
     public final boolean hasChildren() {
         return this.childrenLen != 0;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the number of children in this node.
+     * </p>
+     * 
+     * @return the number of children.
+     */
     public final int numChildren() {
         return this.childrenLen;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the children of this node.
+     *   The returned list is immutable.
+     * </p>
+     * 
+     * @return the list of children.
+     */
     public final List<Node> getChildren() {
+        
         if (this.childrenLen == 0) {
             return Collections.emptyList();
         }
         return Arrays.asList(Arrays.copyOf(this.children, this.childrenLen));
     }
 
-    
+
+    /**
+     * <p>
+     *   Returns the only the {@link Element} children
+     *   of this node, discarding children of any other types.
+     *   The returned list is immutable.
+     * </p>
+     * 
+     * @return the list of Element children.
+     */
     public final List<Element> getElementChildren() {
         if (this.childrenLen == 0) {
             return Collections.emptyList();
@@ -98,11 +134,27 @@ public abstract class NestableNode extends Node {
     }
     
     
+    /**
+     * <p>
+     *   Returns the real, unsafe, inner array of node children. <b>DO NOT</b>
+     *   use this method directly. Modifying this array could result in
+     *   severe DOM corruption.
+     * </p>
+     * 
+     * @return the array of node children.
+     */
     public final Node[] unsafeGetChildrenNodeArray() {
         return this.children;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the first child of this node.
+     * </p>
+     * 
+     * @return the first child.
+     */
     public final Node getFirstChild() {
         if (this.childrenLen == 0) {
             return null;
@@ -110,7 +162,14 @@ public abstract class NestableNode extends Node {
         return this.children[0];
     }
 
-    
+
+    /**
+     * <p>
+     *   Returns the first child of type {@link Element}.
+     * </p>
+     * 
+     * @return the first Element child.
+     */
     public final Element getFirstElementChild() {
         if (this.childrenLen == 0) {
             return null;
@@ -124,6 +183,13 @@ public abstract class NestableNode extends Node {
     }
     
     
+    /**
+     * <p>
+     *   Adds a new child to the node.
+     * </p>
+     * 
+     * @param newChild the new child to be added.
+     */
     public void addChild(final Node newChild) {
         
         if (newChild != null) {
@@ -158,7 +224,18 @@ public abstract class NestableNode extends Node {
     
 
     
-    
+    /**
+     * <p>
+     *   Adds a new child to the node, at a specific position.
+     * </p>
+     * <p>
+     *   All children nodes from that position are moved one position
+     *   forward in order to make room for the new child.
+     * </p>
+     * 
+     * @param index the position to insert the new child into.
+     * @param newChild the new child.
+     */
     public final void insertChild(final int index, final Node newChild) {
         
         Validate.isTrue(index >= 0, "Index for inserting child must be >= 0");
@@ -215,7 +292,21 @@ public abstract class NestableNode extends Node {
     }
 
 
-    
+
+    /**
+     * <p>
+     *   Adds a new children to the node, positioned just before
+     *   another child node that is also specified.
+     * </p>
+     * <p>
+     *   This method is effectively equivalent to first searching
+     *   the existing child and then executing {@link #insertChild(int, Node)}
+     *   specifying its position.
+     * </p>
+     * 
+     * @param existingChild the child we want to insert the new child just before.
+     * @param newChild the new child.
+     */
     public final void insertBefore(final Node existingChild, final Node newChild) {
         for (int i = 0; i < this.childrenLen; i++) {
             if (this.children[i] == existingChild) {
@@ -228,7 +319,21 @@ public abstract class NestableNode extends Node {
     }
 
 
-    
+
+    /**
+     * <p>
+     *   Adds a new children to the node, positioned just after
+     *   another child node that is also specified.
+     * </p>
+     * <p>
+     *   This method is effectively equivalent to first searching
+     *   the existing child and then executing {@link #insertChild(int, Node)}
+     *   specifying its position + 1.
+     * </p>
+     * 
+     * @param existingChild the child we want to insert the new child just after.
+     * @param newChild the new child.
+     */
     public final void insertAfter(final Node existingChild, final Node newChild) {
         for (int i = 0; i < this.childrenLen; i++) {
             if (this.children[i] == existingChild) {
@@ -240,7 +345,14 @@ public abstract class NestableNode extends Node {
     }
     
 
-    
+
+    /**
+     * <p>
+     *   Sets the new children of the node to the specified list.
+     * </p>
+     * 
+     * @param newChildren the new chidren.
+     */
     public final void setChildren(final List<Node> newChildren) {
         
         if (this.children != null) {
@@ -262,7 +374,12 @@ public abstract class NestableNode extends Node {
         
     }
     
-    
+
+    /**
+     * <p>
+     *   Removes all the children nodes.
+     * </p>
+     */
     public final void clearChildren() {
         if (this.children != null) {
             for (int i = 0; i < this.childrenLen; i++) {
@@ -274,7 +391,13 @@ public abstract class NestableNode extends Node {
     }
     
     
-    
+    /**
+     * <p>
+     *  Removes a node child at a specific position.
+     * </p>
+     * 
+     * @param index the position to be removed.
+     */
     public final void removeChild(final int index) {
         Validate.isTrue(index >= 0, "Index of child to remove must be >= 0");
         Validate.isTrue(index < this.childrenLen, "Index of child to be removed must be less than size (" + this.childrenLen + ")");
@@ -292,6 +415,13 @@ public abstract class NestableNode extends Node {
     
 
     
+    /**
+     * <p>
+     *   Removes a specific child node from this node.
+     * </p>
+     * 
+     * @param child the child to be removed.
+     */
     public final void removeChild(final Node child) {
         Validate.notNull(child, "Child cannot be null");
         unsafeRemoveChild(child);
@@ -310,6 +440,14 @@ public abstract class NestableNode extends Node {
     }
 
     
+    /**
+     * <p>
+     *   Refactors a DOM tree by moving all the children of this node
+     *   to another (which will be their new parent node).
+     * </p>
+     * 
+     * @param newParent the new parent.
+     */
     public final void moveAllChildren(final NestableNode newParent) {
         
         Validate.notNull(newParent, "New parent cannot be null");
@@ -324,7 +462,20 @@ public abstract class NestableNode extends Node {
         
     }
     
-    
+
+    /**
+     * <p>
+     *   Extracts a child by removing it from the DOM tree and lifting all
+     *   of its children one level, so that they become children nodes of
+     *   this node.
+     * </p>
+     * <p>
+     *   Node local variables, because of their hierarchical nature, are
+     *   handled accordingly.
+     * </p>
+     * 
+     * @param child the child to be extracted.
+     */
     public final void extractChild(final Node child) {
         
         if (child != null) {
@@ -333,7 +484,7 @@ public abstract class NestableNode extends Node {
 
                 final NestableNode nestableChild = (NestableNode) child;
                 final Map<String,Object> nestableChildNodeLocalVariables = 
-                        nestableChild.getNodeLocalVariables();
+                        nestableChild.unsafeGetNodeLocalVariables();
                
                 for (int i = 0; i < this.childrenLen; i++) {
                     
@@ -341,7 +492,7 @@ public abstract class NestableNode extends Node {
                         unsafeRemoveChild(i);
                         for (int j = 0; j < nestableChild.childrenLen; j++) {
                             insertChild(i + j, nestableChild.children[j]);
-                            nestableChild.children[j].addNodeLocalVariables(nestableChildNodeLocalVariables);
+                            nestableChild.children[j].setAllNodeLocalVariables(nestableChildNodeLocalVariables);
                         }
                         return;
                     }

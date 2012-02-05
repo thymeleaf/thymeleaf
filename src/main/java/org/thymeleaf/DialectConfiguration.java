@@ -41,6 +41,13 @@ import org.thymeleaf.processor.ProcessorMatchingContext;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Configuration class for a specific {@link IDialect}.
+ * </p>
+ * <p>
+ *   Except for testing purposes, there is no reason why a user might need to use this 
+ *   class directly.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

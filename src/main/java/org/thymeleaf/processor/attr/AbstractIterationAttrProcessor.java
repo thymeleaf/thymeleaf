@@ -91,13 +91,13 @@ public abstract class AbstractIterationAttrProcessor
             /*
              * Prepare local variables that will be available for each iteration item
              */
-            clonedElement.addNodeLocalVariable(iterVar, obj);
+            clonedElement.setNodeLocalVariable(iterVar, obj);
             final StatusVar status = 
                 new StatusVar(index, index + 1, size, obj);
             if (statusVar != null) {
-                clonedElement.addNodeLocalVariable(statusVar, status);
+                clonedElement.setNodeLocalVariable(statusVar, status);
             } else {
-                clonedElement.addNodeLocalVariable(iterVar + DEFAULT_STATUS_VAR_SUFFIX, status);
+                clonedElement.setNodeLocalVariable(iterVar + DEFAULT_STATUS_VAR_SUFFIX, status);
             }
             
             parentNode.insertBefore(element, clonedElement);

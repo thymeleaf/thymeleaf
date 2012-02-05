@@ -32,6 +32,15 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   An Element node in a Thymeleaf DOM tree. In XML-based templates, Elements
+ *   normally correspond to tags.
+ * </p>
+ * <p>
+ *   Elements are nestable nodes, and therefore have children. Besides, they
+ *   have a sequence of attributes, each of them with a value. Attributes
+ *   are modeled by means of the {@link Attribute} class.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -87,30 +96,105 @@ public final class Element extends NestableNode {
     
 
     
+    /**
+     * <p>
+     *   Returns the original name of the element. Given the fact that the engine
+     *   works using the normalized versions of element names (in order to be case-insensitive),
+     *   it is necessary to make a distinction between the 'original' name of an element
+     *   (as it is written in the template file) and its 'normalized' name. 
+     * </p>
+     * <p>
+     *   If the element name has a prefix, this 'original name' includes such prefix.
+     * </p>
+     * 
+     * @return the original name of the element.
+     */
     public String getOriginalName() {
         return this.originalName;
     }
+
     
+    /**
+     * <p>
+     *   Returns the normalized name of the element. Element names are normalized by
+     *   means of the {@link Node#normalizeName(String)} method so that the engine
+     *   can work in a case-insensitive way.
+     * </p>
+     * <p>
+     *   If the element name has a prefix, this 'normalized name' includes such prefix.
+     * </p>
+     * 
+     * @return the normalized name of the element.
+     */
     public String getNormalizedName() {
         return this.normalizedName;
     }
+
+    
+    /**
+     * <p>
+     *   Returns the normalized prefix of this element (part of its name), if it exists,
+     *   or null if the element is unprefixed.
+     * </p>
+     * <p>
+     *   Prefixes are normalized in the same way as element names, using the
+     *   {@link Node#normalizeName(String)} method.
+     * </p>
+     * 
+     * @return the normalized prefix.
+     */
     
     public String getNormalizedPrefix() {
         return this.normalizedPrefix;
     }
 
 
+    /**
+     * <p>
+     *   Returns the normalized version of the element name, without its prefix
+     *   (if it has one).
+     * </p>
+     * 
+     * @return the unprefixed normalized name-
+     */
     public String getUnprefixedNormalizedName() {
         return this.unprefixedNormalizedName;
     }
 
 
-    public boolean getHasPrefix() {
+    /**
+     * <p>
+     *   Returns whether the element name has a prefix or not.
+     * </p>
+     * 
+     * @return true if the element name has a prefix, false if not.
+     */
+    public boolean hasPrefix() {
         return this.hasPrefix;
     }
 
     
-    
+
+    /**
+     * <p>
+     *   Returns whether this element is <i>minimizable</i> when performing
+     *   XHTML or HTML5 output.
+     * </p>
+     * <p>
+     *   <i>Minimizing</i> tags means writing them as <tt>&lt;tag/&gt;</tt> instead
+     *   of <tt>&lt;tag&gt;&lt;/tag&gt;</tt> when they have no body. XML allows this
+     *   for every tag, bug the the XHTML/HTML5 specifications do not allow 
+     *   minimizing most of the tags (for example, <tt>&lt;div&gt;</tt>, <tt>&lt;p&gt;</tt>, 
+     *   <tt>&lt;textarea&gt;</tt>, etc cannot be minimized). 
+     * </p>
+     * <p>
+     *   This flag precomputes whether the tag can be minimized or not
+     *   when written as XHTML or HTML5.
+     * </p>
+     * 
+     * 
+     * @return true if the tag is minimizable in web-output scenarios, false if not.
+     */
     public boolean isMinimizableIfWeb() {
         return this.minimizableIfWeb;
     }
@@ -128,16 +212,40 @@ public final class Element extends NestableNode {
      */
 
 
+    /**
+     * <p>
+     *   Returns whether this element has any attributes or not.
+     * </p>
+     * 
+     * @return true if this element has attributes, false if not.
+     */
     public boolean hasAttributes() {
         return this.attributesLen != 0;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the number of attributes contained in this element.
+     * </p>
+     * 
+     * @return the number of attributes.
+     */
     public int numAttributes() {
         return this.attributesLen;
     }
 
-    
+
+    /**
+     * <p>
+     *   Returns whether an attribute exists in the element or not. The specified
+     *   name does not have to be normalized, because a normalization operation will
+     *   be performed before comparing.
+     * </p>
+     * 
+     * @param attributeName the name of the attribute to be checked.
+     * @return true if the attribute exists, false if not.
+     */
     public boolean hasAttribute(final String attributeName) {
         if (this.attributesLen > 0) {
             final String normalizedAttributeName = Node.normalizeName(attributeName);
@@ -150,7 +258,17 @@ public final class Element extends NestableNode {
         return false;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns whether an attribute exists in the element or not. The specified
+     *   name has to be already normalized because no normalization operations will
+     *   be performed before comparing.
+     * </p>
+     * 
+     * @param normalizedAttributeName the name of the attribute to be checked, already normalized.
+     * @return true if the attribute exists, false if not.
+     */
     public boolean hasNormalizedAttribute(final String normalizedAttributeName) {
         for (int i = 0; i < this.attributesLen; i++) {
             if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
@@ -160,7 +278,17 @@ public final class Element extends NestableNode {
         return false;
     }
 
-    
+
+    /**
+     * <p>
+     *   Returns an attribute, if it exists (null if not). The specified
+     *   name has to be already normalized because no normalization operations will
+     *   be performed before comparing.
+     * </p>
+     * 
+     * @param normalizedAttributeName the name of the attribute to retrieve.
+     * @return the attribute.
+     */
     public Attribute getAttributeFromNormalizedName(final String normalizedAttributeName) {
         for (int i = 0; i < this.attributesLen; i++) {
             if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
@@ -170,16 +298,43 @@ public final class Element extends NestableNode {
         return null;
     }
 
-    
+
+    /**
+     * <p>
+     *   Returns the inner array used for storing the normalized names of all the
+     *   existing attributes. This method is unsafe and for internal use, and should
+     *   not be called directly. Modifications to this array could produce severe
+     *   DOM inconsistencies.
+     * </p>
+     * 
+     * @return the unsafe array of normalized names.
+     */
     public String[] unsafeGetAttributeNormalizedNames() {
         return this.attributeNormalizedNames;
     }
-    
+
+    /**
+     * <p>
+     *   Returns the inner array used for storing the element attributes. This method is 
+     *   unsafe and for internal use, and should not be called directly. 
+     *   Modifications to this array could produce severe DOM inconsistencies.
+     * </p>
+     * 
+     * @return the array of attributes.
+     */
     public Attribute[] unsafeGetAttributes() {
         return this.attributes;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the original name of an attribute from its normalized name.
+     * </p>
+     * 
+     * @param normalizedAttributeName the normalized name of the attribute.
+     * @return the original attribute (as written in the template file).
+     */
     public String getAttributeOriginalNameFromNormalizedName(final String normalizedAttributeName) {
         for (int i = 0; i < this.attributesLen; i++) {
             if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
@@ -189,7 +344,15 @@ public final class Element extends NestableNode {
         return null;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the value of an attribute from its normalized name.
+     * </p>
+     * 
+     * @param normalizedAttributeName the normalized name of the attribute.
+     * @return the valur of the attribute, or null if the attribute does not exist.
+     */
     public String getAttributeValueFromNormalizedName(final String normalizedAttributeName) {
         for (int i = 0; i < this.attributesLen; i++) {
             if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
@@ -199,7 +362,17 @@ public final class Element extends NestableNode {
         return null;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns the value of an attribute from its attribute name, without needing this name
+     *   to be normalized (because the specified name will be normalized before performing the
+     *   comparison).
+     * </p>
+     * 
+     * @param attributeName the attribute name.
+     * @return the value of the attribute.
+     */
     public String getAttributeValue(final String attributeName) {
         if (this.attributesLen > 0) {
             final String normalizedAttributeName = Node.normalizeName(attributeName);
@@ -212,7 +385,18 @@ public final class Element extends NestableNode {
         return null;
     }
     
-    
+
+    /**
+     * <p>
+     *   Returns a map with all the names (normalized) and values of the element attributes.
+     * </p>
+     * <p>
+     *   The map object returned by this method is a new instance, created ad-hoc with each
+     *   method call.
+     * </p>
+     * 
+     * @return the map of all current attributes in the element.
+     */
     public Map<String,Attribute> getAttributeMap() {
         if (this.attributesLen > 0) {
             final Map<String,Attribute> attributeMap = new LinkedHashMap<String, Attribute>();
@@ -225,7 +409,16 @@ public final class Element extends NestableNode {
     }
     
     
-    
+
+    /**
+     * <p>
+     *   Establishes a new value for an element attribute. If the attribute already
+     *   exists, its value is substituted by the one specified.
+     * </p>
+     * 
+     * @param name the name of the attribute.
+     * @param value the value of the attribute.
+     */
     public void setAttribute(final String name, final String value) {
         
         Validate.notNull(name, "Attribute name cannot be null");
@@ -271,7 +464,16 @@ public final class Element extends NestableNode {
     }
 
 
-    
+
+    /**
+     * <p>
+     *   Establishes the value for several attributes at a time. If any of the
+     *   specified attributes already exists, their values will be substituted by
+     *   the one specified in the parameter map.
+     * </p>
+     * 
+     * @param newAttributes the new attributes to be established.
+     */
     public void setAttributes(final Map<String,String> newAttributes) {
         clearAttributes();
         if (newAttributes != null && newAttributes.size() > 0) {
@@ -282,7 +484,12 @@ public final class Element extends NestableNode {
     }
     
 
-    
+
+    /**
+     * <p>
+     *   Clears all the attributes of the element.
+     * </p> 
+     */
     public void clearAttributes() {
         this.attributeNormalizedNames = null;
         this.attributes = null;
@@ -290,7 +497,17 @@ public final class Element extends NestableNode {
     }
     
 
-    
+
+    /**
+     * <p>
+     *   Removes a specific attribute from the element. The specified name
+     *   does not have to be normalized (it will be normalized before performing
+     *   the removal operation).
+     * </p>
+     * 
+     * @param attributeName the name of tha attribute to remove (does not have to be
+     *        normalized).
+     */
     public void removeAttribute(final String attributeName) {
         
         Validate.notNull(attributeName, "Name of attribute to be removed cannot be null");
@@ -344,6 +561,16 @@ public final class Element extends NestableNode {
     
     
 
+    /**
+     * <p>
+     *   Clones this element node, setting it a new name in the process.
+     * </p>
+     * 
+     * @param newParent the new parent node to be assigned to the cloned element.
+     * @param newElementName the new element name
+     * @param cloneProcessors whether the precomputed list of processors should be cloned too or not.
+     * @return the cloned element.
+     */
     public final Element cloneElementNodeWithNewName(final NestableNode newParent, final String newElementName, final boolean cloneProcessors) {
         final Element clonedElement = new Element(newElementName);
         cloneNodeInternals(clonedElement, newParent, cloneProcessors);

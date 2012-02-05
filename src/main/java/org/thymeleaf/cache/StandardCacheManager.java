@@ -35,7 +35,38 @@ import org.thymeleaf.dom.Node;
 
 
 /**
- * 
+ * <p>
+ *   Standard implementation of {@link ICacheManager}, returning
+ *   configurable instances of {@link StandardCache} for each of
+ *   the default caches defined at the cache manager interface.
+ * </p>
+ * <p>
+ *   Each cache allows the configuration of the following parameters:
+ * </p>
+ * <ul>
+ *   <li>Its <i>name</i> (will be displayed in logs).</li>
+ *   <li>Its <i>initial size</i>: the size the cache will be initialized with.</li>
+ *   <li>Its <i>maximum size</i>: the maximum size the cache will be allowed to reach.
+ *       Some special values:
+ *       <ul>
+ *         <li><tt>-1</tt> means no limit in size.</li>
+ *         <li><tt>0</tt> means this cache will not be used at 
+ *             all (<tt>getXCache()</tt> will return <tt>null</tt>).</li>
+ *       </ul>
+ *   </li>
+ *   <li>Whether the cache should use <i>soft references</i> or not
+ *       (<tt>java.lang.ref.SoftReference</tt>). Using Soft References
+ *       allows the cache to be <i>memory-sensitive</i>, allowing the garbage collector
+ *       to dispose cache entries if memory is critical, before raising an
+ *       <tt>OutOfMemoryError</tt>.</li>
+ *   <li>The <i>name of the logger</i> that will output trace information for the
+ *       cache object. Configuring this allows a finer-grained log configuration that
+ *       allows the more effective inspection of cache behaviour. If not specifically
+ *       set, <tt>org.thymeleaf.TemplateEngine.cache.${cacheName}</tt> will be used.</li>
+ *   <li>An (optional) <i>validity checker</i> implementing {@link ICacheEntryValidityChecker},
+ *       which will be applied on each entry upon retrieval from cache in order to ensure
+ *       it is still valid and can be used.
+ * </ul>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -43,35 +74,135 @@ import org.thymeleaf.dom.Node;
  *
  */
 public class StandardCacheManager extends AbstractCacheManager {
+
     
+    /**
+     * Default template cache name: "TEMPLATE_CACHE"
+     */
     public static final String DEFAULT_TEMPLATE_CACHE_NAME = "TEMPLATE_CACHE";
-    public static final int DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE = 10;
-    public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 50;
-    public static final boolean DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES = true;
-    public static final String DEFAULT_TEMPLATE_CACHE_LOGGER_NAME = null;
-    public static final ICacheEntryValidityChecker<String,Template> DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER = new StandardParsedTemplateEntryValidator();
     
+    /**
+     * Default template cache initial size: 10
+     */
+    public static final int DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE = 10;
+    
+    /**
+     * Default template cache maximum size: 50
+     */
+    public static final int DEFAULT_TEMPLATE_CACHE_MAX_SIZE = 50;
+    
+    /**
+     * Default template cache "use soft references" flag: true
+     */
+    public static final boolean DEFAULT_TEMPLATE_CACHE_USE_SOFT_REFERENCES = true;
+    
+    /**
+     * Default template cache logger name: null (default behaviour = org.thymeleaf.TemplateEngine.cache.TEMPLATE_CACHE)
+     */
+    public static final String DEFAULT_TEMPLATE_CACHE_LOGGER_NAME = null;
+    
+    /**
+     * Default template cache validity checker: an instance of {@link StandardParsedTemplateEntryValidator}.
+     */
+    public static final ICacheEntryValidityChecker<String,Template> DEFAULT_TEMPLATE_CACHE_VALIDITY_CHECKER = new StandardParsedTemplateEntryValidator();
+
+    
+    
+    /**
+     * Default fragment cache name: "FRAGMENT_CACHE"
+     */
     public static final String DEFAULT_FRAGMENT_CACHE_NAME = "FRAGMENT_CACHE";
+    
+    /**
+     * Default fragment cache initial size: 20
+     */
     public static final int DEFAULT_FRAGMENT_CACHE_INITIAL_SIZE = 20;
+    
+    /**
+     * Default fragment cache maximum size: 300
+     */
     public static final int DEFAULT_FRAGMENT_CACHE_MAX_SIZE = 300;
+    
+    /**
+     * Default fragment cache "use soft references" flag: true
+     */
     public static final boolean DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES = true;
+    
+    /**
+     * Default fragment cache logger name: null (default behaviour = org.thymeleaf.TemplateEngine.cache.FRAGMENT_CACHE)
+     */
     public static final String DEFAULT_FRAGMENT_CACHE_LOGGER_NAME = null;
+    
+    /**
+     * Default fragment cache validity checker: null
+     */
     public static final ICacheEntryValidityChecker<String,List<Node>> DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER = null;
    
-    public static final String DEFAULT_MESSAGE_CACHE_NAME = "MESSAGE_CACHE";
-    public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 20;
-    public static final int DEFAULT_MESSAGE_CACHE_MAX_SIZE = 300;
-    public static final boolean DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES = true;
-    public static final String DEFAULT_MESSAGE_CACHE_LOGGER_NAME = null;
-    public static final ICacheEntryValidityChecker<String,Properties> DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER = null;
+
     
+    /**
+     * Default message cache name: "MESSAGE_CACHE"
+     */
+    public static final String DEFAULT_MESSAGE_CACHE_NAME = "MESSAGE_CACHE";
+    
+    /**
+     * Default message cache initial size: 20
+     */
+    public static final int DEFAULT_MESSAGE_CACHE_INITIAL_SIZE = 20;
+    
+    /**
+     * Default message cache maximum size: 300
+     */
+    public static final int DEFAULT_MESSAGE_CACHE_MAX_SIZE = 300;
+    
+    /**
+     * Default message cache "use soft references" flag: true
+     */
+    public static final boolean DEFAULT_MESSAGE_CACHE_USE_SOFT_REFERENCES = true;
+    
+    /**
+     * Default message cache logger name: null (default behaviour = org.thymeleaf.TemplateEngine.cache.MESSAGE_CACHE)
+     */
+    public static final String DEFAULT_MESSAGE_CACHE_LOGGER_NAME = null;
+    
+    /**
+     * Default message cache validity checker: null
+     */
+    public static final ICacheEntryValidityChecker<String,Properties> DEFAULT_MESSAGE_CACHE_VALIDITY_CHECKER = null;
+
+    
+    /**
+     * Default expression cache name: "EXPRESSION_CACHE"
+     */
     public static final String DEFAULT_EXPRESSION_CACHE_NAME = "EXPRESSION_CACHE";
+    
+    /**
+     * Default expression cache initial size: 100
+     */
     public static final int DEFAULT_EXPRESSION_CACHE_INITIAL_SIZE = 100;
+    
+    /**
+     * Default expression cache maximum size: 500
+     */
     public static final int DEFAULT_EXPRESSION_CACHE_MAX_SIZE = 500;
+    
+    /**
+     * Default expression cache "use soft references" flag: true
+     */
     public static final boolean DEFAULT_EXPRESSION_CACHE_USE_SOFT_REFERENCES = true;
+    
+    /**
+     * Default expression cache logger name: null (default behaviour = org.thymeleaf.TemplateEngine.cache.EXPRESSION_CACHE)
+     */
     public static final String DEFAULT_EXPRESSION_CACHE_LOGGER_NAME = null;
+
+    /**
+     * Default expression cache validity checker: null
+     */
     public static final ICacheEntryValidityChecker<String,Object> DEFAULT_EXPRESSION_CACHE_VALIDITY_CHECKER = null;
 
+    
+    
     
     private String templateCacheName = DEFAULT_TEMPLATE_CACHE_NAME;
     private int templateCacheInitialSize = DEFAULT_TEMPLATE_CACHE_INITIAL_SIZE;

@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
@@ -65,16 +63,14 @@ public abstract class AbstractStandardCaseAttrProcessor
     @Override
     protected boolean isVisible(final Arguments arguments, final Element element, final String attributeName) {
         
-        final Map<String,Object> localVariables = arguments.getLocalVariables();
-        
-        if (!localVariables.containsKey(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME)) {
+        if (!arguments.hasLocalVariable(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME)) {
             throw new TemplateProcessingException(
                     "Cannot specify a \"" + attributeName + "\" attribute in an environment where no " +
                     "switch operator has been defined before.");
         }
         
         final SwitchStructure switchStructure = 
-                (SwitchStructure) localVariables.get(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME);
+                (SwitchStructure) arguments.getLocalVariable(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME);
 
         if (switchStructure.isExecuted()) {
             return false;

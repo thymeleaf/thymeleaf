@@ -32,6 +32,11 @@ import org.thymeleaf.dom.Node;
 
 
 /**
+ * <p>
+ *   Common abstract class for {@link ICacheManager} implementations, useful
+ *   for taking care of the lazy initialization of cache objects when their
+ *   corresponding <tt>getXCache()</tt> methods are called.
+ * </p>
  * 
  *
  * @author Daniel Fern&aacute;ndez

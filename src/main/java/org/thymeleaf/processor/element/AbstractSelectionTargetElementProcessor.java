@@ -72,7 +72,7 @@ public abstract class AbstractSelectionTargetElementProcessor
             if (additionalLocalVariables != null) {
                 final List<Node> children = element.getChildren();
                 for (final Node child : children) {
-                    child.addNodeLocalVariables(additionalLocalVariables);
+                    child.setAllNodeLocalVariables(additionalLocalVariables);
                 }
             }
     

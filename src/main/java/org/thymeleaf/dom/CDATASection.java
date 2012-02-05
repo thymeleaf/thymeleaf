@@ -23,6 +23,14 @@ package org.thymeleaf.dom;
 
 
 /**
+ * <p>
+ *   A CDATA Section node in a Thymeleaf DOM tree.
+ * </p>
+ * <p>
+ *   When building an instance of this class, setting the <tt>escapeXml</tt> flag to true
+ *   will apply an escaping operation to the specified contents by means of calling
+ *   {@link org.thymeleaf.util.DOMUtils#escapeXml(char[], boolean)}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

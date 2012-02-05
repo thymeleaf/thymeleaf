@@ -48,6 +48,15 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   General configuration class, containing all the configuration items
+ *   for a {@link TemplateEngine}, including all the info for every configured
+ *   {@link IDialect}.
+ * </p>
+ * <p>
+ *   Except for testing purposes, there is no reason why a user might need to use this 
+ *   class directly.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -465,7 +474,17 @@ public final class Configuration {
     
     
     
-    
+    /**
+     * <p>
+     *   Computes all the processors that should be applied to a specific {@link Node}.
+     * </p>
+     * <p>
+     *   Results are returned ordered by precedence.
+     * </p>
+     * 
+     * @param node the node to compute
+     * @return an ArrayList with the list of processors, as {@link ProcessorAndContext} objects.
+     */
     public ArrayList<ProcessorAndContext> computeProcessorsForNode(final Node node) {
         
         if (node instanceof Element) {
