@@ -1,5 +1,9 @@
 2.0.0
 =====
+- Added th:switch/th:case attributes to the standard dialects, working in a way equivalent
+  to that of the Java "switch" structure (default --> th:case="*").
+- Created version "3" of the standard DTDs for XHTML template validation, including the
+  new th:switch and th:case attributes. 
 - Substituted the Java standard DOM API (org.w3c.dom.*) by Thymeleaf's own tailor-made
   DOM representation (org.thymeleaf.dom)
 - Created a DOM precomputation system that allows caching some information about the processors
