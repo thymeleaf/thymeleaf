@@ -9,12 +9,11 @@ import org.thymeleaf.dom.Node;
 
 /**
  * <p>
- *   Represents a document parser, which parses the given resource into
- *   a Thymeleaf DOM tree.
+ *   Common interface for template parsers, in charge of reading and converting a 
+ *   resolved template into a DOM tree.
  * </p>
- * 
  * <p>
- *   All <tt>IDocumentParser</tt> implementations must be <b>thread-safe</b>.  
+ *   All implementations of this interface must be <b>thread-safe</b>.  
  * </p>
  * 
  * @since 2.0.0

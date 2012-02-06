@@ -9,12 +9,11 @@ import org.thymeleaf.dom.Document;
 
 /**
  * <p>
- *   Common interface for objects in charge of writing the results of
- *   processing templates.
+ *   Common interface for template parsers, in charge of writing processed DOM
+ *   trees, this is, creating their corresponding output.
  * </p>
- * 
  * <p>
- *   All <tt>ITemplateWriter</tt> implementations must be <b>thread-safe</b>.  
+ *   All implementations of this interface must be <b>thread-safe</b>.  
  * </p>
  * 
  * @since 2.0.0

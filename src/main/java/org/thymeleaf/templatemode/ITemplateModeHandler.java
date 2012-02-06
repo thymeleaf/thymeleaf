@@ -23,6 +23,20 @@ import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templatewriter.ITemplateWriter;
 
 /**
+ * <p>
+ *   Common interface for all handlers of template modes.
+ * </p>
+ * <p>
+ *   Any template mode can be used at the Template Engine as long as there is a
+ *   handler registered for it. Template Mode Handlers define:
+ * </p>
+ * <ul>
+ *   <li>The template mode <b>name</b>.</li>
+ *   <li>The way templates are read and parsed in this mode: the <b>parser</b> ({@link ITemplateParser}).</li>
+ *   <li>The way processed template results are written (i.e. converted into output): the <b>writer</b> 
+ *       ({@link ITemplateWriter}).</li>
+ * </ul>
+ * 
  * 
  * @author Daniel Fern&aacute;ndez
  * 

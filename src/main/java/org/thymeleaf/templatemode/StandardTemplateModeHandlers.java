@@ -32,6 +32,20 @@ import org.thymeleaf.templatewriter.XhtmlHtml5TemplateWriter;
 import org.thymeleaf.templatewriter.XmlTemplateWriter;
 
 /**
+ * <p>
+ *   Utility class that defines the standard set of {@link ITemplateModeHandler} objects.
+ * </p>
+ * <p>
+ *   Standard template modes are:
+ * </p>
+ * <ul>
+ *   <li>XML</li>
+ *   <li>VALIDXML</li>
+ *   <li>XHTML</li>
+ *   <li>VALIDXHTML</li>
+ *   <li>HTML5</li>
+ *   <li>LEGACYHTML5 (for non XML-formed HTML5 code &ndash;needs tag balancing prior to parsing)</li>
+ * </ul>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

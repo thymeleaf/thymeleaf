@@ -23,6 +23,9 @@ import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templatewriter.ITemplateWriter;
 
 /**
+ * <p>
+ *   Standard implementation of {@link ITemplateModeHandler}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
