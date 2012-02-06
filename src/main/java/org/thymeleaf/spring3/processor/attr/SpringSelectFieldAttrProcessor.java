@@ -25,9 +25,9 @@ import java.util.Map;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -73,7 +73,7 @@ public final class SpringSelectFieldAttrProcessor
         
         inputElement.setAttribute("id", id);
         inputElement.setAttribute("name", name);
-        inputElement.addNodeLocalVariables(localVariables);
+        inputElement.setAllNodeLocalVariables(localVariables);
 
         processOptionChildren(inputElement, attributeName, attributeValue);
         
@@ -87,7 +87,7 @@ public final class SpringSelectFieldAttrProcessor
             hiddenElement.setAttribute("type", "hidden");
             hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
             hiddenElement.setAttribute("value", "1");
-            hiddenElement.addNodeLocalVariables(localVariables);
+            hiddenElement.setAllNodeLocalVariables(localVariables);
             
             parent.insertAfter(inputElement, hiddenElement);
             

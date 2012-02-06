@@ -25,8 +25,8 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.SelectedValueComparatorWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -109,13 +109,13 @@ public final class SpringInputCheckboxFieldAttrProcessor
         } else {
             inputElement.removeAttribute("checked");
         }
-        inputElement.addNodeLocalVariables(localVariables);
+        inputElement.setAllNodeLocalVariables(localVariables);
         
         final Element hiddenElement = new Element("input");
         hiddenElement.setAttribute("type", "hidden");
         hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
         hiddenElement.setAttribute("value", "on");
-        hiddenElement.addNodeLocalVariables(localVariables);
+        hiddenElement.setAllNodeLocalVariables(localVariables);
 
         parent.insertBefore(element, inputElement);
         parent.insertBefore(element, hiddenElement);
