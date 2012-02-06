@@ -27,6 +27,19 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Models the context in which a node is matched.
+ * </p>
+ * <p>
+ *   These objects are only applied when the node is an {@link org.thymeleaf.dom.Element}.
+ *   This is needed because a processor's applicability specifies an element or attribute name,
+ *   but dialects might be configured with any prefix, and this will affect matching capabilities
+ *   because final names will be composed of both prefix and name.
+ * </p>
+ * <p>
+ *   Matching contexts help matchers know the circumstances in which a node is trying to match,
+ *   specifically the prefix being applied to the dialect.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

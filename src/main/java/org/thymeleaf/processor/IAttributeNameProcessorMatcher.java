@@ -28,6 +28,13 @@ import org.thymeleaf.dom.Element;
 
 
 /**
+ * <p>
+ *   Sub-interface of {@link IProcessorMatcher} for matchers based on attribute names.
+ * </p>
+ * <p>
+ *   Every processor matching attributes by name should have matchers implementing this
+ *   interface, as this enables certain precomputations and boosts performance.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

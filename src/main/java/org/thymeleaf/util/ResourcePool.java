@@ -56,7 +56,7 @@ public final class ResourcePool<T> {
      *   available immediately.
      * </p>
      * 
-     * @returns the allocated resource, heving been removed from the allocation pool.
+     * @return the allocated resource, heving been removed from the allocation pool.
      */
     public T allocate() {
         

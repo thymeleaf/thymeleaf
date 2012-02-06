@@ -23,6 +23,9 @@ import org.thymeleaf.TemplateEngine;
 
 
 /**
+ * <p>
+ *   General exception for errors raised during the process of a template.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Guven Demir

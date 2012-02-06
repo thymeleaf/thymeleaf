@@ -28,6 +28,13 @@ import org.thymeleaf.dom.AbstractTextNode;
 
 
 /**
+ * <p>
+ *   Sub-interface of {@link IProcessorMatcher} for matchers that match Text/CDATA nodes.
+ * </p>
+ * <p>
+ *   Every processor matching Text/CDATA nodes should have matchers implementing this
+ *   interface.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

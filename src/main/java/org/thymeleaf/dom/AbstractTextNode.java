@@ -116,7 +116,7 @@ public abstract class AbstractTextNode extends Node {
      *   specified array (instead, it is merely assigned to an internal variable).
      * </p>
      * 
-     * @param content the new content
+     * @param newContent the new content
      */
     public void unsafeSetContent(final char[] newContent) {
         this.content = newContent;

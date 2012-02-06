@@ -431,7 +431,7 @@ public abstract class Node implements Serializable {
      *   processors before looking for the next processor to execute.
      * </p>
      * 
-     * @param recomputeProcessorsAfterEachExecution the new value for the flag
+     * @param recomputeProcessorsImmediately the new value for the flag
      */
     public final void setRecomputeProcessorsImmediately(final boolean recomputeProcessorsImmediately) {
         this.recomputeProcessorsImmediately = recomputeProcessorsImmediately;

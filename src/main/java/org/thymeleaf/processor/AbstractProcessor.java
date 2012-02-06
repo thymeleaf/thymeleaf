@@ -27,6 +27,11 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Common abstract superclass for all processors, including utility methods for 
+ *   easily resolving template- and class-based externalized messages. This class
+ *   also takes care of processor <i>precedence</i>.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -46,7 +51,7 @@ public abstract class AbstractProcessor implements IProcessor {
     /**
      * <p>
      *   Resolves a message, trying to resolve it first as a <i>template message</i>
-     *   (see {@link #getMessageForTemplate(Arguments, TemplateResolution, String, Object[])}) and,
+     *   (see {@link #getMessageForTemplate(Arguments, String, Object[])}) and,
      *   if not found, as a <i>processor message</i> (see {@link #getMessageForProcessor(Arguments, String, Object[])}.
      * </p>
      * <p>

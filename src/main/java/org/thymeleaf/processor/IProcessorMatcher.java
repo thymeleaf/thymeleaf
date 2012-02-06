@@ -26,6 +26,10 @@ import org.thymeleaf.dom.Node;
 
 
 /**
+ * <p>
+ *   Common interface for objects that specify when a processor can be applied
+ *   to a node.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -34,8 +38,26 @@ import org.thymeleaf.dom.Node;
  */
 public interface IProcessorMatcher<T extends Node> {
     
+    /**
+     * <p>
+     *   Try to match the node, using the specified matching context.
+     * </p>
+     * 
+     * @param node the node to be matched
+     * @param context the matching context
+     * @return true if the node matches, false if not.
+     */
     public boolean matches(final Node node, final ProcessorMatchingContext context);
     
+    
+    /**
+     * <p>
+     *   Returns the type of Node this matcher applies to (and therefore the type
+     *   of Node that processors with this matcher will apply to).
+     * </p>
+     * 
+     * @return the type of node (subclass of Node) this matcher applies to.
+     */
     public Class<? extends T> appliesTo();
     
 }

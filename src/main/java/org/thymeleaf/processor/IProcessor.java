@@ -23,6 +23,10 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Node;
 
 /**
+ * <p>
+ *   Common interface for all processors to be applied on Thymeleaf
+ *   DOM trees.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -31,8 +35,28 @@ import org.thymeleaf.dom.Node;
  */
 public interface IProcessor extends Comparable<IProcessor> {
 
+    /**
+     * <p>
+     *   Returns the matcher ({@link IProcessorMatcher}) that 
+     *   defines the applicability of this processor.
+     * </p>
+     * 
+     * @return the matcher.
+     */
     public IProcessorMatcher<? extends Node> getMatcher();
 
+    
+    /**
+     * <p>
+     *   Processes a node. This node is supposed to have already
+     *   positively matched this processor's applicability.
+     * </p>
+     * 
+     * @param arguments the Arguments object to be applied.
+     * @param processorMatchingContext the matching context.
+     * @param node the node to be processed.
+     * @return the processor result.
+     */
     public ProcessorResult process(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node);
     
 }
