@@ -1,6 +1,8 @@
 2.0.0
 =====
-
+- Created version "3" of the standard DTDs for XHTML template validation, including the
+  new th:switch and th:case attributes. 
+- Adapted processors to the new DOM/IProcessor infrastructure.
 
 1.1.4
 =====
