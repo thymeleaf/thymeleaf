@@ -1,3 +1,22 @@
+/*
+ * =============================================================================
+ * 
+ *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
+ * 
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ * 
+ * =============================================================================
+ */
 package org.thymeleaf.dom;
 
 import java.io.Serializable;
@@ -11,6 +30,40 @@ import java.util.regex.Pattern;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
+
+/**
+ * <p>
+ *   DOM Selectors model selections of subtrees from Thymeleaf DOM trees.
+ * </p>
+ * <p>
+ *   A common use of these selectors is for including fragments of other templates
+ *   without the need of these other templates having any Thymeleaf code.
+ * </p>
+ * <p>
+ *   DOM Selector syntax is a subset of XPath, including:
+ * </p>
+ * <ul>
+ *   <li><tt>/x</tt> means <i>direct children of the current node with name <tt>x</tt></i>.</li>
+ *   <li><tt>//x</tt> means <i>children of the current node with name <tt>x</tt>, at any depth</i>.</li>
+ *   <li><tt>x[@z="v"]</tt> means <i>elements with name <tt>x</tt> and an attribute called z with
+ *       value "v"</i>.</li>
+ *   <li><tt>x[@z1="v1" and @z2="v2"]</tt> means <i>elements with name <tt>x</tt> and attributes
+ *       <tt>z1</tt> and <tt>z2</tt> with values "v1" and "v2", respectively</i>.</li>
+ *   <li><tt>x[i]</tt> means <i>element with name <tt>x</tt> positioned in number <tt>i</tt> among
+ *       its siblings</i>.</li>
+ *   <li><tt>x[@z="v"][i]</tt> means <i>elements with name <tt>x</tt>, attribute <tt>z</tt> with
+ *       value "v" and positioned in number <tt>i</tt> among its siblings that also match this
+ *       condition</i>.</li>
+ * </ul>
+ * <p>
+ *   For example: <tt>//div[@id="menu"]</tt>.
+ * </p>
+ * 
+ * @author Daniel Fern&aacute;ndez
+ * 
+ * @since 2.0.0
+ *
+ */
 public final class DOMSelector implements Serializable {
 
     private static final long serialVersionUID = -1680336779267140369L;

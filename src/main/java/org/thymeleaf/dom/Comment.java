@@ -26,6 +26,10 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   A Comment node in a Thymeleaf DOM tree.
+ * </p>
+ * 
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -77,10 +81,32 @@ public final class Comment extends Node {
     
     
     
+    /**
+     * <p>
+     *   Returns the textual content of this node, as a String.
+     * </p>
+     * 
+     * @return the textual content of this node.
+     */
     public String getContent() {
         return new String(this.content);
     }
     
+    
+    /**
+     * <p>
+     *   Returns the unsafe inner char[] with the textual content of this
+     *   code.
+     * </p>
+     * <p>
+     *   Calling this method avoids the need to create a new <tt>String</tt>
+     *   object (like {@link #getContent()} does, but requires to be extremely
+     *   careful with the result, as any modification to the returned char array
+     *   will actually modify the node's contents.
+     * </p>
+     * 
+     * @return the textual content of this node.
+     */
     public char[] unsafeGetContentCharArray() {
         return this.content;
     }

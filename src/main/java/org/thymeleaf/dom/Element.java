@@ -143,7 +143,6 @@ public final class Element extends NestableNode {
      * 
      * @return the normalized prefix.
      */
-    
     public String getNormalizedPrefix() {
         return this.normalizedPrefix;
     }
@@ -155,7 +154,7 @@ public final class Element extends NestableNode {
      *   (if it has one).
      * </p>
      * 
-     * @return the unprefixed normalized name-
+     * @return the unprefixed normalized name.
      */
     public String getUnprefixedNormalizedName() {
         return this.unprefixedNormalizedName;

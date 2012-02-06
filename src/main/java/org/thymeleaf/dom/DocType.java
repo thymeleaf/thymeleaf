@@ -8,6 +8,14 @@ import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Models a DOCTYPE declaration in an XML-based template document.
+ * </p>
+ * <p>
+ *   Objects of this class contain both the original PUBLICID and SYSTEMID,
+ *   and also a <i>processed</i> version of both, which can be the result
+ *   of applying DOCTYPE translations. 
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -62,12 +70,28 @@ public final class DocType implements Serializable {
         return this.processedSystemId;
     }
 
+    
+    /**
+     * <p>
+     *   Returns whether this DOCTYPE has already been processed -and therefore
+     *   translations have been applied- or not.
+     * </p>
+     * 
+     * @return true if the DOCTYPE has already been processed, false if not.
+     */
     public boolean isProcessed() {
         return this.processed;
     }
 
     
 
+    /**
+     * <p>
+     *   Process this DOCTYPE, including any applicable translations.
+     * </p>
+     * 
+     * @param configuration the configuration to be applied.
+     */
     public void process(final Configuration configuration) {
         if (!this.processed) {
             final IDocTypeTranslation translation =
