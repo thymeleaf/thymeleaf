@@ -23,8 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.processor.attr.IAttrProcessor;
-import org.thymeleaf.processor.tag.ITagProcessor;
+import org.thymeleaf.processor.IProcessor;
 
 public class ScoreDialect extends AbstractDialect {
 
@@ -48,24 +47,17 @@ public class ScoreDialect extends AbstractDialect {
     
     /*
      * Two attribute processors are declared: 'classforposition' and
-     * 'remarkforposition'.  
+     * 'remarkforposition'. Also one element processor: the 'headlines'
+     * tag.
      */
     @Override
-    public Set<IAttrProcessor> getAttrProcessors() {
-        final Set<IAttrProcessor> attrProcessors = new HashSet<IAttrProcessor>();
-        attrProcessors.add(new ClassForPositionAttrProcessor());
-        attrProcessors.add(new RemarkForPositionAttrProcessor());
-        return attrProcessors;
+    public Set<IProcessor> getProcessors() {
+        final Set<IProcessor> processors = new HashSet<IProcessor>();
+        processors.add(new ClassForPositionAttrProcessor());
+        processors.add(new RemarkForPositionAttrProcessor());
+        processors.add(new HeadlinesTagProcessor());
+        return processors;
     }
 
-    /*
-     * Only one tag processor: the 'headlines' tag.
-     */
-    @Override
-    public Set<ITagProcessor> getTagProcessors() {
-        final Set<ITagProcessor> tagProcessors = new HashSet<ITagProcessor>();
-        tagProcessors.add(new HeadlinesTagProcessor());
-        return tagProcessors;
-    }
 
 }

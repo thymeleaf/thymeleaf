@@ -21,16 +21,11 @@ package thymeleafexamples.extrathyme.dialects.score;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.processor.applicability.AttrApplicability;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-import org.thymeleaf.templateresolver.TemplateResolution;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import thymeleafexamples.extrathyme.business.entities.Remark;
 import thymeleafexamples.extrathyme.business.util.RemarkUtil;
@@ -40,36 +35,35 @@ public class ClassForPositionAttrProcessor
 
     
     public ClassForPositionAttrProcessor() {
-        super();
+        super("classforposition");
     }
+
 
     
     
-    public Set<AttrApplicability> getAttributeApplicabilities() {
-        return AttrApplicability.createSetForAttrName("classforposition");
-    }
-
-    
-    
-    public Integer getPrecedence() {
-        return Integer.valueOf(12000);
+    public int getPrecedence() {
+        return 12000;
     }
     
     
 
     @Override
-    protected Map<String, String> getNewAttributeValues(final Arguments arguments,
-            final TemplateResolution templateResolution, final Document document,
-            final Element element, final Attr attribute, final String attributeName,
-            final String attributeValue) {
+    protected Map<String, String> getModifiedAttributeValues(
+            final Arguments arguments, final Element element,
+            final String attributeName) {
 
+        /*
+         * Obtain the attribute value
+         */
+        final String attributeValue = element.getAttributeValue(attributeName);
+        
         /*
          * Process (parse and execute) the attribute value, specified as a
          * Thymeleaf Standard Expression.
          */
         final Integer position =
             (Integer) StandardExpressionProcessor.processExpression(
-                    arguments, templateResolution, attributeValue);
+                    arguments, attributeValue);
 
         /*
          * Obtain the remark corresponding to this position in the league table.
@@ -100,26 +94,36 @@ public class ClassForPositionAttrProcessor
 
     
     
+
+
+
     @Override
     protected ModificationType getModificationType(final Arguments arguments,
-            final TemplateResolution templateResolution, final Document document,
-            final Element element, final Attr attribute, final String attributeName,
-            final String attributeValue, final String newAttributeName) {
+            final Element element, final String attributeName,
+            final String newAttributeName) {
         // Just in case there already is a value set for the 'class' attribute in the
         // tag, we will append our new value (using a whitespace separator) instead
         // of simply substituting it.
         return ModificationType.APPEND_WITH_SPACE;
     }
 
-    
-    
+
+
     @Override
     protected boolean removeAttributeIfEmpty(final Arguments arguments,
-            final TemplateResolution templateResolution, final Document document,
-            final Element element, final Attr attribute, final String attributeName,
-            final String attributeValue, final String newAttributeName) {
+            final Element element, final String attributeName,
+            final String newAttributeName) {
         // If the resulting 'class' attribute is empty, do not show it at all.
         return true;
+    }
+
+
+
+    @Override
+    protected boolean recomputeProcessorsAfterExecution(final Arguments arguments,
+            final Element element, final String attributeName) {
+        // There is no need to recompute the element after this processor has executed 
+        return false;
     }
     
 

@@ -19,16 +19,10 @@
  */
 package thymeleafexamples.extrathyme.dialects.score;
 
-import java.util.Set;
-
 import org.thymeleaf.Arguments;
-import org.thymeleaf.processor.applicability.AttrApplicability;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-import org.thymeleaf.templateresolver.TemplateResolution;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import thymeleafexamples.extrathyme.business.entities.Remark;
 import thymeleafexamples.extrathyme.business.util.RemarkUtil;
@@ -38,19 +32,14 @@ public class RemarkForPositionAttrProcessor
 
     
     public RemarkForPositionAttrProcessor() {
-        super();
+        super("remarkforposition");
     }
 
     
     
-    public Set<AttrApplicability> getAttributeApplicabilities() {
-        return AttrApplicability.createSetForAttrName("remarkforposition");
-    }
-
     
-    
-    public Integer getPrecedence() {
-        return Integer.valueOf(12000);
+    public int getPrecedence() {
+        return 12000;
     }
     
 
@@ -58,9 +47,12 @@ public class RemarkForPositionAttrProcessor
 
     @Override
     protected String getText(final Arguments arguments,
-            final TemplateResolution templateResolution, final Document document,
-            final Element element, final Attr attribute, final String attributeName,
-            final String attributeValue) {
+            final Element element, String attributeName) {
+
+        /*
+         * Obtain the attribute value
+         */
+        final String attributeValue = element.getAttributeValue(attributeName);
 
         /*
          * Process (parse and execute) the attribute value, specified as a
@@ -68,7 +60,7 @@ public class RemarkForPositionAttrProcessor
          */
         final Integer position =
             (Integer) StandardExpressionProcessor.processExpression(
-                    arguments, templateResolution, attributeValue);
+                    arguments, attributeValue);
         
         /*
          * Obtain the remark corresponding to this position in the league table.
@@ -87,10 +79,9 @@ public class RemarkForPositionAttrProcessor
          * 'remarks.{REMARK}' (e.g. 'remarks.RELEGATION'). No parameters are needed for this
          * message.
          */
-        return getMessage(arguments, templateResolution, "remarks." + remark.toString(), new Object[0]); 
+        return getMessage(arguments, "remarks." + remark.toString(), new Object[0]); 
         
     }
-    
 
 
 

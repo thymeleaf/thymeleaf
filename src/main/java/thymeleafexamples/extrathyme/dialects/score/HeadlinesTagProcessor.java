@@ -23,41 +23,41 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.processor.applicability.TagApplicability;
-import org.thymeleaf.processor.tag.AbstractMarkupSubstitutionTagProcessor;
+import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
+import org.thymeleaf.dom.Text;
+import org.thymeleaf.processor.element.AbstractMarkupSubstitutionElementProcessor;
 import org.thymeleaf.spring3.context.SpringWebContext;
-import org.thymeleaf.templateresolver.TemplateResolution;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.Text;
 
 import thymeleafexamples.extrathyme.business.entities.Headline;
 import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepository;
 
-public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcessor {
+public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionElementProcessor {
 
     private final Random rand = new Random(System.currentTimeMillis());
     
     
     public HeadlinesTagProcessor() {
-        super();
+        super("headlines");
     }
     
-    
-    public Set<TagApplicability> getTagApplicabilities() {
-        return TagApplicability.createSetForTagName("headlines");
-    }
+
 
 
     @Override
-    protected List<Node> getMarkupSubstitutes(final Arguments arguments,
-            final TemplateResolution templateResolution, final Document document,
-            final Element element) {
+    public int getPrecedence() {
+        return 1000;
+    }
+
+    
+    
+
+    @Override
+    protected List<Node> getMarkupSubstitutes(
+            final Arguments arguments, final Element element) {
 
         /*
          * Obtain the Spring application context. Being a SpringMVC-based 
@@ -80,7 +80,7 @@ public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcesso
          * will allow us to determine whether we want to show a random headline or
          * only the latest one ('latest' is default).
          */
-        final String order = element.getAttribute("order");
+        final String order = element.getAttributeValue("order");
 
         String headlineText = null;
         if (order != null && order.trim().toLowerCase().equals("random")) {
@@ -102,11 +102,11 @@ public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcesso
          * The headline will be shown inside a '<div>' tag, and so this must
          * be created first and then a Text node must be added to it.
          */
-        final Element container = document.createElement("div");
+        final Element container = new Element("div");
         container.setAttribute("class", "headlines");
 
-        final Text text = document.createTextNode(headlineText);
-        container.appendChild(text);
+        final Text text = new Text(headlineText);
+        container.addChild(text);
 
         /*
          * The abstract IAttrProcessor implementation we are using defines
@@ -119,6 +119,10 @@ public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionTagProcesso
         return nodes;
         
     }
+
+
+
+
 
 
 }
