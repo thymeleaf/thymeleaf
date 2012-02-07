@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>What's new in Thymeleaf 2.0 - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="features.html" title="Features">Features</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      ::
+      <span class="current">what's new in thymeleaf 2.0</span>
+   </div>
+
+
+   <div id="content">
+
+    <h1>What's new in Thymeleaf 2.0</h1>
+
+
+
+    <h2>Performance</h2>
+
+
+    <p>
+      Thymeleaf 2.0 includes a complete rewrite of its template execution engine and
+      a redesign of most of its internal architecture. This has meant big improvements
+      in performance since 1.1.
+    </p>
+    <p>
+      Users do not have to make any changes in their existing templates to benefit from
+      these improvements, as these are mainly of internal nature.
+    </p>
+    <p>
+      A Benchmark has been created for measuring these improvements. You can have a look at
+      the results <a href="benchmarking20.html">here</a>.
+    </p>
+    
+
+
+    <h2>New <kbd>th:switch</kbd>/<kbd>th:case</kbd> attribute in the standard dialects</h2>
+
+    
+    <p>
+      The new <kbd>th:switch</kbd> attribute works in a very similar way to the <kbd>switch</kbd>
+      structure in the Java language. The expression specified as value is evaluated and its result
+      is compared with the result of evaluating expressions in inner <kbd>th:case</kbd> attributes.
+    </p>
+    
+    <code>
+&lt;<b>div</b>&nbsp;th:switch=<span class="string">&quot;${user.role}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;'admin'&quot;</span>&gt;User&nbsp;is&nbsp;an&nbsp;administrator&lt;/<b>p</b>&gt;<br />
+&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;#{roles.manager}&quot;</span>&gt;User&nbsp;is&nbsp;a&nbsp;manager&lt;/<b>p</b>&gt;
+<br />
+&lt;/<b>div</b>&gt;
+    </code>
+
+    <p>
+      Note that as soon as one <kbd>th:case</kbd> attribute is evaluated as <kbd>true</kbd>,
+      every other <kbd>th:case</kbd> attribute in the same <i>switch</i> context is evaluated as <kbd>false</kbd>.
+    </p>
+    <p>
+      The <kbd>default</kbd> option is specified as <kbd>th:case="*"</kbd>.
+    </p>
+    
+    <code>
+&lt;<b>div</b>&nbsp;th:switch=<span class="string">&quot;${user.role}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;'admin'&quot;</span>&gt;User&nbsp;is&nbsp;an&nbsp;administrator&lt;/<b>p</b>&gt;<br />
+&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;#{roles.manager}&quot;</span>&gt;User&nbsp;is&nbsp;a&nbsp;manager&lt;/<b>p</b>&gt;<br />
+&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;*&quot;</span>&gt;User&nbsp;is&nbsp;some&nbsp;other thing&lt;/<b>p</b>&gt;
+<br />
+&lt;/<b>div</b>&gt;
+    </code>
+
+
+
+    <h2>Added <kbd>all-but-first</kbd> value to <kbd>th:remove</kbd></h2>
+
+
+    <p>
+      Prototyping a table usually means to add several tuples (<kbd>&lt;tr&gt;</kbd>) to it; the first
+      of them being the object of iteration (<kbd>th:each</kbd>) and the rest needing to be removed
+      when the template is processed (<kbd>th:remove</kbd>):
+    </p>
+
+<code>
+&lt;<b>table</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${user.name}&quot;</span>&gt;John&nbsp;Apricot&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Martha&nbsp;Apple&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Frederic&nbsp;Orange&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&lt;<b>/table</b>&gt;
+</code>
+
+    <p>
+      A new value for <kbd>th:remove</kbd>, called <kbd>all-but-first</kbd>, does
+      exactly that and saves some repetitive code:
+    </p>
+    
+<code>
+&lt;<b>table</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&nbsp;th:remove=<span class="string">&quot;all-but-first&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${user.name}&quot;</span>&gt;John&nbsp;Apricot&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Martha&nbsp;Apple&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>trsa</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Frederic&nbsp;Orange&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&lt;<b>/table</b>&gt;
+</code>
+
+    
+
+    <h2>New XHTML DTDs for the standard dialects</h2>
+
+
+    <p>
+      The new <kbd>th:switch</kbd> and <kbd>th:case</kbd> attributes require a change in the existing
+      Thymeleaf DTDs (those specified with a <kbd>DOCTYPE SYSTEM</kbd> clause), in order
+      to include this new attribute and allow its validation.
+    </p>
+
+    <p>
+      New versions of the DTDs for the Standard and SpringStandard dialects
+      have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
+    </p>
+    
+    <code>
+    
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    
+    </code>
+
+    <p>
+      Can now be substituted by new versions containing the new attribute:
+    </p>
+    
+    <code>
+    
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd&quot;</span>&gt;
+    <br />
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-3.dtd&quot;</span>&gt;
+    
+    </code>
+
+
+
+
+    <h2>DOM Selectors</h2>
+
+
+    
+    <p>
+      Thymeleaf 1.1 allowed the inclusion of fragments from other templates by specifying 
+      these fragments with an XPath expression between square brackets (<kbd>[...]</kbd>),
+      like:
+    </p>
+    
+<code>
+&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;sometemplate&nbsp;::&nbsp;[//div[@id=&#39;menu&#39;]]&quot;</span>&gt;
+<br />
+&lt;<b>/div</b>&gt;
+</code>
+
+    <p>
+      Nevertheless, XPath execution heavily relies on the use of the standard DOM API, which
+      Thymeleaf 2.0 replaces by a tailor-made one. Because of this, XPath support has now been 
+      replaced by <i>DOM Selector support</i> and expressions between square brackets
+      like the one above will now be considered DOM Selector expressions.  
+    </p>
+    
+    <p>
+      And what is a DOM Selector? It is an object of class <kbd>org.thymeleaf.dom.DOMSelector</kbd>
+      that allows you to use a subset of the XPath syntax in order to select a specific region
+      of the original DOM tree. Allowed syntax is as follows:
+    </p>
+
+    <ul>
+      <li><tt>/x</tt> means <i>direct children of the current node with name <tt>x</tt></i>.</li>
+      <li><tt>//x</tt> means <i>children of the current node with name <tt>x</tt>, at any depth</i>.</li>
+      <li><tt>x[@z='v']</tt> means <i>elements with name <tt>x</tt> and an attribute called z with
+          value "v"</i>.</li>
+      <li><tt>x[@z1='v1' and @z2='v2']</tt> means <i>elements with name <tt>x</tt> and attributes
+          <tt>z1</tt> and <tt>z2</tt> with values "v1" and "v2", respectively</i>.</li>
+      <li><tt>x[i]</tt> means <i>element with name <tt>x</tt> positioned in number <tt>i</tt> among
+          its siblings</i>.</li>
+      <li><tt>x[@z='v'][i]</tt> means <i>elements with name <tt>x</tt>, attribute <tt>z</tt> with
+          value "v" and positioned in number <tt>i</tt> among its siblings that also match this
+          condition</i>.</li>
+    </ul>
+ 
+    <p>
+      So the following will still be completely valid in 2.0:
+    </p>
+    
+<code>
+&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;sometemplate&nbsp;::&nbsp;[//div[@id=&#39;menu&#39;]]&quot;</span>&gt;
+<br />
+&lt;<b>/div</b>&gt;
+</code>
+
+
+
+    <h2>Substituted the standard Java DOM API (<kbd>org.w3c.dom.*</kbd>) by a 
+        tailor-made DOM representation (<kbd>org.thymeleaf.dom.*</kbd>)</h2>
+
+
+    <p>
+      There's a new DOM
+    </p>
+
+    <p>
+      Allows precomputation
+    </p>
+
+- Created a DOM precomputation system that allows caching some information about the processors
+  that are applicable to each node in the tree, so that this information does not always
+  have to be computed during cached template execution.
+
+
+
+    <h2>Refactored processor system: the <kbd>IProcessor</kbd> hierarchy</h2>
+
+
+    <p>
+      No attr and tag, all IProcessor. 
+    </p>
+
+    
+- Renamed "Tag Processors" as "Element Processors" in order to keep coherence with DOM.
+- Refactored Processor system: generalized "Attribute Processors" and "Element Processors"
+  by creating the IProcessor interface, This interface will be implemented by any processor 
+  object of any kind (which can now apply of any type of DOM node, and not only Elements). 
+  "Attribute Processors" and "Element Processors" are now specializations of IProcessors.
+- Redefined ITextInliner objects (text, javascript, dart inliners) as Processors for
+  Text and CDATASection nodes. Inlining is now a Standard-Dialect feature and not a Thymeleaf
+  core engine one.
+- Removed the old IApplicability class hierarchy and substituted by a much simpler
+  IProcessorMatcher interface and a set of simple implementations for matching a processor
+  by element name, attribute name, etc.
+  
+
+
+    <h2>Generalized Template Mode read/writing infrastructure</h2>
+
+  
+- Template modes have been generalized, along with template parsers and output creation 
+  infrastructure. Instead of the previous fixed set of template modes (XML, VALIDXML, XHTML, 
+  VALIDXML, HTML5 and LEGACYHTML5), now any number of template modes can be configured at the
+  Template Engine as long as an implementation of ITemplateModeHandler is provided for each of
+  them (by default, the old ones are provided out-of-the-box). This "Template Mode Handlers" specify 
+  the parser (implementation of ITemplateParser) to be used for templates using this mode 
+  (template -> DOM) and also the writer (implementation of ITemplateWriter) to be used for writing 
+  the results of processing (DOM -> result). This effectively allows Thymeleaf to process any kind 
+  of template --and not only XML/XHTML/HTML-- as long as these templates can be somehow converted 
+  to and from a DOM representation.
+- Created a new SAX parser implementation of ITemplateParser, now used by default for reading templates
+  in all template modes except LEGACYHTML5 (which requires previous tag balancing by nekoHTML).
+
+
+
+    <h2>Line information in DOM nodes</h2>
+
+  
+  
+- Added position information to DOM nodes, so that template execution errors now display along with
+  the number of the line in the template where they occur.
+
+
+
+    <h2>Generalized cache infrastructure</h2>
+
+  
+  
+- Cache infrastructure has been generalized. The ICacheManager interface now allows the specification
+  of tailor-made implementations for template, fragment, message and expression caches. All of these
+  caches now implement a new interface called ICache.
+- Reimplemented the standard (default) cache strategies for templates, fragments, messages and 
+  expressions based on ConcurrentHashMaps.
+
+
+
+    <h2>Enabled processing of template fragments</h2>
+
+  
+
+- Adapted the parsing and DOM handling infrastructure in order to enable Thymeleaf to process fragmentary
+  templates instead of complete documents. For example, no DOCTYPE or document root is now required
+  (template could be just a '<div>' block, for instance).
+  
+
+
+    <h2>Minor API modifications</h2>
+
+  
+
+- Created the TemplateProcessingParameters class containing all the info available for the
+  processing of the template before its resolution and parsing.
+- Made Arguments objects include the corresponding TemplateResolution object created after
+  resolving and parsing the template. Arguments is still immutable, so this means that
+  the Arguments object used at the Processors is now created after template resolution and
+  parsing. 
+- Modified IResourceResolver interface so that Resource Resolver objects now receive a
+  TemplateProcessingParameters object instead of an Arguments one.
+- Modified ITemplateResolver interface so that Template Resolver objects now receive a
+  TemplateProcessingParameters object instead of an Arguments one.
+- Created org.thymeleaf.TemplateRepository for processing obtention of the parsed templates and 
+  parsable fragments by applying the cache (if it exists).
+
+
+    
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+  
+</html>
