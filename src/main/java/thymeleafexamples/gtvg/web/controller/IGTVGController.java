@@ -28,9 +28,10 @@ import org.thymeleaf.TemplateEngine;
 public interface IGTVGController {
 
     
-    public String process(
+    public void process(
             HttpServletRequest request, HttpServletResponse response,
-            ServletContext servletContext, TemplateEngine templateEngine);
+            ServletContext servletContext, TemplateEngine templateEngine)
+            throws Exception;
     
     
 }

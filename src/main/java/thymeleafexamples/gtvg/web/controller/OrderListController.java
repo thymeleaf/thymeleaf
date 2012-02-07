@@ -39,9 +39,10 @@ public class OrderListController implements IGTVGController {
     }
     
     
-    public String process(
+    public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) 
+            throws Exception {
         
         final OrderService orderService = new OrderService();
         final List<Order> allOrders = orderService.findAll(); 
@@ -49,7 +50,7 @@ public class OrderListController implements IGTVGController {
         final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
         ctx.setVariable("orders", allOrders);
         
-        return templateEngine.process("order/list", ctx);
+        templateEngine.process("order/list", ctx, response.getWriter());
         
     }
 

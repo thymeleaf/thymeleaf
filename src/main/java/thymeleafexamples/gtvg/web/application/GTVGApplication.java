@@ -25,7 +25,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.TemplateMode;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import thymeleafexamples.gtvg.web.controller.HomeController;
@@ -56,7 +55,7 @@ public class GTVGApplication {
         
         ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
         // XHTML is the default mode, but we will set it anyway for better understanding of code
-        templateResolver.setTemplateMode(TemplateMode.XHTML);
+        templateResolver.setTemplateMode("XHTML");
         // This will convert "home" to "/WEB-INF/templates/home.html"
         templateResolver.setPrefix("/WEB-INF/templates/");
         templateResolver.setSuffix(".html");

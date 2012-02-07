@@ -36,14 +36,15 @@ public class HomeController implements IGTVGController {
     }
     
     
-    public String process(
+    public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) 
+            throws Exception {
         
         WebContext ctx = new WebContext(request, servletContext, request.getLocale());
         ctx.setVariable("today", Calendar.getInstance());
         
-        return templateEngine.process("home", ctx);
+        templateEngine.process("home", ctx, response.getWriter());
         
     }
 

@@ -34,12 +34,13 @@ public class SubscribeController implements IGTVGController {
     }
     
     
-    public String process(
+    public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) 
+            throws Exception {
         
         WebContext ctx = new WebContext(request, servletContext, request.getLocale());
-        return templateEngine.process("subscribe", ctx);
+        templateEngine.process("subscribe", ctx, response.getWriter());
         
     }
 

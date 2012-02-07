@@ -37,9 +37,10 @@ public class ProductCommentsController implements IGTVGController {
     }
     
     
-    public String process(
+    public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) 
+            throws Exception {
         
         final Integer prodId = Integer.valueOf(request.getParameter("prodId"));
         
@@ -49,7 +50,7 @@ public class ProductCommentsController implements IGTVGController {
         final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
         ctx.setVariable("prod", product);
         
-        return templateEngine.process("product/comments", ctx);
+        templateEngine.process("product/comments", ctx, response.getWriter());
         
     }
 

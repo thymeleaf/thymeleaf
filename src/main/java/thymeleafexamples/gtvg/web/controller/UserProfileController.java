@@ -34,12 +34,13 @@ public class UserProfileController implements IGTVGController {
     }
     
     
-    public String process(
+    public void process(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final TemplateEngine templateEngine) {
+            final ServletContext servletContext, final TemplateEngine templateEngine) 
+            throws Exception {
         
         final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
-        return templateEngine.process("userprofile", ctx);
+        templateEngine.process("userprofile", ctx, response.getWriter());
         
     }
 

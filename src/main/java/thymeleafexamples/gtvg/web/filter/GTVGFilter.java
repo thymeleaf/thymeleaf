@@ -112,13 +112,10 @@ public class GTVGFilter implements Filter {
              * Execute the controller and process view template,
              * obtaining an HTML String. 
              */
-            final String result = 
-                    controller.process(
-                            request, response, 
-                            request.getSession(true).getServletContext(), 
-                            templateEngine);
-            
-            response.getWriter().write(result);
+            controller.process(
+                    request, response, 
+                    request.getSession(true).getServletContext(), 
+                    templateEngine);
             
             return true;
             
