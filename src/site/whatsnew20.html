@@ -45,19 +45,60 @@
 
     <h1>What's new in Thymeleaf 2.0</h1>
 
+	
+	<p>
+	  Thymeleaf 2.0 includes a lot of new features, but many of them &ndash;in fact,
+	  the most important ones in terms of effort&ndash; will not be directly visible to 
+	  those users that did never have the need to create their own dialects for 
+	  extending Thymeleaf's capabilities.
+	</p>
+	<p>
+	  That is why the explanations you are about to read are not necessarily ordered
+	  by relevance, but rather by whether they affect <i>normal</i> users or not.
+	</p>
+	<ul>
+	  <li>Affect all users:
+	    <ul>
+		  <li><a href="#perf">Performance</a></li>
+		  <li><a href="#swit">New <kbd>th:switch</kbd>/<kbd>th:case</kbd> attributes in the standard dialects</a></li>
+		  <li><a href="#allb">Added <kbd>all-but-first</kbd> value to <kbd>th:remove</kbd></a></li>
+		  <li><a href="#lnum">Line number information in errors</a></li>
+		  <li><a href="#doms">DOM Selectors</a></li>
+		  <li><a href="#frag">Enabled processing of fragmentary templates</a></li>
+		  <li><a href="#cach">Generalized cache infrastructure</a></li>
+		  <li><a href="#dtds">New XHTML DTDs for the standard dialects</a></li>
+		</ul>
+	  </li>
+	  <li>Affect only users creating their own Thymeleaf extensions:
+	    <ul>
+		  <li><a href="#ndom">Substituted the standard Java DOM API by a tailor-made DOM representation</a></li>
+		  <li><a href="#ipro">Refactored processor system: the <kbd>IProcessor</kbd> hierarchy</a></li>
+		  <li><a href="#tmod">Generalized Template Modes: new template reading/writing infrastructure</a></li>
+		  <li><a href="#mino">Minor API modifications</a></li>
+		</ul>
+	  </li>
+	</ul>
 
 
-    <h2>Performance</h2>
+    <h2><a name="perf"></a>Performance</h2>
 
 
     <p>
       Thymeleaf 2.0 includes a complete rewrite of its template execution engine and
-      a redesign of most of its internal architecture. This has meant big improvements
+      a redesign of most of its internal architecture. This means big improvements
       in performance since 1.1.
     </p>
     <p>
-      Users do not have to make any changes in their existing templates to benefit from
-      these improvements, as these are mainly of internal nature.
+      Users do not have to make any changes in their existing templates in order to benefit from
+      these improvements, as these are mainly of internal nature. The only performance
+	  modification that could directly affect users is that the 
+	  <kbd>TemplateEngine.process(...)</kbd> method now allows specifying a <kbd>java.io.Writer</kbd>
+      object as a parameter in order to write the processing results as soon as the DOM tree
+      is processed, without the need to create a <kbd>String</kbd> object containing the whole
+      results in memory (this is especially useful in web scenarios where 
+	  <kbd>HttpServletResponse</kbd> objects contain one of such <i>writers</i>, but it will 
+	  not affect Spring MVC users, as this optimization is applied
+	  automatically in the <kbd>thymeleaf-spring3</kbd> integration package).
     </p>
     <p>
       A Benchmark has been created for measuring these improvements. You can have a look at
@@ -66,7 +107,7 @@
     
 
 
-    <h2>New <kbd>th:switch</kbd>/<kbd>th:case</kbd> attributes in the standard dialects</h2>
+    <h2><a name="swit"></a>New <kbd>th:switch</kbd>/<kbd>th:case</kbd> attributes in the standard dialects</h2>
 
     
     <p>
@@ -104,7 +145,7 @@
 
 
 
-    <h2>Added <kbd>all-but-first</kbd> value to <kbd>th:remove</kbd></h2>
+    <h2><a name="allb"></a>Added <kbd>all-but-first</kbd> value to <kbd>th:remove</kbd></h2>
 
 
     <p>
@@ -166,64 +207,35 @@
 &lt;<b>/table</b>&gt;
 </code>
 
-    
 
-    <h2>New XHTML DTDs for the standard dialects</h2>
+    <h2><a name="lnum"></a>Line number information in errors</h2>
 
+	<p>
+	  The new DOM representation and the generalized template parsing infrastructure (see below)
+	  now enable template parsers to add <i>location</i> information to DOM nodes, which
+	  in practice brings the opportunity to output the number of the line in the template
+	  where a processing error has been found:
+	</p>
 
+<code>
+org.thymeleaf.exceptions.TemplateProcessingException: <br />
+&nbsp;&nbsp;&nbsp;&nbsp;Exception evaluating SpringEL expression: "#fields.hasErrors('*')" <b>(seedstartermng:69)</b><br />
+org.thymeleaf.spring3.expression.SpelExpressionEvaluator.evaluate(SpelExpressionEvaluator.java:108)<br />
+org.thymeleaf.standard.expression.VariableExpression.executeVariable(VariableExpression.java:116)<br />
+org.thymeleaf.standard.expression.SimpleExpression.executeSimple(SimpleExpression.java:392)<br />
+org.thymeleaf.standard.expression.Expression.execute(Expression.java:228)<br />
+...    
+</code>
+	
     <p>
-      The new <kbd>th:switch</kbd> and <kbd>th:case</kbd> attributes require a change in the existing
-      Thymeleaf DTDs (those specified with a <kbd>DOCTYPE SYSTEM</kbd> clause), in order
-      to include this new attribute and allow its validation.
-    </p>
-
-    <p>
-      New versions of the DTDs for the Standard and SpringStandard dialects
-      have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
-    </p>
-    
-    <code>
-    
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    
-    </code>
-
-    <p>
-      Can now be substituted by new versions containing the new attribute:
-    </p>
-    
-    <code>
-    
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd&quot;</span>&gt;
-    <br />
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-3.dtd&quot;</span>&gt;
-    
-    </code>
+	  Simple as it might seem, this was one of the most asked-for enhancements in Thymeleaf,
+	  but the old parsing infrastructure just didn't allow it to be implemented... anyway, now the old
+	  parsers are gone, so here it is!
+	</p>
 
 
 
-
-    <h2>DOM Selectors</h2>
+    <h2><a name="doms"></a>DOM Selectors</h2>
 
 
     
@@ -278,112 +290,265 @@
 
 
 
-    <h2>Substituted the standard Java DOM API (<kbd>org.w3c.dom.*</kbd>) by a 
-        tailor-made DOM representation (<kbd>org.thymeleaf.dom.*</kbd>)</h2>
+    <h2><a name="frag"></a>Enabled processing of fragmentary templates</h2>
+
+    <p>
+	  Prior to 2.0, Thymeleaf was not adequately designed to process templates that could not be
+	  considered <i>complete documents</i> from an XML perspective, which limited its scope
+	  of applicability in scenarios where it was needed to process only fragments or components
+	  of higher-level user interfaces.
+	</p>
+	
+	<p>
+	  The new engine architecture in 2.0 completely removes this restriction so that Thymeleaf
+	  can be used to process templates which could be, for example, no longer than a simple
+	  &lt;div&gt; block.
+	</p>
+
+
+
+    <h2><a name="cach"></a>Generalized cache infrastructure</h2>
 
 
     <p>
-      There's a new DOM
+	  Thymeleaf 2.0 completely generalizes the cache infrastructure already present in
+	  previous versions. The reason to do this is to give the user complete control over
+	  what caches are used or not, and how these should work.
     </p>
-
-    <p>
-      Allows precomputation
-    </p>
-
-- Created a DOM precomputation system that allows caching some information about the processors
-  that are applicable to each node in the tree, so that this information does not always
-  have to be computed during cached template execution.
-
-
-
-    <h2>Refactored processor system: the <kbd>IProcessor</kbd> hierarchy</h2>
-
-
-    <p>
-      No attr and tag, all IProcessor. 
-    </p>
+	<p>
+	  The new <kbd>ICacheManager</kbd> interface defines an extension point that will allow
+	  the user to specify his/her own caches (implementations of <kbd>ICache</kbd>) for
+	  templates, fragments, externalized messages and expressions.
+	</p>
+	<p>
+	  Also, a standard implementation is included (<kbd>StandardCacheManager</kbd>), providing
+	  an easy-to-use API for configuring cache sizes and behaviour without the need of 
+	  developing custom implementations of the interface.
+	</p>
+	
+<code>
+StandardCacheManager&nbsp;manager&nbsp;=&nbsp;<b>new</b>&nbsp;StandardCacheManager();
+<br />
+manager.setTemplateCacheMaxSize(5);
+<br />
+manager.setExpressionCacheUseSoftReferences(<b>false</b>);
+<br />
+<br />
+templateEngine.setCacheManager(manager);
+</code>
 
     
-- Renamed "Tag Processors" as "Element Processors" in order to keep coherence with DOM.
-- Refactored Processor system: generalized "Attribute Processors" and "Element Processors"
-  by creating the IProcessor interface, This interface will be implemented by any processor 
-  object of any kind (which can now apply of any type of DOM node, and not only Elements). 
-  "Attribute Processors" and "Element Processors" are now specializations of IProcessors.
-- Redefined ITextInliner objects (text, javascript, dart inliners) as Processors for
-  Text and CDATASection nodes. Inlining is now a Standard-Dialect feature and not a Thymeleaf
-  core engine one.
-- Removed the old IApplicability class hierarchy and substituted by a much simpler
-  IProcessorMatcher interface and a set of simple implementations for matching a processor
-  by element name, attribute name, etc.
+
+    <h2><a name="dtds"></a>New XHTML DTDs for the standard dialects</h2>
+
+
+    <p>
+      The new <kbd>th:switch</kbd> and <kbd>th:case</kbd> attributes require a change in the existing
+      Thymeleaf DTDs (those specified with a <kbd>DOCTYPE SYSTEM</kbd> clause), in order
+      to include this new attribute and allow its validation.
+    </p>
+
+    <p>
+      New versions of the DTDs for the Standard and SpringStandard dialects
+      have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
+    </p>
+    
+    <code>
+    
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd&quot;</span>&gt;
+    <br />
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd&quot;</span>&gt;
+    
+    </code>
+
+    <p>
+      Can now be substituted by new versions containing the new attribute:
+    </p>
+    
+    <code>
+    
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd&quot;</span>&gt;
+    <br />
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-3.dtd&quot;</span>&gt;
+    <br />
+    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-3.dtd&quot;</span>&gt;
+    
+    </code>
+
+
+
+    <h2><a name="ndom"></a>Substituted the standard Java DOM API by a 
+        tailor-made DOM representation</h2>
+
+
+    <p>
+      Before version 2.0, Thymeleaf used the standard Java DOM API from <kbd>org.w3c.dom.*</kbd>
+	  for modelling documents in memory, and template documents using this API where directly
+	  exposed to the diverse hierarchies of processors in dialects. This had the advantage of allowing
+	  users to work with a well-known API when developing their own dialects and processors.
+    </p>
+	<p>
+	  Unfortunately, the standard DOM API is extremely heavy and complex, and although Thymeleaf
+	  only needed to use a percent of all its features, template documents required a lot
+	  of memory space and where slower to process than they could be. Besides, several 
+	  Thymeleaf-specific optimizations existed that could not be applied to DOM processing while using 
+	  the standard API, so the engine was being penalized even more...
+	</p>
+    <p>
+      Thymeleaf 2.0 completely removes the standard Java DOM API from its architecture and
+	  substitutes it by its own DOM representation (<kbd>org.thymeleaf.dom.*</kbd>). This new
+	  DOM representation does not adhere to the DOM standard, although it tries to
+	  mirror some parts of its structure and concepts in order to be immediately familiar to users.
+    </p>
+	<p>
+	  The <i>new DOM</i> is tailor-made for Thymeleaf, and not only it is much simpler than the old
+	  standard, but it also includes as first-class citizens a bunch of important optimizations
+	  that allow Thymeleaf to process templates much faster than before, using less resources.
+	</p>
+	<p>
+	  Some advantages of the new DOM are:
+	</p>
+	<ul>
+	  <li>Simpler API, which leads to simpler processors.</li>
+	  <li>Lighter objects, allowing a lower memory usage.</li>
+	  <li>Ability to <i>precompute</i> the processors to be applied to nodes, so that the 
+	      sequence of operations to be performed at each node during template processing 
+		  can be cached along with the DOM tree itself in many scenarios, significantly 
+		  reducing processing time.</li>
+      <li>Allows the generalization of the template parsing infrastructure, so that Thymeleaf
+	      2.0 now uses a SAX parser as default &ndash;instead of the old DOM parser, which can
+		  still be used but is not default anymore&ndash;. This new parser is much faster than
+		  the old one, which leads to an additional improvement in performance, even when a
+		  template cache is not being used.</li>
+	  <li>Allows the generalization of the template result <i>writing</i> system (converting
+	      DOM trees into the desired output), so that new template formats can be made
+		  available. Together with parser generalization, this will effectively allow the
+		  generalization of the whole <i>template mode</i> infrastructure, as we will see 
+		  below.</li>
+	</ul>
+
+
+
+
+    <h2><a name="ipro"></a>Refactored processor system: the <kbd>IProcessor</kbd> hierarchy</h2>
+
+
+    <p>
+      In Thymeleaf 1.1, <i>processors</i> could be classified in two groups:
+	  <i>attribute processors</i> and <i>tag processors</i>. The former type were 
+	  defined specifically to process DOM elements (<i>tags</i>) based on the 
+	  existence of a specific attribute in these elements. The latter type processed
+	  DOM elements (<i>tags</i>) just based on their name.
+    </p>
+	<p>
+	  In Thymeleaf 2.0, the new DOM allows a generalization of this schema, so that
+	  <i>attribute processors</i> and <i>tag processors</i> (the latter now called
+	  <i>element processors</i>) are no longer completely
+	  disjoint hierarchies, but instead are children of the new general
+	  <kbd>IProcessor</kbd> interface.
+	</p>
+	<p>
+	  And this also means that processors no longer can only apply to DOM elements
+	  (<i>tags</i>), but instead can apply to any DOM node of any kind, like
+	  Text nodes, comments, etc.
+    </p>
+    <p>
+      <i>Attribute Processors</i> (now extending <kbd>AbstractAttrProcessor</kbd>) and 
+	  <i>Element Processors</i> (now extending <kbd>AbstractElementProcessor</kbd>) are still dealt 
+	  with in a specific manner at the engine for performance reasons, but they are no longer 
+	  the only type of processors. For example, the <i>Text Inliners</i> that were somewhat 
+	  hard-coded at the engine in previous versions have now been refactored as 
+	  <i>text node processors</i> (extending <kbd>AbstractTextNodeProcessor</kbd>) executing 
+	  on Text or CDATA Section nodes, so that their use is consistent with other processors, 
+	  and also so that they can be easily extended and included into new dialects created by 
+	  developers.
+	</p>
+	<p>
+	  Finally, the <i>processor applicability</i> infrastructure has also been modified in 
+	  order to simplify it, resulting in the new <kbd>IProcessorMatcher</kbd> hierarchy 
+	  that substitutes the old <kbd>IApplicability</kbd> features. This new API for 
+	  specifying when a processor <i>matches</i> (<i>"can be applied to"</i>) a DOM node 
+	  is more general &ndash;in order to adapt to the new  <kdb>IProcessor</kbd> 
+	  needs&ndash; and also enables a simpler specification of applicability constraints 
+	  in processors, resulting in simpler extension code.
+	</p>
   
 
 
-    <h2>Generalized Template Mode read/writing infrastructure</h2>
+    <h2><a name="tmod"></a>Generalized Template Modes: new template reading/writing infrastructure</h2>
 
   
-- Template modes have been generalized, along with template parsers and output creation 
-  infrastructure. Instead of the previous fixed set of template modes (XML, VALIDXML, XHTML, 
-  VALIDXML, HTML5 and LEGACYHTML5), now any number of template modes can be configured at the
-  Template Engine as long as an implementation of ITemplateModeHandler is provided for each of
-  them (by default, the old ones are provided out-of-the-box). This "Template Mode Handlers" specify 
-  the parser (implementation of ITemplateParser) to be used for templates using this mode 
-  (template -> DOM) and also the writer (implementation of ITemplateWriter) to be used for writing 
-  the results of processing (DOM -> result). This effectively allows Thymeleaf to process any kind 
-  of template --and not only XML/XHTML/HTML-- as long as these templates can be somehow converted 
-  to and from a DOM representation.
-- Created a new SAX parser implementation of ITemplateParser, now used by default for reading templates
-  in all template modes except LEGACYHTML5 (which requires previous tag balancing by nekoHTML).
+    <p>
+	  As already mentioned, another consequence of the new DOM implementation is the ability
+	  to manage <i>generalized template modes</i>.
+	</p>
+	<p>
+	  What this means is that Thymeleaf no longer can only process templates in one of the
+	  six <i>standard template modes</i> (<kbd>XML</kbd>, <kbd>VALIDXML</kbd>,
+	  <kbd>XHTML</kbd>, <kbd>VALIDXHTML</kbd>, <kbd>HTML5</kbd> and <kbd>LEGACYHTML5</kbd>),
+	  but it now allows developers to create their own template modes and use Thymeleaf to
+	  process them, just by specifying a <i>template parser</i> and a <i>template writer</i>
+	  for each of them, managed by a structure now known as a <i>Template Mode Handler</i> 
+	  (<kbd>ITemplateModeHandler</kbd>).
+	</p>
+	<p>
+	  Given the fact that a <i>template parser</i> (<kbd>ITemplateParser</kbd>) is effectively a
+	  means to convert input read by a <i>resource resolver</i> into a DOM tree, and also that
+	  a <i>template writer</i> is effectively a means to convert a DOM tree into the required
+	  output format (an XML document, an HTML5 web page, etc.) this new <i>Template Mode Handler</i>
+	  extension point allows developers to make Thymeleaf process any kind of templates as far
+	  as they can be modelled as a DOM tree for processing and then written back to their
+	  original format for output.
+	</p>
+	<p>
+	  Out-of-the-box, Thymeleaf 2.0 includes the same standard template modes as before, with
+	  the difference that they must now be specified at <i>template resolver</i> configuration
+	  as Strings instead of using the now-deprecated <kbd>TemplateMode</kbd> enum:
+	</p>
+
+<code>
+ServletContextTemplateResolver&nbsp;templateResolver&nbsp;=&nbsp;<b>new</b>&nbsp;ServletContextTemplateResolver();
+<br />
+<span class="comment">//&nbsp;templateResolver.setTemplateMode(TemplateMode.HTML5);&nbsp;&nbsp;&nbsp;DEPRECATED!!
+</span><br />
+templateResolver.setTemplateMode(<span class="string">&quot;HTML5&quot;</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;OK&nbsp;for&nbsp;2.0!
+</span><br />
+</code>  
 
 
-
-    <h2>Line information in DOM nodes</h2>
-
-  
-  
-- Added position information to DOM nodes, so that template execution errors now display along with
-  the number of the line in the template where they occur.
-
-
-
-    <h2>Generalized cache infrastructure</h2>
-
-  
-  
-- Cache infrastructure has been generalized. The ICacheManager interface now allows the specification
-  of tailor-made implementations for template, fragment, message and expression caches. All of these
-  caches now implement a new interface called ICache.
-- Reimplemented the standard (default) cache strategies for templates, fragments, messages and 
-  expressions based on ConcurrentHashMaps.
-
-
-
-    <h2>Enabled processing of template fragments</h2>
-
-  
-
-- Adapted the parsing and DOM handling infrastructure in order to enable Thymeleaf to process fragmentary
-  templates instead of complete documents. For example, no DOCTYPE or document root is now required
-  (template could be just a '<div>' block, for instance).
-  
-
-
-    <h2>Minor API modifications</h2>
+    <h2><a name="mino"></a>Minor API modifications</h2>
 
   
-
-- Created the TemplateProcessingParameters class containing all the info available for the
-  processing of the template before its resolution and parsing.
-- Made Arguments objects include the corresponding TemplateResolution object created after
-  resolving and parsing the template. Arguments is still immutable, so this means that
-  the Arguments object used at the Processors is now created after template resolution and
-  parsing. 
-- Modified IResourceResolver interface so that Resource Resolver objects now receive a
-  TemplateProcessingParameters object instead of an Arguments one.
-- Modified ITemplateResolver interface so that Template Resolver objects now receive a
-  TemplateProcessingParameters object instead of an Arguments one.
-- Created org.thymeleaf.TemplateRepository for processing obtention of the parsed templates and 
-  parsable fragments by applying the cache (if it exists).
-
+    <p>
+	  Several other minor modifications have been applied to the diverse engine APIs during
+	  the architecture rewrite. Namely:
+	</p>
+    <ul>
+	  <li>Created the <kbd>TemplateProcessingParameters</kbd> class containing all the 
+	      info available for the processing of the template before its resolution 
+		  and parsing, and modified the <kbd>ITemplateResolver</kbd> and
+		  <kbd>IResourceResolver</kbd> interfaces to use this class as a parameter instead
+		  of the more complex <kbd>Arguments</kbd> class.</li>
+	  <li>Made <kbd>Arguments</kbd> objects include the corresponding 
+	      <kbd>TemplateResolution</kbd> object created after resolving and parsing each
+		  template.</li>
+	</ul>
 
     
 
