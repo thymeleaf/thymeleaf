@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.dom;
 
+import java.io.Serializable;
+
 import org.thymeleaf.util.PrefixUtils;
 import org.thymeleaf.util.Validate;
 
@@ -34,7 +36,9 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
-public final class Attribute {
+public final class Attribute implements Serializable {
+
+    private static final long serialVersionUID = 7133984802585560958L;
 
     /**
      * <p>

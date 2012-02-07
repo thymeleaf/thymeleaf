@@ -40,7 +40,7 @@ public class NonCacheableTemplateResolutionValidity
      *   Singleton instance. Meant to avoid creating too many objects of this class.
      * </p>
      */
-    public static NonCacheableTemplateResolutionValidity INSTANCE = 
+    public static final NonCacheableTemplateResolutionValidity INSTANCE = 
         new NonCacheableTemplateResolutionValidity();
     
     public NonCacheableTemplateResolutionValidity() {

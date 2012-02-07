@@ -45,7 +45,7 @@ public class AlwaysValidTemplateResolutionValidity
      *   Singleton instance. Meant to avoid creating too many objects of this class.
      * </p>
      */
-    public static AlwaysValidTemplateResolutionValidity INSTANCE = 
+    public static final AlwaysValidTemplateResolutionValidity INSTANCE = 
         new AlwaysValidTemplateResolutionValidity();
 
     

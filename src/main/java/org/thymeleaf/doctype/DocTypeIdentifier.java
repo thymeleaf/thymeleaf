@@ -24,8 +24,8 @@ public final class DocTypeIdentifier implements Serializable {
     private static final long serialVersionUID = -2899688477489960285L;
 
     
-    public static DocTypeIdentifier ANY = new DocTypeIdentifier(false, true, null);
-    public static DocTypeIdentifier NONE = new DocTypeIdentifier(true, false, null);
+    public static final DocTypeIdentifier ANY = new DocTypeIdentifier(false, true, null);
+    public static final DocTypeIdentifier NONE = new DocTypeIdentifier(true, false, null);
     
     private final boolean none;
     private final boolean any;

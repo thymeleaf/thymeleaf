@@ -22,8 +22,8 @@ package org.thymeleaf.processor.attr;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.ObjectUtils;
@@ -40,7 +40,7 @@ public abstract class AbstractIterationAttrProcessor
         extends AbstractAttrProcessor {
 
     
-    public static String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
+    public static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
     
 
     
