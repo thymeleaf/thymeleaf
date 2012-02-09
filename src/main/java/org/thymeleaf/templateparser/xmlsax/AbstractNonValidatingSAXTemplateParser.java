@@ -308,7 +308,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             if(this.cdataBufferLen > 0) {
                 Node cdata = 
                         new CDATASection(Arrays.copyOf(this.cdataBuffer, this.cdataBufferLen), false);
-                this.elementStack.peek().addChild(cdata);
+                if (this.elementStack.isEmpty()) {
+                    this.rootNodes.add(cdata);
+                } else {
+                    final Element parent = this.elementStack.peek();
+                    parent.addChild(cdata);
+                }
                 this.cdataBufferLen = 0;
             }
             
@@ -370,9 +375,17 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 throws SAXException {
             
             if (!this.dtdMode) {
+                
                 final Comment comment = 
                         new Comment(Arrays.copyOfRange(ch, start, start + length));
-                this.elementStack.peek().addChild(comment);
+                
+                if (this.elementStack.isEmpty()) {
+                    this.rootNodes.add(comment);
+                } else {
+                    final Element parent = this.elementStack.peek();
+                    parent.addChild(comment);
+                }
+                
             }
             
         }
@@ -489,10 +502,15 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             
             if (this.textBufferLen > 0) {
 
-                final Element element = this.elementStack.peek();
                 final Node textNode = 
                         new Text(Arrays.copyOf(this.textBuffer, this.textBufferLen), false);
-                element.addChild(textNode);
+                
+                if (this.elementStack.isEmpty()) {
+                    this.rootNodes.add(textNode);
+                } else {
+                    final Element parent = this.elementStack.peek();
+                    parent.addChild(textNode);
+                }
             
                 this.textBufferLen = 0;
                 
