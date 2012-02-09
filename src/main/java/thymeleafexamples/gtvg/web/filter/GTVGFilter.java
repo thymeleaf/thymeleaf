@@ -101,7 +101,7 @@ public class GTVGFilter implements Filter {
             TemplateEngine templateEngine = GTVGApplication.getTemplateEngine();
 
             /*
-             * Write the response
+             * Write the response headers
              */
             response.setContentType("text/html;charset=UTF-8");
             response.setHeader("Pragma", "no-cache");
@@ -110,7 +110,7 @@ public class GTVGFilter implements Filter {
 
             /*
              * Execute the controller and process view template,
-             * obtaining an HTML String. 
+             * writing the results to the response writer. 
              */
             controller.process(
                     request, response, 
