@@ -14,40 +14,44 @@
     <h1>Product list</h1>
   
     <table>
-      <tr>
-        <th>NAME</th>
-        <th>PRICE</th>
-        <th>IN STOCK</th>
-        <th>COMMENTS</th>
-      </tr>
-      <tr th:each="prod : ${prods}" th:class="${prodStat.odd}? 'odd'">
-        <td th:text="${prod.name}">Onions</td>
-        <td th:text="${prod.price}">2.41</td>
-        <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
-        <td>
-          <span th:text="${#lists.size(prod.comments)}">2</span> comment/s
-          <a href="comments.html" 
-             th:href="@{/product/comments(prodId=${prod.id})}" 
-             th:unless="${#lists.isEmpty(prod.comments)}">view</a>
-        </td>
-      </tr>
-      <tr class="odd" th:remove="all">
-        <td>Blue Lettuce</td>
-        <td>9.55</td>
-        <td>no</td>
-        <td>
-          <span>0</span> comment/s
-        </td>
-      </tr>
-      <tr th:remove="all">
-        <td>Mild Cinnamon</td>
-        <td>1.99</td>
-        <td>yes</td>
-        <td>
-          <span>3</span> comment/s
-          <a href="comments.html">view</a>
-        </td>
-      </tr>
+      <thead>
+        <tr>
+          <th>NAME</th>
+          <th>PRICE</th>
+          <th>IN STOCK</th>
+          <th>COMMENTS</th>
+        </tr>
+      </thead>
+      <tbody th:remove="all-but-first">
+        <tr th:each="prod : ${prods}" th:class="${prodStat.odd}? 'odd'">
+          <td th:text="${prod.name}">Onions</td>
+          <td th:text="${prod.price}">2.41</td>
+          <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
+          <td>
+            <span th:text="${#lists.size(prod.comments)}">2</span> comment/s
+            <a href="comments.html" 
+               th:href="@{/product/comments(prodId=${prod.id})}" 
+               th:unless="${#lists.isEmpty(prod.comments)}">view</a>
+          </td>
+        </tr>
+        <tr class="odd">
+          <td>Blue Lettuce</td>
+          <td>9.55</td>
+          <td>no</td>
+          <td>
+            <span>0</span> comment/s
+          </td>
+        </tr>
+        <tr>
+          <td>Mild Cinnamon</td>
+          <td>1.99</td>
+          <td>yes</td>
+          <td>
+            <span>3</span> comment/s
+            <a href="comments.html">view</a>
+          </td>
+        </tr>
+      </tbody>
     </table>
   
     <p>
