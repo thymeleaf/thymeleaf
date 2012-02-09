@@ -46,13 +46,6 @@
     <h1>What's new in Thymeleaf 2.0</h1>
 
  
-    <p class="notice">
-      <b>Please note</b> Thymeleaf 2.0 is still in <i>beta</i> stage. All the features described
-      below are already available in the currently published version <kbd>2.0.0-beta2</kbd>. Thymeleaf
-      2.0.0 will be GA as soon as final testing ends and some docs get updated.
-    </p>
-
-	
 	<p>
 	  Thymeleaf 2.0 includes a lot of new features, but many of them &ndash;in fact,
 	  the most important ones in terms of effort&ndash; will not be directly visible to 
@@ -162,9 +155,9 @@
     </p>
 
 <code>
-&lt;<b>table</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&gt;
+&lt;<b>table</b>&gt;
 <br />
-&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${user.name}&quot;</span>&gt;John&nbsp;Apricot&lt;<b>/td</b>&gt;
 <br />
@@ -191,9 +184,9 @@
     </p>
     
 <code>
-&lt;<b>table</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&nbsp;th:remove=<span class="string">&quot;all-but-first&quot;</span>&gt;
+&lt;<b>table</b>&nbsp;th:remove=<span class="string">&quot;all-but-first&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${user.name}&quot;</span>&gt;John&nbsp;Apricot&lt;<b>/td</b>&gt;
 <br />

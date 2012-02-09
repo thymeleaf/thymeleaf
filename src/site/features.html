@@ -44,7 +44,7 @@
     <h2>Core Features</h2>
     
     <ul>
-      <li><b>Java template engine for XML, XHTML and HTML5</b>.</li>
+      <li><b>Java template engine for XML, XHTML and HTML5</b>. Extensible to other template formats.</li>
       <li>Works both in web and non-web (<i>offline</i>) environments. No hard dependency on the Servlet API.</li>
       <li>Based on modular <i>feature sets</i> called <b>dialects</b>.
         <ul>
@@ -53,7 +53,7 @@
           <li>Developers can extend and create custom dialects.</li>
         </ul>
       </li>
-      <li>Several <i>template modes</i>:
+      <li>Several <i>template modes</i> out-of-the-box (extensible):
         <ul>
           <li><b>XML</b>: validating against a DTD or not.</li>
           <li><b>XHTML 1.0 and 1.1</b>: validating against standard DTDs or not.</li>
@@ -117,6 +117,18 @@
             </ul>
           </li>
           <li>Custom message resolvers can be developed.</li>
+        </ul>
+      </li>
+      <li>Template modes:
+        <ul>
+          <li>Out-of-the-box: <kbd>XML</kbd>, <kbd>VALIDXML</kbd>, <kbd>XHTML</kbd>, <kbd>VALIDXHTML</kbd>, <kbd>HTML5</kbd> and <kbd>LEGACYHTML5</kbd>.
+          <li>Can be extended to process anything that can be modelled as a DOM tree, as long as both a <i>parser</i> and a results <i>writer</i> are provided.</li>
+        </ul>
+      </li>
+      <li>Cach&eacute; management:
+        <ul>
+          <li>Out-of-the-box: comprehensive set of robust cach&eacute;s for templates, code fragments, messages and expressions.</li>
+          <li>Can be extended to modify (or disable) standard cach&eacute; strategies, and also create new ones for specific purposes.</li>
         </ul>
       </li>
       <li>Advantages obtained through extension:
