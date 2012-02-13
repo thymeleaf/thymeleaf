@@ -59,7 +59,7 @@ public final class SpringOptionFieldAttrProcessor
         final String value = element.getAttributeValue("value");
         if (value == null) {
             throw new TemplateProcessingException(
-                    "Attribute \"value\" is required in \"input(radio)\" tags");
+                    "Attribute \"value\" is required in \"option\" tags");
         }
         
         final boolean selected = 
