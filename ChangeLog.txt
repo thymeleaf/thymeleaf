@@ -1,3 +1,17 @@
+
+2.0.1
+=====
+- Fixed exception at SAX parser when comments appear at document-root level.
+- Fixed template name at exception reports when including fragments (the top-level template name
+  was appearing instead of the fragment's).
+- Fixed attribute management so that null-valued attributes are allowed and output as "".
+- Fixed Java6-specific code which disallowed Thymeleaf to compile and run correctly in Java 5.
+- Modified the "display if null" flag of th:value from false to true, in order to avoid problems with
+  parts of the framework (esp. form-binding relative) that require a "value" attribute in
+  <option> tags.
+- Fixed incorrect exception messages.
+
+
 2.0.0
 =====
 - Added th:switch/th:case attributes to the standard dialects, working in a way equivalent
