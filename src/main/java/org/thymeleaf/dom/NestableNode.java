@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.IdentityCounter;
 import org.thymeleaf.util.Validate;
 
@@ -107,7 +108,7 @@ public abstract class NestableNode extends Node {
         if (this.childrenLen == 0) {
             return Collections.emptyList();
         }
-        return Arrays.asList(Arrays.copyOf(this.children, this.childrenLen));
+        return Arrays.asList(ArrayUtils.copyOf(this.children, this.childrenLen));
     }
 
 
@@ -209,7 +210,7 @@ public abstract class NestableNode extends Node {
                 }
 
                 if (this.childrenLen >= this.children.length) {
-                    final Node[] newChildren = Arrays.copyOf(this.children, this.children.length * 2);
+                    final Node[] newChildren = ArrayUtils.copyOf(this.children, this.children.length * 2);
                     this.children = newChildren;
                 }
                 this.children[this.childrenLen++] = newChild;
@@ -273,7 +274,7 @@ public abstract class NestableNode extends Node {
             } else {
 
                 if (this.childrenLen >= this.children.length) {
-                    final Node[] newChildren = Arrays.copyOf(this.children, this.children.length * 2);
+                    final Node[] newChildren = ArrayUtils.copyOf(this.children, this.children.length * 2);
                     this.children = newChildren;
                 }
 

@@ -20,7 +20,6 @@
 package org.thymeleaf.util;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 
 /**
@@ -58,7 +57,7 @@ public final class IdentityCounter<T> implements Serializable {
     public void count(final T object) {
         if (this.countedLen >= this.countedSize) {
             this.countedSize *= 2;
-            this.counted = Arrays.copyOf(this.counted, this.countedSize);
+            this.counted = ArrayUtils.copyOf(this.counted, this.countedSize);
         }
         this.counted[this.countedLen++] = object;
     }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -27,6 +26,7 @@ import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.ResourcePool;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -307,7 +307,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             this.cdataMode = false;
             if(this.cdataBufferLen > 0) {
                 Node cdata = 
-                        new CDATASection(Arrays.copyOf(this.cdataBuffer, this.cdataBufferLen), false);
+                        new CDATASection(ArrayUtils.copyOf(this.cdataBuffer, this.cdataBufferLen), false);
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(cdata);
                 } else {
@@ -336,7 +336,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             if (this.cdataMode) {
                 
                 while (this.cdataBufferLen + length > this.cdataBuffer.length) {
-                    this.cdataBuffer = Arrays.copyOf(this.cdataBuffer, this.cdataBuffer.length * 2);
+                    this.cdataBuffer = ArrayUtils.copyOf(this.cdataBuffer, this.cdataBuffer.length * 2);
                 }
                 System.arraycopy(ch, start, this.cdataBuffer, this.cdataBufferLen, length);
                 this.cdataBufferLen += length;
@@ -344,7 +344,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             } else {
                 
                 while (this.textBufferLen + length > this.textBuffer.length) {
-                    this.textBuffer = Arrays.copyOf(this.textBuffer, this.textBuffer.length * 2);
+                    this.textBuffer = ArrayUtils.copyOf(this.textBuffer, this.textBuffer.length * 2);
                 }
                 System.arraycopy(ch, start, this.textBuffer, this.textBufferLen, length);
                 this.textBufferLen += length;
@@ -377,7 +377,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             if (!this.dtdMode) {
                 
                 final Comment comment = 
-                        new Comment(Arrays.copyOfRange(ch, start, start + length));
+                        new Comment(ArrayUtils.copyOfRange(ch, start, start + length));
                 
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(comment);
@@ -503,7 +503,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             if (this.textBufferLen > 0) {
 
                 final Node textNode = 
-                        new Text(Arrays.copyOf(this.textBuffer, this.textBufferLen), false);
+                        new Text(ArrayUtils.copyOf(this.textBuffer, this.textBufferLen), false);
                 
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(textNode);

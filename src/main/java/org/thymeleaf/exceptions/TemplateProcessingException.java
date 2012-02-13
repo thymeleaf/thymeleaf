@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.exceptions;
 
-import org.thymeleaf.TemplateEngine;
 
 
 /**
@@ -43,11 +42,11 @@ public class TemplateProcessingException extends TemplateEngineException {
     
     
     public TemplateProcessingException(final String message) {
-        this(message, TemplateEngine.threadTemplateName(), (Integer)null);
+        this(message, (String)null, (Integer)null);
     }
     
     public TemplateProcessingException(final String message, final Throwable cause) {
-        this(message, TemplateEngine.threadTemplateName(), (Integer)null, cause);
+        this(message, (String)null, (Integer)null, cause);
     }
     
     public TemplateProcessingException(final String message, final String templateName) {
@@ -106,7 +105,7 @@ public class TemplateProcessingException extends TemplateEngineException {
     public String getMessage() {
         
         final StringBuilder sb = new StringBuilder();
-        
+
         sb.append(super.getMessage());
         
         if (this.templateName != null) {

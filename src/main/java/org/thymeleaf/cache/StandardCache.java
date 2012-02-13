@@ -86,40 +86,13 @@ public final class StandardCache<K, V> implements ICache<K,V> {
     }
 
     public StandardCache(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final int maxSize, 
-            final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
-            final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, 0.75f, maxSize, entryValidityChecker, logger);
-    }
-
-    public StandardCache(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor, final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, loadFactor, -1, null, logger);
-    }
-
-    public StandardCache(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor,
-            final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
-            final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, loadFactor, -1, entryValidityChecker, logger);
-    }
-
-    public StandardCache(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor,
-            final int maxSize, final Logger logger) {
-        this(name, useSoftReferences, initialCapacity, loadFactor, maxSize, null, logger);
-    }
-
-    public StandardCache(final String name, final boolean useSoftReferences, 
-            final int initialCapacity, final float loadFactor,
-            final int maxSize, final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
+            final int initialCapacity, final int maxSize, final ICacheEntryValidityChecker<? super K, ? super V> entryValidityChecker, 
             final Logger logger) {
         
         super();
 
         Validate.notEmpty(name, "Name cannot be null or empty");
         Validate.isTrue(initialCapacity > 0, "Initial capacity must be > 0");
-        Validate.isTrue(loadFactor >= 0.0f && loadFactor <= 1.0f, "Load factor must be between 0 and 1");
         Validate.isTrue(maxSize != 0, "Cache max size must be either -1 (no limit) or > 0");
         
         this.name = name;
@@ -131,7 +104,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         this.traceExecution = (logger == null? false : logger.isTraceEnabled());
         
         this.dataContainer = 
-                new CacheDataContainer<K,V>(this.name, initialCapacity, loadFactor, maxSize, this.traceExecution, this.logger);
+                new CacheDataContainer<K,V>(this.name, initialCapacity, maxSize, this.traceExecution, this.logger);
         
         this.getCount = new AtomicLong(0);
         this.putCount = new AtomicLong(0);
@@ -339,13 +312,13 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         private int fifoPointer;
 
 
-        public CacheDataContainer(final String name, final int initialCapacity, final float loadFactor, 
+        public CacheDataContainer(final String name, final int initialCapacity, 
                 final int maxSize, final boolean traceExecution, final Logger logger) {
             
             super();
 
             this.name = name;
-            this.container = new ConcurrentHashMap<K,CacheEntry<V>>(initialCapacity, loadFactor);
+            this.container = new ConcurrentHashMap<K,CacheEntry<V>>(initialCapacity);
             this.maxSize = maxSize;
             this.sizeLimit = (maxSize < 0? false : true);
             if (this.sizeLimit) {

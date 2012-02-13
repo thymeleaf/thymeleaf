@@ -170,6 +170,44 @@ public final class ArrayUtils {
                 (componentClass == null? "" : (" of " + componentClass.getClass().getSimpleName())));
         
     }
+
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    public static <T,X> X[] copyOf(final T[] original, final int newLength, final Class<? extends X[]> newType) {
+        final X[] newArray = 
+                ((Object)newType == (Object)Object[].class)? 
+                        (X[]) new Object[newLength] : 
+                        (X[]) Array.newInstance(newType.getComponentType(), newLength);
+        System.arraycopy(original, 0, newArray, 0, Math.min(original.length, newLength));
+        return newArray;
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T[] copyOf(final T[] original, final int newLength) {
+        return (T[]) copyOf(original, newLength, original.getClass());
+    }
+    
+    
+    public static char[] copyOf(final char[] original, final int newLength) {
+        final char[] copy = new char[newLength];
+        System.arraycopy(original, 0, copy, 0, Math.min(original.length, newLength));
+        return copy;
+    }
+    
+    
+    public static char[] copyOfRange(final char[] original, final int from, final int to) {
+        final int newLength = (to - from);
+        if (newLength < 0) {
+            throw new IllegalArgumentException("Cannot copy array range with indexes " + from + " and " + to);
+        }
+        final char[] copy = new char[newLength];
+        System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
+        return copy;
+    }
+
     
     
     

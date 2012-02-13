@@ -93,14 +93,16 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
         
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        if (JAVASCRIPT_INLINE.equals(attributeValue.toLowerCase())) {
-            return StandardJavaScriptTextInliner.INSTANCE;
-        } else if (DART_INLINE.equals(attributeValue.toLowerCase())) {
-            return StandardDartTextInliner.INSTANCE;
-        } else if (TEXT_INLINE.equals(attributeValue.toLowerCase())) {
-            return StandardTextTextInliner.INSTANCE;
-        } else if (NONE_INLINE.equals(attributeValue.toLowerCase())) {
-            return null;
+        if (attributeValue != null) {
+            if (JAVASCRIPT_INLINE.equals(attributeValue.toLowerCase())) {
+                return StandardJavaScriptTextInliner.INSTANCE;
+            } else if (DART_INLINE.equals(attributeValue.toLowerCase())) {
+                return StandardDartTextInliner.INSTANCE;
+            } else if (TEXT_INLINE.equals(attributeValue.toLowerCase())) {
+                return StandardTextTextInliner.INSTANCE;
+            } else if (NONE_INLINE.equals(attributeValue.toLowerCase())) {
+                return null;
+            }
         }
         
         throw new TemplateProcessingException(

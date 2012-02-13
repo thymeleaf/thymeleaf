@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
+import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.PrefixUtils;
 import org.thymeleaf.util.Validate;
 
@@ -421,7 +422,6 @@ public final class Element extends NestableNode {
     public void setAttribute(final String name, final String value) {
         
         Validate.notNull(name, "Attribute name cannot be null");
-        Validate.notNull(value, "Attribute value (" + name + ") cannot be null");
         
         final Attribute attribute = new Attribute(name, value);
         final String attributeNormalizedName = attribute.getNormalizedName();
@@ -450,8 +450,8 @@ public final class Element extends NestableNode {
         
         if (this.attributesLen >= this.attributes.length) {
             final int newLength = this.attributesLen * 2;
-            final String[] newAttributeNormalizedNames = Arrays.copyOf(this.attributeNormalizedNames, newLength);
-            final Attribute[] newAttributes = Arrays.copyOf(this.attributes, newLength);
+            final String[] newAttributeNormalizedNames = ArrayUtils.copyOf(this.attributeNormalizedNames, newLength);
+            final Attribute[] newAttributes = ArrayUtils.copyOf(this.attributes, newLength);
             this.attributeNormalizedNames = newAttributeNormalizedNames;
             this.attributes = newAttributes;
         }
@@ -590,8 +590,8 @@ public final class Element extends NestableNode {
         final Element element = (Element) node;
         
         if (this.attributesLen > 0) {
-            element.attributeNormalizedNames = Arrays.copyOf(this.attributeNormalizedNames, this.attributesLen);
-            element.attributes = Arrays.copyOf(this.attributes, this.attributesLen);
+            element.attributeNormalizedNames = ArrayUtils.copyOf(this.attributeNormalizedNames, this.attributesLen);
+            element.attributes = ArrayUtils.copyOf(this.attributes, this.attributesLen);
             element.attributesLen = this.attributesLen;
         }
         

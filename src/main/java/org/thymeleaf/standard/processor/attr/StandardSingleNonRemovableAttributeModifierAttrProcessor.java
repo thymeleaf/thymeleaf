@@ -42,6 +42,7 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
                 "name",
                 "src",
                 "type",
+                "value"
         };
     
     

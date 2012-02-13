@@ -69,7 +69,7 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
             final String attributeName = this.matcher.getAttributeName(processorMatchingContext);
             final String attributeValue = ((Element)node).getAttributeValue(attributeName);
             this.logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in element \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, attributeValue, ((Element)node).getNormalizedName()});
+                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, (attributeValue == null? "" : attributeValue), ((Element)node).getNormalizedName()});
         }
         return processAttribute(arguments, (Element)node, this.matcher.getAttributeName(processorMatchingContext));
     }

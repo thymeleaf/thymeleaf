@@ -131,7 +131,6 @@ public final class StandardSingleRemovableAttributeModifierAttrProcessor
                 "target",
                 "title",
                 "usemap",
-                "value",
                 "valuetype",
                 "vspace",
                 "width",

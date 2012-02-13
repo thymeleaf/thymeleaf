@@ -21,8 +21,8 @@ package org.thymeleaf.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,10 +167,9 @@ public final class NumberUtils {
             if (minIntegerDigits != null) {
                 format.setMinimumIntegerDigits(minIntegerDigits.intValue());
             }
-            format.setRoundingMode(RoundingMode.FLOOR);
             format.setDecimalSeparatorAlwaysShown(decimalPointType != NumberPointType.NONE && fractionDigits.intValue() > 0);
             format.setGroupingUsed(thousandsPointType != NumberPointType.NONE);
-            format.setDecimalFormatSymbols(new NumberDecimalFormatSymbols(decimalPointType, thousandsPointType, locale));
+            format.setDecimalFormatSymbols(computeDecimalFormatSymbols(decimalPointType, thousandsPointType, locale));
                 
         } else {
             throw new IllegalArgumentException(
@@ -184,7 +183,51 @@ public final class NumberUtils {
 
     
     
-    
+    private static DecimalFormatSymbols computeDecimalFormatSymbols(
+            final NumberPointType decimalPointType, final NumberPointType thousandsPointType, final Locale locale) {
+
+        Validate.notNull(decimalPointType, "Decimal point type cannot be null");
+        Validate.notNull(thousandsPointType, "Thousands point type cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
+        
+        final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        
+        switch (decimalPointType) {
+            case POINT :
+                symbols.setDecimalSeparator('.');
+                break;
+            case COMMA :
+                symbols.setDecimalSeparator(',');
+                break;
+            case DEFAULT :
+                final DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
+                symbols.setDecimalSeparator(dfs.getDecimalSeparator());
+                break;
+            case NONE :
+                // This should never happen
+                symbols.setDecimalSeparator('?');
+                break;
+        }
+        switch (thousandsPointType) {
+            case POINT :
+                symbols.setGroupingSeparator('.');
+                break;
+            case COMMA :
+                symbols.setGroupingSeparator(',');
+                break;
+            case DEFAULT :
+                final DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
+                symbols.setGroupingSeparator(dfs.getGroupingSeparator());
+                break;
+            case NONE :
+                // This should never be shown
+                symbols.setGroupingSeparator('?');
+                break;
+        }
+        
+        return symbols;
+        
+    }
     
     
     
