@@ -62,26 +62,26 @@
       Thymeleaf Dialects are sets of features you can use in your templates. These features include:
     </p>
     <ul>
-      <li><b>Processing logic</b> specified via <i>tags</i> and <i>attributes</i>, which are
-          executed by <i>tag / attribute processors</i>.</li>
-      <li><b>DOCTYPE transformations</b> which allow the automatic conversion of the template's
+      <li><b>Processing logic</b> specified via <i>processors</i> that apply on specific
+             DOM nodes.</li>
+      <li><b>DOCTYPE translations</b> which allow the automatic conversion of the template's
           DOCTYPE declaration into a target one, thus allowing validation both before processing
           --against a DTD including the dialect's tags and attributes-- and after processing
           --against a DTD not including these, like e.g. a standard XHTML DTD.</li>
-      <li><b>DOCTYPE resolution entries</b> which are fed into Thymeleaf's template parser and allow
+      <li><b>DOCTYPE resolution entries</b> which are fed into Thymeleaf's template parsers and allow
           the resolution of DTD files for the validation of templates (if required) in an offline manner, 
           this is, without the need to perform remote HTTP connections and/or download anything.</li>
     </ul>
     <p>
-      All of these features are optional, and a dialect can specify only some of them. For example,
-      neither the Standard nor the SpringStandard dialects include any <i>tag processors</i>, which
-      is why all template features are written into <kbd>th:*</kbd> attributes when using any of these
-      dialects.
+      All of these features are optional, and a dialect can specify only some of them. For example, your
+      dialect might not need to specify any DOCTYPE translations because you do not plan to allow
+      the ability to validate templates against a DTD including your dialect's features.
     </p>
     <p>
-      By the way, that "<kbd>th</kbd>" in <kbd>th:*</kbd> is called the <b>dialect prefix</b>, and it
-      means that all tags and attributes processed by that dialect will start with
-      such prefix.
+      If you've seen fragments of code written in the <i>Standard Dialects</i>, you should have noticed that
+      the processable attributes start with <kbd>th:</kbd>. That "<kbd>th</kbd>" is called the 
+      <b>dialect prefix</b>, and it means that all tags and attributes processed by that dialect 
+      will start with such prefix.
     </p>
     <p>
       It is important also to note that <b>a Template Engine can be set several dialects at a time</b>,
@@ -104,13 +104,22 @@
 &lt;<b>p</b>&nbsp;hello:sayto=<span class="string">&quot;World&quot;</span>&gt;Hi&nbsp;ya!&lt;/<b>p</b>&gt;
     </code>
     
-    <h3>The attribute processor</h3>
+    <h3>The processor</h3>
     
     <p>
       First, we will have to create the attribute processor that will take care of displaying
-      our salutation message. All attribute processors implement the
-      <kbd>org.thymeleaf.processor.attr.IAttrProcessor</kbd> interface, but several convenience
-      abstract implementations exist that ease the development of each type of processor. 
+      our salutation message.
+    </p>
+    <p>
+      All attribute processors implement the
+      <kbd>org.thymeleaf.processor.IProcessor</kbd> interface &ndash;which marks them as 
+      <i>processors</i>&ndash; and specify a <i>matcher</i>
+      (<kbd>IProcessor.getMatcher()</kbd>) that implements the
+      <kbd>org.thymeleaf.processor.IAttributeNameProcessorMatcher</kbd> interface
+      &ndash;which specifically marks them as <i>attribute processors</i> and allows the
+      use of several engine optimizations&ndash;. However, several convenience
+      abstract implementations exist that not only implement the right interfaces, but also
+      ease the development of each type of processor. 
     </p>
     <p>
       Specifically, the <kbd>AbstractTextChildModifierAttrProcessor</kbd>
@@ -120,34 +129,30 @@
     </p>
     <code>
 
-<br />
+
+
 <b>public</b>&nbsp;<b>class</b>&nbsp;SayToAttrProcessor&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>extends</b>&nbsp;AbstractTextChildModifierAttrProcessor&nbsp;{
+<br />
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToAttrProcessor()&nbsp;{
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;sayto&#39;&nbsp;attributes.
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>(<span class="string">&quot;sayto&quot;</span>);
+
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;AttrApplicability&gt;&nbsp;getAttributeApplicabilities()&nbsp;{
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;sayto&#39;&nbsp;attributes.
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;AttrApplicability.createSetForAttrName(<span class="string">&quot;sayto&quot;</span>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Integer&nbsp;getPrecedence()&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>int</b>&nbsp;getPrecedence()&nbsp;{
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;A&nbsp;value&nbsp;of&nbsp;10000&nbsp;is&nbsp;higher&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
 
@@ -159,9 +164,11 @@
 </span><br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;same&nbsp;tag.
 </span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Integer.valueOf(10000);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;10000;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
@@ -172,7 +179,7 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&#39;AbstractTextChildModifierAttrProcessor&#39;,&nbsp;which&nbsp;takes&nbsp;care&nbsp;of&nbsp;the
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;DOM&nbsp;modifying&nbsp;stuff&nbsp;and&nbsp;allows&nbsp;us&nbsp;just&nbsp;to&nbsp;implement&nbsp;this&nbsp;&#39;getText(...)&#39;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;DOM&nbsp;modifying&nbsp;stuff&nbsp;and&nbsp;allows&nbsp;us&nbsp;just&nbsp;to&nbsp;implement&nbsp;<b>this</b>&nbsp;&#39;getText(...)&#39;
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;method&nbsp;to&nbsp;compute&nbsp;the&nbsp;text&nbsp;to&nbsp;be&nbsp;set&nbsp;as&nbsp;tag&nbsp;body.
@@ -182,30 +189,25 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;@Override
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;<b>final</b>&nbsp;Attr&nbsp;attribute,&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName,
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName)&nbsp;{
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeValue)&nbsp;{
 <br />
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;&quot;</span>&nbsp;&nbsp;+&nbsp;attributeValue&nbsp;+&nbsp;<span class="string">&quot;!&quot;</span>;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;&quot;</span>&nbsp;&nbsp;+&nbsp;element.getAttributeValue(attributeName)&nbsp;+&nbsp;<span class="string">&quot;!&quot;</span>;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
 
 <br />
+
+<br />
 }
 <br />
-<br />
-
 
     </code>
 
@@ -225,12 +227,13 @@
     <code>
 
 
-<br />
+
 <b>public</b>&nbsp;<b>class</b>&nbsp;HelloDialect&nbsp;<b>extends</b>&nbsp;AbstractDialect&nbsp;{
 <br />
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;HelloDialect()&nbsp;{
+
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
 <br />
@@ -283,28 +286,29 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;attribute&nbsp;processors.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;processors.
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;@Override
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;getAttrProcessors()&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;getProcessors()&nbsp;{
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;attrProcessors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IAttrProcessor&gt;();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;processors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IProcessor&gt;();
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attrProcessors.add(<b>new</b>&nbsp;SayToAttrProcessor());
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;attrProcessors;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processors.add(<b>new</b>&nbsp;SayToAttrProcessor());
 
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;processors;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
 
 <br />
-}
+
 <br />
+}
 <br />
 
 

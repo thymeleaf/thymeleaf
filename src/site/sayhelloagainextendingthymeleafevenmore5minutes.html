@@ -161,8 +161,8 @@
     <h2>Adding a new processor to our dialect</h2>
 
     <p>
-      The first thing we want to do is add a new <i>attribute processor</i> to our existing <kbd>HelloDialect</kbd>. For
-      this we modify the dialect's <kbd>getAttrProcessors()</kbd> method in order to include
+      The first thing we want to do is add a new <i>processor</i> to our existing <kbd>HelloDialect</kbd>. For
+      this we modify the dialect's <kbd>getProcessors()</kbd> method in order to include
       our new <kbd>SayToPlanetAttrProcessor</kbd> class: 
     </p>
 
@@ -182,23 +182,23 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;attribute&nbsp;processors.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;processors.
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;@Override
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;getAttrProcessors()&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;getProcessors()&nbsp;{
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IAttrProcessor&gt;&nbsp;attrProcessors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IAttrProcessor&gt;();
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;processors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IProcessor&gt;();
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attrProcessors.add(<b>new</b>&nbsp;SayToAttrProcessor());
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processors.add(<b>new</b>&nbsp;SayToAttrProcessor());
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attrProcessors.add(<b>new</b>&nbsp;SayToPlanetAttrProcessor());
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processors.add(<b>new</b>&nbsp;SayToPlanetAttrProcessor());
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;attrProcessors;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;processors;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
@@ -220,7 +220,7 @@
     <h2>Using expressions as attribute values</h2>
     
     <p>
-      Now we want to add to our attribute processor the ability of parsing and 
+      Now we want to add to our new processor the ability of parsing and 
       executing expressions in the same way we can do in the <i>Standard</i> and 
       <i>SpringStandard</i> dialects, this is, <i>Thymeleaf standard expressions</i>: 
     </p>
@@ -242,64 +242,62 @@
 <b>public</b>&nbsp;<b>class</b>&nbsp;SayToPlanetAttrProcessor&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>extends</b>&nbsp;AbstractTextChildModifierAttrProcessor&nbsp;{
-
 <br />
 
 <br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>private</b>&nbsp;<b>static</b>&nbsp;<b>final</b>&nbsp;String&nbsp;SAYTO_PLANET_MESSAGE&nbsp;=&nbsp;<span class="string">&quot;msg.helloplanet&quot;</span>;&nbsp;
+<br />
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToPlanetAttrProcessor()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;AttrApplicability&gt;&nbsp;getAttributeApplicabilities()&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToPlanetAttrProcessor()&nbsp;{
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;saytoplanet&#39;&nbsp;attributes.
 </span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;AttrApplicability.createSetForAttrName(<span class="string">&quot;saytoplanet&quot;</span>);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>(<span class="string">&quot;saytoplanet&quot;</span>);
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
 
+<br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Integer&nbsp;getPrecedence()&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>int</b>&nbsp;getPrecedence()&nbsp;{
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Higher&nbsp;(less-precedent)&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;SpringStandard&nbsp;dialect&nbsp;and&nbsp;also&nbsp;than&nbsp;&#39;sayto&#39;.
 
 </span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Integer.valueOf(11000);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;SpringStandard&nbsp;dialect&nbsp;and&nbsp;also&nbsp;than&nbsp;&#39;sayto&#39;.
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;11000;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;}
 <br />
 
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;@Override
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;<b>final</b>&nbsp;Attr&nbsp;attribute,&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeValue)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;
 <br />
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments,&nbsp;element.getAttributeValue(attributeName));
 
 <br />
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;planet&nbsp;&quot;</span>&nbsp;+&nbsp;planet;
 <br />
@@ -309,8 +307,12 @@
 <br />
 
 <br />
-}
+
 <br />
+
+<br />
+}
+
 <br />
     
     </code>
@@ -336,26 +338,20 @@
     </code>
     <p>
       ...by a message built from an externalized String that we must somehow obtain from our
-      code. The abstract parent class <kbd>AbstractAttrProcessor</kbd> offers three methods we 
+      code. The abstract parent class <kbd>AbstractProcessor</kbd> offers three methods we 
       can use for this:
     </p>
     <code>
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessage(
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessageForTemplate(
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
@@ -428,70 +424,68 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
     <code>
     
 <br />
-@Override
+&nbsp;&nbsp;&nbsp;&nbsp;@Override
 <br />
-<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;TemplateResolution&nbsp;templateResolution,&nbsp;<b>final</b>&nbsp;Document&nbsp;document,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;<b>final</b>&nbsp;Attr&nbsp;attribute,&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName,
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeValue)&nbsp;{
+&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;
 <br />
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName)&nbsp;{
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments,&nbsp;element.getAttributeValue(attributeName));
 
 <br />
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;&#39;getMessage(...)&#39;&nbsp;method&nbsp;will&nbsp;first&nbsp;&nbsp;to&nbsp;resolve&nbsp;the
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;message&nbsp;as&nbsp;a&nbsp;&#39;template&nbsp;message&#39;&nbsp;(one&nbsp;that&nbsp;is&nbsp;defined&nbsp;for&nbsp;a&nbsp;specific&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;template&nbsp;or&nbsp;templates,&nbsp;and&nbsp;that&nbsp;would&nbsp;be&nbsp;resolved,&nbsp;in&nbsp;a&nbsp;Spring&nbsp;MVC&nbsp;app,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;&#39;getMessage(...)&#39;&nbsp;method&nbsp;will&nbsp;first&nbsp;try&nbsp;to&nbsp;resolve&nbsp;the
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;message&nbsp;as&nbsp;a&nbsp;&#39;template&nbsp;message&#39;&nbsp;(one&nbsp;that&nbsp;is&nbsp;defined&nbsp;for&nbsp;a&nbsp;specific&nbsp;
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;Spring&#39;s&nbsp;MessageSource&nbsp;objects).
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;If&nbsp;not&nbsp;found,&nbsp;it&nbsp;will&nbsp;&nbsp;to&nbsp;resolve&nbsp;it&nbsp;as&nbsp;a&nbsp;&#39;processor&nbsp;message&#39;,&nbsp;a&nbsp;type
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;of&nbsp;messages&nbsp;meant&nbsp;to&nbsp;appear&nbsp;in&nbsp;.properties&nbsp;files&nbsp;by&nbsp;the&nbsp;side&nbsp;of&nbsp;the&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;template&nbsp;or&nbsp;templates,&nbsp;and&nbsp;that&nbsp;would&nbsp;be&nbsp;resolved,&nbsp;in&nbsp;a&nbsp;Spring&nbsp;MVC&nbsp;app,&nbsp;
 <br />
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;attribute&nbsp;processor&nbsp;itself&nbsp;(or&nbsp;any&nbsp;of&nbsp;its&nbsp;superclasses)&nbsp;and,&nbsp;if&nbsp;needed,&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;Spring&#39;s&nbsp;MessageSource&nbsp;objects).
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;be&nbsp;packaged&nbsp;along&nbsp;with&nbsp;it&nbsp;in&nbsp;a&nbsp;.jar&nbsp;file&nbsp;for&nbsp;better&nbsp;encapsulation&nbsp;of&nbsp;UI&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;If&nbsp;not&nbsp;found,&nbsp;it&nbsp;will&nbsp;try&nbsp;to&nbsp;resolve&nbsp;it&nbsp;as&nbsp;a&nbsp;&#39;processor&nbsp;message&#39;,&nbsp;a&nbsp;type
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;components.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;of&nbsp;messages&nbsp;meant&nbsp;to&nbsp;appear&nbsp;in&nbsp;.properties&nbsp;files&nbsp;by&nbsp;the&nbsp;side&nbsp;of&nbsp;the&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;attribute&nbsp;processor&nbsp;itself&nbsp;(or&nbsp;any&nbsp;of&nbsp;its&nbsp;superclasses)&nbsp;and,&nbsp;if&nbsp;needed,&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;message&nbsp;=&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;be&nbsp;packaged&nbsp;along&nbsp;with&nbsp;it&nbsp;in&nbsp;a&nbsp;.jar&nbsp;file&nbsp;for&nbsp;better&nbsp;encapsulation&nbsp;of&nbsp;UI&nbsp;
+
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessage(arguments,&nbsp;templateResolution,&nbsp;<span class="string">&quot;msg.helloplanet&quot;</span>,&nbsp;<b>new</b>&nbsp;Object[]&nbsp;{planet});
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;components.
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;message&nbsp;=&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessage(arguments,&nbsp;SAYTO_PLANET_MESSAGE,&nbsp;<b>new</b>&nbsp;Object[]&nbsp;{planet});
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;message;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;message;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-}
-<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
 <br />    
-    
+<br />
+
     </code>
 
     <p>
