@@ -2,6 +2,8 @@
 2.0.2
 =====
 - Fixed NullPointerException when getting message for class.
+- Worked around ArrayIndexOutOfBounds when executing #messages.* functions in OGNL (not SpringEL)
+  due to bug in OGNL implementation.
 
 
 2.0.1

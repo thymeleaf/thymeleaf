@@ -37,23 +37,79 @@ import org.thymeleaf.util.Validate;
  */
 public class Messages {
 
+    private static String[] NO_PARAMETERS = new String[0];
+    
     
     private Arguments arguments;
     
     
-    public String msg(final String messageKey, final Object... messageParameters) {
+    public String msg(final String messageKey) {
+        return msgWithParams(messageKey, NO_PARAMETERS);
+    }
+    
+    public String msg(final String messageKey, final Object messageParameter0) {
+        return msgWithParams(messageKey, new Object[] { messageParameter0 });
+    }
+
+    public String msg(final String messageKey, final Object messageParameter0, final Object messageParameter1) {
+        return msgWithParams(messageKey, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public String msg(final String messageKey, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return msgWithParams(messageKey, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public String msgWithParams(final String messageKey, final Object[] messageParameters) {
         return MessageResolutionUtils.resolveMessageForTemplate(
                 this.arguments, messageKey, messageParameters, true);
     }
+
     
     
-    public String msgOrNull(final String messageKey, final Object... messageParameters) {
+    
+    public String msgOrNull(final String messageKey) {
+        return msgOrNullWithParams(messageKey, NO_PARAMETERS);
+    }
+    
+    public String msgOrNull(final String messageKey, final Object messageParameter0) {
+        return msgOrNullWithParams(messageKey, new Object[] { messageParameter0 });
+    }
+
+    public String msgOrNull(final String messageKey, final Object messageParameter0, final Object messageParameter1) {
+        return msgOrNullWithParams(messageKey, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public String msgOrNull(final String messageKey, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return msgOrNullWithParams(messageKey, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public String msgOrNullWithParams(final String messageKey, final Object[] messageParameters) {
         return MessageResolutionUtils.resolveMessageForTemplate(
                 this.arguments, messageKey, messageParameters, false);
     }
+
     
     
-    public String[] arrayMsg(final Object[] messageKeys, final Object... messageParameters) {
+    
+    
+    
+    public String[] arrayMsg(final Object[] messageKeys) {
+        return arrayMsgWithParams(messageKeys, NO_PARAMETERS);
+    }
+    
+    public String[] arrayMsg(final Object[] messageKeys, final Object messageParameter0) {
+        return arrayMsgWithParams(messageKeys, new Object[] { messageParameter0 });
+    }
+
+    public String[] arrayMsg(final Object[] messageKeys, final Object messageParameter0, final Object messageParameter1) {
+        return arrayMsgWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public String[] arrayMsg(final Object[] messageKeys, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return arrayMsgWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public String[] arrayMsgWithParams(final Object[] messageKeys, final Object[] messageParameters) {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         final String[] result = new String[messageKeys.length];
         for (int i = 0; i < messageKeys.length; i++) {
@@ -65,7 +121,26 @@ public class Messages {
     }
     
     
-    public String[] arrayMsgOrNull(final Object[] messageKeys, final Object... messageParameters) {
+    
+    
+    
+    public String[] arrayMsgOrNull(final Object[] messageKeys) {
+        return arrayMsgOrNullWithParams(messageKeys, NO_PARAMETERS);
+    }
+    
+    public String[] arrayMsgOrNull(final Object[] messageKeys, final Object messageParameter0) {
+        return arrayMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0 });
+    }
+
+    public String[] arrayMsgOrNull(final Object[] messageKeys, final Object messageParameter0, final Object messageParameter1) {
+        return arrayMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public String[] arrayMsgOrNull(final Object[] messageKeys, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return arrayMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public String[] arrayMsgOrNullWithParams(final Object[] messageKeys, final Object[] messageParameters) {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         final String[] result = new String[messageKeys.length];
         for (int i = 0; i < messageKeys.length; i++) {
@@ -76,30 +151,113 @@ public class Messages {
         return result;
     }
 
+
     
-    public List<String> listMsg(final List<String> messageKeys, final Object... messageParameters) {
+    
+
+    
+    public List<String> listMsg(final List<String> messageKeys) {
+        return listMsgWithParams(messageKeys, NO_PARAMETERS);
+    }
+    
+    public List<String> listMsg(final List<String> messageKeys, final Object messageParameter0) {
+        return listMsgWithParams(messageKeys, new Object[] { messageParameter0 });
+    }
+
+    public List<String> listMsg(final List<String> messageKeys, final Object messageParameter0, final Object messageParameter1) {
+        return listMsgWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public List<String> listMsg(final List<String> messageKeys, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return listMsgWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public List<String> listMsgWithParams(final List<String> messageKeys, final Object[] messageParameters) {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         return doMsg(true, messageKeys, messageParameters);
     }
 
+
+
     
-    public List<String> listMsgOrNull(final List<String> messageKeys, final Object... messageParameters) {
+    
+    
+    public List<String> listMsgOrNull(final List<String> messageKeys) {
+        return listMsgOrNullWithParams(messageKeys, NO_PARAMETERS);
+    }
+    
+    public List<String> listMsgOrNull(final List<String> messageKeys, final Object messageParameter0) {
+        return listMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0 });
+    }
+
+    public List<String> listMsgOrNull(final List<String> messageKeys, final Object messageParameter0, final Object messageParameter1) {
+        return listMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public List<String> listMsgOrNull(final List<String> messageKeys, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return listMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public List<String> listMsgOrNullWithParams(final List<String> messageKeys, final Object[] messageParameters) {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         return doMsg(false, messageKeys, messageParameters);
     }
 
     
-    public Set<String> setMsg(final Set<String> messageKeys, final Object... messageParameters) {
+
+    
+    
+    
+    public Set<String> setMsg(final Set<String> messageKeys) {
+        return setMsgWithParams(messageKeys, NO_PARAMETERS);
+    }
+    
+    public Set<String> setMsg(final Set<String> messageKeys, final Object messageParameter0) {
+        return setMsgWithParams(messageKeys, new Object[] { messageParameter0 });
+    }
+
+    public Set<String> setMsg(final Set<String> messageKeys, final Object messageParameter0, final Object messageParameter1) {
+        return setMsgWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public Set<String> setMsg(final Set<String> messageKeys, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return setMsgWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public Set<String> setMsgWithParams(final Set<String> messageKeys, final Object[] messageParameters) {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         return new LinkedHashSet<String>(doMsg(true, messageKeys, messageParameters));
     }
 
     
-    public Set<String> setMsgOrNull(final Set<String> messageKeys, final Object... messageParameters) {
+    
+    
+    
+    public Set<String> setMsgOrNull(final Set<String> messageKeys) {
+        return setMsgOrNullWithParams(messageKeys, NO_PARAMETERS);
+    }
+    
+    public Set<String> setMsgOrNull(final Set<String> messageKeys, final Object messageParameter0) {
+        return setMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0 });
+    }
+
+    public Set<String> setMsgOrNull(final Set<String> messageKeys, final Object messageParameter0, final Object messageParameter1) {
+        return setMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1 });
+    }
+
+    public Set<String> setMsgOrNull(final Set<String> messageKeys, final Object messageParameter0, final Object messageParameter1, final Object messageParameter2) {
+        return setMsgOrNullWithParams(messageKeys, new Object[] { messageParameter0, messageParameter1, messageParameter2 });
+    }
+    
+    public Set<String> setMsgOrNullWithParams(final Set<String> messageKeys, final Object[] messageParameters) {
         Validate.notNull(messageKeys, "Message keys cannot be null");
         return new LinkedHashSet<String>(doMsg(false, messageKeys, messageParameters));
     }
 
+    
+    
+    
+    
     
     
     private List<String> doMsg(final boolean returnStringAlways, final Iterable<String> messageKeys, final Object... messageParameters) {
