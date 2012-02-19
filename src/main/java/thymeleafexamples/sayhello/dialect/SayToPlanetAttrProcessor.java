@@ -19,16 +19,10 @@
  */
 package thymeleafexamples.sayhello.dialect;
 
-import java.util.Set;
-
 import org.thymeleaf.Arguments;
-import org.thymeleaf.processor.applicability.AttrApplicability;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-import org.thymeleaf.templateresolver.TemplateResolution;
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class SayToPlanetAttrProcessor 
         extends AbstractTextChildModifierAttrProcessor {
@@ -37,32 +31,26 @@ public class SayToPlanetAttrProcessor
 
     
     public SayToPlanetAttrProcessor() {
-        super();
-    }
-    
-    
-    public Set<AttrApplicability> getAttributeApplicabilities() {
         // Only execute this processor for 'saytoplanet' attributes.
-        return AttrApplicability.createSetForAttrName("saytoplanet");
+        super("saytoplanet");
     }
 
     
-    public Integer getPrecedence() {
+    public int getPrecedence() {
         // Higher (less-precedent) than any attribute in the
         // SpringStandard dialect and also than 'sayto'.
-        return Integer.valueOf(11000);
+        return 11000;
     }
 
 
     
     @Override
-    protected String getText(final Arguments arguments,
-            final TemplateResolution templateResolution, final Document document,
-            final Element element, final Attr attribute, final String attributeName,
-            final String attributeValue) {
-
+    protected String getText(final Arguments arguments, final Element element, 
+            final String attributeName) {
+        
         final String planet =
-            (String) StandardExpressionProcessor.processExpression(arguments, templateResolution, attributeValue);
+            (String) StandardExpressionProcessor.processExpression(
+                    arguments, element.getAttributeValue(attributeName));
 
         /*
          * This 'getMessage(...)' method will first try to resolve the
@@ -77,11 +65,12 @@ public class SayToPlanetAttrProcessor
          * components.
          */
         final String message = 
-            getMessage(arguments, templateResolution, SAYTO_PLANET_MESSAGE, new Object[] {planet});
+            getMessage(arguments, SAYTO_PLANET_MESSAGE, new Object[] {planet});
         
         return message;
         
     }
+
 
 
 }
