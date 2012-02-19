@@ -234,7 +234,7 @@ public final class MessageResolutionUtils {
         final List<Properties> messages = new ArrayList<Properties>();
         for (final String messageResourceName : messageResourceNames) {
             final InputStream messageFileInputStream =
-                usedResourceResolver.getResourceAsStream(arguments.getTemplateProcessingParameters(), messageResourceName);
+                usedResourceResolver.getResourceAsStream((arguments == null? null : arguments.getTemplateProcessingParameters()), messageResourceName);
             if (messageFileInputStream != null) {
                 messages.add(loadMessages(messageFileInputStream));
                 if (logger.isDebugEnabled()) {

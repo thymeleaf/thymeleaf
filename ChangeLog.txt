@@ -1,4 +1,9 @@
 
+2.0.2
+=====
+- Fixed NullPointerException when getting message for class.
+
+
 2.0.1
 =====
 - Fixed exception at SAX parser when comments appear at document-root level.
