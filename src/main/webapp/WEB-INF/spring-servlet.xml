@@ -15,12 +15,20 @@
 			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
             http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring
             http://ehcache-spring-annotations.googlecode.com/svn/schema/ehcache-spring/ehcache-spring-1.1.xsd">
+    
+            
 	<!-- Use spring servlet for all requests, including static resources -->
     <mvc:default-servlet-handler/>
+    
+    
 	<!-- Use @MVC annotations -->
     <mvc:annotation-driven />
+    
+    
 	<!-- User @Controller, @Service... annotations -->
     <context:component-scan base-package="thymeleafexamples.springsecurity" />
+    
+    
 	<!-- Thymeleaf template engine -->
     <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
         <property name="cacheable" value="true" />
@@ -28,12 +36,14 @@
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
     </bean>
+    
     <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
         <property name="templateResolver" ref="templateResolver" />
-        <property name="parsedTemplateCacheSize" value="100" />
     </bean>
+    
     <bean id="viewResolver" class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
         <property name="templateEngine" ref="templateEngine" />
         <property name="characterEncoding" value="UTF-8" />
     </bean>
+    
 </beans>
