@@ -50,7 +50,8 @@
         <ul>
           <li><a href="#where-come-from">Where does Thymeleaf come from? Is it made or backed by any software company?</a>.</li>
           <li><a href="#does-offer-support">Does Thymeleaf offer any type of commercial support?</a></li>
-          <li><a href="is-it-stable">Is it stable? Can it be considered production-ready?</a></li>
+          <li><a href="#is-it-stable">Is it stable? Can it be considered production-ready?</a></li>
+          <li><a href="#versioning-policy">What is the project's versioning policy?</a></li>
           <li><a href="#how-can-i-contribute">How can I contribute to Thymeleaf?</a></li>
         </ul>
       </li>
@@ -107,6 +108,26 @@
     <p>
       Yes, all stable (non-beta) releases can be considered production-ready. 
     </p>
+    
+
+    <h3><a id="versioning-policy">What is the project's versioning policy?</a></h3>
+    
+    <p>
+      Thymeleaf version numbers have three components: <kbd>x.y.z</kbd> (like: <kbd>2.0.1</kbd>). 
+    </p>
+    <ul>
+      <li><kbd>x</kbd> is the <b>major version number</b>. A change in this number means a rewrite
+          of the core or architecture, or an important amount of changes in the library's APIs which
+          might break backwards compatibility and/or legacy support.</li>
+      <li><kbd>y</kbd> is the <b>minor version number</b>. A change in this number means a moderate
+          set of changes has been applied, offering new features and improvements without changing
+          APIs significantly and providing <i>deprecation</i> periods for all changed features in
+          order to allow for a period of adaptation to the new interfaces.</li>
+      <li><kbd>z</kbd> is the <b>build/bugfix version number</b>. A change in this number means
+          the fix of some bugs or the addition of a series of performance or documentation
+          improvements. <i>Bugfix versions</i> should modify no APIs and be therefore
+          <i>drop-in</i> replacements for any previous version within the same major+minor version.</li>
+    </ul>
 
 
     <h3><a id="how-can-i-contribute">How can I contribute to Thymeleaf?</a></h3>
