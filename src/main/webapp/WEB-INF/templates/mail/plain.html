@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Template for plain text mail</title>
+    <meta charset="utf-8" />
+</head>
+<body th:inline="text">
+Hello, [[${name}]]!
+
+You have been successfully subscribed to the Fake newsletter on [[${#dates.format(subscriptionDate)}]].
+
+Your hobbies are: [[${hobbies}]].
+
+Regards,
+    The Thymeleaf Team
+</body>
+</html>

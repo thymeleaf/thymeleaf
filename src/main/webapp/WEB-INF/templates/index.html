@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Thymeleafexamples - Spring mail</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <h1>Thymeleafexamples - Spring mail</h1>
+        <p>This is a demo of Thymeleaf and Spring-mail integration.</p>
+        <h2>Plain text email</h2>
+        <form action="index.html" th:action="@{/sendTextMail}" method="post">
+            <label for="textPecipient">To:</label>
+            <input type="email" id="textPecipient" name="recipient" placeholder="example@example.com" required="required" /> <br />
+            <input type="submit" value="Send mail" />
+        </form>
+        <h2>HTML mail with an attachment</h2>
+        <form action="index.html" th:action="@{/sendMailWithAttachment}" method="post" enctype="multipart/form-data">
+            <label for="attachRecipient">To:</label>
+            <input type="email" id="attachRecipient" name="recipient" placeholder="example@example.com" required="required" /> <br />
+            <label for="document">Attachment:</label>
+            <input type="file" id="document" name="document" required="required" /> <br />
+            <input type="submit" value="Send mail" />
+        </form>
+        <h2>HTML mail with an embedded image</h2>
+        <form action="index.html" th:action="@{/sendMailWithInline}" method="post" enctype="multipart/form-data">
+            <label for="imageRecipient">To:</label>
+            <input type="email" id="imageRecipient" name="recipient" placeholder="example@example.com" required="required" /> <br />
+            <label for="image">Embedded image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required="required" /> <br />
+            <input type="submit" value="Send mail" />
+        </form>
+    </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Template for mail with attachment</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <p>
+            Hello, <b th:text="${name}">Peter</b>!
+        </p>
+        <p>
+            You have been successfully subscribed to the <b>Fake newsletter</b> on
+            <span th:text="${#dates.format(subscriptionDate)}">28-12-2012</span>
+        </p>
+        <p>Your hobbies are:</p>
+        <ul>
+            <li th:each="hobby : ${hobbies}" th:text="${hobby}">Cinema</li>
+            <li th:remove="all">Music</li>
+            <li th:remove="all">Football</li>
+        </ul>
+        <p>
+            You could find <b>your uploaded document</b> attached to this mail.
+        </p>
+        <p>
+            Regards, <br />
+            &emsp; <em>The Thymeleaf Team</em>
+        </p>
+    </body>
+</html>
