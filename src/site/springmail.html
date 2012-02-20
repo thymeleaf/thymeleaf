@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Sending HTML email with Thymeleaf and Spring - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="features.html" title="Features">Features</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      articles
+      ::
+      <span class="current">sending html email with thymeleaf and spring</span>
+   </div>
+
+
+   <div id="content">
+
+     <h1>Sending HTML email with Thymeleaf and Spring</h1>
+
+     <p id="author">
+       <i>By Jos&eacute; Miguel Samper &lt;jmiguelsamper AT users.sourceforge.net&gt;</i>
+     </p>
+
+     <p>
+         In this article we will show how to use Thymeleaf templates for composing HTML email, and
+         we will integrate it with Spring Mail utilities in order to configure a simple but powerful email
+         templating system.
+     </p>
+
+     <h2>Prerequisites</h2>
+
+     <p>
+         We assume you are familiar with Thymeleaf and Spring, and you have a working application using
+         these technologies.
+         We will not dive into Spring Mail details, for further information please take a look at the
+         <a href="http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/mail.html">Email chapter on the Spring Documentation</a>.
+     </p>
+
+     <h2>Sending email with Spring</h2>
+
+     <p>
+         First, you need to configure a <b>MailSender</b> class in your Spring configuration, as in the
+         following XML. <br />
+         Remember setting your SMTP IP address instead of <b>127.0.0.1</b>.
+     </p>
+
+    <code>
+        &lt;<b>bean</b> id=<span class="string">&quot;mailSender&quot;</span>
+            class=<span class="string">&quot;org.springframework.mail.javamail.JavaMailSenderImpl&quot;</span>&gt;
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b> name=<span class="string">&quot;host&quot;</span>
+            value=<span class="string">&quot;127.0.0.1&quot;</span> /&gt;
+        <br />
+        &lt;/<b>bean</b>&gt;
+    </code>
+
+    <p>
+        Spring provides a class called <b>MimeMessageHelper</b> to facilitate the creation of mail messages.
+        Let's see how to use it together with <b>MailSender</b>.
+    </p>
+
+    <code>
+        MimeMessage mimeMessage = mailSender.createMimeMessage(); <br />
+        MimeMessageHelper message = <b>new</b> MimeMessageHelper(mimeMessage); <br />
+        message.setFrom(<span class="string">&quot;sender@example.com&quot;</span>); <br />
+        message.setTo(<span class="string">&quot;recipient@example.com&quot;</span>); <br />
+        message.setSubject(<span class="string">&quot;This is the message subject&quot;</span>); <br />
+        message.setText(<span class="string">&quot;This is the message body&quot;</span>); <br />
+        mailSender.send(mimeMessage);
+    </code>
+
+     <h2>Thymeleaf email templates</h2>
+
+     <p>
+         Thymeleaf is a nice template engine for HTML, so why do not use it for HTML emails? <br />
+         In the following snippet we create a Thymeleaf <kbd>WebContext</kbd> object, populate it with some
+         example variables, and finally process the <kbd>inline.html</kbd> template.
+     </p>
+
+    <code>
+        WebContext ctx = <b>new</b> WebContext(httpServletRequest, servletContext, locale); <br />
+        ctx.setVariable(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;John Smith&quot;</span>); <br />
+        ctx.setVariable(<span class="string">&quot;subscriptionDate&quot;</span>, <b>new</b> Date()); <br />
+        ctx.setVariable(<span class="string">&quot;hobbies&quot;</span>, Arrays.asList(
+            <span class="string">&quot;Cinema&quot;</span>, <span class="string">&quot;Sports&quot;</span>, <span class="string">&quot;Music&quot;</span>)); <br />
+        ctx.setVariable(<span class="string">&quot;image&quot;</span>, image); <br />
+        String messageBody = templateEngine.process(<span class="string">&quot;inline.html&quot;</span>, ctx);
+    </code>
+
+     <p>
+         The <em>image</em> variable is a <kbd>org.springframework.web.multipart.MultipartFile</kbd> object, which
+         contains the image bytes, file name and mime type.
+     </p>
+
+     <p>
+         Our <kbd>inline.html</kbd> template file looks like:
+     </p>
+
+    <code>
+        &lt;<b>!DOCTYPE</b> html&gt; <br />
+        &lt;<b>html</b> xmlns=<span class="string">&quot;http://www.w3.org/1999/xhtml&quot;</span> xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>head</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>title</b>&gt;Template for mail with inline image&lt;/<b>title</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>meta</b> charset=<span class="string">&quot;utf-8&quot;</span> /&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>head</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>body</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hello, &lt;<b>b</b> th:text=<span class="string">&quot;${name}&quot;</span>&gt;Peter&lt;/<b>b</b>&gt;! <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You have been successfully subscribed to the &lt;<b>b</b>&gt;Fake newsletter&lt;/<b>b</b>&gt; on <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>span</b> th:text=<span class="string">&quot;${#dates.format(subscriptionDate)}&quot;</span>&gt;28-12-2012&lt;/<b>span</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>p</b>&gt;Your hobbies are:&lt;/<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>ul</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>li</b> th:each=<span class="string">&quot;hobby : ${hobbies}&quot;</span> th:text=<span class="string">&quot;${hobby}&quot;</span>&gt;Cinema&lt;/<b>li</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>li</b> th:remove=<span class="string">&quot;all&quot;</span>&gt;Music&lt;/<b>li</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>li</b> th:remove=<span class="string">&quot;all&quot;</span>&gt;Football&lt;/<b>li</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>ul</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; You can find &lt;<b>b</b>&gt;your uploaded image&lt;/<b>b</b>&gt; just below this text. <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>img</b> src=<span class="string">&quot;sample.png&quot;</span> th:src=<span class="string">&quot;'cid:' + ${image.name}&quot;</span> /&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Regards, &lt;<b>br</b> /&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;<b>em</b>&gt;The Thymeleaf Team&lt;/<b>em</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>p</b>&gt; <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; &lt;/<b>body</b>&gt; <br />
+        &lt;/<b>html</b>&gt; <br />
+    </code>
+
+    <p>
+        Let's remark some points:
+    </p>
+
+    <ul>
+        <li>
+            The former template is fully WYSIWYG; you can test it with just a browser. That's better than sending an email
+            to see the result.
+        </li>
+        <li>
+            We can use all Thymeleaf features. In this example, we use <kbd>th:each</kbd> to iterate over a list and <kbd>#dates</kbd>
+            to format a date, but you could also use internationalization or inlining.
+        </li>
+        <li>
+            The <kbd>img</kbd> element has a hardcoded <kbd>src</kbd> value nice for prototyping, but it will be substituted at runtime by something like
+            <kbd>cid:image.jpg</kbd> matching the attached image filename.
+        </li>
+    </ul>
+
+    <h2>All together</h2>
+
+    <p>
+        Finally, the following code shows all Java code joined into a Spring Controller:
+    </p>
+
+    <code>
+        @RequestMapping(value = <span class="string">&quot;/sendMail&quot;</span>, method = RequestMethod.POST) <br />
+        <b>public</b> String sendMail(@RequestParam(<span class="string">&quot;recipient&quot;</span>) String recipient, <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; @RequestParam(<span class="string">&quot;image&quot;</span>) MultipartFile image, <br />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HttpServletRequest request, Locale locale) <b>throws</b> MessagingException, IOException { <br />
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; <span class="comment">// Prepare message</span> <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; MimeMessage mimeMessage = this.mailSender.createMimeMessage(); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; MimeMessageHelper message = <b>new</b> MimeMessageHelper(mimeMessage, <b>true</b>, <span class="string">&quot;UTF-8&quot;</span>); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; message.setSubject(<span class="string">&quot;Example mail with embedded image&quot;</span>); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; message.setFrom(<span class="string">&quot;sender@example.com&quot;</span>); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; message.setTo(recipient); <br />
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; <span class="comment">// Message body from Thymeleaf template</span> <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; WebContext ctx = <b>new</b> WebContext(request, this.context, locale); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; ctx.setVariable(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;John Smith&quot;</span>); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; ctx.setVariable(<span class="string">&quot;subscriptionDate&quot;</span>, <b>new</b> Date()); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; ctx.setVariable(<span class="string">&quot;hobbies&quot;</span>, Arrays.asList(<span class="string">&quot;Cinema&quot;</span>,
+                    <span class="string">&quot;Sports&quot;</span>, <span class="string">&quot;Music&quot;</span>)); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; ctx.setVariable(<span class="string">&quot;image&quot;</span>, image); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; message.setText(this.templateEngine.process(<span class="string">&quot;inline.html&quot;</span>, ctx), <b>true</b>); <br />
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; <span class="comment">// Inline image</span> <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; InputStreamSource imageSource = <b>new</b> ByteArrayResource(image.getBytes()); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; message.addInline(image.getName(), imageSource, image.getContentType()); <br />
+        <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; <span class="comment">// Send mail</span> <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; this.mailSender.send(mimeMessage); <br />
+        &nbsp;&nbsp;&nbsp;&nbsp; <b>return</b> <span class="string">&quot;redirect:sent.html&quot;</span>; <br />
+        <br />
+        }
+    </code>
+
+    <p>
+        Note that we have used a <kbd>org.springframework.core.io.ByteArrayResource</kbd> object to
+        attach an image uploaded by the user. <br />
+        This class would be also appropiate if the image is stored into a database. <br />
+        You could use <kbd>FileSystemResource</kbd> class to attach a filesystem image,
+        or <kbd>UrlResource</kbd> to attach a remote file.
+    </p>
+    
+    <h2>More examples</h2>
+
+    <p>
+        For the sake of brevity, we do not show more examples in this article, but you are encouraged to download the
+        full source code examples for this article. They contain working examples for:
+    </p>
+
+    <ul>
+        <li>Sending plain text email</li>
+        <li>Sending HTML email with attachments</li>
+        <li>Sending HTML email with embedded images</li>
+    </ul>
+
+    <p>
+        The full working example code used in this article is available for download at
+        the <a href="documentation.html">project's documentation page</a>.
+    </p>
+
+    <p>
+        <b>Note:</b> Neither this article nor the example code performs any special treatment for exceptions, in order to
+        focus just on the subject matter. You would probably want to catch the exceptions so as to show nice error
+        messages.
+    </p>
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; 2011 The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
+  </div>
+  </body>
+  
+</html>
