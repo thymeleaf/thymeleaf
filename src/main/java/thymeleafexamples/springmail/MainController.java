@@ -87,8 +87,7 @@ public class MainController {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent =
-                this.templateEngine.process("mail/email-simple.html", ctx);
+        final String htmlContent = this.templateEngine.process("email-simple.html", ctx);
         message.setText(htmlContent, true /* isHtml */);
         
         // Send email
@@ -127,8 +126,7 @@ public class MainController {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent =
-                this.templateEngine.process("mail/email-withattachment.html", ctx);
+        final String htmlContent = this.templateEngine.process("email-withattachment.html", ctx);
         message.setText(htmlContent, true /* isHtml */);
         
         // Add the attachment
@@ -173,8 +171,7 @@ public class MainController {
         message.setTo(recipientEmail);
 
         // Create the HTML body using Thymeleaf
-        final String htmlContent =
-                this.templateEngine.process("mail/email-inlineimage.html", ctx);
+        final String htmlContent = this.templateEngine.process("email-inlineimage.html", ctx);
         message.setText(htmlContent, true /* isHtml */);
         
         // Add the inline image, referenced from the HTML code as "cid:{image.name}"

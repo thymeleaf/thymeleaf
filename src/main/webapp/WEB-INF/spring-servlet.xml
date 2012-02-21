@@ -56,18 +56,28 @@
     </bean>
     
     
-    <!-- Thymeleaf template engine -->
-    <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-        <property name="cacheable" value="true" />
+    <!-- THYMELEAF: Template Resolver for email templates -->
+    <bean id="emailTemplateResolver" class="org.thymeleaf.templateresolver.ClassLoaderTemplateResolver">
+        <property name="prefix" value="/mail/" />
+        <property name="templateMode" value="HTML5" />
+        <property name="characterEncoding" value="UTF-8" />
+        <property name="order" value="1" />
+    </bean>
+    
+    <!-- THYMELEAF: Template Resolver for webapp pages -->
+    <bean id="webTemplateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
         <property name="prefix" value="/WEB-INF/templates/" />
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
+        <property name="order" value="2" />
     </bean>
     
+    <!-- THYMELEAF: Template Engine (Spring3-specific version) -->
     <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
         <property name="templateResolver" ref="templateResolver" />
     </bean>
     
+    <!-- THYMELEAF: View Resolver (implementation of Spring's ViewResolver interface) -->
     <bean id="viewResolver" class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
         <property name="templateEngine" ref="templateEngine" />
         <property name="characterEncoding" value="UTF-8" />
