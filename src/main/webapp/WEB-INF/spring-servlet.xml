@@ -58,7 +58,7 @@
     
     <!-- THYMELEAF: Template Resolver for email templates -->
     <bean id="emailTemplateResolver" class="org.thymeleaf.templateresolver.ClassLoaderTemplateResolver">
-        <property name="prefix" value="/mail/" />
+        <property name="prefix" value="mail/" />
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
         <property name="order" value="1" />
