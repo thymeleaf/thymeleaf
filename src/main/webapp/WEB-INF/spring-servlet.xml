@@ -74,7 +74,12 @@
     
     <!-- THYMELEAF: Template Engine (Spring3-specific version) -->
     <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
-        <property name="templateResolver" ref="templateResolver" />
+        <property name="templateResolvers">
+          <set>
+            <ref bean="emailTemplateResolver" />
+            <ref bean="webTemplateResolver" />
+          </set>
+        </property>
     </bean>
     
     <!-- THYMELEAF: View Resolver (implementation of Spring's ViewResolver interface) -->

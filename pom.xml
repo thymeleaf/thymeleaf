@@ -57,6 +57,14 @@
         <role>Project developer</role>
       </roles>
     </developer>
+    <developer>
+      <id>dfernandez</id>
+      <name>Daniel Fernandez</name>
+      <email>dfernandez AT users.sourceforge.net</email>
+      <roles>
+        <role>Project admin</role>
+      </roles>
+    </developer>
   </developers>
   
 
