@@ -27,11 +27,19 @@
 
     <!-- Read configuration properties -->
     <context:property-placeholder location="classpath:configuration.properties"/>
+
+
+    <!-- Message externalization/internationalization -->
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+      <property name="basename" value="Messages" />
+    </bean>
+    
+    
     
     <!-- Multipart form support -->
     <bean id="multipartResolver"
         class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-        <property name="maxUploadSize" value="2097152" /> <!-- 2 Mb -->
+        <property name="maxUploadSize" value="10485760" /> <!-- 10 Mb -->
     </bean>
     
     
