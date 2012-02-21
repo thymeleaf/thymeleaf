@@ -51,7 +51,7 @@
 
      <p>
        In this article we will show how to use Thymeleaf templates for composing email messages of
-       several kinds, and we will integrate this with Spring Mail utilities in order to configure a 
+       several kinds, and we will integrate this with Spring's email utilities in order to configure a 
        simple but powerful email system.
      </p>
      <p>
@@ -81,7 +81,7 @@
      <h2>Sending email with Spring</h2>
 
      <p>
-         First, you need to configure a <b>MailSender</b> class in your Spring configuration, as in the
+         First, you need to configure a <b>Mail Sender</b> object in your Spring configuration, as in the
          following XML (your specific configuration needs might differ):
      </p>
 
@@ -112,8 +112,8 @@
     </code>
 
     <p>
-        Spring provides a class called <kbd>MimeMessageHelper</kbd> to facilitate the creation of mail messages.
-        Let's see how to use it together with <kbd>MailSender</kbd>.
+        Spring provides a class called <kbd>MimeMessageHelper</kbd> to ease the creation of email messages.
+        Let's see how to use it together with our <kbd>mailSender</kbd>.
     </p>
 
     <code>
@@ -129,7 +129,7 @@
      <h2>Thymeleaf HTML email templates</h2>
 
      <p>
-       Using Thymeleaf for processing our email templates into message texts would allow us to use
+       Using Thymeleaf for processing our email templates would allow us to use
        some interesting features:
      </p>
      <ul>
@@ -142,8 +142,8 @@
      </ul>
      <p>
        Also, given the fact that Thymeleaf has no dependencies on the servlet API, there would be <b>no need at all
-       to create or send this HTML email from a web application</b>. The techniques explained here could be used seamlessly
-       in a standalone application with no web UI.
+       to create or send this HTML email from a web application</b>. The techniques explained here could be used with little
+       or no change in a standalone application with no web UI.
      </p>
      
      <h3>Our goals</h3>
@@ -161,7 +161,7 @@
      
      <p>
        In order to process our templates, we will need to configure our <kbd>TemplateEngine</kbd> at
-       out <kbd>spring-servlet.xml</kbd>:
+       <kbd>spring-servlet.xml</kbd>:
      </p>
      
      <code>
@@ -248,10 +248,10 @@
      </code>
      
      <p>
-       Note that we configured two <i>template resolvers</i> for our engine: one for the email templates
+       Note that we have configured two <i>template resolvers</i> for our engine: one for the email templates
        &ndash;which come from our resources directory and therefore are loaded by a <kbd>ClassLoaderTemplateResolver</kbd>&ndash;
        and another one for the web templates that support the example application itself &ndash;which loads its
-       templates from the <i>servlet context</i>, as most Spring web applications.
+       templates from the <i>servlet context</i>, as most Spring web applications do.
      </p>
      <p>
        Of course, if we were creating a non-web application, we would not need either the <kbd>webTemplateResolver</kbd>
@@ -390,8 +390,8 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
 
     <ul>
         <li>
-            The former template is fully WYSIWYG; you can check how it looks just by opening it with your browser. That's better than sending an email
-            to see the result:
+            The former template is fully WYSIWYG; you can check how it looks just by opening it with your browser. That's much better than sending an email
+            to see the result, isn't it?
         </li>
         
     </ul>
