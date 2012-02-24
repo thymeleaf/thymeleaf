@@ -1,3 +1,8 @@
+2.0.3
+=====
+- Fixed selection target not being correctly processed when th:object and th:remove="tag" appeared
+  at the same host tag.
+
 
 2.0.2
 =====
