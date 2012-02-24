@@ -20,6 +20,7 @@
 package org.thymeleaf.processor.attr;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
@@ -60,16 +61,20 @@ public abstract class AbstractSelectionTargetAttrProcessor
         final Object newSelectionTarget = 
             getNewSelectionTarget(arguments, element, attributeName);
         
-        final Map<String,Object> additionalLocalVariables = 
+        Map<String,Object> additionalLocalVariables = 
             getAdditionalLocalVariables(arguments, element, attributeName);
+        
+        if (additionalLocalVariables == null) {
+            additionalLocalVariables = new HashMap<String, Object>(2, 1.0f);
+        } else {
+            additionalLocalVariables = new HashMap<String, Object>(additionalLocalVariables);
+        }
+        additionalLocalVariables.put(
+                Arguments.SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
         
         element.removeAttribute(attributeName);
         
-        if (additionalLocalVariables == null || additionalLocalVariables.isEmpty()) {
-            return ProcessorResult.setSelectionTarget(newSelectionTarget);
-        }
-        
-        return ProcessorResult.setLocalVariablesAndSelectionTarget(additionalLocalVariables, newSelectionTarget);
+        return ProcessorResult.setLocalVariables(additionalLocalVariables);
         
     }
     

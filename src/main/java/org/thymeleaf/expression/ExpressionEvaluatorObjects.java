@@ -102,7 +102,7 @@ public final class ExpressionEvaluatorObjects {
         variables.put(ROOT_VARIABLE_NAME, arguments.getExpressionEvaluationRoot());
         
         if (arguments.hasSelectionTarget()) {
-            variables.put(SELECTION_VARIABLE_NAME, arguments.getSelectionTargetObject());
+            variables.put(SELECTION_VARIABLE_NAME, arguments.getSelectionTarget());
         } else {
             variables.put(SELECTION_VARIABLE_NAME, arguments.getExpressionEvaluationRoot());
         }

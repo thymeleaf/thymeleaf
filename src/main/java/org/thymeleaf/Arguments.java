@@ -67,6 +67,8 @@ import org.thymeleaf.util.Validate;
  */
 public final class Arguments {
 
+    public static final String SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
+    
     
     private final TemplateProcessingParameters templateProcessingParameters;
     private final Configuration configuration;
@@ -75,7 +77,6 @@ public final class Arguments {
     private final TemplateRepository templateRepository;
     private final IContext context;
     private final HashMap<String,Object> localVariables;
-    private final SelectionTarget selectionTarget;
     private final Map<String,Integer> idCounts;
     
     private final Object evaluationRoot;
@@ -122,7 +123,6 @@ public final class Arguments {
         this.document = document;
         this.context = this.templateProcessingParameters.getContext();
         this.localVariables = null;
-        this.selectionTarget = null;
         this.idCounts = new HashMap<String,Integer>();
         
         this.evaluationRoot = createEvaluationRoot();
@@ -142,7 +142,6 @@ public final class Arguments {
             final TemplateRepository templateRepository,
             final Document document,
             final HashMap<String,Object> localVariables,
-            final SelectionTarget selectionTarget,
             final Map<String,Integer> idCounts,
             final boolean processOnlyElementNodes) {
         
@@ -155,7 +154,6 @@ public final class Arguments {
         this.document = document;
         this.context = this.templateProcessingParameters.getContext();
         this.localVariables = localVariables;
-        this.selectionTarget = selectionTarget;
         this.idCounts = idCounts;
         
         this.evaluationRoot = createEvaluationRoot();
@@ -186,7 +184,7 @@ public final class Arguments {
     private Object createSelectedEvaluationRoot() {
         
         if (hasSelectionTarget()) {
-            return getSelectionTargetObject();
+            return getSelectionTarget();
         }
         return this.evaluationRoot;
 
@@ -375,27 +373,13 @@ public final class Arguments {
      * @return true if there is a selection currently established, false if not
      */
     public boolean hasSelectionTarget() {
-        return this.selectionTarget != null;
+        return hasLocalVariable(Arguments.SELECTION_TARGET_LOCAL_VARIABLE_NAME);
     }
     
     
     /**
      * <p>
-     *   Returns the current selection target (e.g. object selected by
-     *   a <tt>th:object</tt> attribute in standard dialect).
-     * </p>
-     * 
-     * @return the current selection target, if there is any
-     */
-    public SelectionTarget getSelectionTarget() {
-        return this.selectionTarget;
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>selection target object</i>, object contained
-     *   by the result of {@link #getSelectionTarget()}, and raises an
+     *   Returns the <i>selection target object</i>, and raises an
      *   exception if there isn't any.
      * </p>
      * <p>
@@ -404,9 +388,9 @@ public final class Arguments {
      * 
      * @return the selection target object
      */
-    public Object getSelectionTargetObject() {
+    public Object getSelectionTarget() {
         if (hasSelectionTarget()) {
-            return this.selectionTarget.getTarget();
+            return getLocalVariable(Arguments.SELECTION_TARGET_LOCAL_VARIABLE_NAME);
         }
         throw new IllegalStateException(
                 "Cannot return selection target object, a selection target has not been set.");
@@ -583,49 +567,7 @@ public final class Arguments {
         }
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, this.selectionTarget, this.idCounts, this.processOnlyElementNodes);
-        return arguments;
-    }
-    
-    
-    /**
-     * <p>
-     *   Creates a new Arguments object by setting a selection target. 
-     * </p>
-     * 
-     * @param target the new selection target object
-     * @return the new Arguments object
-     */
-    public Arguments setSelectionTarget(final Object target) {
-        final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, this.processOnlyElementNodes);
-        return arguments;
-    }
-
-    
-
-    /**
-     * <p>
-     *   Creates a new Arguments object by setting new local variables and a selection target.
-     * </p>
-     * 
-     * @param newVariables the new local variables
-     * @param target the new selection target object
-     * @return the new Arguments object
-     */
-    public Arguments addLocalVariablesAndSetSelectionTarget(final Map<String,Object> newVariables, final Object target) {
-        if (newVariables == null || newVariables.isEmpty()) {
-            return this;
-        }
-        final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
-        final HashMap<String,Object> cloneLocalVariables = 
-                new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
-        if (this.localVariables != null) {
-            cloneLocalVariables.putAll(this.localVariables);
-        }
-        cloneLocalVariables.putAll(newVariables);
-        final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, new SelectionTarget(target), this.idCounts, this.processOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
 
@@ -641,7 +583,7 @@ public final class Arguments {
      */
     public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
 
@@ -668,73 +610,11 @@ public final class Arguments {
         }
         cloneLocalVariables.putAll(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, this.selectionTarget, this.idCounts, shouldProcessOnlyElementNodes);
-        return arguments;
-    }
-    
-    
-
-    /**
-     * <p>
-     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyElementNodes</tt> flag and a selection target.
-     * </p>
-     * 
-     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
-     * @param target the new selection target object
-     * @return the new Arguments object
-     */
-    public Arguments setProcessOnlyElementNodesAndSetSelectionTarget(final boolean shouldProcessOnlyElementNodes, final Object target) {
-        final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, this.localVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyElementNodes);
-        return arguments;
-    }
-    
-    
-
-    /**
-     * <p>
-     *   Creates a new Arguments object by adding new local variables, a new value for the <tt>processOnlyElementNodes</tt> flag and a selection target. 
-     * </p>
-     * 
-     * @param newVariables the new local variables
-     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
-     * @param target the new selection target object
-     * @return the new Arguments object
-     */
-    public Arguments addLocalVariablesAndProcessOnlyElementNodesAndSetSelectionTarget(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes, final Object target) {
-        if (newVariables == null || newVariables.isEmpty()) {
-            return this;
-        }
-        final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
-        final HashMap<String,Object> cloneLocalVariables = 
-                new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
-        if (this.localVariables != null) {
-            cloneLocalVariables.putAll(this.localVariables);
-        }
-        cloneLocalVariables.putAll(newVariables);
-        final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, new SelectionTarget(target), this.idCounts, shouldProcessOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, this.templateRepository, this.document, cloneLocalVariables, this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
 
     
     
-    
-    
-    private static final class SelectionTarget {
-
-        private final Object target;
-        
-        public SelectionTarget(final Object target) {
-            super();
-            this.target = target;
-        }
-
-        public Object getTarget() {
-            return this.target;
-        }
-        
-    }
-
     
 }

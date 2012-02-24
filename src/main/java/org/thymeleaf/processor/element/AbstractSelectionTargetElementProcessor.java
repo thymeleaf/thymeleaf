@@ -20,12 +20,13 @@
 package org.thymeleaf.processor.element;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -64,29 +65,31 @@ public abstract class AbstractSelectionTargetElementProcessor
         final boolean removeHostElement = 
                 removeHostElement(arguments, element);
         
-        final Map<String,Object> additionalLocalVariables = 
+        Map<String,Object> additionalLocalVariables = 
             getAdditionalLocalVariables(arguments, element);
+        
+        if (additionalLocalVariables == null) {
+            additionalLocalVariables = new HashMap<String, Object>(2, 1.0f);
+        } else {
+            additionalLocalVariables = new HashMap<String, Object>(additionalLocalVariables);
+        }
+        additionalLocalVariables.put(
+                Arguments.SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
 
         if (removeHostElement) {
             
-            if (additionalLocalVariables != null) {
-                final List<Node> children = element.getChildren();
-                for (final Node child : children) {
-                    child.setAllNodeLocalVariables(additionalLocalVariables);
-                }
+            final List<Node> children = element.getChildren();
+            for (final Node child : children) {
+                child.setAllNodeLocalVariables(additionalLocalVariables);
             }
     
             element.getParent().extractChild(element);
             
-            return ProcessorResult.setSelectionTarget(newSelectionTarget);
+            return ProcessorResult.OK;
             
         }
             
-        if (additionalLocalVariables != null) {
-            return ProcessorResult.setLocalVariablesAndSelectionTarget(additionalLocalVariables, newSelectionTarget);
-        }
-        
-        return ProcessorResult.setSelectionTarget(newSelectionTarget);
+        return ProcessorResult.setLocalVariables(additionalLocalVariables);
         
     }
     

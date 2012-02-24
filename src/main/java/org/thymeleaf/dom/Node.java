@@ -189,7 +189,6 @@ public abstract class Node implements Serializable {
         return this.lineNumber;
     }
 
-
     
 
     /**
@@ -803,16 +802,16 @@ public abstract class Node implements Serializable {
                     
                     Arguments executionArguments = arguments;
 
-                    final ProcessorResult attrProcessorResult = 
+                    final ProcessorResult processorResult = 
                             processor.getProcessor().process(executionArguments, processor.getContext(), node);
                     
                     // The execution arguments need to be updated as instructed by the processor
                     // (for example, for adding local variables)
-                    executionArguments = attrProcessorResult.computeNewArguments(executionArguments);
+                    executionArguments = processorResult.computeNewArguments(executionArguments);
                     
                     // If we have added local variables, we should update the node's map for these variables in
                     // order to keep them synchronized
-                    if (attrProcessorResult.hasLocalVariables() && executionArguments.hasLocalVariables()) {
+                    if (processorResult.hasLocalVariables() && executionArguments.hasLocalVariables()) {
                         node.unsafeSetNodeLocalVariables(executionArguments.unsafeGetLocalVariables());
                     }
                     
