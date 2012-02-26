@@ -35,12 +35,12 @@ import org.thymeleaf.spring3.context.SpringWebContext;
 import thymeleafexamples.extrathyme.business.entities.Headline;
 import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepository;
 
-public class HeadlinesTagProcessor extends AbstractMarkupSubstitutionElementProcessor {
+public class HeadlinesElementProcessor extends AbstractMarkupSubstitutionElementProcessor {
 
     private final Random rand = new Random(System.currentTimeMillis());
     
     
-    public HeadlinesTagProcessor() {
+    public HeadlinesElementProcessor() {
         super("headlines");
     }
     

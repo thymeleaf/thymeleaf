@@ -55,7 +55,7 @@ public class ScoreDialect extends AbstractDialect {
         final Set<IProcessor> processors = new HashSet<IProcessor>();
         processors.add(new ClassForPositionAttrProcessor());
         processors.add(new RemarkForPositionAttrProcessor());
-        processors.add(new HeadlinesTagProcessor());
+        processors.add(new HeadlinesElementProcessor());
         return processors;
     }
 
