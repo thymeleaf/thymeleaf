@@ -76,7 +76,7 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <springframework.version>3.0.6.RELEASE</springframework.version>
     <springsecurity.version>3.0.7.RELEASE</springsecurity.version>
-    <thymeleaf.version>2.0.2</thymeleaf.version>
+    <thymeleaf.version>2.0.3-SNAPSHOT</thymeleaf.version>
   </properties>
 
   <build>
