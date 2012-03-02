@@ -55,8 +55,8 @@ public final class StandardExpressionProcessor {
 
     
     
-    public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments).parseAssignationSequence(arguments, input);
+    public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
+        return getParserAttribute(arguments).parseAssignationSequence(arguments, input, allowParametersWithoutValue);
     }
 
     

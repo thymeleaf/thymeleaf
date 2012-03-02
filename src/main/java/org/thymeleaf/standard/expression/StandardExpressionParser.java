@@ -72,10 +72,10 @@ public final class StandardExpressionParser {
 
     
     
-    public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input) {
+    public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseAssignationSequence(arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseAssignationSequence(arguments, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
     }
 
     
@@ -136,7 +136,7 @@ public final class StandardExpressionParser {
 
     
     
-    AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean preprocess) {
+    AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
         
         final String trimmedInput = input.trim();
         
@@ -150,7 +150,7 @@ public final class StandardExpressionParser {
             return cachedAssignationSequence;
         }
         
-        final AssignationSequence assignationSequence = AssignationSequence.parse(preprocessedInput);
+        final AssignationSequence assignationSequence = AssignationSequence.parse(preprocessedInput, allowParametersWithoutValue);
         
         if (assignationSequence == null) {
             throw new TemplateProcessingException("Could not parse as assignation sequence: \"" + input + "\"");

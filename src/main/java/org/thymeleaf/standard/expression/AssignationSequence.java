@@ -91,7 +91,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     
     
     
-    static AssignationSequence parse(final String input) {
+    static AssignationSequence parse(final String input, final boolean allowParametersWithoutValue) {
         
         if (input == null || input.trim().equals("")) {
             return null;
@@ -104,7 +104,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
             return null;
         }
         
-        result = composeSequence(result, 0);
+        result = composeSequence(result, 0, allowParametersWithoutValue);
         
         if (result == null || !result.get(0).isAssignationSequence()) {
             return null;
@@ -118,7 +118,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     
     
     private static List<ExpressionParsingNode> composeSequence(
-            final List<ExpressionParsingNode> inputExprs, final int inputIndex) {
+            final List<ExpressionParsingNode> inputExprs, final int inputIndex, final boolean allowParametersWithoutValue) {
 
         if (inputExprs == null || inputExprs.size() == 0 || inputIndex >= inputExprs.size()) {
             return null;
@@ -177,7 +177,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
         final List<Assignation> assignations = new ArrayList<Assignation>();
         for (final Integer assignationIndex : assignationIndexes) {
             final int assignationIdx = assignationIndex.intValue();
-            result = Assignation.composeAssignation(result, assignationIdx);
+            result = Assignation.composeAssignation(result, assignationIdx, allowParametersWithoutValue);
             if (result == null) {
                 return null;
             }

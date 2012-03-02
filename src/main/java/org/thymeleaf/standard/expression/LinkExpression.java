@@ -168,7 +168,9 @@ public final class LinkExpression extends SimpleExpression {
                             return null;
                         }
                         
-                        final AssignationSequence parametersAssigSeq = AssignationSequence.parse(parameters);
+                        final AssignationSequence parametersAssigSeq = 
+                                AssignationSequence.parse(
+                                        parameters, true /* allow parameters without value or equals sign */);
                         if (parametersAssigSeq == null) {
                             return null;
                         }
@@ -251,9 +253,15 @@ public final class LinkExpression extends SimpleExpression {
         final int questionMarkPosition = linkBase.indexOf("?"); 
         
         final StringBuffer parametersBuffer = new StringBuffer();
+        
         for (final Map.Entry<String,List<Object>> parameterEntry : parameters.entrySet()) {
+            
             final String parameterName = parameterEntry.getKey();
-            for (final Object parameterObjectValue : parameterEntry.getValue()) {
+            final List<Object> parameterValues = parameterEntry.getValue();
+            
+            if (parameterValues == null) {
+                // This is a parameter without a value and even without an "=" symbol
+                
                 if (parametersBuffer.length() == 0) {
                     if (questionMarkPosition == -1) {
                         parametersBuffer.append("?");
@@ -263,14 +271,31 @@ public final class LinkExpression extends SimpleExpression {
                 } else {
                     parametersBuffer.append("&");
                 }
-                final String parameterValue =
-                    (parameterObjectValue == null? "" : parameterObjectValue.toString());
-                try {
-                    parametersBuffer.append(parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    throw new TemplateProcessingException("Exception while processing link parameters", e);
+                parametersBuffer.append(parameterName);
+                
+            } else {
+                
+                for (final Object parameterObjectValue : parameterEntry.getValue()) {
+                    if (parametersBuffer.length() == 0) {
+                        if (questionMarkPosition == -1) {
+                            parametersBuffer.append("?");
+                        } else {
+                            parametersBuffer.append("&");
+                        }
+                    } else {
+                        parametersBuffer.append("&");
+                    }
+                    final String parameterValue =
+                        (parameterObjectValue == null? "" : parameterObjectValue.toString());
+                    try {
+                        parametersBuffer.append(parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new TemplateProcessingException("Exception while processing link parameters", e);
+                    }
                 }
+                
             }
+            
         }
         
         if (isLinkBaseAbsolute(linkBase)) {
@@ -337,11 +362,17 @@ public final class LinkExpression extends SimpleExpression {
             final String parameterName = assignationValue.getLeft().getValue();
             final Expression parameterExpression = assignationValue.getRight();
             
-            final Object value = Expression.execute(arguments, parameterExpression, expressionEvaluator);
-            if (value == null) {
-                parameters.put(parameterName, EMPTY_PARAMETER_VALUE);
+            if (parameterExpression == null) {
+                // If this is null, it means we want to render the parameter without a value and
+                // also without an equals sign.
+                parameters.put(parameterName, null);
             } else {
-                parameters.put(parameterName, convertParameterValueToList(LiteralValue.unwrap(value)));
+                final Object value = Expression.execute(arguments, parameterExpression, expressionEvaluator);
+                if (value == null) {
+                    parameters.put(parameterName, EMPTY_PARAMETER_VALUE);
+                } else {
+                    parameters.put(parameterName, convertParameterValueToList(LiteralValue.unwrap(value)));
+                }
             }
             
         }

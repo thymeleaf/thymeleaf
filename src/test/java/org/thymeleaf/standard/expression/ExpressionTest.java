@@ -214,6 +214,12 @@ public class ExpressionTest extends TestCase {
         test("${pamerica.permissions} == ${loceania.permissions}", "false");
         test("${loceania.permissions} == ${meurope.permissions}", "false");
         
+
+        test("@{http://a.b.com/xx/yy(p1)}", "http://a.b.com/xx/yy?p1");
+        test("@{http://a.b.com/xx/yy(p1, p2=${pamerica.name})}", "http://a.b.com/xx/yy?p1&amp;p2=Petronila+America");
+        test("@{http://a.b.com/xx/yy(p1='zz', p2)}", "http://a.b.com/xx/yy?p1=zz&amp;p2");
+        test("@{http://a.b.com/xx/yy(p1, p2)}", "http://a.b.com/xx/yy?p1&amp;p2");
+    
     }
 
     

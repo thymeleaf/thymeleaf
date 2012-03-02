@@ -62,7 +62,8 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         
         final String attributeValue = element.getAttributeValue(attributeName);
         final AssignationSequence assignations = 
-            StandardExpressionProcessor.parseAssignationSequence(arguments, attributeValue);
+            StandardExpressionProcessor.parseAssignationSequence(
+                    arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");

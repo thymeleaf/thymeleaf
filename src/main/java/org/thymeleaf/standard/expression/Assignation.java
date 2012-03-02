@@ -53,6 +53,15 @@ public final class Assignation implements Serializable {
         this.right = right;
     }
     
+    private Assignation(final Token left) {
+        // This type of assignations are for URL parameters, where no value (and no "=") sign
+        // can be specified.
+        super();
+        Validate.notNull(left, "Assignation left side cannot be null");
+        this.left = left;
+        this.right = null;
+    }
+    
 
     public Token getLeft() {
         return this.left;
@@ -65,13 +74,15 @@ public final class Assignation implements Serializable {
     public String getStringRepresentation() {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(this.left.getStringRepresentation());
-        strBuilder.append(ASSIGNATION_CHAR);
-        if (this.right instanceof ComplexExpression) {
-            strBuilder.append('(');
-            strBuilder.append(this.right.getStringRepresentation());
-            strBuilder.append(')');
-        } else {
-            strBuilder.append(this.right.getStringRepresentation());
+        if (this.right != null) {
+            strBuilder.append(ASSIGNATION_CHAR);
+            if (this.right instanceof ComplexExpression) {
+                strBuilder.append('(');
+                strBuilder.append(this.right.getStringRepresentation());
+                strBuilder.append(')');
+            } else {
+                strBuilder.append(this.right.getStringRepresentation());
+            }
         }
         return strBuilder.toString();
     }
@@ -85,7 +96,7 @@ public final class Assignation implements Serializable {
     
     
     static List<ExpressionParsingNode> composeAssignation(
-            final List<ExpressionParsingNode> inputExprs, final int inputIndex) {
+            final List<ExpressionParsingNode> inputExprs, final int inputIndex, final boolean allowParametersWithoutValue) {
 
         if (inputExprs == null || inputExprs.size() == 0 || inputIndex >= inputExprs.size()) {
             return null;
@@ -99,7 +110,6 @@ public final class Assignation implements Serializable {
         final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
         
         int tokenIndex = inputExprs.size();
-        int expressionIndex = tokenIndex + 1;
         
         Token token = null;
 
@@ -130,44 +140,77 @@ public final class Assignation implements Serializable {
         }
         
         if (token == null) {
-            return null;
+            
+            if (allowParametersWithoutValue) {
+                
+                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                inputWithPlaceholders.append(String.valueOf(tokenIndex));
+                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                token = Token.parse(fragment.toString());
+                if (token == null) {
+                    return null;
+                }
+                fragments.add(new ExpressionParsingNode(token));
+                fragment = null;
+                
+            } else {
+                
+                return null;
+                
+            }
+            
         }
 
-        inputWithPlaceholders.append(ASSIGNATION_CHAR);
-        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        inputWithPlaceholders.append(String.valueOf(expressionIndex));
-        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        fragments.add(new ExpressionParsingNode(fragment.toString()));
+        
+        int expressionIndex = -1;
+        if (fragment != null) {
+            // Could be null if assignation has no "=" and no value (can happen for URL parameters)
+            expressionIndex = tokenIndex + 1;
+            inputWithPlaceholders.append(ASSIGNATION_CHAR);
+            inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+            inputWithPlaceholders.append(String.valueOf(expressionIndex));
+            inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+            fragments.add(new ExpressionParsingNode(fragment.toString()));
+        }
 
         
         List<ExpressionParsingNode> result = inputExprs;
         result.set(inputIndex, new ExpressionParsingNode(inputWithPlaceholders.toString()));
         result.addAll(fragments);
         
-        result = SimpleExpression.addNumberLiteralDecomposition(result, expressionIndex);
-        if (result == null) {
-            return null;
-        }
-        
-        result = Expression.unnest(result, expressionIndex);
-        if (result == null) {
-            return null;
-        }
-
-        
-        if (!result.get(expressionIndex).isExpression()) {
-            result = ComplexExpression.composeComplexExpressions(result, expressionIndex);
+        if (expressionIndex != -1) {
+            
+            result = SimpleExpression.addNumberLiteralDecomposition(result, expressionIndex);
             if (result == null) {
                 return null;
             }
-            if (!result.get(expressionIndex).isExpression()) {
+            
+            result = Expression.unnest(result, expressionIndex);
+            if (result == null) {
                 return null;
             }
+
+        
+            if (!result.get(expressionIndex).isExpression()) {
+                result = ComplexExpression.composeComplexExpressions(result, expressionIndex);
+                if (result == null) {
+                    return null;
+                }
+                if (!result.get(expressionIndex).isExpression()) {
+                    return null;
+                }
+            }
+
+            final Assignation assignation = new Assignation(token, result.get(expressionIndex).getExpression());
+            result.set(inputIndex, new ExpressionParsingNode(assignation));
+            
+        } else {
+
+            final Assignation assignation = new Assignation(token);
+            result.set(inputIndex, new ExpressionParsingNode(assignation));
+            
         }
         
-
-        final Assignation assignation = new Assignation(token, result.get(expressionIndex).getExpression());
-        result.set(inputIndex, new ExpressionParsingNode(assignation));
         
         return result; 
         
