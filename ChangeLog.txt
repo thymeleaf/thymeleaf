@@ -2,6 +2,9 @@
 =====
 - Fixed selection target not being correctly processed when th:object and th:remove="tag" appeared
   at the same host tag.
+- Allow parameters in @{...} expressions to specify no value, and even no '=' sign. As per the HTTP
+  specification, these parameters are valid and completely equivalent to specifying the empty string
+  as value.
 
 
 2.0.2
