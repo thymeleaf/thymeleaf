@@ -1,3 +1,11 @@
+2.0.3
+=====
+- Modified behaviour of th:method in <form> tags so that it controls whether the selected method
+  is supported by browsers (get, post) or not. If not, it creates a hidden input field inside the
+  form (named '_method') with the original value and sets the method to 'post'. This mirrors the
+  behaviour of Spring's FormTag class (Spring taglib's "<form:form>" tag).
+
+
 2.0.2
 =====
 - (No changes)
