@@ -55,6 +55,11 @@ import org.thymeleaf.templatewriter.XmlTemplateWriter;
 public final class StandardTemplateModeHandlers {
     
 
+    // We have to set a maximum pool size. Some environments might set too high
+    // numbers for Runtime.availableProcessors (for example, Google App Engine sets
+    // this to 1337).
+    private final static int MAX_PARSERS_POOL_SIZE = 24;
+
     public final static ITemplateModeHandler XML;
     public final static ITemplateModeHandler VALIDXML;
     public final static ITemplateModeHandler XHTML;
@@ -70,7 +75,10 @@ public final class StandardTemplateModeHandlers {
     static {
 
         final int availableProcessors = Runtime.getRuntime().availableProcessors();
-        final int poolSize = (availableProcessors <= 2? availableProcessors : availableProcessors - 1);
+        final int poolSize = 
+                Math.min(
+                        (availableProcessors <= 2? availableProcessors : availableProcessors - 1),
+                        MAX_PARSERS_POOL_SIZE);
         
         XML = new TemplateModeHandler(
                 "XML",
