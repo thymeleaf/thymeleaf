@@ -40,15 +40,18 @@ import org.thymeleaf.spring3.processor.attr.SpringInputFileFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputGeneralFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputPasswordFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputRadioFieldAttrProcessor;
+import org.thymeleaf.spring3.processor.attr.SpringMethodAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringObjectAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringOptionFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringSelectFieldAttrProcessor;
+import org.thymeleaf.spring3.processor.attr.SpringSingleRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringTextareaFieldAttrProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
 
 /**
  * <p>
@@ -398,7 +401,9 @@ public class SpringStandardDialect extends StandardDialect {
         additionalAttrProcessors.add(new SpringInputCheckboxFieldAttrProcessor());
         additionalAttrProcessors.add(new SpringInputRadioFieldAttrProcessor());
         additionalAttrProcessors.add(new SpringInputFileFieldAttrProcessor());
+        additionalAttrProcessors.add(new SpringMethodAttrProcessor());
         additionalAttrProcessors.add(new SpringSelectFieldAttrProcessor());
+        additionalAttrProcessors.addAll(Arrays.asList(SpringSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
         additionalAttrProcessors.add(new SpringOptionFieldAttrProcessor());
         additionalAttrProcessors.add(new SpringTextareaFieldAttrProcessor());
         return additionalAttrProcessors;
@@ -409,6 +414,7 @@ public class SpringStandardDialect extends StandardDialect {
     protected Set<Class<? extends IProcessor>> getRemovedProcessors() {
         final Set<Class<? extends IProcessor>> removedAttrProcessors = new LinkedHashSet<Class<? extends IProcessor>>();
         removedAttrProcessors.add(StandardObjectAttrProcessor.class);
+        removedAttrProcessors.add(StandardSingleRemovableAttributeModifierAttrProcessor.class);
         return removedAttrProcessors;
     }
 
