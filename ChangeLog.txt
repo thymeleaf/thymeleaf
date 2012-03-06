@@ -5,6 +5,8 @@
 - Allow parameters in @{...} expressions to specify no value, and even no '=' sign. As per the HTTP
   specification, these parameters are valid and completely equivalent to specifying the empty string
   as value.
+- Fixed excessive size of parser pools being created at Google App Engine for the standard template 
+  mode handler set (availableProcessors is set to 1377 in that environment).
 
 
 2.0.2
