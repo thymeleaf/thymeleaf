@@ -7,6 +7,8 @@
   as value.
 - Fixed excessive size of parser pools being created at Google App Engine for the standard template 
   mode handler set (availableProcessors is set to 1377 in that environment).
+- Fixed attribute values resulting from the execution of processors in the Standard Dialects not being
+  correctly XML-escaped.
 
 
 2.0.2

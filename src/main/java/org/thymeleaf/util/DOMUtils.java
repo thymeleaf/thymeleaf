@@ -120,6 +120,27 @@ public final class DOMUtils {
     }
     
     
+    public static String escapeXml(final String str, final boolean escapeQuotes) throws IOException {
+        
+        if (str == null) {
+            return null;
+        }
+        
+        final int strLen = str.length();
+        for (int i = 0; i < strLen; i++) {
+            final char c = str.charAt(i);
+            if (c == '&' || c == '<' || c == '>' || (escapeQuotes && (c == '\'' || c == '\"'))) {
+                final CharArrayWriter writer = new CharArrayWriter();
+                writeXmlEscaped(str, writer, escapeQuotes);
+                return writer.toString();
+            }
+        }
+        
+        return str;
+        
+    }
+    
+    
 
     public static void writeXmlEscaped(final String buffer, final Writer writer, final boolean escapeQuotes) throws IOException {
         if (buffer == null) {

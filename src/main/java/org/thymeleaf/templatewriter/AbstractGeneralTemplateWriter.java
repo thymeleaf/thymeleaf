@@ -35,6 +35,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -212,7 +213,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                     writer.write('\"');
                     final String attrValue = attribute.getValue();
                     if (attrValue != null) {
-                        writer.write(attrValue);                        
+                        writer.write(DOMUtils.escapeXml(attrValue, true));                        
                     }
                     writer.write('\"');
                 }
