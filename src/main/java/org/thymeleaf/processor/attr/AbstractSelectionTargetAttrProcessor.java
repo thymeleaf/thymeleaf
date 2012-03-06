@@ -72,6 +72,8 @@ public abstract class AbstractSelectionTargetAttrProcessor
         additionalLocalVariables.put(
                 Arguments.SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
         
+        doAdditionalProcess(arguments, element, attributeName);
+        
         element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(additionalLocalVariables);
@@ -92,5 +94,13 @@ public abstract class AbstractSelectionTargetAttrProcessor
     protected abstract Object getNewSelectionTarget(
             final Arguments arguments, final Element element, final String attributeName);
 
+    
+    
+    @SuppressWarnings("unused")
+    protected void doAdditionalProcess(
+            final Arguments arguments, final Element element, final String attributeName) {
+        // Nothing to be done, meant to be overriden
+    }
+    
     
 }

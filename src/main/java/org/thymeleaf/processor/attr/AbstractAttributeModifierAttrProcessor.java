@@ -121,6 +121,8 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
             
         }
         
+        doAdditionalProcess(arguments, element, attributeName);
+        
         element.removeAttribute(attributeName);
         
         if (recomputeProcessorsAfterExecution(arguments, element, attributeName)) {
@@ -148,6 +150,14 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
     
     protected abstract boolean recomputeProcessorsAfterExecution(
             final Arguments arguments, final Element element, final String attributeName);
+
+    
+    
+    @SuppressWarnings("unused")
+    protected void doAdditionalProcess(
+            final Arguments arguments, final Element element, final String attributeName) {
+        // Nothing to be done, meant to be overriden
+    }
     
     
 }

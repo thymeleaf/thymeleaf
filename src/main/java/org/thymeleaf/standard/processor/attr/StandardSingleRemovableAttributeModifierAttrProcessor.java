@@ -154,7 +154,7 @@ public final class StandardSingleRemovableAttributeModifierAttrProcessor
     
     
     
-    private StandardSingleRemovableAttributeModifierAttrProcessor(final String attributeName) {
+    public StandardSingleRemovableAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

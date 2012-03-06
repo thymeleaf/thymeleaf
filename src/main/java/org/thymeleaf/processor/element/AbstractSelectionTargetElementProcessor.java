@@ -85,9 +85,13 @@ public abstract class AbstractSelectionTargetElementProcessor
     
             element.getParent().extractChild(element);
             
+            doAdditionalProcess(arguments, element);
+            
             return ProcessorResult.OK;
             
         }
+        
+        doAdditionalProcess(arguments, element);
             
         return ProcessorResult.setLocalVariables(additionalLocalVariables);
         
@@ -108,6 +112,13 @@ public abstract class AbstractSelectionTargetElementProcessor
  
     
     protected abstract boolean removeHostElement(final Arguments arguments, final Element element);
+
+    
+    
+    @SuppressWarnings("unused")
+    protected void doAdditionalProcess(final Arguments arguments, final Element element) {
+        // Nothing to be done, meant to be overriden
+    }
 
     
 }

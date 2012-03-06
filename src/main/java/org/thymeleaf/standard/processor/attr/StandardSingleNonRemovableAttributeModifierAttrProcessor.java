@@ -62,7 +62,7 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
     
     
     
-    private StandardSingleNonRemovableAttributeModifierAttrProcessor(final String attributeName) {
+    public StandardSingleNonRemovableAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
