@@ -27,6 +27,7 @@ import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.util.ArrayUtils;
+import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.ResourcePool;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -438,8 +439,10 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             
             for (int i = 0; i < attributes.getLength(); i++) {
                 element.setAttribute(
-                        attributes.getQName(i), 
-                        EntitySubstitutionTemplateReader.removeEntitySubstitutions(attributes.getValue(i)));
+                        attributes.getQName(i),
+                        DOMUtils.unescapeXml(
+                                EntitySubstitutionTemplateReader.removeEntitySubstitutions(attributes.getValue(i)),
+                                true));
             }
             
             this.elementStack.push(element);
