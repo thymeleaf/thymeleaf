@@ -59,6 +59,7 @@ public class ThymeleafViewResolver
     private boolean redirectHttp10Compatible = true;
     
     private String[] viewNames = null;
+    private String[] excludedViewNames = null;
     private int order = Integer.MAX_VALUE;
 
 
@@ -177,11 +178,25 @@ public class ThymeleafViewResolver
     }
     
     
+
+    
+    public void setExcludedViewNames(final String[] excludedViewNames) {
+        this.excludedViewNames = excludedViewNames;
+    }
+
+
+    public String[] getExcludedViewNames() {
+        return this.excludedViewNames;
+    }
+    
+    
     
 
     private boolean canHandle(final String viewName) {
-        String[] specifiedViewNames = getViewNames();
-        return (specifiedViewNames == null || PatternMatchUtils.simpleMatch(specifiedViewNames, viewName));
+        final String[] viewNamesToBeProcessed = getViewNames();
+        final String[] viewNamesNotToBeProcessed = getExcludedViewNames();
+        return ((viewNamesToBeProcessed == null || PatternMatchUtils.simpleMatch(viewNamesToBeProcessed, viewName)) &&
+                (viewNamesNotToBeProcessed == null || !PatternMatchUtils.simpleMatch(viewNamesNotToBeProcessed, viewName)));
     }
     
     

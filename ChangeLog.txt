@@ -4,6 +4,9 @@
   is supported by browsers (get, post) or not. If not, it creates a hidden input field inside the
   form (named '_method') with the original value and sets the method to 'post'. This mirrors the
   behaviour of Spring's FormTag class (Spring taglib's "<form:form>" tag).
+- Added "excludedViewNames" property to ThymeleafViewResolver so that a set of patterns of views
+  that will not be resolved by this ViewResolver can be specified. This will act as an 'exclusions'
+  filter for what is specified at the "viewNames" property.
 
 
 2.0.2
