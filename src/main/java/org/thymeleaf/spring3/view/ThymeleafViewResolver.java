@@ -167,7 +167,16 @@ public class ThymeleafViewResolver
     
     
 
-    
+    /**
+     * <p>
+     *   Specify the names of the views that can be handled by this view resolver.
+     * </p>
+     * <p>
+     *   These view names can be specified as patterns: "index.*", "user_*", etc.
+     * </p>
+     * 
+     * @param viewNames the view names (actually view name patterns)
+     */
     public void setViewNames(final String[] viewNames) {
         this.viewNames = viewNames;
     }
@@ -180,6 +189,21 @@ public class ThymeleafViewResolver
     
 
     
+    /**
+     * <p>
+     *   Specify names of views that cannot be handled by this view resolver.
+     * </p>
+     * <p>
+     *   These view names can be specified as patterns: "index.*", "user_*", etc.
+     * </p>
+     * <p>
+     *   This works as an exclusion filter for the <tt>viewNames</tt> property. A view
+     *   name must both match <tt>viewNames</tt> (if it is not null) and not match
+     *   <tt>excludedViewName</tt> (if it is not null) in order to be executed.
+     * </p>
+     * 
+     * @param excludedViewNames the view names to be excluded (actually view name patterns)
+     */
     public void setExcludedViewNames(final String[] excludedViewNames) {
         this.excludedViewNames = excludedViewNames;
     }
