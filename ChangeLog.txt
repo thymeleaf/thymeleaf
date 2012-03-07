@@ -1,3 +1,8 @@
+2.0.4
+=====
+- Fixed element attributes not being XML-unescaped at SAX parser.
+
+
 2.0.3
 =====
 - Fixed selection target not being correctly processed when th:object and th:remove="tag" appeared
