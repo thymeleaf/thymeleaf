@@ -1,3 +1,8 @@
+2.0.4
+=====
+- (No changes)
+
+
 2.0.3
 =====
 - Modified behaviour of th:method in <form> tags so that it controls whether the selected method
