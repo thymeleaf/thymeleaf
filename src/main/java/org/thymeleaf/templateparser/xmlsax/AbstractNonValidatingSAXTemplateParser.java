@@ -51,6 +51,7 @@ import org.xml.sax.ext.Locator2;
  * 
  * @author Guven Demir
  * @author Daniel Fern&aacute;ndez
+ * @author Tsuyoshi Yoshizawa
  * 
  */
 public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplateParser {
@@ -124,6 +125,11 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             throw new TemplateInputException("Exception parsing document", e);
         } catch (final TemplateProcessingException e) {
             throw e;
+        } catch (final SAXParseException e) {
+            final String message = 
+                    String.format("Exception parsing document: template=%s, near line=%d, column=%d",
+                            documentName, Integer.valueOf(e.getLineNumber()), Integer.valueOf(e.getColumnNumber()));
+            throw new TemplateInputException(message, e);
         } catch (final SAXException e) {
             throw new TemplateInputException("Exception parsing document", e);
         } finally {
