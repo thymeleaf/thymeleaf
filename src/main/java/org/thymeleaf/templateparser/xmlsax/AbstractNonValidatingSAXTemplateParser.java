@@ -127,7 +127,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             throw e;
         } catch (final SAXParseException e) {
             final String message = 
-                    String.format("Exception parsing document: template=%s, near line=%d, column=%d",
+                    String.format("Exception parsing document: template=\"%s\", line %d - column %d",
                             documentName, Integer.valueOf(e.getLineNumber()), Integer.valueOf(e.getColumnNumber()));
             throw new TemplateInputException(message, e);
         } catch (final SAXException e) {
