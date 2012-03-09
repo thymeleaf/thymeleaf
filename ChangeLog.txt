@@ -1,6 +1,7 @@
 2.0.5
 =====
 - Added template name, line number and column to SAXParseExceptions in AbstractNonValidatingSAXTemplateParser.
+- Fixed attribute escaping in builtin DOM parser.
 
 
 2.0.4
