@@ -110,8 +110,10 @@ public class StandardDOMTranslator {
         for (int i = 0; i < attributesLen; i++) {
             final org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attributes.item(i);
             element.setAttribute(
-                    attr.getName(), 
-                    EntitySubstitutionTemplateReader.removeEntitySubstitutions(attr.getValue()));
+                    attr.getName(),
+                    DOMUtils.unescapeXml(
+                            EntitySubstitutionTemplateReader.removeEntitySubstitutions(attr.getValue()),
+                            true));
         }
         
         final org.w3c.dom.NodeList children = domNode.getChildNodes();
