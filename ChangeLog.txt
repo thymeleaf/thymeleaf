@@ -1,3 +1,9 @@
+2.0.5
+=====
+- Modified ViewResolver so that view beans are only configured using an existing bean as prototype
+  if this bean is of type ThymeleafView.
+
+
 2.0.4
 =====
 - (No changes)

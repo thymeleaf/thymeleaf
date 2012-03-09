@@ -257,7 +257,12 @@ public class ThymeleafViewResolver
         ThymeleafView view = BeanUtils.instantiateClass(ThymeleafView.class);
 
         if (beanFactory.containsBean(viewName)) {
-            view = (ThymeleafView) beanFactory.configureBean(view, viewName);
+            final Class<?> viewBeanType = beanFactory.getType(viewName);
+            if (ThymeleafView.class.isAssignableFrom(viewBeanType)) {
+                view = (ThymeleafView) beanFactory.configureBean(view, viewName);
+            } else {
+                view = (ThymeleafView) beanFactory.initializeBean(view, viewName);
+            }
         } else {
             view = (ThymeleafView) beanFactory.initializeBean(view, viewName);
         }
