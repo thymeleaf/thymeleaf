@@ -2,6 +2,9 @@
 =====
 - Modified ViewResolver so that view beans are only configured using an existing bean as prototype
   if this bean is of type ThymeleafView.
+- Made ThymeleafView return the default content type in getContentType() even if setContentType()
+  has not been called before. This allows compatibility with the ContentNegotiatingViewResolver
+  view resolver appeared in Spring 3.0.
 
 
 2.0.4
