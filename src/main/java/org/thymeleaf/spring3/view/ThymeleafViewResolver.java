@@ -38,6 +38,18 @@ import org.thymeleaf.spring3.SpringTemplateEngine;
 
 
 /**
+ * <p>
+ *   Implementation of the Spring MVC {@link org.springframework.web.servlet.ViewResolver}
+ *   interface.
+ * </p>
+ * <p>
+ *   View resolvers execute after the controller ends its execution. They receive the name
+ *   of the view to be processed and are in charge of creating (and configuring) the
+ *   corresponding {@link View} object for it.
+ * </p>
+ * <p>
+ *   The {@link View} implementation managed by this class is {@link ThymeleafView}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -52,7 +64,26 @@ public class ThymeleafViewResolver
     private static final Logger vrlogger = LoggerFactory.getLogger(ThymeleafViewResolver.class);
     
     
+    /**
+     * <p>
+     *   Prefix to be used in view names (returned by controllers) for specifying an
+     *   HTTP redirect.
+     * </p>
+     * <p>
+     *   Value: <tt>redirect:</tt>
+     * </p>
+     */
     public static final String REDIRECT_URL_PREFIX = "redirect:";
+    
+    /**
+     * <p>
+     *   Prefix to be used in view names (returned by controllers) for specifying an
+     *   HTTP forward.
+     * </p>
+     * <p>
+     *   Value: <tt>forward:</tt>
+     * </p>
+     */
     public static final String FORWARD_URL_PREFIX = "forward:";
 
     private boolean redirectContextRelative = true;
@@ -70,7 +101,12 @@ public class ThymeleafViewResolver
     private SpringTemplateEngine templateEngine;
 
 
-    
+
+    /**
+     * <p>
+     *   Create an instance of ThymeleafViewResolver.
+     * </p>
+     */
     public ThymeleafViewResolver() {
         super();
     }
@@ -78,12 +114,31 @@ public class ThymeleafViewResolver
     
 
     
-    
+    /**
+     * <p>
+     *   Returns the Thymeleaf template engine instance to be used for the 
+     *   execution of templates.
+     * </p>
+     * <p>
+     *   Template engine instances to be used for this resolver should be of a
+     *   subclass of {@link org.thymeleaf.TemplateEngine} including 
+     *   specific Spring integrations: {@link SpringTemplateEngine}.
+     * </p>
+     * 
+     * @return the template engine being used for processing templates.
+     */
     public SpringTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
 
+    /**
+     * <p>
+     *   Sets the Template Engine instance to be used for processing 
+     * </p>
+     * 
+     * @param templateEngine
+     */
     public void setTemplateEngine(final SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
@@ -272,7 +327,7 @@ public class ThymeleafViewResolver
         view.setStaticVariables(getStaticVariables());
         
         
-        if (view.getContentType() == null && getContentType() != null) {
+        if (!view.isContentTypeSet() && getContentType() != null) {
             view.setContentType(getContentType());
         }
         if (view.getLocale() == null && locale != null) {

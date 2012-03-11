@@ -59,7 +59,8 @@ public class ThymeleafView
 
     
     private String beanName = null;
-    private String contentType = null;
+    private String contentType = DEFAULT_CONTENT_TYPE;
+    private boolean contentTypeSet = false;
     private String characterEncoding = null;
     private TemplateEngine templateEngine = null;
 	private String templateName = null;
@@ -86,6 +87,11 @@ public class ThymeleafView
 
     public void setContentType(final String contentType) {
         this.contentType = contentType;
+        this.contentTypeSet = true;
+    }
+    
+    boolean isContentTypeSet() {
+        return this.contentTypeSet;
     }
 
     
