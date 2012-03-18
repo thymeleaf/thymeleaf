@@ -120,7 +120,7 @@ public class ThymeleafViewResolver
      *   execution of templates.
      * </p>
      * <p>
-     *   Template engine instances to be used for this resolver should be of a
+     *   Template engine instances to be used for this view resolver should be of a
      *   subclass of {@link org.thymeleaf.TemplateEngine} including 
      *   specific Spring integrations: {@link SpringTemplateEngine}.
      * </p>
@@ -134,27 +134,80 @@ public class ThymeleafViewResolver
 
     /**
      * <p>
-     *   Sets the Template Engine instance to be used for processing 
+     *   Sets the Template Engine instance to be used for processing
+     *   templates.
+     * </p>
+     * <p>
+     *   Template engine instances to be used for this view resolver should be of a
+     *   subclass of {@link org.thymeleaf.TemplateEngine} including 
+     *   specific Spring integrations: {@link SpringTemplateEngine}.
      * </p>
      * 
-     * @param templateEngine
+     * @param templateEngine the template engine to be used
      */
     public void setTemplateEngine(final SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
     
-    
+
+    /**
+     * <p>
+     *   Return the static variables, which will be available at the context
+     *   every time a view resolved by this ViewResolver is processed.
+     * </p>
+     * <p>
+     *   These static variables are added to the context by the view resolver
+     *   before every view is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     * 
+     * @return the map of static variables to be set into views' execution.
+     */
     public Map<String,Object> getStaticVariables() {
         return Collections.unmodifiableMap(this.staticVariables);
     }
 
 
+    /**
+     * <p>
+     *   Add a new static variable.
+     * </p>
+     * <p>
+     *   These static variables are added to the context by the view resolver
+     *   before every view is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     * 
+     * @param name the name of the static variable
+     * @param value the value of the static variable
+     */
     public void addStaticVariable(final String name, final Object value) {
         this.staticVariables.put(name, value);
     }
 
 
+    /**
+     * <p>
+     *   Sets a set of static variables, which will be available at the context
+     *   every time a view resolved by this ViewResolver is processed.
+     * </p>
+     * <p>
+     *   This method <b>does not overwrite</b> the existing static variables, it
+     *   simply adds the ones specify to any variables already registered.
+     * </p>
+     * <p>
+     *   These static variables are added to the context by the view resolver
+     *   before every view is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     * 
+     * 
+     * @param variables the set of variables to be added.
+     */
     public void setStaticVariables(final Map<String, ?> variables) {
         if (variables != null) {
             for (Map.Entry<String, ?> entry : variables.entrySet()) {
@@ -165,57 +218,232 @@ public class ThymeleafViewResolver
 
 
 
+    /**
+     * <p>
+     *   Specify the order in which this view resolver will be queried.
+     * </p>
+     * <p>
+     *   Spring MVC applications can have several view resolvers configured,
+     *   and this <tt>order</tt> property established the order in which
+     *   they will be queried for view resolution.
+     * </p>
+     * 
+     * @param order the order in which this view resolver will be asked to resolve
+     *        the view.
+     */
     public void setOrder(final int order) {
         this.order = order;
     }
 
 
+    /**
+     * <p>
+     *   Returns the order in which this view resolver will be queried.
+     * </p>
+     * <p>
+     *   Spring MVC applications can have several view resolvers configured,
+     *   and this <tt>order</tt> property established the order in which
+     *   they will be queried for view resolution.
+     * </p>
+     * 
+     * @return the order
+     */
     public int getOrder() {
         return this.order;
     }
     
     
 
+    /**
+     * <p>
+     *   Sets the content type to be used when rendering views.
+     * </p>
+     * <p>
+     *   This content type acts as a <i>default</i>, so that every view
+     *   resolved by this resolver will use this content type unless there
+     *   is a bean defined for such view that specifies a different content type.
+     * </p>
+     * <p>
+     *   Therefore, individual views are allowed to specify their own content type
+     *   regardless of the <i>application-wide</i> setting established here.
+     * </p>
+     * <p>
+     *   If a content type is not specified (either here or at a specific view definition),
+     *   {@link ThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
+     * </p>
+     * 
+     * @param contentType the content type to be used.
+     */
     public void setContentType(final String contentType) {
         this.contentType = contentType;
     }
 
 
+    
+    /**
+     * <p>
+     *   Returns the content type that will be set into views resolved by this
+     *   view resolver.
+     * </p>
+     * <p>
+     *   This content type acts as a <i>default</i>, so that every view
+     *   resolved by this resolver will use this content type unless there
+     *   is a bean defined for such view that specifies a different content type.
+     * </p>
+     * <p>
+     *   Therefore, individual views are allowed to specify their own content type
+     *   regardless of the <i>application-wide</i> setting established here.
+     * </p>
+     * <p>
+     *   If a content type is not specified (either at the view resolver or at a specific 
+     *   view definition), {@link ThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
+     * </p>
+     * 
+     * @return returns the content type currently configured
+     */
     public String getContentType() {
         return this.contentType;
     }
     
 
 
+    
+    /**
+     * <p>
+     *   Specifies the character encoding to be set into the response when
+     *   the view is rendered.
+     * </p>
+     * <p>
+     *   Many times, character encoding is specified as a part of the <i>content
+     *   type</i>, using the {@link #setContentType(String)} or 
+     *   {@link ThymeleafView#setContentType(String)}, but this is not mandatory,
+     *   and it could be that only the MIME type is specified that way, thus allowing
+     *   to set the character encoding using this method.
+     * </p>
+     * <p>
+     *   As with {@link #setContentType(String)}, the value specified here acts as a 
+     *   default in case no character encoding has been specified at the view itself.
+     *   If a view bean exists with the name of the view to be processed, and this
+     *   view has been set a value for its {@link ThymeleafView#setCharacterEncoding(String)}
+     *   method, the value specified at the view resolver has no effect.
+     * </p>
+     * 
+     * @param characterEncoding the character encoding to be used (e.g. <tt>UTF-8</tt>, 
+     *        <tt>ISO-8859-1</tt>, etc.)
+     */
     public void setCharacterEncoding(final String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
 
 
+    /**
+     * <p>
+     *   Returns the character encoding set to be used for all views resolved by
+     *   this view resolver.
+     * </p>
+     * <p>
+     *   Many times, character encoding is specified as a part of the <i>content
+     *   type</i>, using the {@link #setContentType(String)} or 
+     *   {@link ThymeleafView#setContentType(String)}, but this is not mandatory,
+     *   and it could be that only the MIME type is specified that way, thus allowing
+     *   to set the character encoding using the {@link #setCharacterEncoding(String)}
+     *   counterpart of this getter method.
+     * </p>
+     * <p>
+     *   As with {@link #setContentType(String)}, the value specified here acts as a 
+     *   default in case no character encoding has been specified at the view itself.
+     *   If a view bean exists with the name of the view to be processed, and this
+     *   view has been set a value for its {@link ThymeleafView#setCharacterEncoding(String)}
+     *   method, the value specified at the view resolver has no effect.
+     * </p>
+     * 
+     * @return the character encoding to be set at a view-resolver-wide level.
+     */
     public String getCharacterEncoding() {
         return this.characterEncoding;
     }
     
     
 
-    
+    /**
+     * <p>
+     *   Set whether to interpret a given redirect URL that starts with a slash ("/") 
+     *   as relative to the current ServletContext, i.e. as relative to the web application root.
+     * </p>
+     * <p>
+     *   Default is <b><tt>true</tt></b>: A redirect URL that starts with a slash will be interpreted 
+     *   as relative to the web application root, i.e. the context path will be prepended to the URL.
+     * </p>
+     * <p>
+     *   Redirect URLs can be specified via the <tt>"redirect:"</tt> prefix. e.g.: 
+     *   <tt>"redirect:myAction.do"</tt>. 
+     * </p>
+     * 
+     * @param redirectContextRelative whether redirect URLs should be considered context-relative or not.
+     * @see RedirectView#setContextRelative(boolean)
+     */
     public void setRedirectContextRelative(final boolean redirectContextRelative) {
         this.redirectContextRelative = redirectContextRelative;
     }
 
     
+    /**
+     * <p>
+     *   Return whether to interpret a given redirect URL that starts with a slash ("/") 
+     *   as relative to the current ServletContext, i.e. as relative to the web application root. 
+     * </p>
+     * <p>
+     *   Default is <b><tt>true</tt></b>.
+     * </p>
+     *
+     * @return true if redirect URLs will be considered relative to context, false if not.
+     * @see RedirectView#setContextRelative(boolean)
+     */
     public boolean isRedirectContextRelative() {
         return this.redirectContextRelative;
     }
 
     
     
-    
+    /**
+     * <p>
+     *   Set whether redirects should stay compatible with HTTP 1.0 clients.
+     * </p>
+     * <p>
+     *   In the default implementation (default is <b><tt>true</tt></b>), this will enforce HTTP status 
+     *   code 302 in any case, i.e. delegate to 
+     *   {@link javax.servlet.http.HttpServletResponse#sendRedirect(String)}. Turning this off 
+     *   will send HTTP status code 303, which is the correct code for HTTP 1.1 clients, but not understood 
+     *   by HTTP 1.0 clients.
+     * </p>
+     * <p>
+     *   Many HTTP 1.1 clients treat 302 just like 303, not making any difference. However, some clients 
+     *   depend on 303 when redirecting after a POST request; turn this flag off in such a scenario.
+     * </p>
+     *   Redirect URLs can be specified via the <tt>"redirect:"</tt> prefix. e.g.: 
+     *   <tt>"redirect:myAction.do"</tt> 
+     * </p>
+     * 
+     * @param redirectHttp10Compatible true if redirects should stay compatible with HTTP 1.0 clients,
+     *        false if not.
+     * @see RedirectView#setHttp10Compatible(boolean)
+     */
     public void setRedirectHttp10Compatible(final boolean redirectHttp10Compatible) {
         this.redirectHttp10Compatible = redirectHttp10Compatible;
     }
 
     
+    /**
+     * <p>
+     *   Return whether redirects should stay compatible with HTTP 1.0 clients.
+     * </p>
+     * <p>
+     *   Default is <b><tt>true</tt></b>.
+     * </p>
+     * 
+     * @return whether redirect responses should stay compatible with HTTP 1.0 clients.
+     * @see RedirectView#setHttp10Compatible(boolean)
+     */
     public boolean isRedirectHttp10Compatible() {
         return this.redirectHttp10Compatible;
     }
@@ -224,7 +452,14 @@ public class ThymeleafViewResolver
 
     /**
      * <p>
-     *   Specify the names of the views that can be handled by this view resolver.
+     *   Specify a set of name patterns that will applied to determine whether a view name
+     *   returned by a controller will be resolved by this resolver or not.
+     * </p>
+     * <p>
+     *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf 
+     *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
+     *   a view will be considered to be resolved by this view resolver and when Spring should
+     *   simply ask the next resolver in the chain instead &ndash;according to its <tt>order</tt>.
      * </p>
      * <p>
      *   These view names can be specified as patterns: "index.*", "user_*", etc.
