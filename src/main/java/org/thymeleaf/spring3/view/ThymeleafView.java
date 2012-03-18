@@ -159,16 +159,52 @@ public class ThymeleafView
     }
 
     
+    /*
+     * Internally used (by ThymeleafViewResolver) in order to know whether a value
+     * for the content type has been explicitly set or not.
+     */
     boolean isContentTypeSet() {
         return this.contentTypeSet;
     }
 
     
 	
+    /**
+     * <p>
+     *   Returns the character encoding set to be used for rendering this view.
+     * </p>
+     * <p>
+     *   Many times, character encoding is specified as a part of the <i>content
+     *   type</i> using the {@link #setContentType(String)} method, but this is not mandatory,
+     *   and it could be that only the MIME type is specified that way, thus allowing
+     *   to set the character encoding using the {@link #setCharacterEncoding(String)}
+     *   counterpart of this getter method.
+     * </p>
+     * 
+     * @return the character encoding to be set.
+     */
     public String getCharacterEncoding() {
         return this.characterEncoding;
     }
 
+    
+
+    /**
+     * <p>
+     *   Specifies the character encoding to be set into the response when
+     *   the view is rendered.
+     * </p>
+     * <p>
+     *   Many times, character encoding is specified as a part of the <i>content
+     *   type</i> using the {@link #setContentType(String)} method, but this is not mandatory,
+     *   and it could be that only the MIME type is specified that way, thus allowing
+     *   to set the character encoding using the {@link #setCharacterEncoding(String)}
+     *   counterpart of this getter method.
+     * </p>
+     * 
+     * @param characterEncoding the character encoding to be used (e.g. <tt>UTF-8</tt>, 
+     *        <tt>ISO-8859-1</tt>, etc.)
+     */
     public void setCharacterEncoding(final String characterEncoding) {
         this.characterEncoding = characterEncoding;
     }
