@@ -40,6 +40,17 @@ import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 
 
 /**
+ * <p>
+ *   Implementation of the Spring MVC {@link org.springframework.web.servlet.View}
+ *   interface.
+ * </p>
+ * <p>
+ *   Views represent a template being executed, after being resolved (and
+ *   instantiated) by a {@link org.springframework.web.servlet.ViewResolver}.
+ * </p>
+ * <p>
+ *   This is the view implementation resolved by {@link ThymeleafViewResolver}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Josh Long
@@ -51,8 +62,11 @@ public class ThymeleafView
         extends WebApplicationObjectSupport 
         implements View, BeanNameAware  {
     
-    /*
-     * Charset set to ISO-8859-1 for compatibility reasons with Spring's AbstractView
+    /**
+     * <p>
+     *   Default charset set to ISO-8859-1 for compatibility reasons with Spring's AbstractView.
+     *   Value is "<tt>text/html;charset=ISO-8859-1</tt>".
+     * <p>
      */
     public static final String DEFAULT_CONTENT_TYPE = "text/html;charset=ISO-8859-1";
     
@@ -68,12 +82,26 @@ public class ThymeleafView
     private Map<String, Object> staticVariables = null;
 
 
+    /**
+     * <p>
+     *   Creates a new instance of <tt>ThymeleafView</tt>.
+     * </p>
+     */
 	protected ThymeleafView() {
 	    super();
 	}
 
 
+	/**
+	 * <p>
+	 *   Creates a new instance of <tt>ThymeleafView</tt>, specifying the
+	 *   template name.
+	 * </p>
+	 * 
+	 * @param templateName the template name.
+	 */
 	protected ThymeleafView(final String templateName) {
+	    super();
 		this.templateName = templateName;
 	}
 
@@ -81,14 +109,55 @@ public class ThymeleafView
 	
 
 
+    /**
+     * <p>
+     *   Returns the content type that will used for this view.
+     * </p>
+     * <p>
+     *   Content type will be computed this way:
+     * </p>
+     * <ul>
+     *   <li>If a value is specified calling {@link #setContentType(String)} on
+     *       this object, that value will be used.</li>
+     *   <li>If a value is specified at the <i>view resolver</i> by calling
+     *       {@link ThymeleafViewResolver#setContentType(String)}, that one will
+     *       be used.</li>
+     *   <li>If none of the above is true, the {@link #DEFAULT_CONTENT_TYPE} constant
+     *       with value {@value #DEFAULT_CONTENT_TYPE} will be used.</li>
+     * </ul>
+     * 
+     * @return the content type
+     * @see ThymeleafViewResolver#getContentType()
+     */
     public String getContentType() {
         return this.contentType;
     }
 
+
+    /**
+     * <p>
+     *   Sets the content type that will used for this view.
+     * </p>
+     * <p>
+     *   Content type will be computed this way:
+     * </p>
+     * <ul>
+     *   <li>If a value is specified calling this method, that value will be used.</li>
+     *   <li>If a value is specified at the <i>view resolver</i> by calling
+     *       {@link ThymeleafViewResolver#setContentType(String)}, that one will
+     *       be used.</li>
+     *   <li>If none of the above is true, the {@link #DEFAULT_CONTENT_TYPE} constant
+     *       with value {@value #DEFAULT_CONTENT_TYPE} will be used.</li>
+     * </ul>
+     * 
+     * @param contentType the content type to be used.
+     * @see ThymeleafViewResolver#setContentType(String)
+     */
     public void setContentType(final String contentType) {
         this.contentType = contentType;
         this.contentTypeSet = true;
     }
+
     
     boolean isContentTypeSet() {
         return this.contentTypeSet;

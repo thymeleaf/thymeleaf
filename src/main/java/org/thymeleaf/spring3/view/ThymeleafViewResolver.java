@@ -299,7 +299,7 @@ public class ThymeleafViewResolver
      *   view definition), {@link ThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
      * </p>
      * 
-     * @return returns the content type currently configured
+     * @return the content type currently configured
      */
     public String getContentType() {
         return this.contentType;
@@ -459,19 +459,52 @@ public class ThymeleafViewResolver
      *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf 
      *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
      *   a view will be considered to be resolved by this view resolver and when Spring should
-     *   simply ask the next resolver in the chain instead &ndash;according to its <tt>order</tt>.
+     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   instead.
      * </p>
      * <p>
-     *   These view names can be specified as patterns: "index.*", "user_*", etc.
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
      * </p>
      * 
      * @param viewNames the view names (actually view name patterns)
+     * @see PatternMatchUtils#simpleMatch(String[], String)
      */
     public void setViewNames(final String[] viewNames) {
         this.viewNames = viewNames;
     }
 
 
+    /**
+     * <p>
+     *   Return the set of name patterns that will applied to determine whether a view name
+     *   returned by a controller will be resolved by this resolver or not.
+     * </p>
+     * <p>
+     *   In applications configuring several view resolvers &ndash;for example, one for Thymeleaf 
+     *   and another one for JSP+JSTL legacy pages&ndash;, this property establishes when
+     *   a view will be considered to be resolved by this view resolver and when Spring should
+     *   simply ask the next resolver in the chain &ndash;according to its <tt>order</tt>&ndash;
+     *   instead.
+     * </p>
+     * <p>
+     *   The specified view name patterns can be complete view names, but can also use
+     *   the <tt>*</tt> wildcard: "<tt>index.*</tt>", "<tt>user_*</tt>", "<tt>admin/*</tt>", etc.
+     * </p>
+     * <p>
+     *   Also note that these view name patterns are checked <i>before</i> applying any prefixes
+     *   or suffixes to the view name, so they should not include these. Usually therefore, you
+     *   would specify <tt>orders/*</tt> instead of <tt>/WEB-INF/templates/orders/*.html</tt>.
+     * </p>
+     * 
+     * @return the view name patterns
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     */
     public String[] getViewNames() {
         return this.viewNames;
     }
@@ -481,24 +514,37 @@ public class ThymeleafViewResolver
     
     /**
      * <p>
-     *   Specify names of views that cannot be handled by this view resolver.
+     *   Specify names of views &ndash;patterns, in fact&ndash; that cannot 
+     *   be handled by this view resolver.
      * </p>
      * <p>
-     *   These view names can be specified as patterns: "index.*", "user_*", etc.
-     * </p>
-     * <p>
-     *   This works as an exclusion filter for the <tt>viewNames</tt> property. A view
-     *   name must both match <tt>viewNames</tt> (if it is not null) and not match
-     *   <tt>excludedViewName</tt> (if it is not null) in order to be executed.
+     *   These patterns can be specified in the same format as those in
+     *   {@link #setViewNames(String[])}, but work as an <i>exclusion list</i>.
      * </p>
      * 
      * @param excludedViewNames the view names to be excluded (actually view name patterns)
+     * @see ThymeleafViewResolver#setViewNames(String[])
+     * @see PatternMatchUtils#simpleMatch(String[], String)
      */
     public void setExcludedViewNames(final String[] excludedViewNames) {
         this.excludedViewNames = excludedViewNames;
     }
 
 
+    /**
+     * <p>
+     *   Returns the names of views &ndash;patterns, in fact&ndash; that cannot 
+     *   be handled by this view resolver.
+     * </p>
+     * <p>
+     *   These patterns can be specified in the same format as those in
+     *   {@link #setViewNames(String[])}, but work as an <i>exclusion list</i>.
+     * </p>
+     * 
+     * @return the excluded view name patterns
+     * @see ThymeleafViewResolver#getViewNames()
+     * @see PatternMatchUtils#simpleMatch(String[], String)
+     */
     public String[] getExcludedViewNames() {
         return this.excludedViewNames;
     }
