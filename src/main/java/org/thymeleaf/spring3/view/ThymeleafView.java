@@ -35,6 +35,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.spring3.SpringTemplateEngine;
 import org.thymeleaf.spring3.context.SpringWebContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 
@@ -76,7 +77,7 @@ public class ThymeleafView
     private String contentType = DEFAULT_CONTENT_TYPE;
     private boolean contentTypeSet = false;
     private String characterEncoding = null;
-    private TemplateEngine templateEngine = null;
+    private SpringTemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
     private Map<String, Object> staticVariables = null;
@@ -210,48 +211,135 @@ public class ThymeleafView
     }
 
     
-    
+    /**
+     * <p>
+     *   Returns the bean name.
+     * </p>
+     * 
+     * @return the bean name.
+     */
     public String getBeanName() {
         return this.beanName;
     }
 
+    
+    /**
+     * <p>
+     *   Sets the bean name.
+     * </p>
+     * 
+     * @param beanName the new bean name.
+     */
     public void setBeanName(final String beanName) {
         this.beanName = beanName;
     }
 
     
-    
+
+    /**
+     * <p>
+     *   Returns the name of the template being processed by this view object.
+     * </p>
+     * <p>
+     *   This name will be specified in the same shape it will be resolved by the
+     *   template resolvers (i.e. as it is returned by controllers, without any
+     *   prefixes/suffixes).
+     * </p>
+     * 
+     * @return the template name.
+     */
     public String getTemplateName() {
         return this.templateName;
     }
 	
+    
+    /**
+     * <p>
+     *   Sets the name of the template to be processed by this view object.
+     * </p>
+     * <p>
+     *   This name will be specified in the same shape it will be resolved by the
+     *   template resolvers (i.e. as it is returned by controllers, without any
+     *   prefixes/suffixes).
+     * </p>
+     * 
+     * @param templateName the template name
+     */
 	public void setTemplateName(final String templateName) {
 		this.templateName = templateName;
 	}
 
 	
 
+	/**
+	 * <p>
+	 *   Returns the locale to be used for template processing.
+	 * </p>
+	 * 
+	 * @return the locale
+	 */
     protected Locale getLocale() {
         return this.locale;
     }
 
+    
+    /**
+     * <p>
+     *   Sets the locale to be used for template processing. Usually,
+     *   the View Resolver will set this automatically from user session
+     *   / application data.
+     * </p>
+     * 
+     * @param locale the locale to be used.
+     */
     void setLocale(final Locale locale) {
         this.locale = locale;
+        
     }
     
     
     
-    protected TemplateEngine getTemplateEngine() {
+    /**
+     * <p>
+     *   Returns the template engine instance &ndash;a {@link SpringTemplateEngine} instance,
+     *   specifically&ndash; to be used for processing the template specified by this view object.
+     * </p>
+     * 
+     * @return the template engine instance
+     */
+    protected SpringTemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
-    void setTemplateEngine(final TemplateEngine templateEngine) {
+    
+    /**
+     * <p>
+     *   Sets the template engine instance &ndash;a {@link SpringTemplateEngine} instance,
+     *   specifically&ndash; to be used for processing the template specified by this view object.
+     * </p>
+     * 
+     * @param templateEngine the template engine instance to be used
+     */
+    void setTemplateEngine(final SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
 
     
 
+    /**
+     * <p>
+     *   Return the static variables, which will be available at the context
+     *   every time this view is processed.
+     * </p>
+     * <p>
+     *   These static variables are added to the context before the view is 
+     *   processed, so that they can be referenced from the context like any 
+     *   other context variables, for example: <tt>${myStaticVar}</tt>.
+     * </p>
+     * 
+     * @return the map of static variables to be set into view's execution.
+     */
     public Map<String,Object> getStaticVariables() {
         if (this.staticVariables == null) {
             return Collections.emptyMap();
@@ -260,6 +348,20 @@ public class ThymeleafView
     }
 
 
+    /**
+     * <p>
+     *   Add a new static variable.
+     * </p>
+     * <p>
+     *   These static variables are added to the context before this view 
+     *   is processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     * 
+     * @param name the name of the static variable
+     * @param value the value of the static variable
+     */
     public void addStaticVariable(final String name, final Object value) {
         if (this.staticVariables == null) {
             this.staticVariables = new HashMap<String, Object>();
@@ -268,6 +370,25 @@ public class ThymeleafView
     }
 
 
+    /**
+     * <p>
+     *   Sets a set of static variables, which will be available at the context
+     *   when this view is processed.
+     * </p>
+     * <p>
+     *   This method <b>does not overwrite</b> the existing static variables, it
+     *   simply adds the ones specify to any variables already registered.
+     * </p>
+     * <p>
+     *   These static variables are added to the context before this view is 
+     *   processed, so that they can be referenced from
+     *   the context like any other context variables, for example:
+     *   <tt>${myStaticVar}</tt>.
+     * </p>
+     * 
+     * 
+     * @param variables the set of variables to be added.
+     */
     public void setStaticVariables(final Map<String, ?> variables) {
         if (variables != null) {
             if (this.staticVariables == null) {
