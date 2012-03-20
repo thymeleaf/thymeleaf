@@ -176,6 +176,19 @@ h3 {
   border-left: 3px dotted #99cc33;
   padding: 3px 10px;
 }
+h4 {
+  font-family: 'DejaVu Sans', Arial, Helvetica;
+  font-size: 11px;
+  font-style: italic;
+  font-weight: bold;
+  color: #352726;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  margin-left: 40px;
+  margin-right: 40px;
+  border-left: 1px dotted #99cc33;
+  padding: 3px 10px;
+}
 #author {
   font-size: 12px;
   text-align:right;
