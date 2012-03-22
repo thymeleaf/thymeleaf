@@ -46,7 +46,9 @@ public final class DOMUtils {
     private static final char[] LT = "&lt;".toCharArray();
     private static final char[] GT = "&gt;".toCharArray();
     private static final char[] QUOT = "&quot;".toCharArray();
-    private static final char[] APOS = "&apos;".toCharArray();
+    // &apos; will not be used as it is considered an XML entity, but not
+    // an HTML one. This causes problems in Internet Explorer <= 8.
+    private static final char[] APOS = "&#39;".toCharArray();
     
     
     
