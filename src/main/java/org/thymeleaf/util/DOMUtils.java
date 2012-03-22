@@ -300,9 +300,21 @@ public final class DOMUtils {
             return "\"";
         } else if (len == 6 && unescapeQuotes && c1 == 'a' && c2 == 'p' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 's') {
             return "\'";
-        } else {
-            return str.substring(off, (off + len));
+        } else if (len == 5 && c1 == '#') {
+            final char c3 = str.charAt(off + 3);
+            if (c2 == '6' && c3 == '0') {
+                return "<";
+            } else if (c2 == '6' && c3 == '2') {
+                return ">";
+            } else if (c2 == '3' && c3 == '8') {
+                return "&";
+            } else if (unescapeQuotes && c2 == '3' && c3 == '4') {
+                return "\"";
+            } else if (unescapeQuotes && c2 == '3' && c3 == '9') {
+                return "\'";
+            }
         }
+        return str.substring(off, (off + len));
         
     }
     
