@@ -2,6 +2,10 @@
 =====
 - Added template name, line number and column to SAXParseExceptions in AbstractNonValidatingSAXTemplateParser.
 - Fixed attribute escaping in builtin DOM parser.
+- Fixed XML-escaping of ' (apos) in element attributes. "&apos;" is not a recognized HTML entity (only an XML one)
+  and IE <= 8 does not recognize it. &#39; will be used for escaping ' instead.
+- Fixed unescaping of XML entities in element attributes, so that those specified with codes (&#XX;) are also
+  correctly unescaped.
 
 
 2.0.4
