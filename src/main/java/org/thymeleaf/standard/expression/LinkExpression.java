@@ -328,7 +328,20 @@ public final class LinkExpression extends SimpleExpression {
             final String linkBasePart2 = linkBase.substring(questionMarkPosition);
             return contextName + linkBasePart1 + sessionFragment + linkBasePart2 + parametersBuffer.toString();
             
+        } else if (isLinkBaseServerRelative(linkBase)) {
+            
+            if (questionMarkPosition == -1) {
+                // remove the "~" from the link base
+                return linkBase.substring(1) + sessionFragment + parametersBuffer.toString();
+            }
+            
+            final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
+            final String linkBasePart2 = linkBase.substring(questionMarkPosition);
+            // remove the "~" from the link base part 1 
+            return linkBasePart1.substring(1) + sessionFragment + linkBasePart2 + parametersBuffer.toString();
+            
         }
+
         
         return linkBase + sessionFragment + parametersBuffer.toString();
         
@@ -349,6 +362,11 @@ public final class LinkExpression extends SimpleExpression {
     
     private static boolean isLinkBaseContextRelative(final String linkBase) {
         return linkBase.startsWith("/");
+    }
+    
+    
+    private static boolean isLinkBaseServerRelative(final String linkBase) {
+        return linkBase.startsWith("~/");
     }
     
     

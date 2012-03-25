@@ -6,6 +6,9 @@
   and IE <= 8 does not recognize it. &#39; will be used for escaping ' instead.
 - Fixed unescaping of XML entities in element attributes, so that those specified with codes (&#XX;) are also
   correctly unescaped.
+- Added to link expressions (@{...}) the ability to create server-root-relative (instead of context-root-relative)
+  URLs in order to link to different contexts in the same server. These URLs will be specified like 
+  @{~/path/to/something}. 
 
 
 2.0.4
