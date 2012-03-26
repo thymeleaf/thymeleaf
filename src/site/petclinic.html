@@ -69,13 +69,13 @@
        application for the employees of a pets clinic. That is, view and manage information 
        regarding the veterinarians.</p>
     <p>At Thymeleaf, we have modified such an application to have a version using Thymeleaf instead of JSP (used in the
-       original application). We've kept the functionality but replaced the view layer</p>
-    <p>More on the JSP version of PetClinic <a href="http://static.springsource.org/docs/petclinic.html">at SpringSource</a></p>
+       original application). We've kept the functionality but replaced the view layer.</p>
+    <p>More on the JSP version of PetClinic <a href="http://static.springsource.org/docs/petclinic.html">at SpringSource.</a></p>
     
     <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
     
     <h3>View layer</h3>
-    <p>The purpose of this application is the modification of the PetClinic's view layer. The original application
+    <p>The purpose of this application is the modification of the Petclinic's view layer. The original application
        uses JSP and we want to replace it with Thymeleaf in order to have valid HTML files understandable by any 
        web browser and, at the same time, usable by any web designer without having to convert that code (remove 
        or add tags, ...) so that both, designers and developers, can work with the same files.</p>
@@ -108,7 +108,7 @@
     
     <h3>Advantages</h3>
     <p>With the Thymeleaf approach, we get an application with HTML which can be displayed in a browser,
-    with no third-party tags...just HTML with Thymeleaf attributes.</p>
+    with no third-party tags...just HTML with Thymeleaf attributes: easier to develop...easier to maintain.</p>
      
         
     <h3>Tasks</h3>
@@ -120,11 +120,10 @@
         <li>Rename the *.jsp files to *.html as now they only contain HTML</li>     
     </ul>
         
-    <p>Regarding the pages structure, as it is not necessary to modify them for our version to work, we've kept it. So, 
-       we still have header and footer files but now, each file is an HTML valid one on it's own: header and footer are 
-       well formed HTML files and the show.jsp as well -which includes the header and footer fragments. We could have 
-       modified the structure and have all the fragments (basically header and footer) in the same page but we have 
-       preferred keeping the original structure</p>
+    <p>Regarding the pages structure, we have modified it. Instead of having the header and footer files as incomplete
+       HTML files, we now have a single file with two fragments: head and footer. Our new file is an HTML valid one on 
+       it's own: header and footer are now well formed HTML files and the show.html as well -which includes the head and 
+       footer fragments.</p>
         
         
     <h2>The code</h2>
@@ -177,7 +176,7 @@
     
         <p>Note that our templates are in the folder WEB-INF/templates instead of WEB-INF/jsp</p>
         
-        <p>We also need to add the default view to the error handling bean. This is necessary as, in the original configuration when an unexpected
+        <p>We also need to add the default view to the error handling bean. This is necessary as, in the original configuration, when an unexpected
            exception arises, an HTML page configured in the web.xml file is shown...but we can't use thymeleaf there as the server(i.e. tomcat) is who manages
            that situation directly. So, in order to remove the java code in that page and, instead, use thymeleaf in the default error page, we have to
            configure our bean so that spring can manage that error. The code below will show the new configuration in the petclinic-servlet.xml.</p>
@@ -245,7 +244,7 @@
     <p>In order to modify the JSP page, we have to:</p>
     <ul>
         <li>Rename list.jsp to list.html</li>
-        <li>Remove the include sentences as we do not need any tags libray and the header and footer pieces of html will
+        <li>Remove the include sentences as we do not need any tags libray and the head and footer pieces of HTML will
         be added to the page by means of the <kbd>th:substituteby</kbd> tag. Header and footer files have been included in
         one single file: <kbd>layout.html</kbd>
                 <code>
@@ -266,7 +265,7 @@
 <br />
 &lt;<b>html</b>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;header&quot;</span>&gt;&lt;<b>/head</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;head&quot;</span>&gt;&lt;<b>/head</b>&gt;
 
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
