@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>The Spring PetClinic Application: from JSP to Thymeleaf</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+    
+    <style type="text/css">
+        /* ---------------------- */
+        /* PETCLINIC IMAGES       */
+        /* ---------------------- */
+        #content img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="features.html" title="Features">Features</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      articles
+      ::
+      <span class="current">The spring petclinic application</span>
+   </div>
+
+
+   <div id="content">
+
+     <h1>The Spring PetClinic Application: from JSP to Thymeleaf</h1>
+
+     <p id="author">
+       <i>By XXXXXXXXXXXXXXX</i>
+     </p>
+
+
+
+    <h2>The Spring PetClinic application</h2>
+    
+    <h3>Overview</h3>
+    <p>PetClinic is a sample application from SpringSource to learn how to use Spring Framework in order to create an 
+       application for the employees of a pets clinic. That is, view and manage information 
+       regarding the veterinarians.</p>
+    <p>At Thymeleaf, we have modified such an application to have a version using Thymeleaf instead of JSP (used in the
+       original application). We've kept the functionality but replaced the view layer</p>
+    <p>More on the JSP version of PetClinic <a href="http://static.springsource.org/docs/petclinic.html">at SpringSource</a></p>
+    
+    <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
+    
+    <h3>View layer</h3>
+    <p>The purpose of this application is the modification of the PetClinic's view layer. The original application
+       uses JSP and we want to replace it with Thymeleaf in order to have valid HTML files understandable by any 
+       web browser and, at the same time, usable by any web designer without having to convert that code (remove 
+       or add tags, ...) so that both, designers and developers, can work with the same files.</p>
+    <p>Neither the application features nor  the java code will be modified. We'll only replace:</p>
+    <ul>
+        <li>the JSP files with their equivalent only HTML version (using Thymeleaf attributes) and</li>
+        <li>the configuration files to create and configure Thymeleaf template resolver</li>
+    </ul> 
+    <p>In the original view layer (JSP):</p>
+    <ul>
+        <li>The HTML pages include JSTL and Spring tags which are not understandable by the browser...so there is no 
+        way for it to represent the pages statically.</li>
+        <li>The HTML pages are not well formed. For example,the show owners page is broken down into three 
+        incomplete pages:
+            <ol> 
+                <li>a header.jsp one ending with body and div tags not closed,</li>
+                <li>a show.jsp which does not have neither head nor body tags -as they come from the header, 
+                and</li>
+                <li> a footer.jsp one closing the body and div tags opened in the header</li>
+            </ol>
+        </li>
+        <li>Some HTML pages to handle exceptions include java code which is not a good practice.</li>
+    </ul>         
+    <p>All of the above points avoid the pages from being correctly displayed by any browser which makes
+    both, the developer and designer tasks, less easy whereas in the Thymeleaf version this does not happen and
+    the code is more readable and can be seen in the browser in a static way. </p>
+
+    
+    <h2>Substituting JSP by Thymeleaf</h2>
+    
+    <h3>Advantages</h3>
+    <p>With the Thymeleaf approach, we get an application with HTML which can be displayed in a browser,
+    with no third-party tags...just HTML with Thymeleaf attributes.</p>
+     
+        
+    <h3>Tasks</h3>
+    <p>In order to have a working Thymeleaf version of PetClinic, we need to perform several actions on the original version:</p>
+    <ul>
+        <li>Remove all of the JSTL and Spring tags. Instead of them, add the Thymeleaf attributes to the HTML tags to achieve
+        the same functionality</li>
+        <li>Remove java code from the error pages</li>
+        <li>Rename the *.jsp files to *.html as now they only contain HTML</li>     
+    </ul>
+        
+    <p>Regarding the pages structure, as it is not necessary to modify them for our version to work, we've kept it. So, 
+       we still have header and footer files but now, each file is an HTML valid one on it's own: header and footer are 
+       well formed HTML files and the show.jsp as well -which includes the header and footer fragments. We could have 
+       modified the structure and have all the fragments (basically header and footer) in the same page but we have 
+       preferred keeping the original structure</p>
+        
+        
+    <h2>The code</h2>
+    
+    <p>All the code in this article (the Thymeleaf version) comes from a working example application you can download from
+       the <a href="documentation.html">documentation page</a>. Downloading this application from the Thymeleaf
+       website and the JSP one from <a href="https://src.springframework.org/svn/spring-samples">here</a>, 
+       executing it and exploring its source code is highly recommended as it will help you to discover the 
+       differences between the JSP approach and the Thymeleaf one.</p>
+    
+    <h3>Spring MVC XML configuration</h3>
+    <h4>pom.xml</h4>
+    <p>We have to modify the pom.xml in order to add the Thymeleaf dependencies to it and remove the JSP related ones from it</p>
+    <h4>petclinic-servlet.xml</h4>
+    <p>In the Spring configuration file we have to add the <kbd>templateresolver</kbd> for the views replacing 
+        the JSP one. That is, remove the <kbd>InternalResourceViewResolver</kbd> and set the <kbd>Thymeleaf view resolver</kbd> as seen in the
+        following piece of code:</p>
+        
+            <code>
+&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateResolver&quot;</span>&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>&gt;&lt;<b>/property</b>&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&gt;&lt;<b>/property</b>&gt;
+<br />
+&lt;<b>/bean</b>&gt;
+<br />
+&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
+<br />
+&lt;<b>/bean</b>&gt;
+<br />
+&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
+<br />
+    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
+<br />
+&lt;<b>/bean</b>&gt;
+
+        
+        </code>
+    
+        <p>Note that our templates are in the folder WEB-INF/templates instead of WEB-INF/jsp</p>
+        
+        <p>We also need to add the default view to the error handling bean. This is necessary as, in the original configuration when an unexpected
+           exception arises, an HTML page configured in the web.xml file is shown...but we can't use thymeleaf there as the server(i.e. tomcat) is who manages
+           that situation directly. So, in order to remove the java code in that page and, instead, use thymeleaf in the default error page, we have to
+           configure our bean so that spring can manage that error. The code below will show the new configuration in the petclinic-servlet.xml.</p>
+        
+    <code>
+    &lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.handler.SimpleMappingExceptionResolver&quot;</span>&gt;
+<br />
+        &lt;<b>property</b>&nbsp;name=<span class="string">&quot;exceptionMappings&quot;</span>&gt;
+<br />
+            &lt;<b>props</b>&gt;
+<br />
+                &lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.web.servlet.PageNotFound&quot;</span>&gt;pageNotFound&lt;<b>/prop</b>&gt;
+<br />
+                &lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.dao.DataAccessException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+<br />
+                &lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.transaction.TransactionException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+<br />
+            &lt;<b>/props</b>&gt;
+<br />
+        &lt;<b>/property</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;defaultErrorView&quot;</span>&nbsp;value=<span class="string">&quot;uncaughtException&quot;</span>&gt;&lt;<b>/property</b>&gt;
+<br />
+    &lt;<b>/bean</b>&gt;
+<br />
+    
+    </code>
+
+<p>We also have removed the piece of code in the web.xml file configuring the default error page. The code below should be removed.</p>
+   
+   <code>
+
+
+&lt;<b>error-page</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
+<br />
+	&lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
+<br />
+	&lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
+<br />
+&lt;<b>/error-page</b>&gt;
+<br />
+
+
+</code>
+     
+        
+        
+        
+    <h3>HTML pages</h3>
+    <p>In this section, we'll describe how to replace two different pages in the application with their Thymeleaf version:</p>
+    <ul>
+        <li>owners/list.jsp page</li>
+        <li>uncaughtException.jsp page</li>
+    </ul>
+        
+       
+     
+    <h4>Modify owners/list.jsp page</h4>     
+    <p>This page shows the list of veterinarians that match the last name we introduced in the previous page (search.jsp).</p>
+    
+    <img src="images/thymeleafpetclinic_owners.png" alt="Owners page"/> 
+    
+    <p>In order to modify the JSP page, we have to:</p>
+    <ul>
+        <li>Rename list.jsp to list.html</li>
+        <li>Remove the include sentences as we do not need any tags libray and the header and footer pieces of html will
+        be added to the page by means of the <kbd>th:substituteby</kbd> tag. Header and footer files have been included in
+        one single file: <kbd>layout.html</kbd>
+                <code>
+&lt;<b>!--</b>&nbsp;list.jsp&nbsp;file&nbsp;--&gt;
+<br />
+&lt;<b>%@</b>&nbsp;include&nbsp;file=<span class="string">&quot;/WEB-INF/jsp/includes.jsp&quot;</span>&nbsp;%&gt;
+<br />
+&lt;<b>%@</b>&nbsp;include&nbsp;file=<span class="string">&quot;/WEB-INF/jsp/header.jsp&quot;</span>&nbsp;%&gt;
+
+<br />
+&lt;<b>h2</b>&gt;Owners:&lt;<b>/h2</b>&gt;
+                    
+                </code>
+                <code>
+&lt;<b>!--</b>&nbsp;list.html&nbsp;file&nbsp;--&gt;
+<br />
+                    &lt;<b>!DOCTYPE</b>&nbsp;html&gt;
+<br />
+&lt;<b>html</b>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;header&quot;</span>&gt;&lt;<b>/head</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
+<br />
+            
+                </code>
+        </li>
+        <li>
+            Remove the JSP tags and use Thymeleaf attributes instead
+
+<code>
+
+
+&lt;<b>!--</b>&nbsp;list.jsp&nbsp;file&nbsp;--&gt;
+<br />
+&lt;<b>table</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>thead</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Name&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Address&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;City&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Telephone&lt;<b>/th</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Pets&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/thead</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>c:forEach</b>&nbsp;var=<span class="string">&quot;owner&quot;</span>&nbsp;items=<span class="string">&quot;${selections}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>spring:url</b>&nbsp;value=<span class="string">&quot;owners/{ownerId}&quot;</span>&nbsp;var=<span class="string">&quot;ownerUrl&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>spring:param</b>&nbsp;name=<span class="string">&quot;ownerId&quot;</span>&nbsp;value=<span class="string">&quot;${owner.id}&quot;</span>/&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/spring:url</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;${fn:escapeXml(ownerUrl)}&quot;</span>&gt;${owner.firstName}&nbsp;${owner.lastName}&lt;<b>/a</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;${owner.address}&lt;<b>/td</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;${owner.city}&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;${owner.telephone}&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:forEach</b>&nbsp;var=<span class="string">&quot;pet&quot;</span>&nbsp;items=<span class="string">&quot;${owner.pets}&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${pet.name}&nbsp;&amp;nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/c:forEach</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&lt;<b>/c:forEach</b>&gt;
+<br />
+&lt;<b>/table</b>&gt;
+
+<br />
+
+
+</code>
+
+
+<code>
+
+
+&lt;<b>!--</b>&nbsp;list.html&nbsp;file&nbsp;--&gt;
+<br />
+&lt;<b>table</b>&gt;
+<br />
+    &lt;<b>thead</b>&gt;
+
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+<br />
+        &lt;<b>th</b>&gt;Name&lt;<b>/th</b>&gt;
+<br />
+        &lt;<b>th</b>&gt;Address&lt;<b>/th</b>&gt;
+<br />
+
+        &lt;<b>th</b>&gt;City&lt;<b>/th</b>&gt;
+<br />
+        &lt;<b>th</b>&gt;Telephone&lt;<b>/th</b>&gt;
+<br />
+        &lt;<b>th</b>&gt;Pets&lt;<b>/th</b>&gt;
+
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+    &lt;<b>/thead</b>&gt;
+<br />
+    &lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
+<br />
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+        &lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&nbsp;
+<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;Mary&nbsp;Smith&lt;<b>/a</b>&gt;
+
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;45,&nbsp;Oxford&nbsp;Street&lt;<b>/td</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;Cambridge&lt;<b>/td</b>&gt;
+
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;555-555-555&lt;<b>/td</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+        &lt;<b>span</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:utext=<span class="string">&quot;${pet.name&nbsp;+&nbsp;&#39;&amp;nbsp;&#39;}&quot;</span>&gt;
+
+<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;Bob
+<br />
+        &lt;<b>/span</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+    &lt;<b>/tr</b>&gt;
+<br />
+    &lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
+
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&gt;John&nbsp;Moore&lt;<b>/a</b>&gt;&lt;<b>/td</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;78,&nbsp;NY&nbsp;Street&lt;<b>/td</b>&gt;
+
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Washington&lt;<b>/td</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;333-333-333&lt;<b>/td</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+
+        &lt;<b>span</b>&gt;Roger&lt;<b>/span</b>&gt;
+<br />
+        &lt;<b>br/</b>&gt;
+<br />
+        &lt;<b>span</b>&gt;Peggy&lt;<b>/span</b>&gt;
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+
+<br />
+    &lt;<b>/tr</b>&gt;
+<br />
+&lt;<b>/table</b>&gt;
+<br />
+
+
+</code>
+
+            <p>In the code above you can see how, for example, we have replaced the use of the tag <kbd>c:foreach</kbd> with 
+            the <kbd>th:each</kbd> attribute instead.</p>
+            <p>Note that, in the Thymeleaf version, we have added some code just to be used when displaying the page statically. So we use the th:remove attribute
+            to avoid this being rendered when deploying in a server.</p>
+        </li>
+    </ul>
+
+    <p>You can checkout the Petclinic module from the <a href="documentation.html" title="Documentation">Thymeleaf documentation page</a> and have a look at this in detail.
+     
+    <h4>Modify uncaughtException.jsp</h4>     
+    <p>
+    </p>
+    <img src="images/thymeleafpetclinic_uncaughtexception.png" alt="Uncaught Exception page"/>
+    
+ 
+  </div>
+  </body>
+  
+</html>
