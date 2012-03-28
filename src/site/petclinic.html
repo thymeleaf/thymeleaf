@@ -2,8 +2,8 @@
 <html>
 
   <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>The Spring PetClinic Application: from JSP to Thymeleaf</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>The Spring PetClinic Application: from JSP to Thymeleaf</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
     <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
@@ -70,7 +70,7 @@
        regarding the veterinarians.</p>
     <p>At Thymeleaf, we have modified such an application to have a version using Thymeleaf instead of JSP (used in the
        original application). We've kept the functionality but replaced the view layer.</p>
-    <p>More on the JSP version of PetClinic <a href="http://static.springsource.org/docs/petclinic.html">at SpringSource.</a></p>
+    <p>More on the JSP version of PetClinic <a href="http://static.springsource.org/docs/petclinic.html">at SpringSource</a>.</p>
     
     <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
     
@@ -214,9 +214,9 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
 <br />
-	&lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
+    &lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
 <br />
-	&lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
+    &lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
 <br />
 &lt;<b>/error-page</b>&gt;
 <br />
@@ -449,9 +449,198 @@
     <p>You can checkout the Petclinic module from the <a href="documentation.html" title="Documentation">Thymeleaf documentation page</a> and have a look at this in detail.
      
     <h4>Modify uncaughtException.jsp</h4>     
-    <p>
+    <p>This is the page the user will be redirected to when an unexpected exception arises. The JSP version of this page is not as the others, instead
+    of JSP tags, it contains java code (yes...that's not a good practice). So, in orther to create the thymeleaf version of that page, we
+    have to replace all of that java code with HTML and add thymeleaf attributes to it in order to get the same results 
+    as the original page.
     </p>
     <img src="images/thymeleafpetclinic_uncaughtexception.png" alt="Uncaught Exception page"/>
+    
+    
+    
+    <code>
+&lt;<b>!--</b>&nbsp;uncaughtException.jsp&nbsp;file&nbsp;--&gt;
+<br />
+
+&lt;%&nbsp;
+<br />
+<b>try</b>&nbsp;{
+<br />
+    <span class="comment">//&nbsp;The&nbsp;Servlet&nbsp;spec&nbsp;guarantees&nbsp;<b>this</b>&nbsp;attribute&nbsp;will&nbsp;be&nbsp;available
+
+</span><br />
+    Throwable&nbsp;exception&nbsp;=&nbsp;(Throwable)&nbsp;request.getAttribute(<span class="string">&quot;javax.servlet.error.exception&quot;</span>);&nbsp;
+<br />
+
+<br />
+    if&nbsp;(exception&nbsp;!=&nbsp;null)&nbsp;{
+
+<br />
+        if&nbsp;(exception&nbsp;instanceof&nbsp;ServletException)&nbsp;{
+<br />
+            <span class="comment">//&nbsp;It&#39;s&nbsp;a&nbsp;ServletException:&nbsp;we&nbsp;should&nbsp;extract&nbsp;the&nbsp;root&nbsp;cause
+
+</span><br />
+            ServletException&nbsp;sex&nbsp;=&nbsp;(ServletException)&nbsp;exception;
+<br />
+            Throwable&nbsp;rootCause&nbsp;=&nbsp;sex.getRootCause();
+<br />
+            if&nbsp;(rootCause&nbsp;==&nbsp;null)
+
+<br />
+                rootCause&nbsp;=&nbsp;sex;
+<br />
+            out.println(<span class="string">&quot;**&nbsp;Root&nbsp;cause&nbsp;is:&nbsp;&quot;</span>+&nbsp;rootCause.getMessage());
+<br />
+            rootCause.printStackTrace(<b>new</b>&nbsp;java.io.PrintWriter(out));&nbsp;
+
+<br />
+        }
+<br />
+        else&nbsp;{
+<br />
+            <span class="comment">//&nbsp;It&#39;s&nbsp;not&nbsp;a&nbsp;ServletException,&nbsp;so&nbsp;we&#39;ll&nbsp;just&nbsp;show&nbsp;it
+
+</span><br />
+            exception.printStackTrace(<b>new</b>&nbsp;java.io.PrintWriter(out));&nbsp;
+<br />
+        }
+<br />
+    }&nbsp;
+<br />
+    else&nbsp;&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    out.println(<span class="string">&quot;No&nbsp;error&nbsp;information&nbsp;available&quot;</span>);
+<br />
+    }&nbsp;
+<br />
+
+<br />
+    <span class="comment">//&nbsp;Display&nbsp;cookies
+
+</span><br />
+    out.println(<span class="string">&quot;\nCookies:\n&quot;</span>);
+<br />
+    Cookie[]&nbsp;cookies&nbsp;=&nbsp;request.getCookies();
+<br />
+    if&nbsp;(cookies&nbsp;!=&nbsp;null)&nbsp;{
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;    <b>for</b>&nbsp;(<b>int</b>&nbsp;i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;cookies.length;&nbsp;i++)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;        out.println(cookies[i].getName()&nbsp;+&nbsp;<span class="string">&quot;=[&quot;</span>&nbsp;+&nbsp;cookies[i].getValue()&nbsp;+&nbsp;<span class="string">&quot;]&quot;</span>);
+
+<br />
+        }
+<br />
+    }
+<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+}&nbsp;<b>catch</b>&nbsp;(Exception&nbsp;ex)&nbsp;{&nbsp;
+<br />
+
+    ex.printStackTrace(<b>new</b>&nbsp;java.io.PrintWriter(out));
+<br />
+}
+<br />
+%&gt;
+<br />
+
+
+</code>
+
+
+
+
+
+
+
+
+
+<code>
+&lt;<b>!--</b>&nbsp;uncaughtException.html&nbsp;file&nbsp;--&gt;
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;id=<span class="string">&quot;main&quot;</span>&nbsp;th:with=&quot;exception&nbsp;&nbsp;&nbsp;=&nbsp;${#httpServletRequest.getAttribute(&#39;javax.servlet.error.exception&#39;)},
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;${exception.class},
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stacktrace&nbsp;&nbsp;=&nbsp;${exception.stackTrace},
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookies&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;${#httpServletRequest.cookies}&quot;&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;Internal&nbsp;error&lt;<b>/h2</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p/</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;!=&nbsp;null}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:object=<span class="string">&quot;${exception.rootCause}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:utext=<span class="string">&quot;*{&#39;**&nbsp;Root&nbsp;cause&nbsp;is:&nbsp;&#39;&nbsp;+&nbsp;message&nbsp;+&nbsp;&#39;&amp;lt;br/&amp;gt;&#39;}&quot;</span>&gt;&lt;<b>/div</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;*{stackTrace}&quot;</span>&nbsp;th:text=<span class="string">&quot;${st}&quot;</span>&gt;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:unless=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:utext=<span class="string">&quot;${exception.class&nbsp;+&nbsp;&#39;:&nbsp;&#39;&nbsp;+&nbsp;exception.message&nbsp;+&nbsp;&#39;&amp;lt;br/&amp;gt;&#39;}&quot;</span>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:utext=<span class="string">&quot;${&#39;at&nbsp;&#39;+&nbsp;st&nbsp;+&nbsp;&#39;&amp;lt;br/&amp;gt;&#39;}&quot;</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;${stackTrace}&quot;</span>&nbsp;&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;==&nbsp;null}&quot;</span>&nbsp;th:text=<span class="string">&quot;&#39;No&nbsp;error&nbsp;information&nbsp;available&#39;&quot;</span>&gt;&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br/</b>&gt;
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cookies:
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br/</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;c&nbsp;:&nbsp;${cookies}&quot;</span>&nbsp;th:text=<span class="string">&quot;${c.name&nbsp;+&nbsp;&#39;=[&#39;&nbsp;+&nbsp;c.value&nbsp;+&nbsp;&#39;]&#39;}&quot;</span>&gt;&lt;<b>/p</b>&gt;
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+</code>
+
+
+<p>Note in the code above how we use the <kbd>th:with</kbd> attribute in order to define several variables to be used in the HTML
+under the tag containing the <kbd>th:with</kbd>. With our Thymeleaf version we are, as in the JSP one, printing the exception stacktrace in the page in a different
+way depending on the exception type.</p>
+<p>To be able to access to the exception, we make use of the <kbd>#httpServletRequest</kbd> object in our Spring EL expression.</p>
+
     
  
   </div>
