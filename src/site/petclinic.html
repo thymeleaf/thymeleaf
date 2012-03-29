@@ -79,10 +79,12 @@
        uses JSP and we want to replace it with Thymeleaf in order to have valid HTML files understandable by any 
        web browser and, at the same time, usable by any web designer without having to convert that code (remove 
        or add tags, ...) so that both, designers and developers, can work with the same files.</p>
-    <p>Neither the application features nor  the java code will be modified. We'll only replace:</p>
+    <p>Neither the application features nor  the java code will be modified. We'll only:</p>
     <ul>
-        <li>the JSP files with their equivalent only HTML version (using Thymeleaf attributes) and</li>
-        <li>the configuration files to create and configure Thymeleaf template resolver</li>
+        <li>replace the configuration files to create and configure Thymeleaf template resolver,</li>
+        <li>replace the XHTML JSP files with their equivalent HTML5 version (using Thymeleaf attributes),</li>
+        <li>optimize the application configuration (Spring version, access to static resources, ...)</li>
+        
     </ul> 
     <p>In the original view layer (JSP):</p>
     <ul>
@@ -100,7 +102,7 @@
         <li>Some HTML pages to handle exceptions include java code which is not a good practice.</li>
     </ul>         
     <p>All of the above points avoid the pages from being correctly displayed by any browser which makes
-    both, the developer and designer tasks, less easy whereas in the Thymeleaf version this does not happen and
+    both, the developer and designer tasks, less easy whereas, in the Thymeleaf version, this does not happen and
     the code is more readable and can be seen in the browser in a static way. </p>
 
     
