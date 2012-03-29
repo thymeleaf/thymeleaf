@@ -176,49 +176,49 @@
         
         </code>
     
-        <p>Note that our templates are in the folder WEB-INF/templates instead of WEB-INF/jsp</p>
+        <p>Note that our templates are in the folder WEB-INF/templates instead of WEB-INF/jsp.</p>
         
         <p>We also need to add the default view to the error handling bean. This is necessary as, in the original configuration, when an unexpected
-           exception arises, an HTML page configured in the web.xml file is shown...but we can't use thymeleaf there as the server(i.e. tomcat) is who manages
+           exception arises, an HTML page configured in the web.xml file is shown...but we can't use Thymeleaf there as the server(i.e. tomcat) is who manages
            that situation directly. So, in order to remove the java code in that page and, instead, use thymeleaf in the default error page, we have to
-           configure our bean so that spring can manage that error. The code below will show the new configuration in the petclinic-servlet.xml.</p>
+           configure our bean so that Spring can manage that error. The code below shows the new configuration in the petclinic-servlet.xml.</p>
         
     <code>
     &lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.handler.SimpleMappingExceptionResolver&quot;</span>&gt;
 <br />
-        &lt;<b>property</b>&nbsp;name=<span class="string">&quot;exceptionMappings&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;exceptionMappings&quot;</span>&gt;
 <br />
-            &lt;<b>props</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>props</b>&gt;
 <br />
-                &lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.web.servlet.PageNotFound&quot;</span>&gt;pageNotFound&lt;<b>/prop</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.web.servlet.PageNotFound&quot;</span>&gt;pageNotFound&lt;<b>/prop</b>&gt;
 <br />
-                &lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.dao.DataAccessException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.dao.DataAccessException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
 <br />
-                &lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.transaction.TransactionException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.transaction.TransactionException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
 <br />
-            &lt;<b>/props</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/props</b>&gt;
 <br />
-        &lt;<b>/property</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;defaultErrorView&quot;</span>&nbsp;value=<span class="string">&quot;uncaughtException&quot;</span>&gt;&lt;<b>/property</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;defaultErrorView&quot;</span>&nbsp;value=<span class="string">&quot;uncaughtException&quot;</span>&gt;&lt;<b>/property</b>&gt;
 <br />
     &lt;<b>/bean</b>&gt;
 <br />
     
     </code>
 
-<p>We also have removed the piece of code in the web.xml file configuring the default error page. The code below should be removed.</p>
+<p>We also have to remove the piece of code in the web.xml file configuring the default error page. The code below should be removed:</p>
    
    <code>
 
 
 &lt;<b>error-page</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
 <br />
-    &lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
 <br />
-    &lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
 <br />
 &lt;<b>/error-page</b>&gt;
 <br />
@@ -452,9 +452,9 @@
      
     <h4>Modify uncaughtException.jsp</h4>     
     <p>This is the page the user will be redirected to when an unexpected exception arises. The JSP version of this page is not as the others, instead
-    of JSP tags, it contains java code (yes...that's not a good practice). So, in orther to create the thymeleaf version of that page, we
-    have to replace all of that java code with HTML and add thymeleaf attributes to it in order to get the same results 
-    as the original page.
+    of JSP tags, it contains java code (yes...that's not a good practice). So, in order to create the Thymeleaf version of that page, we
+    have to replace all of that java code with HTML and add Thymeleaf attributes to it in order to get the same results 
+    as the original page does.
     </p>
     <img src="images/thymeleafpetclinic_uncaughtexception.png" alt="Uncaught Exception page"/>
     
