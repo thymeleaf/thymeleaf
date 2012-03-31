@@ -8,7 +8,8 @@
   correctly unescaped.
 - Added to link expressions (@{...}) the ability to create server-root-relative (instead of context-root-relative)
   URLs in order to link to different contexts in the same server. These URLs will be specified like 
-  @{~/path/to/something}. 
+  @{~/path/to/something}
+- Fixed javascript/dart expression inlining in order to work inside JSON objects. 
 
 
 2.0.4
