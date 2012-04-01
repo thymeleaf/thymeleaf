@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>sayhello</artifactId>
   <packaging>war</packaging>
-  <version>20120307</version>
+  <version>20120401</version>
   <name>Thymeleaf Examples - Say Hello!</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -163,13 +163,13 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>2.0.4</version>
+      <version>2.0.5</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
-      <version>2.0.4</version>
+      <version>2.0.5</version>
       <scope>compile</scope>
     </dependency>
     
