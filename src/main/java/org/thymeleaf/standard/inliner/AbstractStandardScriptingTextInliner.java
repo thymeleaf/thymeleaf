@@ -202,7 +202,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
     
     
-    private char computeLineEndCharForInline(final String lastPartOfLine) {
+    private static char computeLineEndCharForInline(final String lastPartOfLine) {
         if (lastPartOfLine != null) {
             final String trimmedLastPartOfLine = lastPartOfLine.trim();
             final char lastChar = trimmedLastPartOfLine.charAt(trimmedLastPartOfLine.length() - 1);
