@@ -53,8 +53,8 @@
       regarding to operators to be applied between expressions. In Thymeleaf 1.1 this system
       is substituted in both the Standard and SpringStandard dialects
       by a new <i>Standard Expression</i> system, which builds on the
-      previous one and keeps all of its syntax &ndash; so that all your templates still
-      work alright &ndash; and adds the following new features:
+      previous one and keeps all of its syntax &mdash; so that all your templates still
+      work alright &mdash; and adds the following new features:
     </p>
     <ul>
       <li>Numeric literals: <kbd>1</kbd>, <kbd>32</kbd>, <kbd>42.3</kbd>, <kbd>11.34</kbd>, etc.</li>
@@ -139,7 +139,7 @@
       called <kbd>th:substituteby</kbd>, which works very similarly to the already
       existing <kbd>th:include</kbd> for including a fragment from an external template, 
       but actually substitutes the host tag by the fragment's, instead of only substituting
-      its contents &ndash; which is what <kbd>th:include</kbd> does. 
+      its contents &mdash; which is what <kbd>th:include</kbd> does. 
     </p>
     
     <p>
@@ -297,8 +297,8 @@
     <h2>Changes in condition evaluation</h2>
 
     <p>
-      Condition evaluation &ndash;used in <kbd>th:if</kbd> or <kbd>th:unless</kbd> attributes, for
-      example&ndash; changes a bit in Thymeleaf 1.1 so that the Strings
+      Condition evaluation &mdash;used in <kbd>th:if</kbd> or <kbd>th:unless</kbd> attributes, for
+      example&mdash; changes a bit in Thymeleaf 1.1 so that the Strings
       <kbd>"false"</kbd>, <kbd>"no"</kbd> and <kbd>"off"</kbd> now evaluate as
       <b>false</b>, instead of <i>true</i> as they did before (Thymeleaf 1.0 evaluated
       as <i>true</i> any non-null String). 
@@ -309,7 +309,7 @@
     
     <p>
       When a template is stored into the cache, Thymeleaf 1.1 now scans its whole DOM tree
-      in order to determine which nodes &ndash;and also entire trees&ndash;
+      in order to determine which nodes &mdash;and also entire trees&mdash;
       are <i>not executable</i> (because no attribute or tag processor can be applied to them),
       and marks those DOM nodes so that they are skipped when actually processing the template.
     </p>

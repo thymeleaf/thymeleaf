@@ -48,8 +48,8 @@
 
  
 	<p>
-	  Thymeleaf 2.0 includes a lot of new features, but many of them &ndash;in fact,
-	  the most important ones in terms of effort&ndash; will not be directly visible to 
+	  Thymeleaf 2.0 includes a lot of new features, but many of them &mdash;in fact,
+	  the most important ones in terms of effort&mdash; will not be directly visible to 
 	  those users that did never have the need to create their own dialects for 
 	  extending Thymeleaf's capabilities.
 	</p>
@@ -433,8 +433,8 @@ templateEngine.setCacheManager(manager);
 		  can be cached along with the DOM tree itself in many scenarios, significantly 
 		  reducing processing time.</li>
       <li>Allows the generalization of the template parsing infrastructure, so that Thymeleaf
-	      2.0 now uses a SAX parser as default &ndash;instead of the old DOM parser, which can
-		  still be used but is not default anymore&ndash;. This new parser is much faster than
+	      2.0 now uses a SAX parser as default &mdash;instead of the old DOM parser, which can
+		  still be used but is not default anymore&mdash;. This new parser is much faster than
 		  the old one, which leads to an additional improvement in performance, even when a
 		  template cache is not being used.</li>
 	  <li>Allows the generalization of the template result <i>writing</i> system (converting
@@ -485,8 +485,8 @@ templateEngine.setCacheManager(manager);
 	  order to simplify it, resulting in the new <kbd>IProcessorMatcher</kbd> hierarchy 
 	  that substitutes the old <kbd>IApplicability</kbd> features. This new API for 
 	  specifying when a processor <i>matches</i> (<i>"can be applied to"</i>) a DOM node 
-	  is more general &ndash;in order to adapt to the new  <kdb>IProcessor</kbd> 
-	  needs&ndash; and also enables a simpler specification of applicability constraints 
+	  is more general &mdash;in order to adapt to the new  <kdb>IProcessor</kbd> 
+	  needs&mdash; and also enables a simpler specification of applicability constraints 
 	  in processors, resulting in simpler extension code.
 	</p>
   

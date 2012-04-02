@@ -56,7 +56,7 @@
        simple but powerful email system.
      </p>
      <p>
-       Note that, although this article &ndash;and the corresponding example app&ndash; uses the
+       Note that, although this article &mdash;and the corresponding example app&mdash; uses the
        Spring Framework, Thymeleaf can also be used for processing email templates in an application 
        without Spring.
      </p>
@@ -250,8 +250,8 @@
      
      <p>
        Note that we have configured two <i>template resolvers</i> for our engine: one for the email templates
-       &ndash;which come from our resources directory and therefore are loaded by a <kbd>ClassLoaderTemplateResolver</kbd>&ndash;
-       and another one for the web templates that support the example application itself &ndash;which loads its
+       &mdash;which come from our resources directory and therefore are loaded by a <kbd>ClassLoaderTemplateResolver</kbd>&mdash;
+       and another one for the web templates that support the example application itself &mdash;which loads its
        templates from the <i>servlet context</i>, as most Spring web applications do.
      </p>
      <p>
@@ -406,7 +406,7 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
             <kbd>#dates</kbd> to format a date...
         </li>
         <li>
-            The <kbd>img</kbd> element has a hardcoded <kbd>src</kbd> value &ndash;nice for prototyping&ndash;, which will be substituted at runtime by something like
+            The <kbd>img</kbd> element has a hardcoded <kbd>src</kbd> value &mdash;nice for prototyping&mdash;, which will be substituted at runtime by something like
             <kbd>cid:image.jpg</kbd> matching the attached image filename.
         </li>
     </ul>
@@ -507,7 +507,7 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
     </p>
     <p>
         You could also make use of <kbd>FileSystemResource</kbd> to attach a file directly from the
-        filesystem &ndash;thus avoiding loading it into memory&ndash;,
+        filesystem &mdash;thus avoiding loading it into memory&mdash;,
         or <kbd>UrlResource</kbd> to attach a remote file.
     </p>
 
@@ -580,7 +580,10 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
    
    <div id="footer">
      <div id="googleplus">
-       <g:plusone size="small" href="http://www.thymeleaf.org"></g:plusone>
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
      </div>
      <div id="twitter">
        <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
