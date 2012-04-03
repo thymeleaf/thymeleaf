@@ -47,32 +47,9 @@
      <h1>Standard URL Syntax</h1>
 
      <p>
-       The Thymeleaf Standard Dialects &mdash;<i>Standard</i> and <i>SpringStandard</i>&mdash; offer a way to easily create 
-       URLs in your web application which include all the required <i>URL Rewriting</i> artifacts. This is done by means of the 
-       <i>&#8220;at&#8221; syntax</i>, enclosing expressions in <tt>@{...}</tt>
-     </p>
-
-
-
-     <h2>Context-relative URLs</h2>
-
-     <p>
-       The most used type of URLs are the <i>context-relative</i> ones. These are URLs which are supposed to be 
-       relative to the application once it is installed on the web/application server (relative to a context, 
-       therefore).
-     </p>
-
-     <p>
-       These URLs start with <tt>/</tt>:
-     </p>
-
-     <code>
-       @{/order/list}
-     </code>
-
-     <p>
-       If our app is deployed at <tt>http://localhost:8080/myapp</tt>, this URL will output as 
-       <tt>/myapp/order/list</tt>
+       The Thymeleaf standard dialects &mdash;called <i>Standard</i> and <i>SpringStandard</i>&mdash; offer a way to easily create 
+       URLs in your web application so that they include any required <i>URL preparation</i> artifacts. This is done by means of the 
+       so-called <i>&#8220;at&#8221; syntax</i> of the <i>standard expressions</i>: <tt>@{...}</tt>
      </p>
 
 
@@ -80,63 +57,97 @@
      <h2>Absolute URLs</h2>
 
      <p>
-       Absolute URLs allow you to create links to other servers, including protocol (HTTP or HTTPS):
+       Absolute URLs allow you to create links to other servers. They start by specifying a protocol
+       name (<tt>http://</tt> or <tt>https://</tt>)
      </p>
 
      <code>
-       @{http://www.thymeleaf/documentation.html}
+       &lt;<b>a</b> th:href=<span class="string">"@{http://www.thymeleaf/documentation.html}"</span>&gt;
      </code>
+
+     <p>
+       They are not modified at all:
+     </p>
+
+     <code>
+       &lt;<b>a</b> href=<span class="string">"http://www.thymeleaf/documentation.html"</span>&gt;
+     </code>
+
+
+
+     <h2>Context-relative URLs</h2>
+
+     <p>
+       The most used type of URLs are <i>context-relative</i> ones. These are URLs which are supposed to be 
+       relative to the web application root once it is installed on the server. For example, if we deploy
+       a <tt>myapp.war</tt> file into a Tomcat server, our application will probably be accessible as
+       <tt>http://localhost:8080/myapp</tt>, and <tt>myapp</tt> will be the <i>context name</i>.
+     </p>
+
+     <p>
+       Context-relative URLs start with <tt>/</tt>:
+     </p>
+
+     <code>
+       &lt;<b>a</b> th:href=<span class="string">"@{/order/list}"</span>&gt;
+     </code>
+
+     <p>
+       If our app is installed at <tt>http://localhost:8080/myapp</tt>, this URL will output:
+     </p>
+
+     <code>
+       &lt;<b>a</b> href=<span class="string">"/myapp/order/list"</span>&gt;
+     </code>
+
+
+
+     <h3>URL Rewriting</h3>
+
+     <p>
+       Rewriting <i>context-relative</i> URLs means to:
+     </p>
+     
+     <ul>
+       <li>
+         Automatically add the context name to context-relative URLs, as already seen.
+       </li>
+       <li>
+         Automatically detect whether the user has cookies enabled or not, and
+         add the <tt>;jsessionid=...</tt> fragment to the URL if not &mdash;or if it is the 
+         first request and cookie configuration is still unknown.
+       </li>
+     </ul>
+
+     <p>
+       All this is automatically performed by Thymeleaf when outputting this kind of URLs.
+     </p>
 
 
 
      <h2>Server-relative URLs</h2>
 
      <p>
-       <i>Server-relative</i> URLs are quite similar to context-relative URLs, except they do not assume 
+       <i>Server-relative</i> URLs are quite similar to <i>context-relative</i> URLs, except they do not assume 
        you want your URL to be linking to a resource inside your application's context, and therefore 
        allow you to link to a different context in the same server:
      </p>
      
      <code>
-       @{~/billing-app/showDetails.htm}
+       &lt;<b>a</b> th:href=<span class="string">"@{~/billing-app/showDetails.htm}"</span>&gt;
      </code>
 
      <p>
-       Your own context will be ignored, therefore even if our app is deployed at 
-       <tt>http://localhost:8080/myapp</tt>, this URL will output as 
-       <tt>/billing-app/showDetails.htm</tt>
-     <p>
-     
-     <p>
-       <i>(Note that server-relative URLs are available since Thymeleaf 2.0.5)</i>
-     </p>
-
-
-
-     <h2>URL Rewriting</h2>
-
-     <p>
-       You might be saying: OK, this was fine, but... why did you say I needed this? What is that 
-       URL rewriting thing?
-     </p>
-
-     <p>
-       In a Java web application, URL rewriting has two functions needed for context-relative URLs:
+       The current application's context will be ignored, therefore although our application is deployed at 
+       <tt>http://localhost:8080/myapp</tt>, this URL will output:
      </p>
      
-     <ul>
-       <li>
-         Automatically detect whether the user has cookies enabled or not, and
-         add the <tt>;jsessionid=...</tt> fragment to the URL if not --or if it is the 
-         first request and cookie configuration is still unknown.
-       </li>
-       <li>
-         Automatically add the context name to context-relative URLs.
-       </li>
-     </ul>
-
+     <code>
+       &lt;<b>a</b> href=<span class="string">"/billing-app/showDetails.htm"</span>&gt;
+     </code>
+     
      <p>
-       These two features are not applied in URLs of types other than context-relative.
+       <i>(Note that server-relative URLs are only available since Thymeleaf 2.0.5)</i>
      </p>
 
 
@@ -145,23 +156,54 @@
      <h2>Adding parameters</h2>
 
      <p>
-       Many URLs in our applications have parameters... how do we add them to <tt>@{...}</tt> 
-       syntax expressions? Simple:
+       How do we add URL parameters to the URLs we create with <tt>@{...}</tt> 
+       expressions? Simple:
      </p>
-     
+
      <code>
-       @{/order/details(id=3)}
+       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=3)}"</span>&gt;
      </code>
 
      <p>
-       You can add several, separating them with commas:
+       Which would output as:
      </p>
-     
+
      <code>
-       @{/order/details(id=3,action='show_all')}
+       &lt;<b>a</b> href=<span class="string">"/order/details?id=3"</span>&gt;
+     </code>
+
+     <p>
+       You can add several parameters, separating them with commas:
+     </p>
+
+     <code>
+       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=3,action='show_all')}"</span>&gt;
+     </code>
+
+     <p>
+       Which would output as:
+     </p>
+
+     <code>
+       &lt;<b>a</b> href=<span class="string">"/order/details?id=3&action=show_all"</span>&gt;
      </code>
 
 
+
+     <h2>Only for th:href's?</h2>
+
+     <p>
+       Do not think that URL <tt>@{...}</tt> expressions are only used in <tt>th:href</tt> attributes. They can,
+       in fact, be used <i>anywhere</i> just like variable (<tt>${...}</tt>) expressions or message externalization / 
+       internationalization (<tt>#{...}</tt>) ones. 
+     </p>
+     <p>
+       Some examples:
+     </p>
+     
+     <code>
+       &lt;<b>p</b> th:text=<span class="string">"#{orders.explanation('3', @{/order/details(id=3,action='show_all')}"</span>&gt;
+     </code>
 
 
      <h2>Using expressions inside URLs</h2>
