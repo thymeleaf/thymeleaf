@@ -70,9 +70,18 @@
        regarding the veterinarians.</p>
     <p>At Thymeleaf, we have modified such an application to have a version using Thymeleaf instead of JSP (used in the
        original application). We've kept the functionality but replaced the view layer.</p>
-    <p>More on the JSP version of PetClinic <a href="http://static.springsource.org/docs/petclinic.html">at SpringSource</a>.</p>
     
     <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
+    
+    <p>The main goals of this Thymeleaf version of Petclinic are:</p>
+    
+    <ul>
+        <li>Do not modify the Java code...just the view. That is, the JSP files with HTML ones containing Thymeleaf attributes.</li>
+        <li>Convert the application to an HTML5 one.</li>
+        <li>Add some features of HTML5 to the pages (i.e. input fields with type tel, date, ...).</li>
+        <li>Have well formed and valid HTML5 pages that can be seen in the browser statically.</li>
+        <li>Optimize the application configuration (Spring version, access to static resources, ...).</li>
+    </ul>
     
     <h3>View layer</h3>
     <p>The purpose of this application is the modification of the Petclinic's view layer. The original application
@@ -132,7 +141,7 @@
     
     <p>All the code in this article (the Thymeleaf version) comes from a working example application you can download from
        the <a href="documentation.html">documentation page</a>. Downloading this application from the Thymeleaf
-       website and the JSP one from <a href="https://src.springframework.org/svn/spring-samples">here</a>, 
+       website and the JSP one from <a href="http://static.springsource.org/docs/petclinic.html">SpringSource</a>, 
        executing it and exploring its source code is highly recommended as it will help you to discover the 
        differences between the JSP approach and the Thymeleaf one.</p>
     
