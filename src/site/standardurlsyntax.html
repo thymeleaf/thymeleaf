@@ -120,7 +120,7 @@
      </ul>
 
      <p>
-       All this is automatically performed by Thymeleaf when outputting this kind of URLs.
+       All of this is automatically performed by Thymeleaf when outputting this kind of URLs.
      </p>
 
 
@@ -128,7 +128,7 @@
      <h2>Server-relative URLs</h2>
 
      <p>
-       <i>Server-relative</i> URLs are quite similar to <i>context-relative</i> URLs, except they do not assume 
+       <i>Server-relative</i> URLs are very similar to <i>context-relative</i> URLs, except they do not assume 
        you want your URL to be linking to a resource inside your application's context, and therefore 
        allow you to link to a different context in the same server:
      </p>
@@ -156,7 +156,7 @@
      <h2>Adding parameters</h2>
 
      <p>
-       How do we add URL parameters to the URLs we create with <tt>@{...}</tt> 
+       How do we add parameters to the URLs we create with <tt>@{...}</tt> 
        expressions? Simple:
      </p>
 
@@ -193,47 +193,54 @@
      <h2>Only for th:href's?</h2>
 
      <p>
-       Do not think that URL <tt>@{...}</tt> expressions are only used in <tt>th:href</tt> attributes. They can,
-       in fact, be used <i>anywhere</i> just like variable (<tt>${...}</tt>) expressions or message externalization / 
-       internationalization (<tt>#{...}</tt>) ones. 
+       Do not think URL <tt>@{...}</tt> expressions are only used in <tt>th:href</tt> attributes. They can,
+       in fact, be used <i>anywhere</i> just like variable expressions (<tt>${...}</tt>) or message externalization / 
+       internationalization ones (<tt>#{...}</tt>). 
      </p>
      <p>
-       Some examples:
+       For example, you could use them in forms...
      </p>
      
      <code>
-       &lt;<b>p</b> th:text=<span class="string">"#{orders.explanation('3', @{/order/details(id=3,action='show_all')}"</span>&gt;
+       &lt;<b>form</b> th:action=<span class="string">"@{/order/processOrder}"</span>&gt;
+     </code>
+     <p>
+       ...or as a part of other expression. Here as a parameter of an externalized/internationalized string:
+     </p>     
+     <code>
+       &lt;<b>p</b> th:text=<span class="string">"#{orders.explanation('3', @{/order/details(id=3,action='show_all')})}"</span>&gt;
      </code>
 
 
-     <h2>Using expressions inside URLs</h2>
+     <h2>Using expressions in URLs</h2>
 
      <p>
-       You might have noted that in the previous URLs...
+       What if we needed to write an URL expression like this:
      </p>
 
      <code>
-       @{/order/details(id=3)}
-       @{/order/details(id=3,action='show_all')}
+       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=3,action='show_all')}"</span>&gt;
      </code>
 
      <p>
-       Both 3 and 'show_all' are specified as literals 
-       &mdash;a number and a text literal, respectively&mdash;. But... can we use other expressions 
-       like variable evaluations, i18n, conditionals...? Yes, we can:
+       ...but neither <tt>3</tt> nor <tt>'show_all'</tt> could be literals, because we only know their
+       value at run time?
+     </p>
+     <p>
+       No problem! Every URL parameter value is in fact an expression, so you can easily substitute
+       your literals with any other expressions, including i18n, conditionals...:
      </p>
 
      <code>
-       @{/order/details(id=${order.id})}
-       @{/order/details(id=${order.id},action=(${user.admin} ? 'show_all' : 'show_public'))}
+       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=${order.id},action=(${user.admin} ? 'show_all' : 'show_public'))}"</span>&gt;
      </code>
 
      <p>
-       What's more: an URL like:
+       What's more: an URL expression like:
      </p>
 
      <code>
-       @{/order/details(id=${order.id})}
+       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=${order.id})}"</span>&gt;
      </code>
 
      <p>
@@ -241,16 +248,24 @@
      </p>
 
      <code>
-       @{'/order/details'(id=${order.id})}
+       &lt;<b>a</b> th:href=<span class="string">"@{'/order/details'(id=${order.id})}"</span>&gt;
      </code>
 
      <p>
-       ...which means that the URL base itself can be specified with an expression:
+       Which means that the URL base itself can be specified as an expression, for example
+       a variable expression:
      </p>
 
      <code>
-       @{${detailsURL}(id=${order.id})}
-       @{#{orders.details.localized_url}(id=${order.id})}
+       &lt;<b>a</b> th:href=<span class="string">"@{${detailsURL}(id=${order.id})}"</span>&gt;
+     </code>
+
+     <p>
+       ...or an externalized/internationalized text:
+     </p>
+
+     <code>
+       &lt;<b>a</b> th:href=<span class="string">"@{#{orders.details.localized_url}(id=${order.id})}"</span>&gt;
      </code>
 
      <p>
@@ -258,7 +273,27 @@
      </p>
 
      <code>
-       @{(${user.admin}? '/admin/home' : ${user.homeUrl})(id=${order.id})}
+       &lt;<b>a</b> th:href=<span class="string">"@{(${user.admin}? '/admin/home' : ${user.homeUrl})(id=${order.id})}"</span>&gt;
+     </code>
+
+     <p>
+       Want it cleaner? Use <tt>th:with</tt>:
+     </p>
+
+     <code>
+       &lt;<b>a</b> th:with=<span class="string">"baseUrl=(${user.admin}? '/admin/home' : ${user.homeUrl})"</span> th:href=<span class="string">"@{${baseUrl}(id=${order.id})}"</span>&gt;
+     </code>
+
+     <p>
+       ...or...
+     </p>
+
+     <code>
+       &lt;<b>div</b> th:with=<span class="string">"baseUrl=(${user.admin}? '/admin/home' : ${user.homeUrl})"</span>&gt;<br />
+       &nbsp;&nbsp;&nbsp;&nbsp;...<br />
+       &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b> th:href=<span class="string">"@{${baseUrl}(id=${order.id})}"</span>&gt;...&lt;/<b>a</b>&gt;<br />
+       &nbsp;&nbsp;&nbsp;&nbsp;...<br />
+       &lt;/<b>div</b>&gt;
      </code>
 
 
