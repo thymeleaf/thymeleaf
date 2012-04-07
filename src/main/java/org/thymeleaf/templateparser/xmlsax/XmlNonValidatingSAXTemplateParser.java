@@ -46,7 +46,7 @@ public final class XmlNonValidatingSAXTemplateParser extends AbstractNonValidati
     
     @Override
     protected final List<Node> unwrapFragment(final Document document) {
-        return ((NestableNode)((NestableNode)((NestableNode)document.getFirstChild()).getFirstChild()).getFirstChild()).getChildren();
+        return ((NestableNode)document.getFirstChild()).getChildren();
     }
     
 }
