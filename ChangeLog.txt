@@ -1,3 +1,11 @@
+2.0.6
+=====
+- Fixed "Message Resolver has not been initialized" error when more than one message resolver was configured
+  for the same template engine.
+- Fixed ClassCastException executing #{...} expressions in XML and VALIDXML template modes, because of a
+  wrong construction of parsable code fragments (NestableNode was expected where there was a Text).
+  
+
 2.0.5
 =====
 - Added template name, line number and column to SAXParseExceptions in AbstractNonValidatingSAXTemplateParser.
