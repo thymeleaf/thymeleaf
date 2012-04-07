@@ -216,8 +216,14 @@ public final class Configuration {
                 }
                 this.messageResolvers = this.defaultMessageResolvers;
             }
+            
+            for (final IMessageResolver messageResolver : this.messageResolvers) {
+                messageResolver.initialize();
+            }
+            
             final List<IMessageResolver> messageResolversList = 
                 new ArrayList<IMessageResolver>(this.messageResolvers);
+            
             Collections.sort(messageResolversList, 
                     new Comparator<IMessageResolver>() {
                         public int compare(final IMessageResolver o1, final IMessageResolver o2) {
@@ -230,10 +236,8 @@ public final class Configuration {
                             return o1.getOrder().compareTo(o2.getOrder());
                         }
             });
+            
             this.messageResolvers = new LinkedHashSet<IMessageResolver>(messageResolversList);
-            for (final IMessageResolver messageResolver : this.messageResolvers) {
-                messageResolver.initialize();
-            }
 
             
             /*
