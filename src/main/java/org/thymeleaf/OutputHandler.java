@@ -23,6 +23,8 @@ import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
@@ -59,6 +61,7 @@ public final class OutputHandler {
     public static final String DOCTYPE_PUBLICID_PREFIX = "<!DOCTYPE html PUBLIC ";
     public static final String DOCTYPE_SYSTEMID_PREFIX = "<!DOCTYPE html SYSTEM ";
     
+    private static final Pattern XML_DECLARATION_PATTERN = Pattern.compile("^\\s*(\\<\\?xml(.*?)\\?\\>)(.*?)$", Pattern.DOTALL);
 
    
     
@@ -143,7 +146,17 @@ public final class OutputHandler {
                     }
                 }
                 
-                result = doctype + "\n" + result;
+                final Matcher xmlDeclarationMatcher = XML_DECLARATION_PATTERN.matcher(result);
+                if (xmlDeclarationMatcher.matches()) {
+                
+                    result = xmlDeclarationMatcher.group(1) + "\n" + doctype + "\n" + xmlDeclarationMatcher.group(3);
+                    
+                } else {
+                    
+                    result = doctype + "\n" + result;
+                    
+                }
+                
                 logger.debug("[THYMELEAF][{}] Output DOCTYPE: {}", TemplateEngine.threadIndex(), doctype);
                 
             }
