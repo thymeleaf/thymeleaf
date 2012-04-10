@@ -119,9 +119,43 @@
         
     <h2>Configuration</h2>
 
-    <h3>pom.xml</h3>
+    <h3>Basic project configuration</h3>
     
-    <p>We have to modify the pom.xml in order to add the Thymeleaf dependencies to it and remove the JSP related ones from it</p>
+    <p>
+      Some basic configuration steps will be needed:
+    </p>
+    
+    <ul>
+      <li>The <tt>pom.xml</tt> file will be modified in order to add the Thymeleaf dependencies to it and remove the 
+          JSP related ones.</li>
+      <li>The original <tt>web.xml</tt> file will also be modified in order to remove the declaration of a <tt>default</tt>
+          servlet depending on a specific Tomcat class for serving static resources &mdash;images, css, etc&mdash;.
+          Instead, the much more general and elegant <tt>&lt;mvc:resources/&gt;</tt> mechanism will be used:</li>
+    </ul>
+    
+            <code>
+&lt;!--
+<br />
+&nbsp;&nbsp;-&nbsp;Static&nbsp;resources
+<br />
+--&gt;
+<br />
+&lt;<b>mvc:resources</b>&nbsp;location=<span class="string">&quot;/&quot;</span>&nbsp;mapping=<span class="string">&quot;/static/**&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&lt;!--
+<br />
+&nbsp;&nbsp;-&nbsp;The&nbsp;controllers&nbsp;are&nbsp;autodetected&nbsp;POJOs&nbsp;labeled&nbsp;with&nbsp;the&nbsp;@Controller&nbsp;annotation.
+<br />
+--&gt;
+<br />
+&lt;<b>mvc:annotation-driven</b>&nbsp;/&gt;
+<br />
+&lt;<b>context:component-scan</b>&nbsp;base-package=<span class="string">&quot;org.springframework.samples.petclinic.web&quot;</span>/&gt;
+<br />
+            </code>    
+
     
     <h3>petclinic-servlet.xml</h3>
     
