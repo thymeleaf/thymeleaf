@@ -64,42 +64,43 @@
 
     <h2>The Spring PetClinic application</h2>
     
-    <h3>Overview</h3>
-    <p>PetClinic is a sample application from SpringSource to learn how to use Spring Framework in order to create an 
-       application for the employees of a pets clinic. That is, view and manage information 
-       regarding the veterinarians.</p>
-    <p>At Thymeleaf, we have modified such an application to have a version using Thymeleaf instead of JSP (used in the
-       original application). We've kept the functionality but replaced the view layer.</p>
+    <p><i>PetClinic</i> is one of the example applications created by SpringSource for
+       the Spring Framework. It is designed to display and manage information 
+       related to pets and veterinarians in a pet clinic. More info can be obtained 
+       <a href="http://static.springsource.org/docs/petclinic.html">here</a>,
+       and the source code can be obtained 
+       <a href="https://src.springframework.org/svn/spring-samples/petclinic/trunk/">here</a>.</p>
     
     <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
-    
-    <p>The main goals of this Thymeleaf version of Petclinic are:</p>
+
+    <p><i>Pet Clinic</i> originally includes a view layer created with JSP, which we will replace using Thymeleaf:</p>
     
     <ul>
-        <li>Do not modify the Java code...just the view. That is, the JSP files with HTML ones containing Thymeleaf attributes.</li>
-        <li>Convert the application to an HTML5 one.</li>
-        <li>Add some features of HTML5 to the pages (i.e. input fields with type tel, date, ...).</li>
-        <li>Have well formed and valid HTML5 pages that can be seen in the browser statically.</li>
-        <li>Optimize the application configuration (Spring version, access to static resources, ...).</li>
+        <li>Absolutely no modifications will be made to the Java code, just the view layer. The JSP files will be replaced
+            and the application will be reconfigured.</li>
+        <li>The original XHTML 1.0 will be replaced with HTML5, and some HTML5-specific features will be 
+            added (i.e. input fields with type <tt>tel</tt>, <tt>date</tt>,...).</li>
+        <li>Apart from the switch to HTML5, all the application's interface will have to display exactly the same
+            as the original.</li>
+        <li>Thymeleaf template files should display OK when open statically on a browser (<i>Natural templating</i>).</li>
     </ul>
     
-    <h3>View layer</h3>
-    <p>The purpose of this application is the modification of the Petclinic's view layer. The original application
-       uses JSP and we want to replace it with Thymeleaf in order to have valid HTML files understandable by any 
-       web browser and, at the same time, usable by any web designer without having to convert that code (remove 
-       or add tags, ...) so that both, designers and developers, can work with the same files.</p>
-    <p>Neither the application features nor  the java code will be modified. We'll only:</p>
+    <p>
+      All the code of the PetClinic+Thymeleaf application can be obtained at the
+      <a href="documentation.html">documentation</a> page.
+    </p>
+    
+    
+    <h3>The original JSP view layer</h3>
+    
+    <p>Some problems in the original JSP view layer:</p>
     <ul>
-        <li>replace the configuration files to create and configure Thymeleaf template resolver,</li>
-        <li>replace the XHTML JSP files with their equivalent HTML5 version (using Thymeleaf attributes),</li>
-        <li>optimize the application configuration (Spring version, access to static resources, ...)</li>
-        
-    </ul> 
-    <p>In the original view layer (JSP):</p>
-    <ul>
-        <li>The HTML pages include JSTL and Spring tags which are not understandable by the browser...so there is no 
-        way for it to represent the pages statically.</li>
-        <li>The HTML pages are not well formed. For example,the show owners page is broken down into three 
+        <li>The JSP/HTML pages include both JSTL and Spring-specific tags which are not understandable 
+        by the browser... so there is no way for it to represent the pages statically (no static 
+        prototyping possible).</li>
+        <li>JSTL tags use the JSP EL (Expression Language), whereas the tags from the JSP Spring taglibs
+        use Spring EL. Two different expression languages are therefore mixed.</li>
+        <li>The original HTML pages are not well formed. For example, the <i>"show owners"</i> page is broken down into three 
         incomplete pages:
             <ol> 
                 <li>a header.jsp one ending with body and div tags not closed,</li>
