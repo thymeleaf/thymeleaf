@@ -86,70 +86,45 @@
     </ul>
     
     <p>
-      All the code of the PetClinic+Thymeleaf application can be obtained at the
-      <a href="documentation.html">documentation</a> page.
+      All the code of the PetClinic+Thymeleaf application can be obtained at the 
+      <a href="documentation.html">Thymeleaf Project's Documentation</a> page. Note that the original JSP files have 
+      not been removed from the source tree but rather moved to the <tt>doc/old_jsps</tt> folder at the source tree,
+      so that you can still access them in order to compare with the new templates.
     </p>
     
     
     <h3>The original JSP view layer</h3>
     
-    <p>Some problems in the original JSP view layer:</p>
+    <p>The original JSP view layer has a number of problems we will fix when translating the view layer
+       to Thymeleaf:</p>
     <ul>
-        <li>The JSP/HTML pages include both JSTL and Spring-specific tags which are not understandable 
-        by the browser... so there is no way for it to represent the pages statically (no static 
+        <li>The JSP pages include both JSTL and Spring-specific tags. None of which are understandable 
+        by browsers, so there is no way for it to represent the pages statically (no static 
         prototyping possible).</li>
         <li>JSTL tags use the JSP EL (Expression Language), whereas the tags from the JSP Spring taglibs
-        use Spring EL. Two different expression languages are therefore mixed.</li>
-        <li>The original HTML pages are not well formed. For example, the <i>"show owners"</i> page is broken down into three 
-        incomplete pages:
+        use Spring EL. Two different expression languages are therefore mixed in the same pages.</li>
+        <li>The original JSP templates are not complete or well-formed HTML documents. For example, 
+        the <i>"show owners"</i> page is broken down into three fragments:
             <ol> 
-                <li>a header.jsp one ending with body and div tags not closed,</li>
-                <li>a show.jsp which does not have neither head nor body tags -as they come from the header, 
+                <li>a <tt>header.jsp</tt> with unclosed body and div tags,</li>
+                <li>a <tt>show.jsp</tt> which does not have neither head nor body tags &mdash;as they come from the header&mdash;, 
                 and</li>
-                <li> a footer.jsp one closing the body and div tags opened in the header</li>
+                <li> a <tt>footer.jsp</tt> closing the body and div tags opened at the header.</li>
             </ol>
         </li>
-        <li>Some HTML pages to handle exceptions include java code which is not a good practice.</li>
+        <li>Some JSP pages &mdash;exception handling, for example&mdash; include java code scriptlets, 
+            which is not a good practice.</li>
     </ul>         
-    <p>All of the above points avoid the pages from being correctly displayed by any browser which makes
-    both, the developer and designer tasks, less easy whereas, in the Thymeleaf version, this does not happen and
-    the code is more readable and can be seen in the browser in a static way. </p>
+        
+        
+    <h2>Configuration</h2>
 
+    <h3>pom.xml</h3>
     
-    <h2>Substituting JSP by Thymeleaf</h2>
-    
-    <h3>Advantages</h3>
-    <p>With the Thymeleaf approach, we get an application with HTML which can be displayed in a browser,
-    with no third-party tags...just HTML with Thymeleaf attributes: easier to develop...easier to maintain.</p>
-     
-        
-    <h3>Tasks</h3>
-    <p>In order to have a working Thymeleaf version of PetClinic, we need to perform several actions on the original version:</p>
-    <ul>
-        <li>Remove all of the JSTL and Spring tags. Instead of them, add the Thymeleaf attributes to the HTML tags to achieve
-        the same functionality</li>
-        <li>Remove java code from the error pages</li>
-        <li>Rename the *.jsp files to *.html as now they only contain HTML</li>     
-    </ul>
-        
-    <p>Regarding the pages structure, we have modified it. Instead of having the header and footer files as incomplete
-       HTML files, we now have a single file with two fragments: head and footer. Our new file is an HTML valid one on 
-       it's own: header and footer are now well formed HTML files and the show.html as well -which includes the head and 
-       footer fragments.</p>
-        
-        
-    <h2>The code</h2>
-    
-    <p>All the code in this article (the Thymeleaf version) comes from a working example application you can download from
-       the <a href="documentation.html">documentation page</a>. Downloading this application from the Thymeleaf
-       website and the JSP one from <a href="http://static.springsource.org/docs/petclinic.html">SpringSource</a>, 
-       executing it and exploring its source code is highly recommended as it will help you to discover the 
-       differences between the JSP approach and the Thymeleaf one.</p>
-    
-    <h3>Spring MVC XML configuration</h3>
-    <h4>pom.xml</h4>
     <p>We have to modify the pom.xml in order to add the Thymeleaf dependencies to it and remove the JSP related ones from it</p>
-    <h4>petclinic-servlet.xml</h4>
+    
+    <h3>petclinic-servlet.xml</h3>
+    
     <p>In the Spring configuration file we have to add the <kbd>templateresolver</kbd> for the views replacing 
         the JSP one. That is, remove the <kbd>InternalResourceViewResolver</kbd> and set the <kbd>Thymeleaf view resolver</kbd> as seen in the
         following piece of code:</p>
@@ -239,7 +214,8 @@
         
         
         
-    <h3>HTML pages</h3>
+    <h2>HTML pages</h2>
+    
     <p>In this section, we'll describe how to replace two different pages in the application with their Thymeleaf version:</p>
     <ul>
         <li>owners/list.jsp page</li>
