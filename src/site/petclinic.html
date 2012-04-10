@@ -130,7 +130,8 @@
           JSP related ones.</li>
       <li>The original <tt>web.xml</tt> file will also be modified in order to remove the declaration of a <tt>default</tt>
           servlet depending on a specific Tomcat class for serving static resources &mdash;images, css, etc&mdash;.
-          Instead, the much more general and elegant <tt>&lt;mvc:resources/&gt;</tt> mechanism will be used:</li>
+          Instead, the much cleaner <tt>&lt;mvc:resources/&gt;</tt> mechanism will be used at
+          our <tt>petclinic-servlet.xml</tt> Spring bean configuration file:</li>
     </ul>
     
             <code>
