@@ -32,6 +32,7 @@
        <li><a href="features.html" title="Features">Features</a></li>
        <li><a href="download.html" title="Download">Download</a></li>
        <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
        <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
        <li><a href="https://sourceforge.net/tracker/?group_id=509826" title="Issue Tracking">Issue Tracking</a></li>
      </ul>
@@ -160,43 +161,54 @@
     
     <h3>petclinic-servlet.xml</h3>
     
-    <p>In the Spring configuration file we have to add the <kbd>templateresolver</kbd> for the views replacing 
-        the JSP one. That is, remove the <kbd>InternalResourceViewResolver</kbd> and set the <kbd>Thymeleaf view resolver</kbd> as seen in the
-        following piece of code:</p>
+    <p>
+      Our next configuration step will be to add three required beans at the Spring beans configuration file,
+      <tt>petclinic-servlet.xml</tt>:
+    </p>
+    <ul>
+      <li>The Thymeleaf <i>template resolver</i> that will be in charge of reading the 
+          template files to be processed. For this application we will use a <tt>ServletContextTemplateResolver</tt>.</li>
+      <li>The Thymeleaf <i>template engine</i> instance, of class <tt>SpringTemplateEngine</tt>.</li>
+      <li>The Thymeleaf <i>view resolver</i>, a <tt>ThymeleafViewResolver</tt> instance implementing Spring's 
+          <tt>org.springframework.web.servlet.ViewResolver</tt> interface. This bean will substitute the
+          original <tt>InternalResourceViewResolver</tt> bean which enabled JSP support in the original application.</li>
+    </ul>
         
             <code>
+
 &lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateResolver&quot;</span>&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>&gt;&lt;<b>/property</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>&nbsp;/&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&gt;&lt;<b>/property</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&nbsp;/&gt;
 <br />
 &lt;<b>/bean</b>&gt;
 <br />
 &lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
 <br />
 &lt;<b>/bean</b>&gt;
 <br />
 &lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
 <br />
-    &lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
 <br />
-&lt;<b>/bean</b>&gt;
-
+&lt;<b>/bean</b>&gt;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
         
         </code>
     
-        <p>Note that our templates are in the folder WEB-INF/templates instead of WEB-INF/jsp.</p>
+        <p>Note that, as a difference from the original application, our templates will live at the 
+           <tt>/WEB-INF/templates</tt> folder instead of the original <tt>/WEB-INF/jsp</tt>.</p>
         
         <p>We also need to add the default view to the error handling bean. This is necessary as, in the original configuration, when an unexpected
            exception arises, an HTML page configured in the web.xml file is shown...but we can't use Thymeleaf there as the server(i.e. tomcat) is who manages
