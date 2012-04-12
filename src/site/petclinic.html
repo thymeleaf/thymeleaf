@@ -128,7 +128,7 @@
     
     <ul>
       <li>The <tt>pom.xml</tt> file will be modified in order to add the Thymeleaf dependencies to it and remove the 
-          JSP related ones.</li>
+          JSP-related ones.</li>
       <li>The original <tt>web.xml</tt> file will also be modified in order to remove the declaration of a <tt>default</tt>
           servlet depending on a specific Tomcat class for serving static resources &mdash;images, css, etc&mdash;.
           Instead, the much cleaner <tt>&lt;mvc:resources/&gt;</tt> mechanism will be used at
@@ -161,6 +161,8 @@
     
     <h3>petclinic-servlet.xml</h3>
     
+	<h4>Adding the Thymeleaf Spring beans</h4>
+	
     <p>
       Our next configuration step will be to add three required beans at the Spring beans configuration file,
       <tt>petclinic-servlet.xml</tt>:
@@ -209,26 +211,82 @@
     
         <p>Note that, as a difference from the original application, our templates will live at the 
            <tt>/WEB-INF/templates</tt> folder instead of the original <tt>/WEB-INF/jsp</tt>.</p>
-        
-        <p>We also need to add the default view to the error handling bean. This is necessary as, in the original configuration, when an unexpected
-           exception arises, an HTML page configured in the web.xml file is shown...but we can't use Thymeleaf there as the server(i.e. tomcat) is who manages
-           that situation directly. So, in order to remove the java code in that page and, instead, use thymeleaf in the default error page, we have to
-           configure our bean so that Spring can manage that error. The code below shows the new configuration in the petclinic-servlet.xml.</p>
+
+
+		   
+		<h4>Handling uncaught exceptions through Spring</h4>
+		
+        <p>
+		  The original application handles some types of exceptions through Spring, declaring a 
+		  <tt>SimpleMappingExceptionResolver</tt> bean:
+        </p>
+		
+    <code>
+    
+    &lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.handler.SimpleMappingExceptionResolver&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;exceptionMappings&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>props</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.web.servlet.PageNotFound&quot;</span>&gt;pageNotFound&lt;<b>/prop</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.dao.DataAccessException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.transaction.TransactionException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/props</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
+<br />
+    &lt;<b>/bean</b>&gt;
+<br />
+    
+    </code>
+		
+		<p>
+		  The problem is, this does not include every type of exception possible and,
+		  for all the remaining exceptions, an ugly JSP file called <tt>uncaughtException.jsp</tt> is
+          originally configured at <tt>web.xml</tt> (the reason why we call this one <i>"ugly"</i> will be explained later):
+		</p>
+		
+        <code>
+
+          &lt;<b>error-page</b>&gt;
+          <br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
+          <br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
+          <br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
+          <br />
+          &lt;<b>/error-page</b>&gt;
+          <br />
+
+        </code>
+		
+		<p>
+		  As we want to implement this <i>uncaught exception</i> page using Thymeleaf, we will need our exception handling
+		  for these exceptions to go through Spring and not let our web server directly execute our template 
+		  &mdash;only JSPs are directly understood by Java web servers&mdash;.
+		  So we will remove the code above from <tt>web.xml</tt> and we will modify the exception handling
+		  bean declaration at <tt>petclinic-servlet.xml</tt>:
+        </p>
         
     <code>
     &lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.handler.SimpleMappingExceptionResolver&quot;</span>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;exceptionMappings&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>props</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>props</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.web.servlet.PageNotFound&quot;</span>&gt;pageNotFound&lt;<b>/prop</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.web.servlet.PageNotFound&quot;</span>&gt;pageNotFound&lt;<b>/prop</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.dao.DataAccessException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.dao.DataAccessException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.transaction.TransactionException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>prop</b>&nbsp;key=<span class="string">&quot;org.springframework.transaction.TransactionException&quot;</span>&gt;dataAccessFailure&lt;<b>/prop</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/props</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/props</b>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
 <br />
@@ -238,25 +296,6 @@
 <br />
     
     </code>
-
-<p>We also have to remove the piece of code in the web.xml file configuring the default error page. The code below should be removed:</p>
-   
-   <code>
-
-
-&lt;<b>error-page</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
-<br />
-&lt;<b>/error-page</b>&gt;
-<br />
-
-
-</code>
      
         
         
