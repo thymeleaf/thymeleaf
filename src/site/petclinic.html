@@ -344,31 +344,42 @@
         and <i>footer</i> pieces of HTML will be added to the page by means of a <kbd>th:substituteby</kbd> 
         attribute. Original <kbd>header.jsp</kbd> and <kbd>footer.jsp</kbd> files have been merged into a single <kbd>layout.html</kbd> file,
         now containing both fragments.
+        
                 <code>
-&lt;<b>!--</b>&nbsp;list.jsp&nbsp;file&nbsp;--&gt;
+<span class="comment">&lt;!--&nbsp;list.jsp&nbsp;file&nbsp;--&gt;</span>
 <br />
 &lt;<b>%@</b>&nbsp;include&nbsp;file=<span class="string">&quot;/WEB-INF/jsp/includes.jsp&quot;</span>&nbsp;%&gt;
 <br />
 &lt;<b>%@</b>&nbsp;include&nbsp;file=<span class="string">&quot;/WEB-INF/jsp/header.jsp&quot;</span>&nbsp;%&gt;
-
-<br />
-&lt;<b>h2</b>&gt;Owners:&lt;<b>/h2</b>&gt;
                     
                 </code>
                 <code>
-&lt;<b>!--</b>&nbsp;list.html&nbsp;file&nbsp;--&gt;
+
+<span class="comment">&lt;!--&nbsp;list.html&nbsp;file&nbsp;--&gt;</span>
 <br />
-                    &lt;<b>!DOCTYPE</b>&nbsp;html&gt;
+&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
 <br />
 &lt;<b>html</b>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;head&quot;</span>&gt;&lt;<b>/head</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;header&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;href=<span class="string">&quot;../../../styles/petclinic.css&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;PetClinic&nbsp;::&nbsp;a&nbsp;Spring&nbsp;Framework&nbsp;demonstration&lt;<b>/title</b>&gt;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/head</b>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
 <br />
             
                 </code>
+                
+                Note how <kbd>list.html</kbd> contains more code at its <kbd>&lt;head&gt;</kbd> section than the original JSP file. But this is in
+                fact merely optional, and its only aim is to allow the <kbd>list.html</kbd> Thymeleaf template to display statically as a prototype (something 
+                nearly impossible with JSP). The <kbd>&lt;head&gt;</kbd> tag in <kbd>list.html</kbd> will in fact be substituted by the <kbd>header</kbd>
+                fragment in <kbd>layout.html</kbd> when executed by means of the <kbd>th:substituteby</kbd> attribute seen above.
         </li>
         <li>
             Remove the JSP tags and use Thymeleaf attributes instead
@@ -743,6 +754,43 @@ way depending on the exception type.</p>
 
     
  
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="sourceforge">
+       <a href="http://sourceforge.net/projects/thymeleaf"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=509826&amp;type=9" width="80" height="15" alt="Get thymeleaf at SourceForge.net. Fast, secure and Free Open Source software downloads" /></a>
+     </div>
+     <div id="copy">
+       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+   <script type="text/javascript">
+
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-1276954-9']);
+     _gaq.push(['_trackPageview']);
+
+     (function() {
+         var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+         })();
+
+   </script>
+   
   </div>
   </body>
   
