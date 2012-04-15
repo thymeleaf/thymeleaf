@@ -346,7 +346,7 @@
         now containing both fragments.
         
                 <code>
-<span class="comment">&lt;!--&nbsp;list.jsp&nbsp;file&nbsp;--&gt;</span>
+<span class="comment">&lt;!--&nbsp;list.jsp&nbsp;--&gt;</span>
 <br />
 &lt;<b>%@</b>&nbsp;include&nbsp;file=<span class="string">&quot;/WEB-INF/jsp/includes.jsp&quot;</span>&nbsp;%&gt;
 <br />
@@ -355,7 +355,7 @@
                 </code>
                 <code>
 
-<span class="comment">&lt;!--&nbsp;list.html&nbsp;file&nbsp;--&gt;</span>
+<span class="comment">&lt;!--&nbsp;list.html&nbsp;--&gt;</span>
 <br />
 &lt;<b>!DOCTYPE</b>&nbsp;html&gt;
 <br />
@@ -376,18 +376,19 @@
             
                 </code>
                 
-                Note how <kbd>list.html</kbd> contains more code at its <kbd>&lt;head&gt;</kbd> section than the original JSP file. But this is in
-                fact merely optional, and its only aim is to allow the <kbd>list.html</kbd> Thymeleaf template to display statically as a prototype (something 
+                Note how <kbd>list.html</kbd> contains more code at its <kbd>&lt;head&gt;</kbd> section than the original JSP file, which
+                in fact does not have one as it is included from <kbd>header.jsp</kbd>. But doing it this way
+                is merely optional, and its only aim is to allow the <kbd>list.html</kbd> Thymeleaf template to display statically as a prototype (something 
                 nearly impossible with JSP). The <kbd>&lt;head&gt;</kbd> tag in <kbd>list.html</kbd> will in fact be substituted by the <kbd>header</kbd>
                 fragment in <kbd>layout.html</kbd> when executed by means of the <kbd>th:substituteby</kbd> attribute seen above.
         </li>
         <li>
-            Remove the JSP tags and use Thymeleaf attributes instead
+            The original code looks like this:
 
 <code>
 
 
-&lt;<b>!--</b>&nbsp;list.jsp&nbsp;file&nbsp;--&gt;
+<span class="comment">&lt;!--&nbsp;list.jsp&nbsp;--&gt;</span>
 <br />
 &lt;<b>table</b>&gt;
 <br />
@@ -454,107 +455,96 @@
 
 </code>
 
+Which we will replace with:
 
 <code>
 
 
-&lt;<b>!--</b>&nbsp;list.html&nbsp;file&nbsp;--&gt;
+<span class="comment">&lt;!--&nbsp;list.html&nbsp;file&nbsp;--&gt;</span>
 <br />
 &lt;<b>table</b>&gt;
 <br />
-    &lt;<b>thead</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>thead</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
 <br />
-        &lt;<b>th</b>&gt;Name&lt;<b>/th</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Name&lt;<b>/th</b>&gt;
 <br />
-        &lt;<b>th</b>&gt;Address&lt;<b>/th</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Address&lt;<b>/th</b>&gt;
 <br />
-
-        &lt;<b>th</b>&gt;City&lt;<b>/th</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;City&lt;<b>/th</b>&gt;
 <br />
-        &lt;<b>th</b>&gt;Telephone&lt;<b>/th</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Telephone&lt;<b>/th</b>&gt;
 <br />
-        &lt;<b>th</b>&gt;Pets&lt;<b>/th</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Pets&lt;<b>/th</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
 <br />
-    &lt;<b>/thead</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/thead</b>&gt;
 <br />
-    &lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
 <br />
-
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
 <br />
-        &lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&nbsp;
 <br />
-        &nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;Mary&nbsp;Smith&lt;<b>/a</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;Mary&nbsp;Smith&lt;<b>/a</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;45,&nbsp;Oxford&nbsp;Street&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;45,&nbsp;Oxford&nbsp;Street&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;Cambridge&lt;<b>/td</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;Cambridge&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;555-555-555&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;555-555-555&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
 <br />
-        &lt;<b>span</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:utext=<span class="string">&quot;${pet.name&nbsp;+&nbsp;&#39;&amp;nbsp;&#39;}&quot;</span>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:utext=<span class="string">&quot;${pet.name&nbsp;+&nbsp;&#39;&amp;nbsp;&#39;}&quot;</span>&gt;
 <br />
-        &nbsp;&nbsp;&nbsp;&nbsp;Bob
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bob
 <br />
-        &lt;<b>/span</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
 <br />
-    &lt;<b>/tr</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
 <br />
-    &lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&gt;John&nbsp;Moore&lt;<b>/a</b>&gt;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&gt;John&nbsp;Moore&lt;<b>/a</b>&gt;&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;78,&nbsp;NY&nbsp;Street&lt;<b>/td</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;78,&nbsp;NY&nbsp;Street&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Washington&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Washington&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;333-333-333&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;333-333-333&lt;<b>/td</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
 <br />
-
-        &lt;<b>span</b>&gt;Roger&lt;<b>/span</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&gt;Roger&lt;<b>/span</b>&gt;
 <br />
-        &lt;<b>br/</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br/</b>&gt;
 <br />
-        &lt;<b>span</b>&gt;Peggy&lt;<b>/span</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&gt;Peggy&lt;<b>/span</b>&gt;
 <br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
-
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
 <br />
-    &lt;<b>/tr</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
 <br />
 &lt;<b>/table</b>&gt;
 <br />
 
-
 </code>
 
-            <p>In the code above you can see how, for example, we have replaced the use of the tag <kbd>c:foreach</kbd> with 
-            the <kbd>th:each</kbd> attribute instead.</p>
-            <p>Note that, in the Thymeleaf version, we have added some code just to be used when displaying the page statically. So we use the th:remove attribute
-            to avoid this being rendered when deploying in a server.</p>
+              In the code above you can see how, for example, we replaced the use of the <kbd>c:foreach</kbd> tag with 
+              a <kbd>th:each</kbd> attribute in a <kbd>&lt;tr&gt;</kbd> tag.
+              Also, our Thymeleaf version is longer because we have added some prototyping code (an additional
+              row in the table) just to be displayed when 
+              the page is statically open. So we use the <kbd>th:remove</kbd> attribute
+              to avoid this prototyping code being rendered when deployed into a server.
         </li>
     </ul>
-
-    <p>You can checkout the Petclinic module from the <a href="documentation.html" title="Documentation">Thymeleaf documentation page</a> and have a look at this in detail.
 
      
     <h3>uncaughtException</h3>     
