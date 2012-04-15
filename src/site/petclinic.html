@@ -799,14 +799,14 @@ Which we will replace with:
      </p>         
      
      <code>
-&lt;<b>input</b>&nbsp;type=<span class="string">&quot;date&quot;</span>&nbsp;th:field=<span class="string">&quot;*{birthDate}&quot;</span>&nbsp;size=<span class="string">&quot;10&quot;</span>&nbsp;maxlength=<span class="string">&quot;10&quot;</span>/&gt;      
+&lt;<b>input</b>&nbsp;type=<span class="string">&quot;date&quot;</span>&nbsp;th:field=<span class="string">&quot;*{birthDate}&quot;</span>&nbsp;/&gt;      
      </code>
 
      <p>
-       ...which behaves wonderfully when displayed at a browser with good HTML5 support:
+       ...which behaves wonderfully when displayed at a browser with good HTML5 support (Opera, in this case):
      </p>
 
-     [[SCREENSHOT]]
+     <img src="images/thymeleafpetclinic_petsform_date.png" alt="An HTML5 date input"/>
 
      <h2>And what about the <i>Natural Templating</i> thing?</h2>    
 
@@ -817,13 +817,13 @@ Which we will replace with:
        statically:
      </p> 
      
-     [[SCREENSHOT]]
+     <img src="images/thymeleafpetclinic_ownerslist_jsp_static.png" alt="Owners list (JSP), statically opened"/>
      
      <p>
-       ...and now let's have a look at our new Thymeleaf-powered <kbd>ownsers/list.html</kbd>:
+       ...and now let's have a look at our new Thymeleaf-powered <kbd>owners/list.html</kbd>:
      </p>
      
-     [[SCREENSHOT]]
+     <img src="images/thymeleafpetclinic_ownerslist_thymeleaf_static.png" alt="Owners list (thymeleaf), statically opened"/>
      
      <p>
        There we are. Data is not valid, because it is a prototype. But it looks good!
