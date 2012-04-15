@@ -49,7 +49,7 @@
      <p>
        The Thymeleaf standard dialects &mdash;called <i>Standard</i> and <i>SpringStandard</i>&mdash; offer a way to easily create 
        URLs in your web application so that they include any required <i>URL preparation</i> artifacts. This is done by means of the 
-       so-called <i>&#8220;at&#8221; syntax</i> of the <i>standard expressions</i>: <tt>@{...}</tt>
+       so-called <i>&#8220;at&#8221; syntax</i> of the <i>standard expressions</i>: <kbd>@{...}</kbd>
      </p>
 
 
@@ -58,7 +58,7 @@
 
      <p>
        Absolute URLs allow you to create links to other servers. They start by specifying a protocol
-       name (<tt>http://</tt> or <tt>https://</tt>)
+       name (<kbd>http://</kbd> or <kbd>https://</kbd>)
      </p>
 
      <code>
@@ -80,12 +80,12 @@
      <p>
        The most used type of URLs are <i>context-relative</i> ones. These are URLs which are supposed to be 
        relative to the web application root once it is installed on the server. For example, if we deploy
-       a <tt>myapp.war</tt> file into a Tomcat server, our application will probably be accessible as
-       <tt>http://localhost:8080/myapp</tt>, and <tt>myapp</tt> will be the <i>context name</i>.
+       a <kbd>myapp.war</kbd> file into a Tomcat server, our application will probably be accessible as
+       <kbd>http://localhost:8080/myapp</kbd>, and <kbd>myapp</kbd> will be the <i>context name</i>.
      </p>
 
      <p>
-       Context-relative URLs start with <tt>/</tt>:
+       Context-relative URLs start with <kbd>/</kbd>:
      </p>
 
      <code>
@@ -93,7 +93,7 @@
      </code>
 
      <p>
-       If our app is installed at <tt>http://localhost:8080/myapp</tt>, this URL will output:
+       If our app is installed at <kbd>http://localhost:8080/myapp</kbd>, this URL will output:
      </p>
 
      <code>
@@ -114,7 +114,7 @@
        </li>
        <li>
          Automatically detect whether the user has cookies enabled or not, and
-         add the <tt>;jsessionid=...</tt> fragment to the URL if not &mdash;or if it is the 
+         add the <kbd>;jsessionid=...</kbd> fragment to the URL if not &mdash;or if it is the 
          first request and cookie configuration is still unknown.
        </li>
      </ul>
@@ -139,7 +139,7 @@
 
      <p>
        The current application's context will be ignored, therefore although our application is deployed at 
-       <tt>http://localhost:8080/myapp</tt>, this URL will output:
+       <kbd>http://localhost:8080/myapp</kbd>, this URL will output:
      </p>
      
      <code>
@@ -156,7 +156,7 @@
      <h2>Adding parameters</h2>
 
      <p>
-       How do we add parameters to the URLs we create with <tt>@{...}</tt> 
+       How do we add parameters to the URLs we create with <kbd>@{...}</kbd> 
        expressions? Simple:
      </p>
 
@@ -193,9 +193,9 @@
      <h2>Only for th:href's?</h2>
 
      <p>
-       Do not think URL <tt>@{...}</tt> expressions are only used in <tt>th:href</tt> attributes. They can,
-       in fact, be used <i>anywhere</i> just like variable expressions (<tt>${...}</tt>) or message externalization / 
-       internationalization ones (<tt>#{...}</tt>). 
+       Do not think URL <kbd>@{...}</kbd> expressions are only used in <kbd>th:href</kbd> attributes. They can,
+       in fact, be used <i>anywhere</i> just like variable expressions (<kbd>${...}</kbd>) or message externalization / 
+       internationalization ones (<kbd>#{...}</kbd>). 
      </p>
      <p>
        For example, you could use them in forms...
@@ -223,7 +223,7 @@
      </code>
 
      <p>
-       ...but neither <tt>3</tt> nor <tt>'show_all'</tt> could be literals, because we only know their
+       ...but neither <kbd>3</kbd> nor <kbd>'show_all'</kbd> could be literals, because we only know their
        value at run time?
      </p>
      <p>
@@ -277,7 +277,7 @@
      </code>
 
      <p>
-       Want it cleaner? Use <tt>th:with</tt>:
+       Want it cleaner? Use <kbd>th:with</kbd>:
      </p>
 
      <code>

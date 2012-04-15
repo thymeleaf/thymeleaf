@@ -80,7 +80,7 @@
         <li>Absolutely no modifications will be made to the Java code, just the view layer. The JSP files will be replaced
             and the application will be reconfigured.</li>
         <li>The original XHTML 1.0 will be replaced with HTML5, and some HTML5-specific features will be 
-            added (i.e. input fields with type <tt>tel</tt>, <tt>date</tt>,...).</li>
+            added (i.e. input fields with type <kbd>tel</kbd>, <kbd>date</kbd>,...).</li>
         <li>Apart from the switch to HTML5, all the application's interface will have to display exactly the same
             as the original.</li>
         <li>Thymeleaf template files should display OK when open statically on a browser (<i>Natural templating</i>).</li>
@@ -89,7 +89,7 @@
     <p>
       All the code of the PetClinic+Thymeleaf application can be obtained at the 
       <a href="documentation.html">Thymeleaf Project's Documentation</a> page. Note that the original JSP files have 
-      not been removed from the source tree but rather moved to the <tt>doc/old_jsps</tt> folder at the source tree,
+      not been removed from the source tree but rather moved to the <kbd>doc/old_jsps</kbd> folder at the source tree,
       so that you can still access them in order to compare with the new templates.
     </p>
     
@@ -99,21 +99,27 @@
     <p>The original JSP view layer has a number of problems we will try to fix when converting the view layer
        to Thymeleaf:</p>
     <ul>
-        <li>The JSP pages include both JSTL and Spring-specific tags. None of which are understandable 
-        by browsers, so there is no way for it to represent the pages statically (no static 
-        prototyping possible).</li>
+        <li>The JSP templates seem to define an XHTML interface, although no <kbd>DOCTYPE</kbd> declaration
+            is applied and several minor format errors appear &mdash;like e.g. minimized tags without
+            a space before the <kbd>/</kbd> like <kbd>&lt;br/&gt;</kbd> instead of <kbd>&lt;br /&gt;</kbd>&mdash;. 
+            We will convert this application to <b>HTML5</b>.</li>
+        <li>JSPs include both JSTL and Spring-specific tags. None of which are understandable 
+            by browsers, so there is no way for it to represent the pages statically (no static 
+            prototyping possible).</li>
         <li>JSTL tags use the JSP EL (Expression Language), whereas the tags from the JSP Spring taglibs
-        use Spring EL. Two different expression languages are therefore mixed in the same pages.</li>
+            use Spring EL. Two different expression languages are therefore mixed in the same pages.</li>
         <li>The original JSP templates are not complete or well-formed HTML documents. For example, 
-        the <i>"show owners"</i> page is broken down into three fragments:
+            the <i>"show owners"</i> page is broken down into three fragments:
             <ol> 
-                <li>a <tt>header.jsp</tt> with unclosed body and div tags,</li>
-                <li>a <tt>show.jsp</tt> which does not have neither head nor body tags &mdash;as they come from the header&mdash;, 
-                and</li>
-                <li> a <tt>footer.jsp</tt> closing the body and div tags opened at the header.</li>
+                <li>A <kbd>header.jsp</kbd> file with unclosed <kbd>&lt;body&gt;</kbd> and <kbd>&lt;div&gt;</kbd> tags,</li>
+                <li>A <kbd>show.jsp</kbd> file which does not have any <kbd>&lt;head&gt;</kbd> nor <kbd>&lt;body&gt;</kbd> 
+                    tags &mdash;they come from the included <kbd>header</kbd>&mdash;, 
+                    and defines the content of the <i>"show owners"</i> page.</li>
+                <li>A <kbd>footer.jsp</kbd> file with closing <kbd>&lt;/div&gt;</kbd> and <kbd>&lt;/body&gt;</kbd> tags corresponding
+                    to the ones opened at <kbd>header</kbd>.</li>
             </ol>
         </li>
-        <li>Some JSP pages &mdash;exception handling, for example&mdash; include java code scriptlets, 
+        <li>Some JSP pages &mdash;for exception handling, for example&mdash; include java code scriptlets, 
             which is not a good practice.</li>
     </ul>         
         
@@ -127,30 +133,30 @@
     </p>
     
     <ul>
-      <li>The <tt>pom.xml</tt> file will be modified in order to add the Thymeleaf dependencies to it and remove the 
+      <li>The <kbd>pom.xml</kbd> file will be modified in order to add the Thymeleaf dependencies to it and remove the 
           JSP-related ones.</li>
-      <li>The original <tt>web.xml</tt> file will also be modified in order to remove the declaration of a <tt>default</tt>
+      <li>The original <kbd>web.xml</kbd> file will also be modified in order to remove the declaration of a <kbd>default</kbd>
           servlet depending on a specific Tomcat class for serving static resources &mdash;images, css, etc&mdash;.
-          Instead, the much cleaner <tt>&lt;mvc:resources/&gt;</tt> mechanism will be used at
-          our <tt>petclinic-servlet.xml</tt> Spring bean configuration file:</li>
+          Instead, the much cleaner <kbd>&lt;mvc:resources/&gt;</kbd> mechanism will be used at
+          our <kbd>petclinic-servlet.xml</kbd> Spring bean configuration file:</li>
     </ul>
     
             <code>
-&lt;!--
+<span class="comment">&lt;!--
 <br />
 &nbsp;&nbsp;-&nbsp;Static&nbsp;resources
 <br />
---&gt;
+--&gt;</span>
 <br />
 &lt;<b>mvc:resources</b>&nbsp;location=<span class="string">&quot;/&quot;</span>&nbsp;mapping=<span class="string">&quot;/static/**&quot;</span>&nbsp;/&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&lt;!--
+<span class="comment">&lt;!--
 <br />
 &nbsp;&nbsp;-&nbsp;The&nbsp;controllers&nbsp;are&nbsp;autodetected&nbsp;POJOs&nbsp;labeled&nbsp;with&nbsp;the&nbsp;@Controller&nbsp;annotation.
 <br />
---&gt;
+--&gt;</span>
 <br />
 &lt;<b>mvc:annotation-driven</b>&nbsp;/&gt;
 <br />
@@ -165,15 +171,15 @@
 	
     <p>
       Our next configuration step will be to add three required beans at the Spring beans configuration file,
-      <tt>petclinic-servlet.xml</tt>:
+      <kbd>petclinic-servlet.xml</kbd>:
     </p>
     <ul>
       <li>The Thymeleaf <i>template resolver</i> that will be in charge of reading the 
-          template files to be processed. For this application we will use a <tt>ServletContextTemplateResolver</tt>.</li>
-      <li>The Thymeleaf <i>template engine</i> instance, of class <tt>SpringTemplateEngine</tt>.</li>
-      <li>The Thymeleaf <i>view resolver</i>, a <tt>ThymeleafViewResolver</tt> instance implementing Spring's 
-          <tt>org.springframework.web.servlet.ViewResolver</tt> interface. This bean will substitute the
-          original <tt>InternalResourceViewResolver</tt> bean which enabled JSP support in the original application.</li>
+          template files to be processed. For this application we will use a <kbd>ServletContextTemplateResolver</kbd>.</li>
+      <li>The Thymeleaf <i>template engine</i> instance, of class <kbd>SpringTemplateEngine</kbd>.</li>
+      <li>The Thymeleaf <i>view resolver</i>, a <kbd>ThymeleafViewResolver</kbd> instance implementing Spring's 
+          <kbd>org.springframework.web.servlet.ViewResolver</kbd> interface. This bean will substitute the
+          original <kbd>InternalResourceViewResolver</kbd> bean which enabled JSP support in the original application.</li>
     </ul>
         
             <code>
@@ -210,7 +216,7 @@
         </code>
     
         <p>Note that, as a difference from the original application, our templates will live at the 
-           <tt>/WEB-INF/templates</tt> folder instead of the original <tt>/WEB-INF/jsp</tt>.</p>
+           <kbd>/WEB-INF/templates</kbd> folder instead of the original <kbd>/WEB-INF/jsp</kbd>.</p>
 
 
 		   
@@ -218,7 +224,7 @@
 		
         <p>
 		  The original application handles some types of exceptions through Spring, declaring a 
-		  <tt>SimpleMappingExceptionResolver</tt> bean:
+		  <kbd>SimpleMappingExceptionResolver</kbd> bean:
         </p>
 		
     <code>
@@ -246,8 +252,8 @@
 		
 		<p>
 		  The problem is, this does not include every type of exception possible and,
-		  for all the remaining exceptions, an ugly JSP file called <tt>uncaughtException.jsp</tt> is
-          originally configured at <tt>web.xml</tt> (the reason why we call this one <i>"ugly"</i> will be explained later):
+		  for all the remaining exceptions, an ugly JSP file called <kbd>uncaughtException.jsp</kbd> is
+          originally configured at <kbd>web.xml</kbd> (the reason why we call this one <i>"ugly"</i> will be explained later):
 		</p>
 		
         <code>
@@ -256,7 +262,7 @@
           <br />
           &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Exception&lt;<b>/exception-type</b>&gt;
           <br />
-          &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">&lt;!--&nbsp;Displays&nbsp;a&nbsp;stack&nbsp;trace&nbsp;--&gt;</span>
           <br />
           &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/WEB-INF/jsp/uncaughtException.jsp&lt;<b>/location</b>&gt;
           <br />
@@ -269,8 +275,8 @@
 		  As we want to implement this <i>uncaught exception</i> page using Thymeleaf, we will need our exception handling
 		  for these exceptions to go through Spring and not let our web server directly execute our template 
 		  &mdash;only JSPs are directly understood by Java web servers&mdash;.
-		  So we will remove the code above from <tt>web.xml</tt> and we will modify the exception handling
-		  bean declaration at <tt>petclinic-servlet.xml</tt>:
+		  So we will remove the code above from <kbd>web.xml</kbd> and we will modify the exception handling
+		  bean declaration at <kbd>petclinic-servlet.xml</kbd>:
         </p>
         
     <code>
@@ -300,27 +306,44 @@
         
         
         
-    <h2>HTML pages</h2>
+    <h2>Substituting the JSPs</h2>
     
-    <p>In this section, we'll describe how to replace two different pages in the application with their Thymeleaf version:</p>
+    <p>
+      PetClinic includes more than 10 JSP XHTML templates, and we will rewrite all of them using Thymeleaf and HTML5.
+      However, for the sake of brevity, we will only inspect two of them in detail in this article:
+    </p>
+    
     <ul>
-        <li>owners/list.jsp page</li>
-        <li>uncaughtException.jsp page</li>
+        <li><kbd>owners/list.jsp</kbd> &#187; <kbd>owners/list.html</kbd></li>
+        <li><kbd>uncaughtException.jsp</kbd> &#187; <kbd>uncaughtException.html</kbd></li>
     </ul>
         
+    <p>
+      Remember you can see all the templates at the source code, downloadable from 
+      <a href="documentation.html">the documentation page</a>, and also that you can review the original
+      JSP files at the <kbd>doc/old_jsps</kbd> folder.
+    </p>
        
+
      
-    <h4>Modify owners/list.jsp page</h4>     
-    <p>This page shows the list of veterinarians that match the last name we introduced in the previous page (search.jsp).</p>
+    <h3>owners/list.jsp</h3>
+    
+         
+    <p>
+      This page shows the list of veterinarians that match the last name we introduced in a previous 
+      page (<kbd>search.jsp</kbd>):
+    </p>
     
     <img src="images/thymeleafpetclinic_owners.png" alt="Owners page"/> 
+
     
-    <p>In order to modify the JSP page, we have to:</p>
+    <p>In order to convert this page to Thymeleaf, we will:</p>
     <ul>
-        <li>Rename list.jsp to list.html</li>
-        <li>Remove the include sentences as we do not need any tags libray and the head and footer pieces of HTML will
-        be added to the page by means of the <kbd>th:substituteby</kbd> tag. Header and footer files have been included in
-        one single file: <kbd>layout.html</kbd>
+        <li>Rename <kbd>list.jsp</kbd> to <kbd>list.html</kbd>.</li>
+        <li>Remove all <kbd>&lt;%@ include %&gt;</kbd> directives as we do not need any JSP tag libraries and the <i>header</i> 
+        and <i>footer</i> pieces of HTML will be added to the page by means of a <kbd>th:substituteby</kbd> 
+        attribute. Original <kbd>header.jsp</kbd> and <kbd>footer.jsp</kbd> files have been merged into a single <kbd>layout.html</kbd> file,
+        now containing both fragments.
                 <code>
 &lt;<b>!--</b>&nbsp;list.jsp&nbsp;file&nbsp;--&gt;
 <br />
@@ -521,8 +544,11 @@
     </ul>
 
     <p>You can checkout the Petclinic module from the <a href="documentation.html" title="Documentation">Thymeleaf documentation page</a> and have a look at this in detail.
+
      
-    <h4>Modify uncaughtException.jsp</h4>     
+    <h3>uncaughtException</h3>     
+
+
     <p>This is the page the user will be redirected to when an unexpected exception arises. The JSP version of this page is not as the others, instead
     of JSP tags, it contains java code (yes...that's not a good practice). So, in order to create the Thymeleaf version of that page, we
     have to replace all of that java code with HTML and add Thymeleaf attributes to it in order to get the same results 
