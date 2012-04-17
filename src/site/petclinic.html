@@ -85,7 +85,7 @@
             added (i.e. form input fields with type <kbd>tel</kbd>, <kbd>date</kbd>,...).</li>
         <li>Apart from the switch to HTML5, all the application's interface will have to display exactly the same
             as the original.</li>
-        <li>Thymeleaf template files should display OK when open statically on a browser (<i>Natural templating</i>).</li>
+        <li>Thymeleaf template files should display OK when opened statically on a browser (<i>Natural templating</i>).</li>
     </ul>
     
     <p>
@@ -369,9 +369,9 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;header&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;href=<span class="string">&quot;../../../styles/petclinic.css&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;href=<span class="string">&quot;../../../styles/petclinic.css&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>&nbsp;/&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;PetClinic&nbsp;::&nbsp;a&nbsp;Spring&nbsp;Framework&nbsp;demonstration&lt;<b>/title</b>&gt;&nbsp;&nbsp;
 <br />
@@ -488,55 +488,59 @@ Which we will replace with:
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/thead</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tbody</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;Mary&nbsp;Smith&lt;<b>/a</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;Mary&nbsp;Smith&lt;<b>/a</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;45,&nbsp;Oxford&nbsp;Street&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;Cambridge&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;45,&nbsp;Oxford&nbsp;Street&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;555-555-555&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;Cambridge&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;555-555-555&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:utext=<span class="string">&quot;${pet.name&nbsp;+&nbsp;&#39;&amp;nbsp;&#39;}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bob
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:utext=<span class="string">&quot;${pet.name&nbsp;+&nbsp;&#39;&amp;nbsp;&#39;}&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bob
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&gt;John&nbsp;Moore&lt;<b>/a</b>&gt;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;78,&nbsp;NY&nbsp;Street&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;show.html&quot;</span>&gt;John&nbsp;Moore&lt;<b>/a</b>&gt;&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Washington&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;78,&nbsp;NY&nbsp;Street&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;333-333-333&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Washington&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;333-333-333&lt;<b>/td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&gt;Roger&lt;<b>/span</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&gt;Roger&lt;<b>/span</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&gt;Peggy&lt;<b>/span</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&gt;Peggy&lt;<b>/span</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tbody</b>&gt;
 <br />
 &lt;<b>/table</b>&gt;
 <br />
@@ -678,13 +682,9 @@ Which we will replace with:
 <span class="comment">&lt;!--&nbsp;uncaughtException.html&nbsp;--&gt;</span>
 <br />
 
-&lt;<b>div</b>&nbsp;id=<span class="string">&quot;main&quot;</span>&nbsp;th:with=<span class="string">&quot;exception&nbsp;&nbsp;&nbsp;=&nbsp;${#httpServletRequest.getAttribute(&#39;javax.servlet.error.exception&#39;)},
+&lt;<b>div</b>&nbsp;id=<span class="string">&quot;main&quot;</span>&nbsp;th:with=<span class="string">&quot;exception&nbsp;=&nbsp;${#httpServletRequest.getAttribute(&#39;javax.servlet.error.exception&#39;)},
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;${exception.class},
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;stacktrace&nbsp;&nbsp;=&nbsp;${exception.stackTrace},
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookies&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&nbsp;${#httpServletRequest.cookies}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookies&nbsp;&nbsp;&nbsp;=&nbsp;${#httpServletRequest.cookies}&quot;</span>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
@@ -692,41 +692,49 @@ Which we will replace with:
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;!=&nbsp;null}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;!=&nbsp;null}&quot;</span>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:object=<span class="string">&quot;${exception.rootCause}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:object=<span class="string">&quot;${exception.rootCause}&nbsp;?:&nbsp;${exception}&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:utext=<span class="string">&quot;*{&#39;**&nbsp;Root&nbsp;cause&nbsp;is:&nbsp;&#39;&nbsp;+&nbsp;message&nbsp;+&nbsp;&#39;&amp;lt;br/&amp;gt;&#39;}&quot;</span>&gt;&lt;<b>/div</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;**&nbsp;Root&nbsp;cause&nbsp;is:&nbsp;&lt;<b>span</b>&nbsp;th:utext=<span class="string">&quot;*{message}&quot;</span>&gt;ClassNotFound&lt;<b>/span</b>&gt;&lt;<b>/p</b>&gt;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;*{stackTrace}&quot;</span>&nbsp;th:text=<span class="string">&quot;${st}&quot;</span>&gt;&lt;<b>/div</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;*{stackTrace}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${st}&quot;</span>&gt;a.b.c.MainController.do(MainController:5)&lt;<b>/span</b>&gt;&lt;<b>br</b>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:unless=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:unless=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:utext=<span class="string">&quot;${exception.class&nbsp;+&nbsp;&#39;:&nbsp;&#39;&nbsp;+&nbsp;exception.message&nbsp;+&nbsp;&#39;&amp;lt;br/&amp;gt;&#39;}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${exception.class.name}&quot;</span>&gt;NullPointerException&lt;<b>/span</b>&gt;:&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NullPointerException:&nbsp;null
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${exception.message}&quot;</span>&gt;null&lt;<b>/span</b>&gt;&lt;<b>br</b>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:utext=<span class="string">&quot;${&#39;at&nbsp;&#39;+&nbsp;st&nbsp;+&nbsp;&#39;&amp;lt;br/&amp;gt;&#39;}&quot;</span>&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;${exception.stackTrace}&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;${stackTrace}&quot;</span>&nbsp;&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${st}&quot;</span>&gt;a.b.c.MainController.do(MainController:5)&lt;<b>/span</b>&gt;&lt;<b>br</b>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;a.b.c.MainController
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
 <br />
@@ -736,41 +744,26 @@ Which we will replace with:
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;==&nbsp;null}&quot;</span>&nbsp;th:text=<span class="string">&quot;&#39;No&nbsp;error&nbsp;information&nbsp;available&#39;&quot;</span>&gt;&lt;<b>/p</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;==&nbsp;null}&quot;</span>&gt;No&nbsp;error&nbsp;information&nbsp;available&lt;<b>/p</b>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br/</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;Cookies:
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br/</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;c&nbsp;:&nbsp;${cookies}&quot;</span>&nbsp;th:text=<span class="string">&quot;${c.name&nbsp;+&nbsp;&#39;=[&#39;&nbsp;+&nbsp;c.value&nbsp;+&nbsp;&#39;]&#39;}&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;=[anonymous]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;c&nbsp;:&nbsp;${cookies}&quot;</span>&nbsp;th:text=<span class="string">&quot;${c.name&nbsp;+&nbsp;&#39;=[&#39;&nbsp;+&nbsp;c.value&nbsp;+&nbsp;&#39;]&#39;}&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;=[anonymous]
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br/</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>table</b>&nbsp;th:substituteby=<span class="string">&quot;layout&nbsp;::&nbsp;footer&quot;</span>&nbsp;class=<span class="string">&quot;footer&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;welcome.html&quot;</span>&gt;Home&lt;<b>/a</b>&gt;&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;align=<span class="string">&quot;right&quot;</span>&gt;&lt;<b>img</b>&nbsp;src=<span class="string">&quot;../../images/springsource-logo.png&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alt=<span class="string">&quot;Sponsored&nbsp;by&nbsp;SpringSource&quot;</span>&gt;&lt;<b>/img</b>&gt;&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/table</b>&gt;
 <br />
 &lt;<b>/div</b>&gt;
 <br />
@@ -780,7 +773,7 @@ Which we will replace with:
 
        <p>
          A couple of things to note: first, that the original page almost had no format at all, so we did add it here &mdash;just a couple of <kbd>&lt;p&gt;</kbd>s
-         and <kbd>&lt;div&gt;</kbd>s&mdash;. Second, that we made an intelligent use of the <kbd>th:with</kbd> attribute in order to define several variables 
+         and <kbd>&lt;span&gt;</kbd>s&mdash;. Second, see how we made use of the <kbd>th:with</kbd> attribute in order to define a couple of variables 
          that would be used several times along the template.
        </p>
        <p>
@@ -813,7 +806,7 @@ Which we will replace with:
      <p>
        We also mentioned that our new Thymeleaf templates would be able to display correctly when opened
        statically in a browser because of the <i>Natural Templating</i> capabilities of Thymeleaf. Well,
-       let's have a look at how the original <kbd>owners/list.jsp</kbd> template looked like when seen
+       let's have a look at how the original <kbd>owners/list.jsp</kbd> template looks like when seen
        statically:
      </p> 
      
