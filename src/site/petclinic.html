@@ -564,13 +564,17 @@ Which we will replace with:
 
 
     <p>
-      This is the page the user will be redirected to when an unexpected exception arises. The JSP version of this page is not as 
-      the others, as instead of JSP tags it contains <i>scriptlets with java code</i> (yes...that's why we called it <i>ugly</i> 
-      before). So, in order to create the Thymeleaf version of that page, we have to replace all that java code with 
-      plain HTML with Thymeleaf attributes in it that work exactly as the original code.
+      This is the page the user will be redirected to when an unexpected exception arises:
     </p>
+    
     <img src="images/thymeleafpetclinic_uncaughtexception.png" alt="Uncaught Exception page"/>
     
+    <p>
+      The JSP version of this page is not as the others, as instead of JSP tags it contains <i>scriptlets with 
+      java code</i> (yes...that's why we called it <i>ugly</i> before). So, in order to create the Thymeleaf 
+      version of that page, we have to replace all that java code with plain HTML with Thymeleaf attributes 
+      in it that work exactly as the original code.
+    </p>
     
     
     <code>
