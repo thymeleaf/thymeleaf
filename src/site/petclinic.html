@@ -79,8 +79,11 @@
     <p><i>Pet Clinic</i> originally includes a view layer created with JSP, which we will replace using Thymeleaf:</p>
     
     <ul>
-        <li>Absolutely no modifications will be made to the Java code, just the view layer. The JSP files will be replaced
-            and the application will be reconfigured.</li>
+        <li>Spring 3.1 will be used (instead of the original 3.0).</li>
+        <li>No modifications will be made to the original Java code, except the creation of a new class
+            for initializing the property editors in the way required by Spring 3.1. Apart from that,
+            modifications will be focused on the view layer: the JSP files will be replaced
+            and the application will be reconfigured. Controllers will be left untouched.</li>
         <li>The original XHTML will be replaced with HTML5, and some HTML5-specific features will be 
             added (i.e. form input fields with type <kbd>tel</kbd>, <kbd>date</kbd>,...).</li>
         <li>Apart from the switch to HTML5, all the application's interface will have to display exactly the same
