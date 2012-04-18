@@ -4,6 +4,15 @@
   for the same template engine.
 - Fixed ClassCastException executing #{...} expressions in XML and VALIDXML template modes, because of a
   wrong construction of parsable code fragments (NestableNode was expected where there was a Text).
+- Updated OGNL dependency to 3.0.5 and javassist dependency to 3.16.1-GA.
+- Created org.thymeleaf.util.ClassLoaderUtils with utility methods for obtaining a valid class loader
+  to operate with, using priority order 1. Thread context class loader, 2. Current class class loader, 
+  3. System class loader.
+- Modified org.thymeleaf.standard.expression.OgnlExpressionEvaluator so that it applies a fix on OGNL's
+  expression processor. This fix makes OGNL evaluate Strings as booleans in a way consistent with that
+  of Thymeleaf ('false', 'off' and 'no' are considered "false" in Thymeleaf expressions, but OGNL
+  evaluates them as "true"). This fix does not affect Spring EL, as it already evaluates those values
+  in the same way as Thymeleaf.
   
 
 2.0.5
