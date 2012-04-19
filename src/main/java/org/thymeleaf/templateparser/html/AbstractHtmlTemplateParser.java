@@ -15,6 +15,7 @@ import org.thymeleaf.templateparser.EntityResolver;
 import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.ResourcePool;
 import org.thymeleaf.util.StandardDOMTranslator;
 import org.xml.sax.InputSource;
@@ -41,7 +42,8 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
 
         boolean nekoFound = true;
         try {
-            Thread.currentThread().getContextClassLoader().loadClass("org.cyberneko.html.parsers.DOMParser");
+            ClassLoaderUtils.getClassLoader(AbstractHtmlTemplateParser.class).
+                    loadClass("org.cyberneko.html.parsers.DOMParser");
         } catch (final ClassNotFoundException e) {
             nekoFound = false;
         }

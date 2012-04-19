@@ -22,17 +22,16 @@ package org.thymeleaf.resourceresolver;
 import java.io.InputStream;
 
 import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
 /**
  * <p>
  *   Implementation of {@link IResourceResolver} that resolves
- *   resources as classloader resources:
- * </p>
- * <p>
- *   <tt>
- *     Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName)
- *   </tt>
+ *   resources as classloader resources, using
+ *   {@link org.thymeleaf.util.ClassLoaderUtils#getClassLoader(Class)} for
+ *   obtaining the class loader and then executing
+ *   {@link ClassLoader#getResourceAsStream(String)}
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -58,7 +57,7 @@ public final class ClassLoaderResourceResolver
     
     public InputStream getResourceAsStream(final TemplateProcessingParameters templateProcessingParameters, final String resourceName) {
         Validate.notNull(resourceName, "Resource name cannot be null");
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+        return ClassLoaderUtils.getClassLoader(ClassLoaderResourceResolver.class).getResourceAsStream(resourceName);
     }
     
 }

@@ -22,6 +22,7 @@ package org.thymeleaf.doctype.resolution;
 import java.io.IOException;
 
 import org.thymeleaf.doctype.DocTypeIdentifier;
+import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -61,7 +62,7 @@ public final class ClassLoaderDocTypeResolutionEntry implements IDocTypeResoluti
 
     public InputSource createInputSource() throws SAXException, IOException {
         return new InputSource(
-                Thread.currentThread().getContextClassLoader().getResourceAsStream(this.resourceName));
+                ClassLoaderUtils.getClassLoader(ClassLoaderDocTypeResolutionEntry.class).getResourceAsStream(this.resourceName));
     }
 
 

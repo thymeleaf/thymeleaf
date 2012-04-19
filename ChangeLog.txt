@@ -8,6 +8,8 @@
 - Created org.thymeleaf.util.ClassLoaderUtils with utility methods for obtaining a valid class loader
   to operate with, using priority order 1. Thread context class loader, 2. Current class class loader, 
   3. System class loader.
+- Substituted all Thread.currentThread().getContextClassLoader() calls with calls to ClassLoaderUtils
+  in order to avoid NullPointerExceptions when the context or current class loaders are null.
 - Modified org.thymeleaf.standard.expression.OgnlExpressionEvaluator so that it applies a fix on OGNL's
   expression processor. This fix makes OGNL evaluate Strings as booleans in a way consistent with that
   of Thymeleaf ('false', 'off' and 'no' are considered "false" in Thymeleaf expressions, but OGNL
