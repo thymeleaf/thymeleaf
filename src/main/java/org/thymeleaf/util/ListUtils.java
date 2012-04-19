@@ -70,8 +70,7 @@ public final class ListUtils {
     
     
     public static boolean isEmpty(final List<?> target) {
-        Validate.notNull(target, "Cannot execute list isEmpty: target is null");
-        return target.isEmpty();
+        return target == null || target.isEmpty();
     }
     
     public static boolean contains(final List<?> target, final Object element) {

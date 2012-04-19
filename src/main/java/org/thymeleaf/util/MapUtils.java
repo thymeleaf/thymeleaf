@@ -42,8 +42,7 @@ public final class MapUtils {
     
     
     public static boolean isEmpty(final Map<?,?> target) {
-        Validate.notNull(target, "Cannot execute map isEmpty: target is null");
-        return target.isEmpty();
+        return target == null || target.isEmpty();
     }
 
     

@@ -72,8 +72,7 @@ public final class SetUtils {
     
     
     public static boolean isEmpty(final Set<?> target) {
-        Validate.notNull(target, "Cannot execute set isEmpty: target is null");
-        return target.isEmpty();
+        return target == null || target.isEmpty();
     }
     
     public static boolean contains(final Set<?> target, final Object element) {

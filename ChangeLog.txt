@@ -15,6 +15,7 @@
   of Thymeleaf ('false', 'off' and 'no' are considered "false" in Thymeleaf expressions, but OGNL
   evaluates them as "true"). This fix does not affect Spring EL, as it already evaluates those values
   in the same way as Thymeleaf.
+- Fixed null-safety in "isEmpty" methods in #arrays, #lists, #maps and #sets.
   
 
 2.0.5

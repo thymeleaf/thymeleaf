@@ -75,8 +75,7 @@ public final class ArrayUtils {
     
     
     public static boolean isEmpty(final Object[] target) {
-        Validate.notNull(target, "Cannot execute array isEmpty: target is null");
-        return target.length > 0;
+        return target == null || target.length <= 0;
     }
     
     
