@@ -76,7 +76,7 @@ public abstract class AbstractIterationAttrProcessor
         final Object iteratedObject = iterationSpec.getIteratedObject();
         
         
-        final List<?> list = ObjectUtils.convertToList(iteratedObject);
+        final List<?> list = ObjectUtils.convertToIterable(iteratedObject);
 
         int size = list.size(); 
         int index = 0;

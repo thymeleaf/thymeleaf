@@ -116,6 +116,17 @@ public final class ObjectUtils {
     
     
     
+    public static List<Object> convertToIterable(final Object value) {
+        // Iterating on null should be the same as iterating an empty list
+        // (for example, <c:forEach>)
+        if (value == null) {
+            return Collections.emptyList();
+        }
+        return convertToList(value);
+    }
+    
+    
+    
     public static List<Object> convertToList(final Object value) {
         
         final List<Object> result = new ArrayList<Object>();

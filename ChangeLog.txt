@@ -16,6 +16,8 @@
   evaluates them as "true"). This fix does not affect Spring EL, as it already evaluates those values
   in the same way as Thymeleaf.
 - Fixed null-safety in "isEmpty" methods in #arrays, #lists, #maps and #sets.
+- Fixed th:each so that a null iterable equals no-iteration instead of 1 iteration of a null object. 
+  This imitates the behaviour of JSTL's <c:forEach>
   
 
 2.0.5

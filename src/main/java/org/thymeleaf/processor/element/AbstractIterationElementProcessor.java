@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -82,7 +82,7 @@ public abstract class AbstractIterationElementProcessor
         final Object iteratedObject = iterationSpec.getIteratedObject();
         
         
-        final List<?> list = ObjectUtils.convertToList(iteratedObject);
+        final List<?> list = ObjectUtils.convertToIterable(iteratedObject);
 
         int size = list.size(); 
         int index = 0;
