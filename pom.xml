@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>springmail</artifactId>
   <packaging>war</packaging>
-  <version>20120401</version>
+  <version>20120422</version>
   <name>Thymeleaf Examples - Spring mail</name>
   <description>Example of Thymeleaf and Spring mail integration</description>
 
@@ -89,7 +89,7 @@
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <springframework.version>3.1.0.RELEASE</springframework.version>
-    <thymeleaf.version>2.0.5</thymeleaf.version>
+    <thymeleaf.version>2.0.6</thymeleaf.version>
   </properties>
 
   <build>
