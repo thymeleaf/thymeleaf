@@ -18,6 +18,7 @@
 - Fixed null-safety in "isEmpty" methods in #arrays, #lists, #maps and #sets.
 - Fixed th:each so that a null iterable equals no-iteration instead of 1 iteration of a null object. 
   This imitates the behaviour of JSTL's <c:forEach>
+- Added logging of exceptions when resolving resources at UrlResourceResolver and FileResourceResolver.  
   
 
 2.0.5

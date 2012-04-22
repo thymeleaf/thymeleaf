@@ -22,6 +22,9 @@ package org.thymeleaf.resourceresolver;
 import java.io.InputStream;
 import java.net.URL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.util.Validate;
 
@@ -49,6 +52,9 @@ import org.thymeleaf.util.Validate;
 public final class UrlResourceResolver 
         implements IResourceResolver {
 
+    
+    private static final Logger logger = LoggerFactory.getLogger(UrlResourceResolver.class);
+    
     public static final String NAME = "URL";
 
     
@@ -69,7 +75,27 @@ public final class UrlResourceResolver
         try {
             final URL url = new URL(resourceName);
             return url.openStream();
-        } catch (final Exception e1) {
+        } catch (final Exception e) {
+            if (logger.isDebugEnabled()) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                            String.format(
+                                    "[THYMELEAF][%s][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                    "maybe this resource is not intended to be resolved by this resolver. " +
+                                    "Exception is provided for tracing purposes: ", 
+                                    TemplateEngine.threadIndex(), templateProcessingParameters.getTemplateName(),
+                                    resourceName),
+                            e);
+                } else {
+                    logger.debug(
+                            String.format(
+                                    "[THYMELEAF][%s][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                    "maybe this resource is not intended to be resolved by this resolver. " +
+                                    "Exception message is provided: %s: %s", 
+                                    TemplateEngine.threadIndex(), templateProcessingParameters.getTemplateName(),
+                                    resourceName, e.getClass().getName(), e.getMessage()));
+                }
+            }
             return null;
         }
         
