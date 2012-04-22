@@ -1,3 +1,8 @@
+2.0.6
+=====
+- (No changes)
+
+
 2.0.5
 =====
 - Modified ViewResolver so that view beans are only configured using an existing bean as prototype
