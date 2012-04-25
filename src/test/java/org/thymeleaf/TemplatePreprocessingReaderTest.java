@@ -32,7 +32,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
-import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
+import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 
 /**
  * 
@@ -41,7 +41,7 @@ import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
  * @since 1.1
  *
  */
-public class HTMLTemplateReaderTest extends TestCase {
+public class TemplatePreprocessingReaderTest extends TestCase {
 
     private static final String TEMPLATE_TEST1_FILENAME = "htmlTemplateReaderTest1";
     private static final String TEMPLATE_TEST2_FILENAME = "htmlTemplateReaderTest2";
@@ -53,7 +53,7 @@ public class HTMLTemplateReaderTest extends TestCase {
     
     private static final int[] BUFFER_SIZES = new int[] {512, 1024, 2048, 4096, 8192, 16384, 32768};
     
-    public HTMLTemplateReaderTest() {
+    public TemplatePreprocessingReaderTest() {
         super();
     }
     
@@ -81,8 +81,8 @@ public class HTMLTemplateReaderTest extends TestCase {
             throws Exception{
         
         final InputStream is = getFile(name + ".html");
-        final EntitySubstitutionTemplateReader reader = 
-            new EntitySubstitutionTemplateReader(new InputStreamReader(is, "UTF-8"), readerBufferSize);
+        final TemplatePreprocessingReader reader = 
+            new TemplatePreprocessingReader(new InputStreamReader(is, "UTF-8"), readerBufferSize);
         
         final StringBuilder strBuilder = new StringBuilder();
         

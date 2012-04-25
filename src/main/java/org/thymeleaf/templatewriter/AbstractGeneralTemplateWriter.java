@@ -25,7 +25,6 @@ import java.io.Writer;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
@@ -122,32 +121,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     @SuppressWarnings("unused")
     protected void writeDocType(final Arguments arguments, final Writer writer, final DocType docType) 
             throws IOException {
-        
-        DocTypeIdentifier writablePublicId = docType.getProcessedPublicId();
-        DocTypeIdentifier writableSystemId = docType.getProcessedSystemId();
-        
-        if (!docType.isProcessed()) {
-            writablePublicId = DocTypeIdentifier.forValue(docType.getPublicId());
-            writableSystemId = DocTypeIdentifier.forValue(docType.getSystemId());
-        }
-        
-        writer.write("<!DOCTYPE ");
-        writer.write(docType.getRootElementName());
-        if (!writablePublicId.isNone()) {
-            writer.write(" PUBLIC \"");
-            writablePublicId.write(writer);
-            writer.write("\"");
-        }
-        if (!writableSystemId.isNone()) {
-            if (writablePublicId.isNone()) {
-                writer.write(" SYSTEM");
-            }
-            writer.write(" \"");
-            writableSystemId.write(writer);
-            writer.write("\"");
-        }
-        writer.write(">");
-    
+        docType.write(writer);
     }
 
     

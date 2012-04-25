@@ -1,10 +1,13 @@
 package org.thymeleaf.dom;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -26,9 +29,13 @@ public final class DocType implements Serializable {
     
     private static final long serialVersionUID = -5122946925754578948L;
 
+    private final String originalDocTypeClause;
     private final String rootElementName;
     private final String publicId;
     private final String systemId;
+    
+    private final char[] firstToken;
+    private final char[] thirdToken;
     
     private boolean processed;
     private DocTypeIdentifier processedPublicId;
@@ -36,16 +43,39 @@ public final class DocType implements Serializable {
 
     
     public DocType(final String rootElementName, final String publicId, final String systemId) {
+        this(rootElementName, publicId, systemId, null);
+    }
+    
+    public DocType(final String rootElementName, final String publicId, final String systemId,
+            final String originalDocTypeClause) {
+        
         super();
+        
         Validate.notNull(rootElementName, "Root element name cannot be null");
+        this.originalDocTypeClause = originalDocTypeClause;
         this.rootElementName = rootElementName;
         this.publicId = publicId;
         this.systemId = systemId;
         this.processed = false;
         this.processedPublicId = null;
         this.processedSystemId = null;
+        
+        if (this.originalDocTypeClause != null) {
+            final String[] docTypeClauseTokens = extractDocTypeTokens(this.originalDocTypeClause);
+            this.firstToken = (docTypeClauseTokens[0] == null? null : docTypeClauseTokens[0].toCharArray());
+            this.thirdToken = (docTypeClauseTokens[2] == null? null : docTypeClauseTokens[2].toCharArray());
+        } else {
+            this.firstToken = null;
+            this.thirdToken = null;
+        }
+        
     }
 
+    
+    public String getOriginalDocTypeClause() {
+        return this.originalDocTypeClause;
+    }
+    
     
     public String getRootElementName() {
         return this.rootElementName;
@@ -157,8 +187,95 @@ public final class DocType implements Serializable {
     
     
     
+    private static String[] extractDocTypeTokens(final String docTypeClause) {
+        
+        try {
+            final int docTypeClauseLen = docTypeClause.length();
+            
+            boolean inToken = true;
+            int tokenDelim = 0;
+            int currentToken = 0;
+            
+            final String[] result = new String[3];
+            
+            for (int i = 0; i < docTypeClauseLen; i++) {
+                final char c = docTypeClause.charAt(i);
+                if (c == ' ' || c == '\t' || c == '>') {
+                    if (inToken) {
+                        result[currentToken++] = docTypeClause.substring(tokenDelim,i).trim();
+                        tokenDelim = i;
+                        inToken = false;
+                        if (currentToken > 2) {
+                            return result;
+                        }
+                    }
+                } else {
+                    inToken = true;
+                }
+            }
+                
+            return result;
+        
+        } catch (final Exception e) {
+            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + docTypeClause + "\"");
+        }
+        
+    }
+    
+
     
     
+    public void write(final Writer writer) throws IOException {
+        
+        DocTypeIdentifier writablePublicId = getProcessedPublicId();
+        DocTypeIdentifier writableSystemId = getProcessedSystemId();
+        
+        if (!isProcessed()) {
+            writablePublicId = DocTypeIdentifier.forValue(getPublicId());
+            writableSystemId = DocTypeIdentifier.forValue(getSystemId());
+        }
+        
+        writer.write(this.firstToken);
+        writer.write(' ');
+        writer.write(getRootElementName());
+        if (!writablePublicId.isNone()) {
+            writer.write(' ');
+            if (!isProcessed()) {
+                writer.write(this.thirdToken);
+            } else {
+                writer.write("PUBLIC");
+            }
+            writer.write(" \"");
+            writablePublicId.write(writer);
+            writer.write("\"");
+        }
+        if (!writableSystemId.isNone()) {
+            if (writablePublicId.isNone()) {
+                writer.write(' ');
+                if (!isProcessed()) {
+                    writer.write(this.thirdToken);
+                } else {
+                    writer.write("SYSTEM");
+                }
+            }
+            writer.write(" \"");
+            writableSystemId.write(writer);
+            writer.write("\"");
+        }
+        writer.write(">");
+    
+    }
+    
+    
+    
+    
+    
+    /**
+     * 
+     * @deprecated Redundant. {@link org.thymeleaf.util.StandardDOMTranslator#translateDocumentType(org.w3c.dom.DocumentType)}
+     *             should be used instead. Will be removed in 2.1.0
+     */
+    @Deprecated
     public static final DocType translateDOMDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
         
         if (domDocumentType == null) {

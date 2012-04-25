@@ -12,9 +12,9 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateparser.EntityResolver;
-import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.ResourcePool;
 import org.thymeleaf.util.StandardDOMTranslator;
@@ -152,9 +152,9 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
             
             final org.apache.xerces.parsers.DOMParser domParser = (org.apache.xerces.parsers.DOMParser) this.pool.allocate();
 
-            final Reader templateReader = 
-                    (reader instanceof EntitySubstitutionTemplateReader? 
-                            reader : new EntitySubstitutionTemplateReader(reader, 8192));
+            final TemplatePreprocessingReader templateReader = 
+                    (reader instanceof TemplatePreprocessingReader? 
+                            (TemplatePreprocessingReader) reader : new TemplatePreprocessingReader(reader, 8192));
             
             try {
                 
@@ -165,7 +165,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                 final org.w3c.dom.Document domDocument = domParser.getDocument();
                 domParser.reset();
                 
-                return StandardDOMTranslator.translateDocument(domDocument, documentName);
+                return StandardDOMTranslator.translateDocument(domDocument, documentName, templateReader.getDocTypeClause());
                 
             } catch (final TemplateProcessingException e) {
                 throw e;

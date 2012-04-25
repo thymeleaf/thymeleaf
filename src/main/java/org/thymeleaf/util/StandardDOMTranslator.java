@@ -8,7 +8,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
+import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 
 /**
  * <p>
@@ -50,10 +50,16 @@ public class StandardDOMTranslator {
 
     
     public static final Document translateDocument(final org.w3c.dom.Document domDocument, final String documentName) {
+        return translateDocument(domDocument, documentName, null);
+    }
+
+        
+    public static final Document translateDocument(final org.w3c.dom.Document domDocument, final String documentName,
+            final String originalDocTypeClause) {
         
         final org.w3c.dom.DocumentType domDocumentType = domDocument.getDoctype();
         final org.w3c.dom.NodeList children = domDocument.getChildNodes();
-        final Document document = new Document(documentName, translateDocumentType(domDocumentType));
+        final Document document = new Document(documentName, translateDocumentType(domDocumentType, originalDocTypeClause));
         
         final String xmlVersion = domDocument.getXmlVersion();
         if (xmlVersion != null) {
@@ -84,6 +90,13 @@ public class StandardDOMTranslator {
 
     
     public static final DocType translateDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
+        return translateDocumentType(domDocumentType, null);
+    }
+
+    
+    
+    public static final DocType translateDocumentType(
+            final org.w3c.dom.DocumentType domDocumentType, final String originalDocTypeClause) {
         
         if (domDocumentType == null) {
             return null;
@@ -93,7 +106,7 @@ public class StandardDOMTranslator {
         
         return new DocType(
                 rootElementName, domDocumentType.getPublicId(),
-                domDocumentType.getSystemId());
+                domDocumentType.getSystemId(), originalDocTypeClause);
         
     }
 
@@ -112,7 +125,7 @@ public class StandardDOMTranslator {
             element.setAttribute(
                     attr.getName(),
                     DOMUtils.unescapeXml(
-                            EntitySubstitutionTemplateReader.removeEntitySubstitutions(attr.getValue()),
+                            TemplatePreprocessingReader.removeEntitySubstitutions(attr.getValue()),
                             true));
         }
         
@@ -141,7 +154,7 @@ public class StandardDOMTranslator {
     
     public static final CDATASection translateCDATASection(final org.w3c.dom.CDATASection domNode, final NestableNode parentNode, final String documentName) {
         final CDATASection cdata = 
-                new CDATASection(EntitySubstitutionTemplateReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
+                new CDATASection(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
         cdata.setParent(parentNode);
         return cdata;
     }
@@ -151,7 +164,7 @@ public class StandardDOMTranslator {
     public static final Text translateText(final org.w3c.dom.Text domNode, final NestableNode parentNode, final String documentName) {
         
         final Text text = 
-                new Text(EntitySubstitutionTemplateReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
+                new Text(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
         text.setParent(parentNode);
         return text;
         

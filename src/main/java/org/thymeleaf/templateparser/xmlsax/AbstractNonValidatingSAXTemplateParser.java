@@ -23,9 +23,9 @@ import org.thymeleaf.exceptions.ParserInitializationException;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.templateparser.EntityResolver;
-import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
 import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.ResourcePool;
@@ -113,13 +113,13 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
         final SAXParser saxParser = pool.allocate();
 
-        final Reader templateReader = 
-                (reader instanceof EntitySubstitutionTemplateReader? 
-                        reader : new EntitySubstitutionTemplateReader(reader, 8192));
+        final TemplatePreprocessingReader templateReader = 
+                (reader instanceof TemplatePreprocessingReader? 
+                        (TemplatePreprocessingReader) reader : new TemplatePreprocessingReader(reader, 8192));
         
         try {
             
-            return doParse(configuration, documentName, new InputSource(templateReader), saxParser);
+            return doParse(configuration, documentName, templateReader, saxParser);
             
         } catch (final IOException e) {
             throw new TemplateInputException("Exception parsing document", e);
@@ -145,10 +145,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
     
     private static Document doParse(
             final Configuration configuration, final String documentName,
-            final InputSource inputSource, final SAXParser saxParser)
+            final TemplatePreprocessingReader reader, final SAXParser saxParser)
             throws IOException, SAXException {
 
 
+        final InputSource inputSource = new InputSource(reader);
+        
         final XmlSAXHandler handler = 
                 new XmlSAXHandler(documentName, new EntityResolver(configuration), ErrorHandler.INSTANCE);
         
@@ -160,7 +162,14 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         saxParser.parse(inputSource, handler);
         
-        final DocType docType = handler.getDocType();
+        final String docTypeClause = reader.getDocTypeClause();
+        final String docTypeRootElementName = handler.getDocTypeRootElementName();
+        final String docTypePublicId = handler.getDocTypePublicId();
+        final String docTypeSystemId = handler.getDocTypeSystemId();
+        
+        final DocType docType = 
+                new DocType(docTypeRootElementName, docTypePublicId, docTypeSystemId, docTypeClause);
+        
         final List<Node> rootNodes = handler.getRootNodes();
         
         final String xmlVersion = handler.getXmlVersion();
@@ -227,7 +236,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         private final org.xml.sax.ErrorHandler errorHandler;
         
         private Locator locator = null;
-        private DocType docType = null;
+        private String docTypeRootElementName = null;
+        private String docTypePublicId = null;
+        private String docTypeSystemId = null;
         private List<Node> rootNodes = null;
         
         private boolean cdataMode = false;
@@ -261,8 +272,16 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
 
         
-        public DocType getDocType() {
-            return this.docType;
+        public String getDocTypeRootElementName() {
+            return this.docTypeRootElementName;
+        }
+        
+        public String getDocTypePublicId() {
+            return this.docTypePublicId;
+        }
+        
+        public String getDocTypeSystemId() {
+            return this.docTypeSystemId;
         }
         
         public List<Node> getRootNodes() {
@@ -339,7 +358,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         @Override
         public void characters(final char ch[], final int start, final int length) {
             
-            EntitySubstitutionTemplateReader.removeEntitySubstitutions(ch, start, length);
+            TemplatePreprocessingReader.removeEntitySubstitutions(ch, start, length);
             if (this.cdataMode) {
                 
                 while (this.cdataBufferLen + length > this.cdataBuffer.length) {
@@ -447,7 +466,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 element.setAttribute(
                         attributes.getQName(i),
                         DOMUtils.unescapeXml(
-                                EntitySubstitutionTemplateReader.removeEntitySubstitutions(attributes.getValue(i)),
+                                TemplatePreprocessingReader.removeEntitySubstitutions(attributes.getValue(i)),
                                 true));
             }
             
@@ -486,7 +505,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         public void startDTD(final String name, final String publicId, final String systemId)
                 throws SAXException {
             super.startDTD(name, publicId, systemId);
-            this.docType = new DocType(name, publicId, systemId);
+            this.docTypeRootElementName = name;
+            this.docTypePublicId = publicId;
+            this.docTypeSystemId = systemId;
             this.dtdMode = true;
         }
         

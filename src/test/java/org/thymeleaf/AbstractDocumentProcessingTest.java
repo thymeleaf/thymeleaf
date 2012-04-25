@@ -13,7 +13,7 @@ import junit.framework.TestCase;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.templateparser.EntityResolver;
-import org.thymeleaf.templateparser.EntitySubstitutionTemplateReader;
+import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 import org.w3c.dom.Document;
@@ -52,7 +52,7 @@ public abstract class AbstractDocumentProcessingTest extends TestCase {
         System.out.println(out);
 
         final InputSource inputSource = new InputSource(
-                new EntitySubstitutionTemplateReader(new StringReader(out), 8192));
+                new TemplatePreprocessingReader(new StringReader(out), 8192));
         return docBuilder.parse(inputSource);
     }
 

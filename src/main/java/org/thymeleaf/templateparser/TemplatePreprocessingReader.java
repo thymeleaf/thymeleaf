@@ -34,27 +34,49 @@ import org.thymeleaf.exceptions.TemplateInputException;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
- * @deprecated Renamed to <tt>TemplatePreprocessingReader</tt>. This class will be removed in 2.1.0
+ * @since 2.0.7
  *
  */
-@Deprecated
-public final class EntitySubstitutionTemplateReader extends Reader {
+public final class TemplatePreprocessingReader extends Reader {
 
     
-    private static final Logger readerLogger = LoggerFactory.getLogger(EntitySubstitutionTemplateReader.class);
+    private static final Logger readerLogger = LoggerFactory.getLogger(TemplatePreprocessingReader.class);
     
     public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
+
     
-    private static final char CHAR_WHITESPACE_WILDCARD = '\u01F7';
-    private static final char CHAR_ALPHANUMERIC_WILDCARD = '\u0234';
+    private static final char CHAR_OPTIONAL_WHITESPACE_WILDCARD = '\u0358';
+    private static final char CHAR_WHITESPACE_WILDCARD = '\u0359';
+    private static final char CHAR_ALPHANUMERIC_WILDCARD = '\u0360';
+    private static final char CHAR_ANY_WILDCARD = '\u0361';
+
+    
+    private static final char[] LOWER_CHARS = 
+            ("[]<>!=-_.,:;+*()&/%$\"'@#~^ \t\n\rabcdefghijklmnopqrstuvwxyz" + 
+            String.valueOf(CHAR_OPTIONAL_WHITESPACE_WILDCARD) + String.valueOf(CHAR_WHITESPACE_WILDCARD) +
+            String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + String.valueOf(CHAR_ANY_WILDCARD)).toCharArray();
+    private static final char[] UPPER_CHARS = 
+            ("[]<>!=-_.,:;+*()&/%$\"'@#~^ \t\n\rABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
+            String.valueOf(CHAR_OPTIONAL_WHITESPACE_WILDCARD) + String.valueOf(CHAR_WHITESPACE_WILDCARD) +
+            String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + String.valueOf(CHAR_ANY_WILDCARD)).toCharArray();
+
     
     
-    private static final char[] COMMENT_START = "<!--".toCharArray(); 
-    private static final char[] COMMENT_END = "-->".toCharArray(); 
-    private static final char[] ENTITY = "&\u0234;".toCharArray();
+    private static final int[] COMMENT_START = convertToIndexes("<!--"); 
+    private static final int[] COMMENT_END = convertToIndexes("-->");
+    private static final int[] ENTITY = convertToIndexes("&" + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ";");
+    private static final int[] DOCTYPE =
+            convertToIndexes("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">");
+
+
+    private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
+    private static final char[] NORMALIZED_DOCTYPE_PUBLIC = "PUBLIC ".toCharArray();
+    private static final char[] NORMALIZED_DOCTYPE_SYSTEM = "SYSTEM ".toCharArray();
     
-    private static final char[] ENTITY_START_SUBSTITUTE = new char[] { CHAR_ENTITY_START_SUBSTITUTE };
+    
+    private static final char[] ENTITY_START_SUBSTITUTE_CHAR_ARRAY = new char[] { CHAR_ENTITY_START_SUBSTITUTE };
+
+    
     
     private final BufferedReader bufferedReader;
     
@@ -63,10 +85,45 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     private int overflowIndex;
     
     private boolean inComment = false;
+    private boolean docTypeClauseRead = false;
     
     private boolean noMoreToRead = false;
     
+    private String docTypeClause = null;
+    
 
+
+    
+    
+    private static int[] convertToIndexes(final String str) {
+        
+        final int strLen = str.length();
+        final int[] result = new int[strLen];
+        for (int i = 0; i < strLen; i++) {
+            final char c = str.charAt(i);
+            boolean found = false;
+            for (int j = 0; !found && j < UPPER_CHARS.length; j++) {
+                if (UPPER_CHARS[j] == c) {
+                    result[i] = j;
+                    found = true;
+                }
+            }
+            for (int j = 0; !found && j < LOWER_CHARS.length; j++) {
+                if (LOWER_CHARS[j] == c) {
+                    result[i] = j;
+                    found = true;
+                }
+            }
+            if (!found) {
+                throw new RuntimeException(
+                        "Cannot convert to index character: '" + c + "' (value: " + ((int)c) + ")");
+            }
+        }
+        return result;
+        
+    }
+    
+    
     
     /*
      * 
@@ -76,7 +133,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
 
 
     
-    public EntitySubstitutionTemplateReader(final Reader in, final int bufferSize) {
+    public TemplatePreprocessingReader(final Reader in, final int bufferSize) {
         super();
         this.bufferedReader = new BufferedReader(in, bufferSize);
         this.buffer = new char[bufferSize + 1024]; 
@@ -91,7 +148,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     public int read(char[] cbuf, int off, int len) throws IOException {
 
         if (readerLogger.isTraceEnabled()) {
-            readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] CALLING read(char[], {}, {})", 
+            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] CALLING read(char[], {}, {})", 
                     new Object[] {TemplateEngine.threadIndex(),Integer.valueOf(off), Integer.valueOf(len)});
         }
         
@@ -116,7 +173,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
             bufferSize += copied;
             
             if (readerLogger.isTraceEnabled()) {
-                readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] READ FROM OVERFLOW BUFFER {} Some content from the overflow buffer has been copied into results.", 
+                readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] READ FROM OVERFLOW BUFFER {} Some content from the overflow buffer has been copied into results.", 
                         new Object[] {TemplateEngine.threadIndex(), Integer.valueOf(copied)});
             }
             
@@ -134,7 +191,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
             System.arraycopy(this.overflow, 0, overflowOverflow, 0, this.overflowIndex);
             
             if (readerLogger.isTraceEnabled()) {
-                readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] RELLOCATED SOME OVERFLOW CONTENTS, WAITING TO BE ADDED TO RESULT/NEW OVERFLOW {} Some content was remaining at the overflow buffer and will have to be rellocated.", 
+                readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] RELLOCATED SOME OVERFLOW CONTENTS, WAITING TO BE ADDED TO RESULT/NEW OVERFLOW {} Some content was remaining at the overflow buffer and will have to be rellocated.", 
                         new Object[] {TemplateEngine.threadIndex(), Integer.valueOf(this.overflowIndex)});
             }
             
@@ -151,7 +208,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
             final int reallyRead = this.bufferedReader.read(this.buffer, bufferSize, toBeRead);
             
             if (readerLogger.isTraceEnabled()) {
-                readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] READ FROM SOURCE {} A read operation was executed on the source reader (max chars requested: {}).", 
+                readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] READ FROM SOURCE {} A read operation was executed on the source reader (max chars requested: {}).", 
                         new Object[] {TemplateEngine.threadIndex(), Integer.valueOf(reallyRead), Integer.valueOf(toBeRead)});
             }
             
@@ -160,7 +217,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
                 if (bufferSize == 0) {
 
                     if (readerLogger.isTraceEnabled()) {
-                        readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] RETURN {} After trying to read from input: No input left, no buffer left.", 
+                        readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] RETURN {} After trying to read from input: No input left, no buffer left.", 
                                 new Object[] {TemplateEngine.threadIndex(), Integer.valueOf(reallyRead)});
                     }
                     
@@ -183,7 +240,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
             // Nothing left to do. Just return -1
 
             if (readerLogger.isTraceEnabled()) {
-                readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] RETURN -1 Reader was already marked to be finished. No more input, no more buffer.", 
+                readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] RETURN -1 Reader was already marked to be finished. No more input, no more buffer.", 
                         new Object[] {TemplateEngine.threadIndex()});
             }
             
@@ -199,6 +256,36 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         int buffi = 0;
         while (cbufi < last && buffi < bufferSize) {
 
+            
+            /*
+             * Process DOCTYPE first (if needed)
+             */
+            if (!this.docTypeClauseRead) {
+                
+                final int matchedDocType =
+                        match(DOCTYPE, 0, DOCTYPE.length, this.buffer, buffi, bufferSize);
+                
+                if (matchedDocType > 0) {
+                    
+                    this.docTypeClause = new String(this.buffer, buffi, matchedDocType);
+                    this.docTypeClauseRead = true;
+                    
+                    final char[] normalizedDocType =
+                            normalizeDocTypeClause(this.buffer, buffi, matchedDocType);
+                    
+                    final int copied =
+                        copyToResult(
+                                normalizedDocType, 0, matchedDocType, 
+                                cbuf, cbufi, last);
+                    cbufi += copied;
+                    totalRead += copied;
+                    buffi += matchedDocType;
+                    continue;
+                    
+                }
+                
+            }
+            
             final int matchedStartOfComment = 
                 (this.inComment? 
                         -2 : match(COMMENT_START, 0, COMMENT_START.length, this.buffer, buffi, bufferSize));
@@ -242,7 +329,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
                 
                 final int copied =
                     copyToResult(
-                            ENTITY_START_SUBSTITUTE, 0, ENTITY_START_SUBSTITUTE.length, 
+                            ENTITY_START_SUBSTITUTE_CHAR_ARRAY, 0, ENTITY_START_SUBSTITUTE_CHAR_ARRAY.length, 
                             cbuf, cbufi, last);
                 cbufi += copied;
                 totalRead += copied;
@@ -289,7 +376,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         if (readerLogger.isTraceEnabled()) {
             final char[] result = new char[totalRead];
             System.arraycopy(cbuf, off, result, 0, totalRead);
-            readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] RETURN {} Input was read and processed. Returning content: [[{}]]", 
+            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] RETURN {} Input was read and processed. Returning content: [[{}]]", 
                     new Object[] {TemplateEngine.threadIndex(), Integer.valueOf(totalRead), new String(result)});
         }
         
@@ -305,7 +392,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     public int read() throws IOException {
 
         if (readerLogger.isTraceEnabled()) {
-            readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] CALLING read(). Will be delegated to read(char[], 0, 1).", 
+            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] CALLING read(). Will be delegated to read(char[], 0, 1).", 
                     new Object[] {TemplateEngine.threadIndex()});
         }
         
@@ -327,7 +414,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     public int read(final CharBuffer target) throws IOException {
 
         if (readerLogger.isTraceEnabled()) {
-            readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] CALLING read(CharBuffer). Will be delegated as several calls to read(char[], 0, 1024).", 
+            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] CALLING read(CharBuffer). Will be delegated as several calls to read(char[], 0, 1024).", 
                     new Object[] {TemplateEngine.threadIndex()});
         }
         
@@ -353,7 +440,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     public int read(final char[] cbuf) throws IOException {
 
         if (readerLogger.isTraceEnabled()) {
-            readerLogger.trace("[THYMELEAF][HTMLTEMPLATEREADER][{}] CALLING read(char[] cbuf). Will be delegated to read(cbuf, 0, cbuf.length).", 
+            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] CALLING read(char[] cbuf). Will be delegated to read(cbuf, 0, cbuf.length).", 
                     new Object[] {TemplateEngine.threadIndex()});
         }
         
@@ -466,19 +553,21 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     
     /*
      * RETURNS:
-     *    -1 = does not start here
-     *     0 = maybe (not enough buffer to know)
-     *     1 = does start here
+     *     <0 = does not start here
+     *     0  = maybe (not enough buffer to know)
+     *     >0 = does start here
      */
     private static int match(
-            final char[] fragment, final int fragmentOff, final int fragmentLen, 
+            final int[] fragment, final int fragmentOff, final int fragmentLen, 
             final char[] buffer, final int buffi, final int bufferLast) {
         
         /*
          * Trying to fail fast
          */
-        final char f0 = fragment[fragmentOff];
-        if (f0 != CHAR_WHITESPACE_WILDCARD && f0 != CHAR_ALPHANUMERIC_WILDCARD && f0 != buffer[buffi]) {
+        final char f0Lower = LOWER_CHARS[fragment[fragmentOff]];
+        final char f0Upper = UPPER_CHARS[fragment[fragmentOff]];
+        if (f0Lower != CHAR_WHITESPACE_WILDCARD && f0Lower != CHAR_ALPHANUMERIC_WILDCARD && 
+            f0Lower != buffer[buffi] && f0Upper != buffer[buffi]) {
             return -1;
         }
         
@@ -488,17 +577,34 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         int fragmenti = fragmentOff;
         while (buffj < bufferLast && fragmenti < fragmentLast) {
 
-            final char f = fragment[fragmenti];
+            final int fragmentIndex = fragment[fragmenti];
+            // lower will be enough for most checks
+            final char fLower = LOWER_CHARS[fragmentIndex];
             
-            if (f == CHAR_WHITESPACE_WILDCARD) {
+            // For wildcards, checking against lowercase will be enough (wildcards are at the same
+            // position in lower and upper case).
+            if (fLower == CHAR_WHITESPACE_WILDCARD) {
                 
+                if (buffer[buffj] != ' ' && buffer[buffj] != '\t') {
+                    if (buffj > buffi && (buffer[buffj - 1] == ' ' || buffer[buffj - 1] == '\t')) {
+                        fragmenti++;
+                    } else {
+                        // We did not find at least one whitespace
+                        return -1;
+                    }
+                } else {
+                    buffj++;
+                }
+                
+            } else if (fLower == CHAR_OPTIONAL_WHITESPACE_WILDCARD) {
+                    
                 if (buffer[buffj] != ' ' && buffer[buffj] != '\t') {
                     fragmenti++;
                 } else {
                     buffj++;
                 }
-                
-            } else if (f == CHAR_ALPHANUMERIC_WILDCARD) {
+                    
+            } else if (fLower == CHAR_ALPHANUMERIC_WILDCARD) {
                 
                 final char c = buffer[buffj]; 
                 final boolean isUpper = (c >= 'A' && c <= 'Z'); 
@@ -506,7 +612,22 @@ public final class EntitySubstitutionTemplateReader extends Reader {
                 final boolean isDigit = (c >= '0' && c <= '9'); 
                 final boolean isHash = (c == '#'); 
                 if ((!isUpper && !isLower && !isDigit && !isHash) ||
-                        (fragmenti + 1 < fragmentLast && fragment[fragmenti + 1] == buffer[buffj])) {
+                        (fragmenti + 1 < fragmentLast && 
+                                (UPPER_CHARS[fragment[fragmenti + 1]] == buffer[buffj]) ||
+                                (LOWER_CHARS[fragment[fragmenti + 1]] == buffer[buffj]))) {
+                    // Either we found a non-alphanumeric, or we simply found
+                    // a character that matches next one in fragment
+                    fragmenti++;
+                } else {
+                    buffj++;
+                }
+                
+            } else if (fLower == CHAR_ANY_WILDCARD) {
+                
+                if ((fragmenti + 1 < fragmentLast && 
+                        (UPPER_CHARS[fragment[fragmenti + 1]] == buffer[buffj]) ||
+                        (LOWER_CHARS[fragment[fragmenti + 1]] == buffer[buffj]))) {
+                    // We found a character that matches next one in fragment!
                     fragmenti++;
                 } else {
                     buffj++;
@@ -514,21 +635,106 @@ public final class EntitySubstitutionTemplateReader extends Reader {
                 
             } else {
                 
-                if (buffer[buffj++] != fragment[fragmenti++]) {
+                final char bufferChar = buffer[buffj];
+                        
+                if (bufferChar != UPPER_CHARS[fragmentIndex] && 
+                    bufferChar != fLower) {
                     return -1;
                 }
+
+                buffj++;
+                fragmenti++;
                 
             }
             
         }
         if (fragmenti == fragmentLast) {
+            // Matches! and we return the number of chars that matched
             return buffj - buffi;
         }
-        return -1;
+        // Was matching OK, but then we hit the end of the buffer...
+        return 0;
         
     }
 
 
+    
+    
+    private static char[] normalizeDocTypeClause(final char[] buffer, int offset, int len) {
+        
+        try {
+            
+            boolean afterQuote = false;
+            
+            final char[] result = new char[len];
+            System.arraycopy(NORMALIZED_DOCTYPE_PREFIX, 0, result, 0, NORMALIZED_DOCTYPE_PREFIX.length);
+            
+            for (int i = (offset + NORMALIZED_DOCTYPE_PREFIX.length); i < (offset + len); i++) {
+                final char c = buffer[i];
+                if (c == '\"') {
+                    // Once we find a quote symbol, we stop worrying about normalizing and just copy verbatim
+                    afterQuote = true;
+                    result[i - offset] = c;
+                } else if (!afterQuote && (c == 'P' || c == 'p')) {
+                    final char c2 = buffer[i + 1];
+                    if (c2 == 'U' || c2 == 'u') {
+                        final char c3 = buffer[i + 2];
+                        final char c4 = buffer[i + 3];
+                        final char c5 = buffer[i + 4];
+                        final char c6 = buffer[i + 5];
+                        final char c7 = buffer[i + 6];
+                        if ((c3 == 'B' || c3 == 'b') && 
+                            (c4 == 'L' || c4 == 'l') &&
+                            (c5 == 'I' || c5 == 'i') &&
+                            (c6 == 'C' || c6 == 'c') &&
+                            (c7 == ' ' || c7 == '\t')) {
+                            System.arraycopy(NORMALIZED_DOCTYPE_PUBLIC, 0, result, (i - offset), NORMALIZED_DOCTYPE_PUBLIC.length);
+                            i += NORMALIZED_DOCTYPE_PUBLIC.length - 1;
+                            continue;
+                        }
+                    }
+                    result[i - offset] = c;
+                } else if (!afterQuote && (c == 'S' || c == 's')) {
+                    final char c2 = buffer[i + 1];
+                    if (c2 == 'Y' || c2 == 'y') {
+                        final char c3 = buffer[i + 2];
+                        final char c4 = buffer[i + 3];
+                        final char c5 = buffer[i + 4];
+                        final char c6 = buffer[i + 5];
+                        final char c7 = buffer[i + 6];
+                        if ((c3 == 'S' || c3 == 's') && 
+                            (c4 == 'T' || c4 == 't') &&
+                            (c5 == 'E' || c5 == 'e') &&
+                            (c6 == 'M' || c6 == 'm') &&
+                            (c7 == ' ' || c7 == '\t')) {
+                            System.arraycopy(NORMALIZED_DOCTYPE_SYSTEM, 0, result, (i - offset), NORMALIZED_DOCTYPE_SYSTEM.length);
+                            i += NORMALIZED_DOCTYPE_SYSTEM.length - 1;
+                            continue;
+                        }
+                    }
+                    result[i - offset] = c;
+                } else {
+                    result[i - offset] = c;
+                }
+            }
+    
+            
+            return result;
+
+        } catch (final Exception e) {
+            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + (new String(buffer, offset, len)) + "\"");
+        }
+        
+    }
+
+    
+    
+    
+    public String getDocTypeClause() {
+        return this.docTypeClause;
+    }
+
+    
     
     
     public static final String removeEntitySubstitutions(final String text) {
@@ -538,10 +744,10 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         }
         final int textLen = text.length();
         for (int i = 0; i < textLen; i++) {
-            if (text.charAt(i) == EntitySubstitutionTemplateReader.CHAR_ENTITY_START_SUBSTITUTE) {
+            if (text.charAt(i) == TemplatePreprocessingReader.CHAR_ENTITY_START_SUBSTITUTE) {
                 final char[] textCharArray = text.toCharArray();
                 for (int j = 0; j < textLen; j++) {
-                    if (textCharArray[j] == EntitySubstitutionTemplateReader.CHAR_ENTITY_START_SUBSTITUTE) {
+                    if (textCharArray[j] == TemplatePreprocessingReader.CHAR_ENTITY_START_SUBSTITUTE) {
                         textCharArray[j] = '&';
                     }
                 }
@@ -562,7 +768,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         }
         final int finalPos = off + len;
         for (int i = off; i < finalPos; i++) {
-            if (text[i] == EntitySubstitutionTemplateReader.CHAR_ENTITY_START_SUBSTITUTE) {
+            if (text[i] == TemplatePreprocessingReader.CHAR_ENTITY_START_SUBSTITUTE) {
                 text[i] = '&';
             }
         }

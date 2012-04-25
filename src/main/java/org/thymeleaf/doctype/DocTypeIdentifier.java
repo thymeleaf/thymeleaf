@@ -42,7 +42,7 @@ public final class DocTypeIdentifier implements Serializable {
     }
     
     public static DocTypeIdentifier forValue(final String value) {
-        if (value == null) {
+        if (value == null || value.equals("")) {
             return NONE;
         }
         return new DocTypeIdentifier(false, false, value);
