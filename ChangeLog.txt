@@ -1,3 +1,9 @@
+2.0.7
+=====
+- Fixed case in DOCTYPE clause not being respected. Upper-case was required, which was against the HTML5
+  spec (which specifies the DOCTYPE clause to be case-insensitive).
+  
+
 2.0.6
 =====
 - Fixed "Message Resolver has not been initialized" error when more than one message resolver was configured
