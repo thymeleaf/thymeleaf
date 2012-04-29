@@ -3,7 +3,6 @@ package org.thymeleaf.templateparser.xmldom;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -84,19 +83,8 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
         final DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         docBuilderFactory.setValidating(validating);
 
-        final List<DocumentBuilder> docBuilders = new ArrayList<DocumentBuilder>();
-        
-        for(int i = 0; i < poolSize; i++) {
-            
-            try {
-                docBuilders.add(docBuilderFactory.newDocumentBuilder());
-            } catch(final ParserConfigurationException e) {
-                throw new ParserInitializationException("Error creating document builder", e);
-            }
-            
-        }
-        
-        return new ResourcePool<DocumentBuilder>(docBuilders);
+        return new ResourcePool<DocumentBuilder>(
+                new DOMTemplateParserFactory(docBuilderFactory), poolSize);
         
     }
 
@@ -174,5 +162,33 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
     
     protected abstract String wrapFragment(final String fragment);
     protected abstract List<Node> unwrapFragment(final Document document);
+    
+    
+    
+    
+    
+    
+    static class DOMTemplateParserFactory implements ResourcePool.IResourceFactory<DocumentBuilder> {
+
+        private final DocumentBuilderFactory docBuilderFactory;
+        
+        public DOMTemplateParserFactory(final DocumentBuilderFactory docBuilderFactory) {
+            super();
+            this.docBuilderFactory = docBuilderFactory;
+        }
+
+        
+        public DocumentBuilder createResource() {
+            
+            try {
+                return this.docBuilderFactory.newDocumentBuilder();
+            } catch(final ParserConfigurationException e) {
+                throw new ParserInitializationException("Error creating document builder", e);
+            }
+            
+        }
+        
+        
+    }
     
 }

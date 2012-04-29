@@ -2,7 +2,6 @@ package org.thymeleaf.templateparser.html;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.Configuration;
@@ -109,42 +108,9 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         
         public NekoBasedHtmlParser(int poolSize) {
             super();
-            this.pool = createDomParsers(poolSize);
+            this.pool = new ResourcePool<Object>(new HtmlTemplateParserFactory(), poolSize);
         }
         
-        
-        
-        private final ResourcePool<Object> createDomParsers(final int poolSize) {
-            
-            final List<Object> domParsers = new ArrayList<Object>();
-            
-            for(int i = 0; i < poolSize; i++) {
-                
-                try {
-                    
-                    final org.cyberneko.html.HTMLConfiguration config = 
-                        new org.cyberneko.html.HTMLConfiguration();
-                    
-                    config.setFeature("http://xml.org/sax/features/namespaces", false);
-                    config.setFeature("http://cyberneko.org/html/features/override-doctype", true);
-                    config.setFeature("http://cyberneko.org/html/features/scanner/cdata-sections", true);
-                    config.setProperty("http://cyberneko.org/html/properties/doctype/pubid", ""); 
-                    config.setProperty("http://cyberneko.org/html/properties/doctype/sysid", ""); 
-                    config.setProperty("http://cyberneko.org/html/properties/names/elems", "match");
-                    
-                    domParsers.add(new org.apache.xerces.parsers.DOMParser(config));
-                    
-                } catch(final Exception e) {
-                    throw new ConfigurationException(
-                        "Error while creating nekoHTML-based parser for " +
-                        "LEGACYHTML5 template modes.", e);
-                }
-                
-            }
-            
-            return new ResourcePool<Object>(domParsers);
-            
-        }
         
         
         
@@ -178,5 +144,42 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
 
         
     }
+    
+    
+    
+    static class HtmlTemplateParserFactory implements ResourcePool.IResourceFactory<Object> {
+        
+        public HtmlTemplateParserFactory() {
+            super();
+        }
+
+        
+        public Object createResource() {
+            
+            try {
+                
+                final org.cyberneko.html.HTMLConfiguration config = 
+                    new org.cyberneko.html.HTMLConfiguration();
+                
+                config.setFeature("http://xml.org/sax/features/namespaces", false);
+                config.setFeature("http://cyberneko.org/html/features/override-doctype", true);
+                config.setFeature("http://cyberneko.org/html/features/scanner/cdata-sections", true);
+                config.setProperty("http://cyberneko.org/html/properties/doctype/pubid", ""); 
+                config.setProperty("http://cyberneko.org/html/properties/doctype/sysid", ""); 
+                config.setProperty("http://cyberneko.org/html/properties/names/elems", "match");
+                
+                return new org.apache.xerces.parsers.DOMParser(config);
+                
+            } catch(final Exception e) {
+                throw new ConfigurationException(
+                    "Error while creating nekoHTML-based parser for " +
+                    "LEGACYHTML5 template modes.", e);
+            }
+            
+        }
+        
+        
+    }
+    
     
 }

@@ -82,21 +82,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(validating);
 
-        final List<SAXParser> saxParsers = new ArrayList<SAXParser>();
-        
-        for(int i = 0; i < poolSize; i++) {
-            
-            try {
-                saxParsers.add(factory.newSAXParser());
-            } catch(final ParserConfigurationException e) {
-                throw new ParserInitializationException("Error creating SAX parser", e);
-            } catch(final SAXException e) {
-                throw new ParserInitializationException("Error creating SAX parser", e);
-            }
-            
-        }
-        
-        return new ResourcePool<SAXParser>(saxParsers);
+        return new ResourcePool<SAXParser>(new SAXTemplateParserFactory(factory), poolSize);
         
     }
 
@@ -623,5 +609,32 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
     }
 
     
+    
+
+    
+    static class SAXTemplateParserFactory implements ResourcePool.IResourceFactory<SAXParser> {
+
+        private final SAXParserFactory saxParserFactory;
+        
+        public SAXTemplateParserFactory(final SAXParserFactory saxParserFactory) {
+            super();
+            this.saxParserFactory = saxParserFactory;
+        }
+
+        
+        public SAXParser createResource() {
+            
+            try {
+                return this.saxParserFactory.newSAXParser();
+            } catch(final ParserConfigurationException e) {
+                throw new ParserInitializationException("Error creating SAX parser", e);
+            } catch(final SAXException e) {
+                throw new ParserInitializationException("Error creating SAX parser", e);
+            }
+            
+        }
+        
+        
+    }
     
 }

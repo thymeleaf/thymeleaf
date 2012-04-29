@@ -37,14 +37,38 @@ public final class ResourcePool<T> {
     private final Set<T> allocated;
     private final Semaphore semaphore;
     
+    private final IResourceFactory<T> resourceFactory;
+
+    
     
     public ResourcePool(final Collection<T> resources) {
         super();
+        Validate.notNull(resources, "Resources for pool cannot be null");
         this.pool = new LinkedList<T>(resources);
+        this.allocated = new HashSet<T>(this.pool.size() + 1, 1.0f);
+        this.semaphore = new Semaphore(this.pool.size());
+        this.resourceFactory = null;
+    }
+    
+
+    public ResourcePool(final IResourceFactory<T> resourceFactory, final int poolSize) {
+        super();
+        Validate.notNull(resourceFactory, "Resource factory for pool cannot be null");
+        this.resourceFactory = resourceFactory;
+        this.pool = new LinkedList<T>();
+        for (int i = 0; i < poolSize; i++) {
+            final T resource = this.resourceFactory.createResource();
+            if (resource == null) {
+                throw new IllegalStateException(
+                        "Resource created by factory \"" + this.resourceFactory.getClass().getName() + "\"returned null");
+            }
+            this.pool.add(resource);
+        }
         this.allocated = new HashSet<T>(this.pool.size() + 1, 1.0f);
         this.semaphore = new Semaphore(this.pool.size());
     }
 
+    
     
     /**
      * <p>
@@ -88,6 +112,8 @@ public final class ResourcePool<T> {
      *   a broken resource.
      * </p>
      * 
+     * @param the resource to be released and returned to the pool.
+     * 
      */
     public void release(final T resource) {
         
@@ -101,5 +127,64 @@ public final class ResourcePool<T> {
         this.semaphore.release();
         
     }
+    
+
+    
+    /**
+     * <p>
+     *   Discards an allocated resource and forces the resource
+     *   factory to create a new one, if a resource factory has been
+     *   specified during pool instantiation.
+     * </p>
+     * <p>
+     *   If a resource factory has not been specified, this method will
+     *   raise an <tt>IllegalStateException</tt>.
+     * </p>
+     * 
+     * @param resource the resource to be discarded and substituted with a
+     *        new one.
+     * @since 2.0.7
+     * 
+     */
+    public void discardAndReplace(final T resource) {
+        
+        if (this.resourceFactory == null) {
+            throw new IllegalStateException(
+                    "Cannot execute 'discardAndReplace' operation: no resource " +
+                    "factory has been set.");
+        }
+        
+        synchronized(this) {
+            if (this.allocated.contains(resource)) {
+                final T newResource = this.resourceFactory.createResource();
+                this.pool.addLast(newResource);
+                this.allocated.remove(resource);
+            }
+        }
+        
+        this.semaphore.release();
+        
+    }
+    
+    
+    
+    
+    /**
+     * <i>
+     *   Objects implementing this interface are in charge of 
+     *   creating the resources that conform the pool.
+     * </i>
+     * 
+     * @author Daniel Fern&aacute;ndez
+     * @since 2.0.6
+     *
+     */
+    public static interface IResourceFactory<T> {
+        
+        public T createResource();
+        
+    }
+
+    
     
 }
