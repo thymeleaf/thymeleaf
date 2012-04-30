@@ -11,6 +11,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
@@ -56,8 +58,9 @@ import org.xml.sax.ext.Locator2;
  */
 public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplateParser {
     
-    
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ResourcePool<SAXParser> pool;
+    private boolean canResetParsers = true;
     
     
     protected AbstractNonValidatingSAXTemplateParser(final int poolSize) {
@@ -94,10 +97,10 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
 
     
-    private static final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
-            final Reader reader, final ResourcePool<SAXParser> pool) {
+    private final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
+            final Reader reader, final ResourcePool<SAXParser> poolToBeUsed) {
 
-        final SAXParser saxParser = pool.allocate();
+        final SAXParser saxParser = poolToBeUsed.allocate();
 
         final TemplatePreprocessingReader templateReader = 
                 (reader instanceof TemplatePreprocessingReader? 
@@ -105,9 +108,32 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         try {
             
+            /*
+             * Parse the document
+             */
             final Document document = 
                     doParse(configuration, documentName, templateReader, saxParser);
-            saxParser.reset();
+            
+            if (this.canResetParsers) {
+                try {
+                    /*
+                     * Reset the parser so that it can be used again.
+                     */
+                    saxParser.reset();
+                } catch (final UnsupportedOperationException e) {
+                    if (this.logger.isWarnEnabled()) {
+                        this.logger.warn(
+                                "[THYMELEAF] The SAX Parser implementation being used (\"{}\") does not implement " +
+                                    "the \"reset\" operation. This will force Thymeleaf to re-create parser instances " +
+                                    "each time they are needed for parsing templates, which is more costly. Enabling template " +
+                                    "cache is recommended, and also using a parser library which implements \"reset\" such as " +
+                                    "xerces version 2.9.1 or newer.",
+                                saxParser.getClass().getName());
+                    }                    
+                    this.canResetParsers = false;
+                }
+            }
+            
             return document;
             
         } catch (final IOException e) {
@@ -122,8 +148,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         } catch (final SAXException e) {
             throw new TemplateInputException("Exception parsing document", e);
         } finally {
-            
-            pool.release(saxParser);
+
+            if (this.canResetParsers) {
+                poolToBeUsed.release(saxParser);
+            } else {
+                poolToBeUsed.discardAndReplace(saxParser);
+            }
             
         }
         
