@@ -105,7 +105,10 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         try {
             
-            return doParse(configuration, documentName, templateReader, saxParser);
+            final Document document = 
+                    doParse(configuration, documentName, templateReader, saxParser);
+            saxParser.reset();
+            return document;
             
         } catch (final IOException e) {
             throw new TemplateInputException("Exception parsing document", e);
@@ -177,8 +180,6 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         }
         
         document.setChildren(rootNodes);
-        
-        saxParser.reset();
         
         return document;
         
