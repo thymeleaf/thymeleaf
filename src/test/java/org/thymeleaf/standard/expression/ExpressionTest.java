@@ -130,7 +130,7 @@ public class ExpressionTest extends TestCase {
         test("@{http://a.b.com/xx}", "http://a.b.com/xx");
         test("@{http://a.b.com/xx/yy(p1='zz')}", "http://a.b.com/xx/yy?p1=zz");
         test("@{http://a.b.com/xx/yy(p1='zz', p2=${pamerica.name})}", "http://a.b.com/xx/yy?p1=zz&amp;p2=Petronila+America");
-        test("@{http://a.b.com/xx/yy#frag(p1='zz', p2=${pamerica.name})}", "http://a.b.com/xx/yy#frag?p1=zz&amp;p2=Petronila+America");
+        test("@{http://a.b.com/xx/yy#frag(p1='zz', p2=${pamerica.name})}", "http://a.b.com/xx/yy?p1=zz&amp;p2=Petronila+America#frag");
         test("${loceania.permissions[0]}","Event Organizer");
         test("${loceania.permissions[3 - 2]}", "Marketing Worldwide Head");
         test("${loceania.permissions[__3.3 - 1.3__]}", "Office Master");
