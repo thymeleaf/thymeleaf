@@ -10,6 +10,9 @@
   operation (as in, for example, some old versions of xerces: 2.6.2 and older). Now Thymeleaf detects this,
   outputs a warning in the logs, avoids calling reset and forces the parser resource pool to re-create the
   parser each time, substituting the old parser objects.
+- Fixed correct positioning of URL fragments when parameters are present. Expressions like 
+  '@{base#frag(p1='par',p2='par)}' will now be rendered 'base?p1=par&p2=par#frag' instead of the previous
+  incorrect form 'base#frag?p1=par&p2=par'.
 
 
 2.0.6
