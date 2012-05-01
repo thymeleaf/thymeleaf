@@ -1,8 +1,16 @@
 2.0.7
 =====
-- Fixed case in DOCTYPE clause not being respected. Upper-case was required, which was against the HTML5
+- Fixed letter case in DOCTYPE clause not being respected. Upper-case was required, which was against the HTML5
   spec (which specifies the DOCTYPE clause to be case-insensitive).
-  
+- Fixed DOCTYPE clause being output by LEGACYHTML5 parser. Output included an unwanted PUBLIC clause with
+  empty-string public and system ids.
+- Modified ResourcePool so that it allows to discard and re-create pooled instances by the specification
+  of object factories during construction.
+- Fixed error raising when default SAX, DOM or HTML parser implementations did not implement the 'reset'
+  operation (as in, for example, some old versions of xerces: 2.6.2 and older). Now Thymeleaf detects this,
+  outputs a warning in the logs, avoids calling reset and forces the parser resource pool to re-create the
+  parser each time, substituting the old parser objects.
+
 
 2.0.6
 =====
