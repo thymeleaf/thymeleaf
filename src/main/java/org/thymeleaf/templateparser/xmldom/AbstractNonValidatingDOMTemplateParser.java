@@ -9,6 +9,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -57,8 +59,9 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
 
 
     
-    
-    private ResourcePool<DocumentBuilder> pool;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final ResourcePool<DocumentBuilder> pool;
+    private boolean canResetParsers = true;
 
     
     
@@ -97,10 +100,10 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
 
 
     
-    protected static final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
-            final Reader reader, final ResourcePool<DocumentBuilder> pool) {
+    protected final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
+            final Reader reader, final ResourcePool<DocumentBuilder> poolToBeUsed) {
         
-        final DocumentBuilder docBuilder = pool.allocate();
+        final DocumentBuilder docBuilder = poolToBeUsed.allocate();
 
         final TemplatePreprocessingReader templateReader = 
                 (reader instanceof TemplatePreprocessingReader? 
@@ -110,9 +113,31 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
             
             docBuilder.setEntityResolver(new EntityResolver(configuration));
             docBuilder.setErrorHandler(ErrorHandler.INSTANCE);
-            
+
+            /*
+             * Really parse the document
+             */
             final org.w3c.dom.Document domDocument = docBuilder.parse(new InputSource(templateReader));
-            docBuilder.reset();
+            
+            if (this.canResetParsers) {
+                try {
+                    /*
+                     * Reset the parser so that it can be used again.
+                     */
+                    docBuilder.reset();
+                } catch (final UnsupportedOperationException e) {
+                    if (this.logger.isWarnEnabled()) {
+                        this.logger.warn(
+                                "[THYMELEAF] The DOM Parser implementation being used (\"{}\") does not implement " +
+                                    "the \"reset\" operation. This will force Thymeleaf to re-create parser instances " +
+                                    "each time they are needed for parsing templates, which is more costly. Enabling template " +
+                                    "cache is recommended, and also using a parser library which implements \"reset\" such as " +
+                                    "xerces version 2.9.1 or newer.",
+                                docBuilder.getClass().getName());
+                    }                    
+                    this.canResetParsers = false;
+                }
+            }
             
             return StandardDOMTranslator.translateDocument(domDocument, documentName, templateReader.getDocTypeClause());
             
@@ -139,8 +164,12 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
             throw new TemplateInputException("Exception parsing document", e);
             
         } finally {
-            
-            pool.release(docBuilder);
+
+            if (this.canResetParsers) {
+                poolToBeUsed.release(docBuilder);
+            } else {
+                poolToBeUsed.discardAndReplace(docBuilder);
+            }
             
         }
         

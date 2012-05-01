@@ -4,6 +4,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -100,10 +102,12 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
     private static class NekoBasedHtmlParser {
         
         
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
         // The org.apache.xerces.parsers.DOMParser is not used here as a type
         // parameter to avoid the class loader to try to load this xerces class
         // (and fail) before we control the error at the constructor.
         private ResourcePool<Object> pool;
+        private boolean canResetParsers = true;
 
         
         public NekoBasedHtmlParser(int poolSize) {
@@ -129,7 +133,26 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                 
                 domParser.parse(new InputSource(templateReader));
                 final org.w3c.dom.Document domDocument = domParser.getDocument();
-                domParser.reset();
+                
+                if (this.canResetParsers) {
+                    try {
+                        /*
+                         * Reset the parser so that it can be used again.
+                         */
+                        domParser.reset();
+                    } catch (final UnsupportedOperationException e) {
+                        if (this.logger.isWarnEnabled()) {
+                            this.logger.warn(
+                                    "[THYMELEAF] The HTML Parser implementation being used (\"{}\") does not implement " +
+                                        "the \"reset\" operation. This will force Thymeleaf to re-create parser instances " +
+                                        "each time they are needed for parsing templates, which is more costly. Enabling template " +
+                                        "cache is recommended, and also using a parser library which implements \"reset\" such as " +
+                                        "nekoHTML version 1.9.15 or newer.",
+                                    domParser.getClass().getName());
+                        }                    
+                        this.canResetParsers = false;
+                    }
+                }
                 
                 return StandardDOMTranslator.translateDocument(domDocument, documentName, templateReader.getDocTypeClause());
                 
@@ -138,7 +161,13 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
             } catch (final Exception e) {
                 throw new TemplateInputException("Exception parsing document", e);
             } finally {
-                this.pool.release(domParser);
+
+                if (this.canResetParsers) {
+                    this.pool.release(domParser);
+                } else {
+                    this.pool.discardAndReplace(domParser);
+                }
+
             }
         }
 
