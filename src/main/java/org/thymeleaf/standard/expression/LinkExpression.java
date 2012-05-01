@@ -181,7 +181,7 @@ public final class LinkExpression extends SimpleExpression {
                     
                 }
             }
-            
+
             return null;
             
         }
@@ -233,7 +233,7 @@ public final class LinkExpression extends SimpleExpression {
                     "(currently: " + (base == null? null : base.getClass().getName()) + ")");
         }
 
-        final String linkBase = (String) base;
+        String linkBase = (String) base;
         
         if (!isWebContext(arguments.getContext()) && !isLinkBaseAbsolute(linkBase)) {
             throw new TemplateProcessingException(
@@ -249,7 +249,23 @@ public final class LinkExpression extends SimpleExpression {
                     resolveParameters(arguments, expression.getParameters(), expressionEvaluator) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
+        /*
+         * Detect URL fragments (selectors after '#') so that they can be output at the end of 
+         * the URL, after parameters.
+         */
+        final int hashPosition = linkBase.indexOf('#');
+        String urlFragment = "";
+        // If hash position == 0 we will not consider it as marking an
+        // URL fragment.
+        if (hashPosition > 0) {
+            // URL fragment String will include the # sign
+            urlFragment = linkBase.substring(hashPosition);
+            linkBase = linkBase.substring(0, hashPosition);
+        }
         
+        /*
+         * Check for the existence of a question mark symbol in the link base itself
+         */
         final int questionMarkPosition = linkBase.indexOf("?"); 
         
         final StringBuffer parametersBuffer = new StringBuffer();
@@ -299,7 +315,7 @@ public final class LinkExpression extends SimpleExpression {
         }
         
         if (isLinkBaseAbsolute(linkBase)) {
-            return linkBase + parametersBuffer.toString();
+            return linkBase + parametersBuffer.toString() + urlFragment;
         }
         
         final IWebContext webContext = (IWebContext) arguments.getContext();
@@ -321,29 +337,29 @@ public final class LinkExpression extends SimpleExpression {
             final String contextName = request.getContextPath();
             
             if (questionMarkPosition == -1) {
-                return contextName + linkBase + sessionFragment + parametersBuffer.toString();
+                return contextName + linkBase + sessionFragment + parametersBuffer.toString() + urlFragment;
             }
             
             final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
             final String linkBasePart2 = linkBase.substring(questionMarkPosition);
-            return contextName + linkBasePart1 + sessionFragment + linkBasePart2 + parametersBuffer.toString();
+            return contextName + linkBasePart1 + sessionFragment + linkBasePart2 + parametersBuffer.toString() + urlFragment;
             
         } else if (isLinkBaseServerRelative(linkBase)) {
             
             if (questionMarkPosition == -1) {
                 // remove the "~" from the link base
-                return linkBase.substring(1) + sessionFragment + parametersBuffer.toString();
+                return linkBase.substring(1) + sessionFragment + parametersBuffer.toString() + urlFragment;
             }
             
             final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
             final String linkBasePart2 = linkBase.substring(questionMarkPosition);
             // remove the "~" from the link base part 1 
-            return linkBasePart1.substring(1) + sessionFragment + linkBasePart2 + parametersBuffer.toString();
+            return linkBasePart1.substring(1) + sessionFragment + linkBasePart2 + parametersBuffer.toString() + urlFragment;
             
         }
 
         
-        return linkBase + sessionFragment + parametersBuffer.toString();
+        return linkBase + sessionFragment + parametersBuffer.toString() + urlFragment;
         
     }
     
