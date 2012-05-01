@@ -137,9 +137,9 @@ public class ExpressionTest extends TestCase {
         test("#{priority.basic} &gt;= 3","true");
         test("#{priority.basic} &gt;= 4","false");
         test("#{priority.basic} + 10","13");
-        test("@{http://a.b.com/xx/yy#frag(p1='zz', p2=((!${pamerica.isAdmin()})? ${pamerica.login} : 'Admin'))}", "http://a.b.com/xx/yy#frag?p1=zz&amp;p2=pamerica");
-        test("@{'http://a.b.com/xx/yy' + '#frag'(p1='zz', p2=((!${pamerica.isAdmin()})? ${pamerica.login} : 'Admin'))}", "http://a.b.com/xx/yy#frag?p1=zz&amp;p2=pamerica");
-        test("@{('http://a.b.com/xx/yy' + '#frag')(p1='zz', p2=((!${pamerica.isAdmin()})? ${pamerica.login} : 'Admin'))}", "http://a.b.com/xx/yy#frag?p1=zz&amp;p2=pamerica");
+        test("@{http://a.b.com/xx/yy#frag(p1='zz', p2=((!${pamerica.isAdmin()})? ${pamerica.login} : 'Admin'))}", "http://a.b.com/xx/yy?p1=zz&amp;p2=pamerica#frag");
+        test("@{'http://a.b.com/xx/yy' + '#frag'(p1='zz', p2=((!${pamerica.isAdmin()})? ${pamerica.login} : 'Admin'))}", "http://a.b.com/xx/yy?p1=zz&amp;p2=pamerica#frag");
+        test("@{('http://a.b.com/xx/yy' + '#frag')(p1='zz', p2=((!${pamerica.isAdmin()})? ${pamerica.login} : 'Admin'))}", "http://a.b.com/xx/yy?p1=zz&amp;p2=pamerica#frag");
 
         test("${13 + '13'} == (13 + '13')","true");
         test("${13 + '13.0'} == (13 + '13.0')","true");
