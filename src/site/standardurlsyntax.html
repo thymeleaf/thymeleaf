@@ -189,6 +189,31 @@
      </code>
 
 
+     <h2>URL fragment identifiers</h2>
+
+     <p>
+       Fragment identifiers can be included in URLs, both with and without parameters. They will always
+       be included at the URL base, so that:
+     </p>
+
+     <code>
+       &lt;<b>a</b> th:href=<span class="string">"@{/home#all_info(action='show')}"</span>&gt;
+     </code>
+
+     <p>
+       ...would output as:
+     </p>
+
+     <code>
+       &lt;<b>a</b> href=<span class="string">"/home?action=show#all_info"</span>&gt;
+     </code>
+     
+     <p>
+       <i>(Note that fragment identifiers in parameterized URLs are only supported since Thymeleaf 2.0.7)</i>
+     </p>
+
+
+
 
      <h2>Only for th:href's?</h2>
 
