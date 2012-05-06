@@ -1,3 +1,8 @@
+2.0.8
+=====
+- Fixed "Root element name cannot be null" exception when processing non-complete documents (fragments).
+
+
 2.0.7
 =====
 - Fixed letter case in DOCTYPE clause not being respected. Upper-case was required, which was against the HTML5

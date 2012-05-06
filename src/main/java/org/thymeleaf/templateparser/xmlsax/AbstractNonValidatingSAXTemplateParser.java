@@ -186,8 +186,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         final String docTypePublicId = handler.getDocTypePublicId();
         final String docTypeSystemId = handler.getDocTypeSystemId();
         
+        // The DOCTYPE root element name could be null if we are parsing
+        // a non-complete document, a fragment, without a DOCTYPE declaration.
         final DocType docType = 
-                new DocType(docTypeRootElementName, docTypePublicId, docTypeSystemId, docTypeClause);
+                (docTypeRootElementName != null?
+                        new DocType(docTypeRootElementName, docTypePublicId, docTypeSystemId, docTypeClause) :
+                        null);
         
         final List<Node> rootNodes = handler.getRootNodes();
         
