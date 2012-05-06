@@ -92,8 +92,8 @@ public final class Arguments {
      *   Create a new Arguments instance.
      * </p>
      * <p>
-     *   <b>Mainly for internal use</b>. Should not be called directly except
-     *   when processing a template (e.g. a fragment) using the {@link TemplateEngine}
+     *   <b>Mainly for internal use</b>. Should not be called directly except for testing purposes
+     *   or  when processing a template (e.g. a fragment) using the {@link TemplateEngine}
      *   from a element/attribute processor.
      * </p>
      * 
@@ -103,7 +103,7 @@ public final class Arguments {
      * @param templateParser the template parser
      * @param context the context
      */
-    Arguments(
+    public Arguments(
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,

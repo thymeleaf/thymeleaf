@@ -68,7 +68,14 @@ public final class TemplateRepository {
     private final Map<String,ITemplateParser> parsersByTemplateMode;
     
     
-    TemplateRepository(final Configuration configuration) {
+    /**
+     * <p>
+     *   This constructor should only be called directly for <p>testing purposes</p>.
+     * </p>
+     * 
+     * @param configuration
+     */
+    public TemplateRepository(final Configuration configuration) {
         
         super();
         

@@ -25,10 +25,23 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.TemplateRepository;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateOutputException;
+import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
+import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
+import org.thymeleaf.templateresolver.AlwaysValidTemplateResolutionValidity;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.templatewriter.AbstractGeneralTemplateWriter;
 import org.thymeleaf.templatewriter.XhtmlHtml5TemplateWriter;
 import org.thymeleaf.templatewriter.XmlTemplateWriter;
 
@@ -322,30 +335,88 @@ public final class DOMUtils {
     
     
     public static String getXmlFor(final Node node) {
+        return getOutputFor(node, new XmlTemplateWriter(), "XML");
+    }
+    
+    
+    /**
+     * @deprecated To be removed in 2.1.0. Use {@link #getHtml5For(Node)},
+     *             {@link #getXhtmlFor(Node)} or 
+     *             {@link #getOutputFor(Node, ITemplateWriter, String)}
+     *             instead. 
+     */
+    @Deprecated
+    public static String getXhtmlHtml5For(final Node node) {
+        return getOutputFor(node, new XhtmlHtml5TemplateWriter(), "XHTML");
+    }
+    
+    
+    public static String getXhtmlFor(final Node node) {
+        return getOutputFor(node, new XhtmlHtml5TemplateWriter(), "XHTML");
+    }
+    
+    
+    public static String getHtml5For(final Node node) {
+        return getOutputFor(node, new XhtmlHtml5TemplateWriter(), "HTML5");
+    }
+    
+    
+
+    
+    /**
+     * <p>
+     *   This method is for testing purposes only! It creates mock configuration, template and resource
+     *   resolution artifacts, etc. Its usage during normal operation could heavily affect performance.
+     * </p>
+     * 
+     * @param node
+     * @param templateWriter
+     * @return
+     * @since 2.0.8
+     */
+    public static String getOutputFor(final Node node, final AbstractGeneralTemplateWriter templateWriter, final String templateMode) {
+        
+        Validate.notNull(node, "Node cannot be null");
+        Validate.notNull(templateWriter, "Template writer cannot be null");
+        
         try {
-            final XmlTemplateWriter templateWriter = new XmlTemplateWriter();
+            
             final StringWriter writer = new StringWriter();
-            templateWriter.writeNode(null, writer, node);
+
+            final Configuration configuration = new Configuration();
+            configuration.addTemplateResolver(new ClassLoaderTemplateResolver());
+            configuration.addMessageResolver(new StandardMessageResolver());
+            configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
+            configuration.initialize();
+            
+            final String templateName = "output";
+
+            final TemplateProcessingParameters templateProcessingParameters = 
+                    new TemplateProcessingParameters(configuration, templateName, new Context());
+            
+            final TemplateResolution templateResolution = 
+                    new TemplateResolution(templateName, "resource:"+templateName, 
+                            new ClassLoaderResourceResolver(), "UTF-8", templateMode, new AlwaysValidTemplateResolutionValidity());
+            
+            final TemplateRepository templateRepository = new TemplateRepository(configuration);
+
+            final Document document = new Document(templateName);
+            document.addChild(node);
+            
+            final Arguments arguments = 
+                    new Arguments(templateProcessingParameters, templateResolution, 
+                            templateRepository, document);
+            
+            templateWriter.writeNode(arguments, writer, node);
+            
             return writer.toString();
+            
         } catch (final IOException e) {
             throw new TemplateOutputException(
                     "Exception during creation of XML output for node", e);
         }
     }
-    
-    
-    public static String getXhtmlHtml5For(final Node node) {
-        try {
-            final XhtmlHtml5TemplateWriter templateWriter = new XhtmlHtml5TemplateWriter();
-            final StringWriter writer = new StringWriter();
-            templateWriter.writeNode(null, writer, node);
-            return writer.toString();
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    "Exception during creation of XHTML/HTML5 output for node", e);
-        }
-    }
-    
+
     
     private DOMUtils() {
         super();
@@ -353,3 +424,4 @@ public final class DOMUtils {
 
     
 }
+
