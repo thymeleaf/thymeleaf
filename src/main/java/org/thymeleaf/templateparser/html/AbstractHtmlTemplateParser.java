@@ -193,6 +193,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                 config.setFeature("http://xml.org/sax/features/namespaces", false);
                 config.setFeature("http://cyberneko.org/html/features/override-doctype", true);
                 config.setFeature("http://cyberneko.org/html/features/scanner/cdata-sections", true);
+                
                 config.setProperty("http://cyberneko.org/html/properties/doctype/pubid", ""); 
                 config.setProperty("http://cyberneko.org/html/properties/doctype/sysid", ""); 
                 config.setProperty("http://cyberneko.org/html/properties/names/elems", "match");
