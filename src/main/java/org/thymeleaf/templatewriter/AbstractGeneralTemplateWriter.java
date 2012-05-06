@@ -31,6 +31,7 @@ import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.GroupNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -133,6 +134,8 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
         
         if (node instanceof Element) {
             writeElement(arguments, writer, (Element)node);
+        } else if (node instanceof GroupNode) {
+            writeGroupNode(arguments, writer, (GroupNode)node);
         } else if (node instanceof Text) {
             writeText(arguments, writer, (Text)node);
         } else if (node instanceof Comment) {
@@ -147,6 +150,23 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     
     }
 
+    
+
+    
+    protected void writeGroupNode(final Arguments arguments, final Writer writer, final GroupNode groupNode) 
+            throws IOException {
+        
+        if (groupNode.hasChildren()) {
+            final Node[] children = groupNode.unsafeGetChildrenNodeArray();
+            final int childrenLen = groupNode.numChildren();
+            for (int i = 0; i < childrenLen; i++) {
+                writeNode(arguments, writer, children[i]);
+            }
+        }
+        
+    }
+
+    
     
     
     protected void writeElement(final Arguments arguments, final Writer writer, final Element element) 

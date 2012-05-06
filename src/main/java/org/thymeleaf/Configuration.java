@@ -36,6 +36,7 @@ import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.exceptions.ConfigurationException;
@@ -491,24 +492,30 @@ public final class Configuration {
      */
     public ArrayList<ProcessorAndContext> computeProcessorsForNode(final Node node) {
         
-        if (node instanceof Element) {
+        if (node instanceof NestableAttributeHolderNode) {
 
             final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
             
-            final Element element = (Element) node;
+            final NestableAttributeHolderNode nestableNode = (NestableAttributeHolderNode) node;
 
-            final Set<ProcessorAndContext> processorsForElementName = 
-                    this.mergedSpecificProcessorsByElementName.get(element.getNormalizedName());
-            if (processorsForElementName != null) {
-                for (final ProcessorAndContext processorAndContext : processorsForElementName) {
-                    if (processorAndContext.matches(node)) {
-                        processors.add(processorAndContext);
+            if (node instanceof Element) {
+                
+                final Element element = (Element) nestableNode;
+                
+                final Set<ProcessorAndContext> processorsForElementName = 
+                        this.mergedSpecificProcessorsByElementName.get(element.getNormalizedName());
+                if (processorsForElementName != null) {
+                    for (final ProcessorAndContext processorAndContext : processorsForElementName) {
+                        if (processorAndContext.matches(node)) {
+                            processors.add(processorAndContext);
+                        }
                     }
                 }
+                
             }
 
-            final String[] attributeNormalizedNames = element.unsafeGetAttributeNormalizedNames();
-            final int attributesLen = element.numAttributes();
+            final String[] attributeNormalizedNames = nestableNode.unsafeGetAttributeNormalizedNames();
+            final int attributesLen = nestableNode.numAttributes();
             for (int i = 0; i < attributesLen; i++) {
                 final Set<ProcessorAndContext> processorsForAttributeName = 
                         this.mergedSpecificProcessorsByAttributeName.get(attributeNormalizedNames[i]);
@@ -522,7 +529,7 @@ public final class Configuration {
             }
         
             final Set<ProcessorAndContext> applicableNonSpecificProcessors = 
-                    getApplicableNonSpecificProcessorsToNodeClass(Element.class);
+                    getApplicableNonSpecificProcessorsToNodeClass(NestableAttributeHolderNode.class);
             if (applicableNonSpecificProcessors != null) {
                 for (final ProcessorAndContext processorAndContext : applicableNonSpecificProcessors) {
                     if (processorAndContext.matches(node)) {

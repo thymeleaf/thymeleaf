@@ -155,7 +155,8 @@ public abstract class Node implements Serializable {
         this.recomputeProcessorsImmediately = false;
         this.nodeLocalVariables = null;
         this.processors = null;
-        this.shouldConsiderAsElementForProcessing = (this instanceof Element || this instanceof Document);
+        this.shouldConsiderAsElementForProcessing = 
+                (this instanceof NestableAttributeHolderNode || this instanceof Document);
         this.nodeProperties = null;
     }
 

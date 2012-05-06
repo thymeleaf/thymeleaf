@@ -4,6 +4,8 @@
 - Modified Arguments constructor to public for testing purposes.
 - Modified TemplateRepository constructor to public for testing purposes.
 - Fixed "get{outputType}For(node)" methods in DOMUtils.
+- Added new "GroupNode" DOM node type for grouping nodes, with children and (potentially) attributes,
+  but no name and/or associated markup.
 
 
 2.0.7
