@@ -378,45 +378,67 @@ public final class DOMUtils {
         
         Validate.notNull(node, "Node cannot be null");
         Validate.notNull(templateWriter, "Template writer cannot be null");
+
+        final Configuration configuration = new Configuration();
+        configuration.addTemplateResolver(new ClassLoaderTemplateResolver());
+        configuration.addMessageResolver(new StandardMessageResolver());
+        configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
+        configuration.initialize();
+        
+        final String templateName = "output";
+
+        final TemplateProcessingParameters templateProcessingParameters = 
+                new TemplateProcessingParameters(configuration, templateName, new Context());
+        
+        final TemplateResolution templateResolution = 
+                new TemplateResolution(templateName, "resource:"+templateName, 
+                        new ClassLoaderResourceResolver(), "UTF-8", templateMode, new AlwaysValidTemplateResolutionValidity());
+        
+        final TemplateRepository templateRepository = new TemplateRepository(configuration);
+
+        final Document document = new Document(templateName);
+        document.addChild(node);
+        
+        final Arguments arguments = 
+                new Arguments(templateProcessingParameters, templateResolution, 
+                        templateRepository, document);
+
+        return getOutputFor(arguments, node, templateWriter);
+            
+    }
+
+
+    
+    
+    /**
+     * 
+     * @param arguments
+     * @param node
+     * @param templateWriter
+     * @return
+     * @since 2.0.8
+     */
+    public static String getOutputFor(final Arguments arguments, final Node node, 
+            final AbstractGeneralTemplateWriter templateWriter) {
+
+        Validate.notNull(arguments, "Arguments cannot be null");
+        Validate.notNull(node, "Node cannot be null");
+        Validate.notNull(templateWriter, "Template writer cannot be null");
         
         try {
             
             final StringWriter writer = new StringWriter();
-
-            final Configuration configuration = new Configuration();
-            configuration.addTemplateResolver(new ClassLoaderTemplateResolver());
-            configuration.addMessageResolver(new StandardMessageResolver());
-            configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
-            configuration.initialize();
-            
-            final String templateName = "output";
-
-            final TemplateProcessingParameters templateProcessingParameters = 
-                    new TemplateProcessingParameters(configuration, templateName, new Context());
-            
-            final TemplateResolution templateResolution = 
-                    new TemplateResolution(templateName, "resource:"+templateName, 
-                            new ClassLoaderResourceResolver(), "UTF-8", templateMode, new AlwaysValidTemplateResolutionValidity());
-            
-            final TemplateRepository templateRepository = new TemplateRepository(configuration);
-
-            final Document document = new Document(templateName);
-            document.addChild(node);
-            
-            final Arguments arguments = 
-                    new Arguments(templateProcessingParameters, templateResolution, 
-                            templateRepository, document);
-            
             templateWriter.writeNode(arguments, writer, node);
-            
             return writer.toString();
             
         } catch (final IOException e) {
             throw new TemplateOutputException(
-                    "Exception during creation of XML output for node", e);
+                    "Exception during creation of output for node", e);
         }
+        
     }
 
+    
     
     private DOMUtils() {
         super();

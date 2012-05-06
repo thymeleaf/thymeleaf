@@ -113,7 +113,7 @@ public class StandardDOMTranslator {
     
     
     public static final Element translateElement(final org.w3c.dom.Element domNode, final NestableNode parentNode, final String documentName) {
-        
+
         final String elementTagName = domNode.getTagName();
         final Element element = new Element(elementTagName, documentName);
         element.setParent(parentNode);
