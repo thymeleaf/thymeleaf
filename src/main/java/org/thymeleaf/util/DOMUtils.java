@@ -21,6 +21,7 @@ package org.thymeleaf.util;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
@@ -34,10 +35,15 @@ import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
+import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.html.LegacyHtml5TemplateParser;
+import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
+import org.thymeleaf.templateparser.xmlsax.XmlNonValidatingSAXTemplateParser;
 import org.thymeleaf.templateresolver.AlwaysValidTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -437,6 +443,114 @@ public final class DOMUtils {
         }
         
     }
+
+
+    
+    
+    /**
+     * 
+     * @param source
+     * @return
+     * @since 2.0.8
+     */
+    public static Document getHtml5DOMFor(final Reader source) {
+        Validate.notNull(source, "Source cannot be null");
+        return getDOMFor(source, new XhtmlAndHtml5NonValidatingSAXTemplateParser(1));
+    }
+    
+    
+    /**
+     * 
+     * @param source
+     * @return
+     * @since 2.0.8
+     */
+    public static Document getLegacyHTML5DOMFor(final Reader source) {
+        Validate.notNull(source, "Source cannot be null");
+        return getDOMFor(source, new LegacyHtml5TemplateParser("LEGACYHTML5", 1));
+    }
+    
+    
+    /**
+     * 
+     * @param source
+     * @return
+     * @since 2.0.8
+     */
+    public static Document getXmlDOMFor(final Reader source) {
+        Validate.notNull(source, "Source cannot be null");
+        return getDOMFor(source, new XmlNonValidatingSAXTemplateParser(1));
+    }
+    
+    
+    /**
+     * 
+     * @param source
+     * @return
+     * @since 2.0.8
+     */
+    public static Document getXhtmlDOMFor(final Reader source) {
+        Validate.notNull(source, "Source cannot be null");
+        return getDOMFor(source, new XhtmlAndHtml5NonValidatingSAXTemplateParser(1));
+    }
+    
+
+    
+    /**
+     * 
+     * @param configuration
+     * @param source
+     * @param parser
+     * @return
+     * @since 2.0.8
+     */
+    public static Document getDOMFor(final Reader source, final ITemplateParser parser) {
+
+        Validate.notNull(source, "Source cannot be null");
+        Validate.notNull(parser, "Template parser cannot be null");
+
+        final Configuration configuration = new Configuration();
+        configuration.addTemplateResolver(new ClassLoaderTemplateResolver());
+        configuration.addMessageResolver(new StandardMessageResolver());
+        configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
+        configuration.initialize();
+
+        return getDOMFor(configuration, source, parser);
+        
+    }
+    
+    
+    
+    
+    /**
+     * 
+     * @param configuration
+     * @param source
+     * @param parser
+     * @return
+     * @since 2.0.8
+     */
+    public static Document getDOMFor(final Configuration configuration, 
+            final Reader source, final ITemplateParser parser) {
+
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(source, "Source cannot be null");
+        Validate.notNull(parser, "Template parser cannot be null");
+        
+        try {
+            
+            final Document document =
+              parser.parseTemplate(configuration, "input", source);
+            
+            return document;
+            
+        } catch (final Exception e) {
+            throw new TemplateInputException(
+                    "Exception during parsing of source", e);
+        }
+        
+    }
+    
 
     
     

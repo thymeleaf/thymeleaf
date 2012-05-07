@@ -324,7 +324,7 @@ public final class DOMSelector implements Serializable {
         
         if (!doCheckSpecificNodeSelection(node)) {
             
-            if (this.descendMoreThanOneLevel) {
+            if (this.descendMoreThanOneLevel || node instanceof GroupNode) {
                 // This level doesn't match, but maybe next levels do...
                 
                 if (node instanceof NestableNode) {

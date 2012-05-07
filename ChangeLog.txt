@@ -3,9 +3,12 @@
 - Fixed "Root element name cannot be null" exception when processing non-complete documents (fragments).
 - Modified Arguments constructor to public for testing purposes.
 - Modified TemplateRepository constructor to public for testing purposes.
-- Fixed "get{outputType}For(node)" methods in DOMUtils.
+- Fixed "get{outputType}For(node)" methods in DOMUtils, which were outputting exceptions due to
+  new restrictions at the DOM model.
 - Added new "GroupNode" DOM node type for grouping nodes, with children and (potentially) attributes,
   but no name and/or associated markup.
+- Added new utility getHTML5/Xhtml/XmlDOMFor(Reader) methods for obtaining the DOM Document resulting
+  from parsing (with an on-purpose created parser) a fragment of markup code, for testing purposes.
 
 
 2.0.7
