@@ -33,6 +33,7 @@ import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -91,15 +92,30 @@ public final class DOMUtils {
 
             final NestableNode nestableNode = (NestableNode) node;
             
-            if (nestableNode instanceof Element) {
-                final Element element = (Element) nestableNode;
-                if (element.hasNormalizedAttribute(normalizedAttributeName) && 
-                        (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName()))) {
-                    final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+            if (nestableNode instanceof NestableAttributeHolderNode) {
+                
+                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
+                
+                if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
+                    final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
                     if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                        return nestableNode;
+                        // attribute exists and matches
+                        
+                        if (normalizedElementName != null) {
+                            // If we also have to check an element name, the node must be an element and match
+                            if (attributeHolderNode instanceof Element) {
+                                final Element element = (Element) attributeHolderNode;
+                                if (normalizedElementName.equals(element.getNormalizedName())) {
+                                    return nestableNode;
+                                }
+                            }
+                        } else { 
+                            return nestableNode;
+                        }
+                        
                     }
                 }
+                
             }
             
             final List<Node> children = nestableNode.getChildren();

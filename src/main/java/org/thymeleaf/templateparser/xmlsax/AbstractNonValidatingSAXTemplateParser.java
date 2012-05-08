@@ -19,6 +19,7 @@ import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.ParserInitializationException;
@@ -245,7 +246,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
     private static final class XmlSAXHandler extends DefaultHandler2 {
 
         private final String documentName;
-        private final Stack<Element> elementStack;
+        private final Stack<NestableNode> elementStack;
         
         private char[] textBuffer;
         private int textBufferLen;
@@ -280,7 +281,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
             this.documentName = documentName;
             
-            this.elementStack = new Stack<Element>();
+            this.elementStack = new Stack<NestableNode>();
             this.rootNodes = new ArrayList<Node>();
             
             this.textBuffer = new char[512];
@@ -358,7 +359,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(cdata);
                 } else {
-                    final Element parent = this.elementStack.peek();
+                    final NestableNode parent = this.elementStack.peek();
                     parent.addChild(cdata);
                 }
                 this.cdataBufferLen = 0;
@@ -429,7 +430,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(comment);
                 } else {
-                    final Element parent = this.elementStack.peek();
+                    final NestableNode parent = this.elementStack.peek();
                     parent.addChild(comment);
                 }
                 
@@ -502,12 +503,12 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             
             flushBuffer();
             
-            final Element element = this.elementStack.pop();
+            final NestableNode element = this.elementStack.pop();
             
             if (this.elementStack.isEmpty()) {
                 this.rootNodes.add(element);
             } else {
-                final Element parent = this.elementStack.peek();
+                final NestableNode parent = this.elementStack.peek();
                 parent.addChild(element);
             }
             
@@ -559,7 +560,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(textNode);
                 } else {
-                    final Element parent = this.elementStack.peek();
+                    final NestableNode parent = this.elementStack.peek();
                     parent.addChild(textNode);
                 }
             

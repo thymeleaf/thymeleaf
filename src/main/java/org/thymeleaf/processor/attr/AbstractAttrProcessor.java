@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.processor.AbstractProcessor;
 import org.thymeleaf.processor.AttributeNameProcessorMatcher;
@@ -57,7 +58,7 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
     }
 
     
-    public final IProcessorMatcher<? extends Element> getMatcher() {
+    public final IProcessorMatcher<? extends NestableAttributeHolderNode> getMatcher() {
         return this.matcher;
     }
 
