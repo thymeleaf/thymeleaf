@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dom.NestableAttributeHolderNode;
+import org.thymeleaf.dom.Element;
 
 
 
@@ -41,7 +41,7 @@ import org.thymeleaf.dom.NestableAttributeHolderNode;
  * @since 2.0.0
  *
  */
-public interface IAttributeNameProcessorMatcher extends IProcessorMatcher<NestableAttributeHolderNode> {
+public interface IAttributeNameProcessorMatcher extends IProcessorMatcher<Element> {
 
     public String getAttributeName(final ProcessorMatchingContext context);
     

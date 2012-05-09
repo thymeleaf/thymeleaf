@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.util.Validate;
 
@@ -101,26 +100,19 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
     public boolean matches(final Node node, final ProcessorMatchingContext context) {
         
-        if (!(node instanceof NestableAttributeHolderNode)) {
+        if (!(node instanceof Element)) {
             return false;
         }
         
-        final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) node;
+        final Element element = (Element) node;
         final String completeAttributeName = getAttributeName(context); 
         
-        if (!attributeHolderNode.hasAttribute(completeAttributeName)) {
+        if (!element.hasAttribute(completeAttributeName)) {
             return false;
         }
         
         if (this.elementNameFilter != null) {
-            if (attributeHolderNode instanceof Element) {
-                final Element element = (Element) attributeHolderNode;
-                if (!element.getNormalizedName().equals(this.elementNameFilter)) {
-                    return false;
-                }
-            } else {
-                // if node is not an element (because it probably is a group of nodes, it has no
-                // "element/tag name", and therefore does not match if this matcher specifies one.
+            if (!element.getNormalizedName().equals(this.elementNameFilter)) {
                 return false;
             }
         }
@@ -132,13 +124,13 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
                 final String filterAttributeName = filterAttributeEntry.getKey();
                 final String filterAttributeValue = filterAttributeEntry.getValue();
                 
-                if (!attributeHolderNode.hasAttribute(filterAttributeName)) {
+                if (!element.hasAttribute(filterAttributeName)) {
                     if (filterAttributeValue != null) {
                         return false;
                     }
                     continue;
                 }
-                final String elementAttributeValue = attributeHolderNode.getAttributeValue(filterAttributeName);
+                final String elementAttributeValue = element.getAttributeValue(filterAttributeName);
                 if (elementAttributeValue == null) {
                     if (filterAttributeValue != null) {
                         return false;
@@ -159,8 +151,8 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
 
     
-    public final Class<? extends NestableAttributeHolderNode> appliesTo() {
-        return NestableAttributeHolderNode.class;
+    public final Class<? extends Element> appliesTo() {
+        return Element.class;
     }
     
     

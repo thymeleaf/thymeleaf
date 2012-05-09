@@ -21,7 +21,6 @@ package org.thymeleaf.util;
 
 import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
@@ -33,18 +32,12 @@ import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
-import org.thymeleaf.templateparser.ITemplateParser;
-import org.thymeleaf.templateparser.html.LegacyHtml5TemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XmlNonValidatingSAXTemplateParser;
 import org.thymeleaf.templateresolver.AlwaysValidTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -92,30 +85,15 @@ public final class DOMUtils {
 
             final NestableNode nestableNode = (NestableNode) node;
             
-            if (nestableNode instanceof NestableAttributeHolderNode) {
-                
-                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
-                
-                if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
-                    final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
+            if (nestableNode instanceof Element) {
+                final Element element = (Element) nestableNode;
+                if (element.hasNormalizedAttribute(normalizedAttributeName) && 
+                        (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName()))) {
+                    final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
                     if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                        // attribute exists and matches
-                        
-                        if (normalizedElementName != null) {
-                            // If we also have to check an element name, the node must be an element and match
-                            if (attributeHolderNode instanceof Element) {
-                                final Element element = (Element) attributeHolderNode;
-                                if (normalizedElementName.equals(element.getNormalizedName())) {
-                                    return nestableNode;
-                                }
-                            }
-                        } else { 
-                            return nestableNode;
-                        }
-                        
+                        return nestableNode;
                     }
                 }
-                
             }
             
             final List<Node> children = nestableNode.getChildren();
