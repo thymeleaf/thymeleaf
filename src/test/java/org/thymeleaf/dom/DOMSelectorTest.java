@@ -21,6 +21,7 @@ package org.thymeleaf.dom;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -48,13 +49,6 @@ public class DOMSelectorTest extends TestCase {
         
         final Document doc0 = DOMUtils.getHtml5DOMFor(new StringReader(markup0)); 
         
-        final Document doc1 = doc0.clone(true);
-        final Element doc1div = 
-                (Element)((NestableNode)((NestableNode)doc1.getChildren().get(0)).getChildren().get(0)).getChildren().get(0);
-        final GroupNode doc1divGroupNode = new GroupNode();
-        doc1div.moveAllChildren(doc1divGroupNode);
-        doc1div.insertChild(0, doc1divGroupNode);
-        
         outputResult(selector0, doc0);
         outputResult(selector1, doc0);
         outputResult(selector2, doc0);
@@ -62,17 +56,9 @@ public class DOMSelectorTest extends TestCase {
         outputResult(selector4, doc0);
         final List<String> list1 = outputResult(selector5, doc0);
 
-        System.out.println(DOMUtils.getHtml5For(doc1));
-
-        
-        outputResult(selector0, doc1);
-        outputResult(selector1, doc1);
-        outputResult(selector2, doc1);
-        outputResult(selector3, doc1);
-        outputResult(selector4, doc1);
-        final List<String> list2 = outputResult(selector5, doc1);
-        
-        Assert.assertEquals(list1,list2);
+        Assert.assertEquals(
+                list1,
+                (Arrays.asList(new String[] {"<p>This is the text over here.</p>", "<p>...and another one!</p>"})));
         
     }
     
