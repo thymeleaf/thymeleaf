@@ -203,7 +203,13 @@ public final class DOMUtils {
                 if (len > 0) {
                     writer.write(buffer, off, len);
                 }
-                writer.write(AMP);
+                if (isEntityStart(buffer, i)) {
+                    // This avoids escaping &'s that are in fact starting 
+                    // already escaped entities.
+                    writer.write('&');
+                } else {
+                    writer.write(AMP);
+                }
                 off = i + 1;
                 len = 0;
             } else if (c == '<') {
@@ -242,6 +248,22 @@ public final class DOMUtils {
         if (len > 0) {
             writer.write(buffer, off, len);
         }
+    }
+    
+
+    
+    private static boolean isEntityStart(final char[] buffer, final int position) {
+        int i = position + 1;
+        while (i < buffer.length) {
+            final char c = buffer[i];
+            if (!( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ';') )) {
+                return false;
+            } else if (c == ';') {
+                return true;
+            }
+            i++;
+        }
+        return false;
     }
     
 
