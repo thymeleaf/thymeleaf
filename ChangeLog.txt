@@ -7,6 +7,9 @@
   new restrictions at the DOM model.
 - Added new utility getHTML5/Xhtml/XmlDOMFor(Reader) methods for obtaining the DOM Document resulting
   from parsing (with an on-purpose created parser) a fragment of markup code, for testing purposes.
+- Fixed bad re-escaping of XML entities in entity attributes. The "&" was always being escaped, even
+  when it was in fact the beginning of an already-escaped entity. Now this situation is detected and
+  re-escaping avoided.
 
 
 2.0.7
