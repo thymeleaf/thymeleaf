@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>stsm</artifactId>
   <packaging>war</packaging>
-  <version>20120501</version>
+  <version>20120517</version>
   <name>Thymeleaf Examples - Spring Thyme Seedstarter Manager</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -163,13 +163,13 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>2.0.7</version>
+      <version>2.0.8</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
-      <version>2.0.7</version>
+      <version>2.0.8</version>
       <scope>compile</scope>
     </dependency>
     
