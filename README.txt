@@ -1,8 +1,8 @@
 
- Thymeleaf Examples: Spring Thyme Seedstarter Manager
- ----------------------------------------------------
+ Thymeleaf Examples: extraThyme
+ ------------------------------
  
- This is an example project containing code used in the "Thymeleaf + Spring 3" tutorial.
+ This is an example project containing code used in the "Extending Thymeleaf" tutorial.
  
  To learn more and download latest version:
  
