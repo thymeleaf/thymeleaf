@@ -215,16 +215,6 @@ h4 {
   text-decoration: none;
   border: 0px;
 }
-#footer > #sourceforge {
-  display: inline;
-  line-height: 35px;
-  float:right;
-  margin-left: 10px;
-}
-#footer > #sourceforge a {
-  text-decoration: none;
-  border: 0px;
-}
 #footer #copy {
   display: inline;
   text-align: right;
