@@ -49,11 +49,11 @@ import org.thymeleaf.util.ObjectUtils;
 public class OgnlExpressionEvaluator 
         implements IStandardExpressionEvaluator {
     
+    
+    private static final Logger logger = LoggerFactory.getLogger(OgnlExpressionEvaluator.class);
 
     public static final OgnlExpressionEvaluator INSTANCE = new OgnlExpressionEvaluator();
     private static final String OGNL_CACHE_PREFIX = "{ognl}";
-    
-    private static final Logger logger = LoggerFactory.getLogger(OgnlExpressionEvaluator.class);
 
 
     private static boolean booleanFixApplied = false;
