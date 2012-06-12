@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.util;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
@@ -41,9 +42,12 @@ public final class StringUtils {
     
     public static String abbreviate(final Object target, final int maxSize) {
         
-        Validate.notNull(target, "Cannot apply abbreviation on null");
         Validate.isTrue(maxSize >= 3, "Maximum size must be greater or equal to 3");
 
+        if (target == null) {
+            return null;
+        }
+        
         final String str = target.toString();
         if (str.length() <= maxSize) {
             return str;
@@ -305,9 +309,11 @@ public final class StringUtils {
     
     public static String toUpperCase(final Object target, final Locale locale) {
         
-        Validate.notNull(target, "Cannot apply toUpperCase on null");
         Validate.notNull(locale, "Locale cannot be null");
 
+        if (target == null) {
+            return null;
+        }
         return target.toString().toUpperCase(locale);
         
     }
@@ -317,9 +323,11 @@ public final class StringUtils {
     
     public static String toLowerCase(final Object target, final Locale locale) {
         
-        Validate.notNull(target, "Cannot apply toLowerCase on null");
         Validate.notNull(locale, "Locale cannot be null");
 
+        if (target == null) {
+            return null;
+        }
         return target.toString().toLowerCase(locale);
         
     }
@@ -328,7 +336,9 @@ public final class StringUtils {
     
     
     public static String trim(final Object target) {
-        Validate.notNull(target, "Cannot apply trim on null");
+        if (target == null) {
+            return null;
+        }
         return target.toString().trim();
     }
 
@@ -347,7 +357,9 @@ public final class StringUtils {
      */
     public static String capitalize(final Object target) {
         
-        Validate.notNull(target, "Cannot apply capitalize on null");
+        if (target == null) {
+            return null;
+        }
         StringBuilder result = new StringBuilder(target.toString());    
         if (result.length() > 0) {
             result.setCharAt(0, Character.toTitleCase(result.charAt(0)));
@@ -373,7 +385,9 @@ public final class StringUtils {
      */
     public static String unCapitalize(final Object target) {
         
-        Validate.notNull(target, "Cannot apply unCapitalize on null");
+        if (target == null) {
+            return null;
+        }
         StringBuilder result = new StringBuilder(target.toString());    
         
         if (result.length() > 0) {
@@ -460,7 +474,9 @@ public final class StringUtils {
      */
     public static String capitalizeWords(final Object target, final Object delimiters) {
     
-        Validate.notNull(target, "Cannot apply capitalizeWords on null");
+        if (target == null) {
+            return null;
+        }
         
         char[] buffer = target.toString().toCharArray();
         char[] delimiterChars =
@@ -484,6 +500,33 @@ public final class StringUtils {
     }
     
 
+
+    
+    
+
+    /**
+     * <p>
+     *   XML-escapes the specified text.
+     * </p>
+     * 
+     * @param target the text to be escaped
+     * @return the escaped text.
+     * 
+     * @since 2.0.9
+     */
+    public static String escapeXml(final Object target) {
+        if (target == null) {
+            return null;
+        }
+        try {
+            return DOMUtils.escapeXml(target.toString(), false);
+        } catch (final IOException e) {
+            throw new RuntimeException("Error while XML-escaping text");
+        }
+    }
+    
+    
+    
     
     
     private StringUtils() {

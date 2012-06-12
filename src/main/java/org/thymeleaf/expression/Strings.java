@@ -46,7 +46,9 @@ public final class Strings {
     }
     
     public String[] arrayAbbreviate(final Object[] target, final int maxSize) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = abbreviate(target[i], maxSize);
@@ -55,7 +57,9 @@ public final class Strings {
     }
     
     public List<String> listAbbreviate(final List<?> target, final int maxSize) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(abbreviate(element, maxSize));
@@ -64,7 +68,9 @@ public final class Strings {
     }
     
     public Set<String> setAbbreviate(final Set<?> target, final int maxSize) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(abbreviate(element, maxSize));
@@ -674,7 +680,9 @@ public final class Strings {
     }
     
     public String[] arrayToUpperCase(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = toUpperCase(target[i]);
@@ -683,7 +691,9 @@ public final class Strings {
     }
     
     public List<String> listToUpperCase(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(toUpperCase(element));
@@ -692,7 +702,9 @@ public final class Strings {
     }
     
     public Set<String> setToUpperCase(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(toUpperCase(element));
@@ -710,7 +722,9 @@ public final class Strings {
     }
     
     public String[] arrayToLowerCase(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = toLowerCase(target[i]);
@@ -719,7 +733,9 @@ public final class Strings {
     }
     
     public List<String> listToLowerCase(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(toLowerCase(element));
@@ -728,7 +744,9 @@ public final class Strings {
     }
     
     public Set<String> setToLowerCase(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(toLowerCase(element));
@@ -745,7 +763,9 @@ public final class Strings {
     }
     
     public String[] arrayTrim(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = trim(target[i]);
@@ -754,7 +774,9 @@ public final class Strings {
     }
     
     public List<String> listTrim(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(trim(element));
@@ -763,7 +785,9 @@ public final class Strings {
     }
     
     public Set<String> setTrim(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(trim(element));
@@ -804,7 +828,9 @@ public final class Strings {
      * 
      */
     public String[] arrayCapitalize(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = capitalize(target[i]);
@@ -828,7 +854,9 @@ public final class Strings {
      * 
      */
     public List<String> listCapitalize(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(capitalize(element));
@@ -851,7 +879,9 @@ public final class Strings {
      * 
      */
     public Set<String> setCapitalize(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(capitalize(element));
@@ -893,7 +923,9 @@ public final class Strings {
      * 
      */
     public String[] arrayUnCapitalize(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = unCapitalize(target[i]);
@@ -918,7 +950,9 @@ public final class Strings {
      * 
      */
     public List<String> listUnCapitalize(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(unCapitalize(element));
@@ -943,7 +977,9 @@ public final class Strings {
      * 
      */
     public Set<String> setUnCapitalize(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(unCapitalize(element));
@@ -994,7 +1030,9 @@ public final class Strings {
      * 
      */
     public String[] arrayCapitalizeWords(final Object[] target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = capitalizeWords(target[i]);
@@ -1023,7 +1061,9 @@ public final class Strings {
      * 
      */
     public List<String> listCapitalizeWords(final List<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(capitalizeWords(element));
@@ -1051,7 +1091,9 @@ public final class Strings {
      * 
      */
     public Set<String> setCapitalizeWords(final Set<?> target) {
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(capitalizeWords(element));
@@ -1107,7 +1149,9 @@ public final class Strings {
     public String[] arrayCapitalizeWords(final Object[] target, 
             final Object delimiters) {
         
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final String[] result = new String[target.length];
         for (int i = 0; i < target.length; i++) {
             result[i] = capitalizeWords(target[i], delimiters);
@@ -1139,7 +1183,9 @@ public final class Strings {
     public List<String> listCapitalizeWords(final List<?> target, 
             final Object delimiters) {
         
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(capitalizeWords(element, delimiters));
@@ -1170,13 +1216,112 @@ public final class Strings {
     public Set<String> setCapitalizeWords(final Set<?> target, 
             final Object delimiters) {
         
-        Validate.notNull(target, "Target cannot be null");
+        if (target == null) {
+            return null;
+        }
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
             result.add(capitalizeWords(element, delimiters));
         }
         return result;
     }
+    
+    
+    
+
+    /**
+     * <p>
+     *   XML-escapes the specified text.
+     * </p>
+     * 
+     * @param target the text to be escaped
+     * @return the escaped text.
+     * 
+     * @since 2.0.9
+     */
+    public String escapeXml(final Object target) {
+        return StringUtils.escapeXml(target);
+    }
+    
+    
+    /**
+     * <p>
+     * XML-escapes all the elements in the target array.
+     * </p>
+     * 
+     * @param target the array of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a String[] with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.9
+     * 
+     */
+    public String[] arrayEscapeXml(final Object[] target) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = escapeXml(target[i]);
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * XML-escapes all the elements in the target list.
+     * </p>
+     * 
+     * @param target the list of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a List with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.9
+     * 
+     */
+    public List<String> listEscapeXml(final List<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(escapeXml(element));
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * XML-escapes all the elements in the target set.
+     * </p>
+     * 
+     * @param target the list of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a Set with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.9
+     * 
+     */
+    public Set<String> setEscapeXml(final Set<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>();
+        for (final Object element : target) {
+            result.add(escapeXml(element));
+        }
+        return result;
+    }
+    
+    
     
     
     
@@ -1188,6 +1333,8 @@ public final class Strings {
         }
         return locale;
     }
+    
+    
     
     
     
