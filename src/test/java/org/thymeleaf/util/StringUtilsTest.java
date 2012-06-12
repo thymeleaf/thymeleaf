@@ -87,10 +87,11 @@ public class StringUtilsTest {
         String result = StringUtils.capitalize(target);
         assertEquals(expResult, result);
     }
-    @Test(expected= IllegalArgumentException.class)
+    @Test
     public final void testCapitalize4() {
         Object target = null;
         String result = StringUtils.capitalize(target);
+        assertEquals(result, null);
     }
     @Test
     public void testCapitalize5() {
@@ -130,10 +131,11 @@ public class StringUtilsTest {
         String result = StringUtils.unCapitalize(target);
         assertEquals(expResult, result);
     }
-    @Test(expected= IllegalArgumentException.class)
+    @Test
     public void testUnCapitalize4() {
         Object target = null;
         String result = StringUtils.unCapitalize(target);
+        assertEquals(result, null);
     }
     @Test
     public void testUnCapitalize5() {
@@ -229,15 +231,17 @@ public class StringUtilsTest {
         String result = StringUtils.capitalizeWords(s," .");
         assertEquals(expResult, result);
     }
-    @Test(expected= IllegalArgumentException.class)
+    @Test
     public void testCapitalizeWords12() {
         Object s = null;
         String result = StringUtils.capitalizeWords(s);
+        assertEquals(result, null);
     }
-    @Test(expected= IllegalArgumentException.class)
+    @Test
     public void testCapitalizeWords13() {
         Object s = null;
         String result = StringUtils.capitalizeWords(s," .");
+        assertEquals(result, null);
     }
     /**
      * Test of substring method, of class StringUtils.
