@@ -44,9 +44,9 @@
   </organization>
   
   <scm>
-    <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-sayhello</url>
-    <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-sayhello</connection>
-    <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-sayhello</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleafexamples-sayhello.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-sayhello.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-sayhello.git</developerConnection>
   </scm>
   
   <developers>
