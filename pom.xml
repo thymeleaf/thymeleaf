@@ -44,9 +44,9 @@
   </organization>
   
   <scm>
-    <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-dist</url>
-    <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-dist</connection>
-    <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleaf-dist</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleaf-dist.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleaf-dist.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-dist.git</developerConnection>
   </scm>
 
   <developers>
