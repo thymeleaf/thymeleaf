@@ -183,9 +183,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/tags/thymeleaf-spring3</tagBase>
-        </configuration>
+        <version>2.1</version>
       </plugin>
 
 
