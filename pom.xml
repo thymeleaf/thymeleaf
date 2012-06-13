@@ -44,9 +44,9 @@
   </organization>
   
   <scm>
-    <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-stsm</url>
-    <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-stsm</connection>
-    <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-stsm</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsm.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-stsmgit</developerConnection>
   </scm>
   
   <developers>
