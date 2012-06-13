@@ -43,9 +43,9 @@
   </organization>
   
   <scm>
-    <url>scm:svn:http://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-springsecurity</url>
-    <connection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-springsecurity</connection>
-    <developerConnection>scm:svn:https://thymeleaf.svn.sourceforge.net/svnroot/thymeleaf/trunk/thymeleafexamples-springsecurity</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleafexamples-springsecurity.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-springsecurity.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-springsecurity.git</developerConnection>
   </scm>
   
   <developers>
