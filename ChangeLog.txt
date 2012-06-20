@@ -1,3 +1,12 @@
+2.0.9
+=====
+- Added #strings.escapeXml(...) utility method.
+- Added HttpServletResponse argument to WebContext constructors in order to be able to access to the
+  response object from Processors.
+- Added new DOM node type, Macro, for writing content without escaping of any kind directly into
+  results (for example, for caches, direct fragment insertion, etc.)
+
+
 2.0.8
 =====
 - Fixed "Root element name cannot be null" exception when processing non-complete documents (fragments).
@@ -10,6 +19,7 @@
 - Fixed bad re-escaping of XML entities in entity attributes. The "&" was always being escaped, even
   when it was in fact the beginning of an already-escaped entity. Now this situation is detected and
   re-escaping avoided.
+
 
 
 2.0.7
