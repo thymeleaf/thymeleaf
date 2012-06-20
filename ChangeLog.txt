@@ -3,6 +3,8 @@
 - Added RequestContext variable to Model as AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE
   besides thymeleaf's own SpringContextVariableNames.SPRING_REQUEST_CONTEXT for better compatibility
   with other view-layer technologies.
+- Added an HttpServletResponse parameter to SpringWebContext constructors in order to be able to access
+  response from processors.
 
 
 2.0.8
