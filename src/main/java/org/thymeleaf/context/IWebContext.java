@@ -21,6 +21,7 @@ package org.thymeleaf.context;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
@@ -50,6 +51,19 @@ public interface IWebContext extends IContext {
      */
     public HttpServletRequest getHttpServletRequest();
 
+    
+    /**
+     * <p>
+     *   Returns the {@link HttpServletResponse} object associated with the
+     *   request this context has been created for.
+     * </p>
+     * 
+     * @since 2.0.9
+     * @return the HTTP servlet response.
+     */
+    public HttpServletResponse getHttpServletResponse();
+
+    
     /**
      * <p>
      *   Returns the {@link HttpSession} object associated with the
