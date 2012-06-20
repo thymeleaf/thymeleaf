@@ -32,6 +32,7 @@ import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.GroupNode;
+import org.thymeleaf.dom.Macro;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -142,6 +143,8 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
             writeComment(arguments, writer, (Comment)node);
         } else if (node instanceof CDATASection) {
             writeCDATASection(arguments, writer, (CDATASection)node);
+        } else if (node instanceof Macro) {
+            writeMacro(arguments, writer, (Macro)node);
         } else if (node instanceof Document) {
             writeDocument(arguments, writer, (Document)node);
         } else {
@@ -270,6 +273,14 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     protected void writeText(final Arguments arguments, final Writer writer, final Text text) 
             throws IOException {
         writer.write(text.unsafeGetContentCharArray());
+    }
+
+    
+    
+    @SuppressWarnings("unused")
+    protected void writeMacro(final Arguments arguments, final Writer writer, final Macro macro) 
+            throws IOException {
+        writer.write(macro.unsafeGetContentCharArray());
     }
     
 
