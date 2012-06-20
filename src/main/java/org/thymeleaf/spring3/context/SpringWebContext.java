@@ -25,6 +25,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.ApplicationContext;
 import org.thymeleaf.context.WebContext;
@@ -58,14 +59,53 @@ public class SpringWebContext
 
 
 
+    /**
+     * <p>
+     *   Creates a new instance of a SpringWebContext.
+     * </p>
+     * 
+     * @param request the request object
+     * @param servletContext the servlet context
+     * @param locale the locale
+     * @param variables the variables to be included into the context
+     * @param appctx the Spring application context
+     * @deprecated use the constructor with an additional 'response' argument instead. Will
+     *             be removed in 2.1.x.
+     */
+    @Deprecated
     public SpringWebContext(final HttpServletRequest request,
                             final ServletContext servletContext ,
                             final Locale locale, 
                             final Map<String, ?> variables, 
                             final ApplicationContext appctx) {
-        super(request, servletContext, locale, addBeansVariable(variables, appctx));
+        this(request, null, servletContext, locale, variables, appctx);
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new instance of a SpringWebContext.
+     * </p>
+     * 
+     * @param request the request object
+     * @param response the response object
+     * @param servletContext the servlet context
+     * @param locale the locale
+     * @param variables the variables to be included into the context
+     * @param appctx the Spring application context
+     */
+    public SpringWebContext(final HttpServletRequest request,
+                            final HttpServletResponse response,
+                            final ServletContext servletContext ,
+                            final Locale locale, 
+                            final Map<String, ?> variables, 
+                            final ApplicationContext appctx) {
+        super(request, response, servletContext, locale, addBeansVariable(variables, appctx));
         this.applicationContext = appctx;
     }
+
+    
     
 
     private static Map<String,Object> addBeansVariable(final Map<String, ?> variables, final ApplicationContext appctx) {

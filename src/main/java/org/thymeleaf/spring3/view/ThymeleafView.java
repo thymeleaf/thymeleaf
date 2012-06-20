@@ -441,7 +441,8 @@ public class ThymeleafView
         
 
         
-        final IWebContext context = new SpringWebContext(request,servletContext , getLocale(), mergedModel, getApplicationContext());
+        final IWebContext context = 
+                new SpringWebContext(request, response, servletContext , getLocale(), mergedModel, getApplicationContext());
         
         final TemplateEngine viewTemplateEngine = getTemplateEngine();
         
