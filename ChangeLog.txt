@@ -1,3 +1,10 @@
+2.0.9
+=====
+- Added RequestContext variable to Model as AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE
+  besides thymeleaf's own SpringContextVariableNames.SPRING_REQUEST_CONTEXT for better compatibility
+  with other view-layer technologies.
+
+
 2.0.8
 =====
 - (No changes)

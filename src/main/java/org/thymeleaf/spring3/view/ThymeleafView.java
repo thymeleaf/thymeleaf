@@ -33,6 +33,7 @@ import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.spring3.SpringTemplateEngine;
@@ -429,15 +430,16 @@ public class ThymeleafView
         }
 
         
-        if (mergedModel.containsKey(SpringContextVariableNames.SPRING_REQUEST_CONTEXT)) {
-            throw new ServletException(
-                    "Cannot expose request context in model attribute '" + SpringContextVariableNames.SPRING_REQUEST_CONTEXT +
-                    "' because of an existing model object of the same name");
-        }
-        mergedModel.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT,
-                new RequestContext(request, response, servletContext, mergedModel));
+
+        final RequestContext requestContext = 
+                new RequestContext(request, response, getServletContext(), mergedModel);
         
+        // For compatibility with ThymeleafView
+        addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
+        // For compatibility with AbstractTemplateView
+        addRequestContextAsVariable(mergedModel, AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE, requestContext);
         
+
         
         final IWebContext context = new SpringWebContext(request,servletContext , getLocale(), mergedModel, getApplicationContext());
         
@@ -462,7 +464,23 @@ public class ThymeleafView
     }
     
     
+    
+    
 
+    private static void addRequestContextAsVariable(
+            final Map<String,Object> model, final String variableName, final RequestContext requestContext) 
+            throws ServletException {
+        
+        if (model.containsKey(variableName)) {
+            throw new ServletException(
+                    "Cannot expose request context in model attribute '" + variableName +
+                    "' because of an existing model object of the same name");
+        }
+        model.put(variableName, requestContext);
+        
+    }
+
+    
     
 	@Override
 	public String toString() {
