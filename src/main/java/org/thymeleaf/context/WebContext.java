@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.thymeleaf.util.Validate;
@@ -71,6 +72,7 @@ public class WebContext
     public static final String APPLICATION_VARIABLE_NAME = "application";
 
     private final HttpServletRequest httpServletRequest;
+    private final HttpServletResponse httpServletResponse;
     private final HttpSession httpSession;
     private final ServletContext servletContext;
 
@@ -93,9 +95,29 @@ public class WebContext
      * @since 1.1.3
      * @param request the {@link HttpServletRequest} that this context will be related to.
      * @param servletContext the servlet context object
+     * @deprecated use the equivalent constructor with an additional 'response' parameter. Will 
+     *             be removed in 2.1.x.
      */
+    @Deprecated
     public WebContext(final HttpServletRequest request, final ServletContext servletContext) {
         this(request, servletContext, Locale.getDefault());
+    }
+
+    
+    /**
+     * <p>
+     *   Create an instance without specifying a locale. Using this constructor,
+     *   the default locale (<tt>Locale.getDefault()</tt>) will be used.
+     * </p>
+     *
+     * @since 2.0.9
+     * @param request the {@link HttpServletRequest} that this context will be related to.
+     * @param response   the {@link HttpServletResponse} that this context will be related to.
+     * @param servletContext the servlet context object
+     */
+    public WebContext(final HttpServletRequest request, final HttpServletResponse response, 
+            final ServletContext servletContext) {
+        this(request, response, servletContext, Locale.getDefault());
     }
 
     
@@ -108,9 +130,30 @@ public class WebContext
      * @param request the {@link HttpServletRequest} that this context will be related to.
      * @param servletContext the servlet context object
      * @param locale  the locale to be used.
+     * @deprecated use the equivalent constructor with an additional 'response' parameter. Will 
+     *             be removed in 2.1.x.
      */
-    public WebContext(final HttpServletRequest request, final ServletContext servletContext, final Locale locale) {
+    @Deprecated
+    public WebContext(final HttpServletRequest request, final ServletContext servletContext, 
+            final Locale locale) {
         this(request, servletContext, locale, new HashMap<String, Object>());
+    }
+
+    
+    /**
+     * <p>
+     *   Create an instance specifying a locale.
+     * </p>
+     *
+     * @since 2.0.9
+     * @param request the {@link HttpServletRequest} that this context will be related to.
+     * @param response   the {@link HttpServletResponse} that this context will be related to.
+     * @param servletContext the servlet context object
+     * @param locale  the locale to be used.
+     */
+    public WebContext(final HttpServletRequest request, final HttpServletResponse response,
+            final ServletContext servletContext, final Locale locale) {
+        this(request, response, servletContext, locale, new HashMap<String, Object>());
     }
 
 
@@ -125,8 +168,32 @@ public class WebContext
      * @param servletContext the servlet context object
      * @param locale    the locale to be used.
      * @param variables the initial set of context variables.
+     * @deprecated use the equivalent constructor with an additional 'response' parameter. Will 
+     *             be removed in 2.1.x.
+     */
+    @Deprecated
+    public WebContext(final HttpServletRequest request,
+                      final ServletContext servletContext,
+                      final Locale locale, final Map<String, ?> variables) {
+        this(request, null, servletContext, locale, variables);
+    }
+
+
+    /**
+     * <p>
+     *   Create an instance specifying a locale and an initial set of context
+     *   variables.
+     * </p>
+     *
+     * @since 2.0.9
+     * @param request   the {@link HttpServletRequest} that this context will be related to.
+     * @param response   the {@link HttpServletResponse} that this context will be related to.
+     * @param servletContext the servlet context object
+     * @param locale    the locale to be used.
+     * @param variables the initial set of context variables.
      */
     public WebContext(final HttpServletRequest request,
+                      final HttpServletResponse response,
                       final ServletContext servletContext,
                       final Locale locale, final Map<String, ?> variables) {
 
@@ -134,10 +201,12 @@ public class WebContext
 
         Validate.notNull(locale, "Locale cannot be null");
         Validate.notNull(request, "Request cannot be null");
+        // "response" can be null for legacy compatibility reasons (deprecated methods)
 
         final HttpSession session = request.getSession(false);
 
         this.httpServletRequest = request;
+        this.httpServletResponse = response;
         this.httpSession = session;
 
         this.servletContext = servletContext;
@@ -193,6 +262,10 @@ public class WebContext
 
     public HttpServletRequest getHttpServletRequest() {
         return this.httpServletRequest;
+    }
+
+    public HttpServletResponse getHttpServletResponse() {
+        return this.httpServletResponse;
     }
 
     public HttpSession getHttpSession() {
