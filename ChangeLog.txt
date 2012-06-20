@@ -1,3 +1,12 @@
+2.0.9
+=====
+- Added #strings.escapeXml(...) utility method.
+- Added HttpServletResponse argument to WebContext constructors in order to be able to access to the
+  response object from Processors.
+- Added new DOM node type, Macro, for writing content without escaping of any kind directly into
+  results (for example, for caches, direct fragment insertion, etc.)
+
+
 2.0.8
 =====
 - Fixed "Root element name cannot be null" exception when processing non-complete documents (fragments).
@@ -9,6 +18,7 @@
   but no name and/or associated markup.
 - Added new utility getHTML5/Xhtml/XmlDOMFor(Reader) methods for obtaining the DOM Document resulting
   from parsing (with an on-purpose created parser) a fragment of markup code, for testing purposes.
+
 
 
 2.0.7
