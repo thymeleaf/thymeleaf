@@ -229,6 +229,7 @@ public class TemplateEngine {
     private static ThreadLocal<Long> currentProcessIndex = new ThreadLocal<Long>();
     private static ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
     private static ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
+    private static ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
     
     
     private final Configuration configuration;
@@ -894,6 +895,30 @@ public class TemplateEngine {
         currentProcessTemplateName.set(templateName);
     }
 
+    
+    
+    /**
+     * <p>
+     *   Internal method that retrieves the thread-local template engine for the
+     *   current template execution. 
+     * </p>
+     * <p>
+     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
+     * </p>
+     * 
+     * @return the template engine for the current engine execution.
+     * 
+     * @since 2.0.9
+     */
+    public static TemplateEngine threadTemplateEngine() {
+        return currentProcessTemplateEngine.get();
+    }
+
+    
+    private static void setThreadTemplateEngine(final TemplateEngine templateEngine) {
+        currentProcessTemplateEngine.set(templateEngine);
+    }
+
 
     
 
@@ -964,6 +989,7 @@ public class TemplateEngine {
             
             newThreadIndex();
             setThreadLocale(context.getLocale());
+            setThreadTemplateEngine(this);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
