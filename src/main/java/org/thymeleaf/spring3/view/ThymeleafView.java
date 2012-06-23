@@ -468,7 +468,7 @@ public class ThymeleafView
     
     
 
-    private static void addRequestContextAsVariable(
+    protected static void addRequestContextAsVariable(
             final Map<String,Object> model, final String variableName, final RequestContext requestContext) 
             throws ServletException {
         
