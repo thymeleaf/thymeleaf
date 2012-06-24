@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.fragment;
 
-import org.apache.commons.lang.Validate;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.CompleteTemplateFragmentSpec;
@@ -28,6 +27,7 @@ import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.util.Validate;
 
 
 /**
