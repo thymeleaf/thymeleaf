@@ -165,7 +165,7 @@ public class ThymeleafView
      * Internally used (by ThymeleafViewResolver) in order to know whether a value
      * for the content type has been explicitly set or not.
      */
-    boolean isContentTypeSet() {
+    protected boolean isContentTypeSet() {
         return this.contentTypeSet;
     }
 
@@ -293,7 +293,7 @@ public class ThymeleafView
      * 
      * @param locale the locale to be used.
      */
-    void setLocale(final Locale locale) {
+    protected void setLocale(final Locale locale) {
         this.locale = locale;
         
     }
@@ -321,7 +321,7 @@ public class ThymeleafView
      * 
      * @param templateEngine the template engine instance to be used
      */
-    void setTemplateEngine(final SpringTemplateEngine templateEngine) {
+    protected void setTemplateEngine(final SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
