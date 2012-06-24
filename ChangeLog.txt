@@ -5,6 +5,8 @@
   response object from Processors.
 - Added new DOM node type, Macro, for writing content without escaping of any kind directly into
   results (for example, for caches, direct fragment insertion, etc.)
+- Created new org.thymeleaf.fragment and org.thymeleaf.standard.fragment packages as a refactoring 
+  of the several fragment inclusion options available for Thymeleaf dialects.
 
 
 2.0.8
