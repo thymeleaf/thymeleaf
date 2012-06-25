@@ -33,24 +33,16 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class AbstractFragmentSpec implements IFragmentSpec {
     
-    private final String stringRepresentation;
     private final String templateName;
     
     
-    public AbstractFragmentSpec(final String stringRepresentation, final String templateName) {
+    public AbstractFragmentSpec(final String templateName) {
         super();
-        Validate.notEmpty(stringRepresentation, "String Representation cannot be null or empty");
         Validate.notEmpty(templateName, "Template name cannot be null or empty");
-        this.stringRepresentation = stringRepresentation;
         this.templateName = templateName;
     }
 
     
-
-    public String getStringRepresentation() {
-        return this.stringRepresentation;
-    }
-
 
     public String getTemplateName() {
         return this.templateName;

@@ -21,30 +21,26 @@ package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.util.PrefixUtils;
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
- * @deprecated replaced by {@link StandardSubstituteByFragmentAttrProcessor}. Will be
- *             removed in 2.1.x.
+ * @since 2.0.9
  *
  */
-@Deprecated
-public class StandardSubstituteByAttrProcessor 
-        extends AbstractStandardFragmentAttrProcessor {
+public class StandardIncludeFragmentAttrProcessor 
+        extends AbstractStandardFragmentHandlingAttrProcessor {
 
     public static final int ATTR_PRECEDENCE = 100;
-    public static final String ATTR_NAME = "substituteby";
+    public static final String ATTR_NAME = "include";
     public static final String FRAGMENT_ATTR_NAME = StandardFragmentAttrProcessor.ATTR_NAME;
     
     
     
     
-    public StandardSubstituteByAttrProcessor() {
+    public StandardIncludeFragmentAttrProcessor() {
         super(ATTR_NAME);
     }
 
@@ -58,10 +54,9 @@ public class StandardSubstituteByAttrProcessor
 
 
     @Override
-    protected String getFragmentAttributeName(
-            final Arguments arguments,
-            final Element element, final String attributeName, final String attributeValue,
-            final FragmentSelection fragmentSelection) {
+    protected String getTargetAttributeName(
+            final Arguments arguments,final Element element, 
+            final String attributeName, final String attributeValue) {
         
         if (attributeName != null) {
             final String prefix = PrefixUtils.getPrefix(attributeName);
@@ -79,8 +74,8 @@ public class StandardSubstituteByAttrProcessor
     protected boolean getSubstituteInclusionNode(
             final Arguments arguments, 
             final Element element, final String attributeName, final String attributeValue) {
-        // th:substituteby does substitute the inclusion node
-        return true;
+        // th:include does not substitute the inclusion node
+        return false;
     }
 
 

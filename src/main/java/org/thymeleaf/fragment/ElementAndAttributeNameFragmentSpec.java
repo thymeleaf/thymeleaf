@@ -47,13 +47,12 @@ public final class ElementAndAttributeNameFragmentSpec extends AbstractFragmentS
     
     
     public ElementAndAttributeNameFragmentSpec(
-            final String stringRepresentation,
             final String templateName,
             final String elementName, 
             final String attributeName, 
             final String attributeValue) {
         
-        super(stringRepresentation, templateName);
+        super(templateName);
         
         // Either fragment or element name CAN be null (but not both). If element name is
         // null, no check will be done on the containing element.

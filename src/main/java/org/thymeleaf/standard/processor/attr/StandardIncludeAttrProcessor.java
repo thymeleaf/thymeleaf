@@ -29,8 +29,11 @@ import org.thymeleaf.util.PrefixUtils;
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0
+ * @deprecated replaced by {@link StandardIncludeFragmentAttrProcessor}. Will be
+ *             removed in 2.1.x.
  *
  */
+@Deprecated
 public class StandardIncludeAttrProcessor 
         extends AbstractStandardFragmentAttrProcessor {
 

@@ -37,9 +37,8 @@ import org.thymeleaf.dom.Node;
  */
 public final class CompleteTemplateFragmentSpec extends AbstractFragmentSpec {
     
-    public CompleteTemplateFragmentSpec(final String stringRepresentation, 
-            final String fragmentTemplateName) {
-        super(stringRepresentation, fragmentTemplateName);
+    public CompleteTemplateFragmentSpec(final String fragmentTemplateName) {
+        super(fragmentTemplateName);
     }
 
     
