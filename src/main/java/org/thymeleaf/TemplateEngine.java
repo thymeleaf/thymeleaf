@@ -284,12 +284,12 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Returns the configuration object. Meant to be used only by subclasses of TemplateEngine.
+     *   Returns the configuration object.
      * </p>
      * 
      * @return the current configuration
      */
-    protected Configuration getConfiguration() {
+    public Configuration getConfiguration() {
         return this.configuration;
     }
     

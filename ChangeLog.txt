@@ -9,6 +9,7 @@
   of the several fragment inclusion options available for Thymeleaf dialects.
 - Refactored whole hierarchy of "include" and "substituteby" attribute processors in order to use
   the new structures in the org.thymeleaf.fragment package.
+- Modified "TemplateEngine.getConfiguration()" visibility to public.
 
 
 2.0.8
