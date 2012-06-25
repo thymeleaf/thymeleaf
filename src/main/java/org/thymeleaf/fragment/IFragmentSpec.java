@@ -36,8 +36,6 @@ public interface IFragmentSpec {
 
     public String getTemplateName();
     
-    public String getStringRepresentation();
-    
     public Node extractFragment(final Arguments arguments);
     
 }

@@ -49,9 +49,8 @@ public final class DOMSelectorFragmentSpec extends AbstractFragmentSpec {
 
     
     
-    public DOMSelectorFragmentSpec(final String stringRepresentation, 
-            final String templateName, final String selectorExpression) {
-        super(stringRepresentation, templateName);
+    public DOMSelectorFragmentSpec(final String templateName, final String selectorExpression) {
+        super(templateName);
         Validate.notEmpty(selectorExpression, "DOM selector expression cannot be null or empty");
         this.selectorExpression = selectorExpression;
     }

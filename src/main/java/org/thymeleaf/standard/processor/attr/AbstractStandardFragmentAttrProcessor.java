@@ -32,8 +32,11 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0
+ * @deprecated replaced by {@link AbstractStandardFragmentHandlingAttrProcessor}. Will be
+ *             removed in 2.1.x.
  *
  */
+@Deprecated
 public abstract class AbstractStandardFragmentAttrProcessor 
         extends AbstractFragmentAttrProcessor {
 

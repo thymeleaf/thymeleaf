@@ -7,6 +7,8 @@
   results (for example, for caches, direct fragment insertion, etc.)
 - Created new org.thymeleaf.fragment and org.thymeleaf.standard.fragment packages as a refactoring 
   of the several fragment inclusion options available for Thymeleaf dialects.
+- Refactored whole hierarchy of "include" and "substituteby" attribute processors in order to use
+  the new structures in the org.thymeleaf.fragment package.
 
 
 2.0.8

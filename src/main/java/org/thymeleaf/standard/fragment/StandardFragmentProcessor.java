@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.9
  *
  */
-public final class FragmentHandler {
+public final class StandardFragmentProcessor {
 
     
     
@@ -76,17 +76,16 @@ public final class FragmentHandler {
             
             if (fragmentSelection.isXPath()) {
                 
-                return new DOMSelectorFragmentSpec(
-                        fragmentSpec, templateName, fragmentSelector);
+                return new DOMSelectorFragmentSpec(templateName, fragmentSelector);
                 
             }
             
             return new ElementAndAttributeNameFragmentSpec(
-                    fragmentSpec, templateName, targetElementName, targetAttributeName, fragmentSelector);
+                    templateName, targetElementName, targetAttributeName, fragmentSelector);
             
         }
         
-        return new CompleteTemplateFragmentSpec(fragmentSpec, templateName);
+        return new CompleteTemplateFragmentSpec(templateName);
         
     }
     
@@ -96,7 +95,7 @@ public final class FragmentHandler {
     
     
     
-    private FragmentHandler() {
+    private StandardFragmentProcessor() {
         super();
     }
 
