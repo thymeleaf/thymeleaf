@@ -75,9 +75,8 @@ public final class DOMUtils {
             final Node root, final String elementName, final String attributeName, final String attributeValue) {
 
         Validate.notNull(root, "Root cannot be null");
-        // Element name CAN be null (in that case, all elements will be searched)
-        Validate.notNull(attributeName, "Attribute name cannot be null");
-        Validate.notNull(attributeValue, "Attribute value cannot be null");
+        // Element name, attribute name and attribute value CAN be null 
+        // (in that case, all elements will be searched)
         
         return exploreNodeForExtractingFragment(root, Node.normalizeName(elementName), Node.normalizeName(attributeName), attributeValue);
         
@@ -92,14 +91,30 @@ public final class DOMUtils {
             final NestableNode nestableNode = (NestableNode) node;
             
             if (nestableNode instanceof Element) {
+                
                 final Element element = (Element) nestableNode;
-                if (element.hasNormalizedAttribute(normalizedAttributeName) && 
-                        (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName()))) {
-                    final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
-                    if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                
+                if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
+                    
+                    if (normalizedAttributeName != null) {
+                        
+                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
+                            
+                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return nestableNode;
+                            }
+                            
+                        }
+                        
+                    } else {
+                        
                         return nestableNode;
+                        
                     }
+                    
                 }
+                
             }
             
             final List<Node> children = nestableNode.getChildren();

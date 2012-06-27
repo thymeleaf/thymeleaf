@@ -13,6 +13,8 @@
 - Added DOMSelector.select(Node) method for easier calling of DOM selectors on single nodes.
 - Added to TemplateEngine the possibility of filtering parsed templates using a IFragmentSpec in
   order to process only template fragments.
+- Modified extraction of fragments from element and/or attribute name so that a list might be
+  returned instead of a single Node.
 
 
 
