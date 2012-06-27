@@ -1105,26 +1105,23 @@ public class TemplateEngine {
                     fragmentSpec.extractFragment(this.configuration, document);
             
             if (processingRootNode == null) {
-                
                 // If the result is null, there will be no processing to do
                 document = null;
-                
             } else {
-                
                 if (processingRootNode instanceof Document) {
-                    
                     // If it is a document, just process it as it is output from the filter
                     document = (Document) processingRootNode;
-                    
                 } else {
-                    
                     // A fragment exists and it is not a Document. We will therefore lose DOCTYPE
                     final String documentName = document.getDocumentName();
                     document = new Document(documentName);
-                    document.addChild(processingRootNode);
-                    
+                    final Node clonedProcessingRootNode = 
+                            processingRootNode.cloneNode(document, false);
+                    document.addChild(clonedProcessingRootNode);
+                    document.precompute(this.configuration);
                 }
             }
+            
         }
         
         final Arguments arguments = 
