@@ -111,7 +111,7 @@ public final class VariableExpression extends SimpleExpression {
                     "Variable expression is null, which is not allowed");
         }
         
-        final Object evaluationRoot = arguments.getExpressionEvaluationRoot();
+        final Object evaluationRoot = arguments.getExpressionEvaluationContext().getExpressionEvaluationRoot();
         
         return expressionEvaluator.evaluate(arguments, exp, evaluationRoot);
         

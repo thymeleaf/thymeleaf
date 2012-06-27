@@ -66,7 +66,8 @@ public final class StandardTextInliningTextProcessor
             throw new TemplateProcessingException("Cannot execute text inlining processor: Text processors are not active");
         }
         
-        final Object inliner = arguments.getLocalVariable(StandardDialect.INLINER_LOCAL_VARIABLE);
+        final Object inliner = 
+                arguments.getExpressionEvaluationContext().getLocalVariable(StandardDialect.INLINER_LOCAL_VARIABLE);
         if (inliner == null) {
             throw new TemplateProcessingException("Cannot execute text inlining processor: No inliner has been set as a local variable");
         }

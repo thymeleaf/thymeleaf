@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
 
 /**
@@ -86,6 +87,27 @@ public final class ExpressionEvaluatorObjects {
     public static final Aggregates AGGREGATES = new Aggregates();
     
 
+    public static final Map<String,Object> EXPRESSION_EVALUATION_UTILITY_OBJECTS;
+    
+    
+    
+    
+    static {
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS = new HashMap<String, Object>();
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(CALENDARS_EVALUATION_VARIABLE_NAME, CALENDARS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(DATES_EVALUATION_VARIABLE_NAME, DATES);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(BOOLS_EVALUATION_VARIABLE_NAME, BOOLS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(NUMBERS_EVALUATION_VARIABLE_NAME, NUMBERS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(OBJECTS_EVALUATION_VARIABLE_NAME, OBJECTS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(STRINGS_EVALUATION_VARIABLE_NAME, STRINGS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(ARRAYS_EVALUATION_VARIABLE_NAME, ARRAYS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(LISTS_EVALUATION_VARIABLE_NAME, LISTS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(SETS_EVALUATION_VARIABLE_NAME, SETS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(MAPS_EVALUATION_VARIABLE_NAME, MAPS);
+        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(AGGREGATES_EVALUATION_VARIABLE_NAME, AGGREGATES);
+    }
+    
+    
     
     
     
@@ -95,23 +117,60 @@ public final class ExpressionEvaluatorObjects {
 
     
     
+    
+    
     public static Map<String,Object> computeEvaluationVariablesForArguments(final Arguments arguments) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
         
-        variables.put(ROOT_VARIABLE_NAME, arguments.getExpressionEvaluationRoot());
+        variables.putAll(computeExpressionEvaluationObjectsForEvaluationContext(arguments.getExpressionEvaluationContext()));
+        variables.putAll(computeExpressionEvaluationObjectsForContext(arguments.getContext()));
+        variables.putAll(EXPRESSION_EVALUATION_UTILITY_OBJECTS);
         
-        if (arguments.hasSelectionTarget()) {
-            variables.put(SELECTION_VARIABLE_NAME, arguments.getSelectionTarget());
-        } else {
-            variables.put(SELECTION_VARIABLE_NAME, arguments.getExpressionEvaluationRoot());
-        }
+        final Messages messages = new Messages(arguments);
+        variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
 
-        variables.put(CONTEXT_VARIABLE_NAME, arguments.getContext());
-        variables.put(LOCALE_EVALUATION_VARIABLE_NAME, arguments.getContext().getLocale());
+        final Ids ids = new Ids(arguments);
+        variables.put(IDS_EVALUATION_VARIABLE_NAME, ids);
         
-        if (arguments.getContext() instanceof IWebContext) {
-            final IWebContext webContext = (IWebContext) arguments.getContext();
+        return variables;
+        
+    }
+    
+    
+    
+    
+    
+    public static Map<String,Object> computeExpressionEvaluationObjectsForEvaluationContext(
+            final ExpressionEvaluationContext expressionEvaluationContext) {
+
+        final Map<String,Object> variables = new HashMap<String,Object>();
+        
+        variables.put(ROOT_VARIABLE_NAME, expressionEvaluationContext.getExpressionEvaluationRoot());
+        
+        if (expressionEvaluationContext.hasSelectionTarget()) {
+            variables.put(SELECTION_VARIABLE_NAME, expressionEvaluationContext.getSelectionTarget());
+        } else {
+            variables.put(SELECTION_VARIABLE_NAME, expressionEvaluationContext.getExpressionEvaluationRoot());
+        }
+        
+        return variables;
+        
+    }
+
+    
+    
+    
+    
+    public static Map<String,Object> computeExpressionEvaluationObjectsForContext(final IContext context) {
+
+        final Map<String,Object> variables = new HashMap<String,Object>();
+        
+        variables.put(CONTEXT_VARIABLE_NAME, context);
+        variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());
+        
+        if (context instanceof IWebContext) {
+            final IWebContext webContext = (IWebContext) context;
             variables.put(
                     PARAM_EVALUATION_VARIABLE_NAME, webContext.getRequestParameters());
             variables.put(
@@ -124,27 +183,10 @@ public final class ExpressionEvaluatorObjects {
                     HTTP_SESSION_VARIABLE_NAME, webContext.getHttpSession());
         }
         
-        variables.put(CALENDARS_EVALUATION_VARIABLE_NAME, CALENDARS);
-        variables.put(DATES_EVALUATION_VARIABLE_NAME, DATES);
-        variables.put(BOOLS_EVALUATION_VARIABLE_NAME, BOOLS);
-        variables.put(NUMBERS_EVALUATION_VARIABLE_NAME, NUMBERS);
-        variables.put(OBJECTS_EVALUATION_VARIABLE_NAME, OBJECTS);
-        variables.put(STRINGS_EVALUATION_VARIABLE_NAME, STRINGS);
-        variables.put(ARRAYS_EVALUATION_VARIABLE_NAME, ARRAYS);
-        variables.put(LISTS_EVALUATION_VARIABLE_NAME, LISTS);
-        variables.put(SETS_EVALUATION_VARIABLE_NAME, SETS);
-        variables.put(MAPS_EVALUATION_VARIABLE_NAME, MAPS);
-        variables.put(AGGREGATES_EVALUATION_VARIABLE_NAME, AGGREGATES);
-
-        final Messages messages = new Messages(arguments);
-        variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
-
-        final Ids ids = new Ids(arguments);
-        variables.put(IDS_EVALUATION_VARIABLE_NAME, ids);
-        
         return variables;
         
     }
-    
+
+
     
 }
