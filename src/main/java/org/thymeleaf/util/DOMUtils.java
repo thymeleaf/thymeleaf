@@ -76,9 +76,8 @@ public final class DOMUtils {
             final Node root, final String elementName, final String attributeName, final String attributeValue) {
 
         Validate.notNull(root, "Root cannot be null");
-        // Element name CAN be null (in that case, all elements will be searched)
-        Validate.notNull(attributeName, "Attribute name cannot be null");
-        Validate.notNull(attributeValue, "Attribute value cannot be null");
+        // Element name, attribute name and attribute value CAN be null 
+        // (in that case, all elements will be searched)
         
         return exploreNodeForExtractingFragment(root, Node.normalizeName(elementName), Node.normalizeName(attributeName), attributeValue);
         
@@ -92,27 +91,38 @@ public final class DOMUtils {
 
             final NestableNode nestableNode = (NestableNode) node;
             
-            if (nestableNode instanceof NestableAttributeHolderNode) {
+            if (nestableNode instanceof Element) {
                 
-                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
+                final Element element = (Element) nestableNode;
                 
-                if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
-                    final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
-                    if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                        // attribute exists and matches
-                        
-                        if (normalizedElementName != null) {
-                            // If we also have to check an element name, the node must be an element and match
-                            if (attributeHolderNode instanceof Element) {
-                                final Element element = (Element) attributeHolderNode;
-                                if (normalizedElementName.equals(element.getNormalizedName())) {
-                                    return nestableNode;
-                                }
+                if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
+                    if (normalizedAttributeName != null) {
+                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return nestableNode;
                             }
-                        } else { 
-                            return nestableNode;
                         }
-                        
+                    } else {
+                        return nestableNode;
+                    }
+                }
+                
+            } else if (nestableNode instanceof NestableAttributeHolderNode) {
+                
+                final NestableAttributeHolderNode element = (NestableAttributeHolderNode) nestableNode;
+                
+                // If not null, an element without name can never be selectable
+                if (normalizedElementName == null) {
+                    if (normalizedAttributeName != null) {
+                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return nestableNode;
+                            }
+                        }
+                    } else {
+                        return nestableNode;
                     }
                 }
                 
