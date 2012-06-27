@@ -10,6 +10,7 @@
 - Refactored whole hierarchy of "include" and "substituteby" attribute processors in order to use
   the new structures in the org.thymeleaf.fragment package.
 - Modified "TemplateEngine.getConfiguration()" visibility to public.
+- Added DOMSelector.select(Node) method for easier calling of DOM selectors on single nodes.
 
 
 2.0.8
