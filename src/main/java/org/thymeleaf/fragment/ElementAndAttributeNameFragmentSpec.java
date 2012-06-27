@@ -19,9 +19,7 @@
  */
 package org.thymeleaf.fragment;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Template;
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
@@ -37,7 +35,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.9
  *
  */
-public final class ElementAndAttributeNameFragmentSpec extends AbstractFragmentSpec {
+public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec {
     
     private final String elementName;
     private final String attributeName;
@@ -47,12 +45,11 @@ public final class ElementAndAttributeNameFragmentSpec extends AbstractFragmentS
     
     
     public ElementAndAttributeNameFragmentSpec(
-            final String templateName,
             final String elementName, 
             final String attributeName, 
             final String attributeValue) {
         
-        super(templateName);
+        super();
         
         // Either fragment or element name CAN be null (but not both). If element name is
         // null, no check will be done on the containing element.
@@ -90,17 +87,10 @@ public final class ElementAndAttributeNameFragmentSpec extends AbstractFragmentS
     
     
     
-    public final Node extractFragment(final Arguments arguments) {
-
-        final TemplateProcessingParameters fragmentTemplateProcessingParameters = 
-                new TemplateProcessingParameters(
-                        arguments.getConfiguration(), getTemplateName(), arguments.getContext());
-        
-        final Template parsedFragmentTemplate = 
-                arguments.getTemplateRepository().getTemplate(fragmentTemplateProcessingParameters);
+    public final Node extractFragment(final Configuration configuration, final Node node) {
         
         return DOMUtils.extractFragmentByAttributeValue(
-                parsedFragmentTemplate.getDocument(), this.elementName, this.attributeName, this.attributeValue);
+                node, this.elementName, this.attributeName, this.attributeValue);
         
     }
 

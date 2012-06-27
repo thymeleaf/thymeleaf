@@ -21,7 +21,7 @@ package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.fragment.FragmentAndTarget;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentHandlingAttrProcessor;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
@@ -54,13 +54,13 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
 
     
     @Override
-    protected final IFragmentSpec getFragmentSpec(final Arguments arguments,
+    protected final FragmentAndTarget getFragmentAndTarget(final Arguments arguments,
             final Element element, final String attributeName, final String attributeValue) {
 
         final String targetAttributeName = 
                 getTargetAttributeName(arguments, element, attributeName, attributeValue);
         
-        return StandardFragmentProcessor.computeFragmentSpec(
+        return StandardFragmentProcessor.computeStandardFragmentSpec(
                 arguments, attributeValue, null, targetAttributeName);
         
     }

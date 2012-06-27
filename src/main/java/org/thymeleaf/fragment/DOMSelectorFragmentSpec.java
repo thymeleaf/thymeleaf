@@ -21,9 +21,7 @@ package org.thymeleaf.fragment;
 
 import java.util.List;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Template;
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dom.DOMSelector;
@@ -40,7 +38,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.9
  *
  */
-public final class DOMSelectorFragmentSpec extends AbstractFragmentSpec {
+public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
     
     private static final String DOM_SELECTOR_EXPRESSION_PREFIX = "{dom_selector}";
@@ -49,8 +47,8 @@ public final class DOMSelectorFragmentSpec extends AbstractFragmentSpec {
 
     
     
-    public DOMSelectorFragmentSpec(final String templateName, final String selectorExpression) {
-        super(templateName);
+    public DOMSelectorFragmentSpec(final String selectorExpression) {
+        super();
         Validate.notEmpty(selectorExpression, "DOM selector expression cannot be null or empty");
         this.selectorExpression = selectorExpression;
     }
@@ -64,19 +62,12 @@ public final class DOMSelectorFragmentSpec extends AbstractFragmentSpec {
 
     
 
-    public final Node extractFragment(final Arguments arguments) {
-
-        final TemplateProcessingParameters fragmentTemplateProcessingParameters = 
-                new TemplateProcessingParameters(
-                        arguments.getConfiguration(), getTemplateName(), arguments.getContext());
-        
-        final Template parsedFragmentTemplate = 
-                arguments.getTemplateRepository().getTemplate(fragmentTemplateProcessingParameters);
+    public final Node extractFragment(final Configuration configuration, final Node node) {
 
         DOMSelector selector = null;
         ICache<String,Object> expressionCache = null;
         
-        final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
+        final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             expressionCache = cacheManager.getExpressionCache();
             if (expressionCache != null) {
@@ -92,7 +83,7 @@ public final class DOMSelectorFragmentSpec extends AbstractFragmentSpec {
             }
         }
         
-        final List<Node> selectedNodes = selector.select(parsedFragmentTemplate.getDocument().getChildren());
+        final List<Node> selectedNodes = selector.select(node);
         if (selectedNodes == null || selectedNodes.size() == 0) {
             return null;
         }

@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.fragment;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 
 
@@ -34,9 +34,7 @@ import org.thymeleaf.dom.Node;
  */
 public interface IFragmentSpec {
 
-    public String getTemplateName();
-    
-    public Node extractFragment(final Arguments arguments);
+    public Node extractFragment(final Configuration configuration, final Node node);
     
 }
 
