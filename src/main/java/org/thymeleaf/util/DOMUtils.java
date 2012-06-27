@@ -124,7 +124,21 @@ public final class DOMUtils {
                         return Collections.singletonList((Node)nestableNode);
                     }
                }
-                
+            } else if (nestableNode instanceof NestableAttributeHolderNode) {
+                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
+                // If not null, an element without name can never be selectable
+                if (normalizedElementName == null) {
+                    if (normalizedAttributeName != null) {
+                        if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return Collections.singletonList((Node)nestableNode);
+                            }
+                        }
+                    } else {
+                        return Collections.singletonList((Node)nestableNode);
+                    }
+                }
             }
             
             /*
@@ -172,13 +186,11 @@ public final class DOMUtils {
             final Node node, final String normalizedElementName, final String normalizedAttributeName, final String attributeValue) {
         
         if (node instanceof NestableNode) {
-
+            
             final NestableNode nestableNode = (NestableNode) node;
             
             if (nestableNode instanceof Element) {
-                
                 final Element element = (Element) nestableNode;
-                
                 if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
                     if (normalizedAttributeName != null) {
                         if (element.hasNormalizedAttribute(normalizedAttributeName)) {
@@ -191,16 +203,13 @@ public final class DOMUtils {
                         return nestableNode;
                     }
                 }
-                
             } else if (nestableNode instanceof NestableAttributeHolderNode) {
-                
-                final NestableAttributeHolderNode element = (NestableAttributeHolderNode) nestableNode;
-                
+                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
                 // If not null, an element without name can never be selectable
                 if (normalizedElementName == null) {
                     if (normalizedAttributeName != null) {
-                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
-                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+                        if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
                             if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
                                 return nestableNode;
                             }
@@ -209,7 +218,6 @@ public final class DOMUtils {
                         return nestableNode;
                     }
                 }
-                
             }
             
             final List<Node> children = nestableNode.getChildren();
