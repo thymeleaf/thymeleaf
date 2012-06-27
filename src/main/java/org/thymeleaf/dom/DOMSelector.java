@@ -21,6 +21,7 @@ package org.thymeleaf.dom;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -259,6 +260,12 @@ public final class DOMSelector implements Serializable {
 
     
     
+    
+    public List<Node> select(final Node node) {
+        Validate.notNull(node, "Node to be searched cannot be null");
+        return select(Collections.singletonList(node));
+    }
+
     
     public List<Node> select(final List<Node> nodes) {
         Validate.notEmpty(nodes, "Nodes to be searched cannot be null or empty");
