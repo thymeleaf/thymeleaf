@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.fragment;
 
+import java.util.List;
+
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 
@@ -44,8 +46,8 @@ public final class WholeFragmentSpec implements IFragmentSpec {
     
     
     
-    public final Node extractFragment(final Configuration configuration, final Node node) {
-        return node;
+    public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
+        return nodes;
     }
 
     

@@ -27,6 +27,7 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -1101,23 +1102,30 @@ public class TemplateEngine {
         if (fragmentSpec != null) {
 
             // Apply the fragment specification and filter the parsed template.
-            final Node processingRootNode = 
-                    fragmentSpec.extractFragment(this.configuration, document);
+            final List<Node> processingRootNodes = 
+                    fragmentSpec.extractFragment(this.configuration, Collections.singletonList((Node)document));
             
-            if (processingRootNode == null) {
+            if (processingRootNodes == null) {
                 // If the result is null, there will be no processing to do
                 document = null;
             } else {
-                if (processingRootNode instanceof Document) {
+                final Node firstProcessingRootNode = processingRootNodes.get(0);
+                if (processingRootNodes.size() == 1 &&
+                        firstProcessingRootNode != null && 
+                        firstProcessingRootNode instanceof Document) {
                     // If it is a document, just process it as it is output from the filter
-                    document = (Document) processingRootNode;
+                    document = (Document) firstProcessingRootNode;
                 } else {
-                    // A fragment exists and it is not a Document. We will therefore lose DOCTYPE
+                    // Fragment exists and it is not a Document. We will therefore lose DOCTYPE
                     final String documentName = document.getDocumentName();
                     document = new Document(documentName);
-                    final Node clonedProcessingRootNode = 
-                            processingRootNode.cloneNode(document, false);
-                    document.addChild(clonedProcessingRootNode);
+                    for (final Node processingRootNode : processingRootNodes) {
+                        if (processingRootNode != null) {
+                            final Node clonedProcessingRootNode = 
+                                    processingRootNode.cloneNode(document, false);
+                            document.addChild(clonedProcessingRootNode);
+                        }
+                    }
                     document.precompute(this.configuration);
                 }
             }

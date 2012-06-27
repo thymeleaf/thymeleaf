@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.fragment;
 
+import java.util.List;
+
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 
@@ -34,7 +36,7 @@ import org.thymeleaf.dom.Node;
  */
 public interface IFragmentSpec {
 
-    public Node extractFragment(final Configuration configuration, final Node node);
+    public List<Node> extractFragment(final Configuration configuration, final List<Node> nodes);
     
 }
 
