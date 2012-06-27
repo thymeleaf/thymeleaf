@@ -114,7 +114,7 @@ public final class Arguments {
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
         Validate.notNull(templateResolution, "Template resolution cannot be null");
         Validate.notNull(templateRepository, "Template repository cannot be null");
-        Validate.notNull(document, "Document cannot be null");
+        // Document CAN be null, if it has been filtered and nothing has been selected as a result.
         
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration = this.templateProcessingParameters.getConfiguration();

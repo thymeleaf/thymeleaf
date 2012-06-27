@@ -11,6 +11,8 @@
   the new structures in the org.thymeleaf.fragment package.
 - Modified "TemplateEngine.getConfiguration()" visibility to public.
 - Added DOMSelector.select(Node) method for easier calling of DOM selectors on single nodes.
+- Added to TemplateEngine the possibility of filtering parsed templates using a IFragmentSpec in
+  order to process only template fragments.
 
 
 
