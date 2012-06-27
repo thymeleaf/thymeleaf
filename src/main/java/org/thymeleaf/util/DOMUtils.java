@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
@@ -71,6 +73,87 @@ public final class DOMUtils {
     
     
     
+    
+    
+    public static List<Node> extractFragmentByElementAndAttributeValue(
+            final List<Node> rootNodes, final String elementName, final String attributeName, final String attributeValue) {
+
+        Validate.notNull(rootNodes, "Root node list cannot be null");
+        // Element name, attribute name and attribute value CAN be null 
+        // (in that case, all elements will be searched)
+
+        final String normalizedElementName = Node.normalizeName(elementName);
+        final String normalizedAttributeName = Node.normalizeName(attributeName);
+        
+        final List<Node> fragmentNodes = new ArrayList<Node>();
+        for (final Node rootNode : rootNodes) {
+            final List<Node> extraction = 
+                    extractFragmentFromNode(rootNode, normalizedElementName, normalizedAttributeName, attributeValue);
+            if (extraction != null) {
+                fragmentNodes.addAll(extraction);
+            }
+        }
+        return fragmentNodes;
+        
+    }
+
+    
+    
+    private static List<Node> extractFragmentFromNode(
+            final Node node, final String normalizedElementName, final String normalizedAttributeName, final String attributeValue) {
+        
+        if (node instanceof NestableNode) {
+
+            final NestableNode nestableNode = (NestableNode) node;
+            
+            /*
+             * First check the element itself
+             */
+            if (nestableNode instanceof Element) {
+                final Element element = (Element) nestableNode;
+                if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
+                    if (normalizedAttributeName != null) {
+                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return Collections.singletonList((Node)nestableNode);
+                            }
+                        }
+                    } else {
+                        return Collections.singletonList((Node)nestableNode);
+                    }
+               }
+                
+            }
+            
+            /*
+             * If element does not match itself, try children
+             */
+            final List<Node> extraction = new ArrayList<Node>();
+            final List<Node> children = nestableNode.getChildren();
+            for (final Node child : children) {
+                final List<Node> childResult =
+                        extractFragmentFromNode(
+                                child, normalizedElementName, normalizedAttributeName, attributeValue);
+                if (childResult != null) {
+                    extraction.addAll(childResult);
+                }
+            }
+            return extraction;
+            
+        }
+        
+        return null;
+        
+    }
+
+    
+    
+    /**
+     * @deprecated Use {@link #extractFragmentByElementAndAttributeValue(Node, String, String, String)}
+     *             instead. Will be removed in 2.1.x
+     */
+    @Deprecated
     public static NestableNode extractFragmentByAttributeValue(
             final Node root, final String elementName, final String attributeName, final String attributeValue) {
 
@@ -83,6 +166,7 @@ public final class DOMUtils {
     }
     
     
+    @Deprecated
     private static NestableNode exploreNodeForExtractingFragment(
             final Node node, final String normalizedElementName, final String normalizedAttributeName, final String attributeValue) {
         
@@ -132,7 +216,7 @@ public final class DOMUtils {
         return null;
         
     }
-
+    
     
     
     

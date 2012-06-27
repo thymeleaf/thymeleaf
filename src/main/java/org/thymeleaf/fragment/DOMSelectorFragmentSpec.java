@@ -62,7 +62,7 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
     
 
-    public final Node extractFragment(final Configuration configuration, final Node node) {
+    public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
 
         DOMSelector selector = null;
         ICache<String,Object> expressionCache = null;
@@ -83,12 +83,12 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
             }
         }
         
-        final List<Node> selectedNodes = selector.select(node);
+        final List<Node> selectedNodes = selector.select(nodes);
         if (selectedNodes == null || selectedNodes.size() == 0) {
             return null;
         }
             
-        return selectedNodes.get(0);
+        return selectedNodes;
         
     }
 

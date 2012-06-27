@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.fragment;
 
+import java.util.List;
+
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
@@ -65,7 +67,7 @@ public final class FragmentAndTarget {
 
     
     
-    public final Node extractFragment(
+    public final List<Node> extractFragment(
             final Configuration configuration, final IContext context, final TemplateRepository templateRepository) {
 
         final TemplateProcessingParameters fragmentTemplateProcessingParameters = 
@@ -74,7 +76,7 @@ public final class FragmentAndTarget {
         final Template parsedFragmentTemplate = 
                 templateRepository.getTemplate(fragmentTemplateProcessingParameters);
         
-        return this.fragmentSpec.extractFragment(configuration, parsedFragmentTemplate.getDocument());
+        return this.fragmentSpec.extractFragment(configuration, parsedFragmentTemplate.getDocument().getChildren());
         
     }
     

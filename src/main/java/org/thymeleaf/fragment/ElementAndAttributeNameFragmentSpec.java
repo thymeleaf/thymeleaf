@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.fragment;
 
+import java.util.List;
+
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.util.DOMUtils;
@@ -87,10 +89,10 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
     
     
     
-    public final Node extractFragment(final Configuration configuration, final Node node) {
+    public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
         
-        return DOMUtils.extractFragmentByAttributeValue(
-                node, this.elementName, this.attributeName, this.attributeValue);
+        return DOMUtils.extractFragmentByElementAndAttributeValue(
+                nodes, this.elementName, this.attributeName, this.attributeValue);
         
     }
 

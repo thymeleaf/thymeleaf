@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.processor.attr;
 
+import java.util.List;
+
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
@@ -66,14 +68,14 @@ public abstract class AbstractFragmentHandlingAttrProcessor
         final FragmentAndTarget fragmentAndTarget = 
                 getFragmentAndTarget(arguments, element, attributeName, attributeValue);
         
-        final Node fragmentNode = 
+        final List<Node> fragmentNodes = 
                 fragmentAndTarget.extractFragment(
                         arguments.getConfiguration(), arguments.getContext(), arguments.getTemplateRepository());
         
-        if (fragmentNode == null) {
+        if (fragmentNodes == null) {
             throw new TemplateProcessingException(
                     "Cannot correctly process \"" + attributeName + "\" attribute. " +
-                    "Fragment specification \"" + attributeValue + "\" did not match any fragments.");
+                    "Fragment specification \"" + attributeValue + "\" matched null.");
         }
 
         
@@ -83,20 +85,22 @@ public abstract class AbstractFragmentHandlingAttrProcessor
         
         if (substituteInclusionNode) {
             
-            element.addChild(fragmentNode);
+            element.setChildren(fragmentNodes);
             element.getParent().extractChild(element);
             
         } else {
-            
-            if (!(fragmentNode instanceof NestableNode)) {
-                throw new TemplateProcessingException(
-                        "Cannot correctly process \"" + attributeName + "\" attribute. " +
-                        "Node returned by fragment specification \"" + attributeValue + "\" " +
-                        "for inclusion is not a nestable node (" + fragmentNode.getClass().getSimpleName() + ").");
-            }
-            
-            for (final Node newNode : ((NestableNode)fragmentNode).getChildren()) {
-                element.addChild(newNode);
+         
+            for (final Node fragmentNode : fragmentNodes) {
+                if (!(fragmentNode instanceof NestableNode)) {
+                    throw new TemplateProcessingException(
+                            "Cannot correctly process \"" + attributeName + "\" attribute. " +
+                            "Node returned by fragment specification \"" + attributeValue + "\" " +
+                            "for inclusion is not a nestable node (" + fragmentNode.getClass().getSimpleName() + ").");
+                }
+                
+                for (final Node newNode : ((NestableNode)fragmentNode).getChildren()) {
+                    element.addChild(newNode);
+                }
             }
             
         }
