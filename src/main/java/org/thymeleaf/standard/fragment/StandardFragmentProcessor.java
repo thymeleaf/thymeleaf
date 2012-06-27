@@ -21,10 +21,11 @@ package org.thymeleaf.standard.fragment;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.fragment.CompleteTemplateFragmentSpec;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
+import org.thymeleaf.fragment.FragmentAndTarget;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.util.Validate;
@@ -42,21 +43,22 @@ public final class StandardFragmentProcessor {
     
     
 
-    public static final IFragmentSpec computeFragmentSpec(final Arguments arguments, final String fragmentSpec,  
+    public static final FragmentAndTarget computeStandardFragmentSpec(
+            final Arguments arguments, final String standardFragmentSpec,  
             final String targetElementName, final String targetAttributeName) {
         
         Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notEmpty(fragmentSpec, "Fragment Spec cannot be null");
+        Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
         // Target element and attribute names can be null
         
         final FragmentSelection fragmentSelection =
-            StandardExpressionProcessor.parseFragmentSelection(arguments, fragmentSpec);
+            StandardExpressionProcessor.parseFragmentSelection(arguments, standardFragmentSpec);
         
         final Object templateNameObject = 
             StandardExpressionProcessor.executeExpression(arguments, fragmentSelection.getTemplateName());
         if (templateNameObject == null) {
             throw new TemplateProcessingException(
-                    "Evaluation of template name from spec \"" + fragmentSpec + "\" " + 
+                    "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " + 
                     "returned null.");
         }
         
@@ -68,7 +70,7 @@ public final class StandardFragmentProcessor {
                 StandardExpressionProcessor.executeExpression(arguments, fragmentSelection.getFragmentSelector());
             if (fragmentSelectorObject == null) {
                 throw new TemplateProcessingException(
-                        "Evaluation of fragment selector from spec \"" + fragmentSpec + "\" " + 
+                        "Evaluation of fragment selector from spec \"" + standardFragmentSpec + "\" " + 
                         "returned null.");
             }
 
@@ -76,16 +78,20 @@ public final class StandardFragmentProcessor {
             
             if (fragmentSelection.isXPath()) {
                 
-                return new DOMSelectorFragmentSpec(templateName, fragmentSelector);
+                final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector);
+                return new FragmentAndTarget(templateName, fragmentSpec);
                 
             }
             
-            return new ElementAndAttributeNameFragmentSpec(
-                    templateName, targetElementName, targetAttributeName, fragmentSelector);
+            final IFragmentSpec fragmentSpec = 
+                    new ElementAndAttributeNameFragmentSpec(
+                            targetElementName, targetAttributeName, fragmentSelector);
+            return new FragmentAndTarget(templateName, fragmentSpec);
             
         }
         
-        return new CompleteTemplateFragmentSpec(templateName);
+        final IFragmentSpec fragmentSpec = new WholeFragmentSpec();
+        return new FragmentAndTarget(templateName, fragmentSpec);
         
     }
     

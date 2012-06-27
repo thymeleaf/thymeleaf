@@ -13,6 +13,7 @@
 - Added DOMSelector.select(Node) method for easier calling of DOM selectors on single nodes.
 
 
+
 2.0.8
 =====
 - Fixed "Root element name cannot be null" exception when processing non-complete documents (fragments).

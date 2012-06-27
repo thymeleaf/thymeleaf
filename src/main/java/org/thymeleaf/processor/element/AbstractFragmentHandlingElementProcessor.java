@@ -24,7 +24,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.fragment.FragmentAndTarget;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -57,9 +57,11 @@ public abstract class AbstractFragmentHandlingElementProcessor
         
         final boolean substituteInclusionNode = getSubstituteInclusionNode(arguments, element);
         
-        final IFragmentSpec fragmentSpec = getFragmentSpec(arguments, element);
+        final FragmentAndTarget fragmentAndTarget = getFragmentAndTarget(arguments, element);
         
-        final Node fragmentNode = fragmentSpec.extractFragment(arguments);
+        final Node fragmentNode = 
+                fragmentAndTarget.extractFragment(
+                        arguments.getConfiguration(), arguments.getContext(), arguments.getTemplateRepository());
         
         if (fragmentNode == null) {
             throw new TemplateProcessingException(
@@ -103,8 +105,9 @@ public abstract class AbstractFragmentHandlingElementProcessor
     protected abstract boolean getSubstituteInclusionNode(
             final Arguments arguments, final Element element);
     
-    protected abstract IFragmentSpec getFragmentSpec(
+    protected abstract FragmentAndTarget getFragmentAndTarget(
             final Arguments arguments, final Element element);
+    
     
     
     @SuppressWarnings("unused")

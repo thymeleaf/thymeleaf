@@ -19,7 +19,9 @@
  */
 package org.thymeleaf.fragment;
 
-import org.thymeleaf.util.Validate;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.dom.Node;
+
 
 
 
@@ -31,22 +33,21 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.9
  *
  */
-public abstract class AbstractFragmentSpec implements IFragmentSpec {
-    
-    private final String templateName;
+public final class WholeFragmentSpec implements IFragmentSpec {
     
     
-    public AbstractFragmentSpec(final String templateName) {
+    
+    public WholeFragmentSpec() {
         super();
-        Validate.notEmpty(templateName, "Template name cannot be null or empty");
-        this.templateName = templateName;
     }
 
     
-
-    public String getTemplateName() {
-        return this.templateName;
+    
+    
+    public final Node extractFragment(final Configuration configuration, final Node node) {
+        return node;
     }
 
+    
 }
 
