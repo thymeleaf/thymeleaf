@@ -125,7 +125,21 @@ public final class DOMUtils {
                         return Collections.singletonList((Node)nestableNode);
                     }
                }
-                
+            } else if (nestableNode instanceof NestableAttributeHolderNode) {
+                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
+                // If not null, an element without name can never be selectable
+                if (normalizedElementName == null) {
+                    if (normalizedAttributeName != null) {
+                        if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return Collections.singletonList((Node)nestableNode);
+                            }
+                        }
+                    } else {
+                        return Collections.singletonList((Node)nestableNode);
+                    }
+                }
             }
             
             /*
@@ -173,25 +187,32 @@ public final class DOMUtils {
             final Node node, final String normalizedElementName, final String normalizedAttributeName, final String attributeValue) {
         
         if (node instanceof NestableNode) {
-
+            
             final NestableNode nestableNode = (NestableNode) node;
             
-            if (nestableNode instanceof NestableAttributeHolderNode) {
-                
+            if (nestableNode instanceof Element) {
+                final Element element = (Element) nestableNode;
+                if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
+                    if (normalizedAttributeName != null) {
+                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return nestableNode;
+                            }
+                        }
+                    } else {
+                        return nestableNode;
+                    }
+                }
+            } else if (nestableNode instanceof NestableAttributeHolderNode) {
                 final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
-                
-                if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
-                    final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
-                    if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                        // attribute exists and matches
-                        
-                        if (normalizedElementName != null) {
-                            // If we also have to check an element name, the node must be an element and match
-                            if (attributeHolderNode instanceof Element) {
-                                final Element element = (Element) attributeHolderNode;
-                                if (normalizedElementName.equals(element.getNormalizedName())) {
-                                    return nestableNode;
-                                }
+                // If not null, an element without name can never be selectable
+                if (normalizedElementName == null) {
+                    if (normalizedAttributeName != null) {
+                        if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
+                            final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
+                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
+                                return nestableNode;
                             }
                         } else { 
                             return nestableNode;
@@ -200,7 +221,6 @@ public final class DOMUtils {
                     }
                     
                 }
-                
             }
             
             final List<Node> children = nestableNode.getChildren();
