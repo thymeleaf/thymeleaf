@@ -62,7 +62,9 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     
     public void write(final Arguments arguments, final Writer writer, final Document document) 
                 throws IOException {
-        Validate.notNull(document, "Document cannot be null");
+        if (document == null) {
+            return;
+        }
         writeDocument(arguments, writer, document);
     }
 
@@ -131,6 +133,9 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
             throws IOException {
     
         Validate.notNull(arguments, "Arguments cannot be null");
+        if (node == null) {
+            return;
+        }
         
         if (node instanceof Element) {
             writeElement(arguments, writer, (Element)node);

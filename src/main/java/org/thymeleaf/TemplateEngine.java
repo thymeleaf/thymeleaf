@@ -38,11 +38,13 @@ import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
@@ -941,12 +943,38 @@ public class TemplateEngine {
      *         with the provided context.
      */
     public final String process(final String templateName, final IContext context) {
+        return process(templateName, context, (IFragmentSpec)null);
+    }
+
+
+    
+
+    /**
+     * <p>
+     *   Process a template. This method receives both a <i>template name</i>, a <i>context</i>
+     *   and a <i>fragment specification</i> ({@link IFragmentSpec}). This
+     *   method works essentially the same as {@link #process(String, IContext)} but
+     *   applying the specified fragment specification as a filter on the parsed template in order to
+     *   process only a fragment of such template.
+     * </p>
+     * 
+     * @param templateName the name of the template.
+     * @param context the context.
+     * @param fragmentSpec the fragment specification that will be applied as a filter to the parsed
+     *                     template, before processing.
+     * @return a String containing the result of evaluating the specified template 
+     *         with the provided context.
+     * 
+     * @since 2.0.9
+     */
+    public final String process(final String templateName, final IContext context, final IFragmentSpec fragmentSpec) {
         final StringWriter stringWriter = new StringWriter();
-        process(templateName, context, stringWriter);
+        process(templateName, context, fragmentSpec, stringWriter);
         return stringWriter.toString();
     }
     
 
+    
 
     /**
      * <p>
@@ -972,6 +1000,31 @@ public class TemplateEngine {
      * @since 2.0.0 
      */
     public final void process(final String templateName, final IContext context, final Writer writer) {
+        process(templateName, context, null, writer);
+    }
+    
+
+    
+
+    /**
+     * <p>
+     *   Process a template. This method receives a <i>template name</i>, a <i>context</i>, a
+     *   <i>fragment specification</i> ({@link IFragmentSpec}) and also a {@link Writer}. This
+     *   method works essentially the same as {@link #process(String, IContext, Writer)} but
+     *   applying the specified fragment specification as a filter on the parsed template in order to
+     *   process only a fragment of such template.
+     * </p>
+     * 
+     * @param templateName the name of the template.
+     * @param context the context.
+     * @param fragmentSpec the fragment specification that will be applied as a filter to the parsed
+     *                     template, before processing.
+     * @param writer the writer the results will be output to.
+     * 
+     * @since 2.0.9
+     */
+    public final void process(final String templateName, final IContext context, 
+            final IFragmentSpec fragmentSpec, final Writer writer) {
         
         if (!isInitialized()) {
             initialize();
@@ -1001,7 +1054,7 @@ public class TemplateEngine {
             final TemplateProcessingParameters templateProcessingParameters = 
                 new TemplateProcessingParameters(this.configuration, templateName, context);
             
-            process(templateProcessingParameters, writer);
+            process(templateProcessingParameters, fragmentSpec, writer);
             
             final long endMs = System.nanoTime();
             
@@ -1034,33 +1087,65 @@ public class TemplateEngine {
     
     
 
-    private final void process(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
+    private final void process(final TemplateProcessingParameters templateProcessingParameters, 
+            final IFragmentSpec fragmentSpec, final Writer writer) {
         
         final String templateName = templateProcessingParameters.getTemplateName();
         
         final Template template = this.templateRepository.getTemplate(templateProcessingParameters);
-            
         final TemplateResolution templateResolution = template.getTemplateResolution();
-        
-        final Document document = template.getDocument();
+        final String templateMode = templateResolution.getTemplateMode(); 
+
+        Document document = template.getDocument();
+
+        if (fragmentSpec != null) {
+
+            // Apply the fragment specification and filter the parsed template.
+            final Node processingRootNode = 
+                    fragmentSpec.extractFragment(this.configuration, document);
+            
+            if (processingRootNode == null) {
+                
+                // If the result is null, there will be no processing to do
+                document = null;
+                
+            } else {
+                
+                if (processingRootNode instanceof Document) {
+                    
+                    // If it is a document, just process it as it is output from the filter
+                    document = (Document) processingRootNode;
+                    
+                } else {
+                    
+                    // A fragment exists and it is not a Document. We will therefore lose DOCTYPE
+                    final String documentName = document.getDocumentName();
+                    document = new Document(documentName);
+                    document.addChild(processingRootNode);
+                    
+                }
+            }
+        }
         
         final Arguments arguments = 
-            new Arguments(templateProcessingParameters, templateResolution, this.templateRepository, document);
+                new Arguments(templateProcessingParameters, templateResolution, 
+                        this.templateRepository, document);
+       
         
         if (logger.isDebugEnabled()) {
             logger.debug("[THYMELEAF][{}] Starting process on template \"{}\" using mode \"{}\"", 
-                    new Object[] { TemplateEngine.threadIndex(), templateName, templateResolution.getTemplateMode() });
+                    new Object[] { TemplateEngine.threadIndex(), templateName, templateMode });
         }
-        
-        document.process(arguments);
+
+        if (document != null) {
+            document.process(arguments);
+        }
         
         if (logger.isDebugEnabled()) {
             logger.debug("[THYMELEAF][{}] Finished process on template \"{}\" using mode \"{}\"", 
-                    new Object[] { TemplateEngine.threadIndex(), templateName, templateResolution.getTemplateMode() });
+                    new Object[] { TemplateEngine.threadIndex(), templateName, templateMode });
         }
         
-        final String templateMode = 
-                arguments.getTemplateResolution().getTemplateMode();
         final ITemplateModeHandler templateModeHandler =
                 this.configuration.getTemplateModeHandler(templateMode);
         final ITemplateWriter templateWriter = templateModeHandler.getTemplateWriter();
@@ -1071,6 +1156,8 @@ public class TemplateEngine {
         }
         
         try {
+            // It depends on the ITemplateWriter implementation to allow nulls or not.
+            // Standard writer will simply not write anything for null.
             templateWriter.write(arguments, writer, document);
         } catch (IOException e) {
             throw new TemplateOutputException("Error during creation of output", e);
