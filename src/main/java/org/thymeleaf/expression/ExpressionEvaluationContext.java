@@ -22,9 +22,9 @@ package org.thymeleaf.expression;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.VariablesMap;
+import org.thymeleaf.util.Validate;
 
 
 /**
