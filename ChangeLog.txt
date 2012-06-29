@@ -5,6 +5,7 @@
   with other view-layer technologies.
 - Added an HttpServletResponse parameter to SpringWebContext constructors in order to be able to access
   response from processors.
+- Refactored SpringEL expression evaluation.
 
 
 2.0.8

@@ -27,37 +27,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.IStandardExpressionEvaluator;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Guven Demir
  * 
- * @since 1.1
- * @deprecated Use {@link SpelVariableExpressionEvaluator} instead. Will
- *             be removed in 2.1.x
+ * @since 2.0.9
  *
  */
-@Deprecated
-public class SpelExpressionEvaluator 
-        implements IStandardExpressionEvaluator {
+public class SpelVariableExpressionEvaluator 
+        implements IStandardVariableExpressionEvaluator {
 
 
-    public static final SpelExpressionEvaluator INSTANCE = new SpelExpressionEvaluator();
+    public static final SpelVariableExpressionEvaluator INSTANCE = new SpelVariableExpressionEvaluator();
     private static final String SPEL_CACHE_PREFIX = "{spel}";
     
     
     public static final String FIELDS_EVALUATION_VARIABLE_NAME = "fields";
     
     
-    private static final Logger logger = LoggerFactory.getLogger(SpelExpressionEvaluator.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpelVariableExpressionEvaluator.class);
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
     private static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT;
@@ -71,15 +68,15 @@ public class SpelExpressionEvaluator
     
     
     
-    private SpelExpressionEvaluator() {
+    private SpelVariableExpressionEvaluator() {
         super();
     }
     
     
     
     
-    public final Object evaluate(
-            final Arguments arguments, final String spelExpression, final Object root) {
+    public final Object evaluate(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final String spelExpression, final boolean useSelectionAsRoot) {
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] SpringEL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), spelExpression);
@@ -87,13 +84,12 @@ public class SpelExpressionEvaluator
 
         try {
             
-            final Map<String,Object> contextVariables = arguments.getBaseContextVariables();
+            final Map<String,Object> contextVariables = evalContext.getBaseContextVariables();
             
-            final Fields fields = new Fields(arguments);
+            final Fields fields = new Fields(configuration, evalContext);
             contextVariables.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
             
-            final Map<String,Object> additionalContextVariables =
-                computeAdditionalContextVariables(arguments);
+            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(evalContext);
             if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
                 contextVariables.putAll(additionalContextVariables);
             }
@@ -101,9 +97,14 @@ public class SpelExpressionEvaluator
             final SpelEvaluationContext context = 
                     new SpelEvaluationContext(DEFAULT_EVALUATION_CONTEXT, contextVariables);
 
-            final SpelExpression exp = getExpression(arguments.getConfiguration(), spelExpression);
+            final SpelExpression exp = getExpression(configuration, spelExpression);
             
-            return exp.getValue(context, root);
+            final Object evaluationRoot = 
+                    (useSelectionAsRoot?
+                            evalContext.getExpressionSelectionEvaluationRoot() :
+                            evalContext.getExpressionEvaluationRoot());
+            
+            return exp.getValue(context, evaluationRoot);
             
         } catch (final TemplateProcessingException e) {
             throw e;
@@ -143,7 +144,8 @@ public class SpelExpressionEvaluator
     /*
      * Meant to be overwritten
      */
-    protected Map<String,Object> computeAdditionalContextVariables(@SuppressWarnings("unused") final Arguments arguments) {
+    protected Map<String,Object> computeAdditionalContextVariables(
+            @SuppressWarnings("unused") final ExpressionEvaluationContext evalContext) {
         return Collections.emptyMap();
     }
 

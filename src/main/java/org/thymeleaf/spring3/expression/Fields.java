@@ -22,6 +22,8 @@ package org.thymeleaf.spring3.expression;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.spring3.util.FieldUtils;
 
 
@@ -35,17 +37,18 @@ import org.thymeleaf.spring3.util.FieldUtils;
  */
 public class Fields {
 
-    private final Arguments arguments;
+    private final Configuration configuration;
+    private final ExpressionEvaluationContext evalContext;
     
     
     
     public boolean hasErrors(final String field) {
-        return FieldUtils.hasErrors(this.arguments, field);
+        return FieldUtils.hasErrors(this.configuration, this.evalContext, field);
     }
     
     
     public List<String> errors(final String field) {
-        return FieldUtils.errors(this.arguments, field);
+        return FieldUtils.errors(this.configuration, this.evalContext, field);
     }
 
     
@@ -55,12 +58,21 @@ public class Fields {
     
 
     
+    /**
+     * @deprecated Use {@link #Fields(Configuration, ExpressionEvaluationContext)} instead.
+     *             Will be removed in 2.1.x
+     */
+    @Deprecated
 	public Fields(final Arguments arguments) {
-	    
-	    super();
-	    
-	    this.arguments = arguments;
-	    
+	    this(arguments.getConfiguration(), arguments);
 	}
+    
+    
+    public Fields(final Configuration configuration, final ExpressionEvaluationContext evalContext) {
+        super();
+        this.configuration = configuration;
+        this.evalContext = evalContext;
+    }
 
+    
 }

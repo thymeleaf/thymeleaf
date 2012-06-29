@@ -33,7 +33,7 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.spring3.expression.SpelExpressionEvaluator;
+import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
 import org.thymeleaf.spring3.processor.attr.SpringErrorsAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputCheckboxFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputFileFieldAttrProcessor;
@@ -423,7 +423,7 @@ public class SpringStandardDialect extends StandardDialect {
     @Override
     public Map<String, Object> getExecutionAttributes() {
         
-        final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(SpelExpressionEvaluator.INSTANCE);
+        final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(SpelVariableExpressionEvaluator.INSTANCE);
         final StandardExpressionParser parser = StandardExpressionProcessor.createStandardExpressionParser(executor);
         
         final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
