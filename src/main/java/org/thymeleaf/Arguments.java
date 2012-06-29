@@ -22,7 +22,6 @@ package org.thymeleaf;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluationContext;
@@ -65,10 +64,10 @@ import org.thymeleaf.util.Validate;
  * @since 1.0
  *
  */
-public final class Arguments {
+public final class Arguments extends ExpressionEvaluationContext {
 
     /**
-     * @deprecated Use {@link ExpressionEvaluationContext.SELECTION_TARGET_LOCAL_VARIABLE_NAME}
+     * @deprecated Use {@link ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME}
      *             instead. 
      */
     @Deprecated
@@ -81,11 +80,9 @@ public final class Arguments {
     private final TemplateResolution templateResolution;
     private final TemplateRepository templateRepository;
     
-    private final ExpressionEvaluationContext expressionEvaluationContext;
     private final Map<String,Integer> idCounts;
     
     private final boolean processOnlyElementNodes;
-    private final Map<String, Object> baseContextVariables;
 
     
 
@@ -111,7 +108,7 @@ public final class Arguments {
             final TemplateRepository templateRepository,
             final Document document) {
         
-        super();
+        super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()));
         
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
         Validate.notNull(templateResolution, "Template resolution cannot be null");
@@ -123,13 +120,9 @@ public final class Arguments {
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
-        this.expressionEvaluationContext =
-                new ExpressionEvaluationContext(this.templateProcessingParameters.getContext());
         this.idCounts = new HashMap<String,Integer>();
         
         this.processOnlyElementNodes = true;
-        this.baseContextVariables = 
-            ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
     }
     
@@ -140,29 +133,31 @@ public final class Arguments {
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,
             final Document document,
-            final ExpressionEvaluationContext expressionEvaluationContext,
+            final Map<String,Object> localVariables,
             final Map<String,Integer> idCounts,
             final boolean processOnlyElementNodes) {
         
-        super();
+        super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()), localVariables);
         
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration = this.templateProcessingParameters.getConfiguration();
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
-        this.expressionEvaluationContext = expressionEvaluationContext;
         this.idCounts = idCounts;
         
         this.processOnlyElementNodes = processOnlyElementNodes;
-        this.baseContextVariables = 
-                ExpressionEvaluatorObjects.computeEvaluationVariablesForArguments(this);
         
     }
     
 
 
     
+    
+    @Override
+    protected Map<String,Object> computeBaseContextVariables() {
+        return ExpressionEvaluatorObjects.computeExpressionEvaluationObjectsForArguments(this);
+    }
 
     
     
@@ -237,115 +232,6 @@ public final class Arguments {
         return this.templateResolution.getTemplateName();
     }
 
-    
-    
-    /**
-     * <p>
-     *   Returns the current context specified for template processing.
-     * </p>
-     * 
-     * @return the current context
-     */
-    public IContext getContext() {
-        return this.expressionEvaluationContext.getContext();
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns whether local variables have currently been specified or not.
-     *   (e.g. <tt>th:with</tt> in standard dialect). 
-     * </p>
-     * 
-     * @return true if there are local variables, false if not
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will
-     *             be removed in 2.1.x
-     */
-    @Deprecated
-    public boolean hasLocalVariables() {
-        return this.expressionEvaluationContext.hasLocalVariables();
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns the expression evaluation context. 
-     * </p>
-     * 
-     * @return true if there are local variables, false if not
-     * 
-     * @since 2.0.9
-     * 
-     */
-    public ExpressionEvaluationContext getExpressionEvaluationContext() {
-        return this.expressionEvaluationContext;
-    }
-
-    
-    
-    
-    /**
-     * <p>
-     *   Returns the value of a local variable.
-     * </p>
-     * 
-     * @param variableName the name of the local variable to be returned
-     * @return the value of the variable, or null if the variable does not exist (or has null value)
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     * 
-     */
-    @Deprecated
-    public Object getLocalVariable(final String variableName) {
-        return this.expressionEvaluationContext.getLocalVariable(variableName);
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns whether a specific local variable is defined or not.
-     * </p>
-     * 
-     * @return true if the variable is currently defined, false if not.
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public boolean hasLocalVariable(final String variableName) {
-        return this.expressionEvaluationContext.hasLocalVariable(variableName);
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns the real inner map of local variables. This
-     *   method should not be called directly.
-     * </p>
-     * 
-     * @return the local variables map, which could be null if no variables are defined
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public HashMap<String,Object> unsafeGetLocalVariables() {
-        return this.expressionEvaluationContext.unsafeGetLocalVariables();
-    }
-
-    
-    /**
-     * <p>
-     *   Returns a safe copy of the map of local variables.
-     * </p>
-     * 
-     * @return the local variables
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public Map<String,Object> getLocalVariables() {
-        return this.expressionEvaluationContext.getLocalVariables();
-    }
-
 
     /**
      * <p>
@@ -357,42 +243,6 @@ public final class Arguments {
      */
     public boolean getProcessOnlyElementNodes() {
         return this.processOnlyElementNodes;
-    }
-    
-
-    /**
-     * <p>
-     *   Returns whether there currently is a selection going on
-     *   (e.g. <tt>th:object</tt> in standard dialect). 
-     * </p>
-     * 
-     * @return true if there is a selection currently established, false if not
-     * 
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public boolean hasSelectionTarget() {
-        return this.expressionEvaluationContext.hasSelectionTarget();
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns the <i>selection target object</i>, and raises an
-     *   exception if there isn't any.
-     * </p>
-     * <p>
-     *   Meant for internal use.
-     * </p>
-     * 
-     * @return the selection target object
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public Object getSelectionTarget() {
-        return this.expressionEvaluationContext.getSelectionTarget();
     }
 
     
@@ -434,55 +284,6 @@ public final class Arguments {
      */
     public Object getExecutionAttribute(final String attributeName) {
         return this.configuration.getExecutionAttributes().get(attributeName);
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns the current evaluation root. This is the object on which expressions
-     *   (normal expressions, like those specified in the standard dialect with
-     *   <tt>${...}</tt>) are executed.
-     * </p>
-     * 
-     * @return the expression evaluation root
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public Object getExpressionEvaluationRoot() {
-        return this.expressionEvaluationContext.getExpressionEvaluationRoot();
-    }
-
-    
-    /**
-     * <p>
-     *   Returns the current selection evaluation root. This is the object on which selection expressions
-     *   (like those specified in the standard dialect with <tt>*{...}</tt>) are executed.
-     * </p>
-     * 
-     * @return the selection evaluation root
-     * @deprecated use {@link #getExpressionEvaluationContext()} instead. Will be
-     *             removed in 2.1.x
-     */
-    @Deprecated
-    public Object getExpressionSelectionEvaluationRoot() {
-        return this.expressionEvaluationContext.getExpressionSelectionEvaluationRoot();
-    }
-    
-
-    /**
-     * <p>
-     *   Returns the map of base variables that should be made available to every expression
-     *   evaluation operation (whenever variable evaluation is available).
-     * </p>
-     * 
-     * @since 2.0.0
-     * @return the map of variables (a new object, mutable, safe to use as a context variables base)
-     */
-    public Map<String,Object> getBaseContextVariables() {
-        final Map<String,Object> variables = new HashMap<String, Object>();
-        variables.putAll(this.baseContextVariables);
-        return variables;
     }
     
     
@@ -560,13 +361,15 @@ public final class Arguments {
      * @param newVariables the new variables
      * @return the new Arguments object
      */
+    @Override
     public Arguments addLocalVariables(final Map<String,Object> newVariables) {
-        final ExpressionEvaluationContext newExpressionEvaluationContext = 
-                this.expressionEvaluationContext.addLocalVariables(newVariables);
+        if (newVariables == null || newVariables.isEmpty()) {
+            return this;
+        }
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, 
-                    this.templateRepository, this.document, newExpressionEvaluationContext, 
-                    this.idCounts, this.processOnlyElementNodes);
+                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                        this.idCounts, this.processOnlyElementNodes);
         return arguments;
     }
 
@@ -583,7 +386,7 @@ public final class Arguments {
     public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
             new Arguments(this.templateProcessingParameters, this.templateResolution, 
-                    this.templateRepository, this.document, this.expressionEvaluationContext, 
+                    this.templateRepository, this.document, unsafeGetLocalVariables(), 
                     this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
@@ -600,12 +403,10 @@ public final class Arguments {
      * @return the new Arguments object
      */
     public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
-        final ExpressionEvaluationContext newExpressionEvaluationContext = 
-                this.expressionEvaluationContext.addLocalVariables(newVariables);
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, 
-                    this.templateRepository, this.document, newExpressionEvaluationContext, 
-                    this.idCounts, shouldProcessOnlyElementNodes);
+                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                        this.idCounts, shouldProcessOnlyElementNodes);
         return arguments;
     }
 

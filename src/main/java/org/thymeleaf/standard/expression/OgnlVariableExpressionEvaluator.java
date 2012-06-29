@@ -31,11 +31,12 @@ import ognl.OgnlException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.ObjectUtils;
 
@@ -43,19 +44,16 @@ import org.thymeleaf.util.ObjectUtils;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
- * @deprecated Use {@link OgnlVariableExpressionEvaluator} instead. Will be removed
- *             in 2.1.x
+ * @since 2.0.9
  *
  */
-@Deprecated
-public class OgnlExpressionEvaluator 
-        implements IStandardExpressionEvaluator {
+public class OgnlVariableExpressionEvaluator 
+        implements IStandardVariableExpressionEvaluator {
     
     
-    private static final Logger logger = LoggerFactory.getLogger(OgnlExpressionEvaluator.class);
+    private static final Logger logger = LoggerFactory.getLogger(OgnlVariableExpressionEvaluator.class);
 
-    public static final OgnlExpressionEvaluator INSTANCE = new OgnlExpressionEvaluator();
+    public static final OgnlVariableExpressionEvaluator INSTANCE = new OgnlVariableExpressionEvaluator();
     private static final String OGNL_CACHE_PREFIX = "{ognl}";
 
 
@@ -63,7 +61,9 @@ public class OgnlExpressionEvaluator
     
     
     
-    public final Object evaluate(final Arguments arguments, final String expression, final Object root) {
+    public final Object evaluate(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String expression, 
+            final boolean useSelectionAsRoot) {
        
         try {
 
@@ -75,11 +75,13 @@ public class OgnlExpressionEvaluator
             Object expressionTree = null;
             ICache<String, Object> cache = null;
             
-            final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
-            if (cacheManager != null) {
-                cache = cacheManager.getExpressionCache();
-                if (cache != null) {
-                    expressionTree = cache.get(OGNL_CACHE_PREFIX + expression);
+            if (configuration != null) {
+                final ICacheManager cacheManager = configuration.getCacheManager();
+                if (cacheManager != null) {
+                    cache = cacheManager.getExpressionCache();
+                    if (cache != null) {
+                        expressionTree = cache.get(OGNL_CACHE_PREFIX + expression);
+                    }
                 }
             }
             
@@ -91,15 +93,20 @@ public class OgnlExpressionEvaluator
             }
             
             
-            final Map<String,Object> contextVariables = arguments.getBaseContextVariables();
+            final Map<String,Object> contextVariables = evalContext.getBaseContextVariables();
             
-            final Map<String,Object> additionalContextVariables =
-                computeAdditionalContextVariables(arguments);
+            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(evalContext);
             if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
                 contextVariables.putAll(additionalContextVariables);
             }
             
-            return Ognl.getValue(expressionTree, contextVariables, root);
+            final Object evaluationRoot = 
+                    (useSelectionAsRoot?
+                            evalContext.getExpressionSelectionEvaluationRoot() :
+                            evalContext.getExpressionEvaluationRoot());
+
+            
+            return Ognl.getValue(expressionTree, contextVariables, evaluationRoot);
             
         } catch (final OgnlException e) {
             throw new TemplateProcessingException(
@@ -115,7 +122,7 @@ public class OgnlExpressionEvaluator
      * Meant to be overwritten
      */
     protected Map<String,Object> computeAdditionalContextVariables(
-            @SuppressWarnings("unused") final Arguments arguments) {
+            @SuppressWarnings("unused") final ExpressionEvaluationContext evalContext) {
         return Collections.emptyMap();
     }
     
@@ -123,7 +130,7 @@ public class OgnlExpressionEvaluator
     
     
     
-    private OgnlExpressionEvaluator() {
+    private OgnlVariableExpressionEvaluator() {
         super();
         if (!booleanFixApplied && shouldApplyOgnlBooleanFix()) {
             applyOgnlBooleanFix();
@@ -163,7 +170,7 @@ public class OgnlExpressionEvaluator
         try {
             
             final ClassLoader classLoader = 
-                    ClassLoaderUtils.getClassLoader(OgnlExpressionEvaluator.class);
+                    ClassLoaderUtils.getClassLoader(OgnlVariableExpressionEvaluator.class);
             
             final ClassPool pool = new ClassPool(true);
             pool.insertClassPath(new LoaderClassPath(classLoader));
@@ -174,7 +181,7 @@ public class OgnlExpressionEvaluator
             // the latter would cause the class to be loaded and therefore it would not be
             // possible to modify it.
             final CtClass ognlClass = pool.get("ognl.OgnlOps");
-            final CtClass fixClass = pool.get(OgnlExpressionEvaluator.class.getName());
+            final CtClass fixClass = pool.get(OgnlVariableExpressionEvaluator.class.getName());
             
             final CtMethod ognlMethod = 
                     ognlClass.getDeclaredMethod("booleanValue", params);

@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -60,18 +61,18 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
     
     
     
-    static Object executeAddition(final Arguments arguments, final AdditionExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeAddition(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final AdditionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating addition expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object leftValue = 
-            Expression.execute(arguments, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(arguments, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
         
         if (leftValue == null) {
             leftValue = "null";

@@ -23,8 +23,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 
 
@@ -222,12 +223,13 @@ public abstract class Expression implements Serializable {
     
     
     
-    static Object execute(final Arguments arguments, final Expression expression, final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object execute(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
         
         if (expression instanceof SimpleExpression) {
-            return SimpleExpression.executeSimple(arguments, (SimpleExpression)expression, expressionEvaluator);
+            return SimpleExpression.executeSimple(configuration, evalContext, (SimpleExpression)expression, expressionEvaluator);
         } else  if (expression instanceof ComplexExpression) {
-            return ComplexExpression.executeComplex(arguments, (ComplexExpression)expression, expressionEvaluator);
+            return ComplexExpression.executeComplex(configuration, evalContext, (ComplexExpression)expression, expressionEvaluator);
         }
         
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());

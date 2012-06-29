@@ -23,7 +23,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
@@ -67,7 +69,18 @@ public final class StandardExpressionParser {
     public Expression parseExpression(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpression(arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseExpression(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public Expression parseExpression(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return parseExpression(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -75,7 +88,18 @@ public final class StandardExpressionParser {
     public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseAssignationSequence(arguments, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
+        return parseAssignationSequence(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public AssignationSequence parseAssignationSequence(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input, final boolean allowParametersWithoutValue) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return parseAssignationSequence(configuration, evalContext, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
     }
 
     
@@ -83,7 +107,18 @@ public final class StandardExpressionParser {
     public ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpressionSequence(arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseExpressionSequence(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public ExpressionSequence parseExpressionSequence(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return parseExpressionSequence(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -91,7 +126,18 @@ public final class StandardExpressionParser {
     public Each parseEach(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseEach(arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseEach(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public Each parseEach(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return parseEach(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
     }
     
 
@@ -99,7 +145,18 @@ public final class StandardExpressionParser {
     public FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseFragmentSelection(arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseFragmentSelection(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public FragmentSelection parseFragmentSelection(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return parseFragmentSelection(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -108,18 +165,20 @@ public final class StandardExpressionParser {
     
     
     
-    Expression parseExpression(final Arguments arguments, final String input, final boolean preprocess) {
+    Expression parseExpression(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(arguments, trimmedInput) :
+                    preprocess(configuration, evalContext, trimmedInput) :
                     trimmedInput);
 
-        final Expression cachedExpression = CACHE.getExpressionFromCache(arguments.getConfiguration(), preprocessedInput);
-        if (cachedExpression != null) {
-            return cachedExpression;
+        if (configuration != null) {
+            final Expression cachedExpression = CACHE.getExpressionFromCache(configuration, preprocessedInput);
+            if (cachedExpression != null) {
+                return cachedExpression;
+            }
         }
         
         final Expression expression = Expression.parse(preprocessedInput);
@@ -128,7 +187,9 @@ public final class StandardExpressionParser {
             throw new TemplateProcessingException("Could not parse as expression: \"" + input + "\"");
         }
         
-        CACHE.putExpressionIntoCache(arguments.getConfiguration(), preprocessedInput, expression);
+        if (configuration != null) {
+            CACHE.putExpressionIntoCache(configuration, preprocessedInput, expression);
+        }
         
         return expression;
         
@@ -136,18 +197,20 @@ public final class StandardExpressionParser {
 
     
     
-    AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
+    AssignationSequence parseAssignationSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(arguments, trimmedInput) :
+                    preprocess(configuration, evalContext, trimmedInput) :
                     trimmedInput);
 
-        final AssignationSequence cachedAssignationSequence = CACHE.getAssignationSequenceFromCache(arguments.getConfiguration(), preprocessedInput);
-        if (cachedAssignationSequence != null) {
-            return cachedAssignationSequence;
+        if (configuration != null) {
+            final AssignationSequence cachedAssignationSequence = CACHE.getAssignationSequenceFromCache(configuration, preprocessedInput);
+            if (cachedAssignationSequence != null) {
+                return cachedAssignationSequence;
+            }
         }
         
         final AssignationSequence assignationSequence = AssignationSequence.parse(preprocessedInput, allowParametersWithoutValue);
@@ -156,7 +219,9 @@ public final class StandardExpressionParser {
             throw new TemplateProcessingException("Could not parse as assignation sequence: \"" + input + "\"");
         }
         
-        CACHE.putAssignationSequenceIntoCache(arguments.getConfiguration(), preprocessedInput, assignationSequence);
+        if (configuration != null) {
+            CACHE.putAssignationSequenceIntoCache(configuration, preprocessedInput, assignationSequence);
+        }
         
         return assignationSequence;
 
@@ -164,18 +229,20 @@ public final class StandardExpressionParser {
 
     
     
-    ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input, final boolean preprocess) {
+    ExpressionSequence parseExpressionSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(arguments, trimmedInput) :
+                    preprocess(configuration, evalContext, trimmedInput) :
                     trimmedInput);
 
-        final ExpressionSequence cachedExpressionSequence = CACHE.getExpressionSequenceFromCache(arguments.getConfiguration(), preprocessedInput);
-        if (cachedExpressionSequence != null) {
-            return cachedExpressionSequence;
+        if (configuration != null) {
+            final ExpressionSequence cachedExpressionSequence = CACHE.getExpressionSequenceFromCache(configuration, preprocessedInput);
+            if (cachedExpressionSequence != null) {
+                return cachedExpressionSequence;
+            }
         }
         
         final ExpressionSequence expressionSequence = ExpressionSequence.parse(preprocessedInput);
@@ -184,7 +251,9 @@ public final class StandardExpressionParser {
             throw new TemplateProcessingException("Could not parse as expression sequence: \"" + input + "\"");
         }
         
-        CACHE.putExpressionSequenceIntoCache(arguments.getConfiguration(), preprocessedInput, expressionSequence);
+        if (configuration != null) {
+            CACHE.putExpressionSequenceIntoCache(configuration, preprocessedInput, expressionSequence);
+        }
         
         return expressionSequence;
 
@@ -192,18 +261,20 @@ public final class StandardExpressionParser {
 
     
     
-    Each parseEach(final Arguments arguments, final String input, final boolean preprocess) {
+    Each parseEach(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(arguments, trimmedInput) :
+                    preprocess(configuration, evalContext, trimmedInput) :
                     trimmedInput);
 
-        final Each cachedEach = CACHE.getEachFromCache(arguments.getConfiguration(), preprocessedInput);
-        if (cachedEach != null) {
-            return cachedEach;
+        if (configuration != null) {
+            final Each cachedEach = CACHE.getEachFromCache(configuration, preprocessedInput);
+            if (cachedEach != null) {
+                return cachedEach;
+            }
         }
         
         final Each each = Each.parse(preprocessedInput);
@@ -212,7 +283,9 @@ public final class StandardExpressionParser {
             throw new TemplateProcessingException("Could not parse as each: \"" + input + "\"");
         }
         
-        CACHE.putEachIntoCache(arguments.getConfiguration(), preprocessedInput, each);
+        if (configuration != null) {
+            CACHE.putEachIntoCache(configuration, preprocessedInput, each);
+        }
         
         return each;
 
@@ -220,18 +293,20 @@ public final class StandardExpressionParser {
     
 
     
-    FragmentSelection parseFragmentSelection(final Arguments arguments, final String input, final boolean preprocess) {
+    FragmentSelection parseFragmentSelection(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(arguments, trimmedInput) :
+                    preprocess(configuration, evalContext, trimmedInput) :
                     trimmedInput);
 
-        final FragmentSelection cachedFragmentSelection = CACHE.getFragmentSelectionFromCache(arguments.getConfiguration(), preprocessedInput);
-        if (cachedFragmentSelection != null) {
-            return cachedFragmentSelection;
+        if (configuration != null) {
+            final FragmentSelection cachedFragmentSelection = CACHE.getFragmentSelectionFromCache(configuration, preprocessedInput);
+            if (cachedFragmentSelection != null) {
+                return cachedFragmentSelection;
+            }
         }
         
         final FragmentSelection fragmentSelection = FragmentSelection.parse(preprocessedInput);
@@ -240,7 +315,9 @@ public final class StandardExpressionParser {
             throw new TemplateProcessingException("Could not parse as fragment selection: \"" + input + "\"");
         }
         
-        CACHE.putFragmentSelectionIntoCache(arguments.getConfiguration(), preprocessedInput, fragmentSelection);
+        if (configuration != null) {
+            CACHE.putFragmentSelectionIntoCache(configuration, preprocessedInput, fragmentSelection);
+        }
         
         return fragmentSelection;
 
@@ -250,7 +327,8 @@ public final class StandardExpressionParser {
 
     
     
-    String preprocess(final Arguments arguments, final String input) {
+    String preprocess(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input) {
 
         if (input.indexOf(PREPROCESS_DELIMITER) == -1) {
             // Fail quick
@@ -270,13 +348,13 @@ public final class StandardExpressionParser {
                 
                 final Expression expression = 
                     parseExpression(
-                            arguments, matcher.group(1), false);
+                            configuration, evalContext, matcher.group(1), false);
                 if (expression == null) {
                     return null;
                 }
                 
                 final Object result =
-                    this.executor.executeExpression(arguments, expression);
+                    this.executor.executeExpression(configuration, evalContext, expression);
                 
                 strBuilder.append(result);
                 

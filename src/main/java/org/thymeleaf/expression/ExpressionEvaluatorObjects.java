@@ -118,14 +118,23 @@ public final class ExpressionEvaluatorObjects {
     
     
     
-    
+    /**
+     * @deprecated Use {@link #computeExpressionEvaluationObjectsForArguments(Arguments)} instead.
+     *             Will be removed in 2.1.x
+     */
+    @Deprecated
     public static Map<String,Object> computeEvaluationVariablesForArguments(final Arguments arguments) {
+        return computeExpressionEvaluationObjectsForArguments(arguments);
+    }
+    
+    
+    
+    
+    public static Map<String,Object> computeExpressionEvaluationObjectsForArguments(final Arguments arguments) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
         
-        variables.putAll(computeExpressionEvaluationObjectsForEvaluationContext(arguments.getExpressionEvaluationContext()));
-        variables.putAll(computeExpressionEvaluationObjectsForContext(arguments.getContext()));
-        variables.putAll(EXPRESSION_EVALUATION_UTILITY_OBJECTS);
+        variables.putAll(computeExpressionEvaluationObjectsForEvaluationContext(arguments));
         
         final Messages messages = new Messages(arguments);
         variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
@@ -140,11 +149,12 @@ public final class ExpressionEvaluatorObjects {
     
     
     
-    
     public static Map<String,Object> computeExpressionEvaluationObjectsForEvaluationContext(
             final ExpressionEvaluationContext expressionEvaluationContext) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
+        
+        variables.putAll(computeExpressionEvaluationObjectsForContext(expressionEvaluationContext.getContext()));
         
         variables.put(ROOT_VARIABLE_NAME, expressionEvaluationContext.getExpressionEvaluationRoot());
         
@@ -165,6 +175,8 @@ public final class ExpressionEvaluatorObjects {
     public static Map<String,Object> computeExpressionEvaluationObjectsForContext(final IContext context) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
+
+        variables.putAll(EXPRESSION_EVALUATION_UTILITY_OBJECTS);
         
         variables.put(CONTEXT_VARIABLE_NAME, context);
         variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());

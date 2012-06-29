@@ -23,8 +23,9 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -60,14 +61,14 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
 
     
     @SuppressWarnings({"unchecked","null"})
-    static Object executeEquals(final Arguments arguments, final EqualsExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeEquals(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final EqualsExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         Object leftValue = 
-            Expression.execute(arguments, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(arguments, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);

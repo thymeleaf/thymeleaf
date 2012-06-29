@@ -34,11 +34,12 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -215,9 +216,9 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
-    static Object executeLink(
-            final Arguments arguments, final LinkExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeLink(final Configuration configuration,
+            final ExpressionEvaluationContext evalContext, final LinkExpression expression, 
+            final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -225,7 +226,7 @@ public final class LinkExpression extends SimpleExpression {
         
         final Expression baseExpression = expression.getBase();
         Object base = 
-            Expression.execute(arguments, baseExpression, expressionEvaluator);
+            Expression.execute(configuration, evalContext, baseExpression, expressionEvaluator);
         base = LiteralValue.unwrap(base);
         if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
             throw new TemplateProcessingException(
@@ -235,18 +236,18 @@ public final class LinkExpression extends SimpleExpression {
 
         String linkBase = (String) base;
         
-        if (!isWebContext(arguments.getContext()) && !isLinkBaseAbsolute(linkBase)) {
+        if (!isWebContext(evalContext.getContext()) && !isLinkBaseAbsolute(linkBase)) {
             throw new TemplateProcessingException(
                     "Link base \"" + linkBase + "\" is not absolute. Non-absolute links " +
                     "can only be processed if context implements the " + 
                     IWebContext.class.getName() + " interface (context is of class: " +
-                    arguments.getContext().getClass().getName() + ")");
+                    evalContext.getContext().getClass().getName() + ")");
         }
         
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(arguments, expression.getParameters(), expressionEvaluator) :
+                    resolveParameters(configuration, evalContext, expression.getParameters(), expressionEvaluator) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -318,7 +319,7 @@ public final class LinkExpression extends SimpleExpression {
             return linkBase + parametersBuffer.toString() + urlFragment;
         }
         
-        final IWebContext webContext = (IWebContext) arguments.getContext();
+        final IWebContext webContext = (IWebContext) evalContext.getContext();
         
         String sessionFragment = "";
         
@@ -387,8 +388,8 @@ public final class LinkExpression extends SimpleExpression {
     
     
     private static Map<String,List<Object>> resolveParameters(
-            final Arguments arguments, final AssignationSequence assignationValues, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+            final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator) {
         
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
@@ -401,7 +402,8 @@ public final class LinkExpression extends SimpleExpression {
                 // also without an equals sign.
                 parameters.put(parameterName, null);
             } else {
-                final Object value = Expression.execute(arguments, parameterExpression, expressionEvaluator);
+                final Object value = 
+                        Expression.execute(configuration, evalContext, parameterExpression, expressionEvaluator);
                 if (value == null) {
                     parameters.put(parameterName, EMPTY_PARAMETER_VALUE);
                 } else {

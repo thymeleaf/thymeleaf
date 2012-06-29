@@ -23,9 +23,10 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -35,6 +36,7 @@ import org.thymeleaf.util.ObjectUtils;
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.1
+ *
  *
  */
 public final class SubtractionExpression extends AdditionSubtractionExpression {
@@ -63,18 +65,18 @@ public final class SubtractionExpression extends AdditionSubtractionExpression {
     
     
     
-    static Object executeSubtraction(final Arguments arguments, final SubtractionExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeSubtraction(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final SubtractionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating subtraction expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object leftValue = 
-            Expression.execute(arguments, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(arguments, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
         
         if (leftValue == null) {
             leftValue = "null";
