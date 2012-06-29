@@ -15,6 +15,11 @@
   order to process only template fragments.
 - Modified extraction of fragments from element and/or attribute name so that a list might be
   returned instead of a single Node.
+- Modified the StandardExpressionProcessor infrastructure to allow the usage of parameters lighter
+  than an "Arguments" object: Configuration and ExpressionEvaluationContext.
+- Made Arguments extend ExpressionEvaluationContext.
+- Refactored standard expression evaluation to allow execution of expressions outside templates
+  (with limitations, for example, no string externalization).
 
 
 

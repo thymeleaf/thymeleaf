@@ -136,12 +136,12 @@ public class ExpressionBenchmark {
 
         
 
-        final StandardExpressionExecutor executor  = new StandardExpressionExecutor(OgnlExpressionEvaluator.INSTANCE);
+        final StandardExpressionExecutor executor  = new StandardExpressionExecutor(OgnlVariableExpressionEvaluator.INSTANCE);
         final StandardExpressionParser parser = new StandardExpressionParser(executor);
 
         for (int i = 0; i < msgs.size(); i++) {
             final Expression expression = 
-                parser.parseExpression(null, msgs.get(i), false);
+                parser.parseExpression(null, null, msgs.get(i), false);
             Assert.assertNotNull(expression);
             final String exp = expression.getStringRepresentation();
             Assert.assertEquals(exp, processedMsgs.get(i));
@@ -156,7 +156,7 @@ public class ExpressionBenchmark {
         
         for (int x = 0; x < 1000; x++)
             for (int i = 0; i < msgs.size(); i++)
-                parser.parseExpression(null, msgs.get(i), false);
+                parser.parseExpression(null, null, msgs.get(i), false);
 
         sw.stop();
         
@@ -167,7 +167,7 @@ public class ExpressionBenchmark {
         
         for (int x = 0; x < 1000; x++)
             for (int i = 0; i < msgs.size(); i++)
-                parser.parseExpression(null, msgs.get(i), false);
+                parser.parseExpression(null, null, msgs.get(i), false);
 
 
         sw.stop();

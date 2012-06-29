@@ -71,7 +71,7 @@ public abstract class AbstractSelectionTargetAttrProcessor
             additionalLocalVariables = new HashMap<String, Object>(additionalLocalVariables);
         }
         additionalLocalVariables.put(
-                ExpressionEvaluationContext.SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
+                ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
         
         doAdditionalProcess(arguments, element, attributeName);
         

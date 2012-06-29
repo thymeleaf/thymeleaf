@@ -75,7 +75,7 @@ public abstract class AbstractSelectionTargetElementProcessor
             additionalLocalVariables = new HashMap<String, Object>(additionalLocalVariables);
         }
         additionalLocalVariables.put(
-                ExpressionEvaluationContext.SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
+                ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
 
         if (removeHostElement) {
             

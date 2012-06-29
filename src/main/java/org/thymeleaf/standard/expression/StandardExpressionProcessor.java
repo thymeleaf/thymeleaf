@@ -20,7 +20,9 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 
 
@@ -50,54 +52,113 @@ public final class StandardExpressionProcessor {
 
     
     public static Expression parseExpression(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments).parseExpression(arguments, input);
+        return getParserAttribute(arguments.getConfiguration()).parseExpression(arguments, input);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public static Expression parseExpression(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
+        return getParserAttribute(configuration).parseExpression(configuration, evalContext, input);
     }
 
     
     
     public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
-        return getParserAttribute(arguments).parseAssignationSequence(arguments, input, allowParametersWithoutValue);
+        return getParserAttribute(arguments.getConfiguration()).parseAssignationSequence(arguments, input, allowParametersWithoutValue);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public static AssignationSequence parseAssignationSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean allowParametersWithoutValue) {
+        return getParserAttribute(configuration).parseAssignationSequence(configuration, evalContext, input, allowParametersWithoutValue);
     }
 
     
     
     public static ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments).parseExpressionSequence(arguments, input);
+        return getParserAttribute(arguments.getConfiguration()).parseExpressionSequence(arguments, input);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
+        return getParserAttribute(configuration).parseExpressionSequence(configuration, evalContext, input);
     }
 
     
     
     public static Each parseEach(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments).parseEach(arguments, input);
+        return getParserAttribute(arguments.getConfiguration()).parseEach(arguments, input);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public static Each parseEach(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
+        return getParserAttribute(configuration).parseEach(configuration, evalContext, input);
     }
     
 
     
     public static FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments).parseFragmentSelection(arguments, input);
+        return getParserAttribute(arguments.getConfiguration()).parseFragmentSelection(arguments, input);
+    }
+    
+    /**
+     * @since 2.0.9
+     */
+    public static FragmentSelection parseFragmentSelection(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
+        return getParserAttribute(configuration).parseFragmentSelection(configuration, evalContext, input);
     }
 
     
+
     
-   
+    
+    
+    
     public static Object executeExpression(final Arguments arguments, final Expression expression) {
-        return getExecutorAttribute(arguments).executeExpression(arguments, expression);
+        return getExecutorAttribute(arguments.getConfiguration()).executeExpression(arguments, expression);
     }
+    
+    /**
+     * @since 2.0.9
+     */
+    public static Object executeExpression(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final Expression expression) {
+        return getExecutorAttribute(configuration).executeExpression(configuration, evalContext, expression);
+    }
+    
+    
     
 
     
+
     
     public static Object processExpression(final Arguments arguments, final String input) {
         return executeExpression(arguments, parseExpression(arguments, input));
     }
     
+    /**
+     * @since 2.0.9
+     */
+    public static Object processExpression(final Configuration configuration, 
+            final ExpressionEvaluationContext evalContext, final String input) {
+        return executeExpression(configuration, evalContext, parseExpression(configuration, evalContext, input));
+    }
+    
 
     
     
     
-    private static StandardExpressionParser getParserAttribute(final Arguments arguments) {
+    
+    
+    private static StandardExpressionParser getParserAttribute(final Configuration configuration) {
         final Object parser =
-            arguments.getExecutionAttribute(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
+                configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
         if (parser == null || (!(parser instanceof StandardExpressionParser))) {
             throw new TemplateProcessingException(
                     "No Standard Expression Parser has been registered as an execution argument. " +
@@ -113,9 +174,9 @@ public final class StandardExpressionProcessor {
     
     
     
-    private static StandardExpressionExecutor getExecutorAttribute(final Arguments arguments) {
+    private static StandardExpressionExecutor getExecutorAttribute(final Configuration configuration) {
         final Object executor =
-            arguments.getExecutionAttribute(STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME);
+                configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME);
         if (executor == null || (!(executor instanceof StandardExpressionExecutor))) {
             throw new TemplateProcessingException(
                     "No Standard Expression Executor has been registered as an execution argument. " +
@@ -131,9 +192,19 @@ public final class StandardExpressionProcessor {
 
     
     
-    
+    /**
+     * @deprecated Use {@link #createStandardExpressionExecutor(IStandardVariableExpressionEvaluator)}
+     *             instead. Will be removed in 2.1.x
+     */
+    @Deprecated
     public static StandardExpressionExecutor createStandardExpressionExecutor(
             final IStandardExpressionEvaluator expressionEvaluator) {
+        return new StandardExpressionExecutor(
+                new DeprecatedBridgeStandardExpressionEvaluator(expressionEvaluator));
+    }
+    
+    public static StandardExpressionExecutor createStandardExpressionExecutor(
+            final IStandardVariableExpressionEvaluator expressionEvaluator) {
         return new StandardExpressionExecutor(expressionEvaluator);
     }
 

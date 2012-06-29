@@ -24,8 +24,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -190,18 +191,18 @@ public final class DefaultExpression extends ComplexExpression {
 
     
     
-    static Object executeDefault(final Arguments arguments, final DefaultExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeDefault(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final DefaultExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating default expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         final Object queriedValue = 
-            Expression.execute(arguments, expression.getQueriedExpression(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getQueriedExpression(), expressionEvaluator);
         
         if (queriedValue == null) {
-            return Expression.execute(arguments, expression.getDefaultExpression(), expressionEvaluator);
+            return Expression.execute(configuration, evalContext, expression.getDefaultExpression(), expressionEvaluator);
         }
         return queriedValue;
         

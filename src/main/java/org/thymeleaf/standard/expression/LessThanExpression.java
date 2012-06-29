@@ -23,9 +23,10 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -61,18 +62,18 @@ public final class LessThanExpression extends GreaterLesserExpression {
 
     
     @SuppressWarnings("unchecked")
-    static Object executeLessThan(final Arguments arguments, final LessThanExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeLessThan(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final LessThanExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating LESS THAN expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object leftValue = 
-            Expression.execute(arguments, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(arguments, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
 
         if (leftValue == null || rightValue == null) {
             throw new TemplateProcessingException(

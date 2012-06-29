@@ -36,7 +36,7 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.standard.expression.OgnlExpressionEvaluator;
+import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
@@ -477,8 +477,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     @Override
     public Map<String, Object> getExecutionAttributes() {
         
-        final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(OgnlExpressionEvaluator.INSTANCE);
-        final StandardExpressionParser parser = StandardExpressionProcessor.createStandardExpressionParser(executor);
+        final StandardExpressionExecutor executor = 
+                StandardExpressionProcessor.createStandardExpressionExecutor(OgnlVariableExpressionEvaluator.INSTANCE);
+        final StandardExpressionParser parser = 
+                StandardExpressionProcessor.createStandardExpressionParser(executor);
         
         final Map<String,Object> executionAttributes = new HashMap<String, Object>();
         executionAttributes.put(

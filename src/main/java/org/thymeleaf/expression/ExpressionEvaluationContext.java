@@ -34,10 +34,10 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.9
  *
  */
-public final class ExpressionEvaluationContext {
+public class ExpressionEvaluationContext {
 
     
-    public static final String SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
+    public static final String EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
     
 
     private IContext context;
@@ -45,6 +45,8 @@ public final class ExpressionEvaluationContext {
     private Object selectionEvaluationRoot;
     private final HashMap<String,Object> localVariables;
     
+    private final Map<String, Object> baseContextVariables;
+
     
     
     public ExpressionEvaluationContext(final IContext context) {
@@ -57,6 +59,8 @@ public final class ExpressionEvaluationContext {
         this.localVariables = null;
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
+        
+        this.baseContextVariables = computeBaseContextVariables(); 
         
     }
 
@@ -74,6 +78,8 @@ public final class ExpressionEvaluationContext {
                         new HashMap<String,Object>(localVariables) : null);
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
+        
+        this.baseContextVariables = computeBaseContextVariables(); 
         
     }
     
@@ -102,7 +108,29 @@ public final class ExpressionEvaluationContext {
     }
     
     
+    
+    protected Map<String,Object> computeBaseContextVariables() {
+        return ExpressionEvaluatorObjects.computeExpressionEvaluationObjectsForEvaluationContext(this);
+    }
+    
+    
+    
 
+    /**
+     * <p>
+     *   Returns the map of base variables that should be made available to every expression
+     *   evaluation operation (whenever variable evaluation is available).
+     * </p>
+     * 
+     * @return the map of variables (a new object, mutable, safe to use as a context variables base)
+     */
+    public Map<String,Object> getBaseContextVariables() {
+        final Map<String,Object> variables = new HashMap<String, Object>();
+        variables.putAll(this.baseContextVariables);
+        return variables;
+    }
+
+    
     
 
     /**
@@ -155,7 +183,7 @@ public final class ExpressionEvaluationContext {
      * @return true if there is a selection currently established, false if not
      */
     public boolean hasSelectionTarget() {
-        return hasLocalVariable(ExpressionEvaluationContext.SELECTION_TARGET_LOCAL_VARIABLE_NAME);
+        return hasLocalVariable(ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
     }
     
     
@@ -172,7 +200,7 @@ public final class ExpressionEvaluationContext {
      */
     public Object getSelectionTarget() {
         if (hasSelectionTarget()) {
-            return getLocalVariable(ExpressionEvaluationContext.SELECTION_TARGET_LOCAL_VARIABLE_NAME);
+            return getLocalVariable(ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
         }
         throw new IllegalStateException(
                 "Cannot return selection target object, a selection target has not been set.");    }
@@ -271,6 +299,18 @@ public final class ExpressionEvaluationContext {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
+        final ExpressionEvaluationContext newContext = 
+                new ExpressionEvaluationContext(this.context, mergeNewLocalVariables(newVariables));
+        return newContext;
+    }
+
+    
+    
+    
+    protected Map<String,Object> mergeNewLocalVariables(final Map<String,Object> newVariables) {
+        if (newVariables == null || newVariables.isEmpty()) {
+            return this.localVariables;
+        }
         final int localVariablesSize = (this.localVariables != null? this.localVariables.size() : 0);
         final HashMap<String,Object> cloneLocalVariables = 
                 new HashMap<String, Object>(localVariablesSize + newVariables.size() + 1, 1.0f);
@@ -278,11 +318,8 @@ public final class ExpressionEvaluationContext {
             cloneLocalVariables.putAll(this.localVariables);
         }
         cloneLocalVariables.putAll(newVariables);
-        final ExpressionEvaluationContext newContext = 
-                new ExpressionEvaluationContext(this.context, cloneLocalVariables);
-        return newContext;
+        return cloneLocalVariables;
     }
-
     
     
     

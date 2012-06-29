@@ -19,20 +19,20 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 2.0.9
- * @deprecated Implement {@link IStandardVariableExpressionEvaluator} instead.
- *             Will be removed in 2.1.x
  *
  */
-@Deprecated
-public interface IStandardExpressionEvaluator {
+public interface IStandardVariableExpressionEvaluator {
     
-    public Object evaluate(final Arguments arguments, final String expression, final Object root);
+    public Object evaluate(
+            final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final String expression, final boolean useSelectionAsRoot);
     
 }

@@ -20,6 +20,8 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -38,10 +40,10 @@ public final class StandardExpressionExecutor {
 
 
     
-    private final IStandardExpressionEvaluator expressionEvaluator;
+    private final IStandardVariableExpressionEvaluator expressionEvaluator;
     
     
-    StandardExpressionExecutor(final IStandardExpressionEvaluator expressionEvaluator) {
+    StandardExpressionExecutor(final IStandardVariableExpressionEvaluator expressionEvaluator) {
         super();
         this.expressionEvaluator = expressionEvaluator;
     }
@@ -49,14 +51,33 @@ public final class StandardExpressionExecutor {
     
 
     
-    
+
+    /**
+     */
     public Object executeExpression(final Arguments arguments, final Expression expression) {
 
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
         
         final Object result = 
-            Expression.execute(arguments, expression, this.expressionEvaluator);
+            Expression.execute(arguments.getConfiguration(), arguments, expression, this.expressionEvaluator);
+        return LiteralValue.unwrap(result); 
+        
+    }
+
+    
+    
+    /**
+     * @since 2.0.9
+     */
+    public Object executeExpression(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final Expression expression) {
+
+        Validate.notNull(evalContext, "Expression evaluation context cannot be null");
+        Validate.notNull(expression, "Expression cannot be null");
+        
+        final Object result = 
+            Expression.execute(configuration, evalContext, expression, this.expressionEvaluator);
         return LiteralValue.unwrap(result); 
         
     }

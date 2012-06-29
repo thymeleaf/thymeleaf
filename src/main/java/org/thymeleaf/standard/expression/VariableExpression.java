@@ -24,9 +24,10 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -98,8 +99,8 @@ public final class VariableExpression extends SimpleExpression {
     
     
     static Object executeVariable(
-            final Arguments arguments, final VariableExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+            final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final VariableExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating variable expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -111,9 +112,7 @@ public final class VariableExpression extends SimpleExpression {
                     "Variable expression is null, which is not allowed");
         }
         
-        final Object evaluationRoot = arguments.getExpressionEvaluationContext().getExpressionEvaluationRoot();
-        
-        return expressionEvaluator.evaluate(arguments, exp, evaluationRoot);
+        return expressionEvaluator.evaluate(configuration, evalContext, exp, false);
         
     }
     

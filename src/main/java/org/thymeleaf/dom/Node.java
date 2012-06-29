@@ -747,8 +747,8 @@ public abstract class Node implements Serializable {
              * If the Arguments object has local variables, synchronize the node-local
              * variables map.
              */
-            if (executionArguments.getExpressionEvaluationContext().hasLocalVariables()) {
-                unsafeSetNodeLocalVariables(executionArguments.getExpressionEvaluationContext().unsafeGetLocalVariables());
+            if (executionArguments.hasLocalVariables()) {
+                unsafeSetNodeLocalVariables(executionArguments.unsafeGetLocalVariables());
             }
             
             /*
@@ -812,8 +812,8 @@ public abstract class Node implements Serializable {
                     
                     // If we have added local variables, we should update the node's map for these variables in
                     // order to keep them synchronized
-                    if (processorResult.hasLocalVariables() && executionArguments.getExpressionEvaluationContext().hasLocalVariables()) {
-                        node.unsafeSetNodeLocalVariables(executionArguments.getExpressionEvaluationContext().unsafeGetLocalVariables());
+                    if (processorResult.hasLocalVariables() && executionArguments.hasLocalVariables()) {
+                        node.unsafeSetNodeLocalVariables(executionArguments.unsafeGetLocalVariables());
                     }
                     
                     // Make sure this specific processor instance is not executed again

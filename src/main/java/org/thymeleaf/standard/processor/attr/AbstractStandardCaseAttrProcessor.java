@@ -63,15 +63,14 @@ public abstract class AbstractStandardCaseAttrProcessor
     @Override
     protected boolean isVisible(final Arguments arguments, final Element element, final String attributeName) {
         
-        if (!arguments.getExpressionEvaluationContext().hasLocalVariable(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME)) {
+        if (!arguments.hasLocalVariable(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME)) {
             throw new TemplateProcessingException(
                     "Cannot specify a \"" + attributeName + "\" attribute in an environment where no " +
                     "switch operator has been defined before.");
         }
         
         final SwitchStructure switchStructure = 
-                (SwitchStructure) arguments.getExpressionEvaluationContext().
-                        getLocalVariable(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME);
+                (SwitchStructure) arguments.getLocalVariable(AbstractStandardSwitchStructureAttrProcessor.SWITCH_VARIABLE_NAME);
 
         if (switchStructure.isExecuted()) {
             return false;

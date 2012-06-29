@@ -22,8 +22,9 @@ package org.thymeleaf.standard.expression;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 
 
@@ -385,21 +386,21 @@ public abstract class SimpleExpression extends Expression {
     
     
     
-    static Object executeSimple(final Arguments arguments, final SimpleExpression expression, 
-            final IStandardExpressionEvaluator expressionEvaluator) {
+    static Object executeSimple(final Configuration configuration, final ExpressionEvaluationContext evalContext, final SimpleExpression expression, 
+            final IStandardVariableExpressionEvaluator expressionEvaluator) {
         
         if (expression instanceof VariableExpression) {
-            return VariableExpression.executeVariable(arguments, (VariableExpression)expression, expressionEvaluator);
+            return VariableExpression.executeVariable(configuration, evalContext, (VariableExpression)expression, expressionEvaluator);
         } else  if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(arguments, (MessageExpression)expression, expressionEvaluator);
+            return MessageExpression.executeMessage(configuration, evalContext, (MessageExpression)expression, expressionEvaluator);
         } else  if (expression instanceof TextLiteralExpression) {
-            return TextLiteralExpression.executeTextLiteral(arguments, (TextLiteralExpression)expression);
+            return TextLiteralExpression.executeTextLiteral(evalContext, (TextLiteralExpression)expression);
         } else  if (expression instanceof NumberLiteralExpression) {
-            return NumberLiteralExpression.executeNumberLiteral(arguments, (NumberLiteralExpression)expression);
+            return NumberLiteralExpression.executeNumberLiteral(evalContext, (NumberLiteralExpression)expression);
         } else  if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(arguments, (LinkExpression)expression, expressionEvaluator);
+            return LinkExpression.executeLink(configuration, evalContext, (LinkExpression)expression, expressionEvaluator);
         } else  if (expression instanceof SelectionVariableExpression) {
-            return SelectionVariableExpression.executeSelectionVariable(arguments, (SelectionVariableExpression)expression, expressionEvaluator);
+            return SelectionVariableExpression.executeSelectionVariable(configuration, evalContext, (SelectionVariableExpression)expression, expressionEvaluator);
         }
         
         throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());
