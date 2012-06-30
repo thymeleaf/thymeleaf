@@ -61,7 +61,7 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
                 getTargetAttributeName(arguments, element, attributeName, attributeValue);
         
         return StandardFragmentProcessor.computeStandardFragmentSpec(
-                arguments, attributeValue, null, targetAttributeName);
+                arguments.getConfiguration(), arguments, attributeValue, null, targetAttributeName);
         
     }
 
