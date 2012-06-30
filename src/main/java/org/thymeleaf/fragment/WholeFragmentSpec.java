@@ -37,6 +37,7 @@ import org.thymeleaf.dom.Node;
  */
 public final class WholeFragmentSpec implements IFragmentSpec {
     
+    public static final WholeFragmentSpec INSTANCE = new WholeFragmentSpec();
     
     
     public WholeFragmentSpec() {
