@@ -90,7 +90,7 @@ public final class StandardFragmentProcessor {
             
         }
         
-        final IFragmentSpec fragmentSpec = new WholeFragmentSpec();
+        final IFragmentSpec fragmentSpec = WholeFragmentSpec.INSTANCE;
         return new FragmentAndTarget(templateName, fragmentSpec);
         
     }
