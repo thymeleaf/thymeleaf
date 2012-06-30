@@ -20,6 +20,7 @@
 - Made Arguments extend ExpressionEvaluationContext.
 - Refactored standard expression evaluation to allow execution of expressions outside templates
   (with limitations, for example, no string externalization).
+- Modified TemplateEngine.isInitialized() visibility to public.
 
 
 

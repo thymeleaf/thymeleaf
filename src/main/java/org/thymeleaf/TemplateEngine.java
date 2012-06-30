@@ -279,7 +279,7 @@ public class TemplateEngine {
      * @return <tt>true</tt> if the template engine has already been initialized,
      *         <tt>false</tt> if not.
      */
-    protected final boolean isInitialized() {
+    public final boolean isInitialized() {
         return this.initialized;
     }
 
