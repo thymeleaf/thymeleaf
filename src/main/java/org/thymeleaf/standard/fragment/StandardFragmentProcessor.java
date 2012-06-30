@@ -20,7 +20,9 @@
 package org.thymeleaf.standard.fragment;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
 import org.thymeleaf.fragment.FragmentAndTarget;
@@ -43,19 +45,35 @@ public final class StandardFragmentProcessor {
     
     
 
+    /**
+     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, ExpressionEvaluationContext, String, String, String)}
+     *             instead. Will be removed in 2.1.x
+     */
+    @Deprecated
     public static final FragmentAndTarget computeStandardFragmentSpec(
             final Arguments arguments, final String standardFragmentSpec,  
             final String targetElementName, final String targetAttributeName) {
+        return computeStandardFragmentSpec(
+                arguments.getConfiguration(), arguments, standardFragmentSpec, 
+                targetElementName, targetAttributeName);
+    }
+    
+
+    
+    
+    public static final FragmentAndTarget computeStandardFragmentSpec(
+            final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final String standardFragmentSpec, final String targetElementName, final String targetAttributeName) {
         
-        Validate.notNull(arguments, "Arguments cannot be null");
+        Validate.notNull(evalContext, "Evaluation Context cannot be null");
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
         // Target element and attribute names can be null
         
         final FragmentSelection fragmentSelection =
-            StandardExpressionProcessor.parseFragmentSelection(arguments, standardFragmentSpec);
+            StandardExpressionProcessor.parseFragmentSelection(configuration, evalContext, standardFragmentSpec);
         
         final Object templateNameObject = 
-            StandardExpressionProcessor.executeExpression(arguments, fragmentSelection.getTemplateName());
+            StandardExpressionProcessor.executeExpression(configuration, evalContext, fragmentSelection.getTemplateName());
         if (templateNameObject == null) {
             throw new TemplateProcessingException(
                     "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " + 
@@ -67,7 +85,7 @@ public final class StandardFragmentProcessor {
         if (fragmentSelection.hasFragmentSelector()) {
 
             final Object fragmentSelectorObject = 
-                StandardExpressionProcessor.executeExpression(arguments, fragmentSelection.getFragmentSelector());
+                StandardExpressionProcessor.executeExpression(configuration, evalContext, fragmentSelection.getFragmentSelector());
             if (fragmentSelectorObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of fragment selector from spec \"" + standardFragmentSpec + "\" " + 
@@ -94,7 +112,6 @@ public final class StandardFragmentProcessor {
         return new FragmentAndTarget(templateName, fragmentSpec);
         
     }
-    
 
 
     
