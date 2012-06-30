@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.expression;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -302,6 +303,22 @@ public class ExpressionEvaluationContext {
         final ExpressionEvaluationContext newContext = 
                 new ExpressionEvaluationContext(this.context, mergeNewLocalVariables(newVariables));
         return newContext;
+    }
+    
+    
+    /**
+     * <p>
+     *   Creates a new Arguments object by adding some new local variables 
+     *   to the existing map (the rest of the attributes are copied verbatim).
+     * </p>
+     * 
+     * @param newVariables the new variables
+     * @return the new Arguments object
+     */
+    public ExpressionEvaluationContext addSelectionTarget(final Object selectionTargetObject) {
+        final Map<String,Object> newLocalVariables =
+                Collections.singletonMap(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME, selectionTargetObject);
+        return addLocalVariables(newLocalVariables);
     }
 
     
