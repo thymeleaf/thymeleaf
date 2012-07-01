@@ -503,13 +503,31 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             
             flushBuffer();
             
-            final NestableNode element = this.elementStack.pop();
+            final NestableNode node = this.elementStack.pop();
+            
+            if (node instanceof Element) {
+                final Element element = (Element) node;
+                if (TemplatePreprocessingReader.SYNTHETIC_ROOT_ELEMENT_NAME.equals(element.getOriginalName())) {
+                    // If it is the synthetic root element, then we skip the element itself and just add
+                    // its children to the results.
+                    final List<Node> syntheticRootChildren = element.getChildren();
+                    if (this.elementStack.isEmpty()) {
+                        this.rootNodes.addAll(syntheticRootChildren);
+                    } else {
+                        final NestableNode parent = this.elementStack.peek();
+                        for (final Node syntheticRootChild : syntheticRootChildren) {
+                            parent.addChild(syntheticRootChild);
+                        }
+                    }
+                    return;
+                }
+            }
             
             if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(element);
+                this.rootNodes.add(node);
             } else {
                 final NestableNode parent = this.elementStack.peek();
-                parent.addChild(element);
+                parent.addChild(node);
             }
             
         }

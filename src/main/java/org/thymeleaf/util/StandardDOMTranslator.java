@@ -1,5 +1,9 @@
 package org.thymeleaf.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
@@ -80,7 +84,15 @@ public class StandardDOMTranslator {
         for (int i = 0; i < childrenLen; i++) {
             final org.w3c.dom.Node child = children.item(i);
             if (!(child instanceof org.w3c.dom.DocumentType)) {
-                document.addChild(translateNode(child, document, documentName));
+                if (child instanceof org.w3c.dom.Element) {
+                    final List<Node> childNodes =
+                            translateRootElement((org.w3c.dom.Element)child, document, documentName);
+                    for (final Node childNode : childNodes) {
+                        document.addChild(childNode);
+                    }
+                } else {
+                    document.addChild(translateNode(child, document, documentName));
+                }
             }
         }
         return document;
@@ -115,6 +127,7 @@ public class StandardDOMTranslator {
     public static final Element translateElement(final org.w3c.dom.Element domNode, final NestableNode parentNode, final String documentName) {
 
         final String elementTagName = domNode.getTagName();
+        
         final Element element = new Element(elementTagName, documentName);
         element.setParent(parentNode);
         
@@ -137,6 +150,29 @@ public class StandardDOMTranslator {
         }
         
         return element;
+        
+    }
+
+    
+    
+    private static final List<Node> translateRootElement(final org.w3c.dom.Element domNode, 
+            final NestableNode parentNode, final String documentName) {
+
+        final String elementTagName = domNode.getTagName();
+        
+        if (!TemplatePreprocessingReader.SYNTHETIC_ROOT_ELEMENT_NAME.equals(elementTagName)) {
+            return Collections.singletonList((Node)translateElement(domNode, parentNode, documentName));
+        }
+
+        final List<Node> result = new ArrayList<Node>();
+        final org.w3c.dom.NodeList children = domNode.getChildNodes();
+        final int childrenLen = children.getLength();
+        for (int i = 0; i < childrenLen; i++) {
+            final org.w3c.dom.Node child = children.item(i);
+            result.add(translateNode(child, parentNode, documentName));
+        }
+        
+        return result;
         
     }
     

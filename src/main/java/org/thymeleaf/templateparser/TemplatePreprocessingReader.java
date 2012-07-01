@@ -62,11 +62,11 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     
-    private static final int[] COMMENT_START = convertToIndexes("<!--"); 
-    private static final int[] COMMENT_END = convertToIndexes("-->");
-    private static final int[] ENTITY = convertToIndexes("&" + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ";");
+    private static final int[] COMMENT_START = convertToIndexes("<!--".toCharArray()); 
+    private static final int[] COMMENT_END = convertToIndexes("-->".toCharArray());
+    private static final int[] ENTITY = convertToIndexes(("&" + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ";").toCharArray());
     private static final int[] DOCTYPE =
-            convertToIndexes("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">");
+            convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
 
 
     private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
@@ -77,6 +77,10 @@ public final class TemplatePreprocessingReader extends Reader {
     private static final char[] ENTITY_START_SUBSTITUTE_CHAR_ARRAY = new char[] { CHAR_ENTITY_START_SUBSTITUTE };
 
     
+    public static final String SYNTHETIC_ROOT_ELEMENT_NAME = "THYMELEAF_ROOT"; 
+    private static final char[] SYNTHETIC_ROOT_ELEMENT_START_CHARS = ("<" + SYNTHETIC_ROOT_ELEMENT_NAME + ">").toCharArray();
+    private static final char[] SYNTHETIC_ROOT_ELEMENT_END_CHARS = ("</" + SYNTHETIC_ROOT_ELEMENT_NAME + ">").toCharArray(); 
+    
     
     private final BufferedReader bufferedReader;
     
@@ -86,6 +90,9 @@ public final class TemplatePreprocessingReader extends Reader {
     
     private boolean inComment = false;
     private boolean docTypeClauseRead = false;
+    private boolean firstElementProcessed = false;
+    private boolean rootElementClosingSent = false;
+    private int rootElementClosingOffset = 0;
     
     private boolean noMoreToRead = false;
     
@@ -95,12 +102,12 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     
-    private static int[] convertToIndexes(final String str) {
+    private static int[] convertToIndexes(final char[] chars) {
         
-        final int strLen = str.length();
-        final int[] result = new int[strLen];
-        for (int i = 0; i < strLen; i++) {
-            final char c = str.charAt(i);
+        final int charsLen = chars.length;
+        final int[] result = new int[charsLen];
+        for (int i = 0; i < charsLen; i++) {
+            final char c = chars[i];
             boolean found = false;
             for (int j = 0; !found && j < UPPER_CHARS.length; j++) {
                 if (UPPER_CHARS[j] == c) {
@@ -205,7 +212,24 @@ public final class TemplatePreprocessingReader extends Reader {
             // Buffer was not filled up with content from overflow, so ask for more content
             
             final int toBeRead = this.buffer.length - bufferSize;
-            final int reallyRead = this.bufferedReader.read(this.buffer, bufferSize, toBeRead);
+            int reallyRead = this.bufferedReader.read(this.buffer, bufferSize, toBeRead);
+
+            if (!this.rootElementClosingSent && (reallyRead < 0)) {
+                // If there is no more content to be read from the source reader, close the synthetic
+                // root element and make it look like it was read from source.
+
+                reallyRead =
+                    copyToResult(
+                            SYNTHETIC_ROOT_ELEMENT_END_CHARS, this.rootElementClosingOffset, (SYNTHETIC_ROOT_ELEMENT_END_CHARS.length - this.rootElementClosingOffset), 
+                            this.buffer, bufferSize, this.buffer.length);
+                
+                this.rootElementClosingOffset += reallyRead;
+
+                if (this.rootElementClosingOffset >= SYNTHETIC_ROOT_ELEMENT_END_CHARS.length) {
+                    this.rootElementClosingSent = true;
+                }
+                
+            }
             
             if (readerLogger.isTraceEnabled()) {
                 readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] READ FROM SOURCE {} A read operation was executed on the source reader (max chars requested: {}).", 
@@ -213,9 +237,11 @@ public final class TemplatePreprocessingReader extends Reader {
             }
             
             if (reallyRead < 0) {
+
                 
                 if (bufferSize == 0) {
 
+                    
                     if (readerLogger.isTraceEnabled()) {
                         readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] RETURN {} After trying to read from input: No input left, no buffer left.", 
                                 new Object[] {TemplateEngine.threadIndex(), Integer.valueOf(reallyRead)});
@@ -224,6 +250,7 @@ public final class TemplatePreprocessingReader extends Reader {
                     return reallyRead;
                     
                 }
+                
                 this.noMoreToRead = true;
                 
             } else {
@@ -242,6 +269,10 @@ public final class TemplatePreprocessingReader extends Reader {
             if (readerLogger.isTraceEnabled()) {
                 readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] RETURN -1 Reader was already marked to be finished. No more input, no more buffer.", 
                         new Object[] {TemplateEngine.threadIndex()});
+            }
+            
+            if (!this.rootElementClosingSent) {
+                this.rootElementClosingSent = true;
             }
             
             return -1;
@@ -273,10 +304,40 @@ public final class TemplatePreprocessingReader extends Reader {
                     final char[] normalizedDocType =
                             normalizeDocTypeClause(this.buffer, buffi, matchedDocType);
                     
-                    final int copied =
-                        copyToResult(
-                                normalizedDocType, 0, matchedDocType, 
-                                cbuf, cbufi, last);
+                    if (readerLogger.isTraceEnabled()) {
+                        readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Normalized DOCTYPE clause: {}", 
+                                new Object[] {TemplateEngine.threadIndex(), new String(normalizedDocType)});
+                    }
+                    
+                    int copied = -1;
+                    if (!this.firstElementProcessed) {
+                        // If DOCTYPE is processed, we will inject the synthetic root
+                        // element just after the DOCTYPE so that we avoid problems with
+                        // DOCTYPE clause being bigger than 'len' argument in the first 'read()' call.
+                        
+                        final char[] normalizedDocTypePlusSyntheticRootElement = 
+                                new char[normalizedDocType.length + SYNTHETIC_ROOT_ELEMENT_START_CHARS.length + 1];
+                        System.arraycopy(normalizedDocType, 0, normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocType.length);
+                        normalizedDocTypePlusSyntheticRootElement[normalizedDocType.length] = '\n';
+                        System.arraycopy(SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, normalizedDocTypePlusSyntheticRootElement, normalizedDocType.length + 1, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length);
+                        
+                        copied =
+                                copyToResult(
+                                        normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocTypePlusSyntheticRootElement.length, 
+                                        cbuf, cbufi, last);
+                        
+                        this.firstElementProcessed = true;
+                        
+                    } else {
+                        
+                        copied =
+                                copyToResult(
+                                        normalizedDocType, 0, normalizedDocType.length, 
+                                        cbuf, cbufi, last);
+                        
+                    }
+                    
+                    
                     cbufi += copied;
                     totalRead += copied;
                     buffi += matchedDocType;
@@ -286,16 +347,29 @@ public final class TemplatePreprocessingReader extends Reader {
                 
             }
             
+            
+            if (!this.firstElementProcessed) {
+                // This block will be reached if we did not have to process a
+                // DOCTYPE clause (because the DOCTYPE would have
+                // matched the previous block).
+                
+                this.firstElementProcessed = true;
+                    
+                final int copied =
+                    copyToResult(
+                            SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length, 
+                            cbuf, cbufi, last);
+                
+                cbufi += copied;
+                totalRead += copied;
+                continue;
+                
+            }
+            
+            
             final int matchedStartOfComment = 
-                (this.inComment? 
-                        -2 : match(COMMENT_START, 0, COMMENT_START.length, this.buffer, buffi, bufferSize));
-            final int matchedEndOfComment = 
-                (this.inComment? 
-                        match(COMMENT_END, 0, COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
-
-            final int matchedEntity = 
-                (this.inComment? 
-                        -2 : match(ENTITY, 0, ENTITY.length, this.buffer, buffi, bufferSize));
+                    (this.inComment? 
+                            -2 : match(COMMENT_START, 0, COMMENT_START.length, this.buffer, buffi, bufferSize));
             
             if (matchedStartOfComment > 0) {
                 
@@ -311,6 +385,11 @@ public final class TemplatePreprocessingReader extends Reader {
                 
             }
             
+            
+            final int matchedEndOfComment = 
+                    (this.inComment? 
+                            match(COMMENT_END, 0, COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
+            
             if (matchedEndOfComment > 0) {
                 
                 this.inComment = false;
@@ -324,6 +403,11 @@ public final class TemplatePreprocessingReader extends Reader {
                 continue;
                 
             }
+            
+
+            final int matchedEntity = 
+                (this.inComment? 
+                        -2 : match(ENTITY, 0, ENTITY.length, this.buffer, buffi, bufferSize));
             
             if (matchedEntity > 0) {
                 
@@ -727,7 +811,6 @@ public final class TemplatePreprocessingReader extends Reader {
         
     }
 
-    
     
     
     public String getDocTypeClause() {
