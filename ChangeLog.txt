@@ -21,6 +21,8 @@
 - Refactored standard expression evaluation to allow execution of expressions outside templates
   (with limitations, for example, no string externalization).
 - Modified TemplateEngine.isInitialized() visibility to public.
+- Modified parsing system to allow parsing templates without a root element (with several elements / 
+  no elements at all).
 
 
 
