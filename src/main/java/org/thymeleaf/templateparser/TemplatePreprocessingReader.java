@@ -218,9 +218,13 @@ public final class TemplatePreprocessingReader extends Reader {
                 // If there is no more content to be read from the source reader, close the synthetic
                 // root element and make it look like it was read from source.
 
+                final int closingSizeToInsert =
+                    Math.min(
+                            (SYNTHETIC_ROOT_ELEMENT_END_CHARS.length - this.rootElementClosingOffset),
+                            (this.buffer.length - bufferSize)); 
                 reallyRead =
                     copyToResult(
-                            SYNTHETIC_ROOT_ELEMENT_END_CHARS, this.rootElementClosingOffset, (SYNTHETIC_ROOT_ELEMENT_END_CHARS.length - this.rootElementClosingOffset), 
+                            SYNTHETIC_ROOT_ELEMENT_END_CHARS, this.rootElementClosingOffset, closingSizeToInsert, 
                             this.buffer, bufferSize, this.buffer.length);
                 
                 this.rootElementClosingOffset += reallyRead;
@@ -271,10 +275,6 @@ public final class TemplatePreprocessingReader extends Reader {
                         new Object[] {TemplateEngine.threadIndex()});
             }
             
-            if (!this.rootElementClosingSent) {
-                this.rootElementClosingSent = true;
-            }
-            
             return -1;
         }
         
@@ -316,10 +316,9 @@ public final class TemplatePreprocessingReader extends Reader {
                         // DOCTYPE clause being bigger than 'len' argument in the first 'read()' call.
                         
                         final char[] normalizedDocTypePlusSyntheticRootElement = 
-                                new char[normalizedDocType.length + SYNTHETIC_ROOT_ELEMENT_START_CHARS.length + 1];
+                                new char[normalizedDocType.length + SYNTHETIC_ROOT_ELEMENT_START_CHARS.length];
                         System.arraycopy(normalizedDocType, 0, normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocType.length);
-                        normalizedDocTypePlusSyntheticRootElement[normalizedDocType.length] = '\n';
-                        System.arraycopy(SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, normalizedDocTypePlusSyntheticRootElement, normalizedDocType.length + 1, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length);
+                        System.arraycopy(SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, normalizedDocTypePlusSyntheticRootElement, normalizedDocType.length, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length);
                         
                         copied =
                                 copyToResult(

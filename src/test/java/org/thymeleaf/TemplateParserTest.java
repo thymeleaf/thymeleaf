@@ -118,7 +118,7 @@ public class TemplateParserTest {
     private void checkLocations(final String msg, final Document doc, 
             final String documentName, final boolean nullLineNumbers) {
         
-        Element html = (Element) doc.getFirstChild();
+        Element html = doc.getFirstElementChild();
         Element body = html.getFirstElementChild();
         Element p1 = body.getElementChildren().get(0);
         Element p2 = body.getElementChildren().get(1);

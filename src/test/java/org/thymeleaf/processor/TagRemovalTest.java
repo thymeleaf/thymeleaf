@@ -35,26 +35,26 @@ public class TagRemovalTest extends AbstractDocumentProcessingTest {
         Document doc = processTemplate("TagRemovalTest");
 
         // no op
-        assertNodeExists(doc, "/html/body/div[@id='0']");
+        assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/div[@id='0']");
 
         // th:remove = "tag"
-        assertNodeDoesNotExist(doc, "/html/body/div[@id='1']");
-        assertNodeExists(doc, "/html/body/p[@id='1.1']");
+        assertNodeDoesNotExist(doc, "/THYMELEAF_ROOT/html/body/div[@id='1']");
+        assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/p[@id='1.1']");
 
         // th:remove = "body"
-        assertNodeExists(doc, "/html/body/div[@id='2']");
-        assertNodeDoesNotExist(doc, "/html/body/div[@id='2']/p");
+        assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/div[@id='2']");
+        assertNodeDoesNotExist(doc, "/THYMELEAF_ROOT/html/body/div[@id='2']/p");
 
         // th:remove = "all"
-        assertNodeDoesNotExist(doc, "/html/body/div[@id='3']");
+        assertNodeDoesNotExist(doc, "/THYMELEAF_ROOT/html/body/div[@id='3']");
     }
 
     public void testTagRemovalWithVariables() throws Exception {
         Document doc = processTemplate("TagRemovalWithVariablesTest");
 
         // th:remove = "tag"
-        assertNodeDoesNotExist(doc, "/html/body/div[@id='1']");
-        assertNodeExists(doc, "/html/body/p[@id='1.1']");
+        assertNodeDoesNotExist(doc, "/THYMELEAF_ROOT/html/body/div[@id='1']");
+        assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/p[@id='1.1']");
 
     }
 
