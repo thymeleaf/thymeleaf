@@ -94,5 +94,14 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
     
     
+
+    
+    
+    @Override
+    public String toString() {
+        return "(DOMSELECTOR: " + this.selectorExpression +")";
+    }
+    
+    
 }
 

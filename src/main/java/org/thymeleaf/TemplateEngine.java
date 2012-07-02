@@ -1105,7 +1105,7 @@ public class TemplateEngine {
             final List<Node> processingRootNodes = 
                     fragmentSpec.extractFragment(this.configuration, Collections.singletonList((Node)document));
             
-            if (processingRootNodes == null) {
+            if (processingRootNodes == null || processingRootNodes.size() == 0) {
                 // If the result is null, there will be no processing to do
                 document = null;
             } else {

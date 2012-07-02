@@ -96,6 +96,14 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
         
     }
 
+
+    
+    
+    @Override
+    public String toString() {
+        return "(ELEMENT: " + this.elementName + " | ATTRIBUTE: " + this.attributeName +"=\"" + this.attributeValue + "\")";
+    }
+
     
     
 }
