@@ -46,11 +46,16 @@ public final class WholeFragmentSpec implements IFragmentSpec {
 
     
     
-    
     public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
         return nodes;
     }
 
+    
+    
+    @Override
+    public String toString() {
+        return "(WHOLE TEMPLATE)";
+    }
     
 }
 
