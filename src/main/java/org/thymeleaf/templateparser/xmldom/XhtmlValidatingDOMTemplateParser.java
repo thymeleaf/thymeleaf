@@ -3,7 +3,6 @@ package org.thymeleaf.templateparser.xmldom;
 import java.util.List;
 
 import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 
 /**
@@ -48,7 +47,7 @@ public final class XhtmlValidatingDOMTemplateParser extends AbstractValidatingDO
     
     @Override
     protected final List<Node> unwrapFragment(final Document document) {
-        return ((NestableNode)((NestableNode)((NestableNode)document.getFirstChild()).getFirstChild()).getFirstChild()).getChildren();
+        return document.getFirstElementChild().getFirstElementChild().getFirstElementChild().getChildren();
     }
     
 }

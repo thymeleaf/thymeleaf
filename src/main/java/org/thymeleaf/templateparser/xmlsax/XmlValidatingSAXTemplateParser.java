@@ -3,7 +3,6 @@ package org.thymeleaf.templateparser.xmlsax;
 import java.util.List;
 
 import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 
 /**
@@ -45,7 +44,7 @@ public final class XmlValidatingSAXTemplateParser extends AbstractValidatingSAXT
     
     @Override
     protected final List<Node> unwrapFragment(final Document document) {
-        return ((NestableNode)document.getFirstChild()).getChildren();
+        return document.getFirstElementChild().getChildren();
     }
     
 }
