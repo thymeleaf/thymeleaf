@@ -28,8 +28,8 @@ public class InlineJSTest extends AbstractDocumentProcessingTest {
     public void testInlineJS() throws Exception {
         Document doc = processTemplate("InlineJSTest");
 
-        assertNodeExists(doc, "/html/body/script");
-        Node node = getNode(doc, "/html/body/script[1]");
+        assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/script");
+        Node node = getNode(doc, "/THYMELEAF_ROOT/html/body/script[1]");
         assertEquals("/**/var x = 1;/**/", node.getTextContent().trim());
     }
 
