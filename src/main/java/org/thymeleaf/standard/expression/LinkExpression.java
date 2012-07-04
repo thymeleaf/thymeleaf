@@ -313,11 +313,11 @@ public final class LinkExpression extends SimpleExpression {
             
         }
         
-		if (isLinkBaseAbsolute(linkBase)) {
-			return linkBase + parametersBuffer.toString() + urlFragment;
-		} else if (!isWebContext(arguments.getContext()) && isLinkBaseServerRelative(linkBase)) {
-			return linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
-		}
+        if (isLinkBaseAbsolute(linkBase)) {
+            return linkBase + parametersBuffer.toString() + urlFragment;
+        } else if (!isWebContext(arguments.getContext()) && isLinkBaseServerRelative(linkBase)) {
+            return linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+        }
         
         final IWebContext webContext = (IWebContext) arguments.getContext();
         
