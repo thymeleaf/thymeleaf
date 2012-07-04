@@ -22,8 +22,8 @@ package org.thymeleaf.processor.attr;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -66,6 +66,10 @@ public abstract class AbstractChildrenModifierAttrProcessor
         
         element.removeAttribute(attributeName);
         
+        if (getReplaceHostElement(arguments, element, attributeName)) {
+            element.getParent().extractChild(element);
+        }
+        
         return ProcessorResult.OK;
         
     }
@@ -74,6 +78,15 @@ public abstract class AbstractChildrenModifierAttrProcessor
     
     protected abstract List<Node> getModifiedChildren(
             final Arguments arguments, final Element element, final String attributeName);
+
+    
+    
+    @SuppressWarnings("unused")
+    protected boolean getReplaceHostElement(
+            final Arguments arguments, final Element element, final String attributeName) {
+        // Meant to be overriden if the host element has to be replaced
+        return false;
+    }
 
     
 }
