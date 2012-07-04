@@ -235,9 +235,9 @@ public final class LinkExpression extends SimpleExpression {
 
         String linkBase = (String) base;
         
-        if (!isWebContext(arguments.getContext()) && isLinkBaseServerRelative(linkBase)) {
+        if (!isLinkBaseAbsolute(linkBase) && !isWebContext(arguments.getContext()) && !isLinkBaseServerRelative(linkBase)) {
             throw new TemplateProcessingException(
-                    "Link base \"" + linkBase + "\" cannot be server relative (~/) unless you implement the " + 
+                    "Link base \"" + linkBase + "\" cannot be context relative (/) unless you implement the " + 
                     IWebContext.class.getName() + " interface (context is of class: " +
                     arguments.getContext().getClass().getName() + ")");
         }
@@ -313,9 +313,11 @@ public final class LinkExpression extends SimpleExpression {
             
         }
         
-        if (isLinkBaseAbsolute(linkBase) || !isWebContext(arguments.getContext()) && isLinkBaseContextRelative(linkBase)) {
-            return linkBase + parametersBuffer.toString() + urlFragment;
-        }
+		if (isLinkBaseAbsolute(linkBase)) {
+			return linkBase + parametersBuffer.toString() + urlFragment;
+		} else if (!isWebContext(arguments.getContext()) && isLinkBaseServerRelative(linkBase)) {
+			return linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+		}
         
         final IWebContext webContext = (IWebContext) arguments.getContext();
         
