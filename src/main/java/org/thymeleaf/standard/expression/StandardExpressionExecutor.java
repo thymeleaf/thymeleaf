@@ -21,7 +21,7 @@ package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -70,14 +70,14 @@ public final class StandardExpressionExecutor {
     /**
      * @since 2.0.9
      */
-    public Object executeExpression(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+    public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext, 
             final Expression expression) {
 
-        Validate.notNull(evalContext, "Expression evaluation context cannot be null");
+        Validate.notNull(processingContext, "Expression evaluation context cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
         
         final Object result = 
-            Expression.execute(configuration, evalContext, expression, this.expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression, this.expressionEvaluator);
         return LiteralValue.unwrap(result); 
         
     }

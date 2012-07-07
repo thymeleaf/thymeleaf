@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -202,22 +202,22 @@ public final class MessageExpression extends SimpleExpression {
     
 
     static Object executeMessage(final Configuration configuration,
-            final ExpressionEvaluationContext evalContext, final MessageExpression expression, 
+            final IProcessingContext processingContext, final MessageExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating message: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        if (!(evalContext instanceof Arguments)) {
+        if (!(processingContext instanceof Arguments)) {
             throw new TemplateProcessingException(
                     "Cannot evaluate expression \"" + expression + "\". Message externalization expressions " +
                     "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
                     "where evaluation context is an " + Arguments.class.getClass() + " instance instead of an instance of " +
-                    evalContext.getClass().getName());
+                    processingContext.getClass().getName());
         }
         
-        final Arguments arguments = (Arguments) evalContext;
+        final Arguments arguments = (Arguments) processingContext;
         
         final Expression baseExpression = expression.getBase();
         Object messageKey = 

@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -217,7 +217,7 @@ public final class LinkExpression extends SimpleExpression {
 
 
     static Object executeLink(final Configuration configuration,
-            final ExpressionEvaluationContext evalContext, final LinkExpression expression, 
+            final IProcessingContext processingContext, final LinkExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
@@ -226,7 +226,7 @@ public final class LinkExpression extends SimpleExpression {
         
         final Expression baseExpression = expression.getBase();
         Object base = 
-            Expression.execute(configuration, evalContext, baseExpression, expressionEvaluator);
+            Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator);
         base = LiteralValue.unwrap(base);
         if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
             throw new TemplateProcessingException(
@@ -236,18 +236,18 @@ public final class LinkExpression extends SimpleExpression {
 
         String linkBase = (String) base;
         
-        if (!isWebContext(evalContext.getContext()) && !isLinkBaseAbsolute(linkBase)) {
+        if (!isWebContext(processingContext.getContext()) && !isLinkBaseAbsolute(linkBase)) {
             throw new TemplateProcessingException(
                     "Link base \"" + linkBase + "\" is not absolute. Non-absolute links " +
                     "can only be processed if context implements the " + 
                     IWebContext.class.getName() + " interface (context is of class: " +
-                    evalContext.getContext().getClass().getName() + ")");
+                    processingContext.getContext().getClass().getName() + ")");
         }
         
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, evalContext, expression.getParameters(), expressionEvaluator) :
+                    resolveParameters(configuration, processingContext, expression.getParameters(), expressionEvaluator) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -319,7 +319,7 @@ public final class LinkExpression extends SimpleExpression {
             return linkBase + parametersBuffer.toString() + urlFragment;
         }
         
-        final IWebContext webContext = (IWebContext) evalContext.getContext();
+        final IWebContext webContext = (IWebContext) processingContext.getContext();
         
         String sessionFragment = "";
         
@@ -388,7 +388,7 @@ public final class LinkExpression extends SimpleExpression {
     
     
     private static Map<String,List<Object>> resolveParameters(
-            final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final Configuration configuration, final IProcessingContext processingContext, 
             final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator) {
         
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
@@ -403,7 +403,7 @@ public final class LinkExpression extends SimpleExpression {
                 parameters.put(parameterName, null);
             } else {
                 final Object value = 
-                        Expression.execute(configuration, evalContext, parameterExpression, expressionEvaluator);
+                        Expression.execute(configuration, processingContext, parameterExpression, expressionEvaluator);
                 if (value == null) {
                     parameters.put(parameterName, EMPTY_PARAMETER_VALUE);
                 } else {

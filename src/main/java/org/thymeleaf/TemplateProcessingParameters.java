@@ -22,6 +22,8 @@ package org.thymeleaf;
 import java.util.Map;
 
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -45,7 +47,7 @@ public final class TemplateProcessingParameters {
     
     private final Configuration configuration;
     private final String templateName;
-    private final IContext context;
+    private final IProcessingContext processingContext;
 
     
 
@@ -68,6 +70,31 @@ public final class TemplateProcessingParameters {
             final String templateName,
             final IContext context) {
         
+        this(configuration, templateName, new ProcessingContext(context));
+        
+    }
+
+    
+    /**
+     * <p>
+     *   Create a new TemplateProcessingParameters instance.
+     * </p>
+     * <p>
+     *   <b>Mainly for internal use</b>. Should not be called directly except
+     *   when processing a template (e.g. a fragment) using the {@link TemplateEngine}
+     *   from a element/attribute processor.
+     * </p>
+     * 
+     * @param configuration the configuration
+     * @param templateName the template name
+     * @param context the processing context
+     * @since 2.0.9
+     */
+    public TemplateProcessingParameters(
+            final Configuration configuration,
+            final String templateName,
+            final IProcessingContext context) {
+        
         super();
         
         Validate.notNull(configuration, "Configuration cannot be null");
@@ -76,7 +103,7 @@ public final class TemplateProcessingParameters {
         
         this.configuration = configuration;
         this.templateName = templateName;
-        this.context = context;
+        this.processingContext = context;
         
     }
     
@@ -111,11 +138,27 @@ public final class TemplateProcessingParameters {
      * <p>
      *   Returns the current context specified for template processing.
      * </p>
+     * <p>
+     *   Equivalent to {@link #getProcessingContext()#getContext()}.
+     * </p>
      * 
      * @return the current context
      */
     public IContext getContext() {
-        return this.context;
+        return this.processingContext.getContext();
+    }
+
+    
+    /**
+     * <p>
+     *   Returns the processing context specified for template processing.
+     * </p>
+     * 
+     * @return the processing context
+     * @since 2.0.9
+     */
+    public IProcessingContext getProcessingContext() {
+        return this.processingContext;
     }
 
     

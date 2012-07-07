@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -75,7 +75,7 @@ public final class AndExpression extends BinaryOperationExpression {
     
 
     
-    static Object executeAnd(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+    static Object executeAnd(final Configuration configuration, final IProcessingContext processingContext, 
             final AndExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
@@ -83,10 +83,10 @@ public final class AndExpression extends BinaryOperationExpression {
         }
         
         Object leftValue = 
-            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
         
         final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
         final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);

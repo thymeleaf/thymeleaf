@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 
 /**
@@ -124,17 +125,20 @@ public final class ExpressionEvaluatorObjects {
      */
     @Deprecated
     public static Map<String,Object> computeEvaluationVariablesForArguments(final Arguments arguments) {
-        return computeExpressionEvaluationObjectsForArguments(arguments);
+        return computeEvaluationObjectsForArguments(arguments);
     }
     
     
     
-    
-    public static Map<String,Object> computeExpressionEvaluationObjectsForArguments(final Arguments arguments) {
+    /**
+     * 
+     * @since 2.0.9
+     */
+    public static Map<String,Object> computeEvaluationObjectsForArguments(final Arguments arguments) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
         
-        variables.putAll(computeExpressionEvaluationObjectsForEvaluationContext(arguments));
+        variables.putAll(computeEvaluationObjectsForProcessingContext(arguments));
         
         final Messages messages = new Messages(arguments);
         variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
@@ -149,12 +153,16 @@ public final class ExpressionEvaluatorObjects {
     
     
     
-    public static Map<String,Object> computeExpressionEvaluationObjectsForEvaluationContext(
-            final ExpressionEvaluationContext expressionEvaluationContext) {
+    /**
+     * 
+     * @since 2.0.9
+     */
+    public static Map<String,Object> computeEvaluationObjectsForProcessingContext(
+            final IProcessingContext expressionEvaluationContext) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
         
-        variables.putAll(computeExpressionEvaluationObjectsForContext(expressionEvaluationContext.getContext()));
+        variables.putAll(computeEvaluationObjectsForContext(expressionEvaluationContext.getContext()));
         
         variables.put(ROOT_VARIABLE_NAME, expressionEvaluationContext.getExpressionEvaluationRoot());
         
@@ -172,7 +180,11 @@ public final class ExpressionEvaluatorObjects {
     
     
     
-    public static Map<String,Object> computeExpressionEvaluationObjectsForContext(final IContext context) {
+    /**
+     * 
+     * @since 2.0.9
+     */
+    public static Map<String,Object> computeEvaluationObjectsForContext(final IContext context) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
 

@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
@@ -76,11 +76,11 @@ public final class StandardExpressionParser {
      * @since 2.0.9
      */
     public Expression parseExpression(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input) {
+            final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpression(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
+        return parseExpression(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -95,11 +95,11 @@ public final class StandardExpressionParser {
      * @since 2.0.9
      */
     public AssignationSequence parseAssignationSequence(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input, final boolean allowParametersWithoutValue) {
+            final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseAssignationSequence(configuration, evalContext, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
+        return parseAssignationSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
     }
 
     
@@ -114,11 +114,11 @@ public final class StandardExpressionParser {
      * @since 2.0.9
      */
     public ExpressionSequence parseExpressionSequence(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input) {
+            final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpressionSequence(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
+        return parseExpressionSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -133,11 +133,11 @@ public final class StandardExpressionParser {
      * @since 2.0.9
      */
     public Each parseEach(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input) {
+            final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseEach(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
+        return parseEach(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
     
 
@@ -152,11 +152,11 @@ public final class StandardExpressionParser {
      * @since 2.0.9
      */
     public FragmentSelection parseFragmentSelection(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input) {
+            final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(evalContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseFragmentSelection(configuration, evalContext, DOMUtils.unescapeXml(input, true), true);
+        return parseFragmentSelection(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
 
     
@@ -165,13 +165,13 @@ public final class StandardExpressionParser {
     
     
     
-    Expression parseExpression(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
+    Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(configuration, evalContext, trimmedInput) :
+                    preprocess(configuration, processingContext, trimmedInput) :
                     trimmedInput);
 
         if (configuration != null) {
@@ -197,13 +197,13 @@ public final class StandardExpressionParser {
 
     
     
-    AssignationSequence parseAssignationSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
+    AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(configuration, evalContext, trimmedInput) :
+                    preprocess(configuration, processingContext, trimmedInput) :
                     trimmedInput);
 
         if (configuration != null) {
@@ -229,13 +229,13 @@ public final class StandardExpressionParser {
 
     
     
-    ExpressionSequence parseExpressionSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
+    ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(configuration, evalContext, trimmedInput) :
+                    preprocess(configuration, processingContext, trimmedInput) :
                     trimmedInput);
 
         if (configuration != null) {
@@ -261,13 +261,13 @@ public final class StandardExpressionParser {
 
     
     
-    Each parseEach(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
+    Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(configuration, evalContext, trimmedInput) :
+                    preprocess(configuration, processingContext, trimmedInput) :
                     trimmedInput);
 
         if (configuration != null) {
@@ -293,13 +293,13 @@ public final class StandardExpressionParser {
     
 
     
-    FragmentSelection parseFragmentSelection(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean preprocess) {
+    FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
         final String preprocessedInput =
             (preprocess?
-                    preprocess(configuration, evalContext, trimmedInput) :
+                    preprocess(configuration, processingContext, trimmedInput) :
                     trimmedInput);
 
         if (configuration != null) {
@@ -328,7 +328,7 @@ public final class StandardExpressionParser {
     
     
     String preprocess(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input) {
+            final IProcessingContext processingContext, final String input) {
 
         if (input.indexOf(PREPROCESS_DELIMITER) == -1) {
             // Fail quick
@@ -348,13 +348,13 @@ public final class StandardExpressionParser {
                 
                 final Expression expression = 
                     parseExpression(
-                            configuration, evalContext, matcher.group(1), false);
+                            configuration, processingContext, matcher.group(1), false);
                 if (expression == null) {
                     return null;
                 }
                 
                 final Object result =
-                    this.executor.executeExpression(configuration, evalContext, expression);
+                    this.executor.executeExpression(configuration, processingContext, expression);
                 
                 strBuilder.append(result);
                 

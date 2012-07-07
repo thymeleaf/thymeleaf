@@ -21,8 +21,8 @@ package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 /**
  * 
@@ -46,10 +46,10 @@ class DeprecatedBridgeStandardExpressionEvaluator implements IStandardVariableEx
     }
 
 
-    public Object evaluate(final Configuration configuration, final ExpressionEvaluationContext evalContext,
+    public Object evaluate(final Configuration configuration, final IProcessingContext processingContext,
             final String expression, final boolean useSelectionAsRoot) {
         
-        if (!(evalContext instanceof Arguments)) {
+        if (!(processingContext instanceof Arguments)) {
             throw new TemplateProcessingException(
                     "Cannot evaluate expression \"" + expression + "\". A non-standard expression evaluator " +
                     "is being used of class \"" + this.evaluator.getClass().getName() + "\", which implements the old deprecated " +
@@ -60,10 +60,10 @@ class DeprecatedBridgeStandardExpressionEvaluator implements IStandardVariableEx
         
         final Object evaluationRoot = 
                 (useSelectionAsRoot?
-                        evalContext.getExpressionSelectionEvaluationRoot() :
-                        evalContext.getExpressionEvaluationRoot());
+                        processingContext.getExpressionSelectionEvaluationRoot() :
+                        processingContext.getExpressionEvaluationRoot());
         
-        return this.evaluator.evaluate((Arguments)evalContext, expression, evaluationRoot);
+        return this.evaluator.evaluate((Arguments)processingContext, expression, evaluationRoot);
         
     }
     

@@ -655,9 +655,13 @@ public abstract class Node implements Serializable {
     }
 
     
-    final void unsafeSetNodeLocalVariables(final HashMap<String,Object> variables) {
+    final void unsafeSetNodeLocalVariables(final Map<String,Object> variables) {
         if (variables != null) {
-            this.nodeLocalVariables = variables;
+            if (variables instanceof HashMap) {
+                this.nodeLocalVariables = (HashMap<String,Object>)variables;
+            } else {
+                this.nodeLocalVariables = new HashMap<String,Object>(variables);
+            }
         } else { 
             this.nodeLocalVariables = null;
         }
@@ -747,7 +751,7 @@ public abstract class Node implements Serializable {
              * variables map.
              */
             if (executionArguments.hasLocalVariables()) {
-                unsafeSetNodeLocalVariables(executionArguments.unsafeGetLocalVariables());
+                unsafeSetNodeLocalVariables(executionArguments.getLocalVariables());
             }
             
             /*
@@ -812,7 +816,7 @@ public abstract class Node implements Serializable {
                     // If we have added local variables, we should update the node's map for these variables in
                     // order to keep them synchronized
                     if (processorResult.hasLocalVariables() && executionArguments.hasLocalVariables()) {
-                        node.unsafeSetNodeLocalVariables(executionArguments.unsafeGetLocalVariables());
+                        node.unsafeSetNodeLocalVariables(executionArguments.getLocalVariables());
                     }
                     
                     // Make sure this specific processor instance is not executed again

@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -61,14 +61,14 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
 
     
     @SuppressWarnings({"unchecked","null"})
-    static Object executeEquals(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+    static Object executeEquals(final Configuration configuration, final IProcessingContext processingContext, 
             final EqualsExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         Object leftValue = 
-            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);
