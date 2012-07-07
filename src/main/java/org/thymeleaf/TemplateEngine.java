@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -1009,6 +1011,37 @@ public class TemplateEngine {
 
     /**
      * <p>
+     *   Process a template. This method receives a <i>template name</i>, a <i>processing context</i> 
+     *   (which might include local variables) and also a {@link Writer}, so that there is no need 
+     *   to create a String object containing the whole processing results because these will be 
+     *   written to the specified writer as soon as they are generated from the processed DOM 
+     *   tree. This is specially useful for web environments 
+     *   (using {@link javax.servlet.http.HttpServletResponse#getWriter()}).
+     * </p>
+     * <p>
+     *   The template name will be used as input for the template resolvers, queried in chain
+     *   until one of them resolves the template, which will then be executed.
+     * </p>
+     * <p>
+     *   The context will contain the variables that will be available for the execution of
+     *   expressions inside the template.
+     * </p>
+     * 
+     * @param templateName the name of the template.
+     * @param processingContext the processing context.
+     * @param writer the writer the results will be output to.
+     * 
+     * @since 2.0.0 
+     */
+    public final void process(final String templateName, final IProcessingContext processingContext, final Writer writer) {
+        process(templateName, processingContext, null, writer);
+    }
+    
+
+    
+
+    /**
+     * <p>
      *   Process a template. This method receives a <i>template name</i>, a <i>context</i>, a
      *   <i>fragment specification</i> ({@link IFragmentSpec}) and also a {@link Writer}. This
      *   method works essentially the same as {@link #process(String, IContext, Writer)} but
@@ -1026,6 +1059,31 @@ public class TemplateEngine {
      */
     public final void process(final String templateName, final IContext context, 
             final IFragmentSpec fragmentSpec, final Writer writer) {
+        process(templateName, new ProcessingContext(context), fragmentSpec, writer);
+    }
+    
+
+    
+
+    /**
+     * <p>
+     *   Process a template. This method receives a <i>template name</i>, a <i>processing context</i>
+     *   (which might include local variables), a <i>fragment specification</i> ({@link IFragmentSpec}) 
+     *   and also a {@link Writer}. This method works essentially the same as 
+     *   {@link #process(String, IContext, Writer)} but applying the specified fragment specification 
+     *   as a filter on the parsed template in order to process only a fragment of such template.
+     * </p>
+     * 
+     * @param templateName the name of the template.
+     * @param processingContext the processing context.
+     * @param fragmentSpec the fragment specification that will be applied as a filter to the parsed
+     *                     template, before processing.
+     * @param writer the writer the results will be output to.
+     * 
+     * @since 2.0.9
+     */
+    public final void process(final String templateName, final IProcessingContext processingContext, 
+            final IFragmentSpec fragmentSpec, final Writer writer) {
         
         if (!isInitialized()) {
             initialize();
@@ -1034,8 +1092,9 @@ public class TemplateEngine {
         try {
             
             Validate.notNull(templateName, "Template name cannot be null");
-            Validate.notNull(context, "Context cannot be null");
+            Validate.notNull(processingContext, "Processing context cannot be null");
             
+            final IContext context = processingContext.getContext();
             
             final long startMs = System.nanoTime();
 
@@ -1053,7 +1112,7 @@ public class TemplateEngine {
             context.addContextExecutionInfo(templateName);
             
             final TemplateProcessingParameters templateProcessingParameters = 
-                new TemplateProcessingParameters(this.configuration, templateName, context);
+                new TemplateProcessingParameters(this.configuration, templateName, processingContext);
             
             process(templateProcessingParameters, fragmentSpec, writer);
             
