@@ -27,7 +27,6 @@ import java.util.Map;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -74,8 +73,6 @@ public abstract class AbstractSelectionTargetElementProcessor
         } else {
             additionalLocalVariables = new HashMap<String, Object>(additionalLocalVariables);
         }
-        additionalLocalVariables.put(
-                ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME, newSelectionTarget);
 
         if (removeHostElement) {
             
@@ -88,13 +85,13 @@ public abstract class AbstractSelectionTargetElementProcessor
             
             doAdditionalProcess(arguments, element);
             
-            return ProcessorResult.OK;
+            return ProcessorResult.setSelectionTarget(newSelectionTarget);
             
         }
         
         doAdditionalProcess(arguments, element);
             
-        return ProcessorResult.setLocalVariables(additionalLocalVariables);
+        return ProcessorResult.setLocalVariablesAndSelectionTarget(additionalLocalVariables, newSelectionTarget);
         
     }
     

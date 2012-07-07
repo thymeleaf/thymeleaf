@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -92,7 +92,7 @@ public final class TextLiteralExpression extends SimpleExpression {
 
     
     static Object executeTextLiteral(
-            @SuppressWarnings("unused") final ExpressionEvaluationContext evalContext, 
+            @SuppressWarnings("unused") final IProcessingContext processingContext, 
             final TextLiteralExpression expression) {
 
         if (logger.isTraceEnabled()) {

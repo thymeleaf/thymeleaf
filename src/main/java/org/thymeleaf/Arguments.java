@@ -22,9 +22,9 @@ package org.thymeleaf;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.thymeleaf.context.AbstractProcessingContext;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
@@ -64,7 +64,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.0
  *
  */
-public final class Arguments extends ExpressionEvaluationContext {
+public final class Arguments extends AbstractProcessingContext {
 
     /**
      * @deprecated Use {@link ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME}
@@ -83,7 +83,6 @@ public final class Arguments extends ExpressionEvaluationContext {
     private final Map<String,Integer> idCounts;
     
     private final boolean processOnlyElementNodes;
-
     
 
     /**
@@ -108,7 +107,11 @@ public final class Arguments extends ExpressionEvaluationContext {
             final TemplateRepository templateRepository,
             final Document document) {
         
-        super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()));
+        super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()),
+              (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getLocalVariables()),
+              (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getSelectionTarget()),
+              (templateProcessingParameters == null? false : templateProcessingParameters.getProcessingContext().hasSelectionTarget()));
+        
         
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
         Validate.notNull(templateResolution, "Template resolution cannot be null");
@@ -135,9 +138,12 @@ public final class Arguments extends ExpressionEvaluationContext {
             final Document document,
             final Map<String,Object> localVariables,
             final Map<String,Integer> idCounts,
-            final boolean processOnlyElementNodes) {
+            final boolean processOnlyElementNodes,
+            final Object selectionTarget, 
+            final boolean selectionTargetSet) {
         
-        super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()), localVariables);
+        super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()), 
+                localVariables, selectionTarget, selectionTargetSet);
         
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration = this.templateProcessingParameters.getConfiguration();
@@ -156,7 +162,7 @@ public final class Arguments extends ExpressionEvaluationContext {
     
     @Override
     protected Map<String,Object> computeBaseContextVariables() {
-        return ExpressionEvaluatorObjects.computeExpressionEvaluationObjectsForArguments(this);
+        return ExpressionEvaluatorObjects.computeEvaluationObjectsForArguments(this);
     }
 
     
@@ -361,7 +367,6 @@ public final class Arguments extends ExpressionEvaluationContext {
      * @param newVariables the new variables
      * @return the new Arguments object
      */
-    @Override
     public Arguments addLocalVariables(final Map<String,Object> newVariables) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
@@ -369,7 +374,7 @@ public final class Arguments extends ExpressionEvaluationContext {
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes);
+                        this.idCounts, this.processOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
         return arguments;
     }
 
@@ -385,9 +390,9 @@ public final class Arguments extends ExpressionEvaluationContext {
      */
     public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, 
-                    this.templateRepository, this.document, unsafeGetLocalVariables(), 
-                    this.idCounts, shouldProcessOnlyElementNodes);
+                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
         return arguments;
     }
 
@@ -404,11 +409,55 @@ public final class Arguments extends ExpressionEvaluationContext {
      */
     public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
-                        this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, shouldProcessOnlyElementNodes);
+            new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                    this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
         return arguments;
     }
+    
+    
+    
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting a new selection target.
+     * </p>
+     * 
+     * @param newSelectionTarget the new selection target
+     * @return the new Arguments object
+     * @since 2.0.9
+     */
+    public Arguments setSelectionTarget(final Object selectionTarget) {
+        final Arguments arguments = 
+                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true);
+        return arguments;
+    }
+    
+    
+    
+    /**
+     * <p>
+     *   Creates a new Arguments object by adding some new local variables and setting a
+     *   selection target.
+     * </p>
+     * 
+     * @param newVariables the new variables
+     * @return the new Arguments object
+     * @since 2.0.9
+     */
+    public Arguments addLocalVariablesAndSelectionTarget(final Map<String,Object> newVariables, final Object selectionTarget) {
+        if (newVariables == null || newVariables.isEmpty()) {
+            return this;
+        }
+        final Arguments arguments = 
+                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true);
+        return arguments;
+    }
+
+
 
     
     

@@ -21,8 +21,8 @@ package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 
 
@@ -58,8 +58,8 @@ public final class StandardExpressionProcessor {
     /**
      * @since 2.0.9
      */
-    public static Expression parseExpression(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
-        return getParserAttribute(configuration).parseExpression(configuration, evalContext, input);
+    public static Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input) {
+        return getParserAttribute(configuration).parseExpression(configuration, processingContext, input);
     }
 
     
@@ -71,8 +71,8 @@ public final class StandardExpressionProcessor {
     /**
      * @since 2.0.9
      */
-    public static AssignationSequence parseAssignationSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input, final boolean allowParametersWithoutValue) {
-        return getParserAttribute(configuration).parseAssignationSequence(configuration, evalContext, input, allowParametersWithoutValue);
+    public static AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
+        return getParserAttribute(configuration).parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
     }
 
     
@@ -84,8 +84,8 @@ public final class StandardExpressionProcessor {
     /**
      * @since 2.0.9
      */
-    public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
-        return getParserAttribute(configuration).parseExpressionSequence(configuration, evalContext, input);
+    public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input) {
+        return getParserAttribute(configuration).parseExpressionSequence(configuration, processingContext, input);
     }
 
     
@@ -97,8 +97,8 @@ public final class StandardExpressionProcessor {
     /**
      * @since 2.0.9
      */
-    public static Each parseEach(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
-        return getParserAttribute(configuration).parseEach(configuration, evalContext, input);
+    public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
+        return getParserAttribute(configuration).parseEach(configuration, processingContext, input);
     }
     
 
@@ -110,8 +110,8 @@ public final class StandardExpressionProcessor {
     /**
      * @since 2.0.9
      */
-    public static FragmentSelection parseFragmentSelection(final Configuration configuration, final ExpressionEvaluationContext evalContext, final String input) {
-        return getParserAttribute(configuration).parseFragmentSelection(configuration, evalContext, input);
+    public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
+        return getParserAttribute(configuration).parseFragmentSelection(configuration, processingContext, input);
     }
 
     
@@ -128,8 +128,8 @@ public final class StandardExpressionProcessor {
      * @since 2.0.9
      */
     public static Object executeExpression(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final Expression expression) {
-        return getExecutorAttribute(configuration).executeExpression(configuration, evalContext, expression);
+            final IProcessingContext processingContext, final Expression expression) {
+        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression);
     }
     
     
@@ -146,8 +146,8 @@ public final class StandardExpressionProcessor {
      * @since 2.0.9
      */
     public static Object processExpression(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String input) {
-        return executeExpression(configuration, evalContext, parseExpression(configuration, evalContext, input));
+            final IProcessingContext processingContext, final String input) {
+        return executeExpression(configuration, processingContext, parseExpression(configuration, processingContext, input));
     }
     
 

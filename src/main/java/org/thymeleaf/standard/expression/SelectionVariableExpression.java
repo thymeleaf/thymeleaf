@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -90,7 +90,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     
     static Object executeSelectionVariable(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final SelectionVariableExpression expression, 
+            final IProcessingContext processingContext, final SelectionVariableExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
@@ -103,7 +103,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
                     "Variable expression is null, which is not allowed");
         }
         
-        return expressionEvaluator.evaluate(configuration, evalContext, exp, true);
+        return expressionEvaluator.evaluate(configuration, processingContext, exp, true);
         
     }
     

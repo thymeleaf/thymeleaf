@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 
 
 
@@ -386,21 +386,21 @@ public abstract class SimpleExpression extends Expression {
     
     
     
-    static Object executeSimple(final Configuration configuration, final ExpressionEvaluationContext evalContext, final SimpleExpression expression, 
+    static Object executeSimple(final Configuration configuration, final IProcessingContext processingContext, final SimpleExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
         
         if (expression instanceof VariableExpression) {
-            return VariableExpression.executeVariable(configuration, evalContext, (VariableExpression)expression, expressionEvaluator);
+            return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator);
         } else  if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(configuration, evalContext, (MessageExpression)expression, expressionEvaluator);
+            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expressionEvaluator);
         } else  if (expression instanceof TextLiteralExpression) {
-            return TextLiteralExpression.executeTextLiteral(evalContext, (TextLiteralExpression)expression);
+            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression);
         } else  if (expression instanceof NumberLiteralExpression) {
-            return NumberLiteralExpression.executeNumberLiteral(evalContext, (NumberLiteralExpression)expression);
+            return NumberLiteralExpression.executeNumberLiteral(processingContext, (NumberLiteralExpression)expression);
         } else  if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(configuration, evalContext, (LinkExpression)expression, expressionEvaluator);
+            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expressionEvaluator);
         } else  if (expression instanceof SelectionVariableExpression) {
-            return SelectionVariableExpression.executeSelectionVariable(configuration, evalContext, (SelectionVariableExpression)expression, expressionEvaluator);
+            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator);
         }
         
         throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());

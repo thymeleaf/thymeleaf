@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.ObjectUtils;
 
 
@@ -61,7 +61,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
     
     
     
-    static Object executeAddition(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+    static Object executeAddition(final Configuration configuration, final IProcessingContext processingContext, 
             final AdditionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
 
         if (logger.isTraceEnabled()) {
@@ -69,10 +69,10 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         }
         
         Object leftValue = 
-            Expression.execute(configuration, evalContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
 
         Object rightValue = 
-            Expression.execute(configuration, evalContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
         
         if (leftValue == null) {
             leftValue = "null";

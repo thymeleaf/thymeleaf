@@ -20,7 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Configuration;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 
 /**
  * 
@@ -32,7 +32,7 @@ import org.thymeleaf.expression.ExpressionEvaluationContext;
 public interface IStandardVariableExpressionEvaluator {
     
     public Object evaluate(
-            final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+            final Configuration configuration, final IProcessingContext processingContext, 
             final String expression, final boolean useSelectionAsRoot);
     
 }

@@ -35,8 +35,8 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.ObjectUtils;
 
@@ -62,7 +62,7 @@ public class OgnlVariableExpressionEvaluator
     
     
     public final Object evaluate(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String expression, 
+            final IProcessingContext processingContext, final String expression, 
             final boolean useSelectionAsRoot) {
        
         try {
@@ -93,17 +93,17 @@ public class OgnlVariableExpressionEvaluator
             }
             
             
-            final Map<String,Object> contextVariables = evalContext.getBaseContextVariables();
+            final Map<String,Object> contextVariables = processingContext.getBaseContextVariables();
             
-            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(evalContext);
+            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
             if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
                 contextVariables.putAll(additionalContextVariables);
             }
             
             final Object evaluationRoot = 
                     (useSelectionAsRoot?
-                            evalContext.getExpressionSelectionEvaluationRoot() :
-                            evalContext.getExpressionEvaluationRoot());
+                            processingContext.getExpressionSelectionEvaluationRoot() :
+                            processingContext.getExpressionEvaluationRoot());
 
             
             return Ognl.getValue(expressionTree, contextVariables, evaluationRoot);
@@ -122,7 +122,7 @@ public class OgnlVariableExpressionEvaluator
      * Meant to be overwritten
      */
     protected Map<String,Object> computeAdditionalContextVariables(
-            @SuppressWarnings("unused") final ExpressionEvaluationContext evalContext) {
+            @SuppressWarnings("unused") final IProcessingContext processingContext) {
         return Collections.emptyMap();
     }
     
