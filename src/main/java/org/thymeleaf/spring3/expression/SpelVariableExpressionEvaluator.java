@@ -31,8 +31,8 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 
 /**
@@ -75,7 +75,7 @@ public class SpelVariableExpressionEvaluator
     
     
     
-    public final Object evaluate(final Configuration configuration, final ExpressionEvaluationContext evalContext, 
+    public final Object evaluate(final Configuration configuration, final IProcessingContext processingContext, 
             final String spelExpression, final boolean useSelectionAsRoot) {
         
         if (logger.isTraceEnabled()) {
@@ -84,12 +84,12 @@ public class SpelVariableExpressionEvaluator
 
         try {
             
-            final Map<String,Object> contextVariables = evalContext.getBaseContextVariables();
+            final Map<String,Object> contextVariables = processingContext.getBaseContextVariables();
             
-            final Fields fields = new Fields(configuration, evalContext);
+            final Fields fields = new Fields(configuration, processingContext);
             contextVariables.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
             
-            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(evalContext);
+            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
             if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
                 contextVariables.putAll(additionalContextVariables);
             }
@@ -101,8 +101,8 @@ public class SpelVariableExpressionEvaluator
             
             final Object evaluationRoot = 
                     (useSelectionAsRoot?
-                            evalContext.getExpressionSelectionEvaluationRoot() :
-                            evalContext.getExpressionEvaluationRoot());
+                            processingContext.getExpressionSelectionEvaluationRoot() :
+                            processingContext.getExpressionEvaluationRoot());
             
             return exp.getValue(context, evaluationRoot);
             
@@ -145,7 +145,7 @@ public class SpelVariableExpressionEvaluator
      * Meant to be overwritten
      */
     protected Map<String,Object> computeAdditionalContextVariables(
-            @SuppressWarnings("unused") final ExpressionEvaluationContext evalContext) {
+            @SuppressWarnings("unused") final IProcessingContext processingContext) {
         return Collections.emptyMap();
     }
 

@@ -27,8 +27,8 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.SelectionVariableExpression;
@@ -60,10 +60,10 @@ public class FieldUtils {
     }
     
     public static boolean hasErrors(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String field) {
+            final IProcessingContext processingContext, final String field) {
 
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(configuration, evalContext, convertToFieldExpression(field), true);
+            FieldUtils.getBindStatus(configuration, processingContext, convertToFieldExpression(field), true);
         
         return bindStatus.isError();
         
@@ -76,10 +76,10 @@ public class FieldUtils {
     }
 
     public static List<String> errors(final Configuration configuration,
-            final ExpressionEvaluationContext evalContext, final String field) {
+            final IProcessingContext processingContext, final String field) {
 
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(configuration, evalContext, convertToFieldExpression(field), true);
+            FieldUtils.getBindStatus(configuration, processingContext, convertToFieldExpression(field), true);
         
         final String[] errorCodes = bindStatus.getErrorMessages();
         return Arrays.asList(errorCodes);
@@ -109,10 +109,10 @@ public class FieldUtils {
     
     
     public static BindStatus getBindStatus(final Configuration configuration, 
-            final ExpressionEvaluationContext evalContext, final String fieldExpression, final boolean allowAllFields) {
+            final IProcessingContext processingContext, final String fieldExpression, final boolean allowAllFields) {
         
         final RequestContext requestContext =
-            (RequestContext) evalContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+            (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             throw new TemplateProcessingException("A request context has not been created");
         }
@@ -120,17 +120,17 @@ public class FieldUtils {
         if (allowAllFields && ALL_FIELDS_FIELD_EXPRESSION.equals(fieldExpression)) {
             
             final String completeExpression = 
-                FieldUtils.validateAndGetValueExpressionForAllFields(evalContext);
+                FieldUtils.validateAndGetValueExpressionForAllFields(processingContext);
             
             return new BindStatus(requestContext, completeExpression, false);
             
         }
         
         final Expression expression = 
-            StandardExpressionProcessor.parseExpression(configuration, evalContext, fieldExpression);
+            StandardExpressionProcessor.parseExpression(configuration, processingContext, fieldExpression);
         
         final String completeExpression = 
-            FieldUtils.validateAndGetValueExpressionForField(evalContext, expression);
+            FieldUtils.validateAndGetValueExpressionForField(processingContext, expression);
         
         return new BindStatus(requestContext, completeExpression, false);
         
@@ -140,7 +140,7 @@ public class FieldUtils {
     
     
     private static String validateAndGetValueExpressionForField(
-            final ExpressionEvaluationContext evalContext, final Expression expression) {
+            final IProcessingContext processingContext, final Expression expression) {
 
         /*
          * Only asterisk syntax (selection variable expressions) are allowed here.
@@ -149,7 +149,7 @@ public class FieldUtils {
         if (expression instanceof SelectionVariableExpression) {
 
             final VariableExpression formCommandValue = 
-                (VariableExpression) evalContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
+                (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
             if (formCommandValue == null) {
                 throw new TemplateProcessingException(
                         "Cannot process field expression " + expression + " as no form model object has " +
@@ -170,10 +170,10 @@ public class FieldUtils {
     
     
     private static String validateAndGetValueExpressionForAllFields(
-            final ExpressionEvaluationContext evalContext) {
+            final IProcessingContext processingContext) {
 
         final VariableExpression formCommandValue = 
-            (VariableExpression) evalContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
+            (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
         if (formCommandValue == null) {
             throw new TemplateProcessingException(
                     "Cannot process expression for all fields \"" + ALL_FIELDS + "\" as no form model object has " +

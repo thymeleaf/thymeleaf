@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.expression.ExpressionEvaluationContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.spring3.util.FieldUtils;
 
 
@@ -38,17 +38,17 @@ import org.thymeleaf.spring3.util.FieldUtils;
 public class Fields {
 
     private final Configuration configuration;
-    private final ExpressionEvaluationContext evalContext;
+    private final IProcessingContext processingContext;
     
     
     
     public boolean hasErrors(final String field) {
-        return FieldUtils.hasErrors(this.configuration, this.evalContext, field);
+        return FieldUtils.hasErrors(this.configuration, this.processingContext, field);
     }
     
     
     public List<String> errors(final String field) {
-        return FieldUtils.errors(this.configuration, this.evalContext, field);
+        return FieldUtils.errors(this.configuration, this.processingContext, field);
     }
 
     
@@ -59,7 +59,7 @@ public class Fields {
 
     
     /**
-     * @deprecated Use {@link #Fields(Configuration, ExpressionEvaluationContext)} instead.
+     * @deprecated Use {@link #Fields(Configuration, IProcessingContext)} instead.
      *             Will be removed in 2.1.x
      */
     @Deprecated
@@ -68,10 +68,10 @@ public class Fields {
 	}
     
     
-    public Fields(final Configuration configuration, final ExpressionEvaluationContext evalContext) {
+    public Fields(final Configuration configuration, final IProcessingContext processingContext) {
         super();
         this.configuration = configuration;
-        this.evalContext = evalContext;
+        this.processingContext = processingContext;
     }
 
     
