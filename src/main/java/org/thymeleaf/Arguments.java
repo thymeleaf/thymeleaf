@@ -47,7 +47,7 @@ import org.thymeleaf.util.Validate;
  * <ul>
  *   <li>The Template Engine configuration ({@link Configuration}): {@link #getConfiguration()}</li>
  *   <li>The template name: {@link #getTemplateName()}</li>
- *   <li>The Context ({@link IContext}): {@link #getContext()}</li>
+ *   <li>The Context ({@link org.thymeleaf.context.IContext}): {@link #getContext()}</li>
  *   <li>The current map of ID Counts (used for adding a unique index to repeated <tt>id</tt> attributes): {@link #getIdCounts()}</li>
  *   <li>The Expression roots:
  *       <ul>
@@ -67,8 +67,7 @@ import org.thymeleaf.util.Validate;
 public final class Arguments extends AbstractProcessingContext {
 
     /**
-     * @deprecated Use {@link ExpressionEvaluationContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME}
-     *             instead. 
+     * @deprecated Use {@link org.thymeleaf.processor.ProcessorResult#setSelectionTarget(Object) instead.}. 
      */
     @Deprecated
     public static final String SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
@@ -95,11 +94,10 @@ public final class Arguments extends AbstractProcessingContext {
      *   from a element/attribute processor.
      * </p>
      * 
-     * @param templateProcessingParameters the template processing parameters
-     * @param templateResolution the template resolution object
-     * @param templateRepository the template repository in use
-     * @param templateParser the template parser
-     * @param context the context
+     * @param templateProcessingParameters the template processing parameters.
+     * @param templateResolution the template resolution object.
+     * @param templateRepository the template repository in use.
+     * @param document the parsed document.
      */
     public Arguments(
             final TemplateProcessingParameters templateProcessingParameters,
@@ -426,11 +424,11 @@ public final class Arguments extends AbstractProcessingContext {
      * @return the new Arguments object
      * @since 2.0.9
      */
-    public Arguments setSelectionTarget(final Object selectionTarget) {
+    public Arguments setSelectionTarget(final Object newSelectionTarget) {
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true);
+                        this.idCounts, this.processOnlyElementNodes, newSelectionTarget, true);
         return arguments;
     }
     

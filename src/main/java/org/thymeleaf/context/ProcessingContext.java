@@ -82,12 +82,12 @@ public class ProcessingContext extends AbstractProcessingContext {
     
     /**
      * <p>
-     *   Creates a new Arguments object by adding some new local variables 
-     *   to the existing map (the rest of the attributes are copied verbatim).
+     *   Creates a new Arguments object by setting a selection target into the processing  
+     *   context, so that selection expressions are executed on it from then on.
      * </p>
      * 
-     * @param newVariables the new variables
-     * @return the new Arguments object
+     * @param selectionTargetObject the selection target object to be set.
+     * @return the new ProcessingContext object
      */
     public ProcessingContext setSelectionTarget(final Object selectionTargetObject) {
         return new ProcessingContext(getContext(), getLocalVariables(), selectionTargetObject, true);

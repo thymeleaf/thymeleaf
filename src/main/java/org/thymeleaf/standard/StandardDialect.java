@@ -92,12 +92,12 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *           <li>{@link StandardIfAttrProcessor}</li>
  *           <li>{@link StandardInlineAttrProcessor}</li>
  *           <li>{@link StandardUnlessAttrProcessor}</li>
- *           <li>{@link StandardIncludeAttrProcessor}</li>
+ *           <li>{@link StandardIncludeFragmentAttrProcessor}</li>
  *           <li>{@link StandardLangXmlLangAttrProcessor}</li>
  *           <li>{@link StandardRemoveAttrProcessor}</li>
  *           <li>{@link StandardSingleNonRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSingleRemovableAttributeModifierAttrProcessor}</li>
- *           <li>{@link StandardSubstituteByAttrProcessor}</li>
+ *           <li>{@link StandardSubstituteByFragmentAttrProcessor}</li>
  *           <li>{@link StandardSwitchAttrProcessor}</li>
  *           <li>{@link StandardTextAttrProcessor}</li>
  *           <li>{@link StandardUtextAttrProcessor}</li>
@@ -111,7 +111,7 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *   <li><b>Execution attributes</b>:
  *         <ul>
  *           <li>"StandardExpressionExecutor": {@link StandardExpressionExecutor} 
- *               with expression evaluator of type {@link OgnlExpressionEvaluator} 
+ *               with expression evaluator of type {@link OgnlVariableExpressionEvaluator} 
  *               (<tt>OGNL</tt> expression language).</li>
  *           <li>"StandardExpressionParser": {@link StandardExpressionParser}.</li>
  *         </ul>

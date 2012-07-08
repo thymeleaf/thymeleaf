@@ -139,7 +139,7 @@ public final class TemplateProcessingParameters {
      *   Returns the current context specified for template processing.
      * </p>
      * <p>
-     *   Equivalent to {@link #getProcessingContext()#getContext()}.
+     *   Equivalent to <tt>getProcessingContext().getContext()</tt>.
      * </p>
      * 
      * @return the current context

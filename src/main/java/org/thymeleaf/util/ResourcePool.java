@@ -112,7 +112,7 @@ public final class ResourcePool<T> {
      *   a broken resource.
      * </p>
      * 
-     * @param the resource to be released and returned to the pool.
+     * @param resource the resource to be released and returned to the pool.
      * 
      */
     public void release(final T resource) {
