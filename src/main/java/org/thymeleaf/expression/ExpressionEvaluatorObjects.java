@@ -125,8 +125,9 @@ public final class ExpressionEvaluatorObjects {
      */
     @Deprecated
     public static Map<String,Object> computeEvaluationVariablesForArguments(final Arguments arguments) {
-        return computeEvaluationObjectsForArguments(arguments);
+        return computeEvaluationObjects(arguments);
     }
+    
     
     
     
@@ -134,30 +135,31 @@ public final class ExpressionEvaluatorObjects {
      * 
      * @since 2.0.9
      */
-    public static Map<String,Object> computeEvaluationObjectsForArguments(final Arguments arguments) {
+    public static Map<String,Object> computeEvaluationObjects(
+            final IProcessingContext processingContext) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
         
-        variables.putAll(computeEvaluationObjectsForProcessingContext(arguments));
-        
-        final Messages messages = new Messages(arguments);
-        variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
+        variables.putAll(computeEvaluationObjectsForProcessingContext(processingContext));
 
-        final Ids ids = new Ids(arguments);
-        variables.put(IDS_EVALUATION_VARIABLE_NAME, ids);
+        if (processingContext instanceof Arguments) {
+            
+            final Arguments arguments = (Arguments) processingContext; 
+                    
+            final Messages messages = new Messages(arguments);
+            variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
+
+            final Ids ids = new Ids(arguments);
+            variables.put(IDS_EVALUATION_VARIABLE_NAME, ids);
+            
+        }
         
         return variables;
         
     }
     
     
-    
-    
-    /**
-     * 
-     * @since 2.0.9
-     */
-    public static Map<String,Object> computeEvaluationObjectsForProcessingContext(
+    private static Map<String,Object> computeEvaluationObjectsForProcessingContext(
             final IProcessingContext expressionEvaluationContext) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
@@ -180,11 +182,7 @@ public final class ExpressionEvaluatorObjects {
     
     
     
-    /**
-     * 
-     * @since 2.0.9
-     */
-    public static Map<String,Object> computeEvaluationObjectsForContext(final IContext context) {
+    private static Map<String,Object> computeEvaluationObjectsForContext(final IContext context) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
 
