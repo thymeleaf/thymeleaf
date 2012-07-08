@@ -42,7 +42,7 @@ import org.thymeleaf.util.Validate;
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.1
- * @deprecated replaced by {@link AbstractFragmentHandlingAttrProcessor}. Will be
+ * @deprecated replaced by {@link AbstractFragmentHandlingElementProcessor}. Will be
  *             removed in 2.1.x.
  *
  */

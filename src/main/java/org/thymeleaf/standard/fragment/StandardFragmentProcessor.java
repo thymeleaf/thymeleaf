@@ -46,7 +46,7 @@ public final class StandardFragmentProcessor {
     
 
     /**
-     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, ExpressionEvaluationContext, String, String, String)}
+     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, IProcessingContext, String, String, String)}
      *             instead. Will be removed in 2.1.x
      */
     @Deprecated

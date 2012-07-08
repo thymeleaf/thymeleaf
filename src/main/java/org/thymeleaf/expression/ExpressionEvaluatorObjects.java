@@ -120,7 +120,7 @@ public final class ExpressionEvaluatorObjects {
     
     
     /**
-     * @deprecated Use {@link #computeExpressionEvaluationObjectsForArguments(Arguments)} instead.
+     * @deprecated Use {@link #computeEvaluationObjects(IProcessingContext)} instead.
      *             Will be removed in 2.1.x
      */
     @Deprecated

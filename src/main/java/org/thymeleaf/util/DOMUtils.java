@@ -165,7 +165,7 @@ public final class DOMUtils {
     
     
     /**
-     * @deprecated Use {@link #extractFragmentByElementAndAttributeValue(Node, String, String, String)}
+     * @deprecated Use {@link #extractFragmentByElementAndAttributeValue(List, String, String, String)}
      *             instead. Will be removed in 2.1.x
      */
     @Deprecated
@@ -488,7 +488,7 @@ public final class DOMUtils {
     /**
      * @deprecated To be removed in 2.1.0. Use {@link #getHtml5For(Node)},
      *             {@link #getXhtmlFor(Node)} or 
-     *             {@link #getOutputFor(Node, ITemplateWriter, String)}
+     *             {@link #getOutputFor(Node, AbstractGeneralTemplateWriter, String)}
      *             instead. 
      */
     @Deprecated
@@ -515,9 +515,9 @@ public final class DOMUtils {
      *   resolution artifacts, etc. Its usage during normal operation could heavily affect performance.
      * </p>
      * 
-     * @param node
-     * @param templateWriter
-     * @return
+     * @param node the node which output is to be computed
+     * @param templateWriter the template writter to be used for creating the output
+     * @return the computed output
      * @since 2.0.8
      */
     public static String getOutputFor(final Node node, final AbstractGeneralTemplateWriter templateWriter, final String templateMode) {
@@ -558,10 +558,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param arguments
-     * @param node
-     * @param templateWriter
-     * @return
      * @since 2.0.8
      */
     public static String getOutputFor(final Arguments arguments, final Node node, 
@@ -589,8 +585,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param source
-     * @return
      * @since 2.0.8
      */
     public static Document getHtml5DOMFor(final Reader source) {
@@ -601,8 +595,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param source
-     * @return
      * @since 2.0.8
      */
     public static Document getLegacyHTML5DOMFor(final Reader source) {
@@ -613,8 +605,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param source
-     * @return
      * @since 2.0.8
      */
     public static Document getXmlDOMFor(final Reader source) {
@@ -625,8 +615,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param source
-     * @return
      * @since 2.0.8
      */
     public static Document getXhtmlDOMFor(final Reader source) {
@@ -638,10 +626,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param configuration
-     * @param source
-     * @param parser
-     * @return
      * @since 2.0.8
      */
     public static Document getDOMFor(final Reader source, final ITemplateParser parser) {
@@ -664,10 +648,6 @@ public final class DOMUtils {
     
     /**
      * 
-     * @param configuration
-     * @param source
-     * @param parser
-     * @return
      * @since 2.0.8
      */
     public static Document getDOMFor(final Configuration configuration, 
