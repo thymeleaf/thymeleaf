@@ -162,7 +162,7 @@ public final class Arguments extends AbstractProcessingContext {
     
     @Override
     protected Map<String,Object> computeBaseContextVariables() {
-        return ExpressionEvaluatorObjects.computeEvaluationObjectsForArguments(this);
+        return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
     }
 
     

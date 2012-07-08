@@ -113,7 +113,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     protected Map<String,Object> computeBaseContextVariables() {
-        return ExpressionEvaluatorObjects.computeEvaluationObjectsForProcessingContext(this);
+        return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
     }
     
     
