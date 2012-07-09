@@ -20,7 +20,6 @@
 package org.thymeleaf.context;
 
 import java.util.Calendar;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -49,18 +48,26 @@ public class WebContext
         extends AbstractContext
         implements IWebContext {
 
+    
+    
     /**
      * <p>
      *   Name of the context variable that contains the request parameters.
      * </p>
+     * @deprecated Use {@link WebVariablesMap#PARAM_VARIABLE_NAME} instead.
+     *             Will be removed in 2.1.x
      */
+    @Deprecated
     public static final String PARAM_VARIABLE_NAME = "param";
 
     /**
      * <p>
      *   Name of the context variable that contains the session attributes.
      * </p>
+     * @deprecated Use {@link WebVariablesMap#SESSION_VARIABLE_NAME} instead.
+     *             Will be removed in 2.1.x
      */
+    @Deprecated
     public static final String SESSION_VARIABLE_NAME = "session";
 
     /**
@@ -68,18 +75,17 @@ public class WebContext
      *   Name of the context variable that contains the application (servlet context)
      *   attributes.
      * </p>
+     * @deprecated Use {@link WebVariablesMap#APPLICATION_VARIABLE_NAME} instead.
+     *             Will be removed in 2.1.x
      */
+    @Deprecated
     public static final String APPLICATION_VARIABLE_NAME = "application";
 
+    
+    
     private final HttpServletRequest httpServletRequest;
     private final HttpServletResponse httpServletResponse;
-    private final HttpSession httpSession;
     private final ServletContext servletContext;
-
-    private final VariablesMap<String, String[]> requestParameters;
-    private final VariablesMap<String, Object> requestAttributes;
-    private final VariablesMap<String, Object> sessionAttributes;
-    private final VariablesMap<String, Object> applicationAttributes;
 
 
 
@@ -197,66 +203,16 @@ public class WebContext
                       final ServletContext servletContext,
                       final Locale locale, final Map<String, ?> variables) {
 
-        super(locale, variables);
+        super(locale, new WebVariablesMap(request, servletContext, variables));
 
         Validate.notNull(locale, "Locale cannot be null");
         Validate.notNull(request, "Request cannot be null");
         // "response" can be null for legacy compatibility reasons (deprecated methods)
-
-        final HttpSession session = request.getSession(false);
-
+        
         this.httpServletRequest = request;
         this.httpServletResponse = response;
-        this.httpSession = session;
-
         this.servletContext = servletContext;
-
-
-        final Map<String, Object> totalVariables = new HashMap<String, Object>();
-
-        final VariablesMap<String, Object> requestAttributesMap = new VariablesMap<String, Object>();
-        final Enumeration<?> attributeNames = request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            final String attributeName = (String) attributeNames.nextElement();
-            requestAttributesMap.put(attributeName, request.getAttribute(attributeName));
-        }
-        totalVariables.putAll(requestAttributesMap);
-
-
-        final VariablesMap<String, String[]> requestParametersMap = new VariablesMap<String, String[]>();
-        final Enumeration<?> requestParameterNames = request.getParameterNames();
-        while (requestParameterNames.hasMoreElements()) {
-            final String requestParameterName = (String) requestParameterNames.nextElement();
-            final String[] requestParameterValues = request.getParameterValues(requestParameterName);
-            requestParametersMap.put(requestParameterName, requestParameterValues);
-        }
-        totalVariables.put(PARAM_VARIABLE_NAME, requestParametersMap);
-
-
-        final VariablesMap<String, Object> sessionAttributesMap = new VariablesMap<String, Object>();
-        if (null != session) {
-            final Enumeration<?> sessionAttributeNames = session.getAttributeNames();
-            while (sessionAttributeNames.hasMoreElements()) {
-                final String sessionAttributeName = (String) sessionAttributeNames.nextElement();
-                sessionAttributesMap.put(sessionAttributeName, session.getAttribute(sessionAttributeName));
-            }
-        }
-        totalVariables.put(SESSION_VARIABLE_NAME, sessionAttributesMap);
-
-        final VariablesMap<String, Object> applicationAttributesMap = new VariablesMap<String, Object>();
-        final Enumeration<?> applicationAttributeNames = this.servletContext.getAttributeNames();
-        while (applicationAttributeNames.hasMoreElements()) {
-            final String applicationAttributeName = (String) applicationAttributeNames.nextElement();
-            applicationAttributesMap.put(applicationAttributeName, this.servletContext.getAttribute(applicationAttributeName));
-        }
-        totalVariables.put(APPLICATION_VARIABLE_NAME, applicationAttributesMap);
-
-        setVariables(totalVariables);
-        this.requestParameters = requestParametersMap;
-        this.requestAttributes = requestAttributesMap;
-        this.sessionAttributes = sessionAttributesMap;
-        this.applicationAttributes = applicationAttributesMap;
-
+        
     }
 
 
@@ -269,7 +225,7 @@ public class WebContext
     }
 
     public HttpSession getHttpSession() {
-        return this.httpSession;
+        return this.httpServletRequest.getSession(false);
     }
 
     public ServletContext getServletContext() {
@@ -278,24 +234,29 @@ public class WebContext
 
 
     public VariablesMap<String, String[]> getRequestParameters() {
-        return this.requestParameters;
+        return getWebVariablesMap().getRequestParamsVariablesMap();
     }
 
 
     public VariablesMap<String, Object> getRequestAttributes() {
-        return this.requestAttributes;
+        return getWebVariablesMap();
     }
 
 
     public VariablesMap<String, Object> getSessionAttributes() {
-        return this.sessionAttributes;
+        return getWebVariablesMap().getSessionVariablesMap();
     }
 
 
     public VariablesMap<String, Object> getApplicationAttributes() {
-        return this.applicationAttributes;
+        return getWebVariablesMap().getServletContextVariablesMap();
     }
 
+    
+    WebVariablesMap getWebVariablesMap() {
+        return (WebVariablesMap) getVariables();
+    }
+    
 
     @Override
     protected IContextExecutionInfo buildContextExecutionInfo(final String templateName) {
