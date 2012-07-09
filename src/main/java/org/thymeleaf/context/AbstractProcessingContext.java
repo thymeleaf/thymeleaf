@@ -142,13 +142,17 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     public boolean hasSelectionTarget() {
-        return hasLocalVariable(AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
+        return hasLocalVariable(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME) ||
+               getContext().getVariables().containsKey(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
     }
     
     
     public Object getSelectionTarget() {
-        if (hasSelectionTarget()) {
-            return getLocalVariable(AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
+        if (hasLocalVariable(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME)) {
+            return getLocalVariable(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
+        }
+        if (getContext().getVariables().containsKey(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME)) {
+            return getContext().getVariables().get(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME);
         }
         return null;
     }

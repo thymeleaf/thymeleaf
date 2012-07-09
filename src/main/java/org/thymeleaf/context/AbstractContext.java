@@ -93,6 +93,25 @@ public abstract class AbstractContext implements IContext {
         this.variables = newVariablesMap;
     }
     
+    /**
+     * <p>
+     *   Create an instance specifying a locale and the specific VariablesMap instance to be used
+     *   for containing variables.
+     * </p>
+     * 
+     * @param locale the locale to be used.
+     * @param variablesMap the variables map.
+     * 
+     * @since 2.0.9
+     */
+    protected AbstractContext(final Locale locale, final VariablesMap<String,Object> variablesMap) {
+        super();
+        Validate.notNull(locale, "Locale cannot be null");
+        Validate.notNull(variablesMap, "Variables map cannot be null");
+        this.locale = locale;
+        this.variables = variablesMap;
+    }
+    
 
     public Locale getLocale() {
         return this.locale;
