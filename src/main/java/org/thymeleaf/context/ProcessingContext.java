@@ -21,6 +21,8 @@ package org.thymeleaf.context;
 
 import java.util.Map;
 
+import org.thymeleaf.util.Validate;
+
 
 /**
  * 
@@ -55,12 +57,24 @@ public class ProcessingContext extends AbstractProcessingContext {
     
     
     
+    public ProcessingContext(final IProcessingContext processingContext) {
+        
+        super((processingContext == null? null : processingContext.getContext()),
+                (processingContext == null? null : processingContext.getLocalVariables()),
+                (processingContext == null? null : processingContext.getSelectionTarget()),
+                (processingContext == null? false : processingContext.hasSelectionTarget()));
+        
+        Validate.notNull(processingContext, "Processing context cannot be null");
+        
+    }
+    
+    
     
     
     
     /**
      * <p>
-     *   Creates a new Arguments object by adding some new local variables 
+     *   Creates a new ProcessingContext object by adding some new local variables 
      *   to the existing map (the rest of the attributes are copied verbatim).
      * </p>
      * 
