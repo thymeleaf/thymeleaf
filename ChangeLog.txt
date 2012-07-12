@@ -6,6 +6,7 @@
 - Added an HttpServletResponse parameter to SpringWebContext constructors in order to be able to access
   response from processors.
 - Refactored SpringEL expression evaluation.
+- Added "viewClass" property to ThymeleafViewResolver.
 
 
 2.0.8

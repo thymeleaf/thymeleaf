@@ -88,7 +88,9 @@ public class ThymeleafViewResolver
 
     private boolean redirectContextRelative = true;
     private boolean redirectHttp10Compatible = true;
-    
+
+
+    private Class<? extends ThymeleafView> viewClass = ThymeleafView.class;   
     private String[] viewNames = null;
     private String[] excludedViewNames = null;
     private int order = Integer.MAX_VALUE;
@@ -113,6 +115,43 @@ public class ThymeleafViewResolver
     
     
 
+
+    /**
+     * <p>
+     *   Set the view class that should be used to create views. This must be a subclass
+     *   of {@link ThymeleafView} (which is the default value).
+     * </p>
+     * 
+     * @param viewClass class that is assignable to the required view class
+     *        (by default, ThmeleafView).
+     *        
+     * @since 2.0.9
+     * 
+     */
+    public void setViewClass(Class<? extends ThymeleafView> viewClass) {
+        if (viewClass == null || !ThymeleafView.class.isAssignableFrom(viewClass)) {
+            throw new IllegalArgumentException(
+                    "Given view class [" + (viewClass != null ? viewClass.getName() : null) +
+                    "] is not of type [" + ThymeleafView.class.getName() + "]");
+        }
+        this.viewClass = viewClass;
+    }
+    
+    
+    /**
+     * <p>
+     *   Return the view class to be used to create views.
+     * </p>
+     * 
+     * @return the view class.
+     * 
+     * @since 2.0.9
+     * 
+     */
+    protected Class<? extends ThymeleafView> getViewClass() {
+        return this.viewClass;
+    }
+    
     
     /**
      * <p>
@@ -590,7 +629,7 @@ public class ThymeleafViewResolver
         
         final AutowireCapableBeanFactory beanFactory = getApplicationContext().getAutowireCapableBeanFactory();
         
-        ThymeleafView view = BeanUtils.instantiateClass(ThymeleafView.class);
+        ThymeleafView view = BeanUtils.instantiateClass(getViewClass());
 
         if (beanFactory.containsBean(viewName)) {
             final Class<?> viewBeanType = beanFactory.getType(viewName);
