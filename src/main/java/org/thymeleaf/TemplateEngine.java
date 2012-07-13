@@ -448,6 +448,34 @@ public class TemplateEngine {
     
     /**
      * <p>
+     *   Sets an additional set of dialects for this template engine, all of them using
+     *   their default prefixes.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     * 
+     * @param additionalDialects the new set of {@link IDialect} objects to be used.
+     * 
+     * @since 2.0.9
+     * 
+     */
+    public void setAdditionalDialects(final Set<IDialect> additionalDialects) {
+        Validate.notNull(additionalDialects, "Additional dialect set cannot be null");
+        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>();
+        dialectMap.putAll(this.configuration.getDialects());
+        for (final IDialect dialect : additionalDialects)  {
+            dialectMap.put(dialect.getPrefix(), dialect);
+        }
+        this.configuration.setDialects(dialectMap);
+    }
+
+    
+    /**
+     * <p>
      *   Removes all the currently configured dialects.
      * </p>
      * <p>

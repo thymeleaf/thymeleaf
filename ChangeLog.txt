@@ -23,6 +23,10 @@
 - Modified TemplateEngine.isInitialized() visibility to public.
 - Modified parsing system to allow parsing templates without a root element (with several elements / 
   no elements at all).
+- Removed initialization requirement from DialectConfiguration.getPrefix()
+- Added support for server-based URLs in non-servlet-based environments.
+- Added "setAdditionalDialects()" method to TemplateEngine for being able to specify the dialects
+  to be used besides the "standard" ones.
 
 
 
