@@ -251,7 +251,6 @@ public final class DialectConfiguration {
     
     
     public String getPrefix() {
-        checkInitialized();
         return this.prefix;
     }
 
