@@ -222,6 +222,7 @@ public class ExpressionTest extends TestCase {
         test("@{~/xx/yy}", "/xx/yy");
         test("@{~/xx/yy(p1)}", "/xx/yy?p1");
         test("@{~/xx/yy(p1, p2=${pamerica.name})}", "/xx/yy?p1&amp;p2=Petronila+America");
+        test("@{~/xx/yy(a[0]=${pamerica.name},a[1]=${pamerica.name})}", "/xx/yy?a[0]=Petronila+America&amp;a[1]=Petronila+America");
     
     }
 

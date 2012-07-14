@@ -27,7 +27,7 @@
 - Added support for server-based URLs in non-servlet-based environments.
 - Added "setAdditionalDialects()" method to TemplateEngine for being able to specify the dialects
   to be used besides the "standard" ones.
-
+- Fixed URL parameter names not allowing brackets ([,],{,})
 
 
 2.0.8
