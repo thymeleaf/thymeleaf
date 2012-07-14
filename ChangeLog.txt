@@ -3,31 +3,31 @@
 - Added #strings.escapeXml(...) utility method.
 - Added HttpServletResponse argument to WebContext constructors in order to be able to access to the
   response object from Processors.
-- Added new DOM node type, Macro, for writing content without escaping of any kind directly into
-  results (for example, for caches, direct fragment insertion, etc.)
-- Created new org.thymeleaf.fragment and org.thymeleaf.standard.fragment packages as a refactoring 
-  of the several fragment inclusion options available for Thymeleaf dialects.
-- Refactored whole hierarchy of "include" and "substituteby" attribute processors in order to use
-  the new structures in the org.thymeleaf.fragment package.
-- Modified "TemplateEngine.getConfiguration()" visibility to public.
-- Added DOMSelector.select(Node) method for easier calling of DOM selectors on single nodes.
-- Added to TemplateEngine the possibility of filtering parsed templates using a IFragmentSpec in
-  order to process only template fragments.
-- Modified extraction of fragments from element and/or attribute name so that a list might be
-  returned instead of a single Node.
-- Modified the StandardExpressionProcessor infrastructure to allow the usage of parameters lighter
-  than an "Arguments" object: Configuration and ExpressionEvaluationContext.
-- Made Arguments extend ExpressionEvaluationContext.
-- Refactored standard expression evaluation to allow execution of expressions outside templates
-  (with limitations, for example, no string externalization).
-- Modified TemplateEngine.isInitialized() visibility to public.
-- Modified parsing system to allow parsing templates without a root element (with several elements / 
-  no elements at all).
-- Removed initialization requirement from DialectConfiguration.getPrefix()
+- Fixed URL parameter names not allowing brackets ([,],{,})
 - Added support for server-based URLs in non-servlet-based environments.
 - Added "setAdditionalDialects()" method to TemplateEngine for being able to specify the dialects
   to be used besides the "standard" ones.
-- Fixed URL parameter names not allowing brackets ([,],{,})
+- Modified parsing system to allow parsing templates without a root element (with several elements / 
+  no elements at all).
+- Created new org.thymeleaf.fragment and org.thymeleaf.standard.fragment packages as a refactoring 
+  of the several fragment inclusion options available for Thymeleaf dialects.
+- Added to TemplateEngine the possibility of filtering parsed templates using an IFragmentSpec in
+  order to process only fragments of templates.
+- Created IProcessorContext as the interface defining the minimum amount of information required to
+  execute expressions, and created the "ProcessorContext" class as the most basic implementation of
+  this interface. 
+- Modified Arguments to be an implementation of IProcessorContext.
+- Modified the StandardExpressionProcessor infrastructure to allow the specification of an
+  IProcessorContext for executing expressions instead of a full --and heavier-- Arguments object. This
+  allows the execution of expressions outside templates.
+- Refactored whole hierarchy of "include" and "substituteby" attribute processors in order to use
+  the new structures in the org.thymeleaf.fragment package.
+- Modified "TemplateEngine.getConfiguration()" visibility to public.
+- Modified "TemplateEngine.isInitialized()" visibility to public.
+- Added DOMSelector.select(Node) method for easier calling of DOM selectors on single nodes.
+- Modified extraction of fragments from element and/or attribute name so that a list might be
+  returned instead of a single Node.
+- Removed initialization requirement from DialectConfiguration.getPrefix()
 
 
 2.0.8
