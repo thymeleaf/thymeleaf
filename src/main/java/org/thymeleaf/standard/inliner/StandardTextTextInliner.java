@@ -46,6 +46,9 @@ public class StandardTextTextInliner implements IStandardTextInliner {
     
     public static final String TEXT_INLINE_EVAL = "\\[\\[(.*?)\\]\\]";
     public static final Pattern TEXT_INLINE_EVAL_PATTERN = Pattern.compile(TEXT_INLINE_EVAL, Pattern.DOTALL);
+    
+    public static final String SCRIPT_INLINE_PREFIX = "[[";
+    public static final String SCRIPT_INLINE_SUFFIX = "]]";
    
     
     
@@ -98,7 +101,8 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                     
                 } catch (final TemplateProcessingException e) {
                     
-                    strBuilder.append(match);
+                    // If it is not a standard expression, just output it as original
+                    strBuilder.append(SCRIPT_INLINE_PREFIX + match + SCRIPT_INLINE_SUFFIX);
                     
                 }
                 

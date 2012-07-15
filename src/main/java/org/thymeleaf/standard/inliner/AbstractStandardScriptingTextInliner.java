@@ -53,6 +53,9 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
     public static final String SCRIPT_INLINE_EVAL = "\\[\\[(.*?)\\]\\]";
     public static final Pattern SCRIPT_INLINE_EVAL_PATTERN = Pattern.compile(SCRIPT_INLINE_EVAL, Pattern.DOTALL);
+    
+    public static final String SCRIPT_INLINE_PREFIX = "[[";
+    public static final String SCRIPT_INLINE_SUFFIX = "]]";
    
     
     
@@ -246,7 +249,8 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                     
                 } catch (final TemplateProcessingException e) {
                     
-                    strBuilder.append(match);
+                    // If it is not a standard expression, just output it as original
+                    strBuilder.append(SCRIPT_INLINE_PREFIX + match + SCRIPT_INLINE_SUFFIX);
                     
                 }
                 
