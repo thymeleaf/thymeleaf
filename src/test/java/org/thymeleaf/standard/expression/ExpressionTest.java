@@ -19,8 +19,10 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -223,6 +225,9 @@ public class ExpressionTest extends TestCase {
         test("@{~/xx/yy(p1)}", "/xx/yy?p1");
         test("@{~/xx/yy(p1, p2=${pamerica.name})}", "/xx/yy?p1&amp;p2=Petronila+America");
         test("@{~/xx/yy(a[0]=${pamerica.name},a[1]=${pamerica.name})}", "/xx/yy?a[0]=Petronila+America&amp;a[1]=Petronila+America");
+        test("@{~/xx/yy(login=${logins})}", "/xx/yy?login=loceania&amp;login=meurope&amp;login=jafrica&amp;login=pamerica");
+        test("@{~/xx/yy(login=${loginsArray})}", "/xx/yy?login=loceania&amp;login=meurope&amp;login=jafrica&amp;login=pamerica");
+        test("@{~/xx/yy(a[0]=${pamerica.name},a[0]=${pamerica.name})}", "/xx/yy?a[0]=Petronila+America&amp;a[0]=Petronila+America");
     
     }
 
@@ -247,6 +252,7 @@ public class ExpressionTest extends TestCase {
         final Department deptMarketing =
             new Department(Integer.valueOf(4), "Marketing");
 
+        final List<String> logins = new ArrayList<String>();
         final Map<String,Object> objects = new HashMap<String,Object>();
         
         {
@@ -256,6 +262,7 @@ public class ExpressionTest extends TestCase {
                         deptMarketing, 3, toCalendar(2004, 11, 23), 
                         5.3, false, toArray("Event Organizer", "Marketing Worldwide Head", "Office Master"));
             objects.put(user.getLogin(), user);
+            logins.add(user.getLogin());
         }
         
         {
@@ -265,6 +272,7 @@ public class ExpressionTest extends TestCase {
                         deptEngineering, 5, toCalendar(2008, 1, 3), 
                         8.0, true, null);
             objects.put(user.getLogin(), user);
+            logins.add(user.getLogin());
         }
         
         {
@@ -274,6 +282,7 @@ public class ExpressionTest extends TestCase {
                         deptSales, 3, toCalendar(2010, 9, 23), 
                         4.3, false, toArray("Sales Manager", "Department Director"));
             objects.put(user.getLogin(), user);
+            logins.add(user.getLogin());
         }
         
         {
@@ -283,9 +292,13 @@ public class ExpressionTest extends TestCase {
                         deptAccounting, 1, toCalendar(2002, 4, 19), 
                         9.2, false, null);
             objects.put(user.getLogin(), user);
+            logins.add(user.getLogin());
         }
 
         objects.put("currentYear", Integer.valueOf(2011));
+        
+        objects.put("logins", logins);
+        objects.put("loginsArray", logins.toArray(new String[logins.size()]));
         
         this.contextES.getVariables().putAll(objects);
         this.contextEN.getVariables().putAll(objects);
