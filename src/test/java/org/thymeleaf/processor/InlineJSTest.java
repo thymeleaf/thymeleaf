@@ -26,11 +26,31 @@ import org.w3c.dom.Node;
 public class InlineJSTest extends AbstractDocumentProcessingTest {
 
     public void testInlineJS() throws Exception {
-        Document doc = processTemplate("InlineJSTest");
-
-        assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/script");
-        Node node = getNode(doc, "/THYMELEAF_ROOT/html/body/script[1]");
-        assertEquals("/**/var x = 1;/**/", node.getTextContent().trim());
+        
+        {
+            Document doc = processTemplate("InlineJSTest");
+    
+            assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/script");
+            Node node = getNode(doc, "/THYMELEAF_ROOT/html/body/script[1]");
+            assertEquals("/**/var x = 1;/**/", node.getTextContent().trim());
+        }
+        
+        {
+            Document doc = processTemplate("InlineJSTest2");
+    
+            assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/div/script");
+            Node node = getNode(doc, "/THYMELEAF_ROOT/html/body/div/script[1]");
+            assertEquals("/**/[[\"#A3AFDE\",\"#DEFAB1\",\"#3C5F1B\"]]/**/", node.getTextContent().trim());
+        }
+        
+        {
+            Document doc = processTemplate("InlineJSTest3");
+    
+            assertNodeExists(doc, "/THYMELEAF_ROOT/html/body/div/script");
+            Node node = getNode(doc, "/THYMELEAF_ROOT/html/body/div/script[1]");
+            assertEquals("/**/'hello, world!'/**/", node.getTextContent().trim());
+        }
+        
     }
 
 }
