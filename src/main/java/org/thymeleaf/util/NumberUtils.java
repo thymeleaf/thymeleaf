@@ -109,12 +109,34 @@ public final class NumberUtils {
      * @since 1.1.2
      */
     public static Integer[] sequence(final Integer from, final Integer to) {
+        return sequence(from, to, Integer.valueOf(1));
+    }
+    
+
+    
+    
+    
+    /**
+     * <p>
+     *   Produces an array with a sequence of integer numbers, using a step.
+     * </p>
+     * 
+     * @param from value to start the sequence from
+     * @param to value to produce the sequence to
+     * @param step the step to be used
+     * @return the Integer[] sequence
+     * 
+     * @since 2.0.9
+     */
+    public static Integer[] sequence(final Integer from, final Integer to, final Integer step) {
         
         Validate.notNull(from, "Value to start the sequence from cannot be null");
         Validate.notNull(to, "Value to generate the sequence up to cannot be null");
+        Validate.notNull(step, "Step to generate the sequence cannot be null");
         
         final int iFrom = from.intValue();
         final int iTo = to.intValue();
+        final int iStep = step.intValue();
         
         if (iFrom == iTo) {
             return new Integer[] {Integer.valueOf(iFrom)};
@@ -124,13 +146,15 @@ public final class NumberUtils {
         if (iFrom < iTo) {
             int i = iFrom;
             while (i <= iTo) {
-                values.add(Integer.valueOf(i++));
+                values.add(Integer.valueOf(i));
+                i += iStep;
             }
         } else {
             // iFrom > iTo
             int i = iFrom;
             while (i >= iTo) {
-                values.add(Integer.valueOf(i--));
+                values.add(Integer.valueOf(i));
+                i -= iStep;
             }
         }
         
