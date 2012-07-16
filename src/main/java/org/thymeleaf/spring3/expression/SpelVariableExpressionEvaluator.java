@@ -68,7 +68,7 @@ public class SpelVariableExpressionEvaluator
     
     
     
-    private SpelVariableExpressionEvaluator() {
+    protected SpelVariableExpressionEvaluator() {
         super();
     }
     
