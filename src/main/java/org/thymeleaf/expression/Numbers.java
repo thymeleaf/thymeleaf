@@ -290,6 +290,25 @@ public final class Numbers {
     public Integer[] sequence(final Integer from, final Integer to) {
         return NumberUtils.sequence(from, to);
     }
+
+    
+    
+    /**
+     * <p>
+     *   Produces an array with a sequence of integer numbers, using the 
+     *   specified step.
+     * </p>
+     * 
+     * @param from value to start the sequence from
+     * @param to value to produce the sequence to
+     * @param step the step to be used
+     * @return the Integer[] sequence
+     * 
+     * @since 2.0.9
+     */
+    public Integer[] sequence(final Integer from, final Integer to, final Integer step) {
+        return NumberUtils.sequence(from, to, step);
+    }
         
     
 
