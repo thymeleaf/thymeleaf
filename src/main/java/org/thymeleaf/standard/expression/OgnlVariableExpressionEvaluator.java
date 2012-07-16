@@ -130,7 +130,7 @@ public class OgnlVariableExpressionEvaluator
     
     
     
-    private OgnlVariableExpressionEvaluator() {
+    protected OgnlVariableExpressionEvaluator() {
         super();
         if (!booleanFixApplied && shouldApplyOgnlBooleanFix()) {
             applyOgnlBooleanFix();
