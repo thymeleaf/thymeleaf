@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-dist</artifactId>
   <packaging>jar</packaging>
-  <version>2.0.8</version>
+  <version>2.0.9</version>
   <name>thymeleaf-dist</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -53,7 +53,7 @@
     <developer>
       <id>dfernandez</id>
       <name>Daniel Fernandez</name>
-      <email>dfernandez AT users.sourceforge.net</email>
+      <email>daniel.fernandez AT 11thlabs DOT org</email>
       <roles>
         <role>Project admin</role>
       </roles>
