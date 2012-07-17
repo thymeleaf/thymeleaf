@@ -1,3 +1,7 @@
+2.0.10
+======
+- Fixed selection expressions (*{...}) always evaluating on the root context.
+
 2.0.9
 =====
 - Added #strings.escapeXml(...) utility method.
