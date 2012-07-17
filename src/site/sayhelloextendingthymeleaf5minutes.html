@@ -327,8 +327,9 @@
     <h2>Using the hello dialect</h2>
     
     <p>
-      Using our new dialect is very easy. This being a Spring MVC application, we just have to add
-      it to the <i>dialects</i> property of the Template Engine bean:
+      Using our new dialect is very easy. This being a Spring MVC application, we just have to set
+      it at the <i>additionalDialects</i> property of the Template Engine bean, so that it is added to
+      the default <i>SpringStandard</i> dialect:
     </p>
     
     <code>
@@ -342,12 +343,9 @@
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;dialects&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;additionalDialects&quot;</span>&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>set</b>&gt;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.dialect.SpringStandardDialect&quot;</span>/&gt;
 <br />
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;thymeleafexamples.sayhello.dialect.HelloDialect&quot;</span>/&gt;
 <br />
