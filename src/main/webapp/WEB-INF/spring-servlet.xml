@@ -50,9 +50,8 @@
   <bean id="templateEngine"
         class="org.thymeleaf.spring3.SpringTemplateEngine">
     <property name="templateResolver" ref="templateResolver" />
-    <property name="dialects">
+    <property name="additionalDialects">
       <set>
-        <bean class="org.thymeleaf.spring3.dialect.SpringStandardDialect" />
         <bean class="thymeleafexamples.extrathyme.dialects.score.ScoreDialect" />
       </set>
     </property>
