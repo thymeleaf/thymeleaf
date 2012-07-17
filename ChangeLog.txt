@@ -1,3 +1,8 @@
+2.0.10
+======
+- (No changes)
+
+
 2.0.9
 =====
 - Added RequestContext variable to Model as AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE
