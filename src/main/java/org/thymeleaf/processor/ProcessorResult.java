@@ -134,7 +134,7 @@ public final class ProcessorResult {
     
     public boolean isOK() {
         return (this.localVariables == null || this.localVariables.size() == 0) &&
-               !this.processOnlyElementNodesSet; 
+               !this.processOnlyElementNodesSet && !this.selectionTargetSet; 
     }
     
 

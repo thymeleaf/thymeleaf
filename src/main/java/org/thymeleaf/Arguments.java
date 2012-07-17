@@ -445,9 +445,6 @@ public final class Arguments extends AbstractProcessingContext {
      * @since 2.0.9
      */
     public Arguments addLocalVariablesAndSelectionTarget(final Map<String,Object> newVariables, final Object selectionTarget) {
-        if (newVariables == null || newVariables.isEmpty()) {
-            return this;
-        }
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
