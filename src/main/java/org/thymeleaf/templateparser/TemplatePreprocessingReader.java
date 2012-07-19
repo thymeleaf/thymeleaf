@@ -871,8 +871,13 @@ public final class TemplatePreprocessingReader extends Reader {
     }
     
     
+    
+    /**
+     * @since 2.0.11
+     */
     public Reader getInnerReader() {
         return this.innerReader;
     }
+    
     
 }

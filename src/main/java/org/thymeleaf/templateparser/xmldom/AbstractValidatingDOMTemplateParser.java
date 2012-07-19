@@ -44,4 +44,12 @@ public abstract class AbstractValidatingDOMTemplateParser extends AbstractNonVal
 
 
 
+
+    @Override
+    protected boolean shouldAddThymeleafRootToParser() {
+        return false;
+    }
+
+
+
 }

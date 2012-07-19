@@ -105,9 +105,7 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
         
         final DocumentBuilder docBuilder = poolToBeUsed.allocate();
 
-        final TemplatePreprocessingReader templateReader = 
-                (reader instanceof TemplatePreprocessingReader? 
-                        (TemplatePreprocessingReader) reader : new TemplatePreprocessingReader(reader, 8192));
+        final TemplatePreprocessingReader templateReader = getTemplatePreprocessingReader(reader);
         
         try {
             
@@ -192,6 +190,30 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
     protected abstract String wrapFragment(final String fragment);
     protected abstract List<Node> unwrapFragment(final Document document);
     
+    
+    
+    
+
+    /**
+     * @since 2.0.11
+     */
+    protected boolean shouldAddThymeleafRootToParser() {
+        return true;
+    }
+
+    
+    
+    /**
+     * @since 2.0.11
+     */
+    protected TemplatePreprocessingReader getTemplatePreprocessingReader(final Reader reader) {
+        if (reader instanceof TemplatePreprocessingReader) {
+            final TemplatePreprocessingReader templatePreprocessingReader = (TemplatePreprocessingReader) reader;
+            return new TemplatePreprocessingReader(
+                    templatePreprocessingReader.getInnerReader(), 8192, shouldAddThymeleafRootToParser());
+        }
+        return new TemplatePreprocessingReader(reader, 8192, shouldAddThymeleafRootToParser());
+    }
     
     
     
