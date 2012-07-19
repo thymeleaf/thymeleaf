@@ -1,6 +1,16 @@
+2.0.11
+======
+- Fixed THYMELEAF_ROOT element tag appearing in output in LEGACYHTML5 mode.
+- Fixed VALIDXHTML and VALIDXML modes not correctly parsing templates due to the inclusion of
+  the THYMELEAF_ROOT element.
+- Add catch for NoClassDefFoundError to checks for knowing whether nekoHTML is in classpath
+  in LEGACYHTML5 mode.
+
+
 2.0.10
 ======
 - Fixed selection expressions (*{...}) always evaluating on the root context.
+
 
 2.0.9
 =====
