@@ -124,7 +124,8 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
 
             final TemplatePreprocessingReader templateReader = 
                     (reader instanceof TemplatePreprocessingReader? 
-                            (TemplatePreprocessingReader) reader : new TemplatePreprocessingReader(reader, 8192));
+                            new TemplatePreprocessingReader(((TemplatePreprocessingReader) reader).getInnerReader(), 8192, false) : 
+                            new TemplatePreprocessingReader(reader, 8192, false));
             
             try {
                 
