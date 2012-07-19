@@ -71,7 +71,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                     "\"net.sourceforge.nekohtml::nekohtml::1.9.15\". IMPORTANT: DO NOT use versions of " +
                     "nekoHTML older than 1.9.15.");
         }
-        return this.parser.parseTemplate(configuration, documentName, reader);
+        return this.parser.parseTemplate(configuration, documentName, getTemplatePreprocessingReader(reader));
     }
 
 
@@ -118,14 +118,10 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         
         
         
-        public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
+        public final Document parseTemplate(final Configuration configuration, final String documentName, 
+                final TemplatePreprocessingReader templateReader) {
             
             final org.apache.xerces.parsers.DOMParser domParser = (org.apache.xerces.parsers.DOMParser) this.pool.allocate();
-
-            final TemplatePreprocessingReader templateReader = 
-                    (reader instanceof TemplatePreprocessingReader? 
-                            new TemplatePreprocessingReader(((TemplatePreprocessingReader) reader).getInnerReader(), 8192, false) : 
-                            new TemplatePreprocessingReader(reader, 8192, false));
             
             try {
                 
@@ -211,6 +207,31 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         
         
     }
+    
+    
+    
+
+    /**
+     * @since 2.0.11
+     */
+    protected boolean shouldAddThymeleafRootToParser() {
+        return false;
+    }
+
+    
+    
+    /**
+     * @since 2.0.11
+     */
+    protected TemplatePreprocessingReader getTemplatePreprocessingReader(final Reader reader) {
+        if (reader instanceof TemplatePreprocessingReader) {
+            final TemplatePreprocessingReader templatePreprocessingReader = (TemplatePreprocessingReader) reader;
+            return new TemplatePreprocessingReader(
+                    templatePreprocessingReader.getInnerReader(), 8192, shouldAddThymeleafRootToParser());
+        }
+        return new TemplatePreprocessingReader(reader, 8192, shouldAddThymeleafRootToParser());
+    }
+    
     
     
 }

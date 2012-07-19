@@ -43,4 +43,12 @@ public abstract  class AbstractValidatingSAXTemplateParser extends AbstractNonVa
 
 
 
+
+    @Override
+    protected boolean shouldAddThymeleafRootToParser() {
+        return false;
+    }
+
+
+
 }
