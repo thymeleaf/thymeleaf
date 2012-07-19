@@ -47,6 +47,8 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                     loadClass("org.cyberneko.html.parsers.DOMParser");
         } catch (final ClassNotFoundException e) {
             nekoFound = false;
+        } catch (final NoClassDefFoundError e) {
+            nekoFound = false;
         }
         this.nekoInClasspath = nekoFound;
         this.templateModeName = templateModeName;
