@@ -43,9 +43,7 @@ public final class JavaScriptUtils {
 
 
     public static String escapeString(final String str) {
-        final StringBuilder output = new StringBuilder();
-        escapeString(output, str);
-        return output.toString();
+        return StringUtils.escapeJavaScript(str);
     }
 
 
@@ -180,7 +178,7 @@ public final class JavaScriptUtils {
 
     private static void printString(final StringBuilder output, final String str) {
         output.append('\'');
-        escapeString(output, str);
+        output.append(StringUtils.escapeJavaScript(str));
         output.append('\'');
     }
 
@@ -372,69 +370,6 @@ public final class JavaScriptUtils {
 
 
 
-
-
-
-    private static void escapeString(final StringBuilder output, final String str) {
-
-        if (str == null) {
-            return;
-        }
-
-
-        final int length = str.length();
-        for (int i = 0; i < length; i++) {
-
-            char c = str.charAt(i);
-
-            if (c > 0xfff) {
-                output.append("\\u" + Integer.toHexString(c));
-            } else if (c > 0xff) {
-                output.append("\\u0" + Integer.toHexString(c));
-            } else if (c > 0x7f) {
-                output.append("\\u00" + Integer.toHexString(c));
-            } else if (c < 32) {
-                switch (c) {
-                    case '\n':
-                        output.append("\\n");
-                        break;
-                    case '\r':
-                        output.append("\\r");
-                        break;
-                    case '\t':
-                        output.append("\\t");
-                        break;
-                    case '\b':
-                        output.append("\\b");
-                        break;
-                    case '\f':
-                        output.append("\\f");
-                        break;
-                    default :
-                        if (c > 0xf) {
-                            output.append("\\u00" + Integer.toHexString(c));
-                        } else {
-                            output.append("\\u000" + Integer.toHexString(c));
-                        }
-                }
-            } else {
-                switch (c) {
-                    case '\'':
-                        output.append("\\'");
-                        break;
-                    case '"':
-                        output.append("\\\"");
-                        break;
-                    case '\\':
-                        output.append("\\\\");
-                        break;
-                    default :
-                        output.append(c);
-                }
-            }
-        }
-
-    }
 
 
 
