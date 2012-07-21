@@ -1,6 +1,8 @@
 2.0.11
 ======
-- (No changes)
+- Add "getFragmentSpec()" / "setFragmentSpec(IFragmentSpec)" methods to ThymeleafViewResolver and
+  ThymeleafView in order to allow the processing of "partial" views (only the template fragments
+  selected by the IFragmentSpec will be processed and rendered).
 
 
 2.0.10

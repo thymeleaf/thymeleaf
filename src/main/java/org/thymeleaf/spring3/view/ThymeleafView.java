@@ -36,6 +36,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 import org.thymeleaf.spring3.context.SpringWebContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
@@ -81,6 +82,7 @@ public class ThymeleafView
     private SpringTemplateEngine templateEngine = null;
 	private String templateName = null;
     private Locale locale = null;
+    private IFragmentSpec fragmentSpec = null;
     private Map<String, Object> staticVariables = null;
 
 
@@ -183,7 +185,7 @@ public class ThymeleafView
      *   counterpart of this getter method.
      * </p>
      * 
-     * @return the character encoding to be set.
+     * @return the character encoding.
      */
     public String getCharacterEncoding() {
         return this.characterEncoding;
@@ -211,6 +213,58 @@ public class ThymeleafView
         this.characterEncoding = characterEncoding;
     }
 
+    
+    
+    /**
+     * <p>
+     *   Returns the fragment specification ({@link IFragmentSpec}) defining the part
+     *   of the template that should be processed.
+     * </p>
+     * <p>
+     *   This fragment spec will be used for selecting the section of the template
+     *   that should be processed, discarding the rest of the template. If null,
+     *   the whole template will be processed.
+     * </p>
+     * <p>
+     *   Subclasses of {@link ThymeleafView} might choose not to honor this parameter,
+     *   disallowing the processing of template fragments.
+     * </p>
+     * 
+     * @return the fragment spec currently set, or null of no fragment has been
+     *         specified yet.
+     * 
+     * @since 2.0.11
+     */
+    public IFragmentSpec getFragmentSpec() {
+        return this.fragmentSpec;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Sets the fragment specification ({@link IFragmentSpec}) defining the part
+     *   of the template that should be processed.
+     * </p>
+     * <p>
+     *   This fragment spec will be used for selecting the section of the template
+     *   that should be processed, discarding the rest of the template. If null,
+     *   the whole template will be processed.
+     * </p>
+     * <p>
+     *   Subclasses of {@link ThymeleafView} might choose not to honor this parameter,
+     *   disallowing the processing of template fragments.
+     * </p>
+     * 
+     * @param fragmentSpec the fragment specification to be set.
+     *        
+     * @since 2.0.11
+     */
+    public void setFragmentSpec(final IFragmentSpec fragmentSpec) {
+        this.fragmentSpec = fragmentSpec;
+    }
+
+    
     
     /**
      * <p>
@@ -449,6 +503,8 @@ public class ThymeleafView
         final String templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
+        
+        final IFragmentSpec templateFragmentSpec = getFragmentSpec();
 
         response.setLocale(templateLocale);
         if (templateContentType != null) {
@@ -460,7 +516,7 @@ public class ThymeleafView
             response.setCharacterEncoding(templateCharacterEncoding);
         }
         
-        viewTemplateEngine.process(getTemplateName(), context, response.getWriter());
+        viewTemplateEngine.process(getTemplateName(), context, templateFragmentSpec, response.getWriter());
         
     }
     

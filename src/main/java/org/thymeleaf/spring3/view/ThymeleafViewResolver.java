@@ -34,6 +34,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 
 
@@ -99,6 +100,7 @@ public class ThymeleafViewResolver
     private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>();
     private String contentType = null;
     private String characterEncoding = null;
+    private IFragmentSpec fragmentSpec = null;
     
     private SpringTemplateEngine templateEngine;
 
@@ -186,6 +188,57 @@ public class ThymeleafViewResolver
      */
     public void setTemplateEngine(final SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
+    }
+
+    
+    
+    /**
+     * <p>
+     *   Returns the fragment specification ({@link IFragmentSpec}) defining the part
+     *   that should be processed of all the templates resolved by this ViewResolver.
+     * </p>
+     * <p>
+     *   This fragment spec will be used for selecting the section of the templates
+     *   that should be processed, discarding the rest of the templates. If null,
+     *   the whole templates will be processed.
+     * </p>
+     * <p>
+     *   Subclasses of {@link ThymeleafView} might choose not to honor this parameter,
+     *   disallowing the processing of template fragments.
+     * </p>
+     * 
+     * @return the fragment spec currently set, or null of no fragment has been
+     *         specified yet.
+     * 
+     * @since 2.0.11
+     */
+    public IFragmentSpec getFragmentSpec() {
+        return this.fragmentSpec;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Sets the fragment specification ({@link IFragmentSpec}) defining the part
+     *   that should be processed of all the templates resolved by this ViewResolver.
+     * </p>
+     * <p>
+     *   This fragment spec will be used for selecting the section of the templates
+     *   that should be processed, discarding the rest of the templates. If null,
+     *   the whole templates will be processed.
+     * </p>
+     * <p>
+     *   Subclasses of {@link ThymeleafView} might choose not to honor this parameter,
+     *   disallowing the processing of template fragments.
+     * </p>
+     * 
+     * @param fragmentSpec the fragment specification to be set.
+     *        
+     * @since 2.0.11
+     */
+    public void setFragmentSpec(final IFragmentSpec fragmentSpec) {
+        this.fragmentSpec = fragmentSpec;
     }
 
     
@@ -655,6 +708,9 @@ public class ThymeleafViewResolver
         }
         if (view.getCharacterEncoding() == null && getCharacterEncoding() != null) {
             view.setCharacterEncoding(getCharacterEncoding());
+        }
+        if (view.getFragmentSpec() == null && getFragmentSpec() != null) {
+            view.setFragmentSpec(getFragmentSpec());
         }
         
         return view;
