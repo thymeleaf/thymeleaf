@@ -1322,6 +1322,416 @@ public final class Strings {
     }
     
     
+
+    
+    
+    
+    
+    
+    
+
+    /**
+     * <p>
+     *   JavaScript-escapes the specified text.
+     * </p>
+     * 
+     * @param target the text to be escaped
+     * @return the escaped text.
+     * 
+     * @since 2.0.11
+     */
+    public String escapeJavaScript(final Object target) {
+        return StringUtils.escapeJavaScript(target);
+    }
+    
+    
+    /**
+     * <p>
+     * JavaScript-escapes all the elements in the target array.
+     * </p>
+     * 
+     * @param target the array of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a String[] with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public String[] arrayEscapeJavaScript(final Object[] target) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = escapeJavaScript(target[i]);
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * JavaScript-escapes all the elements in the target list.
+     * </p>
+     * 
+     * @param target the list of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a List with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public List<String> listEscapeJavaScript(final List<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(escapeJavaScript(element));
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * JavaScript-escapes all the elements in the target set.
+     * </p>
+     * 
+     * @param target the list of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a Set with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public Set<String> setEscapeJavaScript(final Set<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>();
+        for (final Object element : target) {
+            result.add(escapeJavaScript(element));
+        }
+        return result;
+    }
+    
+
+    
+
+
+    
+    
+    
+
+    /**
+     * <p>
+     *   JavaScript-unescapes the specified text.
+     * </p>
+     * 
+     * @param target the text to be unescaped
+     * @return the unescaped text.
+     * 
+     * @since 2.0.11
+     */
+    public String unescapeJavaScript(final Object target) {
+        return StringUtils.unescapeJavaScript(target);
+    }
+    
+    
+    /**
+     * <p>
+     * JavaScript-unescapes all the elements in the target array.
+     * </p>
+     * 
+     * @param target the array of Strings to be unescaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a String[] with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public String[] arrayUnescapeJavaScript(final Object[] target) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = unescapeJavaScript(target[i]);
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * JavaScript-unescapes all the elements in the target list.
+     * </p>
+     * 
+     * @param target the list of Strings to be unescaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a List with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public List<String> listUnescapeJavaScript(final List<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(unescapeJavaScript(element));
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * JavaScript-unescapes all the elements in the target set.
+     * </p>
+     * 
+     * @param target the list of Strings to be unescaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a Set with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public Set<String> setUnescapeJavaScript(final Set<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>();
+        for (final Object element : target) {
+            result.add(unescapeJavaScript(element));
+        }
+        return result;
+    }
+    
+
+    
+
+    
+    
+    
+    
+
+    /**
+     * <p>
+     *   Java-escapes the specified text.
+     * </p>
+     * 
+     * @param target the text to be escaped
+     * @return the escaped text.
+     * 
+     * @since 2.0.11
+     */
+    public String escapeJava(final Object target) {
+        return StringUtils.escapeJava(target);
+    }
+    
+    
+    /**
+     * <p>
+     * Java-escapes all the elements in the target array.
+     * </p>
+     * 
+     * @param target the array of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a String[] with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public String[] arrayEscapeJava(final Object[] target) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = escapeJava(target[i]);
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * Java-escapes all the elements in the target list.
+     * </p>
+     * 
+     * @param target the list of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a List with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public List<String> listEscapeJava(final List<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(escapeJava(element));
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * Java-escapes all the elements in the target set.
+     * </p>
+     * 
+     * @param target the list of Strings to be escaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a Set with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public Set<String> setEscapeJava(final Set<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>();
+        for (final Object element : target) {
+            result.add(escapeJava(element));
+        }
+        return result;
+    }
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /**
+     * <p>
+     *   Java-unescapes the specified text.
+     * </p>
+     * 
+     * @param target the text to be unescaped
+     * @return the unescaped text.
+     * 
+     * @since 2.0.11
+     */
+    public String unescapeJava(final Object target) {
+        return StringUtils.unescapeJava(target);
+    }
+    
+    
+    /**
+     * <p>
+     * Java-unescapes all the elements in the target array.
+     * </p>
+     * 
+     * @param target the array of Strings to be unescaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a String[] with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public String[] arrayUnescapeJava(final Object[] target) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = unescapeJava(target[i]);
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * Java-unescapes all the elements in the target list.
+     * </p>
+     * 
+     * @param target the list of Strings to be unescaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a List with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public List<String> listUnescapeJava(final List<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(unescapeJava(element));
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     * Java-unescapes all the elements in the target set.
+     * </p>
+     * 
+     * @param target the list of Strings to be unescaped.
+     * If non-String objects, toString() will be called. 
+     * 
+     * @return a Set with the result of each
+     * each element of the target.
+     *
+     * @since 2.0.11
+     * 
+     */
+    public Set<String> setUnescapeJava(final Set<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>();
+        for (final Object element : target) {
+            result.add(unescapeJava(element));
+        }
+        return result;
+    }
+    
+
+    
+
+    
+
+    
+    
     
     
     

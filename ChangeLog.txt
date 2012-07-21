@@ -5,6 +5,8 @@
   the THYMELEAF_ROOT element.
 - Add catch for NoClassDefFoundError to checks for knowing whether nekoHTML is in classpath
   in LEGACYHTML5 mode.
+- Added "escape/unescapeJavaScript" and "escape/unescapeJava" methods to StringUtils class
+  and to #strings expression utility object.
 
 
 2.0.10
