@@ -204,18 +204,18 @@
     </dependency>
     
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>3.0.5.RELEASE</version>
-      <scope>provided</scope>
-    </dependency>
-    
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.5</version>
       <scope>provided</scope>
       <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>3.0.5.RELEASE</version>
+      <scope>provided</scope>
     </dependency>
     
     <dependency>
@@ -241,7 +241,23 @@
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
+    
+    <dependency>
+      <groupId>org.springframework.webflow</groupId>
+      <artifactId>spring-webflow</artifactId>
+      <version>2.3.1.RELEASE</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
   
+    <dependency>
+      <groupId>org.springframework.webflow</groupId>
+      <artifactId>spring-js</artifactId>
+      <version>2.3.1.RELEASE</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
