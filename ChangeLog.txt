@@ -7,6 +7,8 @@
   in LEGACYHTML5 mode.
 - Added "escape/unescapeJavaScript" and "escape/unescapeJava" methods to StringUtils class
   and to #strings expression utility object.
+- Added ChainedFragmentSpec in order to be able to apply a fragment spec on the results of
+  another one.
 
 
 2.0.10
