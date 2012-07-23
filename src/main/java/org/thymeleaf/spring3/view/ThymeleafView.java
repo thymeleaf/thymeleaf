@@ -36,6 +36,7 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.fragment.ChainedFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 import org.thymeleaf.spring3.context.SpringWebContext;
@@ -457,10 +458,17 @@ public class ThymeleafView
     
     
     
-	
 
 
     public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response) 
+            throws Exception {
+        renderFragment(null, model, request, response);
+    }
+	
+
+
+    protected void renderFragment(final IFragmentSpec fragmentSpecToRender, final Map<String, ?> model, final HttpServletRequest request, 
+            final HttpServletResponse response) 
             throws Exception {
 
         ServletContext servletContext = getServletContext() ;
@@ -504,7 +512,19 @@ public class ThymeleafView
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
         
-        final IFragmentSpec templateFragmentSpec = getFragmentSpec();
+        IFragmentSpec templateFragmentSpec = null;
+        final IFragmentSpec viewFragmentSpec = getFragmentSpec();
+        if (viewFragmentSpec == null) {
+            templateFragmentSpec = fragmentSpecToRender;
+        } else {
+            if (fragmentSpecToRender == null) {
+                templateFragmentSpec = viewFragmentSpec;
+            } else {
+                templateFragmentSpec =
+                    new ChainedFragmentSpec(viewFragmentSpec, fragmentSpecToRender);
+            }
+        }
+        
 
         response.setLocale(templateLocale);
         if (templateContentType != null) {

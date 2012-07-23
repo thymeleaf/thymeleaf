@@ -657,16 +657,16 @@ public class ThymeleafViewResolver
     @Override
     protected View createView(final String viewName, final Locale locale) throws Exception {
         if (!canHandle(viewName, locale)) {
-            vrlogger.trace("[THYMELEAF] View {} cannot be handled by ThymeleafViewResolver. Passing on to the next resolver in the chain", viewName);
+            vrlogger.trace("[THYMELEAF] View \"{}\" cannot be handled by ThymeleafViewResolver. Passing on to the next resolver in the chain.", viewName);
             return null;
         }
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
-            vrlogger.trace("[THYMELEAF] View {} is a redirect, and will not be handled directly by ThymeleafViewResolver", viewName);
+            vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
             return new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
         }
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
-            vrlogger.trace("[THYMELEAF] View {} is a forward, and will not be handled directly by ThymeleafViewResolver", viewName);
+            vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
             return new InternalResourceView(forwardUrl);
         }
