@@ -69,7 +69,10 @@ public final class Document extends NestableNode {
     public boolean hasDocType() {
         return this.docType != null;
     }
-    
+
+    public void setDocType(DocType docType) {
+    	this.docType = docType;
+    }
 
 
     @Override
