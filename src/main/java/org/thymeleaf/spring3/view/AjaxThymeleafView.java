@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
@@ -55,7 +56,8 @@ import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
  *   <li>If it is not a DOM selector, a <kbd>th:fragment</kdb> attribute will be used
  *       for designing the fragment to be rendered.</li>
  *   <li>If it is a DOM selector, it will be used for selecting the fragment to be rendered,
- *       without looking for any attributes.</li>
+ *       without looking for any attributes. DOM Selectors are specified between brackets, 
+ *       like <kbd>[//div[@class='changeit']]</kbd></li>
  * </ul>
 *
 * @author Daniel Fern&aacute;ndez
@@ -155,10 +157,29 @@ public class AjaxThymeleafView extends ThymeleafView {
             
             for (final String fragmentToRender : fragmentsToRender) {
                 
-                final IFragmentSpec fragmentSpec =
-                        new ElementAndAttributeNameFragmentSpec(null, fragmentAttributeName, fragmentToRender);
-                
-                super.renderFragment(fragmentSpec, model, request, response);
+                if (fragmentToRender != null) {
+                    
+                    IFragmentSpec fragmentSpec = null;
+                    if (fragmentToRender.length() > 2 && 
+                            fragmentToRender.charAt(0) == '[' &&
+                            fragmentToRender.charAt(fragmentToRender.length() - 1) == ']') {
+                        // Fragment is a DOM selector
+                        
+                        fragmentSpec =
+                                new DOMSelectorFragmentSpec(
+                                        fragmentToRender.substring(1, fragmentToRender.length() - 1).trim());
+                        
+                    } else {
+                        // Fragment is not a DOM selector, therefore it is a fragment name
+                        
+                        fragmentSpec =
+                                new ElementAndAttributeNameFragmentSpec(null, fragmentAttributeName, fragmentToRender);
+                        
+                    }
+                    
+                    super.renderFragment(fragmentSpec, model, request, response);
+                    
+                }
                 
             }
             
