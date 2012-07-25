@@ -9,6 +9,8 @@
   and to #strings expression utility object.
 - Added ChainedFragmentSpec in order to be able to apply a fragment spec on the results of
   another one.
+- Fixed THYMELEAF_ROOT element tag provoking parser error when text or comments are present
+  before DOCTYPE clause.
 
 
 2.0.10
