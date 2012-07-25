@@ -416,11 +416,11 @@ public final class TemplatePreprocessingReader extends Reader {
             }
             
             
-            if (this.buffer[buffi] == '<' && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment) {
+            if (!Character.isWhitespace(this.buffer[buffi]) && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment) {
                 // This block will be reached if we did not have to process a
                 // DOCTYPE clause (because the DOCTYPE would have
                 // matched the previous block). And will not be affected by any whitespaces
-                // or comments before DOCTYPE because of the this.buffer[buffi] == '<' check.
+                // or comments before DOCTYPE because of the !Character.isWhitespace condition.
                     
                 final int copied =
                     copyToResult(
