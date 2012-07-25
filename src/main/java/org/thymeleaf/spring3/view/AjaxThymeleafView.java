@@ -27,16 +27,40 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.js.ajax.AjaxHandler;
-import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.util.StringUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
 /**
+ * <p>
+ *   Subclass of {@link ThymeleafView} adding compatibility with AJAX events in
+ *   Spring JavaScript (part of Spring WebFlow). This allows this View implementation
+ *   to be able to return only <i>fragments</i> of the page.
+ * </p>
+ * <p>
+ *   These rendering of fragments is used, for example, in Spring WebFlow's &lt;render&gt;
+ *   instructions (though not only).
+ * </p>
+ * <p>
+ *   This view searches for a comma-separated list of <i>fragment names</i> in a request
+ *   parameter called <kbd>fragments</kbd>, and for each of them:
+ * </p>
+ * <ul>
+ *   <li>If it is not a DOM selector, a <kbd>th:fragment</kdb> attribute will be used
+ *       for designing the fragment to be rendered.</li>
+ *   <li>If it is a DOM selector, it will be used for selecting the fragment to be rendered,
+ *       without looking for any attributes.</li>
+ * </ul>
 *
 * @author Daniel Fern&aacute;ndez
 * 
-* @since 2.0.9
+* @since 2.0.11
 *
 */
 public class AjaxThymeleafView extends ThymeleafView {
@@ -48,7 +72,7 @@ public class AjaxThymeleafView extends ThymeleafView {
     private static final String FRAGMENTS_PARAM = "fragments";
     
 
-    private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
+    private AjaxHandler ajaxHandler = null;
 
 
 
@@ -60,10 +84,41 @@ public class AjaxThymeleafView extends ThymeleafView {
     
     
 
+    /**
+     * <p>
+     *   Return the AJAX handler (from Spring Javascript) used
+     *   to determine whether a request is an AJAX request or not.
+     * </p>
+     * <p>
+     *   This view class should be used with an instance of
+     *   {@link AjaxThymeleafViewResolver} or any of its subclasses,
+     *   so that {@link #setAjaxHandler(AjaxHandler)} can be called by
+     *   the resolver when resolving the view, setting the default
+     *   AJAX handler being used.
+     * </p>
+     * 
+     * @return the AJAX handler.
+     */
     public AjaxHandler getAjaxHandler() {
         return this.ajaxHandler;
     }
 
+    
+    /**
+     * <p>
+     *   Sets the AJAX handler (from Spring Javascript) used
+     *   to determine whether a request is an AJAX request or not.
+     * </p>
+     * <p>
+     *   This view class should be used with an instance of
+     *   {@link AjaxThymeleafViewResolver} or any of its subclasses,
+     *   so that {@link #setAjaxHandler(AjaxHandler)} can be called by
+     *   the resolver when resolving the view, setting the default
+     *   AJAX handler being used.
+     * </p>
+     * 
+     * @param ajaxHandler the AJAX handler.
+     */
     public void setAjaxHandler(final AjaxHandler ajaxHandler) {
         this.ajaxHandler = ajaxHandler;
     }
@@ -76,7 +131,15 @@ public class AjaxThymeleafView extends ThymeleafView {
             final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response) 
             throws Exception {
 
-        if (this.ajaxHandler.isAjaxRequest(request, response)) {
+        final AjaxHandler templateAjaxHandler = getAjaxHandler();
+        
+        if (templateAjaxHandler == null) {
+            throw new ConfigurationException("[THYMELEAF] AJAX Handler set into " +
+                    AjaxThymeleafView.class.getSimpleName() + " instance for template " +
+                    getTemplateName() + " is null.");
+        }
+        
+        if (templateAjaxHandler.isAjaxRequest(request, response)) {
             
             final String[] fragmentsToRender = getRenderFragments(model, request, response);
             if (fragmentsToRender.length == 0) {
@@ -87,10 +150,17 @@ public class AjaxThymeleafView extends ThymeleafView {
                 return;
             }
 
-            // TODO implement this using real fragment names
-            super.renderFragment(
-                    new ElementAndAttributeNameFragmentSpec(null, "th:fragment", fragmentsToRender[0]), 
-                    model, request, response);
+            final TemplateEngine templateEngine = getTemplateEngine();
+            final String fragmentAttributeName = getFragmentAttributeName(templateEngine);
+            
+            for (final String fragmentToRender : fragmentsToRender) {
+                
+                final IFragmentSpec fragmentSpec =
+                        new ElementAndAttributeNameFragmentSpec(null, fragmentAttributeName, fragmentToRender);
+                
+                super.renderFragment(fragmentSpec, model, request, response);
+                
+            }
             
         } else {
             
@@ -112,6 +182,32 @@ public class AjaxThymeleafView extends ThymeleafView {
         return StringUtils.trimArrayElements(renderFragments);
     }
     
+    
+    
+    
+    
+    
+    private static String getStandardDialectPrefix(final TemplateEngine templateEngine) {
+        
+        for (final Map.Entry<String,IDialect> dialectByPrefix : templateEngine.getDialectsByPrefix().entrySet()) {
+            final IDialect dialect = dialectByPrefix.getValue();
+            if (SpringStandardDialect.class.isAssignableFrom(dialect.getClass())) {
+                return dialectByPrefix.getKey();
+            }
+        }
+        
+        throw new ConfigurationException(
+                "StandardDialect dialect has not been found. In order to use AjaxThymeleafView, you should configure " +
+                "the " + SpringStandardDialect.class.getName() + " dialect at your Template Engine");
+        
+    }
+    
+
+    
+    private static String getFragmentAttributeName(final TemplateEngine templateEngine) {
+        // In most cases: "th:fragment"
+        return getStandardDialectPrefix(templateEngine) + ":" + StandardFragmentAttrProcessor.ATTR_NAME;
+    }
     
 
 }

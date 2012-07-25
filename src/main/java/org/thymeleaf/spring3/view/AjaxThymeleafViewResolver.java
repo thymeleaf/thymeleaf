@@ -31,13 +31,22 @@ import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.js.ajax.SpringJavascriptAjaxHandler;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
+import org.thymeleaf.exceptions.ConfigurationException;
 
 
 /**
+ * <p>
+ *   Subclass of {@link ThymeleafViewResolver} adding compatibility with AJAX-based events
+ *   (redirects) in Spring WebFlow.
+ * </p>
+ * <p>
+ *   <b>Important</b>: Spring WebFlow dependencies are OPTIONAL. If you are not using WebFlow
+ *   in your application, then you should be using {@link ThymeleafViewResolver} directly.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.9
+ * @since 2.0.11
  *
  */
 public class AjaxThymeleafViewResolver 
@@ -46,13 +55,59 @@ public class AjaxThymeleafViewResolver
     
     private static final Logger vrlogger = LoggerFactory.getLogger(AjaxThymeleafViewResolver.class);
     
+
+    private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
     
+
+    
+    
+
+    /**
+     * <p>
+     *   Return the AJAX handler (from Spring Javascript) used
+     *   to determine whether a request is an AJAX request or not 
+     *   in views resolved by this resolver.
+     * </p>
+     * <p>
+     *   An instance of {@link SpringJavascriptAjaxHandler} is set by default.
+     * </p>
+     * 
+     * @return the AJAX handler.
+     */
+    public AjaxHandler getAjaxHandler() {
+        return this.ajaxHandler;
+    }
+
+    
+    /**
+     * <p>
+     *   Sets the AJAX handler (from Spring Javascript) used
+     *   to determine whether a request is an AJAX request or not 
+     *   in views resolved by this resolver.
+     * </p>
+     * <p>
+     *   An instance of {@link SpringJavascriptAjaxHandler} is set by default.
+     * </p>
+     * 
+     * @param ajaxHandler the AJAX handler.
+     */
+    public void setAjaxHandler(final AjaxHandler ajaxHandler) {
+        this.ajaxHandler = ajaxHandler;
+    }
+
+
+
     
     @Override
     protected View createView(final String viewName, final Locale locale) throws Exception {
 
         if (!canHandle(viewName, locale)) {
             return null;
+        }
+        
+        if (this.ajaxHandler == null) {
+            throw new ConfigurationException("[THYMELEAF] AJAX Handler set into " +
+                    AjaxThymeleafViewResolver.class.getSimpleName() + " instance is null.");
         }
 
         // Check for special "redirect:" prefix.
@@ -61,10 +116,24 @@ public class AjaxThymeleafViewResolver
                     "[THYMELEAF] View {} is a redirect. An AJAX-enabled RedirectView implementation will " +
             		"be handling the request.", viewName);
             String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
-            return new AjaxRedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
+            return new AjaxRedirectView(
+                    this.ajaxHandler, redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
         }
         
-        return super.createView(viewName, locale);
+        final View view = super.createView(viewName, locale);
+        
+        if (view instanceof AjaxThymeleafView) {
+            // Set the AJAX handler into view, if it is an AjaxThymeleafView.
+            
+            final AjaxThymeleafView ajaxThymeleafView = (AjaxThymeleafView) view;
+            
+            if (ajaxThymeleafView.getAjaxHandler() == null && getAjaxHandler() != null) {
+                ajaxThymeleafView.setAjaxHandler(getAjaxHandler());
+            }
+            
+        }
+        
+        return view;
         
     }
 
@@ -78,14 +147,21 @@ public class AjaxThymeleafViewResolver
 
         private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
 
-        public AjaxRedirectView(final String redirectUrl, final boolean redirectContextRelative, 
-                final boolean redirectHttp10Compatible) {
+        public AjaxRedirectView(final AjaxHandler ajaxHandler, final String redirectUrl, 
+                final boolean redirectContextRelative, final boolean redirectHttp10Compatible) {
             super(redirectUrl, redirectContextRelative, redirectHttp10Compatible);
+            this.ajaxHandler = ajaxHandler;
         }
 
         protected void sendRedirect(final HttpServletRequest request, final HttpServletResponse response, 
                 final String targetUrl, final boolean http10Compatible) 
                 throws IOException {
+            
+            if (this.ajaxHandler == null) {
+                throw new ConfigurationException("[THYMELEAF] AJAX Handler set into " +
+                        AjaxThymeleafViewResolver.class.getSimpleName() + " instance is null.");
+            }
+            
             if (this.ajaxHandler.isAjaxRequest(request, response)) {
                 if (vlogger.isTraceEnabled()) { 
                     vlogger.trace(

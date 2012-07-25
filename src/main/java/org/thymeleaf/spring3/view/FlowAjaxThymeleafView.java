@@ -30,10 +30,19 @@ import org.springframework.webflow.execution.View;
 
 
 /**
+ * <p>
+ *   Subclass of {@link AjaxThymeleafView} for Spring WebFlow,
+ *   designed for obtaining the fragments to be rendered via
+ *   AJAX in the way needed by Spring WebFlow. 
+ * </p>
+ * <p>
+ *   Most people will need to use this class instead of 
+ *   {@link AjaxThymeleafView} if you are using Spring WebFlow.
+ * </p>
 *
 * @author Daniel Fern&aacute;ndez
 * 
-* @since 2.0.9
+* @since 2.0.11
 *
 */
 public class FlowAjaxThymeleafView extends AjaxThymeleafView {
