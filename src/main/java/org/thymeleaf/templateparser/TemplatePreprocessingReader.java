@@ -84,7 +84,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
     private final Reader innerReader;
     private final BufferedReader bufferedReader;
-    private final boolean addRoot;
+    private final boolean addSyntheticRootElement;
     
     private char[] buffer;
     private char[] overflow;
@@ -92,8 +92,8 @@ public final class TemplatePreprocessingReader extends Reader {
     
     private boolean inComment = false;
     private boolean docTypeClauseRead = false;
-    private boolean firstElementProcessed = false;
-    private boolean rootElementClosingSent = false;
+    private boolean syntheticRootElementOpeningProcessed = false;
+    private boolean syntheticRootElementClosingSent = false;
     private int rootElementClosingOffset = 0;
     
     private boolean noMoreToRead = false;
@@ -151,14 +151,14 @@ public final class TemplatePreprocessingReader extends Reader {
      * 
      * @since 2.0.11
      */
-    public TemplatePreprocessingReader(final Reader in, final int bufferSize, final boolean addRoot) {
+    public TemplatePreprocessingReader(final Reader in, final int bufferSize, final boolean addSyntheticRootElement) {
         super();
         this.innerReader = in;
         this.bufferedReader = new BufferedReader(this.innerReader, bufferSize);
         this.buffer = new char[bufferSize + 1024]; 
         this.overflow = new char[bufferSize + 2048];
         this.overflowIndex = 0;
-        this.addRoot = addRoot;
+        this.addSyntheticRootElement = addSyntheticRootElement;
     }
 
     
@@ -227,7 +227,7 @@ public final class TemplatePreprocessingReader extends Reader {
             final int toBeRead = this.buffer.length - bufferSize;
             int reallyRead = this.bufferedReader.read(this.buffer, bufferSize, toBeRead);
 
-            if (this.addRoot && !this.rootElementClosingSent && (reallyRead < 0)) {
+            if (this.addSyntheticRootElement && !this.syntheticRootElementClosingSent && (reallyRead < 0)) {
                 // If there is no more content to be read from the source reader, close the synthetic
                 // root element and make it look like it was read from source.
 
@@ -243,7 +243,7 @@ public final class TemplatePreprocessingReader extends Reader {
                 this.rootElementClosingOffset += reallyRead;
 
                 if (this.rootElementClosingOffset >= SYNTHETIC_ROOT_ELEMENT_END_CHARS.length) {
-                    this.rootElementClosingSent = true;
+                    this.syntheticRootElementClosingSent = true;
                 }
                 
             }
@@ -323,7 +323,7 @@ public final class TemplatePreprocessingReader extends Reader {
                     }
                     
                     int copied = -1;
-                    if (this.addRoot && !this.firstElementProcessed) {
+                    if (this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed) {
                         // If DOCTYPE is processed, we will inject the synthetic root
                         // element just after the DOCTYPE so that we avoid problems with
                         // DOCTYPE clause being bigger than 'len' argument in the first 'read()' call.
@@ -338,7 +338,7 @@ public final class TemplatePreprocessingReader extends Reader {
                                         normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocTypePlusSyntheticRootElement.length, 
                                         cbuf, cbufi, last);
                         
-                        this.firstElementProcessed = true;
+                        this.syntheticRootElementOpeningProcessed = true;
                         
                     } else {
                         
@@ -356,25 +356,6 @@ public final class TemplatePreprocessingReader extends Reader {
                     continue;
                     
                 }
-                
-            }
-            
-            
-            if (this.addRoot && !this.firstElementProcessed) {
-                // This block will be reached if we did not have to process a
-                // DOCTYPE clause (because the DOCTYPE would have
-                // matched the previous block).
-                
-                this.firstElementProcessed = true;
-                    
-                final int copied =
-                    copyToResult(
-                            SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length, 
-                            cbuf, cbufi, last);
-                
-                cbufi += copied;
-                totalRead += copied;
-                continue;
                 
             }
             
@@ -430,6 +411,27 @@ public final class TemplatePreprocessingReader extends Reader {
                 cbufi += copied;
                 totalRead += copied;
                 buffi += 1; // Only one character is substituted (&)
+                continue;
+                
+            }
+            
+            
+            if (this.buffer[buffi] == '<' && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment) {
+                // This block will be reached if we did not have to process a
+                // DOCTYPE clause (because the DOCTYPE would have
+                // matched the previous block). And will not be affected by any whitespaces
+                // or comments before DOCTYPE because of the this.buffer[buffi] == '<' check.
+                    
+                final int copied =
+                    copyToResult(
+                            SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length, 
+                            cbuf, cbufi, last);
+                
+                cbufi += copied;
+                totalRead += copied;
+                
+                this.syntheticRootElementOpeningProcessed = true;
+                
                 continue;
                 
             }
