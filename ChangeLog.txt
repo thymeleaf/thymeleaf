@@ -1,8 +1,8 @@
 2.0.11
 ======
-- Add "getFragmentSpec()" / "setFragmentSpec(IFragmentSpec)" methods to ThymeleafViewResolver and
-  ThymeleafView in order to allow the processing of "partial" views (only the template fragments
-  selected by the IFragmentSpec will be processed and rendered).
+- Add "getFragmentSpec()" / "setFragmentSpec(IFragmentSpec)" methods to ThymeleafView in order to 
+  allow the processing of "partial" views (only the template fragments selected by the IFragmentSpec 
+  will be processed and rendered).
 - Add AJAX-enabled AjaxThymeleafViewResolver and AjaxThymeleafView, making use of an AjaxHandler 
   instance from Spring JS (part of Spring Webflow).
 - Add AJAX-enabled FlowAjaxThymeleafView, for Spring WebFlow integration.
