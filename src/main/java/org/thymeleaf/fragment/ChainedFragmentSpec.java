@@ -29,10 +29,14 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Implementation of {@link IFragmentSpec} that allows the execution of
+ *   two fragment specs in chain, effectively performing a double-filering.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.9
+ * @since 2.0.11
  *
  */
 public final class ChainedFragmentSpec implements IFragmentSpec {
@@ -49,11 +53,33 @@ public final class ChainedFragmentSpec implements IFragmentSpec {
         this.fragmentSpec1 = fragmentSpec1;
         this.fragmentSpec2 = fragmentSpec2;
     }
+    
+
+    /**
+     * <p>
+     *   Returns the first fragment spec in the chain.
+     * </p>
+     * 
+     * @return the fragment spec
+     */
+    public IFragmentSpec getFragmentSpec1() {
+        return this.fragmentSpec1;
+    }
 
 
-    
-    
-    
+    /**
+     * <p>
+     *   Returns the seconf fragment spec in the chain.
+     * </p>
+     * 
+     * @return the fragment spec
+     */
+    public IFragmentSpec getFragmentSpec2() {
+        return this.fragmentSpec2;
+    }
+
+
+
     public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
         final List<Node> firstResult = this.fragmentSpec1.extractFragment(configuration, nodes);
         return this.fragmentSpec2.extractFragment(configuration, firstResult);
