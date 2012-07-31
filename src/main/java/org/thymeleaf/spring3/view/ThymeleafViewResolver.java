@@ -128,11 +128,11 @@ public class ThymeleafViewResolver
      * @since 2.0.9
      * 
      */
-    public void setViewClass(Class<? extends ThymeleafView> viewClass) {
-        if (viewClass == null || !ThymeleafView.class.isAssignableFrom(viewClass)) {
+    public void setViewClass(Class<? extends AbstractThymeleafView> viewClass) {
+        if (viewClass == null || !AbstractThymeleafView.class.isAssignableFrom(viewClass)) {
             throw new IllegalArgumentException(
                     "Given view class [" + (viewClass != null ? viewClass.getName() : null) +
-                    "] is not of type [" + ThymeleafView.class.getName() + "]");
+                    "] is not of type [" + AbstractThymeleafView.class.getName() + "]");
         }
         this.viewClass = viewClass;
     }
