@@ -48,7 +48,8 @@ import org.thymeleaf.spring3.SpringTemplateEngine;
  *   corresponding {@link View} object for it.
  * </p>
  * <p>
- *   The {@link View} implementation managed by this class is {@link ThymeleafView}.
+ *   The {@link View} implementations managed by this class are subclasses of 
+ *   {@link AbstractThymeleafView}. By default, {@link ThymeleafView} is used.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -119,7 +120,7 @@ public class ThymeleafViewResolver
     /**
      * <p>
      *   Set the view class that should be used to create views. This must be a subclass
-     *   of {@link ThymeleafView} (which is the default value).
+     *   of {@link AbstractThymeleafView}. The default value is {@link ThymeleafView}.
      * </p>
      * 
      * @param viewClass class that is assignable to the required view class
@@ -308,7 +309,7 @@ public class ThymeleafViewResolver
      * </p>
      * <p>
      *   If a content type is not specified (either here or at a specific view definition),
-     *   {@link ThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
+     *   {@link AbstractThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
      * </p>
      * 
      * @param contentType the content type to be used.
@@ -335,7 +336,7 @@ public class ThymeleafViewResolver
      * </p>
      * <p>
      *   If a content type is not specified (either at the view resolver or at a specific 
-     *   view definition), {@link ThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
+     *   view definition), {@link AbstractThymeleafView#DEFAULT_CONTENT_TYPE} will be used.
      * </p>
      * 
      * @return the content type currently configured
@@ -355,7 +356,7 @@ public class ThymeleafViewResolver
      * <p>
      *   Many times, character encoding is specified as a part of the <i>content
      *   type</i>, using the {@link #setContentType(String)} or 
-     *   {@link ThymeleafView#setContentType(String)}, but this is not mandatory,
+     *   {@link AbstractThymeleafView#setContentType(String)}, but this is not mandatory,
      *   and it could be that only the MIME type is specified that way, thus allowing
      *   to set the character encoding using this method.
      * </p>
@@ -363,7 +364,7 @@ public class ThymeleafViewResolver
      *   As with {@link #setContentType(String)}, the value specified here acts as a 
      *   default in case no character encoding has been specified at the view itself.
      *   If a view bean exists with the name of the view to be processed, and this
-     *   view has been set a value for its {@link ThymeleafView#setCharacterEncoding(String)}
+     *   view has been set a value for its {@link AbstractThymeleafView#setCharacterEncoding(String)}
      *   method, the value specified at the view resolver has no effect.
      * </p>
      * 
@@ -383,7 +384,7 @@ public class ThymeleafViewResolver
      * <p>
      *   Many times, character encoding is specified as a part of the <i>content
      *   type</i>, using the {@link #setContentType(String)} or 
-     *   {@link ThymeleafView#setContentType(String)}, but this is not mandatory,
+     *   {@link AbstractThymeleafView#setContentType(String)}, but this is not mandatory,
      *   and it could be that only the MIME type is specified that way, thus allowing
      *   to set the character encoding using the {@link #setCharacterEncoding(String)}
      *   counterpart of this getter method.
@@ -392,7 +393,7 @@ public class ThymeleafViewResolver
      *   As with {@link #setContentType(String)}, the value specified here acts as a 
      *   default in case no character encoding has been specified at the view itself.
      *   If a view bean exists with the name of the view to be processed, and this
-     *   view has been set a value for its {@link ThymeleafView#setCharacterEncoding(String)}
+     *   view has been set a value for its {@link AbstractThymeleafView#setCharacterEncoding(String)}
      *   method, the value specified at the view resolver has no effect.
      * </p>
      * 
@@ -617,7 +618,8 @@ public class ThymeleafViewResolver
             final String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
             return new InternalResourceView(forwardUrl);
         }
-        vrlogger.trace("[THYMELEAF] View {} will be handled by ThymeleafViewResolver and a ThymeleafView instance will be created for it", viewName);
+        vrlogger.trace("[THYMELEAF] View {} will be handled by ThymeleafViewResolver and a " +
+        		"{} instance will be created for it", viewName, this.viewClass.getSimpleName());
         return loadView(viewName, locale);
     }
     
@@ -633,13 +635,13 @@ public class ThymeleafViewResolver
 
         if (beanFactory.containsBean(viewName)) {
             final Class<?> viewBeanType = beanFactory.getType(viewName);
-            if (ThymeleafView.class.isAssignableFrom(viewBeanType)) {
-                view = (ThymeleafView) beanFactory.configureBean(view, viewName);
+            if (AbstractThymeleafView.class.isAssignableFrom(viewBeanType)) {
+                view = (AbstractThymeleafView) beanFactory.configureBean(view, viewName);
             } else {
-                view = (ThymeleafView) beanFactory.initializeBean(view, viewName);
+                view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
             }
         } else {
-            view = (ThymeleafView) beanFactory.initializeBean(view, viewName);
+            view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
         }
 
         view.setTemplateEngine(getTemplateEngine());
