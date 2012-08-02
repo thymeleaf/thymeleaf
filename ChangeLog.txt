@@ -2,6 +2,7 @@
 ======
 - Fixed "viewClass" property in ThymeleafViewResolver requiring an implementation of
   ThymeleafView instead of AbstractThymeleafView.
+- Added AjaxEnabledView interface for views that include an "ajaxHandler" property.
 
 
 2.0.11

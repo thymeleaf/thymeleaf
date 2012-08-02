@@ -65,7 +65,7 @@ import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 * @since 2.0.11
 *
 */
-public class AjaxThymeleafView extends ThymeleafView {
+public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView {
 
     
     private static final Logger vlogger = LoggerFactory.getLogger(AjaxThymeleafView.class);
@@ -86,41 +86,11 @@ public class AjaxThymeleafView extends ThymeleafView {
     
     
 
-    /**
-     * <p>
-     *   Return the AJAX handler (from Spring Javascript) used
-     *   to determine whether a request is an AJAX request or not.
-     * </p>
-     * <p>
-     *   This view class should be used with an instance of
-     *   {@link AjaxThymeleafViewResolver} or any of its subclasses,
-     *   so that {@link #setAjaxHandler(AjaxHandler)} can be called by
-     *   the resolver when resolving the view, setting the default
-     *   AJAX handler being used.
-     * </p>
-     * 
-     * @return the AJAX handler.
-     */
     public AjaxHandler getAjaxHandler() {
         return this.ajaxHandler;
     }
 
     
-    /**
-     * <p>
-     *   Sets the AJAX handler (from Spring Javascript) used
-     *   to determine whether a request is an AJAX request or not.
-     * </p>
-     * <p>
-     *   This view class should be used with an instance of
-     *   {@link AjaxThymeleafViewResolver} or any of its subclasses,
-     *   so that {@link #setAjaxHandler(AjaxHandler)} can be called by
-     *   the resolver when resolving the view, setting the default
-     *   AJAX handler being used.
-     * </p>
-     * 
-     * @param ajaxHandler the AJAX handler.
-     */
     public void setAjaxHandler(final AjaxHandler ajaxHandler) {
         this.ajaxHandler = ajaxHandler;
     }

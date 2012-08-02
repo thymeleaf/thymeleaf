@@ -122,13 +122,13 @@ public class AjaxThymeleafViewResolver
         
         final View view = super.createView(viewName, locale);
         
-        if (view instanceof AjaxThymeleafView) {
+        if (view instanceof AjaxEnabledView) {
             // Set the AJAX handler into view, if it is an AjaxThymeleafView.
             
-            final AjaxThymeleafView ajaxThymeleafView = (AjaxThymeleafView) view;
+            final AjaxEnabledView ajaxEnabledView = (AjaxEnabledView) view;
             
-            if (ajaxThymeleafView.getAjaxHandler() == null && getAjaxHandler() != null) {
-                ajaxThymeleafView.setAjaxHandler(getAjaxHandler());
+            if (ajaxEnabledView.getAjaxHandler() == null && getAjaxHandler() != null) {
+                ajaxEnabledView.setAjaxHandler(getAjaxHandler());
             }
             
         }
