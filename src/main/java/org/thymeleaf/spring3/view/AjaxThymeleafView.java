@@ -132,6 +132,7 @@ public class AjaxThymeleafView extends ThymeleafView {
     public void render(
             final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response) 
             throws Exception {
+        
 
         final AjaxHandler templateAjaxHandler = getAjaxHandler();
         
@@ -150,6 +151,10 @@ public class AjaxThymeleafView extends ThymeleafView {
                         + "the ajax response on the client.");
                 super.render(model, request, response);
                 return;
+            }
+
+            if (getTemplateEngine() == null) {
+                throw new IllegalArgumentException("Property 'templateEngine' is required");
             }
 
             final TemplateEngine templateEngine = getTemplateEngine();
