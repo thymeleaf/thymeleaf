@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -325,7 +326,7 @@ public final class LinkExpression extends SimpleExpression {
         if(null != session){
             final String sessionID  = session.getId();
             
-            if (!request.isRequestedSessionIdFromCookie()) {
+            if (!request.isRequestedSessionIdFromCookie() && !isUserAgentGoogleBot(request)) {
                 sessionFragment = ";jsessionid=" + sessionID;
             }
         }
@@ -477,6 +478,28 @@ public final class LinkExpression extends SimpleExpression {
         
     }
     
+    
+    
+    @SuppressWarnings("unchecked")
+    private static boolean isUserAgentGoogleBot(final HttpServletRequest request) {
+        
+        final Enumeration<String> userAgentHeaders = request.getHeaders("User-Agent");
+        if (userAgentHeaders == null) {
+            return false;
+        }
+        
+        while (userAgentHeaders.hasMoreElements()) {
+            final String header = userAgentHeaders.nextElement();
+            if (header != null) {
+                if (header.toLowerCase().contains("googlebot")) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+        
+    }
 
     
 }
