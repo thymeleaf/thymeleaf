@@ -1,3 +1,9 @@
+2.0.12
+======
+- Avoid "jsessionid" fragment being output in links when Google is indexing a site that
+  creates anonymous sessions (checks for User-Agent containing "Googlebot").
+
+
 2.0.11
 ======
 - Fixed THYMELEAF_ROOT element tag appearing in output in LEGACYHTML5 mode.
