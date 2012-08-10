@@ -52,11 +52,11 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     private static final char[] LOWER_CHARS = 
-            ("[]<>!=-_.,:;+*()&/%$\"'@#~^ \t\n\rabcdefghijklmnopqrstuvwxyz" + 
+            ("[]<>!?=-_.,:;+*()&/%$\"'@#~^ \t\n\rabcdefghijklmnopqrstuvwxyz" + 
             String.valueOf(CHAR_OPTIONAL_WHITESPACE_WILDCARD) + String.valueOf(CHAR_WHITESPACE_WILDCARD) +
             String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + String.valueOf(CHAR_ANY_WILDCARD)).toCharArray();
     private static final char[] UPPER_CHARS = 
-            ("[]<>!=-_.,:;+*()&/%$\"'@#~^ \t\n\rABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
+            ("[]<>!?=-_.,:;+*()&/%$\"'@#~^ \t\n\rABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
             String.valueOf(CHAR_OPTIONAL_WHITESPACE_WILDCARD) + String.valueOf(CHAR_WHITESPACE_WILDCARD) +
             String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + String.valueOf(CHAR_ANY_WILDCARD)).toCharArray();
 
@@ -67,6 +67,8 @@ public final class TemplatePreprocessingReader extends Reader {
     private static final int[] ENTITY = convertToIndexes(("&" + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ";").toCharArray());
     private static final int[] DOCTYPE =
             convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
+    private static final int[] XML_PROLOG =
+            convertToIndexes(("<?xml" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + "?>").toCharArray());
 
 
     private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
@@ -92,6 +94,8 @@ public final class TemplatePreprocessingReader extends Reader {
     
     private boolean inComment = false;
     private boolean docTypeClauseRead = false;
+    private boolean xmlPrologRead = false;
+    private int xmlPrologRemaining = -1;
     private boolean syntheticRootElementOpeningProcessed = false;
     private boolean syntheticRootElementClosingSent = false;
     private int rootElementClosingOffset = 0;
@@ -299,10 +303,62 @@ public final class TemplatePreprocessingReader extends Reader {
         
         int buffi = 0;
         while (cbufi < last && buffi < bufferSize) {
+            
+            
+            /*
+             * Process XML_PROLOG (if needed)
+             * 
+             * Processing it specifically before any other thing ensures the synthetic
+             * root element will never be inserted before it.
+             */
+            if (!this.docTypeClauseRead && !this.xmlPrologRead) {
+
+                if (this.xmlPrologRemaining >= 0) {
+                    // We have still some bytes remaining from the XML PROLOG, and we 
+                    // don't want the reader to mistake them for text and input the synthetic
+                    // root element right now
+                    
+                    if (readerLogger.isTraceEnabled()) {
+                        readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Writing remaining byte from incompletely output XML PROLOG: {}", 
+                                new Object[] {TemplateEngine.threadIndex(), String.valueOf(this.buffer[buffi])});
+                    }
+                    
+                    cbuf[cbufi++] = this.buffer[buffi++];
+                    totalRead++;
+                    this.xmlPrologRemaining--;
+                    continue;
+        
+                }
+                
+                final int matchedXmlProlog =
+                        match(XML_PROLOG, 0, XML_PROLOG.length, this.buffer, buffi, bufferSize);
+                
+                if (matchedXmlProlog > 0) {
+
+                    this.xmlPrologRemaining = matchedXmlProlog;
+                    
+                    final int copied =
+                        copyToResult(
+                                this.buffer, buffi, matchedXmlProlog, 
+                                cbuf, cbufi, last);
+
+                    this.xmlPrologRemaining -= copied;
+                    if (this.xmlPrologRemaining <= 0) {
+                        this.xmlPrologRead = true;
+                    }
+
+                    cbufi += copied;
+                    totalRead += copied;
+                    buffi += matchedXmlProlog;
+                    continue;
+                    
+                }
+                
+            }
 
             
             /*
-             * Process DOCTYPE first (if needed)
+             * Process DOCTYPE (if needed)
              */
             if (!this.docTypeClauseRead) {
                 
@@ -333,6 +389,11 @@ public final class TemplatePreprocessingReader extends Reader {
                         System.arraycopy(normalizedDocType, 0, normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocType.length);
                         System.arraycopy(SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, normalizedDocTypePlusSyntheticRootElement, normalizedDocType.length, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length);
                         
+                        if (readerLogger.isTraceEnabled()) {
+                            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Synthetic root element will be output along with DOCTYPE clause: '{}'", 
+                                    new Object[] {TemplateEngine.threadIndex(), new String(normalizedDocTypePlusSyntheticRootElement)});
+                        }
+                        
                         copied =
                                 copyToResult(
                                         normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocTypePlusSyntheticRootElement.length, 
@@ -342,6 +403,12 @@ public final class TemplatePreprocessingReader extends Reader {
                         
                     } else {
                         
+                        
+                        if (readerLogger.isTraceEnabled()) {
+                            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] DOCTYPE clause will be output, without synthetic root element: '{}'", 
+                                    new Object[] {TemplateEngine.threadIndex(), new String(normalizedDocType)});
+                        }
+
                         copied =
                                 copyToResult(
                                         normalizedDocType, 0, normalizedDocType.length, 
