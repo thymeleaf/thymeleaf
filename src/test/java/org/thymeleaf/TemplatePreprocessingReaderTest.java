@@ -43,12 +43,19 @@ import org.thymeleaf.templateparser.TemplatePreprocessingReader;
  */
 public class TemplatePreprocessingReaderTest extends TestCase {
 
-    private static final String TEMPLATE_TEST1_FILENAME = "htmlTemplateReaderTest1";
-    private static final String TEMPLATE_TEST2_FILENAME = "htmlTemplateReaderTest2";
-    private static final String TEMPLATE_TEST3_FILENAME = "htmlTemplateReaderTest3";
-    private static final String TEMPLATE_TEST4_FILENAME = "htmlTemplateReaderTest4";
-    private static final String TEMPLATE_TEST5_FILENAME = "htmlTemplateReaderTest5";
-    private static final String TEMPLATE_TEST6_FILENAME = "htmlTemplateReaderTest6";
+    private static final String TEMPLATE_TEST1_FILENAME = "htmlTemplateReaderTest01";
+    private static final String TEMPLATE_TEST2_FILENAME = "htmlTemplateReaderTest02";
+    private static final String TEMPLATE_TEST3_FILENAME = "htmlTemplateReaderTest03";
+    private static final String TEMPLATE_TEST4_FILENAME = "htmlTemplateReaderTest04";
+    private static final String TEMPLATE_TEST5_FILENAME = "htmlTemplateReaderTest05";
+    private static final String TEMPLATE_TEST6_FILENAME = "htmlTemplateReaderTest06";
+    private static final String TEMPLATE_TEST7_FILENAME = "htmlTemplateReaderTest07";
+    private static final String TEMPLATE_TEST8_FILENAME = "htmlTemplateReaderTest08";
+    private static final String TEMPLATE_TEST9_FILENAME = "htmlTemplateReaderTest09";
+    private static final String TEMPLATE_TEST10_FILENAME = "htmlTemplateReaderTest10";
+    private static final String TEMPLATE_TEST11_FILENAME = "htmlTemplateReaderTest11";
+    private static final String TEMPLATE_TEST12_FILENAME = "htmlTemplateReaderTest12";
+    private static final String TEMPLATE_TEST13_FILENAME = "htmlTemplateReaderTest13";
     private static final Map<String,String> expectedResults = new HashMap<String, String>();
     
     private static final int[] BUFFER_SIZES = new int[] {512, 1024, 2048, 4096, 8192, 16384, 32768};
@@ -69,6 +76,13 @@ public class TemplatePreprocessingReaderTest extends TestCase {
                     check(TEMPLATE_TEST4_FILENAME, readerBufferSize, bufferSize);
                     check(TEMPLATE_TEST5_FILENAME, readerBufferSize, bufferSize);
                     check(TEMPLATE_TEST6_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST7_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST8_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST9_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST10_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST11_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST12_FILENAME, readerBufferSize, bufferSize);
+                    check(TEMPLATE_TEST13_FILENAME, readerBufferSize, bufferSize);
                 }
             }
         }
