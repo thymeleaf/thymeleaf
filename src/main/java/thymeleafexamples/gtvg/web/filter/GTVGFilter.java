@@ -24,6 +24,7 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -39,6 +40,8 @@ import thymeleafexamples.gtvg.web.controller.IGTVGController;
 
 public class GTVGFilter implements Filter {
 
+    
+    private ServletContext servletContext;
     
     
     public GTVGFilter() {
@@ -56,7 +59,7 @@ public class GTVGFilter implements Filter {
 
 
     public void init(final FilterConfig filterConfig) throws ServletException {
-        // nothing to do
+        this.servletContext = filterConfig.getServletContext();
     }
 
 
@@ -113,9 +116,7 @@ public class GTVGFilter implements Filter {
              * writing the results to the response writer. 
              */
             controller.process(
-                    request, response, 
-                    request.getSession(true).getServletContext(), 
-                    templateEngine);
+                    request, response, this.servletContext, templateEngine);
             
             return true;
             
