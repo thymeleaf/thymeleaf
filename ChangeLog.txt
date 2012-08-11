@@ -3,6 +3,7 @@
 - Avoid "jsessionid" fragment being output in links when Google is indexing a site that
   creates anonymous sessions (checks for User-Agent containing "Googlebot").
 - Fixed XML Prolog breaking parsing when the synthetic root element is inserted.
+- Fixed "]]>" not being escaped inside text literals in JavaScript and Dart inlining.
 
 
 2.0.11
