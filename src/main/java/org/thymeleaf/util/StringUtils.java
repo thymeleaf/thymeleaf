@@ -669,6 +669,16 @@ public final class StringUtils {
                         }
                         writer.write('/');
                         break;
+                    case '>' :
+                        if (javaScript && i > 1) {
+                            // Make sure we escape "]]>" just in case we are inside a
+                            // CDATA Section.
+                            if (text.charAt(i - 1) == ']' && text.charAt(i - 2) == ']') {
+                                writer.write('\\');
+                            }
+                        }
+                        writer.write('>');
+                        break;
                     default :
                         // no need to escape: numbers, letters, ASCII symbols...
                         writer.write(c);
