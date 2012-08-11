@@ -30,6 +30,15 @@ import java.util.StringTokenizer;
 
 
 /**
+ * <p>
+ *   Utility methods for String objects.
+ * </p>
+ * <p>
+ *   This class is used as a basis for the methods offered by
+ *   {@link org.thymeleaf.expression.Strings}, which in turn are the
+ *   methods offered by the <tt>#strings</tt> utility object in variable
+ *   expressions.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Le Roux Bernard
@@ -38,8 +47,28 @@ import java.util.StringTokenizer;
  *
  */
 public final class StringUtils {
+
     
 
+    
+    /**
+     * <p>
+     *   Performs a null-safe <tt>toString()</tt> operation.
+     * </p>
+     * 
+     * @param target the object on which toString will be executed
+     * @return the result of calling <tt>target.toString()</tt> if target is not null,
+     *         <tt>null</tt> if target is null.
+     * @since 2.0.12
+     */
+    public static String toString(final Object target) {
+        if (target == null) {
+            return null;
+        }
+        return target.toString();
+    }
+
+    
 
     
     public static String abbreviate(final Object target, final int maxSize) {

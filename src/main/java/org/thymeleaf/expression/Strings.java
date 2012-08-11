@@ -40,7 +40,96 @@ import org.thymeleaf.util.Validate;
  */
 public final class Strings {
     
+    
 
+    
+    /**
+     * <p>
+     *   Performs a null-safe <tt>toString()</tt> operation.
+     * </p>
+     * 
+     * @param target the object on which toString will be executed
+     * @return the result of calling <tt>target.toString()</tt> if target is not null,
+     *         <tt>null</tt> if target is null.
+     * @since 2.0.12
+     */
+    public String toString(final Object target) {
+        return StringUtils.toString(target);
+    }
+    
+
+    /**
+     * <p>
+     *   Performs a null-safe <tt>toString()</tt> operation on each
+     *   element of the array.
+     * </p>
+     * 
+     * @param target the array of objects on which toString will be executed
+     * @return for each element: the result of calling <tt>target.toString()</tt> 
+     *         if target is not null, <tt>null</tt> if target is null.
+     * @since 2.0.12
+     */
+    public String[] arrayToString(final Object[] target) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = toString(target[i]);
+        }
+        return result;
+    }
+
+    
+    /**
+     * <p>
+     *   Performs a null-safe <tt>toString()</tt> operation on each
+     *   element of the list.
+     * </p>
+     * 
+     * @param target the list of objects on which toString will be executed
+     * @return for each element: the result of calling <tt>target.toString()</tt> 
+     *         if target is not null, <tt>null</tt> if target is null.
+     * @since 2.0.12
+     */
+    public List<String> listToString(final List<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(toString(element));
+        }
+        return result;
+    }
+    
+
+    /**
+     * <p>
+     *   Performs a null-safe <tt>toString()</tt> operation on each
+     *   element of the set.
+     * </p>
+     * 
+     * @param target the set of objects on which toString will be executed
+     * @return for each element: the result of calling <tt>target.toString()</tt> 
+     *         if target is not null, <tt>null</tt> if target is null.
+     * @since 2.0.12
+     */
+    public Set<String> setToString(final Set<?> target) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>();
+        for (final Object element : target) {
+            result.add(toString(element));
+        }
+        return result;
+    }
+    
+
+
+    
+    
     public String abbreviate(final Object target, final int maxSize) {
         return StringUtils.abbreviate(target, maxSize);
     }
