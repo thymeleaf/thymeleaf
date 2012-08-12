@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import javassist.ClassPool;
@@ -91,9 +92,14 @@ public class OgnlVariableExpressionEvaluator
                     cache.put(OGNL_CACHE_PREFIX + expression, expressionTree);
                 }
             }
+
             
+            final Map<String,Object> contextVariables = new HashMap<String, Object>();
             
-            final Map<String,Object> contextVariables = processingContext.getBaseContextVariables();
+            final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
+            if (expressionObjects != null) {
+                contextVariables.putAll(expressionObjects);
+            }
             
             final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
             if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {

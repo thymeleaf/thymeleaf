@@ -63,7 +63,7 @@ public abstract class AbstractFragmentHandlingElementProcessor
         
         final List<Node> fragmentNodes = 
                 fragmentAndTarget.extractFragment(
-                        arguments.getConfiguration(), arguments.getContext(), arguments.getTemplateRepository());
+                        arguments.getConfiguration(), arguments, arguments.getTemplateRepository());
         
         if (fragmentNodes == null) {
             throw new TemplateProcessingException(

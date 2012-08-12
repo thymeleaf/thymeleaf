@@ -25,7 +25,9 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.TemplateRepository;
+import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.util.Validate;
 
@@ -69,6 +71,15 @@ public final class FragmentAndTarget {
     
     public final List<Node> extractFragment(
             final Configuration configuration, final IContext context, final TemplateRepository templateRepository) {
+        return extractFragment(
+                configuration, 
+                new DialectAwareProcessingContext(context, configuration.getDialectSet()), 
+                templateRepository);
+    }
+
+    
+    public final List<Node> extractFragment(
+            final Configuration configuration, final IProcessingContext context, final TemplateRepository templateRepository) {
 
         final TemplateProcessingParameters fragmentTemplateProcessingParameters = 
                 new TemplateProcessingParameters(configuration, getTemplateName(), context);

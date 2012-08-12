@@ -25,6 +25,9 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Basic implementation of {@link AbstractProcessingContext}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 

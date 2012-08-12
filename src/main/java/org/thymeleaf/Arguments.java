@@ -21,11 +21,12 @@ package org.thymeleaf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import org.thymeleaf.context.AbstractProcessingContext;
+import org.thymeleaf.context.AbstractDialectAwareProcessingContext;
+import org.thymeleaf.dialect.IExpressionEnhancingDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
@@ -64,7 +65,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.0
  *
  */
-public final class Arguments extends AbstractProcessingContext {
+public final class Arguments extends AbstractDialectAwareProcessingContext {
 
     /**
      * @deprecated Use {@link org.thymeleaf.processor.ProcessorResult#setSelectionTarget(Object) instead.}. 
@@ -108,7 +109,8 @@ public final class Arguments extends AbstractProcessingContext {
         super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getLocalVariables()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getSelectionTarget()),
-              (templateProcessingParameters == null? false : templateProcessingParameters.getProcessingContext().hasSelectionTarget()));
+              (templateProcessingParameters == null? false : templateProcessingParameters.getProcessingContext().hasSelectionTarget()),
+              (templateProcessingParameters == null? null : templateProcessingParameters.getConfiguration().getDialectSet()));
         
         
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
@@ -117,7 +119,10 @@ public final class Arguments extends AbstractProcessingContext {
         // Document CAN be null, if it has been filtered and nothing has been selected as a result.
         
         this.templateProcessingParameters = templateProcessingParameters;
-        this.configuration = this.templateProcessingParameters.getConfiguration();
+        this.configuration =
+                (this.templateProcessingParameters == null?
+                        null :
+                        this.templateProcessingParameters.getConfiguration());
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
@@ -138,13 +143,17 @@ public final class Arguments extends AbstractProcessingContext {
             final Map<String,Integer> idCounts,
             final boolean processOnlyElementNodes,
             final Object selectionTarget, 
-            final boolean selectionTargetSet) {
+            final boolean selectionTargetSet,
+            final Set<IExpressionEnhancingDialect> enhancingDialects) {
         
         super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()), 
-                localVariables, selectionTarget, selectionTargetSet);
+                localVariables, selectionTarget, selectionTargetSet, enhancingDialects);
         
         this.templateProcessingParameters = templateProcessingParameters;
-        this.configuration = this.templateProcessingParameters.getConfiguration();
+        this.configuration =
+                (this.templateProcessingParameters == null?
+                        null :
+                        this.templateProcessingParameters.getConfiguration());
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
@@ -155,13 +164,6 @@ public final class Arguments extends AbstractProcessingContext {
     }
     
 
-
-    
-    
-    @Override
-    protected Map<String,Object> computeBaseContextVariables() {
-        return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
-    }
 
     
     
@@ -372,7 +374,8 @@ public final class Arguments extends AbstractProcessingContext {
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
+                        this.idCounts, this.processOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
         return arguments;
     }
 
@@ -390,7 +393,8 @@ public final class Arguments extends AbstractProcessingContext {
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
+                        this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
         return arguments;
     }
 
@@ -409,7 +413,8 @@ public final class Arguments extends AbstractProcessingContext {
         final Arguments arguments = 
             new Arguments(this.templateProcessingParameters, this.templateResolution, 
                     this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                    this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
+                    this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
         return arguments;
     }
     
@@ -428,7 +433,8 @@ public final class Arguments extends AbstractProcessingContext {
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, this.processOnlyElementNodes, newSelectionTarget, true);
+                        this.idCounts, this.processOnlyElementNodes, newSelectionTarget, true,
+                        getExpressionEnhancingDialects());
         return arguments;
     }
     
@@ -448,7 +454,8 @@ public final class Arguments extends AbstractProcessingContext {
         final Arguments arguments = 
                 new Arguments(this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true);
+                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true,
+                        getExpressionEnhancingDialects());
         return arguments;
     }
 

@@ -21,9 +21,9 @@ package org.thymeleaf;
 
 import java.util.Map;
 
+import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -70,7 +70,7 @@ public final class TemplateProcessingParameters {
             final String templateName,
             final IContext context) {
         
-        this(configuration, templateName, new ProcessingContext(context));
+        this(configuration, templateName, new DialectAwareProcessingContext(context, configuration.getDialectSet()));
         
     }
 

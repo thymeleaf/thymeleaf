@@ -70,6 +70,8 @@ public final class Configuration {
 
     
     private Set<DialectConfiguration> dialectConfigurations = null;
+    private Map<String,IDialect> dialectsByPrefix = null;
+    private Set<IDialect> dialectSet = null;
     
     private Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>();
     private Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>();
@@ -153,6 +155,17 @@ public final class Configuration {
             for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
                 dialectConfiguration.initialize();
             }
+            
+            
+            /*
+             * Initialize "dialects by prefix" map and the "dialect set"
+             */
+            this.dialectsByPrefix = new LinkedHashMap<String, IDialect>();
+            for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
+                this.dialectsByPrefix.put(dialectConfiguration.getPrefix(), dialectConfiguration.getDialect());
+            }
+            this.dialectsByPrefix = Collections.unmodifiableMap(this.dialectsByPrefix);
+            this.dialectSet = Collections.unmodifiableSet(new LinkedHashSet<IDialect>(this.dialectsByPrefix.values()));
             
             
             /*
@@ -293,7 +306,6 @@ public final class Configuration {
     
     
     public ICacheManager getCacheManager() {
-        checkInitialized();
         return this.cacheManager;
     }
     
@@ -308,12 +320,25 @@ public final class Configuration {
     
     
     
-    public Map<String,IDialect> getDialects() {
-        final Map<String,IDialect> dialects = new LinkedHashMap<String,IDialect>();
-        for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
-            dialects.put(dialectConfiguration.getPrefix(), dialectConfiguration.getDialect());
+    public Set<IDialect> getDialectSet() {
+        if (!isInitialized()) {
+            // If we haven't initialized yet, compute
+            return Collections.unmodifiableSet(new LinkedHashSet<IDialect>(getDialects().values()));
         }
-        return dialects;
+        return this.dialectSet;
+    }
+
+    
+    public Map<String,IDialect> getDialects() {
+        if (!isInitialized()) {
+            // If we haven't initialized yet, compute
+            final Map<String,IDialect> dialects = new LinkedHashMap<String, IDialect>();
+            for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
+                dialects.put(dialectConfiguration.getPrefix(), dialectConfiguration.getDialect());
+            }
+            return Collections.unmodifiableMap(dialects);
+        }
+        return this.dialectsByPrefix;
     }
     
     public void setDialects(final Map<String,IDialect> dialects) {

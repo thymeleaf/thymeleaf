@@ -45,7 +45,9 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     private Object selectionEvaluationRoot;
     private final HashMap<String,Object> localVariables;
     
-    private final Map<String, Object> baseContextVariables;
+    private boolean computedBaseContextVariables = false;
+    private Map<String, Object> expressionObjects = null;
+    
 
     
     
@@ -82,8 +84,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
-        this.baseContextVariables = computeBaseContextVariables(); 
-        
     }
     
     
@@ -112,17 +112,32 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     
-    protected Map<String,Object> computeBaseContextVariables() {
+    protected Map<String,Object> computeExpressionObjects() {
         return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
     }
     
-    
+
+
+    /**
+     * @deprecated Use {@link #getExpressionObjects()} instead. Will be removed in 2.1.x 
+     */
+    @Deprecated
+    public Map<String,Object> getBaseContextVariables() {
+        return getExpressionObjects();
+    }
     
 
-    public Map<String,Object> getBaseContextVariables() {
-        final Map<String,Object> variables = new HashMap<String, Object>();
-        variables.putAll(this.baseContextVariables);
-        return variables;
+    public Map<String,Object> getExpressionObjects() {
+        if (!this.computedBaseContextVariables) {
+            // Base context variables are computed lazily so that subclasses have
+            // the chance to override the basic computing behaviour.
+            // The boolean flag is modified first so that if this method is called by
+            // error during the implementation of "computeExpressionObjects()" it does
+            // not result in an infinite loop.
+            this.computedBaseContextVariables = true;
+            this.expressionObjects = computeExpressionObjects();
+        }
+        return this.expressionObjects;
     }
 
     
