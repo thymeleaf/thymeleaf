@@ -20,6 +20,7 @@
 package org.thymeleaf.spring3.expression;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -87,7 +88,12 @@ public class SpelExpressionEvaluator
 
         try {
             
-            final Map<String,Object> contextVariables = arguments.getBaseContextVariables();
+            final Map<String,Object> contextVariables = new HashMap<String, Object>();
+            
+            final Map<String,Object> expressionObjects = arguments.getExpressionObjects();
+            if (expressionObjects != null) {
+                contextVariables.putAll(expressionObjects);
+            }
             
             final Fields fields = new Fields(arguments);
             contextVariables.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
