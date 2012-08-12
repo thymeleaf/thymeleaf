@@ -310,9 +310,13 @@ public final class DateUtils {
         }
         
         if (target instanceof Calendar) {
-            return dateFormat.format(((Calendar) target).getTime());
+            synchronized (dateFormat) {
+                return dateFormat.format(((Calendar) target).getTime());
+            }
         } else if (target instanceof java.util.Date) {
-            return dateFormat.format((java.util.Date)target);
+            synchronized (dateFormat) {
+                return dateFormat.format((java.util.Date)target);
+            }
         } else {
             throw new IllegalArgumentException(
                     "Cannot format object of class \"" + target.getClass().getName() + "\" as a date");

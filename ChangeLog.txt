@@ -7,6 +7,8 @@
 - Added new null-safe "#strings.toString(obj)" utility method for expression evaluation.
 - Added dialect capability to specify new expression evaluation objects (#xyz) by 
   implementing the new org.thymeleaf.dialect.IExpressionEnhancingDialect interface.
+- Fixed DateUtils.formatDate(...) using non-thread-safe DateFormat instances without
+  synchronizing.
 
 
 2.0.11
