@@ -25,7 +25,6 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -36,9 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
+import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -336,8 +335,7 @@ public class TemplateEngine {
      * @return the {@link IDialect} instances currently configured.
      */
     public final Set<IDialect> getDialects() {
-        return Collections.unmodifiableSet(
-                new HashSet<IDialect>(this.configuration.getDialects().values()));
+        return this.configuration.getDialectSet();
     }
 
     /**
@@ -1087,7 +1085,7 @@ public class TemplateEngine {
      */
     public final void process(final String templateName, final IContext context, 
             final IFragmentSpec fragmentSpec, final Writer writer) {
-        process(templateName, new ProcessingContext(context), fragmentSpec, writer);
+        process(templateName, new DialectAwareProcessingContext(context, getDialects()), fragmentSpec, writer);
     }
     
 

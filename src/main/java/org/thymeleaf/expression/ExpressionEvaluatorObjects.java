@@ -160,18 +160,18 @@ public final class ExpressionEvaluatorObjects {
     
     
     private static Map<String,Object> computeEvaluationObjectsForProcessingContext(
-            final IProcessingContext expressionEvaluationContext) {
+            final IProcessingContext processingContext) {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
         
-        variables.putAll(computeEvaluationObjectsForContext(expressionEvaluationContext.getContext()));
+        variables.putAll(computeEvaluationObjectsForContext(processingContext.getContext()));
         
-        variables.put(ROOT_VARIABLE_NAME, expressionEvaluationContext.getExpressionEvaluationRoot());
+        variables.put(ROOT_VARIABLE_NAME, processingContext.getExpressionEvaluationRoot());
         
-        if (expressionEvaluationContext.hasSelectionTarget()) {
-            variables.put(SELECTION_VARIABLE_NAME, expressionEvaluationContext.getSelectionTarget());
+        if (processingContext.hasSelectionTarget()) {
+            variables.put(SELECTION_VARIABLE_NAME, processingContext.getSelectionTarget());
         } else {
-            variables.put(SELECTION_VARIABLE_NAME, expressionEvaluationContext.getExpressionEvaluationRoot());
+            variables.put(SELECTION_VARIABLE_NAME, processingContext.getExpressionEvaluationRoot());
         }
         
         return variables;

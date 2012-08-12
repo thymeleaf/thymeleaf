@@ -51,8 +51,23 @@ public interface IProcessingContext {
      * </p>
      * 
      * @return the map of variables (a new object, mutable, safe to use as a context variables base)
+     * @deprecated Use {@link #getExpressionObjects()} instead. Will be removed in 2.1.x 
      */
+    @Deprecated
     public Map<String,Object> getBaseContextVariables();
+    
+
+    
+    /**
+     * <p>
+     *   Returns the map of expression objects that should be made available to every expression
+     *   evaluation operation (whenever variable evaluation is available). In OGNL and SpringEL
+     *   expressions, these will be available as <tt>#object1</tt>, <tt>#object2</tt>, etc.
+     * </p>
+     * 
+     * @return the map of objects
+     */
+    public Map<String,Object> getExpressionObjects();
     
     
     
