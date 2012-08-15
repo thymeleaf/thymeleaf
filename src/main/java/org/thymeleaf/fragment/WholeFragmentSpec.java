@@ -29,6 +29,14 @@ import org.thymeleaf.dom.Node;
 
 
 /**
+ * <p>
+ *   Implementation of {@link IFragmentSpec} that simply returns 
+ *   <i>whole templates</i>, this is the same nodes used as input with
+ *   no modification, traversing or selection of any kind.
+ * </p>
+ * <p>
+ *   Objects of this class are <b>thread-safe</b>.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -37,9 +45,24 @@ import org.thymeleaf.dom.Node;
  */
 public final class WholeFragmentSpec implements IFragmentSpec {
     
+    /**
+     * <p>
+     *   Singleton instance.
+     * </p>
+     * <p>
+     *   This instance is <b>thread-safe</b>.
+     * </p>
+     */
     public static final WholeFragmentSpec INSTANCE = new WholeFragmentSpec();
     
     
+    
+    /**
+     * <p>
+     *   Creates a new instance. In most cases {@link #INSTANCE} can be used
+     *   instead of creating new objects of this class.
+     * </p>
+     */
     public WholeFragmentSpec() {
         super();
     }

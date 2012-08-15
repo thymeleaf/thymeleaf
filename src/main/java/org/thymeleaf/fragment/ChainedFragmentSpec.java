@@ -33,6 +33,9 @@ import org.thymeleaf.util.Validate;
  *   Implementation of {@link IFragmentSpec} that allows the execution of
  *   two fragment specs in chain, effectively performing a double-filering.
  * </p>
+ * <p>
+ *   Objects of this class are <b>thread-safe</b>.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -45,6 +48,14 @@ public final class ChainedFragmentSpec implements IFragmentSpec {
     private final IFragmentSpec fragmentSpec2;
     
     
+    /**
+     * <p>
+     *   Creates a new instance of this fragment spec.
+     * </p>
+     * 
+     * @param fragmentSpec1 the first fragment spec that will be executed.
+     * @param fragmentSpec2 the second fragment spec that will be executed.
+     */
     public ChainedFragmentSpec(
             final IFragmentSpec fragmentSpec1, final IFragmentSpec fragmentSpec2) {
         super();
@@ -69,7 +80,11 @@ public final class ChainedFragmentSpec implements IFragmentSpec {
 
     /**
      * <p>
-     *   Returns the seconf fragment spec in the chain.
+     *   Returns the second fragment spec in the chain.
+     * </p>
+     * <p>
+     *   This fragment spec will be executed using the output from 
+     *   <tt>fragmentSpec1</tt> as input.
      * </p>
      * 
      * @return the fragment spec

@@ -28,6 +28,22 @@ import org.thymeleaf.dom.Node;
 
 
 /**
+ * <p>
+ *   Common interface for all <i>fragment specifications</i>.
+ * </p>
+ * <p>
+ *   <i>Fragment specifications</i> are able of extracting specific sections
+ *   or <i>subtrees</i> from a DOM node tree, according to the logic defined 
+ *   at the specific implementation.  
+ * </p>
+ * <p> 
+ *   Fragment specs have multiple uses. One of them is allowing the 
+ *   {@link org.thymeleaf.TemplateEngine} to select a fragment of a template
+ *   to be processed (once read and parsed), discarding the rest of the template
+ *   and reducing the processing effort to executing just the wanted parts. See 
+ *   {@link org.thymeleaf.TemplateEngine#process(String, org.thymeleaf.context.IContext, IFragmentSpec)}
+ *   for more info.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -36,6 +52,16 @@ import org.thymeleaf.dom.Node;
  */
 public interface IFragmentSpec {
 
+    /**
+     * <p>
+     *   Executes the fragment specification against a list of nodes representing a DOM tree
+     *   (or a set of trees), returning the extracted nodes.
+     * </p>
+     * 
+     * @param configuration the configuration object.
+     * @param nodes the list of nodes on which to apply extraction.
+     * @return the extracted nodes.
+     */
     public List<Node> extractFragment(final Configuration configuration, final List<Node> nodes);
     
 }
