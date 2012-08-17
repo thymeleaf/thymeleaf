@@ -46,7 +46,7 @@ public final class StandardFragmentProcessor {
     
 
     /**
-     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, IProcessingContext, String, String, String)}
+     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, IProcessingContext, String, String, String, boolean)}
      *             instead. Will be removed in 2.1.x
      */
     @Deprecated
@@ -60,10 +60,29 @@ public final class StandardFragmentProcessor {
     
 
     
-    
+
+    /**
+     * 
+     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, IProcessingContext, String, String, String, boolean))}
+     *             instead. Will be removed in 2.1.x
+     */
+    @Deprecated
     public static final FragmentAndTarget computeStandardFragmentSpec(
             final Configuration configuration, final IProcessingContext processingContext, 
             final String standardFragmentSpec, final String targetElementName, final String targetAttributeName) {
+        return computeStandardFragmentSpec(configuration, processingContext, standardFragmentSpec, targetElementName, targetAttributeName, false);
+    }
+    
+
+    
+
+    /**
+     * @since 2.0.12
+     */
+    public static final FragmentAndTarget computeStandardFragmentSpec(
+            final Configuration configuration, final IProcessingContext processingContext, 
+            final String standardFragmentSpec, final String targetElementName, final String targetAttributeName,
+            final boolean returnOnlyChildrenIfContainingElement) {
         
         Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
@@ -96,14 +115,14 @@ public final class StandardFragmentProcessor {
             
             if (fragmentSelection.isXPath()) {
                 
-                final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector);
+                final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector, returnOnlyChildrenIfContainingElement);
                 return new FragmentAndTarget(templateName, fragmentSpec);
                 
             }
             
             final IFragmentSpec fragmentSpec = 
                     new ElementAndAttributeNameFragmentSpec(
-                            targetElementName, targetAttributeName, fragmentSelector);
+                            targetElementName, targetAttributeName, fragmentSelector, returnOnlyChildrenIfContainingElement);
             return new FragmentAndTarget(templateName, fragmentSpec);
             
         }

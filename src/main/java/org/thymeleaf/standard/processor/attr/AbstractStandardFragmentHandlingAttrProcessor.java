@@ -55,13 +55,15 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
     
     @Override
     protected final FragmentAndTarget getFragmentAndTarget(final Arguments arguments,
-            final Element element, final String attributeName, final String attributeValue) {
+            final Element element, final String attributeName, final String attributeValue, 
+            final boolean substituteInclusionNode) {
 
         final String targetAttributeName = 
                 getTargetAttributeName(arguments, element, attributeName, attributeValue);
         
         return StandardFragmentProcessor.computeStandardFragmentSpec(
-                arguments.getConfiguration(), arguments, attributeValue, null, targetAttributeName);
+                arguments.getConfiguration(), arguments, attributeValue, null, targetAttributeName,
+                !substituteInclusionNode);
         
     }
 

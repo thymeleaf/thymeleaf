@@ -9,6 +9,8 @@
   implementing the new org.thymeleaf.dialect.IExpressionEnhancingDialect interface.
 - Fixed DateUtils.formatDate(...) using non-thread-safe DateFormat instances without
   synchronizing.
+- Fixed whole-template inclusions not correctly working in fragment templates with no
+  element root.
 
 
 2.0.11
