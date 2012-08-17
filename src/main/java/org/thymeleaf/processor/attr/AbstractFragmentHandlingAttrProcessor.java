@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.FragmentAndTarget;
@@ -66,7 +65,7 @@ public abstract class AbstractFragmentHandlingAttrProcessor
             getSubstituteInclusionNode(arguments, element, attributeName, attributeValue);
         
         final FragmentAndTarget fragmentAndTarget = 
-                getFragmentAndTarget(arguments, element, attributeName, attributeValue);
+                getFragmentAndTarget(arguments, element, attributeName, attributeValue, substituteInclusionNode);
         
         final List<Node> fragmentNodes = 
                 fragmentAndTarget.extractFragment(
@@ -91,16 +90,7 @@ public abstract class AbstractFragmentHandlingAttrProcessor
         } else {
          
             for (final Node fragmentNode : fragmentNodes) {
-                if (!(fragmentNode instanceof NestableNode)) {
-                    throw new TemplateProcessingException(
-                            "Cannot correctly process \"" + attributeName + "\" attribute. " +
-                            "Node returned by fragment specification \"" + attributeValue + "\" " +
-                            "for inclusion is not a nestable node (" + fragmentNode.getClass().getSimpleName() + ").");
-                }
-                
-                for (final Node newNode : ((NestableNode)fragmentNode).getChildren()) {
-                    element.addChild(newNode);
-                }
+                element.addChild(fragmentNode);
             }
             
         }
@@ -117,7 +107,8 @@ public abstract class AbstractFragmentHandlingAttrProcessor
     
     protected abstract FragmentAndTarget getFragmentAndTarget(
             final Arguments arguments, final Element element, 
-            final String attributeName, final String attributeValue);
+            final String attributeName, final String attributeValue, 
+            final boolean substituteInclusionNode);
     
 
     
