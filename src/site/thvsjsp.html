@@ -417,18 +417,20 @@
 
     <h3>Doing HTML5 with JSP</h3>    
 
+    <h4>Before Spring 3.1</h4>
+
     <p>
-      Unfortunately, Spring MVC's JSP tag libraries still have no support for HTML5, so there isn't
-      an <kbd>&lt;sf:email ...&gt;</kbd> tag at our disposal. This means that we will have to 
-      write it in plain HTML code, emulating the results of executing an imaginary <kbd>&lt;sf:email&gt;</kbd> tag:
+      Spring MVC's JSP tag libraries didn't offer complete support for HTML5 until Spring 3.1, so before
+      this version there was no way to write an <i>email type</i> input tag other than do it in plain HTML,
+      like:
     </p>
 
     <code>
       &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;id=<span class="string">&quot;email&quot;</span>&nbsp;name=<span class="string">&quot;email&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;value=<span class="string">&quot;&quot;</span> /&gt;
     </code>
-
+    
     <p>
-      But this is not correct! In Spring MVC we should never write a JSP input field like that,
+      But this was not correct! In Spring MVC we should never write a JSP input field like that,
       because we wouldn't be correctly <i>binding</i> our input to the <kbd>email</kbd> property of
       the form-backing bean. In order to do so, we would need to use an <kbd>&lt;s:eval/&gt;</kbd> tag, which
       will apply all the required transformations (like <i>property editors</i>) and make our
@@ -440,13 +442,30 @@
 <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value=<span class="string">&quot;&lt;<b>s:eval</b>&nbsp;expression=&#39;subscription.email&#39;&nbsp;/&gt;&quot;</span> /&gt;
     </code>
 
+    <h4>Since Spring 3.1</h4>
+      
+    <p>
+      In Spring 3.1 there still is no <kbd>&lt;sf:email ...&gt;</kbd> tag, but the existing
+      <kbd>&lt;sf:input ...&gt;</kbd> allows us to specify a <kbd>type</kbd> attribute with value 
+      <kbd>email</kbd>, which will work just fine:
+    </p>
+
+    <code>
+      &lt;<b>sf:input</b>&nbsp;path=<span class="string">&quot;email&quot;</span>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;/&gt;
+    </code>
+
+    <p>
+      And this will correctly perform our <i>form bindings</i> :-).
+    </p>
+
     <h3>Doing HTML5 with Thymeleaf</h3>
     
     <p>
-      Thymeleaf, on the other hand, has complete support for HTML5, so we will only have to
+      Thymeleaf has complete support for HTML5 (even with Spring 3.0), so we will only have to
       change the <kbd>type</kbd> of our input and add a <kbd>placeholder</kbd>, and it will work
-      out of the box, even correctly binding our property and integrating with Spring MVCs
-      <i>property editors</i>: 
+      out of the box, correctly binding our property and integrating with Spring MVCs
+      <i>property editors</i> and more importantly, being displayed as a usual <kbd>input</kbd> box
+      when displayed as a prototype &mdash;something the <kbd>sf:input</kbd> tag won't&mdash;: 
     </p>
 
     <code>
