@@ -74,7 +74,7 @@ public final class AuthenticationUtils {
         } catch (BeansException e) {
             throw new TemplateProcessingException(
                     "Error retrieving value for property \"" + property + "\" of authentication " + 
-                    "object of class " + authentication.getClass().getName());
+                    "object of class " + authentication.getClass().getName(), e);
         }
 
     }

@@ -34,6 +34,7 @@ import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.dialect.IExpressionEnhancingDialect;
 import org.thymeleaf.extras.springsecurity3.authentication.AuthenticationUtils;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthenticationAttrProcessor;
+import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAttrProcessor;
 import org.thymeleaf.processor.IProcessor;
 
 
@@ -74,6 +75,7 @@ public class SpringSecurityDialect
     public Set<IProcessor> getProcessors() {
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new AuthenticationAttrProcessor());
+        processors.add(new AuthorizeAttrProcessor());
         return processors;
     }
 
