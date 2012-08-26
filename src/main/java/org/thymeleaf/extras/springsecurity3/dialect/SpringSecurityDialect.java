@@ -19,8 +19,11 @@
  */
 package org.thymeleaf.extras.springsecurity3.dialect;
 
+import java.security.Principal;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +32,9 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.dialect.IExpressionEnhancingDialect;
+import org.thymeleaf.extras.springsecurity3.authentication.AuthenticationUtils;
+import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthenticationAttrProcessor;
+import org.thymeleaf.processor.IProcessor;
 
 
 
@@ -63,6 +69,18 @@ public class SpringSecurityDialect
 
 
 
+    
+    @Override
+    public Set<IProcessor> getProcessors() {
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
+        processors.add(new AuthenticationAttrProcessor());
+        return processors;
+    }
+
+    
+
+    
+    
     public Map<String, Object> getAdditionalExpressionObjects(
             final IProcessingContext processingContext) {
         
@@ -78,14 +96,15 @@ public class SpringSecurityDialect
         if (webContext != null) {
             final HttpServletRequest request = webContext.getHttpServletRequest();
             if (request != null) {
-                objects.put(AUTHENTICATION_EXPRESSION_OBJECT_NAME, request.getUserPrincipal());
+                final Principal authenticationObject = 
+                        AuthenticationUtils.getAuthenticationObject();
+                objects.put(AUTHENTICATION_EXPRESSION_OBJECT_NAME, authenticationObject);
             }
         }
        
         return objects;
         
     }
-
     
     
 }
