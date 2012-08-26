@@ -15,12 +15,12 @@
             </user-service>
         </authentication-provider>
     </authentication-manager>
-    <http auto-config="true">
+    <http auto-config="true" use-expressions="true">
         <!-- Login pages -->
         <form-login login-page="/login.html" authentication-failure-url="/login-error.html" />
         <logout />
         <!-- Security zones -->
-        <intercept-url pattern="/admin/**" access="ROLE_ADMIN" />
-        <intercept-url pattern="/user/**" access="ROLE_USER, ROLE_ADMIN" />
+        <intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/user/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
     </http>
 </beans:beans>
