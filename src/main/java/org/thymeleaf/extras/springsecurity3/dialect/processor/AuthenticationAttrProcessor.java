@@ -22,7 +22,7 @@ package org.thymeleaf.extras.springsecurity3.dialect.processor;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.extras.springsecurity3.authentication.AuthenticationUtils;
+import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
 import org.thymeleaf.util.StringUtils;
 
@@ -68,9 +68,9 @@ public class AuthenticationAttrProcessor
             return null;
         }
         
-        final Authentication authentication = AuthenticationUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject();
         final Object authenticationProperty = 
-                AuthenticationUtils.getAuthenticationProperty(authentication, attributeValue);
+                AuthUtils.getAuthenticationProperty(authentication, attributeValue);
         
         if (authenticationProperty == null) {
             return null;

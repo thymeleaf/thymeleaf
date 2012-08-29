@@ -19,20 +19,23 @@
  */
 package org.thymeleaf.extras.springsecurity3.dialect;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.AbstractDialect;
 import org.thymeleaf.dialect.IExpressionEnhancingDialect;
-import org.thymeleaf.extras.springsecurity3.authentication.AuthenticationUtils;
+import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
+import org.thymeleaf.extras.springsecurity3.auth.Authorization;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthenticationAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeUrlAttrProcessor;
@@ -52,6 +55,7 @@ public class SpringSecurityDialect
     public static final String DEFAULT_PREFIX = "security";
     
     public static final String AUTHENTICATION_EXPRESSION_OBJECT_NAME = "authentication";
+    public static final String AUTHORIZATION_EXPRESSION_OBJECT_NAME = "authorization";
     
     
     public SpringSecurityDialect() {
@@ -92,18 +96,28 @@ public class SpringSecurityDialect
         final IWebContext webContext =
                 (context instanceof IWebContext? (IWebContext)context : null);
         
-        final Map<String,Object> objects = new HashMap<String, Object>();
+        final Map<String,Object> objects = new HashMap<String, Object>(3, 1.0f);
         
         /*
-         * Create the #authentication expression object
+         * Create the #authentication and #authorization expression objects
          */
         if (webContext != null) {
+            
             final HttpServletRequest request = webContext.getHttpServletRequest();
-            if (request != null) {
-                final Principal authenticationObject = 
-                        AuthenticationUtils.getAuthenticationObject();
-                objects.put(AUTHENTICATION_EXPRESSION_OBJECT_NAME, authenticationObject);
+            final HttpServletResponse response = webContext.getHttpServletResponse();
+            final ServletContext servletContext = webContext.getServletContext();
+            
+            if (request != null && response != null && servletContext != null) {
+                
+                final Authentication authentication = AuthUtils.getAuthenticationObject();
+                final Authorization authorization = 
+                        new Authorization(authentication, request, response, servletContext); 
+                        
+                objects.put(AUTHENTICATION_EXPRESSION_OBJECT_NAME, authentication);
+                objects.put(AUTHORIZATION_EXPRESSION_OBJECT_NAME, authorization);
+                
             }
+            
         }
        
         return objects;

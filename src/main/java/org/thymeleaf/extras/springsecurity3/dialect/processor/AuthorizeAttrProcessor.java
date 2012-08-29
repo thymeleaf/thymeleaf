@@ -19,32 +19,17 @@
  */
 package org.thymeleaf.extras.springsecurity3.dialect.processor;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ParseException;
-import org.springframework.security.access.expression.ExpressionUtils;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.FilterInvocation;
-import org.springframework.security.web.access.expression.WebSecurityExpressionHandler;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.extras.springsecurity3.authentication.AuthenticationUtils;
+import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.util.StringUtils;
 
@@ -61,15 +46,6 @@ public class AuthorizeAttrProcessor
     
     public static final int ATTR_PRECEDENCE = 300;
     public static final String ATTR_NAME = "authorize";
-    
-    
-    
-    private static final FilterChain DUMMY_CHAIN = new FilterChain() {
-        public void doFilter(ServletRequest request, ServletResponse response) 
-                throws IOException, ServletException {
-           throw new UnsupportedOperationException();
-        }
-    };
     
     
     
@@ -110,65 +86,14 @@ public class AuthorizeAttrProcessor
         final HttpServletResponse response = webContext.getHttpServletResponse();
         final ServletContext servletContext = webContext.getServletContext();
         
-        final Authentication authentication = AuthenticationUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject();
 
         if (authentication == null) {
             return false;
         }
         
-        return authorizeUsingAccessExpression(attributeValue, authentication, request, response, servletContext);
-        
-    }
-    
-
-
-    protected boolean authorizeUsingAccessExpression(
-            final String attributeValue, final Authentication authentication, 
-            final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext) {
-    
-        final WebSecurityExpressionHandler handler = getExpressionHandler(servletContext);
-
-        Expression accessExpression = null;
-        try {
-            accessExpression = handler.getExpressionParser().parseExpression(attributeValue);
-        } catch (ParseException e) {
-            throw new TemplateProcessingException(
-                    "An error happened trying to parse expression \"" +  
-                    attributeValue + "\" for attribute '" + ATTR_NAME + "'", e);
-        }
-
-        final FilterInvocation filterInvocation = new FilterInvocation(request, response, DUMMY_CHAIN);
-
-        if (ExpressionUtils.evaluateAsBoolean(
-                accessExpression, 
-                handler.createEvaluationContext(authentication, filterInvocation))) {
-            return true;
-        }
-
-        return false;
-    
-    }
-    
-    
-    
-    
-    protected WebSecurityExpressionHandler getExpressionHandler(final ServletContext servletContext) {
-
-        final ApplicationContext ctx =
-                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-        
-        final Map<String, WebSecurityExpressionHandler> expressionHandlers = 
-                ctx.getBeansOfType(WebSecurityExpressionHandler.class);
-
-        if (expressionHandlers.size() == 0) {
-            throw new TemplateProcessingException(
-                    "No visible WebSecurityExpressionHandler instance could be found in the application " +
-                    "context. There must be at least one in order to support expressions in '" +
-                    ATTR_NAME + "' attributes.");
-        }
-
-        return (WebSecurityExpressionHandler) expressionHandlers.values().toArray()[0];
+        return AuthUtils.authorizeUsingAccessExpression(
+                attributeValue, authentication, request, response, servletContext);
         
     }
     

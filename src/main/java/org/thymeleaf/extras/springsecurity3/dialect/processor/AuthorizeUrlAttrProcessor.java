@@ -19,22 +19,16 @@
  */
 package org.thymeleaf.extras.springsecurity3.dialect.processor;
 
-import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.extras.springsecurity3.authentication.AuthenticationUtils;
+import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.util.StringUtils;
 
@@ -97,49 +91,17 @@ public class AuthorizeUrlAttrProcessor
         final HttpServletRequest request = webContext.getHttpServletRequest();
         final ServletContext servletContext = webContext.getServletContext();
         
-        final Authentication authentication = AuthenticationUtils.getAuthenticationObject();
+        final Authentication authentication = AuthUtils.getAuthenticationObject();
 
         if (authentication == null) {
             return false;
         }
         
-        return authorizeUsingUrlCheck(url, method, authentication, request, servletContext);
-        
-    }
-    
-
-    
-    protected boolean authorizeUsingUrlCheck(
-            final String url, final String method, final Authentication authentication, 
-            final HttpServletRequest request, final ServletContext servletContext) {
-        
-        return getPrivilegeEvaluator(servletContext).isAllowed(
-                    request.getContextPath(), url, method, authentication) ? 
-                            true : false;
+        return AuthUtils.authorizeUsingUrlCheck(
+                url, method, authentication, request, servletContext);
         
     }
 
-
-    
-    protected WebInvocationPrivilegeEvaluator getPrivilegeEvaluator(final ServletContext servletContext) {
-
-        final ApplicationContext ctx =
-                WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
-        
-        final Map<String, WebInvocationPrivilegeEvaluator> privilegeEvaluators = 
-                ctx.getBeansOfType(WebInvocationPrivilegeEvaluator.class);
-
-        if (privilegeEvaluators.size() == 0) {
-            throw new TemplateProcessingException(
-                    "No visible WebInvocationPrivilegeEvaluator instance could be found in the application " +
-                    "context. There must be at least one in order to support the use of URL access checks in '" +
-                    ATTR_NAME + "' attributes.");
-        }
-
-        return (WebInvocationPrivilegeEvaluator) privilegeEvaluators.values().toArray()[0];
-        
-    }
-    
     
     
 }
