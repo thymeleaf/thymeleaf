@@ -75,9 +75,9 @@ public class AuthorizeUrlAttrProcessor
         
         final int spaceIndex = attributeValue.indexOf(' ');
         final String url = 
-                (spaceIndex < 0? attributeValue : attributeValue.substring(0, spaceIndex)).trim();
+                (spaceIndex < 0? attributeValue : attributeValue.substring(spaceIndex + 1)).trim();
         final String method =
-                (spaceIndex < 0? "GET" : attributeValue.substring(spaceIndex + 1)).trim();
+                (spaceIndex < 0? "GET" : attributeValue.substring(0, spaceIndex)).trim();
 
         final IContext context = arguments.getContext();
         if (!(context instanceof IWebContext)) {
