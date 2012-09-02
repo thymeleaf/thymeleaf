@@ -46,12 +46,18 @@ public class AuthorizeAttrProcessor
     
     public static final int ATTR_PRECEDENCE = 300;
     public static final String ATTR_NAME = "authorize";
+    public static final String ATTR_NAME_EXPR = "authorize-expr";
     
     
     
     
     public AuthorizeAttrProcessor() {
         super(ATTR_NAME);
+    }
+
+    
+    public AuthorizeAttrProcessor(final String attrName) {
+        super(attrName);
     }
 
     

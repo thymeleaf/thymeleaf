@@ -20,7 +20,13 @@
 package org.thymeleaf.extras.springsecurity3.auth;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
@@ -30,18 +36,34 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
 import org.springframework.security.access.expression.ExpressionUtils;
+import org.springframework.security.acls.domain.DefaultPermissionFactory;
+import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl;
+import org.springframework.security.acls.domain.PermissionFactory;
+import org.springframework.security.acls.domain.SidRetrievalStrategyImpl;
+import org.springframework.security.acls.model.Acl;
+import org.springframework.security.acls.model.AclService;
+import org.springframework.security.acls.model.NotFoundException;
+import org.springframework.security.acls.model.ObjectIdentity;
+import org.springframework.security.acls.model.ObjectIdentityRetrievalStrategy;
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
+import org.springframework.security.acls.model.SidRetrievalStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.WebSecurityExpressionHandler;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
@@ -55,6 +77,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 public final class AuthUtils {
 
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthUtils.class);
     
     private static final FilterChain DUMMY_CHAIN = new FilterChain() {
         public void doFilter(ServletRequest request, ServletResponse response) 
@@ -62,6 +85,7 @@ public final class AuthUtils {
            throw new UnsupportedOperationException();
         }
     };
+
     
     
     
@@ -200,6 +224,143 @@ public final class AuthUtils {
 
         return (WebInvocationPrivilegeEvaluator) privilegeEvaluators.values().toArray()[0];
         
+    }
+    
+
+    
+    
+    
+    
+    public static boolean authorizeUsingAccessControlList(
+            final Object domainObject, final List<Permission> permissions, 
+            final Authentication authentication, final ServletContext servletContext) {
+
+
+        final ApplicationContext applicationContext = getContext(servletContext);
+
+        final AclService aclService = getBeanOfType(applicationContext, AclService.class);
+
+        if (authentication == null) {
+            // If authentication is null, authorization cannot be granted.
+            return false;
+        }
+        
+        
+        /*
+         * Initialize required objects
+         */
+        
+        SidRetrievalStrategy sidRetrievalStrategy = getBeanOfType(applicationContext, SidRetrievalStrategy.class);
+        if (sidRetrievalStrategy == null) {
+            sidRetrievalStrategy = new SidRetrievalStrategyImpl();
+        }
+
+        ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = getBeanOfType(applicationContext, ObjectIdentityRetrievalStrategy.class);
+        if (objectIdentityRetrievalStrategy == null) {
+            objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();
+        }
+        
+
+        /*
+         * Compute permissions
+         */
+        
+        if ((null == permissions) || permissions.isEmpty()) {
+            return false;
+        }
+
+        if (domainObject == null) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Domain object for resolved to null. Authorization by " +
+                		"Access Control List is granted.", new Object[] {TemplateEngine.threadIndex()});
+            }
+            // Access to null object is considered always true
+            return true;
+        }
+
+        final List<Sid> sids = 
+                sidRetrievalStrategy.getSids(SecurityContextHolder.getContext().getAuthentication());
+        
+        final ObjectIdentity oid = 
+                objectIdentityRetrievalStrategy.getObjectIdentity(domainObject);
+
+        try {
+            
+            final Acl acl = aclService.readAclById(oid, sids);
+
+            if (acl.isGranted(permissions, sids, false)) {
+                return true;
+            }
+            return false;
+            
+        } catch (final NotFoundException nfe) {
+            return false;
+        }
+        
+    }
+
+    
+
+
+
+    public static List<Permission> parsePermissionsString(
+            final ApplicationContext applicationContext, final String permissionsString) 
+            throws NumberFormatException {
+
+        if (permissionsString == null || permissionsString.trim().equals("")) {
+            return Collections.emptyList();
+        }
+        
+        PermissionFactory permissionFactory = getBeanOfType(applicationContext, PermissionFactory.class);
+        if (permissionFactory == null) {
+            permissionFactory = new DefaultPermissionFactory();
+        }
+        
+        final Set<Permission> permissions = new HashSet<Permission>();
+        final StringTokenizer tokenizer = new StringTokenizer(permissionsString, ",", false);
+
+        while (tokenizer.hasMoreTokens()) {
+            String permission = tokenizer.nextToken();
+            try {
+                permissions.add(permissionFactory.buildFromMask(Integer.valueOf(permission).intValue()));
+            } catch (final NumberFormatException nfe) {
+                // Not an integer mask. Try using a name
+                permissions.add(permissionFactory.buildFromName(permission));
+            }
+        }
+
+        return new ArrayList<Permission>(permissions);
+        
+    }
+    
+    
+    
+    
+    private static <T> T getBeanOfType(final ApplicationContext applicationContext, final Class<T> type) {
+        
+        final Map<String, T> map = applicationContext.getBeansOfType(type);
+
+        for (ApplicationContext context = applicationContext.getParent(); context != null; context = context.getParent()) {
+            map.putAll(context.getBeansOfType(type));
+        }
+
+        if (map.size() == 0) {
+            return null;
+        } else if (map.size() == 1) {
+            return map.values().iterator().next();
+        }
+
+        throw new ConfigurationException(
+                "Found incorrect number of " + type.getSimpleName() +" instances in " +
+                "application context - you must have only have one!");
+        
+    }
+    
+
+
+    
+    public static ApplicationContext getContext(final ServletContext servletContext) {
+        return WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
     }
     
     

@@ -19,10 +19,14 @@
  */
 package org.thymeleaf.extras.springsecurity3.auth;
 
+import java.util.List;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.util.Validate;
 
@@ -82,6 +86,11 @@ public final class Authorization {
 
 
 
+    // Synonym method
+    public boolean expr(final String expression) {
+        return expression(expression);
+    }
+
 
     public boolean expression(final String expression) {
         
@@ -110,5 +119,21 @@ public final class Authorization {
         
     }
     
+
+    
+    public boolean acl(final Object domainObject, final String permissions) {
+        
+        Validate.notEmpty(permissions, "permissions cannot be null or empty");
+
+        final ApplicationContext applicationContext = AuthUtils.getContext(this.servletContext);
+        
+        final List<Permission> permissionsList =
+                AuthUtils.parsePermissionsString(applicationContext, permissions);        
+        
+        return AuthUtils.authorizeUsingAccessControlList(
+                domainObject, permissionsList, this.authentication, this.servletContext);
+        
+    }
+
     
 }

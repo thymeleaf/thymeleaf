@@ -37,6 +37,7 @@ import org.thymeleaf.dialect.IExpressionEnhancingDialect;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.extras.springsecurity3.auth.Authorization;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthenticationAttrProcessor;
+import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAclAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAttrProcessor;
 import org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeUrlAttrProcessor;
 import org.thymeleaf.processor.IProcessor;
@@ -52,7 +53,7 @@ public class SpringSecurityDialect
         extends AbstractDialect 
         implements IExpressionEnhancingDialect {
 
-    public static final String DEFAULT_PREFIX = "security";
+    public static final String DEFAULT_PREFIX = "sec";
     
     public static final String AUTHENTICATION_EXPRESSION_OBJECT_NAME = "authentication";
     public static final String AUTHORIZATION_EXPRESSION_OBJECT_NAME = "authorization";
@@ -81,7 +82,11 @@ public class SpringSecurityDialect
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new AuthenticationAttrProcessor());
         processors.add(new AuthorizeAttrProcessor());
+        // synonym (sec:authorize = sec:authorize-expr) for similarity with 
+        // "authorize-url" and "autorize-acl"
+        processors.add(new AuthorizeAttrProcessor(AuthorizeAttrProcessor.ATTR_NAME_EXPR));
         processors.add(new AuthorizeUrlAttrProcessor());
+        processors.add(new AuthorizeAclAttrProcessor());
         return processors;
     }
 
