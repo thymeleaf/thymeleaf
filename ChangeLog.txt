@@ -1,3 +1,10 @@
+2.0.13
+======
+- Fixed selection target not being correctly applied to Node as a local variable, and 
+  this resulting in *{...} not working OK when th:object was specified in an element
+  with th:remove="tag".
+
+
 2.0.12
 ======
 - Avoid "jsessionid" fragment being output in links when Google is indexing a site that
