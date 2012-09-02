@@ -816,7 +816,7 @@ public abstract class Node implements Serializable {
                     
                     // If we have added local variables, we should update the node's map for these variables in
                     // order to keep them synchronized
-                    if (processorResult.hasLocalVariables() && executionArguments.hasLocalVariables()) {
+                    if ((processorResult.hasLocalVariables() || processorResult.isSelectionTargetSet()) && executionArguments.hasLocalVariables()) {
                         node.unsafeSetNodeLocalVariables(executionArguments.getLocalVariables());
                     }
                     
