@@ -98,7 +98,16 @@ public final class AuthUtils {
 
     public static Authentication getAuthenticationObject() {
         
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Obtaining authentication object.",
+                    new Object[] {TemplateEngine.threadIndex()});
+        }
+        
         if ((SecurityContextHolder.getContext() == null)) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] No security context found, no authentication object returned.",
+                        new Object[] {TemplateEngine.threadIndex()});
+            }
             return null;
         }
 
@@ -106,8 +115,16 @@ public final class AuthUtils {
                 SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getPrincipal() == null) {
-            // There is an Authentication object, but 
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] No authentication object found in context.",
+                        new Object[] {TemplateEngine.threadIndex()});
+            }
             return null;
+        }
+        
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Authentication object of class {} found in context for user \"{}\".",
+                    new Object[] {TemplateEngine.threadIndex(), authentication.getClass().getName()}, authentication.getName());
         }
         
         return authentication;
@@ -118,13 +135,29 @@ public final class AuthUtils {
 
     public static Object getAuthenticationProperty(final Authentication authentication, final String property) {
         
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Reading property \"{}\" from authentication object.",
+                    new Object[] {TemplateEngine.threadIndex(), property});
+        }
+        
         if (authentication == null) {
             return null;
         }
         
         try {
-            BeanWrapperImpl wrapper = new BeanWrapperImpl(authentication);
-            return wrapper.getPropertyValue(property);
+            
+            final BeanWrapperImpl wrapper = new BeanWrapperImpl(authentication);
+            final Object propertyObj = wrapper.getPropertyValue(property);
+            
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Property \"{}\" obtained from authentication object " +
+                		"for user \"{}\". Returned value of class {}.",
+                        new Object[] {TemplateEngine.threadIndex(), property, authentication.getName(), 
+                                (propertyObj == null? null : propertyObj.getClass().getName())});
+            }
+            
+            return propertyObj;
+            
         } catch (BeansException e) {
             throw new TemplateProcessingException(
                     "Error retrieving value for property \"" + property + "\" of authentication " + 
@@ -142,6 +175,11 @@ public final class AuthUtils {
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext) {
     
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Checking authorization using access expression \"{}\" for user \"{}\".",
+                    new Object[] {TemplateEngine.threadIndex(), accessExpression, (authentication == null? null : authentication.getName())});
+        }
+
         final WebSecurityExpressionHandler handler = getExpressionHandler(servletContext);
 
         Expression expressionObject = null;
@@ -158,9 +196,21 @@ public final class AuthUtils {
         if (ExpressionUtils.evaluateAsBoolean(
                 expressionObject, 
                 handler.createEvaluationContext(authentication, filterInvocation))) {
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Checked authorization using access expression \"{}\" for user \"{}\". Access GRANTED.",
+                        new Object[] {TemplateEngine.threadIndex(), accessExpression, (authentication == null? null : authentication.getName())});
+            }
+            
             return true;
+            
         }
 
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Checked authorization using access expression \"{}\" for user \"{}\". Access DENIED.",
+                    new Object[] {TemplateEngine.threadIndex(), accessExpression, (authentication == null? null : authentication.getName())});
+        }
+        
         return false;
     
     }
@@ -196,9 +246,23 @@ public final class AuthUtils {
             final String url, final String method, final Authentication authentication, 
             final HttpServletRequest request, final ServletContext servletContext) {
         
-        return getPrivilegeEvaluator(servletContext).isAllowed(
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Checking authorization for URL \"{}\" and method \"{}\" for user \"{}\".",
+                    new Object[] {TemplateEngine.threadIndex(), url, method, (authentication == null? null : authentication.getName())});
+        }
+        
+        final boolean result =
+                getPrivilegeEvaluator(servletContext).isAllowed(
                     request.getContextPath(), url, method, authentication) ? 
                             true : false;
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Checked authorization for URL \"{}\" and method \"{}\" for user \"{}\". " +
+                    (result? "Access GRANTED." : "Access DENIED."),
+                    new Object[] {TemplateEngine.threadIndex(), url, method, (authentication == null? null : authentication.getName())});
+        }
+        
+        return result;
         
     }
 
@@ -236,13 +300,27 @@ public final class AuthUtils {
             final Authentication authentication, final ServletContext servletContext) {
 
 
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Checking authorization using Access Control List for user \"{}\". " +
+            		"Domain object is of class \"{}\" and permissions are \"{}\".",
+                    new Object[] {TemplateEngine.threadIndex(), (authentication == null? null : authentication.getName()),
+                            (domainObject == null? null : domainObject.getClass().getName()), permissions});
+        }
+        
         final ApplicationContext applicationContext = getContext(servletContext);
 
         final AclService aclService = getBeanOfType(applicationContext, AclService.class);
 
         if (authentication == null) {
             // If authentication is null, authorization cannot be granted.
+            
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Authentication object is null. Access is DENIED. ",
+                        new Object[] {TemplateEngine.threadIndex()});
+            }
+            
             return false;
+            
         }
         
         
@@ -266,13 +344,20 @@ public final class AuthUtils {
          */
         
         if ((null == permissions) || permissions.isEmpty()) {
+            
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Permissions are null or empty. Access is DENIED. ",
+                        new Object[] {TemplateEngine.threadIndex()});
+            }
+            
             return false;
+            
         }
 
         if (domainObject == null) {
             if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] Domain object for resolved to null. Authorization by " +
-                		"Access Control List is granted.", new Object[] {TemplateEngine.threadIndex()});
+                logger.trace("[THYMELEAF][{}] Domain object for resolved to null. Access by " +
+                		"Access Control List is GRANTED.", new Object[] {TemplateEngine.threadIndex()});
             }
             // Access to null object is considered always true
             return true;
@@ -289,8 +374,25 @@ public final class AuthUtils {
             final Acl acl = aclService.readAclById(oid, sids);
 
             if (acl.isGranted(permissions, sids, false)) {
+                
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[THYMELEAF][{}] Checked authorization using Access Control List for user \"{}\". " +
+                            "Domain object is of class \"{}\" and permissions are \"{}\". Access is GRANTED.",
+                            new Object[] {TemplateEngine.threadIndex(), authentication.getName(),
+                                    domainObject.getClass().getName(), permissions});
+                }
+                
                 return true;
+                
             }
+
+            if (logger.isTraceEnabled()) {
+                logger.trace("[THYMELEAF][{}] Checked authorization using Access Control List for user \"{}\". " +
+                        "Domain object is of class \"{}\" and permissions are \"{}\". Access is DENIED.",
+                        new Object[] {TemplateEngine.threadIndex(), authentication.getName(),
+                                domainObject.getClass().getName(), permissions});
+            }
+            
             return false;
             
         } catch (final NotFoundException nfe) {
@@ -307,6 +409,11 @@ public final class AuthUtils {
             final ApplicationContext applicationContext, final String permissionsString) 
             throws NumberFormatException {
 
+        if (logger.isTraceEnabled()) {
+            logger.trace("[THYMELEAF][{}] Parsing permissions string \"{}\".",
+                    new Object[] {TemplateEngine.threadIndex(), permissionsString});
+        }
+        
         if (permissionsString == null || permissionsString.trim().equals("")) {
             return Collections.emptyList();
         }
