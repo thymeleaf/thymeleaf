@@ -52,5 +52,10 @@ Features
 	    Spring Security `<sec:authentication/>` JSP tag.
     *   `sec:authorize="expr"` or `sec:authorize-expr="expr"` renders the element children (*tag content*)
 	    if the authenticated user is authorized to see it according to the specified *Spring Security expression*.
+    *   `sec:authorize-url="url"` renders the element children (*tag content*)
+	    if the authenticated user is authorized to see the specified URL.
+    *   `sec:authorize-acl="object :: permissions"` renders the element children (*tag content*)
+	    if the authenticated user has the specified permissions on the specified domain object, according
+	    to Spring Source's Access Control List system.
 
 ------------------------------------------------------------------------------
