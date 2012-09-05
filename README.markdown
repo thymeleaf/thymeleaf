@@ -158,4 +158,5 @@ Finally, there is an attribute for checking authorization using Spring Security'
     </div>
 ```
 
- 
+In this attribute, both domain object and permission specifications are considered
+to be thymeleaf *Standard Expressions*.
