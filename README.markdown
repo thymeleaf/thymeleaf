@@ -59,3 +59,30 @@ Features
 	    to Spring Source's Access Control List system.
 
 ------------------------------------------------------------------------------
+
+	
+Configuration
+-------------
+
+In order to use the thymeleaf-extras-springsecurity3 module in your Spring MVC application,
+we will first need to configure our application in the usual way for
+Spring + Thymeleaf applications (*TemplateEngine* bean, *template resolvers*, 
+etc.), and add the SpringSecurity dialect to our Template Engine so that we
+can use the `sec:*` attributes and special expression utility objects:
+
+```xml
+    <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
+      ...
+      <property name="additionalDialects">
+        <set>
+          <bean class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect"/>
+        </set>
+      </property>
+	  ...
+    </bean>
+```
+
+And that's all!
+
+
+
