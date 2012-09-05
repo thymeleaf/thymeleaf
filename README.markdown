@@ -86,3 +86,76 @@ And that's all!
 
 
 
+
+	
+Using the expression utility objects
+------------------------------------
+
+The `#authentication` object can be easily used, like this:
+
+```html
+    <div th:text="${#authentication.name}">
+        The value of the "name" property of the authentication object should appear here.
+    </div>
+```
+
+The `#authorization` object can be used in a similar way, normally in `th:if` or `th:unless`tags:
+
+
+```html
+    <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+        This only be seen if authenticated user has role ROLE_ADMIN.
+    </div>
+```
+
+The `#authorization` object is an instance of `org.thymeleaf.extras.springsecurity3.auth.Authorization`, see
+this class and its documentation to understand all the methods offered.
+
+	
+	
+Using the attributes
+--------------------
+
+
+Using the `sec:authentication` attribute is equivalent to using the `#authentication` object, but using its
+own attribute:
+
+```html
+    <div sec:authentication="name">
+        The value of the "name" property of the authentication object should appear here.
+    </div>
+```
+
+The `sec:authorize` and `sec:authorize-expr` attributes are exactly the same. They work equivalently
+to a `th:if` that evaluated an `#authorization.expression(...)` expression:
+
+
+```html
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        This only be seen if authenticated user has role ROLE_ADMIN.
+    </div>
+```
+
+Another way of checking authorization is `sec:authorize-url`, which allows you to check whether a user
+is authorized to visit a specific URL or not:
+
+
+```html
+    <div sec:authorize-url="/admin">
+        This only be seen if authenticated user can visit the admin section
+    </div>
+```
+
+Finally, there is an attribute for checking authorization using Spring Security's
+*Access Control Lists*, which needs the specification of a domain object and the
+*permissions* defined on it that we are asking for.
+
+
+```html
+    <div sec:authorize-acl="${obj} :: '1,3'">
+        This only be seen if authenticated user has permissions "1" and "3"
+        on domain object referenced by context variable "obj".
+    </div>
+```
+
+ 
