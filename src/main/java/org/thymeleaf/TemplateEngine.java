@@ -230,10 +230,10 @@ public class TemplateEngine {
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
     
     private static volatile long processIndex = 0L;
-    private static ThreadLocal<Long> currentProcessIndex = new ThreadLocal<Long>();
-    private static ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
-    private static ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
-    private static ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
+    private static ThreadLocalMetadata<Long> currentProcessIndex = new ThreadLocalMetadata<Long>();
+    private static ThreadLocalMetadata<Locale> currentProcessLocale = new ThreadLocalMetadata<Locale>();
+    private static ThreadLocalMetadata<String> currentProcessTemplateName = new ThreadLocalMetadata<String>();
+    private static ThreadLocalMetadata<TemplateEngine> currentProcessTemplateEngine = new ThreadLocalMetadata<TemplateEngine>();
     
     
     private final Configuration configuration;
@@ -878,7 +878,18 @@ public class TemplateEngine {
     public static Long threadIndex() {
         return currentProcessIndex.get();
     }
+    
+    private static void newThreadIndex() {
+        currentProcessIndex.add(Long.valueOf(processIndex++));
+    }
+    
+    private static void removeThreadIndex() {
+        currentProcessIndex.remove();
+    }
 
+    
+    
+    
     /**
      * <p>
      *   Internal method that retrieves the thread-local locale for the
@@ -894,14 +905,12 @@ public class TemplateEngine {
         return currentProcessLocale.get();
     }
 
-    
-    private static void newThreadIndex() {
-        currentProcessIndex.set(Long.valueOf(processIndex++));
+    private static void setThreadLocale(final Locale locale) {
+        currentProcessLocale.add(locale);
     }
     
-
-    private static void setThreadLocale(final Locale locale) {
-        currentProcessLocale.set(locale);
+    private static void removeThreadLocale() {
+        currentProcessLocale.remove();
     }
 
     
@@ -920,10 +929,13 @@ public class TemplateEngine {
     public static String threadTemplateName() {
         return currentProcessTemplateName.get();
     }
-
     
     private static void setThreadTemplateName(final String templateName) {
-        currentProcessTemplateName.set(templateName);
+        currentProcessTemplateName.add(templateName);
+    }
+    
+    private static void removeThreadTemplateName() {
+        currentProcessTemplateName.remove();
     }
 
     
@@ -944,10 +956,13 @@ public class TemplateEngine {
     public static TemplateEngine threadTemplateEngine() {
         return currentProcessTemplateEngine.get();
     }
-
     
     private static void setThreadTemplateEngine(final TemplateEngine templateEngine) {
-        currentProcessTemplateEngine.set(templateEngine);
+        currentProcessTemplateEngine.add(templateEngine);
+    }
+    
+    private static void removeThreadTemplateEngine() {
+        currentProcessTemplateEngine.remove();
     }
 
 
@@ -1124,10 +1139,9 @@ public class TemplateEngine {
             
             final long startMs = System.nanoTime();
 
-            setThreadTemplateName(templateName);
-            
             newThreadIndex();
             setThreadLocale(context.getLocale());
+            setThreadTemplateName(templateName);
             setThreadTemplateEngine(this);
 
             if (logger.isDebugEnabled()) {
@@ -1159,14 +1173,30 @@ public class TemplateEngine {
             }
             
         } catch (final TemplateOutputException e) {
+            
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw e;
+            
         } catch (final TemplateEngineException e) {
+            
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw e;
+            
         } catch (final RuntimeException e) {
+            
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw new TemplateProcessingException("Exception processing template", templateName, e);
+            
+        } finally {
+
+            /*
+             * "pop" thread-local metadata items
+             */
+            removeThreadTemplateEngine();
+            removeThreadTemplateName();
+            removeThreadLocale();
+            removeThreadIndex();
+            
         }
         
     }
@@ -1256,8 +1286,6 @@ public class TemplateEngine {
     }
 
     
-
-
     
     
 }
