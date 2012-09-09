@@ -7,8 +7,9 @@
 	</head>
     <body>
         <h1>Login page</h1>
-        <p>Example user: bob / demo</p>
         <p>Example administrator: jim / demo</p>
+        <p>Example user: bob / demo</p>
+        <p>Example user and administrator: ted / demo</p>
         <p th:if="${loginError}" class="error">Wrong user or password</p>
         <form th:action="@{/j_spring_security_check}" method="post">
             <label for="j_username">Username</label>:

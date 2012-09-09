@@ -37,6 +37,12 @@ public class MainController {
         return "admin/index.html";
     }
 
+    /** Shared zone index. */
+    @RequestMapping("/shared/index.html")
+    public String sharedIndex() {
+        return "shared/index.html";
+    }
+
     /** Login form. */
     @RequestMapping("/login.html")
     public String login() {
@@ -56,14 +62,6 @@ public class MainController {
         throw new RuntimeException("This is a simulated error message");
     }
 
-    /** Substitute 'less than' and 'greater than' symbols by its HTML entities. */
-    private String escapeTags(String text) {
-        if (text == null) {
-            return null;
-        }
-        return text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
-
     /** Error page. */
     @RequestMapping("/error.html")
     public String error(HttpServletRequest request, Model model) {
@@ -78,5 +76,13 @@ public class MainController {
         errorMessage.append("</ul>");
         model.addAttribute("errorMessage", errorMessage.toString());
         return "error.html";
+    }
+
+    /** Substitute 'less than' and 'greater than' symbols by its HTML entities. */
+    private String escapeTags(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
     }
 }

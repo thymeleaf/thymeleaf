@@ -41,13 +41,13 @@
     <name>The THYMELEAF team</name>
     <url>http://www.thymeleaf.org</url>
   </organization>
-  
+
   <scm>
     <url>scm:git:git@github.com:thymeleaf/thymeleafexamples-springsecurity.git</url>
     <connection>scm:git:git@github.com:thymeleaf/thymeleafexamples-springsecurity.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleafexamples-springsecurity.git</developerConnection>
   </scm>
-  
+
   <developers>
     <developer>
       <id>zemi</id>
@@ -58,7 +58,7 @@
       </roles>
     </developer>
   </developers>
-  
+
 
   <repositories>
     <repository>
@@ -81,9 +81,9 @@
     </properties>
 
   <build>
-    
+
     <resources>
-    
+
       <resource>
         <directory>src/main/resources</directory>
       </resource>
@@ -95,12 +95,12 @@
           <include>**/*.html</include>
         </includes>
       </resource>
-      
+
     </resources>
-    
-        
+
+
     <plugins>
-    
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -110,7 +110,7 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -119,14 +119,14 @@
           <encoding>ISO-8859-1</encoding>
         </configuration>
       </plugin>
-        
+
     </plugins>
-        
+
   </build>
 
-  
+
   <profiles>
-    
+
     <profile>
       <id>build-dist</id>
       <build>
@@ -155,7 +155,7 @@
         </plugins>
       </build>
     </profile>
-      
+
   </profiles>
 
 
@@ -168,21 +168,21 @@
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.thymeleaf.extras</groupId>
       <artifactId>thymeleaf-extras-springsecurity3</artifactId>
       <version>${thymeleafspringsecurity3.version}</version>
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -195,19 +195,19 @@
       <artifactId>spring-context</artifactId>
       <version>${springframework.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
       <version>${springframework.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
       <version>${springsecurity.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
@@ -226,7 +226,7 @@
       <version>1.6.1</version>
       <scope>compile</scope>
     </dependency>
-        
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -254,7 +254,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-       
+
   </dependencies>
-    
+
 </project>
