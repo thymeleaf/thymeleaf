@@ -10,8 +10,9 @@
     <authentication-manager alias="authenticationManager">
         <authentication-provider>
             <user-service>
-                <user name="jim" password="demo" authorities="ROLE_USER, ROLE_ADMIN" />
+                <user name="jim" password="demo" authorities="ROLE_ADMIN" />
                 <user name="bob" password="demo" authorities="ROLE_USER" />
+                <user name="ted" password="demo" authorities="ROLE_USER, ROLE_ADMIN" />
             </user-service>
         </authentication-provider>
     </authentication-manager>
@@ -21,6 +22,7 @@
         <logout />
         <!-- Security zones -->
         <intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
-        <intercept-url pattern="/user/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
+        <intercept-url pattern="/user/**" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/shared/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
     </http>
 </beans:beans>

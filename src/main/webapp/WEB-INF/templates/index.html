@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head>
         <title>Thymeleafexamples - Spring security</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" href="css/main.css" th:href="@{/css/main.css}" />
     </head>
     <body>
-        <div th:fragment="logout" class="logout" th:if="${#httpServletRequest.userPrincipal}">
-            Logged user: <span th:text="${#httpServletRequest.userPrincipal.name}">Bob</span> |
+        <div th:fragment="logout" class="logout"
+             sec:authorize="isAuthenticated()">
+            Logged user: <span sec:authentication="name">Bob</span> |
+            Roles: <span sec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span> |
             <a href="index.html" th:href="@{/j_spring_security_logout}">Logout</a>
         </div>
         <h1>Thymeleafexamples - Spring security</h1>
@@ -15,8 +17,9 @@
         <h2>Private pages</h2>
         <p>This is a public page, but you can navigate to protected pages to trigger authentication.</p>
         <ul>
-            <li>Go to <a href="user/index.html" th:href="@{/user/index.html}">user zone</a></li>
-            <li>Go to <a href="admin/index.html" th:href="@{/admin/index.html}">administration zone</a></li>
+            <li>Go to <a href="admin/index.html" th:href="@{/admin/index.html}">administration zone</a> (only admins)</li>
+            <li>Go to <a href="user/index.html" th:href="@{/user/index.html}">user zone</a> (only users)</li>
+            <li>Go to <a href="user/index.html" th:href="@{/shared/index.html}">shared zone</a> (both users and admins)</li>
         </ul>
         <h2>Exception handling</h2>
         <ul>

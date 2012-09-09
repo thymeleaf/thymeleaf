@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>Thymeleafexamples - Spring security</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="css/main.css" th:href="@{/css/main.css}" />
+    </head>
+    <body>
+        <div th:substituteby="index.html::logout"></div>
+        <h1>Thymeleafexamples - Spring security</h1>
+        <p>This is the <b>shared</b> zone</p>
+        <p>Only authenticated users with roles <b>USER</b> or <b>ADMIN</b> are allowed to see this page.</p>
+        <p>Different content is shown depending on the role of the authenticated user.</p>
+        <div sec:authorize="hasRole('ROLE_ADMIN')">
+            This content is only shown to <b>administrators</b>.
+        </div>
+        <div sec:authorize="hasRole('ROLE_USER')">
+            This content is only shown to <b>users</b>.
+        </div>
+        <p><a href="../index.html" th:href="@{/index.html}">Back to home page</a></p>
+    </body>
+</html>
