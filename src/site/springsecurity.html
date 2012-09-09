@@ -16,7 +16,7 @@
 
   <div id="page">
 
-  
+
    <div id="menu">
      <ul>
        <li><a href="index.html" title="Home">Home</a></li>
@@ -36,8 +36,8 @@
    <div id="breadcrumb">
       <a href="index.html">thymeleaf</a>
       ::
-      <a href="documentation.html">documentation</a> 
-      :: 
+      <a href="documentation.html">documentation</a>
+      ::
       articles
       ::
       <span class="current">login and error pages using thymeleaf and spring security</span>
@@ -315,11 +315,49 @@
 
 </code>
 
+<h2>Spring security dialect</h2>
+
+<p>
+    The <a href="https://github.com/thymeleaf/thymeleaf-extras-springsecurity3">Spring Security 3 integration module</a>
+    is a Thymeleaf dialect equivalent to <a href="http://static.springsource.org/spring-security/site/docs/3.1.x/reference/taglibs.html">Spring security taglib</a>.
+</p>
+
+<p>
+    We use this dialect in the example in order to print the logged user credentials and to
+    show different content to different roles.
+</p>
+
+<p>
+    The attribute <b>sec:authorize</b> renders its content when the attribute expression
+    is evaluated to <b>true</b>:
+</p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b> sec:authorize=<span class="string">&quot;hasRole('ROLE_ADMIN')&quot;</span>&gt;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This content is only shown to administrators.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b> sec:authorize=<span class="string">&quot;hasRole('ROLE_USER')&quot;</span>&gt;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This content is only shown to users.<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+
+</code>
+
+<p>
+    The attribute <b>sec:authentication</b> is used to print logged user name and roles:
+</p>
+
+<code>
+
+&nbsp;&nbsp;&nbsp;&nbsp;Logged user: &lt;<b>span</b> sec:authentication=<span class="string">&quot;name&quot;</span>&gt;Bob&lt;<b>/span</b>&gt; <br />
+&nbsp;&nbsp;&nbsp;&nbsp;Roles: &lt;<b>span</b> sec:authentication=<span class="string">&quot;principal.authorities&quot;</span>&gt;[ROLE_USER, ROLE_ADMIN]&lt;<b>/span</b>&gt; <br />
+
+</code>
 
 <h2>Download example</h2>
 
 <p>
-    The full working example code used in this article is available for download at 
+    The full working example code used in this article is available for download at
     the <a href="documentation.html">project's documentation page</a>.
 </p>
 
@@ -327,8 +365,8 @@
 
 
    </div>
-   
-   
+
+
    <div id="footer">
      <div id="googleplus">
        <div id="plusone-div" class="plusone"></div>
@@ -344,7 +382,7 @@
        Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
      </div>
    </div>
-   
+
    <script type="text/javascript">
 
      var _gaq = _gaq || [];
@@ -358,8 +396,8 @@
          })();
 
    </script>
-   
+
   </div>
   </body>
-  
+
 </html>
