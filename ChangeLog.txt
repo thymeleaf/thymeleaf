@@ -1,3 +1,8 @@
+2.0.13
+======
+- (No changes)
+
+
 2.0.12
 ======
 - Fixed "viewClass" property in ThymeleafViewResolver requiring an implementation of
