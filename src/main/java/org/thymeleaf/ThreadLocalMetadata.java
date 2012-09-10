@@ -32,6 +32,10 @@ import org.thymeleaf.util.Validate;
  * 
  * Also, takes care of nested executions by using a Deque instead of
  * a single instance when executing.
+ * 
+ * @author Daniel Fern&aacute;ndez
+ * 
+ * @since 2.0.13
  */
 class ThreadLocalMetadata<T> {
 

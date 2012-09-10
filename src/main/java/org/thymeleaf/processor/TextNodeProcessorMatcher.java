@@ -27,6 +27,9 @@ import org.thymeleaf.dom.Node;
 
 
 /**
+ * <p>
+ *   Basic implementation of {@link ITextNodeProcessorMatcher}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
