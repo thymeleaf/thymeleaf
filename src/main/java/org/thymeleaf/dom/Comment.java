@@ -120,6 +120,12 @@ public final class Comment extends Node {
         // Nothing to be done here!
     }
 
+
+    @Override
+    final void doAdditionalProcessableComputing(final boolean processable) {
+        // Nothing to be done here!
+    }
+
     
     
     @Override

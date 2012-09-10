@@ -3,6 +3,11 @@
 - Fixed selection target not being correctly applied to Node as a local variable, and 
   this resulting in *{...} not working OK when th:object was specified in an element
   with th:remove="tag".
+- Fixed thread indexes and other thread-local-maintained information not being
+  correctly updated with nested executions.
+- Added "setProcessable(...)" to DOM nodes in order to differentiate between skippability
+  (apparently having no applicable processors) and processability (allowance or
+  prohibition on a node's execution).
 
 
 2.0.12

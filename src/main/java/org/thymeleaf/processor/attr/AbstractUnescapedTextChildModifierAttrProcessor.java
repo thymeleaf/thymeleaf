@@ -66,7 +66,7 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
             final List<Node> fragNodes = templateRepository.getFragment(arguments, text);
             
             for (final Node node : fragNodes) {
-                node.setSkippable(true);
+                node.setProcessable(false);
             }
 
             return fragNodes;
