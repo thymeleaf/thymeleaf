@@ -543,7 +543,7 @@ public abstract class Node implements Serializable {
      *   code injection).
      * </p>
      * 
-     * @param skippable the new value for the flag
+     * @param processable the new value for the flag
      * @since 2.0.13
      */
     public final void setProcessable(final boolean processable) {

@@ -41,7 +41,7 @@ import org.thymeleaf.processor.ProcessorResult;
  * <p>
  *   One common example of these uses is represented by {@link ProcessAllNodesDocumentProcessor},
  *   which is designed for setting to true the flag that tells the Thymeleaf engine to
- *   process all nodes (and not only nodes of type {@link Element}).
+ *   process all nodes (and not only nodes of type {@link org.thymeleaf.dom.Element}).
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

@@ -33,7 +33,7 @@ import org.thymeleaf.processor.ProcessorResult;
  * <p>
  *   Subclass of {@link AbstractDocumentProcessor} used for setting to true the flag 
  *   that tells the Thymeleaf engine to process all nodes (and not only nodes of 
- *   type {@link Element}, which is the default).
+ *   type {@link org.thymeleaf.dom.Element}, which is the default).
  * </p>
  * <p>
  *   This is done by returning a {@link ProcessorResult} instance with its
