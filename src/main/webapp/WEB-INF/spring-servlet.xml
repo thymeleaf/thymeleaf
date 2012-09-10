@@ -62,6 +62,9 @@
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
         <property name="order" value="1" />
+        <!-- Template cache is true by default. Set to false if you want -->
+        <!-- templates to be automatically updated when modified.        -->
+        <property name="cacheable" value="true" />
     </bean>
     
     <!-- THYMELEAF: Template Resolver for webapp pages   -->
@@ -71,6 +74,9 @@
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
         <property name="order" value="2" />
+        <!-- Template cache is true by default. Set to false if you want -->
+        <!-- templates to be automatically updated when modified.        -->
+        <property name="cacheable" value="true" />
     </bean>
     
     <!-- THYMELEAF: Template Engine (Spring3-specific version) -->
