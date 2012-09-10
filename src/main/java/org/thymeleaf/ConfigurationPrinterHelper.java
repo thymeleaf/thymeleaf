@@ -302,7 +302,7 @@ final class ConfigurationPrinterHelper {
             if (p == null) {
                 return null;
             }
-            return p.toString();
+            return p.toString().replaceAll("\\$","\\.");
         }
         
     }
