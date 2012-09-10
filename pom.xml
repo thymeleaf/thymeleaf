@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf.extras</groupId>
   <artifactId>thymeleaf-extras-springsecurity3</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.0-beta1-SNAPSHOT</version>
+  <version>1.0.0-beta1</version>
   <name>thymeleaf-extras-springsecurity3</name>
   <url>http://www.thymeleaf.org</url>
 
