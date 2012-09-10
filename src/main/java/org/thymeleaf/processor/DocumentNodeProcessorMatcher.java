@@ -19,26 +19,41 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dom.AbstractTextNode;
+import org.thymeleaf.dom.Document;
+import org.thymeleaf.dom.Node;
+
+
 
 
 
 /**
  * <p>
- *   Sub-interface of {@link IProcessorMatcher} for matchers that match Text/CDATA nodes.
- * </p>
- * <p>
- *   Every processor matching Text/CDATA nodes should have matchers implementing this
- *   interface.
+ *   Basic implementation of {@link IDocumentNodeProcessorMatcher}.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.0
+ * @since 2.0.13
  *
  */
-public interface ITextNodeProcessorMatcher extends IProcessorMatcher<AbstractTextNode> {
+public final class DocumentNodeProcessorMatcher implements IDocumentNodeProcessorMatcher {
+    
+    
+    
+    public DocumentNodeProcessorMatcher() {
+        super();
+    }
+    
 
-    // Marker interface: no additional methods at the moment
+    public boolean matches(final Node node, final ProcessorMatchingContext context) {
+        return (node instanceof Document);
+    }
+
+
+    
+    public final Class<? extends Document> appliesTo() {
+        return Document.class;
+    }
+    
     
 }

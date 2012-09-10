@@ -8,6 +8,11 @@
 - Added "setProcessable(...)" to DOM nodes in order to differentiate between skippability
   (apparently having no applicable processors) and processability (allowance or
   prohibition on a node's execution).
+- Created org.thymeleaf.processor.document package for easily creating processors for
+  Document nodes.
+- Created org.thymeleaf.processor.document.ProcessAllNodesDocumentProcessor for
+  setting the "processOnlyElementNodes" flag to false at the beginning of template
+  execution.
 
 
 2.0.12
