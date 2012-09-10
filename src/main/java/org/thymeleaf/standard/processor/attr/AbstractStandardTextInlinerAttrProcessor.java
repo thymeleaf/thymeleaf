@@ -78,8 +78,9 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
 
         final Map<String,Object> localVariables = new HashMap<String,Object>();
         localVariables.put(StandardDialect.INLINER_LOCAL_VARIABLE, textInliner);
-        
-        clearSkippability(element);
+
+        // This is probably unnecessary...
+        ensureChildrenArePrecomputed(element);
         
         element.removeAttribute(attributeName);
         
@@ -115,13 +116,13 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
     
 
     
-    private static void clearSkippability(final Node node) {
+    private static void ensureChildrenArePrecomputed(final Node node) {
         if (node != null) {
-            node.setSkippable(false);
+            node.setRecomputeProcessorsImmediately(true);
             if (node instanceof NestableNode) {
                 final List<Node> children = ((NestableNode)node).getChildren();
                 for (final Node child : children) {
-                    clearSkippability(child);
+                    ensureChildrenArePrecomputed(child);
                 }
             }
         }

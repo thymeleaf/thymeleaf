@@ -90,7 +90,19 @@ public abstract class Node implements Serializable {
     private final boolean shouldConsiderAsElementForProcessing;
     
     NestableNode parent;
+    
+    /*
+     * An internal flag determining whether a node "can" be skipped because there are
+     * no processors that apply to it.
+     */
     private boolean skippable;
+    
+    /*
+     * An externally-set flag determining that a specific subtree of the DOM
+     * tree should not be processed at all.
+     */
+    private boolean processable;
+    
     private boolean precomputed;
     private boolean recomputeProcessorsAfterEachExecution;
     private boolean recomputeProcessorsImmediately;
@@ -149,6 +161,7 @@ public abstract class Node implements Serializable {
         super();
         this.documentName = documentName;
         this.lineNumber = lineNumber;
+        this.processable = true;
         this.skippable = false;
         this.precomputed = false;
         this.recomputeProcessorsAfterEachExecution = false;
@@ -444,11 +457,9 @@ public abstract class Node implements Serializable {
      *   this node (and its children).
      * </p>
      * <p>
-     *   This flag can be set by the engine -and also by processors- in order to avoid the
-     *   execution of certain parts of the DOM tree, both because it is known that there is
-     *   nothing to execute (and therefore it would be a waste of time trying to process it)
-     *   and also because we want to signal that specific parts of the tree should not be 
-     *   executed for security reasons (for example, to avoid code injection).
+     *   This flag can be set by the engine -not by processors- in order to avoid the
+     *   execution of certain parts of the DOM tree because it is known that there is
+     *   nothing to execute (and therefore it would be a waste of time trying to process it).
      * </p>
      * 
      * @return the value of the 'skippable' flag
@@ -464,29 +475,97 @@ public abstract class Node implements Serializable {
      *   this node (and its children).
      * </p>
      * <p>
-     *   This flag can be set by the engine -and also by processors- in order to avoid the
-     *   execution of certain parts of the DOM tree, both because it is known that there is
-     *   nothing to execute (and therefore it would be a waste of time trying to process it)
-     *   and also because we want to signal that specific parts of the tree should not be 
-     *   executed for security reasons (for example, to avoid code injection).
+     *   This flag can be set by the engine -not by processors- in order to avoid the
+     *   execution of certain parts of the DOM tree because it is known that there is
+     *   nothing to execute (and therefore it would be a waste of time trying to process it).
      * </p>
      * 
      * @param skippable the new value for the flag
+     * @deprecated Will be made protected in 2.1.x. For most uses from outside the
+     *             Thymeleaf engine (e.g. from processors), you should be using 
+     *             setProcessable() instead.
      */
+    @Deprecated
     public final void setSkippable(final boolean skippable) {
-        this.skippable = skippable;
-        if (!skippable && hasParent()) {
+        unsafeSetSkippable(skippable);
+    }
+
+    protected final void unsafeSetSkippable(final boolean isSkippable) {
+        this.skippable = isSkippable;
+        if (!isSkippable && hasParent()) {
             // If this node is marked as non-skippable, set its parent as
             // non-skippable too.
             if (this.parent.isSkippable()) {
                 this.parent.setSkippable(false);
             }
         }
-        doAdditionalSkippableComputing(skippable);
+        doAdditionalSkippableComputing(isSkippable);
     }
     
     abstract void doAdditionalSkippableComputing(final boolean isSkippable);
 
+    
+    
+    /**
+     * <p>
+     *   Returns the value of a flag indicating whether this node (and its children)
+     *   should be processed. It differs from <tt>skippable</tt> in that processing a skippable
+     *   node simply means not taking profit from a performance advantage, whereas processing
+     *   a non-processable node is completely forbidden.
+     * </p>
+     * <p>
+     *   This flag can be set by processors in order to avoid the
+     *   execution of certain parts of the DOM tree, because we want to signal that specific 
+     *   parts of the tree should not be executed for security reasons (for example, to avoid
+     *   code injection).
+     * </p>
+     * 
+     * @return the value of the 'processable' flag
+     * @since 2.0.13
+     */
+    public final boolean isProcessable() {
+        return this.processable;
+    }
+    
+
+    /**
+     * <p>
+     *   Sets the value of a flag indicating whether this node (and its children)
+     *   should be processed. It differs from <tt>skippable</tt> in that processing a skippable
+     *   node simply means not taking profit from a performance advantage, whereas processing
+     *   a non-processable node is completely forbidden.
+     * </p>
+     * <p>
+     *   This flag can be set by processors in order to avoid the
+     *   execution of certain parts of the DOM tree, because we want to signal that specific 
+     *   parts of the tree should not be executed for security reasons (for example, to avoid
+     *   code injection).
+     * </p>
+     * 
+     * @param skippable the new value for the flag
+     * @since 2.0.13
+     */
+    public final void setProcessable(final boolean processable) {
+        this.processable = processable;
+        if (processable && hasParent()) {
+            // If this node is marked as non-skippable, set its parent as
+            // non-skippable too.
+            if (!this.parent.isProcessable()) {
+                this.parent.setProcessable(true);
+            }
+        }
+        doAdditionalProcessableComputing(processable);
+        if (processable) {
+            // If it is now processable, we should make sure
+            // processors are computed again just in case.
+            setPrecomputed(false);
+        }
+    }
+    
+    abstract void doAdditionalProcessableComputing(final boolean isProcessable);
+
+    
+    
 
     final boolean isDetached() {
         if (this instanceof Document) {
@@ -672,6 +751,10 @@ public abstract class Node implements Serializable {
     
     final void precomputeNode(final Configuration configuration) {
 
+        if (!isProcessable()) {
+            return;
+        }
+        
         if (!isPrecomputed()) {
 
             /*
@@ -723,6 +806,10 @@ public abstract class Node implements Serializable {
     
     void processNode(final Arguments arguments, final boolean processOnlyElementNodes) {
 
+        if (!isProcessable()) {
+            return;
+        }
+        
         if (!this.shouldConsiderAsElementForProcessing && processOnlyElementNodes) {
             return;
         }

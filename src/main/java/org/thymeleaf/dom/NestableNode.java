@@ -537,9 +537,9 @@ public abstract class NestableNode extends Node {
     
     
     /*
-     * ------------
-     * SKIPPABILITY
-     * ------------
+     * -------------------------------
+     * SKIPPABILITY AND PROCESSABILITY
+     * -------------------------------
      */
     
     
@@ -550,7 +550,20 @@ public abstract class NestableNode extends Node {
             // If this node is marked as skippable, all of its
             // children should be marked skippable too.
             for (int i = 0; i < this.childrenLen; i++) {
-                this.children[i].setSkippable(true);
+                this.children[i].unsafeSetSkippable(true);
+            }
+        }
+    }
+    
+    
+    
+    @Override
+    final void doAdditionalProcessableComputing(final boolean processable) {
+        if (!processable && this.childrenLen > 0) {
+            // If this node is marked as non-processable, all of its
+            // children should be marked non-processable too.
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].setProcessable(false);
             }
         }
     }

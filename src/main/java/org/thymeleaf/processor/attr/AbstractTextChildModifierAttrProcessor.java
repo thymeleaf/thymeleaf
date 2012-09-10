@@ -61,7 +61,7 @@ public abstract class AbstractTextChildModifierAttrProcessor
         final Text newNode = new Text(text == null? "" : text);
         // Setting this allows avoiding text inliners processing already generated text,
         // which in turn avoids code injection.
-        newNode.setSkippable(true);
+        newNode.setProcessable(false);
         
         return Collections.singletonList((Node)newNode);
         

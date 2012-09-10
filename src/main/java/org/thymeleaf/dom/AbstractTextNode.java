@@ -132,6 +132,13 @@ public abstract class AbstractTextNode extends Node {
     
     
     @Override
+    final void doAdditionalProcessableComputing(final boolean processable) {
+        // Nothing to be done here!
+    }
+
+    
+    
+    @Override
     final void doAdditionalPrecomputeNode(final Configuration configuration) {
         // Nothing to be done here!
     }
