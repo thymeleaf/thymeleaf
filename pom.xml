@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>springsecurity</artifactId>
   <packaging>war</packaging>
-  <version>20120819</version>
+  <version>20120910</version>
   <name>Thymeleaf Examples - Spring security</name>
   <description>Example of Thymeleaf and Spring-security integration</description>
 
@@ -76,7 +76,7 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <springframework.version>3.0.7.RELEASE</springframework.version>
     <springsecurity.version>3.0.7.RELEASE</springsecurity.version>
-    <thymeleaf.version>2.0.12</thymeleaf.version>
+    <thymeleaf.version>2.0.13</thymeleaf.version>
     <thymeleafspringsecurity3.version>1.0.0-beta1-SNAPSHOT</thymeleafspringsecurity3.version>
     </properties>
 

@@ -31,10 +31,12 @@
     
 	<!-- Thymeleaf template engine -->
     <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-        <property name="cacheable" value="true" />
         <property name="prefix" value="/WEB-INF/templates/" />
         <property name="templateMode" value="HTML5" />
         <property name="characterEncoding" value="UTF-8" />
+        <!-- Template cache is true by default. Set to false if you want -->
+        <!-- templates to be automatically updated when modified.        -->
+        <property name="cacheable" value="true" />
     </bean>
     
     <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
