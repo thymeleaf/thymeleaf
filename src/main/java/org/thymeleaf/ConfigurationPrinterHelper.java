@@ -295,7 +295,7 @@ final class ConfigurationPrinterHelper {
         }
         
         private String replace(final String str, final Object replacement) {
-            return str.replaceFirst(PLACEHOLDER, param(replacement));
+            return str.replaceFirst(PLACEHOLDER, (replacement == null? "" : param(replacement)));
         }
         
         private String param(final Object p) {
