@@ -778,7 +778,7 @@ public abstract class Node implements Serializable {
             } else {
                 // This time we execute "setSkippable" so that all parents at all
                 // levels are also set to "false"
-                setSkippable(false);
+                unsafeSetSkippable(false);
             }
 
             
@@ -865,6 +865,7 @@ public abstract class Node implements Serializable {
                     }
                     
                     if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
+                        setPrecomputed(false);
                         precomputeNode(arguments.getConfiguration());
                         this.recomputeProcessorsImmediately = false;
                     }

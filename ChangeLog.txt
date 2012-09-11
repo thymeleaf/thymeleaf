@@ -1,3 +1,9 @@
+2.0.14
+======
+- Fixed flags recomputeProcessorsImmediately and recomputeProcessorsAfterEachExecution not
+  being able to trigger a true re-computation of an element. 
+
+
 2.0.13
 ======
 - Fixed selection target not being correctly applied to Node as a local variable, and 
