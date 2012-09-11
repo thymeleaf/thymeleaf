@@ -1,7 +1,8 @@
 2.0.14
 ======
 - Fixed flags recomputeProcessorsImmediately and recomputeProcessorsAfterEachExecution not
-  being able to trigger a true re-computation of an element. 
+  being able to trigger a true re-computation of an element.
+- Fixed null dialect prefixes causing an exception. 
 
 
 2.0.13
