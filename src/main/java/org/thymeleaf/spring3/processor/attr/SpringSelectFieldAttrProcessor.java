@@ -112,7 +112,7 @@ public final class SpringSelectFieldAttrProcessor
                 final Element childTag = (Element) child;
                 final String childTagName = childTag.getNormalizedName();
 
-                childTag.setSkippable(false);
+                childTag.setProcessable(true);
                 
                 if (childTagName != null && childTagName.equals("option")) {
                     

@@ -27,8 +27,8 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
@@ -107,7 +107,7 @@ public final class SpringErrorsAttrProcessor
             final List<Node> fragNodes = templateParser.parseFragment(configuration, strBuilder.toString());
 
             for (final Node child : fragNodes) {
-                child.setSkippable(true);
+                child.setProcessable(false);
                 element.addChild(child);
             }
             
