@@ -20,7 +20,9 @@
 package org.thymeleaf.expression;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.context.IContext;
@@ -75,38 +77,13 @@ public final class ExpressionEvaluatorObjects {
     public static final String MESSAGES_EVALUATION_VARIABLE_NAME = "messages";
     public static final String IDS_EVALUATION_VARIABLE_NAME = "ids";
 
-    public static final Calendars CALENDARS = new Calendars();
-    public static final Dates DATES = new Dates();
-    public static final Bools BOOLS = new Bools();
-    public static final Numbers NUMBERS = new Numbers();
-    public static final Objects OBJECTS = new Objects();
-    public static final Strings STRINGS = new Strings();
-    public static final Arrays ARRAYS = new Arrays();
-    public static final Lists LISTS = new Lists();
-    public static final Sets SETS = new Sets();
-    public static final Maps MAPS = new Maps();
-    public static final Aggregates AGGREGATES = new Aggregates();
     
 
-    public static final Map<String,Object> EXPRESSION_EVALUATION_UTILITY_OBJECTS;
+    private static final ConcurrentHashMap<Locale,Map<String,Object>> EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE =
+            new ConcurrentHashMap<Locale, Map<String,Object>>();
     
     
     
-    
-    static {
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS = new HashMap<String, Object>();
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(CALENDARS_EVALUATION_VARIABLE_NAME, CALENDARS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(DATES_EVALUATION_VARIABLE_NAME, DATES);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(BOOLS_EVALUATION_VARIABLE_NAME, BOOLS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(NUMBERS_EVALUATION_VARIABLE_NAME, NUMBERS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(OBJECTS_EVALUATION_VARIABLE_NAME, OBJECTS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(STRINGS_EVALUATION_VARIABLE_NAME, STRINGS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(ARRAYS_EVALUATION_VARIABLE_NAME, ARRAYS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(LISTS_EVALUATION_VARIABLE_NAME, LISTS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(SETS_EVALUATION_VARIABLE_NAME, SETS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(MAPS_EVALUATION_VARIABLE_NAME, MAPS);
-        EXPRESSION_EVALUATION_UTILITY_OBJECTS.put(AGGREGATES_EVALUATION_VARIABLE_NAME, AGGREGATES);
-    }
     
     
     
@@ -186,7 +163,7 @@ public final class ExpressionEvaluatorObjects {
 
         final Map<String,Object> variables = new HashMap<String,Object>();
 
-        variables.putAll(EXPRESSION_EVALUATION_UTILITY_OBJECTS);
+        variables.putAll(getExpressionEvaluationUtilityObjectsForLocale(context.getLocale()));
         
         variables.put(CONTEXT_VARIABLE_NAME, context);
         variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());
@@ -210,5 +187,36 @@ public final class ExpressionEvaluatorObjects {
     }
 
 
+    
+    public static Map<String,Object> getExpressionEvaluationUtilityObjectsForLocale(final Locale locale) {
+        
+        Map<String,Object> objects = EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.get(locale);
+        if (objects == null) {
+        
+            objects = new HashMap<String, Object>();
+        
+            if (locale != null) {
+                objects.put(CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(locale));
+                objects.put(DATES_EVALUATION_VARIABLE_NAME, new Dates(locale));
+                objects.put(NUMBERS_EVALUATION_VARIABLE_NAME, new Numbers(locale));
+                objects.put(STRINGS_EVALUATION_VARIABLE_NAME, new Strings(locale));
+            }
+            objects.put(BOOLS_EVALUATION_VARIABLE_NAME, new Bools());
+            objects.put(OBJECTS_EVALUATION_VARIABLE_NAME, new Objects());
+            objects.put(ARRAYS_EVALUATION_VARIABLE_NAME, new Arrays());
+            objects.put(LISTS_EVALUATION_VARIABLE_NAME, new Lists());
+            objects.put(SETS_EVALUATION_VARIABLE_NAME, new Sets());
+            objects.put(MAPS_EVALUATION_VARIABLE_NAME, new Maps());
+            objects.put(AGGREGATES_EVALUATION_VARIABLE_NAME, new Aggregates());
+
+            EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.put(locale, objects);
+            
+        }
+        
+        return objects;
+        
+    }
+    
+    
     
 }

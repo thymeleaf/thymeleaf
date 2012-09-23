@@ -24,7 +24,6 @@ import java.io.Writer;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
@@ -185,7 +184,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                         throw new TemplateProcessingException(
                                 "Error processing template: dialect prefix \"" + attribute.getNormalizedPrefix() + "\" " +
                                 "is set as non-lenient but attribute \"" + attribute.getOriginalName() + "\" has not " +
-                                "been removed during process", TemplateEngine.threadTemplateName(), element.getLineNumber());
+                                "been removed during process", arguments.getTemplateName(), element.getLineNumber());
                     }
                 }
                 if (writeAttribute) {

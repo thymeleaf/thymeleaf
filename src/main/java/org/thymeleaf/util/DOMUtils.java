@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.context.Context;
@@ -505,28 +506,31 @@ public final class DOMUtils {
         Validate.notNull(node, "Node cannot be null");
         Validate.notNull(templateWriter, "Template writer cannot be null");
 
-        final Configuration configuration = new Configuration();
-        configuration.addTemplateResolver(new ClassLoaderTemplateResolver());
-        configuration.addMessageResolver(new StandardMessageResolver());
-        configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
-        configuration.initialize();
+        final TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.addTemplateResolver(new ClassLoaderTemplateResolver());
+        templateEngine.addMessageResolver(new StandardMessageResolver());
+        templateEngine.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
         
         final String templateName = "output";
 
         final TemplateProcessingParameters templateProcessingParameters = 
-                new TemplateProcessingParameters(configuration, templateName, new Context());
+                new TemplateProcessingParameters(templateEngine.getConfiguration(), templateName, new Context());
         
         final TemplateResolution templateResolution = 
                 new TemplateResolution(templateName, "resource:"+templateName, 
                         new ClassLoaderResourceResolver(), "UTF-8", templateMode, new AlwaysValidTemplateResolutionValidity());
-        
-        final TemplateRepository templateRepository = new TemplateRepository(configuration);
 
+        templateEngine.initialize();
+        
+        final TemplateRepository templateRepository = templateEngine.getTemplateRepository();
+        
         final Document document = new Document(templateName);
         document.addChild(node);
         
+        
         final Arguments arguments = 
-                new Arguments(templateProcessingParameters, templateResolution, 
+                new Arguments(new TemplateEngine(), 
+                        templateProcessingParameters, templateResolution, 
                         templateRepository, document);
 
         return getOutputFor(arguments, node, templateWriter);

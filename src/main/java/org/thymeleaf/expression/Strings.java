@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -39,6 +38,18 @@ import org.thymeleaf.util.Validate;
  *
  */
 public final class Strings {
+    
+
+    private final Locale locale;
+    
+    
+    
+    
+    public Strings(final Locale locale) {
+        super();
+        this.locale = locale;
+    }
+
     
     
 
@@ -209,7 +220,7 @@ public final class Strings {
     
     
     public Boolean containsIgnoreCase(final Object target, final String fragment) {
-        return StringUtils.containsIgnoreCase(target, fragment, getLocale());
+        return StringUtils.containsIgnoreCase(target, fragment, this.locale);
     }
     
     public Boolean[] arrayContainsIgnoreCase(final Object[] target, final String fragment) {
@@ -765,7 +776,7 @@ public final class Strings {
 
     
     public String toUpperCase(final Object target) {
-        return StringUtils.toUpperCase(target, getLocale());
+        return StringUtils.toUpperCase(target, this.locale);
     }
     
     public String[] arrayToUpperCase(final Object[] target) {
@@ -807,7 +818,7 @@ public final class Strings {
     
     
     public String toLowerCase(final Object target) {
-        return StringUtils.toLowerCase(target, getLocale());
+        return StringUtils.toLowerCase(target, this.locale);
     }
     
     public String[] arrayToLowerCase(final Object[] target) {
@@ -1814,32 +1825,7 @@ public final class Strings {
         return result;
     }
     
-
-    
-
-    
-
     
     
-    
-    
-    
-    private static Locale getLocale() {
-        Locale locale = TemplateEngine.threadLocale();
-        if (locale == null) {
-            // If no locale has been set by the template engine, use the system default.
-            locale = Locale.getDefault();
-        }
-        return locale;
-    }
-    
-    
-    
-    
-    
-    
-    public Strings() {
-        super();
-    }
     
 }
