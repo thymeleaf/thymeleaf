@@ -73,6 +73,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
     @Deprecated
     public static final String SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
     
+    private final TemplateEngine templateEngine;
     
     private final TemplateProcessingParameters templateProcessingParameters;
     private final Configuration configuration;
@@ -101,6 +102,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * @param document the parsed document.
      */
     public Arguments(
+            final TemplateEngine templateEngine,
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,
@@ -113,11 +115,13 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
               (templateProcessingParameters == null? null : templateProcessingParameters.getConfiguration().getDialectSet()));
         
         
+        Validate.notNull(templateEngine, "Template engine cannot be null");
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
         Validate.notNull(templateResolution, "Template resolution cannot be null");
         Validate.notNull(templateRepository, "Template repository cannot be null");
         // Document CAN be null, if it has been filtered and nothing has been selected as a result.
-        
+
+        this.templateEngine = templateEngine;
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration =
                 (this.templateProcessingParameters == null?
@@ -135,6 +139,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
 
 
     private Arguments(
+            final TemplateEngine templateEngine,
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,
@@ -148,7 +153,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         
         super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()), 
                 localVariables, selectionTarget, selectionTargetSet, enhancingDialects);
-        
+
+        this.templateEngine = templateEngine;
         this.templateProcessingParameters = templateProcessingParameters;
         this.configuration =
                 (this.templateProcessingParameters == null?
@@ -166,6 +172,20 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
 
 
     
+    
+    /**
+     * <p>
+     *   Returns the Template Engine associated to this Arguments instance.
+     * </p>
+     * 
+     * @return the template processing parameters
+     * @since 2.0.14
+     */
+    public TemplateEngine getTemplateEngine() {
+        return this.templateEngine;
+    }
+    
+
     
     /**
      * <p>
@@ -372,7 +392,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
             return this;
         }
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine, 
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
                         this.idCounts, this.processOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
@@ -391,7 +412,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      */
     public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
                         this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
@@ -411,7 +433,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      */
     public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
                     this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
                     this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
                     getExpressionEnhancingDialects());
@@ -431,7 +454,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      */
     public Arguments setSelectionTarget(final Object newSelectionTarget) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
                         this.idCounts, this.processOnlyElementNodes, newSelectionTarget, true,
                         getExpressionEnhancingDialects());
@@ -452,7 +476,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      */
     public Arguments addLocalVariablesAndSelectionTarget(final Map<String,Object> newVariables, final Object selectionTarget) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
                         this.idCounts, this.processOnlyElementNodes, selectionTarget, true,
                         getExpressionEnhancingDialects());

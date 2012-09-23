@@ -229,11 +229,9 @@ public class TemplateEngine {
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
     
-    private static volatile long processIndex = 0L;
-    private static ThreadLocalMetadata<Long> currentProcessIndex = new ThreadLocalMetadata<Long>();
-    private static ThreadLocalMetadata<Locale> currentProcessLocale = new ThreadLocalMetadata<Locale>();
-    private static ThreadLocalMetadata<String> currentProcessTemplateName = new ThreadLocalMetadata<String>();
-    private static ThreadLocalMetadata<TemplateEngine> currentProcessTemplateEngine = new ThreadLocalMetadata<TemplateEngine>();
+    private static ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
+    private static ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
+    private static ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
     
     
     private final Configuration configuration;
@@ -866,7 +864,7 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Internal method that retrieves the thread-local index for the
+     *   Internal method that retrieves the thread name/index for the
      *   current template execution. 
      * </p>
      * <p>
@@ -875,16 +873,8 @@ public class TemplateEngine {
      * 
      * @return the index of the current execution.
      */
-    public static Long threadIndex() {
-        return currentProcessIndex.get();
-    }
-    
-    private static void newThreadIndex() {
-        currentProcessIndex.add(Long.valueOf(processIndex++));
-    }
-    
-    private static void removeThreadIndex() {
-        currentProcessIndex.remove();
+    public static String threadIndex() {
+        return Thread.currentThread().getName();
     }
 
     
@@ -900,17 +890,17 @@ public class TemplateEngine {
      * </p>
      * 
      * @return the locale of the current template execution.
+     * @deprecated Will be removed in 2.1.x due to possible creation of classloader
+     *             leaks (see http://wiki.apache.org/tomcat/MemoryLeakProtection#webappClassInstanceAsThreadLocalValue)
+     *             If Arguments is available, you can use {@link Arguments#getTemplateName()}
      */
+    @Deprecated
     public static Locale threadLocale() {
         return currentProcessLocale.get();
     }
 
     private static void setThreadLocale(final Locale locale) {
-        currentProcessLocale.add(locale);
-    }
-    
-    private static void removeThreadLocale() {
-        currentProcessLocale.remove();
+        currentProcessLocale.set(locale);
     }
 
     
@@ -925,17 +915,19 @@ public class TemplateEngine {
      * </p>
      * 
      * @return the template name for the current engine execution.
+     * @deprecated Will be removed in 2.1.x due to possible creation of classloader
+     *             leaks (see http://wiki.apache.org/tomcat/MemoryLeakProtection#webappClassInstanceAsThreadLocalValue)
+     *             if a stack container is used for avoiding the wrong template engine being
+     *             processed when template engine executions are being nested.
+     *             If Arguments is available, you can use {@link Arguments#getTemplateName()}
      */
+    @Deprecated
     public static String threadTemplateName() {
         return currentProcessTemplateName.get();
     }
-    
+
     private static void setThreadTemplateName(final String templateName) {
-        currentProcessTemplateName.add(templateName);
-    }
-    
-    private static void removeThreadTemplateName() {
-        currentProcessTemplateName.remove();
+        currentProcessTemplateName.set(templateName);
     }
 
     
@@ -950,19 +942,19 @@ public class TemplateEngine {
      * </p>
      * 
      * @return the template engine for the current engine execution.
+     * @deprecated Will be removed in 2.1.x due to possible creation of classloader
+     *             leaks (see http://wiki.apache.org/tomcat/MemoryLeakProtection#webappClassInstanceAsThreadLocalValue).
+     *             If Arguments is available, you can use {@link Arguments#getTemplateEngine()}
      * 
      * @since 2.0.9
      */
+    @Deprecated
     public static TemplateEngine threadTemplateEngine() {
         return currentProcessTemplateEngine.get();
     }
     
     private static void setThreadTemplateEngine(final TemplateEngine templateEngine) {
-        currentProcessTemplateEngine.add(templateEngine);
-    }
-    
-    private static void removeThreadTemplateEngine() {
-        currentProcessTemplateEngine.remove();
+        currentProcessTemplateEngine.set(templateEngine);
     }
 
 
@@ -1139,9 +1131,8 @@ public class TemplateEngine {
             
             final long startMs = System.nanoTime();
 
-            newThreadIndex();
-            setThreadLocale(context.getLocale());
             setThreadTemplateName(templateName);
+            setThreadLocale(context.getLocale());
             setThreadTemplateEngine(this);
 
             if (logger.isDebugEnabled()) {
@@ -1186,16 +1177,6 @@ public class TemplateEngine {
             
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw new TemplateProcessingException("Exception processing template", templateName, e);
-            
-        } finally {
-
-            /*
-             * "pop" thread-local metadata items
-             */
-            removeThreadTemplateEngine();
-            removeThreadTemplateName();
-            removeThreadLocale();
-            removeThreadIndex();
             
         }
         
@@ -1248,7 +1229,8 @@ public class TemplateEngine {
         }
         
         final Arguments arguments = 
-                new Arguments(templateProcessingParameters, templateResolution, 
+                new Arguments(this, 
+                        templateProcessingParameters, templateResolution, 
                         this.templateRepository, document);
        
         

@@ -141,8 +141,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         
         if (this.traceExecution) {
             this.logger.trace(
-                    "[THYMELEAF][{}][{}][{}][CACHE_ADD][{}] Adding cache entry in cache \"{}\" for key \"{}\". New size is {}.", 
-                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
+                    "[THYMELEAF][{}][{}][CACHE_ADD][{}] Adding cache entry in cache \"{}\" for key \"{}\". New size is {}.", 
+                    new Object[] {TemplateEngine.threadIndex(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
         }
         
         outputReportIfNeeded();
@@ -167,8 +167,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             incrementReportEntity(this.missCount);
             if (this.traceExecution) {
                 this.logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
+                        "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
+                        new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
             }
             outputReportIfNeeded();
             return null;
@@ -180,11 +180,11 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             final int newSize = this.dataContainer.remove(key);
             if (this.traceExecution) {
                 this.logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Removing cache entry in cache \"{}\" (Entry \"{}\" is not valid anymore). New size is {}.",
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
+                        "[THYMELEAF][{}][{}][CACHE_REMOVE][{}] Removing cache entry in cache \"{}\" (Entry \"{}\" is not valid anymore). New size is {}.",
+                        new Object[] {TemplateEngine.threadIndex(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
                 this.logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
+                        "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
+                        new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
             }
             incrementReportEntity(this.missCount);
             outputReportIfNeeded();
@@ -193,8 +193,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         
         if (this.traceExecution) {
             this.logger.trace(
-                    "[THYMELEAF][{}][{}][{}][CACHE_HIT] Cache hit in cache \"{}\" for key \"{}\".", 
-                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
+                    "[THYMELEAF][{}][{}][CACHE_HIT] Cache hit in cache \"{}\" for key \"{}\".", 
+                    new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
         }
         
         incrementReportEntity(this.hitCount);
@@ -385,8 +385,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
                         if (removed != null) {
                             final Integer newSize = Integer.valueOf(this.container.size());
                             this.logger.trace(
-                                    "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Max size exceeded for cache \"{}\". Removing entry for key \"{}\". New size is {}.", 
-                                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, newSize, this.name, removedKey, newSize});
+                                    "[THYMELEAF][{}][{}][CACHE_REMOVE][{}] Max size exceeded for cache \"{}\". Removing entry for key \"{}\". New size is {}.", 
+                                    new Object[] {TemplateEngine.threadIndex(), this.name, newSize, this.name, removedKey, newSize});
                         }
                     }
                     this.fifo[this.fifoPointer] = key;

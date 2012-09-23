@@ -176,7 +176,9 @@ public class TemplateParserTest {
                         new NonCacheableTemplateResolutionValidity());
         
         final Arguments arguments = 
-                new Arguments(templateProcessingParameters, templateResolution, 
+                new Arguments(
+                        new TemplateEngine(),
+                        templateProcessingParameters, templateResolution, 
                         new TemplateRepository(this.configuration), document);
         
         final StringWriter stringWriter = new StringWriter();

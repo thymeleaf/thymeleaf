@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.NumberPointType;
 import org.thymeleaf.util.NumberUtils;
@@ -47,11 +46,22 @@ import org.thymeleaf.util.Validate;
  *
  */
 public final class Numbers {
-    
 
+    
+    private final Locale locale;
+    
+    
+    public Numbers(final Locale locale) {
+        super();
+        this.locale = locale;
+    }
+
+
+    
+    
     public String formatInteger(final Number target, final Integer minIntegerDigits) {
         try {
-            return NumberUtils.format(target, minIntegerDigits, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting integer with minimum integer digits = " + minIntegerDigits, e);
@@ -95,7 +105,7 @@ public final class Numbers {
                     "Unrecognized point format \"" + thousandsPointType + "\"");
         }
         try {
-            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting integer with minimum integer digits = " + 
@@ -137,7 +147,7 @@ public final class Numbers {
     
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final Integer decimalDigits) {
         try {
-            return NumberUtils.format(target, minIntegerDigits, decimalDigits, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, decimalDigits, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting decimal with minimum integer digits = " + minIntegerDigits + 
@@ -185,7 +195,7 @@ public final class Numbers {
                     "Unrecognized point format \"" + decimalPointType + "\"");
         }
         try {
-            return NumberUtils.format(target, minIntegerDigits, decimalDigits, decimalNumberPointType, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, decimalDigits, decimalNumberPointType, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting decimal with minimum integer digits = " + minIntegerDigits +
@@ -238,7 +248,7 @@ public final class Numbers {
                     "Unrecognized point format \"" + thousandsPointType + "\"");
         }
         try {
-            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, decimalDigits, decimalNumberPointType, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, decimalDigits, decimalNumberPointType, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting decimal with minimum integer digits = " + minIntegerDigits + 
@@ -315,22 +325,5 @@ public final class Numbers {
     
     
     
-    private static Locale getLocale() {
-        Locale locale = TemplateEngine.threadLocale();
-        if (locale == null) {
-            // If no locale has been set by the template engine, use the system default.
-            locale = Locale.getDefault();
-        }
-        return locale;
-    }
-    
-    
-    
-    
-    
-    
-    public Numbers() {
-        super();
-    }
     
 }

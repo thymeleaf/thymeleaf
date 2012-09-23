@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DateUtils;
 import org.thymeleaf.util.Validate;
@@ -48,7 +47,18 @@ import org.thymeleaf.util.Validate;
  */
 public final class Dates {
 
+    
+    private final Locale locale;
+    
+    
+    
+    public Dates(final Locale locale) {
+        super();
+        this.locale = locale;
+    }
 
+    
+    
     
     
     /**
@@ -112,10 +122,10 @@ public final class Dates {
     
     public String format(final Date target) {
         try {
-            return DateUtils.format(target, getLocale());
+            return DateUtils.format(target, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "Error formatting date with standard format for locale " + getLocale(), e);
+                    "Error formatting date with standard format for locale " + this.locale, e);
         }
     }
     
@@ -151,7 +161,7 @@ public final class Dates {
     
     public String format(final Date target, final String pattern) {
         try {
-            return DateUtils.format(target, pattern, getLocale());
+            return DateUtils.format(target, pattern, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting date with format pattern \"" + pattern + "\"", e);
@@ -260,7 +270,7 @@ public final class Dates {
     
 
     public String monthName(final Date target) {
-        return DateUtils.monthName(target, getLocale());
+        return DateUtils.monthName(target, this.locale);
     }
     
     public String[] arrayMonthName(final Object[] target) {
@@ -294,7 +304,7 @@ public final class Dates {
     
 
     public String monthNameShort(final Date target) {
-        return DateUtils.monthNameShort(target, getLocale());
+        return DateUtils.monthNameShort(target, this.locale);
     }
     
     public String[] arrayMonthNameShort(final Object[] target) {
@@ -401,7 +411,7 @@ public final class Dates {
     
 
     public String dayOfWeekName(final Date target) {
-        return DateUtils.dayOfWeekName(target, getLocale());
+        return DateUtils.dayOfWeekName(target, this.locale);
     }
     
     public String[] arrayDayOfWeekName(final Object[] target) {
@@ -437,7 +447,7 @@ public final class Dates {
     
 
     public String dayOfWeekNameShort(final Date target) {
-        return DateUtils.dayOfWeekNameShort(target, getLocale());
+        return DateUtils.dayOfWeekNameShort(target, this.locale);
     }
     
     public String[] arrayDayOfWeekNameShort(final Object[] target) {
@@ -623,20 +633,5 @@ public final class Dates {
     
     
     
-    
-    private static Locale getLocale() {
-        Locale locale = TemplateEngine.threadLocale();
-        if (locale == null) {
-            // If no locale has been set by the template engine, use the system default.
-            locale = Locale.getDefault();
-        }
-        return locale;
-    }
-    
-    
-    
-    public Dates() {
-        super();
-    }
     
 }
