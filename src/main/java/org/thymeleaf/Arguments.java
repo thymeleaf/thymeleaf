@@ -88,6 +88,31 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
 
     /**
      * <p>
+     *   Deprecated constructor. <b>Should not use</b>.
+     * </p>
+     * 
+     * @param templateProcessingParameters
+     * @param templateResolution
+     * @param templateRepository
+     * @param document
+     * @deprecated Will be removed in 2.1. Use the constructor with a
+     *            {@link TemplateEngine} argument instead.
+     */
+    @Deprecated
+    public Arguments(
+            final TemplateProcessingParameters templateProcessingParameters,
+            final TemplateResolution templateResolution,
+            final TemplateRepository templateRepository,
+            final Document document) {
+        this(TemplateEngine.threadTemplateEngine(), 
+                templateProcessingParameters, templateResolution,
+                templateRepository, document);
+    }
+    
+    
+    
+    /**
+     * <p>
      *   Create a new Arguments instance.
      * </p>
      * <p>
