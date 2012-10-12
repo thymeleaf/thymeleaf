@@ -38,6 +38,7 @@ import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.processor.IProcessorMatcher;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorMatchingContext;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -112,8 +113,19 @@ public final class DialectConfiguration {
             /*
              * Initializing processors
              */
-            this.processors =
-                Collections.unmodifiableSet(new LinkedHashSet<IProcessor>(this.dialect.getProcessors()));
+            this.processors = new LinkedHashSet<IProcessor>(this.dialect.getProcessors());
+            if (this.dialect instanceof StandardDialect) {
+                // Implementations of StandardDialect are allowed to specify extra
+                // processors in a user-modifiable "additionalProcessors" property.
+                // When "getAdditionalProcessors()" is set to "public final", calling this
+                // static method will be no longer necessary.
+                @SuppressWarnings("deprecation")
+                final Set<IProcessor> additionalProcessors = StandardDialect.externalAdditionalProcessors((StandardDialect)this.dialect);
+                if (additionalProcessors != null) {
+                    this.processors.addAll(additionalProcessors);
+                }
+            }
+            this.processors = Collections.unmodifiableSet(this.processors);
             Validate.containsNoNulls(this.processors, "Processor set can contain no nulls (dialect: " + this.dialect.getClass().getName() + ")");
             
             final ProcessorMatchingContext context = 
