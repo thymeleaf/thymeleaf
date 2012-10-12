@@ -420,10 +420,26 @@ public final class Element extends NestableNode {
      * @param value the value of the attribute.
      */
     public void setAttribute(final String name, final String value) {
+        setAttribute(name, false, value);
+    }
+
+    
+    
+    /**
+     * <p>
+     *   Establishes a new value for an element attribute. If the attribute already
+     *   exists, its value is substituted by the one specified.
+     * </p>
+     * 
+     * @param name the name of the attribute.
+     * @param value the value of the attribute.
+     * @since 2.0.14
+     */
+    public void setAttribute(final String name, final boolean onlyName, final String value) {
         
         Validate.notNull(name, "Attribute name cannot be null");
         
-        final Attribute attribute = new Attribute(name, value);
+        final Attribute attribute = new Attribute(name, onlyName, value);
         final String attributeNormalizedName = attribute.getNormalizedName();
         
         if (this.attributesLen == 0) {
