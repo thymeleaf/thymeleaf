@@ -55,11 +55,12 @@ public final class Attribute implements Serializable {
     
     private final boolean xmlnsAttribute;
     private final String xmlnsPrefix;
-    
+
+    private final boolean onlyName;
     private final String value;
 
 
-    public Attribute(final String name, final String value) {
+    public Attribute(final String name, final boolean onlyName, final String value) {
         
         super();
         
@@ -73,6 +74,12 @@ public final class Attribute implements Serializable {
 
         this.xmlnsAttribute = (this.normalizedPrefix != null && this.normalizedPrefix.equals(XMLNS_PREFIX));
         this.xmlnsPrefix = (this.xmlnsAttribute? this.unprefixedNormalizedName : null);
+
+        // The "onlyName" flag determines whether the attribute was specified
+        // only with its name (without an equals sign or a value).
+        // For "this.onlyName" to be honored by template writers, value should be null. 
+        // If not, onlyName is ignored.
+        this.onlyName = onlyName;
         
         this.value = value;
         
@@ -155,6 +162,31 @@ public final class Attribute implements Serializable {
     public boolean hasPrefix() {
         return this.hasPrefix;
     }
+
+    
+    
+    /**
+     * <p>
+     *   Determines whether this attribute is to be specified only by its
+     *   name (no equals sign, no value).
+     * </p>
+     * <p>
+     *   If this is true, but {@link #getValue()} is not null, this flag is
+     *   ignored.
+     * </p>
+     * <p>
+     *   Parsers and/or template writers are not required to honor this flag,
+     *   and they can choose to render attributes with their values always
+     *   even if these are empty and/or null and this flag is set.
+     * </p>
+     * 
+     * @return true if attribute should be represented only by its name.
+     * @since 2.0.14
+     */
+    public boolean isOnlyName() {
+        return this.onlyName;
+    }
+    
 
 
     /**

@@ -208,15 +208,20 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                     }
                 }
                 if (writeAttribute) {
+                    
                     writer.write(' ');
                     writer.write(attribute.getOriginalName());
-                    writer.write('=');
-                    writer.write('\"');
+                    
                     final String attrValue = attribute.getValue();
-                    if (attrValue != null) {
-                        writer.write(DOMUtils.escapeXml(attrValue, true));                        
+                    if (!(attrValue == null && attribute.isOnlyName())) {
+                        writer.write('=');
+                        writer.write('\"');
+                        if (attrValue != null) {
+                            writer.write(DOMUtils.escapeXml(attrValue, true));                        
+                        }
+                        writer.write('\"');
                     }
-                    writer.write('\"');
+                        
                 }
             }
         }
