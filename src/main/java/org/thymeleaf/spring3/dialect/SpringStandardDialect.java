@@ -19,10 +19,12 @@
  */
 package org.thymeleaf.spring3.dialect;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -389,35 +391,84 @@ public class SpringStandardDialect extends StandardDialect {
     
     
 
-
-
-    @Override
-    protected Set<IProcessor> getAdditionalProcessors() {
-        final Set<IProcessor> additionalAttrProcessors = new LinkedHashSet<IProcessor>();
-        additionalAttrProcessors.add(new SpringObjectAttrProcessor());
-        additionalAttrProcessors.add(new SpringErrorsAttrProcessor());
-        additionalAttrProcessors.addAll(Arrays.asList(SpringInputGeneralFieldAttrProcessor.PROCESSORS));
-        additionalAttrProcessors.add(new SpringInputPasswordFieldAttrProcessor());
-        additionalAttrProcessors.add(new SpringInputCheckboxFieldAttrProcessor());
-        additionalAttrProcessors.add(new SpringInputRadioFieldAttrProcessor());
-        additionalAttrProcessors.add(new SpringInputFileFieldAttrProcessor());
-        additionalAttrProcessors.add(new SpringMethodAttrProcessor());
-        additionalAttrProcessors.add(new SpringSelectFieldAttrProcessor());
-        additionalAttrProcessors.addAll(Arrays.asList(SpringSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
-        additionalAttrProcessors.add(new SpringOptionFieldAttrProcessor());
-        additionalAttrProcessors.add(new SpringTextareaFieldAttrProcessor());
-        return additionalAttrProcessors;
-    }
-
+    
+    
 
     @Override
-    protected Set<Class<? extends IProcessor>> getRemovedProcessors() {
-        final Set<Class<? extends IProcessor>> removedAttrProcessors = new LinkedHashSet<Class<? extends IProcessor>>();
-        removedAttrProcessors.add(StandardObjectAttrProcessor.class);
-        removedAttrProcessors.add(StandardSingleRemovableAttributeModifierAttrProcessor.class);
-        return removedAttrProcessors;
+    public Set<IProcessor> getProcessors() {
+        
+        final List<IProcessor> processors = new ArrayList<IProcessor>();
+        
+        @SuppressWarnings("deprecation")
+        final Set<IProcessor> dialectAdditionalProcessors = getAdditionalProcessors();
+        @SuppressWarnings("deprecation")
+        final Set<Class<? extends IProcessor>> dialectRemovedProcessors = getRemovedProcessors();
+        
+        for (final IProcessor processor : createSpringStandardProcessorsSet()) {
+            if (dialectRemovedProcessors == null || !dialectRemovedProcessors.contains(processor.getClass())) {
+                processors.add(processor);
+            }
+        }
+        
+        if (dialectAdditionalProcessors != null) {
+            processors.addAll(dialectAdditionalProcessors);
+        }
+        
+        return new LinkedHashSet<IProcessor>(processors);
+        
     }
+    
+    
 
+
+    
+    /**
+     * <p>
+     *   Create a the set of SpringStandard processors, all of them freshly instanced.
+     * </p>
+     * 
+     * @return the set of SpringStandard processors.
+     */
+    public static Set<IProcessor> createSpringStandardProcessorsSet() {
+        /*
+         * It is important that we create new instances here because, if there are
+         * several dialects in the TemplateEngine that extend StandardDialect, they should
+         * not be returning the exact same instances for their processors in order
+         * to allow specific instances to be directly linked with their owner dialect.
+         */
+        
+        final Set<IProcessor> standardProcessors = StandardDialect.createStandardProcessorsSet();
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
+        
+        for (final IProcessor standardProcessor : standardProcessors) {
+            // There are several processors we need to remove from the Standard Dialect set
+            if (!(standardProcessor instanceof StandardObjectAttrProcessor) &&
+                !(standardProcessor instanceof StandardSingleRemovableAttributeModifierAttrProcessor)) {
+                processors.add(standardProcessor);
+            }
+        }
+        
+        processors.add(new SpringObjectAttrProcessor());
+        processors.add(new SpringErrorsAttrProcessor());
+        processors.addAll(Arrays.asList(SpringInputGeneralFieldAttrProcessor.PROCESSORS));
+        processors.add(new SpringInputPasswordFieldAttrProcessor());
+        processors.add(new SpringInputCheckboxFieldAttrProcessor());
+        processors.add(new SpringInputRadioFieldAttrProcessor());
+        processors.add(new SpringInputFileFieldAttrProcessor());
+        processors.add(new SpringMethodAttrProcessor());
+        processors.add(new SpringSelectFieldAttrProcessor());
+        processors.addAll(Arrays.asList(SpringSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
+        processors.add(new SpringOptionFieldAttrProcessor());
+        processors.add(new SpringTextareaFieldAttrProcessor());
+        
+        return processors;
+        
+    }
+    
+
+
+    
+    
 
     
     @Override
