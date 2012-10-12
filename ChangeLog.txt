@@ -2,7 +2,9 @@
 ======
 - Fixed flags recomputeProcessorsImmediately and recomputeProcessorsAfterEachExecution not
   being able to trigger a true re-computation of an element.
-- Fixed null dialect prefixes causing an exception. 
+- Fixed null dialect prefixes causing an exception.
+- Added "additionalProcessors" property to StandardDialect in order to being able to easily add
+  a set of custom processors to the Standard or SpringStandard dialects.
 
 
 2.0.13

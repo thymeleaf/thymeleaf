@@ -68,6 +68,7 @@ import org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor;
 import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
+import org.thymeleaf.util.Validate;
 
 /**
  * <p>
@@ -354,6 +355,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                                 XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION
                                 })));
 
+
+    
+    
+    private Set<IProcessor> additionalProcessors = null;
     
 
     
@@ -442,28 +447,78 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         
         final List<IProcessor> processors = new ArrayList<IProcessor>();
         
-        final Set<IProcessor> additionalProcessors = getAdditionalProcessors();
-        final Set<Class<? extends IProcessor>> removedProcessors = getRemovedProcessors();
+        final Set<IProcessor> dialectAdditionalProcessors = getAdditionalProcessors();
+        final Set<Class<? extends IProcessor>> dialectRemovedProcessors = getRemovedProcessors();
         
         for (final IProcessor processor : createStandardProcessorsSet()) {
-            if (removedProcessors == null || !removedProcessors.contains(processor.getClass())) {
+            if (dialectRemovedProcessors == null || !dialectRemovedProcessors.contains(processor.getClass())) {
                 processors.add(processor);
             }
         }
         
-        if (additionalProcessors != null) {
-            processors.addAll(additionalProcessors);
+        if (dialectAdditionalProcessors != null) {
+            processors.addAll(dialectAdditionalProcessors);
         }
         
-        return Collections.unmodifiableSet(new LinkedHashSet<IProcessor>(processors));
+        return new LinkedHashSet<IProcessor>(processors);
         
     }
     
-    
+        
+    /**
+     * @deprecated Override {@link #getProcessors()}, call super.getProcessors() and
+     *             modify the returned set instead. Will be modified to public final
+     *             in 2.1.
+     */
+    @Deprecated
     protected Set<IProcessor> getAdditionalProcessors() {
         return null;
     }
+
     
+    
+    /**
+     * <p>
+     *   Sets an additional set of processors for this dialect, all of which will be
+     *   available within the same dialect prefix.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     * 
+     * @param additionalProcessors the set of {@link IProcessor} objects to be added.
+     * 
+     * @since 2.0.14
+     * 
+     */
+    public void setAdditionalProcessors(final Set<IProcessor> additionalProcessors) {
+        Validate.notNull(additionalProcessors, "Additional processor set cannot be null");
+        this.additionalProcessors = new LinkedHashSet<IProcessor>(additionalProcessors);
+    }
+    
+
+    
+
+    /**
+     * @deprecated Utility ad-hoc static method needed while {@link #getAdditionalProcessors()} is
+     *             not set to public final. Will be removed in 2.1.
+     */
+    @Deprecated
+    public static Set<IProcessor> externalAdditionalProcessors(final StandardDialect dialect) {
+        return dialect.additionalProcessors;
+    }
+
+    
+    
+    
+    /**
+     * @deprecated Override {@link #getProcessors()}, call super.getProcessors() and
+     *             modify the returned set instead. Will be removed in 2.1.
+     */
+    @Deprecated
     protected Set<Class<? extends IProcessor>> getRemovedProcessors() {
         return null;
     }
@@ -498,8 +553,20 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
 
     
-    
+    /**
+     * <p>
+     *   Create a the set of Standard processors, all of them freshly instanced.
+     * </p>
+     * 
+     * @return the set of Standard processors.
+     */
     public static Set<IProcessor> createStandardProcessorsSet() {
+        /*
+         * It is important that we create new instances here because, if there are
+         * several dialects in the TemplateEngine that extend StandardDialect, they should
+         * not be returning the exact same instances for their processors in order
+         * to allow specific instances to be directly linked with their owner dialect.
+         */
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
         processors.add(new StandardAltTitleAttrProcessor());
         processors.add(new StandardAttrAttrProcessor());
