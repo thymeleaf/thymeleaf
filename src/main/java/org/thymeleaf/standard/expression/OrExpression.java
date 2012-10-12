@@ -82,16 +82,20 @@ public final class OrExpression extends BinaryOperationExpression {
             logger.trace("[THYMELEAF][{}] Evaluating OR expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = 
+        final Object leftValue = 
             Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
+        
+        // Short circuit
+        final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
+        if (leftBooleanValue) {
+            return Boolean.TRUE;
+        }
 
-        Object rightValue = 
+        final Object rightValue = 
             Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
         
-        final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
         final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);
-        
-        return Boolean.valueOf(leftBooleanValue || rightBooleanValue);
+        return Boolean.valueOf(rightBooleanValue);
         
     }
     
