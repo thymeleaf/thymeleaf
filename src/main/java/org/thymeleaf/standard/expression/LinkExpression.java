@@ -231,7 +231,7 @@ public final class LinkExpression extends SimpleExpression {
         base = LiteralValue.unwrap(base);
         if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
             throw new TemplateProcessingException(
-                    "Base for message resolution must be a non-null and non-empty String " +
+                    "Base for link URL creation must be a non-null and non-empty String " +
                     "(currently: " + (base == null? null : base.getClass().getName()) + ")");
         }
 
