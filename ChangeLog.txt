@@ -7,6 +7,7 @@
 - Fixed flags recomputeProcessorsImmediately and recomputeProcessorsAfterEachExecution not
   being able to trigger a true re-computation of an element.
 - Fixed null dialect prefixes causing an exception.
+- Added future-parser support for non-XML-well-formed template code.
 
 
 2.0.13
