@@ -46,6 +46,23 @@ import org.thymeleaf.util.Validate;
  */
 public final class Element extends NestableAttributeHolderNode {
 
+
+    /**
+     * <p>
+     *   Specifies whether this element was a standalone element at the original template
+     *   file, or maybe an open element with a closing tag, or just an open element
+     *   (non-XML-well-formed).  
+     * </p>
+     * 
+     * @author Daniel Fern&aacute;ndez
+     * 
+     * @since 2.0.14
+     *
+     */
+    public static enum RepresentationInTemplate {STANDALONE, OPEN_AND_CLOSE_NONEMPTY, OPEN_AND_CLOSE_EMPTY, ONLY_OPEN}
+    
+    
+    
     private static final long serialVersionUID = -8434931215899913983L;
 
     
@@ -56,19 +73,38 @@ public final class Element extends NestableAttributeHolderNode {
     private final boolean hasPrefix;
     
     private final boolean minimizableIfWeb;
+    
+    private final RepresentationInTemplate representationInTemplate;
 
 
+    
+    
     public Element(final String name) {
-        this(name, null, null);
+        this(name, null, null, (RepresentationInTemplate)null);
     }
 
 
     public Element(final String name, final String documentName) {
-        this(name, documentName, null);
+        this(name, documentName, null, (RepresentationInTemplate)null);
     }
     
 
     public Element(final String name, final String documentName, final Integer lineNumber) {
+        this(name, documentName, lineNumber, (RepresentationInTemplate)null);
+    }
+
+    
+    public Element(final String name, final RepresentationInTemplate representationInTemplate) {
+        this(name, null, null, representationInTemplate);
+    }
+
+
+    public Element(final String name, final String documentName, final RepresentationInTemplate representationInTemplate) {
+        this(name, documentName, null, representationInTemplate);
+    }
+    
+
+    public Element(final String name, final String documentName, final Integer lineNumber, final RepresentationInTemplate representationInTemplate) {
         
         super(documentName, lineNumber);
         
@@ -82,7 +118,9 @@ public final class Element extends NestableAttributeHolderNode {
         
         this.minimizableIfWeb = 
                 Arrays.binarySearch(Standards.MINIMIZABLE_XHTML_TAGS, this.normalizedName) >= 0;
-        
+
+        this.representationInTemplate = representationInTemplate;
+                
     }
     
 
@@ -188,6 +226,38 @@ public final class Element extends NestableAttributeHolderNode {
     public boolean isMinimizableIfWeb() {
         return this.minimizableIfWeb;
     }
+    
+    
+    
+    
+    /**
+     * <p>
+     *   Optionally specifies whether this element is written at the original document
+     *   as a standalone element, an open element with a closing tag, or just an open element
+     *   (non-XML-well-formed).
+     * </p>
+     * <p>
+     *   This flag might be ignored by certain parser implementations, and therefore <b>it can 
+     *   be null</b>. This can happen when parsers cannot determine the difference between a standalone
+     *   or an open+closed element, or when parsers have no support for non-XML-well-formed code.
+     *   This can also happen when the document format being parsed is not XML or HTML, and therefore
+     *   this flag does not apply.
+     * </p>
+     * <p>
+     *   Note that this flag only influences how the element should be written if there are no changes
+     *   in the amount of children it contains. For example, an originally-standalone element to which children
+     *   are added will be written as an open plus a close tags (and a body between them containing its children).
+     * </p>
+     * 
+     * @return the original representation of the Element at the template, or null.
+     * 
+     * @since 2.0.14
+     */
+    public RepresentationInTemplate getRepresentationInTemplate() {
+        return this.representationInTemplate;
+    }
+    
+
 
     
 
@@ -239,7 +309,7 @@ public final class Element extends NestableAttributeHolderNode {
 
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        return new Element(this.originalName, getDocumentName(), getLineNumber());
+        return new Element(this.originalName, getDocumentName(), getLineNumber(), this.representationInTemplate);
     }
     
 
