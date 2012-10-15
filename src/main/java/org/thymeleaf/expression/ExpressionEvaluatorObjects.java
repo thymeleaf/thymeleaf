@@ -48,6 +48,11 @@ public final class ExpressionEvaluatorObjects {
     public static final String ROOT_VARIABLE_NAME = "root";
     public static final String SELECTION_VARIABLE_NAME = "object";
     public static final String LOCALE_EVALUATION_VARIABLE_NAME = "locale";
+
+    /**
+     * @since 2.0.14
+     */
+    public static final String VARIABLES_EVALUATION_VARIABLE_NAME = "vars";
     
     /**
      * @since 1.1.2
@@ -143,12 +148,18 @@ public final class ExpressionEvaluatorObjects {
         
         variables.putAll(computeEvaluationObjectsForContext(processingContext.getContext()));
         
-        variables.put(ROOT_VARIABLE_NAME, processingContext.getExpressionEvaluationRoot());
+        final Object evaluationRoot = processingContext.getExpressionEvaluationRoot();
+        
+        /*
+         * #root and #vars are synonyms
+         */
+        variables.put(ROOT_VARIABLE_NAME, evaluationRoot);
+        variables.put(VARIABLES_EVALUATION_VARIABLE_NAME, evaluationRoot);
         
         if (processingContext.hasSelectionTarget()) {
             variables.put(SELECTION_VARIABLE_NAME, processingContext.getSelectionTarget());
         } else {
-            variables.put(SELECTION_VARIABLE_NAME, processingContext.getExpressionEvaluationRoot());
+            variables.put(SELECTION_VARIABLE_NAME, evaluationRoot);
         }
         
         return variables;
