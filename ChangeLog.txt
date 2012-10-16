@@ -3,7 +3,8 @@
 - Make "and" and "or" operators in Standard Expressions short circuit (second operand is never
   evaluated if first operand gives enough information). 
 - Added "additionalProcessors" property to StandardDialect in order to being able to easily add
-  a set of custom processors to the Standard or SpringStandard dialects.  
+  a set of custom processors to the Standard or SpringStandard dialects.
+- Added #vars expression utility object as a synonym to #root.  
 - Fixed flags recomputeProcessorsImmediately and recomputeProcessorsAfterEachExecution not
   being able to trigger a true re-computation of an element.
 - Fixed null dialect prefixes causing an exception.
