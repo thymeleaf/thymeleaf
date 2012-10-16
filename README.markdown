@@ -11,7 +11,7 @@ This is a *thymeleaf extras* module, not a part of the Thymeleaf core (and as
 such following its own versioning schema), but fully supported by the 
 Thymeleaf team.
 
-Current version: **1.0.0-beta1**
+Current version: **1.0.0-beta2**
 
 
 License
@@ -24,7 +24,7 @@ This software is licensed under the [Apache License 2.0]
 Requirements
 ------------
 
-  *   Thymeleaf **2.0.13+**
+  *   Thymeleaf **2.0.14+**
   *   Spring Security version **3.0.x+**
   *   Web environment (Spring Security integration cannot work offline)
 
