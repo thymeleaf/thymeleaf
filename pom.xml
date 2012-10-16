@@ -188,7 +188,7 @@
                 <descriptor>${basedir}/src/assembly/dist.xml</descriptor>
               </descriptors>
               <appendAssemblyId>true</appendAssemblyId>
-              <finalName>thymeleaf-extras-tiles2-${project.version}</finalName>
+              <finalName>thymeleaf-extras-springsecurity3-${project.version}</finalName>
             </configuration>
           </execution>
         </executions>
