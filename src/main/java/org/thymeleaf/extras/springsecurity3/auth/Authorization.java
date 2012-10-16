@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 
@@ -42,6 +43,7 @@ import org.thymeleaf.util.Validate;
 public final class Authorization {
 
 
+    private final IProcessingContext processingContext;
     private final Authentication authentication;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
@@ -50,12 +52,15 @@ public final class Authorization {
     
 
 
-    public Authorization(final Authentication authentication, 
+    public Authorization(
+            final IProcessingContext processingContext,
+            final Authentication authentication, 
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext) {
         
         super();
-        
+
+        this.processingContext = processingContext;
         this.authentication = authentication;
         this.request = request;
         this.response = response;
@@ -64,6 +69,9 @@ public final class Authorization {
     }
 
 
+    public IProcessingContext getProcessingContext() {
+        return this.processingContext;
+    }
 
     public Authentication getAuthentication() {
         return this.authentication;
@@ -97,7 +105,7 @@ public final class Authorization {
         Validate.notEmpty(expression, "Access expression cannot be null");
         
         return AuthUtils.authorizeUsingAccessExpression(
-                expression, this.authentication, this.request, this.response, this.servletContext);
+                this.processingContext, expression, this.authentication, this.request, this.response, this.servletContext);
         
     }
     

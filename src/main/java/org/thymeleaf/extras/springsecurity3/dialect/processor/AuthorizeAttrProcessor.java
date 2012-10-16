@@ -99,7 +99,7 @@ public class AuthorizeAttrProcessor
         }
         
         return AuthUtils.authorizeUsingAccessExpression(
-                attributeValue, authentication, request, response, servletContext);
+                arguments, attributeValue, authentication, request, response, servletContext);
         
     }
     

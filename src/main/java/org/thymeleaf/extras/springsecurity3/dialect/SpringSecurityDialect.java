@@ -116,7 +116,7 @@ public class SpringSecurityDialect
                 
                 final Authentication authentication = AuthUtils.getAuthenticationObject();
                 final Authorization authorization = 
-                        new Authorization(authentication, request, response, servletContext); 
+                        new Authorization(processingContext, authentication, request, response, servletContext); 
                         
                 objects.put(AUTHENTICATION_EXPRESSION_OBJECT_NAME, authentication);
                 objects.put(AUTHORIZATION_EXPRESSION_OBJECT_NAME, authorization);

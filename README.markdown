@@ -104,7 +104,7 @@ The `#authorization` object can be used in a similar way, normally in `th:if` or
 
 ```html
     <div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
-        This only be seen if authenticated user has role ROLE_ADMIN.
+        This will only be displayed if authenticated user has role ROLE_ADMIN.
     </div>
 ```
 
@@ -127,14 +127,34 @@ own attribute:
 ```
 
 The `sec:authorize` and `sec:authorize-expr` attributes are exactly the same. They work equivalently
-to a `th:if` that evaluated an `#authorization.expression(...)` expression:
+to a `th:if` that evaluated an `#authorization.expression(...)` expression, by evaluating a 
+*Spring Security Expression*:
 
 
 ```html
     <div sec:authorize="hasRole('ROLE_ADMIN')">
-        This only be seen if authenticated user has role ROLE_ADMIN.
+        This will only be displayed if authenticated user has role ROLE_ADMIN.
     </div>
 ```
+
+These *Spring Security Expressions* in `sec:authorize` attributes are in fact Spring EL expressions
+evaluated on a SpringSecurity-specific root object containing methods such as `hasRole(...)`, 
+`getPrincipal()`, etc.
+
+As with normal Spring EL expressions, Thymeleaf allows you to access a series of objects from them including
+the context variables map (the `#vars` object). In fact, you are allowed to surround your access
+expression with `${...}` if it makes you feel more comfortable:
+
+
+```html
+    <div sec:authorize="${hasRole(#vars.expectedRole)}">
+        This will only be displayed if authenticated user has a role computed by the controller.
+    </div>
+```
+
+Remember that Spring Security sets a special security-oriented object as expression root, which is why
+you would not be able to access the `expectedRole` variable directly in the above expression. 
+
 
 Another way of checking authorization is `sec:authorize-url`, which allows you to check whether a user
 is authorized to visit a specific URL or not:
@@ -142,7 +162,16 @@ is authorized to visit a specific URL or not:
 
 ```html
     <div sec:authorize-url="/admin">
-        This only be seen if authenticated user can visit the admin section
+        This will only be displayed if authenticated user can call the "/admin" URL.
+    </div>
+```
+
+For specifying a specific HTTP method, do:
+
+```html
+    <div sec:authorize-url="POST /admin">
+        This will only be displayed if authenticated user can call the "/admin" URL
+        using the POST HTTP method.
     </div>
 ```
 
@@ -153,7 +182,7 @@ Finally, there is an attribute for checking authorization using Spring Security'
 
 ```html
     <div sec:authorize-acl="${obj} :: '1,3'">
-        This only be seen if authenticated user has permissions "1" and "3"
+        This will only be displayed if authenticated user has permissions "1" and "3"
         on domain object referenced by context variable "obj".
     </div>
 ```

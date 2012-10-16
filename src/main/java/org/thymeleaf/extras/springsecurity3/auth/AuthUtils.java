@@ -22,6 +22,7 @@ package org.thymeleaf.extras.springsecurity3.auth;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
 import org.springframework.security.access.expression.ExpressionUtils;
@@ -62,9 +64,15 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.expression.WebSecurityExpressionHandler;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.spring3.expression.SpelEvaluationContext;
+import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
+import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.util.Validate;
 
 
 
@@ -171,31 +179,81 @@ public final class AuthUtils {
     
 
     public static boolean authorizeUsingAccessExpression(
+            final IProcessingContext processingContext,
             final String accessExpression, final Authentication authentication, 
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext) {
     
+        Validate.notNull(processingContext, "Processing context cannot be null");
+        
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Checking authorization using access expression \"{}\" for user \"{}\".",
                     new Object[] {TemplateEngine.threadIndex(), accessExpression, (authentication == null? null : authentication.getName())});
         }
 
+        /*
+         * In case this expression is specified as a standard variable expression (${...}), clean it.
+         */
+        final String expr =
+                ((accessExpression != null && accessExpression.startsWith("${") && accessExpression.endsWith("}"))?
+                        accessExpression.substring(2, accessExpression.length() - 1) :
+                        accessExpression);
+        
         final WebSecurityExpressionHandler handler = getExpressionHandler(servletContext);
 
         Expression expressionObject = null;
         try {
-            expressionObject = handler.getExpressionParser().parseExpression(accessExpression);
+            expressionObject = handler.getExpressionParser().parseExpression(expr);
         } catch (ParseException e) {
             throw new TemplateProcessingException(
                     "An error happened trying to parse Spring Security access expression \"" +  
-                    accessExpression + "\"", e);
+                    expr + "\"", e);
         }
 
         final FilterInvocation filterInvocation = new FilterInvocation(request, response, DUMMY_CHAIN);
-
-        if (ExpressionUtils.evaluateAsBoolean(
-                expressionObject, 
-                handler.createEvaluationContext(authentication, filterInvocation))) {
+        
+        final EvaluationContext evaluationContext = handler.createEvaluationContext(authentication, filterInvocation);
+        
+        /*
+         * Initialize the context variables map.
+         * 
+         * This will allow SpringSecurity expressions to include any variables from
+         * the IContext just by accessing them as properties of the "#vars" utility object.
+         */
+        Map<String,Object> contextVariables = null;
+        if (processingContext instanceof Arguments) {
+            // Try to initialize the context variables by asking the SpEL expression
+            // evaluator object (which might be a subclass of the standard one) to create
+            // this variable map.
+            
+            final Arguments arguments = (Arguments) processingContext;
+            final Object expressionEvaluator = 
+                    arguments.getExecutionAttribute(StandardDialect.EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE);
+            
+            final SpelVariableExpressionEvaluator spelExprEval =
+                    ((expressionEvaluator != null && expressionEvaluator instanceof SpelVariableExpressionEvaluator)?
+                            (SpelVariableExpressionEvaluator) expressionEvaluator :
+                            SpelVariableExpressionEvaluator.INSTANCE);
+            contextVariables = spelExprEval.computeContextVariables(arguments.getConfiguration(), arguments);
+            
+        }
+        
+        if (contextVariables == null) {
+            // if we could not create it the more integrated way, just do it the hard-wired way
+            contextVariables = new HashMap<String, Object>();
+            
+            final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
+            if (expressionObjects != null) {
+                contextVariables.putAll(expressionObjects);
+            }
+            
+        }
+        
+        
+        // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
+        final SpelEvaluationContext spelEvaluationContext = new SpelEvaluationContext(evaluationContext, contextVariables);
+        
+        if (ExpressionUtils.evaluateAsBoolean(expressionObject, spelEvaluationContext)) {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] Checked authorization using access expression \"{}\" for user \"{}\". Access GRANTED.",
