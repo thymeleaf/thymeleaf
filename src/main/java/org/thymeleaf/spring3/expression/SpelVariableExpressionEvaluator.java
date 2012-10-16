@@ -58,14 +58,7 @@ public class SpelVariableExpressionEvaluator
     private static final Logger logger = LoggerFactory.getLogger(SpelVariableExpressionEvaluator.class);
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
-    private static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT;
-    
-    
-    static {
-        DEFAULT_EVALUATION_CONTEXT = new StandardEvaluationContext();
-        DEFAULT_EVALUATION_CONTEXT.addPropertyAccessor(VariablesMapPropertyAccessor.INSTANCE);
-        DEFAULT_EVALUATION_CONTEXT.addPropertyAccessor(BeansPropertyAccessor.INSTANCE);
-    }
+    private static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT = new StandardEvaluationContext();
     
     
     

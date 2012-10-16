@@ -1,6 +1,6 @@
 2.0.14
 ======
-- Minor fixed in javadoc.
+- Refactored SpelEvaluationContext to act as a decorator (requirement for thymeleaf-extras-springsecurity3).
 
 
 2.0.13

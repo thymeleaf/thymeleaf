@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.spring3.expression;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -44,19 +46,44 @@ import org.springframework.expression.TypedValue;
  * </p>
  * 
  * @author Guven Demir
+ * @author Daniel Fern&aacute;ndez
  *
  * @since 1.1.3
  *
  */
 public final class SpelEvaluationContext implements EvaluationContext {
     
+    private static final List<PropertyAccessor> THYMELEAF_PROPERTY_ACCESSORS;
+    
+
     private final EvaluationContext delegate;
     private final Map<String,Object> variables;
+    private final List<PropertyAccessor> propertyAccessors;
+    
+    static {
+        final List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
+        accessors.add(VariablesMapPropertyAccessor.INSTANCE);
+        accessors.add(BeansPropertyAccessor.INSTANCE);
+        THYMELEAF_PROPERTY_ACCESSORS = Collections.unmodifiableList(accessors);
+    }
+    
+    
     
     public SpelEvaluationContext(final EvaluationContext delegate, final Map<String,Object> variables) {
+        
         super();
+        
         this.delegate = delegate;
         this.variables = variables;
+        
+        final List<PropertyAccessor> delegatePropertyAccessors = delegate.getPropertyAccessors();
+        if (delegatePropertyAccessors == null || delegatePropertyAccessors.size() == 0) {
+            this.propertyAccessors = THYMELEAF_PROPERTY_ACCESSORS;
+        } else {
+            this.propertyAccessors = new ArrayList<PropertyAccessor>(delegatePropertyAccessors);
+            this.propertyAccessors.addAll(THYMELEAF_PROPERTY_ACCESSORS);
+        }
+        
     }
 
     
@@ -73,7 +100,7 @@ public final class SpelEvaluationContext implements EvaluationContext {
     }
 
     public List<PropertyAccessor> getPropertyAccessors() {
-        return this.delegate.getPropertyAccessors();
+        return this.propertyAccessors;
     }
 
     public TypeLocator getTypeLocator() {

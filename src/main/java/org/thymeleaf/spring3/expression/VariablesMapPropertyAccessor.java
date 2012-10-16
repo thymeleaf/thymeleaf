@@ -26,13 +26,18 @@ import org.springframework.expression.spel.support.ReflectivePropertyAccessor;
 import org.thymeleaf.context.VariablesMap;
 
 /**
+ * <p>
+ *   Property accessor used for allowing Spring EL expression evaluators
+ *   treat {@link VariablesMap} objects correctly (map keys will be accessible
+ *   as object properties).
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.1
  *
  */
-class VariablesMapPropertyAccessor extends ReflectivePropertyAccessor {
+public final class VariablesMapPropertyAccessor extends ReflectivePropertyAccessor {
     
     private static final Class<?>[] TARGET_CLASSES = new Class<?>[] { VariablesMap.class };
     
