@@ -77,21 +77,9 @@ public class SpelVariableExpressionEvaluator
         }
 
         try {
-            
-            final Map<String,Object> contextVariables = new HashMap<String, Object>();
-            
-            final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
-            if (expressionObjects != null) {
-                contextVariables.putAll(expressionObjects);
-            }
-            
-            final Fields fields = new Fields(configuration, processingContext);
-            contextVariables.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
-            
-            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
-            if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
-                contextVariables.putAll(additionalContextVariables);
-            }
+    
+            final Map<String,Object> contextVariables = 
+                    computeContextVariables(configuration, processingContext);
             
             final SpelEvaluationContext context = 
                     new SpelEvaluationContext(DEFAULT_EVALUATION_CONTEXT, contextVariables);
@@ -139,7 +127,32 @@ public class SpelVariableExpressionEvaluator
         
     }
 
+    
+    
+    public Map<String,Object> computeContextVariables(
+            final Configuration configuration, final IProcessingContext processingContext) {
+        
+        final Map<String,Object> contextVariables = new HashMap<String, Object>();
+        
+        final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
+        if (expressionObjects != null) {
+            contextVariables.putAll(expressionObjects);
+        }
+        
+        final Fields fields = new Fields(configuration, processingContext);
+        contextVariables.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
+        
+        final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
+        if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
+            contextVariables.putAll(additionalContextVariables);
+        }
+        
+        return contextVariables;
+        
+    }
+    
 
+    
     /*
      * Meant to be overwritten
      */

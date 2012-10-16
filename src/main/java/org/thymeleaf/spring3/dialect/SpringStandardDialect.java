@@ -49,6 +49,7 @@ import org.thymeleaf.spring3.processor.attr.SpringSelectFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringSingleRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringTextareaFieldAttrProcessor;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
@@ -473,11 +474,15 @@ public class SpringStandardDialect extends StandardDialect {
     
     @Override
     public Map<String, Object> getExecutionAttributes() {
+
+        final IStandardVariableExpressionEvaluator expressionEvaluator = SpelVariableExpressionEvaluator.INSTANCE;
         
-        final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(SpelVariableExpressionEvaluator.INSTANCE);
+        final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(expressionEvaluator);
         final StandardExpressionParser parser = StandardExpressionProcessor.createStandardExpressionParser(executor);
         
         final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
+        executionAttributes.put(
+                StandardDialect.EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
                 StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
