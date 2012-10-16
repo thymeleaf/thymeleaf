@@ -36,6 +36,7 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
@@ -135,6 +136,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     public static final String INLINER_LOCAL_VARIABLE = "%STANDARD_INLINER%";
     
+    /**
+     * @since 2.0.14
+     */
+    public static final String EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE = "EXPRESSION_EVALUATOR";
     
     
     public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF1_SYSTEMID = 
@@ -531,13 +536,17 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     @Override
     public Map<String, Object> getExecutionAttributes() {
+
+        final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
         
         final StandardExpressionExecutor executor = 
-                StandardExpressionProcessor.createStandardExpressionExecutor(OgnlVariableExpressionEvaluator.INSTANCE);
+                StandardExpressionProcessor.createStandardExpressionExecutor(expressionEvaluator);
         final StandardExpressionParser parser = 
                 StandardExpressionProcessor.createStandardExpressionParser(executor);
         
         final Map<String,Object> executionAttributes = new HashMap<String, Object>();
+        executionAttributes.put(
+                EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
                 StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
