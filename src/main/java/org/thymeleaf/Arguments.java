@@ -83,7 +83,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
     
     private final Map<String,Integer> idCounts;
     
-    private final boolean processOnlyElementNodes;
+    private final boolean processTextNodes;
+    private final boolean processCommentNodes;
     
 
     /**
@@ -157,7 +158,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         this.document = document;
         this.idCounts = new HashMap<String,Integer>();
         
-        this.processOnlyElementNodes = true;
+        this.processTextNodes = false;
+        this.processCommentNodes = false;
         
     }
     
@@ -171,7 +173,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
             final Document document,
             final Map<String,Object> localVariables,
             final Map<String,Integer> idCounts,
-            final boolean processOnlyElementNodes,
+            final boolean processTextNodes,
+            final boolean processCommentNodes,
             final Object selectionTarget, 
             final boolean selectionTargetSet,
             final Set<IExpressionEnhancingDialect> enhancingDialects) {
@@ -190,7 +193,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         this.document = document;
         this.idCounts = idCounts;
         
-        this.processOnlyElementNodes = processOnlyElementNodes;
+        this.processTextNodes = processTextNodes;
+        this.processCommentNodes = processCommentNodes;
         
     }
     
@@ -291,9 +295,52 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * </p>
      * 
      * @return whether only element nodes will be processed
+     * @deprecated To be removed in 2.1.x. This flag has been substituted by two
+     *             flags available at the {@link #getProcessTextNodes()} and
+     *             {@link #getProcessCommentNodes()} getter methods.
      */
+    @Deprecated
     public boolean getProcessOnlyElementNodes() {
-        return this.processOnlyElementNodes;
+        // Only having both flags to false is equivalent to a "true" value for
+        // the old flag.
+        return !this.processTextNodes && !this.processCommentNodes;
+    }
+    
+    
+    /**
+     * <p>
+     *   Returns whether text nodes (which include {@link org.thymeleaf.dom.Text} and
+     *   {@link org.thymeleaf.dom.CDATASection} nodes) will be processed.
+     * </p>
+     * <p>
+     *   This flag is false by default as these nodes are not processed by default.
+     *   This can be changed during processor execution by using methods available at the 
+     *   {@link org.thymeleaf.processor.ProcessorResult} class. 
+     * </p>
+     * 
+     * @return whether text nodes will be processed.
+     * @since 2.0.15
+     */
+    public boolean getProcessTextNodes() {
+        return this.processTextNodes;
+    }
+    
+    
+    /**
+     * <p>
+     *   Returns whether {@link org.thymeleaf.dom.Comment} nodes will be processed.
+     * </p>
+     * <p>
+     *   This flag is false by default as these nodes are not processed by default.
+     *   This can be changed during processor execution by using methods available at the 
+     *   {@link org.thymeleaf.processor.ProcessorResult} class. 
+     * </p>
+     * 
+     * @return whether comment nodes will be processed.
+     * @since 2.0.15
+     */
+    public boolean getProcessCommentNodes() {
+        return this.processCommentNodes;
     }
 
     
@@ -420,7 +467,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
                 new Arguments(this.templateEngine, 
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                        this.idCounts, this.processTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
         return arguments;
     }
@@ -433,14 +480,83 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * </p>
      * 
      * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
+     * @deprecated Will be removed in 2.1.x. Use the variants for the new flags instead: 
+     *             {@link #setProcessTextNodes(boolean)}, {@link #setProcessCommentNodes(boolean)} or
+     *             {@link #setProcessTextAndCommentNodes(boolean, boolean)}. 
      * @return the new Arguments object
      */
+    @Deprecated
     public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
                 new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                        this.idCounts, !shouldProcessOnlyElementNodes, !shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting a new value for the <tt>processTextNodes</tt> flag.
+     * </p>
+     * 
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments setProcessTextNodes(final boolean shouldProcessTextNodes) {
+        final Arguments arguments = 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, shouldProcessTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting a new value for the <tt>processCommentNodes</tt> flag.
+     * </p>
+     * 
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments setProcessCommentNodes(final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, this.processTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new values for the <tt>processTextNodes</tt> and
+     *   <tt>processCommentNodes</tt> flags.
+     * </p>
+     * 
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments setProcessTextAndCommentNodes(final boolean shouldProcessTextNodes, final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, shouldProcessTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
         return arguments;
     }
@@ -455,13 +571,86 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * @param newVariables the new local variables
      * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
      * @return the new Arguments object
+     * @deprecated Will be removed in 2.1.x. Use the variants for the new flags instead: 
+     *             {@link #setProcessTextNodes(boolean)}, {@link #setProcessCommentNodes(boolean)} or
+     *             {@link #setProcessTextAndCommentNodes(boolean, boolean)}. 
      */
+    @Deprecated
     public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
         final Arguments arguments = 
             new Arguments(this.templateEngine,
                     this.templateProcessingParameters, this.templateResolution, 
                     this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                    this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                    this.idCounts, !shouldProcessOnlyElementNodes, !shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processTextNodes</tt> flag.
+     * </p>
+     * 
+     * @param newVariables the new local variables
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments addLocalVariablesAndProcessTextNodes(final Map<String,Object> newVariables, final boolean shouldProcessTextNodes) {
+        final Arguments arguments = 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
+                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                    this.idCounts, shouldProcessTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processCommentNodes</tt> flag.
+     * </p>
+     * 
+     * @param newVariables the new local variables
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments addLocalVariablesAndProcessCommentNodes(final Map<String,Object> newVariables, final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
+                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                    this.idCounts, this.processTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new local variables and new values for the <tt>processTextNodes</tt> 
+     *   and <tt>processCommentNodes</tt> flags.
+     * </p>
+     * 
+     * @param newVariables the new local variables
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments addLocalVariablesAndProcessTextAndCommentNodes(final Map<String,Object> newVariables, 
+            final boolean shouldProcessTextNodes, final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
+                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                    this.idCounts, shouldProcessTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
                     getExpressionEnhancingDialects());
         return arguments;
     }
@@ -482,7 +671,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
                 new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, this.processOnlyElementNodes, newSelectionTarget, true,
+                        this.idCounts, this.processTextNodes, this.processCommentNodes, newSelectionTarget, true,
                         getExpressionEnhancingDialects());
         return arguments;
     }
@@ -504,7 +693,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
                 new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true,
+                        this.idCounts, this.processTextNodes, this.processCommentNodes, selectionTarget, true,
                         getExpressionEnhancingDialects());
         return arguments;
     }

@@ -38,11 +38,13 @@ public final class ProcessorResult {
     private static final Map<String,Object> EMPTY_VARIABLES = Collections.unmodifiableMap(new HashMap<String, Object>());
 
     
-    public static final ProcessorResult OK = new ProcessorResult(null, false, false, null, false);
+    public static final ProcessorResult OK = new ProcessorResult(null, false, false, false, false, null, false);
     
     private final Map<String,Object> localVariables;
-    private final boolean processOnlyElementNodes;
-    private final boolean processOnlyElementNodesSet;
+    private final boolean processTextNodes;
+    private final boolean processTextNodesSet;
+    private final boolean processCommentNodes;
+    private final boolean processCommentNodesSet;
     private final Object selectionTarget;
     private final boolean selectionTargetSet;
 
@@ -53,22 +55,80 @@ public final class ProcessorResult {
     }
     
     public static ProcessorResult setLocalVariables(final Map<String,Object> localVariables) {
-        return new ProcessorResult(localVariables, false, false, null, false);
+        return new ProcessorResult(localVariables, false, false, false, false, null, false);
     }
     
+
+    /**
+     * @deprecated Will be removed in 2.1.x. Use the new variants {@link #setProcessTextNodes(boolean)}, 
+     *             {@link #setProcessCommentNodes(boolean)} or {@link #setProcessTextAndCommentNodes(boolean, boolean)}
+     */
+    @Deprecated
     public static ProcessorResult setProcessOnlyElementNodes(final boolean processOnlyElementNodes) {
-        return new ProcessorResult(null, processOnlyElementNodes, true, null, false);
+        return new ProcessorResult(null, processOnlyElementNodes, true, processOnlyElementNodes, true, null, false);
     }
     
+    /**
+     * @deprecated Will be removed in 2.1.x. Use the new variants {@link #setLocalVariablesAndProcessTextNodes(Map, boolean)}, 
+     *             {@link #setLocalVariablesAndProcessCommentNodes(Map, boolean)} or
+     *             {@link #setLocalVariablesAndProcessTextAndCommentNodes(Map, boolean, boolean)}
+     */
+    @Deprecated
     public static ProcessorResult setLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> localVariables, final boolean processOnlyElementNodes) {
-        return new ProcessorResult(localVariables, processOnlyElementNodes, true, null, false);
+        return new ProcessorResult(localVariables, processOnlyElementNodes, true, processOnlyElementNodes, true, null, false);
     }
 
+    
+    /**
+     * @since 2.0.15
+     */
+    public static ProcessorResult setProcessTextAndCommentNodes(final boolean processTextNodes, final boolean processCommentNodes) {
+        return new ProcessorResult(null, processTextNodes, true, processCommentNodes, true, null, false);
+    }
+    
+    /**
+     * @since 2.0.15
+     */
+    public static ProcessorResult setLocalVariablesAndProcessTextAndCommentNodes(final Map<String,Object> localVariables, final boolean processTextNodes, final boolean processCommentNodes) {
+        return new ProcessorResult(localVariables, processTextNodes, true, processCommentNodes, true, null, false);
+    }
+
+    
+    /**
+     * @since 2.0.15
+     */
+    public static ProcessorResult setProcessTextNodes(final boolean processTextNodes) {
+        return new ProcessorResult(null, processTextNodes, true, false, false, null, false);
+    }
+    
+    /**
+     * @since 2.0.15
+     */
+    public static ProcessorResult setLocalVariablesAndProcessTextNodes(final Map<String,Object> localVariables, final boolean processTextNodes) {
+        return new ProcessorResult(localVariables, processTextNodes, true, false, false, null, false);
+    }
+
+    
+    /**
+     * @since 2.0.15
+     */
+    public static ProcessorResult setProcessCommentNodes(final boolean processCommentNodes) {
+        return new ProcessorResult(null, false, false, processCommentNodes, true, null, false);
+    }
+    
+    /**
+     * @since 2.0.15
+     */
+    public static ProcessorResult setLocalVariablesAndProcessCommentNodes(final Map<String,Object> localVariables, final boolean processCommentNodes) {
+        return new ProcessorResult(localVariables, false, false, processCommentNodes, true, null, false);
+    }
+
+    
     /**
      * @since 2.0.9
      */
     public static ProcessorResult setSelectionTarget(final Object selectionTarget) {
-        return new ProcessorResult(null, false, false, selectionTarget, true);
+        return new ProcessorResult(null, false, false, false, false, selectionTarget, true);
     }
 
     /**
@@ -76,7 +136,7 @@ public final class ProcessorResult {
      */
     public static ProcessorResult setLocalVariablesAndSelectionTarget(
             final Map<String,Object> localVariables, final Object selectionTarget) {
-        return new ProcessorResult(localVariables, false, false, selectionTarget, true);
+        return new ProcessorResult(localVariables, false, false, false, false, selectionTarget, true);
     }
 
 
@@ -84,8 +144,10 @@ public final class ProcessorResult {
     
     private ProcessorResult(
             final Map<String,Object> localVariables,
-            final boolean processOnlyElementNodes,
-            final boolean processOnlyElementNodesSet,
+            final boolean processTextNodes,
+            final boolean processTextNodesSet,
+            final boolean processCommentNodes,
+            final boolean processCommentNodesSet,
             final Object selectionTarget,
             final boolean selectionTargetSet) {
         super();
@@ -93,8 +155,10 @@ public final class ProcessorResult {
             (localVariables == null?
                     EMPTY_VARIABLES :
                     Collections.unmodifiableMap(new HashMap<String, Object>(localVariables)));
-        this.processOnlyElementNodes = processOnlyElementNodes;
-        this.processOnlyElementNodesSet = processOnlyElementNodesSet;
+        this.processTextNodes = processTextNodes;
+        this.processTextNodesSet = processTextNodesSet;
+        this.processCommentNodes = processCommentNodes;
+        this.processCommentNodesSet = processCommentNodesSet;
         this.selectionTarget = selectionTarget;
         this.selectionTargetSet = selectionTargetSet;
     }
@@ -108,14 +172,61 @@ public final class ProcessorResult {
     public Map<String, Object> getLocalVariables() {
         return this.localVariables;
     }
+
     
+    /**
+     * @deprecated Will be removed in 2.1.x. Use the equivalent getters for
+     *             the new flags {@link #getProcessTextNodes()} and
+     *             {@link #getProcessCommentNodes()}
+     */
+    @Deprecated
     public boolean getProcessOnlyElementNodes() {
-        return this.processOnlyElementNodes;
+        return !this.processTextNodes && !this.processCommentNodes;
     }
     
+    /**
+     * @deprecated Will be removed in 2.1.x. Use the equivalent getters for
+     *             the new flags {@link #isProcessTextNodesSet()} and
+     *             {@link #isProcessCommentNodesSet()}
+     */
+    @Deprecated
     public boolean isProcessOnlyElementNodesSet() {
-        return this.processOnlyElementNodesSet;
+        return this.processTextNodesSet || this.processCommentNodesSet;
     }
+
+    
+
+    /**
+     * @since 2.0.15
+     */
+    public boolean getProcessTextNodes() {
+        return this.processTextNodes;
+    }
+    
+    /**
+     * @since 2.0.15
+     */
+    public boolean isProcessTextNodesSet() {
+        return this.processTextNodesSet;
+    }
+
+    
+    
+    /**
+     * @since 2.0.15
+     */
+    public boolean getProcessCommentNodes() {
+        return this.processCommentNodes;
+    }
+    
+    /**
+     * @since 2.0.15
+     */
+    public boolean isProcessCommentNodesSet() {
+        return this.processCommentNodesSet;
+    }
+
+    
     
     /**
      * @since 2.0.9
@@ -134,7 +245,8 @@ public final class ProcessorResult {
     
     public boolean isOK() {
         return (this.localVariables == null || this.localVariables.size() == 0) &&
-               !this.processOnlyElementNodesSet && !this.selectionTargetSet; 
+                !this.processTextNodesSet && !this.processCommentNodesSet && 
+                !this.selectionTargetSet; 
     }
     
 
@@ -149,9 +261,17 @@ public final class ProcessorResult {
         
         if (this.localVariables != null && this.localVariables.size() > 0) {
             // There are local variables
-            if (this.processOnlyElementNodesSet) {
-                // A text inliner has been set
-                return arguments.addLocalVariablesAndProcessOnlyElementNodes(this.localVariables, this.processOnlyElementNodes);
+            if (this.processTextNodesSet && this.processCommentNodesSet) {
+                // Both flags have been set
+                return arguments.addLocalVariablesAndProcessTextAndCommentNodes(this.localVariables, this.processTextNodes, this.processCommentNodes);
+            }
+            if (this.processTextNodesSet) {
+                // Text nodes should be processed from here on
+                return arguments.addLocalVariablesAndProcessTextNodes(this.localVariables, this.processTextNodes);
+            }
+            if (this.processCommentNodesSet) {
+                // Text nodes should be processed from here on
+                return arguments.addLocalVariablesAndProcessCommentNodes(this.localVariables, this.processCommentNodes);
             }
             if (this.selectionTargetSet) {
                 return arguments.addLocalVariablesAndSelectionTarget(this.localVariables, this.selectionTarget);
@@ -160,11 +280,18 @@ public final class ProcessorResult {
             return arguments.addLocalVariables(this.localVariables);
         }
         // There are no local variables
-        if (this.processOnlyElementNodesSet) {
-            // A text inliner has been set
-            return arguments.setProcessOnlyElementNodes(this.processOnlyElementNodes);
+        if (this.processTextNodesSet && this.processCommentNodesSet) {
+            // Both flags have been set
+            return arguments.setProcessTextAndCommentNodes(this.processTextNodes, this.processCommentNodes);
         }
-        // There are no local variables
+        if (this.processTextNodesSet) {
+            // Text nodes should be processed from here on
+            return arguments.setProcessTextNodes(this.processTextNodes);
+        }
+        if (this.processCommentNodesSet) {
+            // Text nodes should be processed from here on
+            return arguments.setProcessCommentNodes(this.processCommentNodes);
+        }
         if (this.selectionTargetSet) {
             // A text inliner has been set
             return arguments.setSelectionTarget(this.selectionTarget);
