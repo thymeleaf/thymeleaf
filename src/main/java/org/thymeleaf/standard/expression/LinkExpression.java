@@ -31,7 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,6 +217,7 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
+    @SuppressWarnings("null")
     static Object executeLink(final Configuration configuration,
             final IProcessingContext processingContext, final LinkExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
@@ -319,46 +320,32 @@ public final class LinkExpression extends SimpleExpression {
         
         final IWebContext webContext = (IWebContext) processingContext.getContext();
         
-        String sessionFragment = "";
-        
         final HttpServletRequest request = webContext.getHttpServletRequest();
-        final HttpSession session = webContext.getHttpSession();
-        if(null != session){
-            final String sessionID  = session.getId();
-            
-            if (!request.isRequestedSessionIdFromCookie() && !isUserAgentGoogleBot(request)) {
-                sessionFragment = ";jsessionid=" + sessionID;
-            }
-        }
+        final HttpServletResponse response = webContext.getHttpServletResponse();
+
+        final boolean shouldEncodeURL = response != null && !isUserAgentGoogleBot(request);
+        
         
         if (isLinkBaseContextRelative(linkBase)) {
             
             final String contextName = request.getContextPath();
-            
-            if (questionMarkPosition == -1) {
-                return contextName + linkBase + sessionFragment + parametersBuffer.toString() + urlFragment;
-            }
-            
-            final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
-            final String linkBasePart2 = linkBase.substring(questionMarkPosition);
-            return contextName + linkBasePart1 + sessionFragment + linkBasePart2 + parametersBuffer.toString() + urlFragment;
+            final String url =
+                    contextName + linkBase + parametersBuffer.toString() + urlFragment;
+            return (shouldEncodeURL? response.encodeURL(url) : url);
             
         } else if (isLinkBaseServerRelative(linkBase)) {
             
-            if (questionMarkPosition == -1) {
-                // remove the "~" from the link base
-                return linkBase.substring(1) + sessionFragment + parametersBuffer.toString() + urlFragment;
-            }
-            
-            final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
-            final String linkBasePart2 = linkBase.substring(questionMarkPosition);
-            // remove the "~" from the link base part 1 
-            return linkBasePart1.substring(1) + sessionFragment + linkBasePart2 + parametersBuffer.toString() + urlFragment;
+            // remove the "~" from the link base
+            final String url =
+                    linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+            return (shouldEncodeURL? response.encodeURL(url) : url);
             
         }
 
         
-        return linkBase + sessionFragment + parametersBuffer.toString() + urlFragment;
+        final String url =
+                linkBase + parametersBuffer.toString() + urlFragment;
+        return (shouldEncodeURL? response.encodeURL(url) : url);
         
     }
     
