@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -84,7 +84,7 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
         
         element.removeAttribute(attributeName);
         
-        return ProcessorResult.setLocalVariablesAndProcessOnlyElementNodes(localVariables, false);
+        return ProcessorResult.setLocalVariablesAndProcessTextNodes(localVariables, true);
         
     }
     

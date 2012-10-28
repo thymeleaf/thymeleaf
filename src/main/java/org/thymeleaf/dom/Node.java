@@ -87,8 +87,6 @@ public abstract class Node implements Serializable {
     private final String documentName;
     private final Integer lineNumber;
     
-    private final boolean shouldConsiderAsElementForProcessing;
-    
     NestableNode parent;
     
     /*
@@ -168,8 +166,6 @@ public abstract class Node implements Serializable {
         this.recomputeProcessorsImmediately = false;
         this.nodeLocalVariables = null;
         this.processors = null;
-        this.shouldConsiderAsElementForProcessing = 
-                (this instanceof NestableAttributeHolderNode || this instanceof Document);
         this.nodeProperties = null;
     }
 
@@ -805,14 +801,34 @@ public abstract class Node implements Serializable {
     
     
     
-    void processNode(final Arguments arguments, final boolean processOnlyElementNodes) {
+    void processNode(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
 
         if (!isProcessable()) {
             return;
         }
-        
-        if (!this.shouldConsiderAsElementForProcessing && processOnlyElementNodes) {
-            return;
+
+        if (!(this instanceof NestableAttributeHolderNode) && !(this instanceof Document)) {
+            // NestableAttributeHolderNodes and Documents are always processed
+            // Macros are never processed
+            // Text/CDATAs and Comments will depend on their respective flag
+            
+            if (!processTextNodes && !processCommentNodes) {
+                // fail fast
+                return;
+            }
+            
+            if ((this instanceof Text || this instanceof CDATASection) && !processTextNodes) {
+                return;
+            }
+            
+            if (this instanceof Comment && !processCommentNodes) {
+                return;
+            }
+            
+            if (this instanceof Macro) {
+                return;
+            }
+            
         }
         
         if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
@@ -875,7 +891,7 @@ public abstract class Node implements Serializable {
                 
             }
             
-            doAdditionalProcess(executionArguments, executionArguments.getProcessOnlyElementNodes());
+            doAdditionalProcess(executionArguments, executionArguments.getProcessTextNodes(), executionArguments.getProcessCommentNodes());
             
         }
     
@@ -926,7 +942,7 @@ public abstract class Node implements Serializable {
     
     
     
-    abstract void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes);
+    abstract void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes);
     
     
 

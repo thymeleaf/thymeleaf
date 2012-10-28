@@ -573,7 +573,7 @@ public final class Configuration {
         }
 
         //
-        // NODE IS NOT AN ELEMENT...
+        // NODE IS NOT AN ATTRIBUTE HOLDER...
         //
 
         final Set<ProcessorAndContext> applicableNonSpecificProcessors = 

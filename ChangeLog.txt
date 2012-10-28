@@ -1,3 +1,9 @@
+2.0.15
+======
+- Divide "processOnlyElementNodes" flag in Arguments into two different flags (processTextNodes
+  and processCommentNodes) in order to allow activation of text/comment processing separately.
+  
+
 2.0.14
 ======
 - Make "and" and "or" operators in Standard Expressions short circuit (second operand is never

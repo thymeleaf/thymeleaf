@@ -78,7 +78,7 @@ public class ProcessAllNodesDocumentProcessor extends AbstractDocumentProcessor 
                     new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName()});
         }
 
-        return ProcessorResult.setProcessOnlyElementNodes(false);
+        return ProcessorResult.setProcessTextAndCommentNodes(true, true);
         
     }
     
