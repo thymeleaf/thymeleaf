@@ -47,7 +47,7 @@ public class ProductCommentsController implements IGTVGController {
         final ProductService productService = new ProductService();
         final Product product = productService.findById(prodId);
         
-        final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         ctx.setVariable("prod", product);
         
         templateEngine.process("product/comments", ctx, response.getWriter());

@@ -102,8 +102,15 @@ public class GTVGApplication {
     
     
     private static String getRequestPath(final HttpServletRequest request) {
-        final String requestURI = request.getRequestURI();
+        
+        String requestURI = request.getRequestURI();
         final String contextPath = request.getContextPath();
+        
+        final int fragmentIndex = requestURI.indexOf(';'); 
+        if (fragmentIndex != -1) {
+            requestURI = requestURI.substring(0, fragmentIndex);
+        }
+        
         if (requestURI.startsWith(contextPath)) {
             return requestURI.substring(contextPath.length());
         }

@@ -39,7 +39,7 @@ public class UserProfileController implements IGTVGController {
             final ServletContext servletContext, final TemplateEngine templateEngine) 
             throws Exception {
         
-        final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         templateEngine.process("userprofile", ctx, response.getWriter());
         
     }

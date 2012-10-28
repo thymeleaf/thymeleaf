@@ -47,7 +47,7 @@ public class ProductListController implements IGTVGController {
         final ProductService productService = new ProductService();
         final List<Product> allProducts = productService.findAll(); 
         
-        final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         ctx.setVariable("prods", allProducts);
         
         templateEngine.process("product/list", ctx, response.getWriter());

@@ -47,7 +47,7 @@ public class OrderDetailsController implements IGTVGController {
         final OrderService orderService = new OrderService();
         final Order order = orderService.findById(orderId);
         
-        final WebContext ctx = new WebContext(request, servletContext, request.getLocale());
+        final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
         ctx.setVariable("order", order);
         
         templateEngine.process("order/details", ctx, response.getWriter());
