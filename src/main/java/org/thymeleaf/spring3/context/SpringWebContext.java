@@ -114,9 +114,10 @@ public class SpringWebContext
             (variables == null?
                     new HashMap<String, Object>() : new HashMap<String, Object>(variables));
         
-        final Beans beans = new Beans(appctx);
-        
-        newVariables.put(BEANS_VARIABLE_NAME, beans);
+        if (!newVariables.containsKey(BEANS_VARIABLE_NAME)) {
+            final Beans beans = new Beans(appctx);
+            newVariables.put(BEANS_VARIABLE_NAME, beans);
+        }
         
         return newVariables;
         
