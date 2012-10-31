@@ -1,3 +1,9 @@
+2.0.15
+======
+- Made "beans" context variable not override a variable with the same name, if such variable comes
+  from the model.
+
+
 2.0.14
 ======
 - Refactored SpelEvaluationContext to act as a decorator (requirement for thymeleaf-extras-springsecurity3).
