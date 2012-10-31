@@ -101,14 +101,14 @@ public class SpringWebContext
                             final Locale locale, 
                             final Map<String, ?> variables, 
                             final ApplicationContext appctx) {
-        super(request, response, servletContext, locale, addBeansVariable(variables, appctx));
+        super(request, response, servletContext, locale, addSpringSpecificVariables(variables, appctx));
         this.applicationContext = appctx;
     }
 
     
     
 
-    private static Map<String,Object> addBeansVariable(final Map<String, ?> variables, final ApplicationContext appctx) {
+    private static Map<String,Object> addSpringSpecificVariables(final Map<String, ?> variables, final ApplicationContext appctx) {
 
         final Map<String,Object> newVariables =
             (variables == null?
