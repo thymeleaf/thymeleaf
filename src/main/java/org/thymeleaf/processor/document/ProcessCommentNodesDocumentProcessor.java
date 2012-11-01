@@ -31,27 +31,27 @@ import org.thymeleaf.processor.ProcessorResult;
 
 /**
  * <p>
- *   Subclass of {@link AbstractDocumentProcessor} used for setting to true the flags 
- *   that tell the Thymeleaf engine to process both text (Text,CDATA) and Comment nodes.
+ *   Subclass of {@link AbstractDocumentProcessor} used for setting to true the flag 
+ *   that tells the Thymeleaf engine to process {@link org.thymeleaf.dom.Comment} nodes.
  *   By default, only nodes of type {@link org.thymeleaf.dom.Element} are processed in a
  *   document.
  * </p>
  * <p>
  *   This is done by returning a {@link ProcessorResult} instance with its
- *   {@link ProcessorResult#setProcessTextAndCommentNodes(boolean, boolean)} flags set 
- *   both to true.
+ *   {@link ProcessorResult#setProcessCommentNodes(boolean)} flag set 
+ *   to true.
  * </p>
  * <p>
- *   Note that enabling the flag on text nodes does not set an inliner (like e.g. the
- *   "th:inline" attribute does). 
+ *   One of the main uses of setting this flag to true is being able to process
+ *   Internet Explorer conditional comments.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.13
+ * @since 2.0.15
  *
  */
-public class ProcessAllNodesDocumentProcessor extends AbstractDocumentProcessor {
+public class ProcessCommentNodesDocumentProcessor extends AbstractDocumentProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -60,11 +60,11 @@ public class ProcessAllNodesDocumentProcessor extends AbstractDocumentProcessor 
 
     
     
-    public ProcessAllNodesDocumentProcessor() {
+    public ProcessCommentNodesDocumentProcessor() {
         this(MATCHER);
     }
 
-    public ProcessAllNodesDocumentProcessor(final IDocumentNodeProcessorMatcher matcher) {
+    public ProcessCommentNodesDocumentProcessor(final IDocumentNodeProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -79,13 +79,13 @@ public class ProcessAllNodesDocumentProcessor extends AbstractDocumentProcessor 
     protected ProcessorResult processDocumentNode(final Arguments arguments, final Document documentNode) {
         
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug("[THYMELEAF][{}][{}] Setting both 'processTextNodes' and " +
-            		"'processCommentNodes' flags to true for this document. " +
-            		"Text (incl. CDATA) and Comment nodes will be considered processable.",
+            this.logger.debug("[THYMELEAF][{}][{}] Setting the " +
+                    "'processCommentNodes' flags to true for this document. " +
+                    "Comment nodes will be considered processable.",
                     new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName()});
         }
 
-        return ProcessorResult.setProcessTextAndCommentNodes(true, true);
+        return ProcessorResult.setProcessCommentNodes(true);
         
     }
     

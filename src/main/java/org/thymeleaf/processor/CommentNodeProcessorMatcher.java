@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.processor;
 
-import org.thymeleaf.dom.AbstractTextNode;
+import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.Node;
 
 
@@ -28,33 +28,32 @@ import org.thymeleaf.dom.Node;
 
 /**
  * <p>
- *   Implementation of {@link ITextNodeProcessorMatcher} that matches every node extending
- *   from {@link AbstractTextNode}, this is, {@link org.thymeleaf.dom.Text} and 
- *   {@link org.thymeleaf.dom.CDATASection} nodes.
+ *   Implementation of {@link ICommentNodeProcessorMatcher} that matches every 
+ *   {@link org.thymeleaf.dom.Comment} node.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.0
+ * @since 2.0.15
  *
  */
-public final class TextNodeProcessorMatcher implements ITextNodeProcessorMatcher {
+public final class CommentNodeProcessorMatcher implements ICommentNodeProcessorMatcher {
     
     
     
-    public TextNodeProcessorMatcher() {
+    public CommentNodeProcessorMatcher() {
         super();
     }
     
 
     public boolean matches(final Node node, final ProcessorMatchingContext context) {
-        return (node instanceof AbstractTextNode);
+        return (node instanceof Comment);
     }
 
 
     
-    public final Class<? extends AbstractTextNode> appliesTo() {
-        return AbstractTextNode.class;
+    public final Class<? extends Comment> appliesTo() {
+        return Comment.class;
     }
     
     
