@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,7 +216,6 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
-    @SuppressWarnings("null")
     static Object executeLink(final Configuration configuration,
             final IProcessingContext processingContext, final LinkExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
@@ -240,7 +238,7 @@ public final class LinkExpression extends SimpleExpression {
         
         if (!isWebContext(processingContext.getContext()) && !isLinkBaseAbsolute(linkBase) && !isLinkBaseServerRelative(linkBase)) {
             throw new TemplateProcessingException(
-                    "Link base \"" + linkBase + "\" cannot be context relative (/) unless you implement the " + 
+                    "Link base \"" + linkBase + "\" cannot be context relative (/) or page relative unless you implement the " + 
                     IWebContext.class.getName() + " interface (context is of class: " +
                     processingContext.getContext().getClass().getName() + ")");
         }
@@ -311,41 +309,54 @@ public final class LinkExpression extends SimpleExpression {
             }
             
         }
+
         
-        if (isLinkBaseAbsolute(linkBase)) {
-            return linkBase + parametersBuffer.toString() + urlFragment;
-        } else if (!isWebContext(processingContext.getContext()) && isLinkBaseServerRelative(linkBase)) {
+        /*
+         * Context is not web: URLs can only be absolute or server-relative
+         */
+        if (!isWebContext(processingContext.getContext())) {
+            
+            if (isLinkBaseAbsolute(linkBase)) {
+                return linkBase + parametersBuffer.toString() + urlFragment;
+            }
+            // isLinkBaseServerRelative(linkBase) == true
             return linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+            
         }
+        
+
+        /*
+         * Context is web 
+         */
         
         final IWebContext webContext = (IWebContext) processingContext.getContext();
         
         final HttpServletRequest request = webContext.getHttpServletRequest();
         final HttpServletResponse response = webContext.getHttpServletResponse();
 
-        final boolean shouldEncodeURL = response != null && !isUserAgentGoogleBot(request);
-        
+        String url = null;
         
         if (isLinkBaseContextRelative(linkBase)) {
             
-            final String contextName = request.getContextPath();
-            final String url =
-                    contextName + linkBase + parametersBuffer.toString() + urlFragment;
-            return (shouldEncodeURL? response.encodeURL(url) : url);
+            url = request.getContextPath() + linkBase + parametersBuffer.toString() + urlFragment;
             
         } else if (isLinkBaseServerRelative(linkBase)) {
             
             // remove the "~" from the link base
-            final String url =
-                    linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
-            return (shouldEncodeURL? response.encodeURL(url) : url);
+            url = linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+            
+        } else if (isLinkBaseAbsolute(linkBase)) {
+            
+            url = linkBase + parametersBuffer.toString() + urlFragment;
+            
+        } else {
+            // Link base is current-URL-relative
+            
+            url = linkBase + parametersBuffer.toString() + urlFragment;
             
         }
 
-        
-        final String url =
-                linkBase + parametersBuffer.toString() + urlFragment;
-        return (shouldEncodeURL? response.encodeURL(url) : url);
+        return (response != null? response.encodeURL(url) : url);
         
     }
     
@@ -465,28 +476,6 @@ public final class LinkExpression extends SimpleExpression {
         
     }
     
-    
-    
-    @SuppressWarnings("unchecked")
-    private static boolean isUserAgentGoogleBot(final HttpServletRequest request) {
-        
-        final Enumeration<String> userAgentHeaders = request.getHeaders("User-Agent");
-        if (userAgentHeaders == null) {
-            return false;
-        }
-        
-        while (userAgentHeaders.hasMoreElements()) {
-            final String header = userAgentHeaders.nextElement();
-            if (header != null) {
-                if (header.toLowerCase().contains("googlebot")) {
-                    return true;
-                }
-            }
-        }
-        
-        return false;
-        
-    }
 
     
 }
