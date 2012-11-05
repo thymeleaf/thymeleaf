@@ -74,7 +74,7 @@ public final class Element extends NestableAttributeHolderNode {
     
     private final boolean minimizableIfWeb;
     
-    private final RepresentationInTemplate representationInTemplate;
+    private RepresentationInTemplate representationInTemplate;
 
 
     
@@ -255,6 +255,37 @@ public final class Element extends NestableAttributeHolderNode {
      */
     public RepresentationInTemplate getRepresentationInTemplate() {
         return this.representationInTemplate;
+    }
+    
+    
+    /**
+     * <p>
+     *   Sets a new value to the 'representationInTemplate' property.
+     * </p>
+     * <p>
+     *   <b>This method should only be called from parsers</b>, as a result of adjusts on DOM creation
+     *   during parsing. It is not intended to be called from processors, as this property
+     *   should reflect the way the element was represented at the original template.
+     * </p>
+     * <p>
+     *   This flag might be ignored by certain parser implementations, and therefore <b>it can 
+     *   be null</b>. This can happen when parsers cannot determine the difference between a standalone
+     *   or an open+closed element, or when parsers have no support for non-XML-well-formed code.
+     *   This can also happen when the document format being parsed is not XML or HTML, and therefore
+     *   this flag does not apply.
+     * </p>
+     * <p>
+     *   Note that this flag only influences how the element should be written if there are no changes
+     *   in the amount of children it contains. For example, an originally-standalone element to which children
+     *   are added will be written as an open plus a close tags (and a body between them containing its children).
+     * </p>
+     * 
+     * @param representationInTemplate the original representation of the Element at the template, or null.
+     * 
+     * @since 2.0.15
+     */
+    public void setRepresentationInTemplate(final RepresentationInTemplate representationInTemplate) {
+        this.representationInTemplate = representationInTemplate;
     }
     
 
