@@ -182,6 +182,15 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
             
         } finally {
 
+            if (templateReader != null) {
+                try {
+                    templateReader.close();
+                } catch (final Exception ignored) {
+                    // ignored
+                }
+            }
+            
+
             if (this.canResetParsers) {
                 poolToBeUsed.release(docBuilder);
             } else {

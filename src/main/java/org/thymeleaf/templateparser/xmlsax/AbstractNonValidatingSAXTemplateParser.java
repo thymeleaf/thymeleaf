@@ -167,6 +167,14 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             throw new TemplateInputException("Exception parsing document", e);
         } finally {
 
+            if (templateReader != null) {
+                try {
+                    templateReader.close();
+                } catch (final Exception ignored) {
+                    // ignored
+                }
+            }
+            
             if (this.canResetParsers) {
                 poolToBeUsed.release(saxParser);
             } else {
