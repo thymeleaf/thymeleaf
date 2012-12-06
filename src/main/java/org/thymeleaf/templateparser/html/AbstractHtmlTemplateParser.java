@@ -180,6 +180,14 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                 throw new TemplateInputException("Exception parsing document", e);
             } finally {
 
+                if (templateReader != null) {
+                    try {
+                        templateReader.close();
+                    } catch (final Exception ignored) {
+                        // ignored
+                    }
+                }
+                
                 if (this.canResetParsers) {
                     this.pool.release(domParser);
                 } else {
