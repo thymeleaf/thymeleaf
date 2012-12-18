@@ -4,7 +4,8 @@
   of always adding jsessionid, for better web container integration.
 - Divide "processOnlyElementNodes" flag in Arguments into two different flags (processTextNodes
   and processCommentNodes) in order to allow activation of text/comment processing separately.
-- Added close operation on template Readers in case a parsing exception occurs.
+- Fixed: Added close operation on template Readers in case a parsing exception occurs.
+- Fixed: Removed case-sensitivity resolving element processors.
   
 
 2.0.14
