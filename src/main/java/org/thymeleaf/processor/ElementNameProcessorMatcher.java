@@ -97,9 +97,9 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
         }
         
         final Element element = (Element) node;
-        final String completeElementName = getElementName(context); 
+        final String completeNormalizedElementName = Node.normalizeName(getElementName(context)); 
         
-        if (!element.getNormalizedName().equals(completeElementName)) {
+        if (!element.getNormalizedName().equals(completeNormalizedElementName)) {
             return false;
         }
         
