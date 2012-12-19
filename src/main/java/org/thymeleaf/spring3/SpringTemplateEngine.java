@@ -44,8 +44,11 @@ import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
  * </p>
  * <p>
  *   It also configures a {@link SpringMessageResolver} as message resolver, and
- *   provides a convenience method for setting the {@link MessageSource} that
- *   this resolver needs for message resolution. 
+ *   implements the {@link MessageSourceAware} interface in order to let Spring 
+ *   automatically setting the {@link MessageSource} used at the application
+ *   (bean needs to have id <tt>"messageSource"</tt>). If this Spring standard setting
+ *   needs to be overridden, the {@link #setCustomMessageSource(MessageSource)} can
+ *   be used. 
  * </p>
  * <p>
  *   Note that this class will validate during initialization that at least one of the
@@ -64,7 +67,8 @@ public class SpringTemplateEngine
     
     private static final SpringStandardDialect SPRINGSTANDARD_DIALECT = new SpringStandardDialect();
     
-    private MessageSource messageSource;
+    private MessageSource messageSource = null;
+    private MessageSource templateEngineMessageSource = null;
     
     
     public SpringTemplateEngine() {
@@ -77,8 +81,18 @@ public class SpringTemplateEngine
 
     /**
      * <p>
-     *   Convenience method for setting the message source that will
-     *   be used by the {@link SpringMessageResolver} configured by default.
+     *   Implementation of the {@link MessageSourceAware#setMessageSource(MessageSource)}
+     *   method at the {@link MessageSourceAware} interface, provided so that
+     *   Spring is able to automatically set the currently configured {@link MessageSource} into
+     *   this template engine.
+     * </p>
+     * <p>
+     *   If several {@link MessageSource} implementation beans exist, Spring will inject here 
+     *   the one with id <tt>"messageSource"</tt>.
+     * </p>
+     * <p>
+     *   This property <b>should not be set manually</b> in most scenarios (see 
+     *   {@link #setCustomMessageSource(MessageSource)} instead).
      * </p>
      * 
      * @param messageSource the message source to be used by the message resolver
@@ -86,11 +100,28 @@ public class SpringTemplateEngine
     public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
+
+
+
+    /**
+     * <p>
+     *   Convenience method for setting the message source that will
+     *   be used by this template engine, overriding the one automatically set by
+     *   Spring at the {@link #setMessageSource(MessageSource)} method. 
+     * </p>
+     * 
+     * @param templateEngineMessageSource the message source to be used by the message resolver
+     * @since 2.0.15
+     */
+    public void setTemplateEngineMessageSource(final MessageSource templateEngineMessageSource) {
+        this.templateEngineMessageSource = templateEngineMessageSource;
+    }
     
 
     public void afterPropertiesSet() throws Exception {
         final SpringMessageResolver springMessageResolver = new SpringMessageResolver();
-        springMessageResolver.setMessageSource(this.messageSource);
+        springMessageResolver.setMessageSource(
+                this.templateEngineMessageSource == null ? this.messageSource : this.templateEngineMessageSource);
         super.setDefaultMessageResolvers(Collections.singleton(springMessageResolver));
     }
     

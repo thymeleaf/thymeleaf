@@ -2,6 +2,8 @@
 ======
 - Made "beans" context variable not override a variable with the same name, if such variable comes
   from the model.
+- Fixed: Added "SpringTemplateEngine.setTemplateEngineMessageSource(...)" for letting users really 
+  specify a MessageSource to be used by thymeleaf overriding the one automatically set by Spring.
 
 
 2.0.14
