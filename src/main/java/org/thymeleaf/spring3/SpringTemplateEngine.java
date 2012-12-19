@@ -47,7 +47,7 @@ import org.thymeleaf.spring3.messageresolver.SpringMessageResolver;
  *   implements the {@link MessageSourceAware} interface in order to let Spring 
  *   automatically setting the {@link MessageSource} used at the application
  *   (bean needs to have id <tt>"messageSource"</tt>). If this Spring standard setting
- *   needs to be overridden, the {@link #setCustomMessageSource(MessageSource)} can
+ *   needs to be overridden, the {@link #setTemplateEngineMessageSource(MessageSource)} can
  *   be used. 
  * </p>
  * <p>
@@ -92,7 +92,7 @@ public class SpringTemplateEngine
      * </p>
      * <p>
      *   This property <b>should not be set manually</b> in most scenarios (see 
-     *   {@link #setCustomMessageSource(MessageSource)} instead).
+     *   {@link #setTemplateEngineMessageSource(MessageSource)} instead).
      * </p>
      * 
      * @param messageSource the message source to be used by the message resolver
