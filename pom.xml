@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>gtvg</artifactId>
   <packaging>war</packaging>
-  <version>20121115</version>
+  <version>20121220</version>
   <name>Thymeleaf Examples - Good Thymes Virtual Grocery</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -75,7 +75,7 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.0.15-SNAPSHOT</thymeleaf.version>
+    <thymeleaf.version>2.0.15</thymeleaf.version>
   </properties>
   
   
