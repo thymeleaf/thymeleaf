@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>stsm</artifactId>
   <packaging>war</packaging>
-  <version>20121017</version>
+  <version>20121220</version>
   <name>Thymeleaf Examples - Spring Thyme Seedstarter Manager</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -82,7 +82,7 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.0.14</thymeleaf.version>
+    <thymeleaf.version>2.0.15</thymeleaf.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>
   </properties>
   
