@@ -13,7 +13,7 @@ Thymeleaf team.
 
 Current versions: 
 
-  * For Thymeleaf 2.0 (2.0.14+): **thymeleaf-extras-springsecurity3 2.0.0**
+  * For Thymeleaf 2.0 (2.0.14+): thymeleaf-extras-springsecurity3 version **2.0.0**
 
 
 License
