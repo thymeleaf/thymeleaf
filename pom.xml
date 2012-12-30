@@ -87,7 +87,7 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.0.15-SNAPSHOT</thymeleaf.version>
+    <thymeleaf.version>2.0.15</thymeleaf.version>
     <springsecurity.version>3.0.7.RELEASE</springsecurity.version>
   </properties>
 
