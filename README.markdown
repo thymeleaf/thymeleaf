@@ -13,7 +13,7 @@ Thymeleaf team.
 
 Current versions: 
 
-  * For Thymeleaf 2.0: **2.0.0**
+  * For Thymeleaf 2.0 (2.0.14+): **thymeleaf-extras-springsecurity3 2.0.0**
 
 
 License
@@ -27,7 +27,7 @@ Requirements
 ------------
 
   *   Thymeleaf **2.0.14+**
-  *   Spring Security version **3.0.x+**
+  *   Spring Security version **3.0.x**, **3.1.1+**, **3.2.x**
   *   Web environment (Spring Security integration cannot work offline)
 
 
