@@ -41,8 +41,7 @@ Maven info
 Distribution packages
 ---------------------
 
-Distribution packages (binaries + sources + javadoc) can be downloaded from  
-[SourceForge](http://sourceforge.net/projects/thymeleaf/files/thymeleaf-extras-springsecurity3/).
+Distribution packages (binaries + sources + javadoc) can be downloaded from [SourceForge](http://sourceforge.net/projects/thymeleaf/files/thymeleaf-extras-springsecurity3/).
 
 
 Features
