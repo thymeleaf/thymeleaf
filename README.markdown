@@ -41,15 +41,15 @@ Maven info
 Distribution packages
 ---------------------
 
-  Distribution packages (binaries + sources + javadoc) can be downloaded from  
-  [SourceForge](http://sourceforge.net/projects/thymeleaf/files/thymeleaf-extras-springsecurity3/).
+Distribution packages (binaries + sources + javadoc) can be downloaded from  
+[SourceForge](http://sourceforge.net/projects/thymeleaf/files/thymeleaf-extras-springsecurity3/).
 
 
 Features
 --------
 
-  This module provides a new dialect called `org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect`,
-  with default prefix `sec`. It includes:
+This module provides a new dialect called `org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect`,
+with default prefix `sec`. It includes:
   
   *   New expression utility objects:
     *   `#authentication` representing the Spring Security authentication object
