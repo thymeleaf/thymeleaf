@@ -17,11 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.report;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
-public interface ITestSetReportBuilder {
 
-    public void processedTemplateOK();
+public class IndexTestNameSpec implements ITestNameSpec {
+
+    public static final IndexTestNameSpec INSTANCE = new IndexTestNameSpec();
     
+    private IndexTestNameSpec() {
+        super();
+    }
+
+    public String getTestName(final String testSetName, final int testIndex) {
+        return testSetName + "." + String.format("%05d", Integer.valueOf(testIndex));
+    }
+
+   
 }

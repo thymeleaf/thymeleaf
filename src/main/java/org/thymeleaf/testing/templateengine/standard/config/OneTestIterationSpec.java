@@ -17,17 +17,16 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public class Html5TestTemplateModeSpec extends TestTemplateModeSpec {
+public class OneTestIterationSpec extends TestIterationSpec {
 
-    public static final Html5TestTemplateModeSpec INSTANCE = new Html5TestTemplateModeSpec();
-    private static final String HTML5_TEMPLATE_MODE = "HTML5";
+    public static final OneTestIterationSpec INSTANCE = new OneTestIterationSpec();
     
-    private Html5TestTemplateModeSpec() {
-        super(HTML5_TEMPLATE_MODE);
+    private OneTestIterationSpec() {
+        super(1);
     }
     
 }

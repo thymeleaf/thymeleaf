@@ -17,16 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public class NoTestFragmentSpec extends TestFragmentSpec {
+public class Html5TestTemplateModeSpec extends TestTemplateModeSpec {
 
-    public static final NoTestFragmentSpec INSTANCE = new NoTestFragmentSpec();
+    public static final Html5TestTemplateModeSpec INSTANCE = new Html5TestTemplateModeSpec();
+    private static final String HTML5_TEMPLATE_MODE = "HTML5";
     
-    private NoTestFragmentSpec() {
-        super(null);
+    private Html5TestTemplateModeSpec() {
+        super(HTML5_TEMPLATE_MODE);
     }
     
 }

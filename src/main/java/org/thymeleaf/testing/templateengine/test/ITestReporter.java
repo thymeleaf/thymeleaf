@@ -17,12 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.test;
 
 
 
-public interface ITestIterationSpec {
+public interface ITestReporter {
 
-    public int getIterations(final String testSetName, final String testName);
+    public void processedTemplateOK();
     
 }

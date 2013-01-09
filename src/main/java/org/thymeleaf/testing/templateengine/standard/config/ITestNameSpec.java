@@ -17,19 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.config;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public class TemplateProcessTestConfig implements Cloneable {
+public interface ITestNameSpec {
 
-    public TemplateProcessTestConfig() {
-        super();
-    }
-    
-    @Override
-    public TemplateProcessTestConfig clone() {
-        return new TemplateProcessTestConfig();
-    }
+    public String getTestName(final String testSetName, final int testIndex);
     
 }

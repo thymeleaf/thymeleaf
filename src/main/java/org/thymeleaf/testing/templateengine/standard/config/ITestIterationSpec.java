@@ -17,24 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public class TestNameSpec implements ITestNameSpec {
+public interface ITestIterationSpec {
 
-    private final boolean prefixTestSetName;
-    private final String testName;
+    public int getIterations(final String testSetName, final String testName);
     
-    public TestNameSpec(final String testName, final boolean prefixTestSetName) {
-        super();
-        this.testName = testName;
-        this.prefixTestSetName = prefixTestSetName;
-    }
-
-    public String getTestName(final String testSetName, final int testIndex) {
-        return (this.prefixTestSetName? (testSetName + ".") : "") + this.testName;
-    }
-
-   
 }

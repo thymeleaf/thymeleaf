@@ -17,13 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.testset;
+package org.thymeleaf.testing.templateengine.standard.config;
+
+import java.io.Reader;
 
 
-public interface ITestSetMessagesSpec {
 
-    public String getMessage(
-            final String testSetName, final String testName, 
-            final String key, final Object[] messageParameters);
+public interface ITestInputSpec {
+
+    public Reader getInputReader(final String testSetName, final String testName, final int iteration);
     
 }

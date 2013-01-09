@@ -17,16 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.test;
 
 
 
-public class OneTestIterationSpec extends TestIterationSpec {
+public interface ITestResult {
 
-    public static final OneTestIterationSpec INSTANCE = new OneTestIterationSpec();
-    
-    private OneTestIterationSpec() {
-        super(1);
-    }
+    public boolean isOK();
+    public String getMessage();
+    public Throwable getThrowable();
     
 }

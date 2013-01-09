@@ -17,13 +17,26 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.testset;
+package org.thymeleaf.testing.templateengine.test;
 
-import org.thymeleaf.testing.templateprocess.report.ITestSetReportBuilder;
+import java.util.List;
+import java.util.Properties;
+
+import org.thymeleaf.dialect.IDialect;
 
 
-public interface ITestSetReportSpec {
 
-    public ITestSetReportBuilder getTestSetReportBuilder(final String testSetName, final String testName);
+
+public interface ITestSuite {
+
+    public String getName();
+
+    public List<IDialect> getDialects();
+    
+    public Properties getMessages();
+    
+    public ITestSequence getSequence();
+    
+    public ITestReporter getReporter();
     
 }

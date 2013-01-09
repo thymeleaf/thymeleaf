@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 import java.util.HashMap;
 import java.util.Locale;

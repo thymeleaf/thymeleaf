@@ -17,12 +17,18 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.test;
 
 
 
-public interface ITestTemplateModeSpec {
+public interface ITestable {
 
-    public String getTemplateMode(final String testSetName, final String testName, final int iteration);
+    public boolean hasName();
+    public String getName();
     
+    public int getIterations();
+    
+    public boolean hasMaxTimeInMillis();
+    public Integer getMaxTimeInMillis();
+
 }

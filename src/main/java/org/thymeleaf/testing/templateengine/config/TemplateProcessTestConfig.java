@@ -17,13 +17,19 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
-
-import org.thymeleaf.fragment.IFragmentSpec;
+package org.thymeleaf.testing.templateengine.config;
 
 
-public interface ITestFragmentSpec {
 
-    public IFragmentSpec getFragmentSpec(final String testSetName, final String testName, final int iteration);
+public class TemplateProcessTestConfig implements Cloneable {
+
+    public TemplateProcessTestConfig() {
+        super();
+    }
+    
+    @Override
+    public TemplateProcessTestConfig clone() {
+        return new TemplateProcessTestConfig();
+    }
     
 }

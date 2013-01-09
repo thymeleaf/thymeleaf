@@ -17,21 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public class IndexTestNameSpec implements ITestNameSpec {
+public interface ITestTemplateModeSpec {
 
-    public static final IndexTestNameSpec INSTANCE = new IndexTestNameSpec();
+    public String getTemplateMode(final String testSetName, final String testName, final int iteration);
     
-    private IndexTestNameSpec() {
-        super();
-    }
-
-    public String getTestName(final String testSetName, final int testIndex) {
-        return testSetName + "." + String.format("%05d", Integer.valueOf(testIndex));
-    }
-
-   
 }

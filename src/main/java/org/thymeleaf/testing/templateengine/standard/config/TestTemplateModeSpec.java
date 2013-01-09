@@ -17,12 +17,22 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public interface ITestNameSpec {
+public class TestTemplateModeSpec implements ITestTemplateModeSpec {
 
-    public String getTestName(final String testSetName, final int testIndex);
+    private final String templateMode;
+    
+    public TestTemplateModeSpec(final String templateMode) {
+        super();
+        this.templateMode = templateMode;
+    }
+
+    public final String getTemplateMode(
+            final String testSetName, final String testName, final int iteration) {
+        return this.templateMode;
+    }
     
 }

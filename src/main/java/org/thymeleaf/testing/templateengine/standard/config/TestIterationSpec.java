@@ -17,23 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
-
-import org.thymeleaf.fragment.IFragmentSpec;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
-public class TestFragmentSpec implements ITestFragmentSpec {
 
-    private final IFragmentSpec fragmentSpec;
+public class TestIterationSpec implements ITestIterationSpec {
+
+    private final int iterations;
     
-    public TestFragmentSpec(final IFragmentSpec fragmentSpec) {
+    public TestIterationSpec(final int iterations) {
         super();
-        this.fragmentSpec = fragmentSpec;
+        this.iterations = iterations;
     }
 
-    public IFragmentSpec getFragmentSpec(
-            final String testSetName, final String testName, final int iteration) {
-        return this.fragmentSpec;
+    public int getIterations(final String testSetName, final String testName) {
+        return this.iterations;
     }
     
 }

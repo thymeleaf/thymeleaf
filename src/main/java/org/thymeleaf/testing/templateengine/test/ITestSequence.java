@@ -17,21 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.test;
+
+import java.util.List;
 
 
 
-public class TestIterationSpec implements ITestIterationSpec {
+public interface ITestSequence extends ITestable {
 
-    private final int iterations;
-    
-    public TestIterationSpec(final int iterations) {
-        super();
-        this.iterations = iterations;
-    }
-
-    public int getIterations(final String testSetName, final String testName) {
-        return this.iterations;
-    }
+    public int getSize();
+    public List<ITestable> getElements();
     
 }

@@ -17,17 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
-
-import java.io.Reader;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateprocess.spec.test.ITestSpec;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
-public class StandardTestSpec implements ITestSpec {
+
+public class StandardTestSetConfig {
 
 
     private ITestNameSpec testNameSpec = IndexTestNameSpec.INSTANCE;
@@ -39,7 +34,7 @@ public class StandardTestSpec implements ITestSpec {
     private ITestOutputSpec testOutputSpec = null;
 
     
-    public StandardTestSpec() {
+    public StandardTestSetConfig() {
         super();
     }
     
@@ -117,54 +112,6 @@ public class StandardTestSpec implements ITestSpec {
                this.testContextSpec != null &&
                this.testInputSpec != null &&
                this.testOutputSpec != null;
-    }
-    
-    
-    public String getTestName(final String testSetName, final int testIndex) {
-        return this.testNameSpec.getTestName(testSetName, testIndex);
-    }
-    
-    
-    public int getIterations(final String testSetName, final String testName) {
-        return this.testIterationSpec.getIterations(testSetName, testName);
-    }
-    
-    
-    public IContext getContext(final String testSetName, final String testName, final int iteration) {
-        return this.testContextSpec.getContext(testSetName, testName, iteration);
-    }
-    
-    
-    public IFragmentSpec getFragmentSpec(final String testSetName, final String testName, final int iteration) {
-        return this.testFragmentSpec.getFragmentSpec(testSetName, testName, iteration);
-    }
-    
-    
-    public String getTemplateMode(final String testSetName, final String testName, final int iteration) {
-        return this.testTemplateModeSpec.getTemplateMode(testSetName, testName, iteration);
-    }
-    
-    
-    public Reader getInputReader(final String testSetName, final String testName, final int iteration) {
-        return this.testInputSpec.getInputReader(testSetName, testName, iteration);
-    }
-
-    
-    public boolean shouldFail(final String testSetName, final String testName, final int iteration) {
-        return this.testOutputSpec.shouldFail(testSetName, testName, iteration);
-    }
-
-    public String getDesiredOutput(final String testSetName, final String testName, final int iteration) {
-        return this.testOutputSpec.getDesiredOutput(testSetName, testName, iteration);
-    }
-
-    public String getErrorMessage(final String testSetName, final String testName, final int iteration) {
-        return this.testOutputSpec.getErrorMessage(testSetName, testName, iteration);
-    }
-
-    public int getMaxExecutionTimeMilliseconds(final String testSetName,
-            final String testName, final int iteration) {
-        return this.testOutputSpec.getMaxExecutionTimeMilliseconds(testSetName, testName, iteration);
     }
 
     

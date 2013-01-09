@@ -17,19 +17,16 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
 
+public class NoTestFragmentSpec extends TestFragmentSpec {
 
-public interface ITestOutputSpec {
-
-    public boolean shouldFail(final String testSetName, final String testName, final int iteration);
+    public static final NoTestFragmentSpec INSTANCE = new NoTestFragmentSpec();
     
-    public String getDesiredOutput(final String testSetName, final String testName, final int iteration);
-    
-    public String getErrorMessage(final String testSetName, final String testName, final int iteration);
-    
-    public int getMaxExecutionTimeMilliseconds(final String testSetName, final String testName, final int iteration);
+    private NoTestFragmentSpec() {
+        super(null);
+    }
     
 }

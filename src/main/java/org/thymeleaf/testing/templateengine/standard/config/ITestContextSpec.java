@@ -17,14 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
+package org.thymeleaf.testing.templateengine.standard.config;
 
-import java.io.Reader;
+import org.thymeleaf.context.IContext;
 
 
+public interface ITestContextSpec {
 
-public interface ITestInputSpec {
-
-    public Reader getInputReader(final String testSetName, final String testName, final int iteration);
+    public IContext getContext(final String testSetName, final String testName, final int iteration);
     
 }

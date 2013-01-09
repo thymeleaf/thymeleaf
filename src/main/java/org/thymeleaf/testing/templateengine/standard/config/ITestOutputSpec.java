@@ -17,27 +17,19 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test;
-
-import java.io.Reader;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
-public interface ITestSpec {
 
-    public String getTestName(final String testSetName, final int testIndex);
-    public int getIterations(final String testSetName, final String testName);
-    public IContext getContext(final String testSetName, final String testName, final int iteration);
-    public IFragmentSpec getFragmentSpec(final String testSetName, final String testName, final int iteration);
-    public String getTemplateMode(final String testSetName, final String testName, final int iteration);
-    
-    public Reader getInputReader(final String testSetName, final String testName, final int iteration);
-    
+
+public interface ITestOutputSpec {
+
     public boolean shouldFail(final String testSetName, final String testName, final int iteration);
+    
     public String getDesiredOutput(final String testSetName, final String testName, final int iteration);
+    
     public String getErrorMessage(final String testSetName, final String testName, final int iteration);
+    
     public int getMaxExecutionTimeMilliseconds(final String testSetName, final String testName, final int iteration);
     
 }

@@ -17,13 +17,24 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateprocess.spec.test.standard;
-
-import org.thymeleaf.context.IContext;
+package org.thymeleaf.testing.templateengine.standard.config;
 
 
-public interface ITestContextSpec {
 
-    public IContext getContext(final String testSetName, final String testName, final int iteration);
+public class TestNameSpec implements ITestNameSpec {
+
+    private final boolean prefixTestSetName;
+    private final String testName;
     
+    public TestNameSpec(final String testName, final boolean prefixTestSetName) {
+        super();
+        this.testName = testName;
+        this.prefixTestSetName = prefixTestSetName;
+    }
+
+    public String getTestName(final String testSetName, final int testIndex) {
+        return (this.prefixTestSetName? (testSetName + ".") : "") + this.testName;
+    }
+
+   
 }
