@@ -17,18 +17,51 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.engine.resolver;
+
+import java.io.InputStream;
+
+import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.resourceresolver.IResourceResolver;
 
 
 
-public interface ITestReporter {
 
-    public void suiteStart();
-    public void suiteEnd(final long executionTimeNanos);
+
+
+public class TestResourceResolver implements IResourceResolver {
+
+    public static final String NAME = "TEST";
     
-    public void sequenceStart(final ITestSequence sequence);
-    public void sequenceEnd(final ITestSequence sequence, final long executionTimeNanos);
     
-    public void test(final ITest test, final ITestResult result, final long executionTimeNanos);
+    private InputStream stream = null;
+    
+
+    public TestResourceResolver() {
+        super();
+    }
+
+    
+    
+    
+    void setStream(final InputStream stream) {
+        this.stream = stream;
+    }
+
+
+
+    public String getName() {
+        return NAME;
+    }
+
+    
+
+    
+    public InputStream getResourceAsStream(
+            final TemplateProcessingParameters templateProcessingParameters,
+            final String resourceName) {
+        return this.stream;            
+    }
+    
     
 }

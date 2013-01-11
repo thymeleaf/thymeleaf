@@ -30,7 +30,7 @@ public abstract class AbstractTestable implements ITestable {
     
     private String name = null;
     private int iterations = DEFAULT_ITERATIONS;
-    private Integer maxTimeInMillis = null;
+    private Long maxTimeNanos = null;
 
     
     
@@ -64,20 +64,20 @@ public abstract class AbstractTestable implements ITestable {
 
 
     
-    public boolean hasMaxTimeInMillis() {
-        return this.maxTimeInMillis != null;
+    public boolean hasMaxTimeNanos() {
+        return this.maxTimeNanos != null;
     }
 
-    public void setMaxTimeInMillis(final int maxTimeInMillis) {
-        this.maxTimeInMillis = Integer.valueOf(maxTimeInMillis);
+    public void setMaxTimeNanos(final long maxTimeNanos) {
+        this.maxTimeNanos = Long.valueOf(maxTimeNanos);
     }
     
-    public void clearMaxTimeInMillis() {
-        this.maxTimeInMillis = null;
+    public void clearMaxTimeNanos() {
+        this.maxTimeNanos = null;
     }
     
-    public Integer getMaxTimeInMillis() {
-        return this.maxTimeInMillis;
+    public Long getMaxTimeNanos() {
+        return this.maxTimeNanos;
     }
 
 

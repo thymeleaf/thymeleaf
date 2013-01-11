@@ -28,7 +28,7 @@ public interface ITestable {
     
     public int getIterations();
     
-    public boolean hasMaxTimeInMillis();
-    public Integer getMaxTimeInMillis();
+    public boolean hasMaxTimeNanos();
+    public Long getMaxTimeNanos();
 
 }

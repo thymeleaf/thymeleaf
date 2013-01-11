@@ -17,18 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.engine;
 
 
 
-public interface ITestReporter {
 
-    public void suiteStart();
-    public void suiteEnd(final long executionTimeNanos);
+
+
+public class TestEngineExecutionException extends RuntimeException {
+
     
-    public void sequenceStart(final ITestSequence sequence);
-    public void sequenceEnd(final ITestSequence sequence, final long executionTimeNanos);
+    private static final long serialVersionUID = -341588084846304479L;
+
     
-    public void test(final ITest test, final ITestResult result, final long executionTimeNanos);
+    
+    public TestEngineExecutionException() {
+        super();
+    }
+
+    
+    public TestEngineExecutionException(final String message, final Throwable throwable) {
+        super(message, throwable);
+    }
+
+    public TestEngineExecutionException(final String message) {
+        super(message);
+    }
+
+    public TestEngineExecutionException(final Throwable throwable) {
+        super(throwable);
+    }
     
 }
