@@ -30,7 +30,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class Test 
+public abstract class AbstractTest 
         extends AbstractTestable
         implements ITest {
 
@@ -43,10 +43,14 @@ public class Test
     private String templateMode = DEFAULT_TEMPLATE_MODE; 
     private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC; 
     
+    private final String input;
     
     
-    public Test() {
+    
+    
+    protected AbstractTest(final String input) {
         super();
+        this.input = input;
     }
 
 
@@ -89,14 +93,9 @@ public class Test
     
 
     public String getInput() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.input;
     }
 
-    public ITestResult evalResult(final String output) {
-        // TODO Auto-generated method stub
-        return null;
-    }
     
     
 }

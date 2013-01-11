@@ -20,6 +20,8 @@
 package org.thymeleaf.testing.templateengine.test;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import org.thymeleaf.dialect.IDialect;
@@ -29,11 +31,12 @@ import org.thymeleaf.dialect.IDialect;
 
 public interface ITestSuite {
 
+    public boolean hasName();
     public String getName();
 
     public List<IDialect> getDialects();
     
-    public Properties getMessages();
+    public Map<Locale,Properties> getMessages();
     
     public ITestSequence getSequence();
     

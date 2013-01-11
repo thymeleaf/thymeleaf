@@ -19,22 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
 
 
-public interface ITest extends ITestable {
+public class ConsoleTestReporter implements ITestReporter {
 
-    public IContext getContext();
-    
-    public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
-    
-    public String getTemplateMode();
-    
-    public String getInput();
-    
-    public ITestResult evalResult(final String result);
-    public ITestResult evalResult(final Throwable t);
+    public void processedTemplateOK() {
+        
+    }
     
 }

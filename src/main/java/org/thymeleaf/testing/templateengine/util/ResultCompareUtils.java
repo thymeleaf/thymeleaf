@@ -17,24 +17,37 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.util;
 
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
+import junit.framework.ComparisonCompactor;
 
 
-public interface ITest extends ITestable {
 
-    public IContext getContext();
+
+
+
+public class ResultCompareUtils {
+
     
-    public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
+    private static final int CONTEXT_LENGTH = 30;
     
-    public String getTemplateMode();
     
-    public String getInput();
+    public static String explainComparison(final String expected, final String actual) {
+        /*
+         * JUnit's comparison reporter will be used
+         */
+        final ComparisonCompactor compactor =
+                new ComparisonCompactor(CONTEXT_LENGTH, expected, actual);
+        return compactor.compact("Result does not match -");
+    }
     
-    public ITestResult evalResult(final String result);
-    public ITestResult evalResult(final Throwable t);
+    
+    
+    private ResultCompareUtils() {
+        super();
+    }
+    
+    
+    
     
 }

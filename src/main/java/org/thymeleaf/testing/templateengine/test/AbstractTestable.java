@@ -25,8 +25,11 @@ package org.thymeleaf.testing.templateengine.test;
 
 public abstract class AbstractTestable implements ITestable {
 
+    public static final int DEFAULT_ITERATIONS = 1;
+    
+    
     private String name = null;
-    private int iterations = 1;
+    private int iterations = DEFAULT_ITERATIONS;
     private Integer maxTimeInMillis = null;
 
     
