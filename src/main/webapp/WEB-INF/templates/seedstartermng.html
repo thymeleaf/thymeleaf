@@ -15,13 +15,6 @@
            th:src="@{/images/stsmlogo.png}" th:alt-title="#{title.application}"/>
     </div>
     
-    <script th:inline="javascript">
-      // <![CDATA[
-          var url = /*[[@{'/' + ${'leilo'}}]]*/ 'one url';
-          alert(url);
-      // ]]>
-    </script>
-    
     <div class="seedstarterlist" th:unless="${#lists.isEmpty(allSeedStarters)}">
     
       <h2 th:text="#{title.list}">List of Seed Starters</h2>
