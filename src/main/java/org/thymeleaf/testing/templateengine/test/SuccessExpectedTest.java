@@ -30,11 +30,11 @@ public class SuccessExpectedTest
         extends AbstractTest {
 
     
-    private final String output;
+    private final ITestResource output;
     
     
     
-    public SuccessExpectedTest(final String input, final String output) {
+    public SuccessExpectedTest(final ITestResource input, final ITestResource output) {
         super(input);
         Validate.notNull(output, "Output cannot be null");
         this.output = output;
@@ -43,7 +43,7 @@ public class SuccessExpectedTest
 
     
     
-    public String getOutput() {
+    public ITestResource getOutput() {
         return this.output;
     }
 
@@ -60,7 +60,9 @@ public class SuccessExpectedTest
             return TestResult.ok(getInput(), result);
         }
      
-        return TestResult.error(getInput(), result, ResultCompareUtils.explainComparison(this.output, result));
+        final String outputStr = this.output.read();
+        
+        return TestResult.error(getInput(), result, ResultCompareUtils.explainComparison(outputStr, result));
         
     }
 

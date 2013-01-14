@@ -21,30 +21,8 @@ package org.thymeleaf.testing.templateengine.test;
 
 
 
+public interface ITestResource {
 
-
-public abstract class AbstractTestable implements ITestable {
-
-    private String name = null;
-
-    
-    public AbstractTestable() {
-        super();
-    }
-    
-    
-    
-    public boolean hasName() {
-        return this.name != null;
-    }
-    
-    public void setName(final String name) {
-        this.name = name;
-    }
-    
-    public String getName() {
-        return this.name;
-    }
-
+    public String read();
     
 }

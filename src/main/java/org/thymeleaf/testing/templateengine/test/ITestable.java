@@ -25,10 +25,5 @@ public interface ITestable {
 
     public boolean hasName();
     public String getName();
-    
-    public int getIterations();
-    
-    public boolean hasMaxTimeNanos();
-    public Long getMaxTimeNanos();
 
 }

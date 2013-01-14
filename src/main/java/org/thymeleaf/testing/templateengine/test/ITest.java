@@ -32,7 +32,7 @@ public interface ITest extends ITestable {
     
     public String getTemplateMode();
     
-    public String getInput();
+    public ITestResource getInput();
     
     public ITestResult evalResult(final String result);
     public ITestResult evalResult(final Throwable t);

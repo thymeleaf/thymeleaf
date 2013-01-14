@@ -52,68 +52,128 @@ public class ConsoleTestReporter implements ITestReporter {
     
     
 
-    public void suiteStart() {
-        output("[START] REPORT START");
-    }
-
-    public void suiteEnd(final long executionTimeNanos) {
-        output("[END] REPORT END [" + duration(executionTimeNanos) + "]");
-    }
-
-    public void sequenceStart(final ITestSequence sequence) {
+    
+    public void suiteStart(final ITestSuite suite) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[SEQSTART]");
-        strBuilder.append("[" + (sequence.hasName()? sequence.getName() : "*") + "]");
-        strBuilder.append("[" + sequence.getIterations() + "]");
-        strBuilder.append("[" + sequence.getSize() + "]");
-        strBuilder.append("[" + (sequence.hasMaxTimeNanos()? sequence.getMaxTimeNanos() : "*") + "]");
-        output(strBuilder.toString());
-    }
-
-    public void sequenceEnd(final ITestSequence sequence, final long executionTimeNanos) {
-        
-        final boolean execTimeOK =
-                (sequence.hasMaxTimeNanos()? (sequence.getMaxTimeNanos().longValue() >= executionTimeNanos) : true);
-        
-        final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[SEQEND]");
-        strBuilder.append("[" + (sequence.hasName()? sequence.getName() : "*") + "]");
-        strBuilder.append("[" + sequence.getIterations() + "]");
-        strBuilder.append("[" + sequence.getSize() + "]");
-        strBuilder.append("[" + (sequence.hasMaxTimeNanos()? sequence.getMaxTimeNanos() : "*") + "]");
-        strBuilder.append("[" + executionTimeNanos + "]");
-        strBuilder.append("[" + (execTimeOK? "EXECTIMEOK" : "EXECTIMEKO") + "]");
-        if (!sequence.hasMaxTimeNanos()) {
-            strBuilder.append(
-                    " Sequence executed in " + duration(executionTimeNanos));
+        strBuilder.append("[SUITESTART]");
+        if (suite.hasName()) {
+            strBuilder.append("[" + suite.getName() + "]");
         } else {
-            if (execTimeOK) {
-                strBuilder.append(
-                        " Sequence executed on time. Executed in " + 
-                        duration(executionTimeNanos) + " (max: " + duration(sequence.getMaxTimeNanos()) + ")");
-            } else {
-                strBuilder.append(
-                        " Sequence FAILED to execute on time. Executed in " + 
-                        duration(executionTimeNanos) + " (max: " + duration(sequence.getMaxTimeNanos()) + ")");
-            }
+            strBuilder.append("[ ]");
         }
         output(strBuilder.toString());
     }
 
     
-    public void test(final ITest test, final ITestResult result, final long executionTimeNanos) {
-        
-        final boolean execTimeOK =
-                (test.hasMaxTimeNanos()? (test.getMaxTimeNanos().longValue() >= executionTimeNanos) : true);
+    public void suiteEnd(final ITestSuite suite, final long executionTimeNanos) {
         
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[TEST]");
-        strBuilder.append("[" + (result.isOK()? "OK" : "KO") + "]");
-        strBuilder.append("[" + (test.hasName()? test.getName() : "*") + "]");
-        strBuilder.append("[" + test.getIterations() + "]");
-        strBuilder.append("[" + (test.hasMaxTimeNanos()? test.getMaxTimeNanos() : "*") + "]");
+        strBuilder.append("[SUITEEND  ]");
+        if (suite.hasName()) {
+            strBuilder.append("[" + suite.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
         strBuilder.append("[" + executionTimeNanos + "]");
-        strBuilder.append("[" + (execTimeOK? "EXECTIMEOK" : "EXECTIMEKO") + "]");
+        strBuilder.append(" Suite executed in " + duration(executionTimeNanos));
+        
+        output(strBuilder.toString());
+        
+    }
+
+    
+    
+    
+    public void sequenceStart(final ITestSequence sequence) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[SEQSTART  ]");
+        if (sequence.hasName()) {
+            strBuilder.append("[" + sequence.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
+        output(strBuilder.toString());
+    }
+    
+    
+    public void sequenceEnd(final ITestSequence sequence, final long executionTimeNanos) {
+        
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[SEQEND    ]");
+        if (sequence.hasName()) {
+            strBuilder.append("[" + sequence.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
+        strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Sequence executed in " + duration(executionTimeNanos));
+        
+        output(strBuilder.toString());
+        
+    }
+
+    
+    
+    
+    public void iteratorStart(final ITestIterator iterator) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[ITERSTART ]");
+        if (iterator.hasName()) {
+            strBuilder.append("[" + iterator.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
+        strBuilder.append("[" + iterator.getIterations() + "]");
+        output(strBuilder.toString());
+    }
+    
+    
+    public void iteratorEnd(final ITestIterator iterator, final long executionTimeNanos) {
+        
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[ITEREND   ]");
+        if (iterator.hasName()) {
+            strBuilder.append("[" + iterator.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
+        strBuilder.append("[" + iterator.getIterations() + "]");
+        strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Iterator executed in " + duration(executionTimeNanos));
+        
+        output(strBuilder.toString());
+    }
+
+    
+    
+    
+    public void testStart(final ITest test) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[TESTSTART ]");
+        if (test.hasName()) {
+            strBuilder.append("[" + test.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
+        output(strBuilder.toString());
+    }
+    
+    
+    public void testEnd(final ITest test, final long executionTimeNanos, final ITestResult result) {
+        
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[TESTEND   ]");
+        if (test.hasName()) {
+            strBuilder.append("[" + test.getName() + "]");
+        } else {
+            strBuilder.append("[ ]");
+        }
+        strBuilder.append("[" + executionTimeNanos + "]");
+        if (result.isOK()) {
+            strBuilder.append("[OK]");
+        } else {
+            strBuilder.append("[KO]");
+        }
         strBuilder.append(' ');
         
         if (result.isOK()) {
@@ -130,20 +190,7 @@ public class ConsoleTestReporter implements ITestReporter {
             strBuilder.append(" [Exception thrown: " +  result.getThrowable().getClass().getName() + ": " + result.getThrowable().getMessage() + "]");
         }
 
-        if (!test.hasMaxTimeNanos()) {
-            strBuilder.append(
-                    " Test executed in " + duration(executionTimeNanos));
-        } else {
-            if (execTimeOK) {
-                strBuilder.append(
-                        " Test executed on time. Executed in " + 
-                        duration(executionTimeNanos) + " (max: " + duration(test.getMaxTimeNanos()) + ")");
-            } else {
-                strBuilder.append(
-                        " Test FAILED to execute on time. Executed in " + 
-                        duration(executionTimeNanos) + " (max: " + duration(test.getMaxTimeNanos()) + ")");
-            }
-        }
+        strBuilder.append(" - Test executed in " + duration(executionTimeNanos));
         
         output(strBuilder.toString());
         
@@ -163,13 +210,6 @@ public class ConsoleTestReporter implements ITestReporter {
         }
     }
     
-    
-    private String duration(final Long nanos) {
-        if (nanos == null) {
-            return null;
-        }
-        return duration(nanos.longValue());
-    }
     
     private String duration(final long nanos) {
         final BigInteger nanosBI = BigInteger.valueOf(nanos);

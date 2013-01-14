@@ -39,7 +39,7 @@ public class FailExpectedTest
     
     
     
-    public FailExpectedTest(final String input, 
+    public FailExpectedTest(final ITestResource input, 
             final Class<? extends Throwable> outputThrowableClass, final String outputThrowableMessagePattern) {
         super(input);
         Validate.notNull(outputThrowableClass, "Output throwable class cannot be null");

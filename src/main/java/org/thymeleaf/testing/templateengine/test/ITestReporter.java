@@ -23,12 +23,16 @@ package org.thymeleaf.testing.templateengine.test;
 
 public interface ITestReporter {
 
-    public void suiteStart();
-    public void suiteEnd(final long executionTimeNanos);
+    public void suiteStart(final ITestSuite suite);
+    public void suiteEnd(final ITestSuite suite, final long executionTimeNanos);
     
     public void sequenceStart(final ITestSequence sequence);
     public void sequenceEnd(final ITestSequence sequence, final long executionTimeNanos);
     
-    public void test(final ITest test, final ITestResult result, final long executionTimeNanos);
+    public void iteratorStart(final ITestIterator iterator);
+    public void iteratorEnd(final ITestIterator iterator, final long executionTimeNanos);
+    
+    public void testStart(final ITest test);
+    public void testEnd(final ITest test, final long executionTimeNanos, final ITestResult result);
     
 }

@@ -23,28 +23,36 @@ package org.thymeleaf.testing.templateengine.test;
 
 
 
-public abstract class AbstractTestable implements ITestable {
-
-    private String name = null;
-
+public class TestIterator 
+        extends AbstractTestable 
+        implements ITestIterator {
     
-    public AbstractTestable() {
+
+    public static final int DEFAULT_ITERATIONS = 1;
+    
+    private int iterations = DEFAULT_ITERATIONS;
+    private final ITestable iteratedElement;
+    
+    
+    public TestIterator(final ITestable iteratedElement) {
         super();
-    }
-    
-    
-    
-    public boolean hasName() {
-        return this.name != null;
-    }
-    
-    public void setName(final String name) {
-        this.name = name;
-    }
-    
-    public String getName() {
-        return this.name;
+        this.iteratedElement = iteratedElement;
     }
 
+
+    
+    public void setIterations(final int iterations) {
+        this.iterations = iterations;
+    }
+    
+    public int getIterations() {
+        return this.iterations;
+    }
+
+    
+    
+    public ITestable getIteratedElement() {
+        return this.iteratedElement;
+    }
     
 }

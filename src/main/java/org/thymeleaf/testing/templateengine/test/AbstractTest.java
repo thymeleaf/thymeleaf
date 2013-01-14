@@ -43,12 +43,12 @@ public abstract class AbstractTest
     private String templateMode = DEFAULT_TEMPLATE_MODE; 
     private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC; 
     
-    private final String input;
+    private final ITestResource input;
     
     
     
     
-    protected AbstractTest(final String input) {
+    protected AbstractTest(final ITestResource input) {
         super();
         this.input = input;
     }
@@ -92,7 +92,7 @@ public abstract class AbstractTest
 
     
 
-    public String getInput() {
+    public ITestResource getInput() {
         return this.input;
     }
 
