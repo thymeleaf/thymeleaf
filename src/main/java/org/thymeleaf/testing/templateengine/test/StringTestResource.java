@@ -19,27 +19,24 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-
-import org.thymeleaf.dialect.IDialect;
 
 
 
 
-public interface ITestSuite {
+public class StringTestResource implements ITestResource {
 
-    public String getName();
-
-    public List<IDialect> getDialects();
     
-    public Map<Locale,Properties> getMessages();
+    private final String str;
     
-    public ITestSequence getSequence();
     
-    public ITestReporter getReporter();
+    public StringTestResource(final String str) {
+        super();
+        this.str = str;
+    }
     
+    
+    public String read() {
+        return this.str;
+    }
     
 }

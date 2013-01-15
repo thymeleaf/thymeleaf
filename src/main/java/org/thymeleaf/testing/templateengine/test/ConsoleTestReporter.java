@@ -56,11 +56,7 @@ public class ConsoleTestReporter implements ITestReporter {
     public void suiteStart(final ITestSuite suite) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[SUITESTART]");
-        if (suite.hasName()) {
             strBuilder.append("[" + suite.getName() + "]");
-        } else {
-            strBuilder.append("[ ]");
-        }
         output(strBuilder.toString());
     }
 
@@ -69,11 +65,7 @@ public class ConsoleTestReporter implements ITestReporter {
         
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[SUITEEND  ]");
-        if (suite.hasName()) {
-            strBuilder.append("[" + suite.getName() + "]");
-        } else {
-            strBuilder.append("[ ]");
-        }
+        strBuilder.append("[" + suite.getName() + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         strBuilder.append(" Suite executed in " + duration(executionTimeNanos));
         
@@ -147,27 +139,20 @@ public class ConsoleTestReporter implements ITestReporter {
     
     
     
-    public void testStart(final ITest test) {
+    public void testStart(final ITest test, final String testName) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[TESTSTART ]");
-        if (test.hasName()) {
-            strBuilder.append("[" + test.getName() + "]");
-        } else {
-            strBuilder.append("[ ]");
-        }
+        strBuilder.append("[" + testName + "]");
         output(strBuilder.toString());
     }
     
     
-    public void testEnd(final ITest test, final long executionTimeNanos, final ITestResult result) {
+    public void testEnd(final ITest test, final String testName, 
+            final long executionTimeNanos, final ITestResult result) {
         
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[TESTEND   ]");
-        if (test.hasName()) {
-            strBuilder.append("[" + test.getName() + "]");
-        } else {
-            strBuilder.append("[ ]");
-        }
+        strBuilder.append("[" + testName + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         if (result.isOK()) {
             strBuilder.append("[OK]");

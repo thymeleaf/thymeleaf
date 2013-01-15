@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
+import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
 import org.thymeleaf.util.Validate;
 
@@ -34,8 +35,8 @@ public class SuccessExpectedTest
     
     
     
-    public SuccessExpectedTest(final ITestResource input, final ITestResource output) {
-        super(input);
+    public SuccessExpectedTest(final ITestResource input, final boolean inputCacheable, final ITestResource output) {
+        super(input, inputCacheable);
         Validate.notNull(output, "Output cannot be null");
         this.output = output;
     }
@@ -50,26 +51,31 @@ public class SuccessExpectedTest
 
 
 
-    public ITestResult evalResult(final String result) {
+    public ITestResult evalResult(final String testName, final String result) {
         
         if (result == null) {
-            TestResult.error(getInput(), result, "Result is null");
+            TestResult.error(testName, getInput(), result, "Result is null");
         }
         
-        if (this.output.equals(result)) {
-            return TestResult.ok(getInput(), result);
-        }
-     
         final String outputStr = this.output.read();
         
-        return TestResult.error(getInput(), result, ResultCompareUtils.explainComparison(outputStr, result));
+        if (outputStr == null) {
+            throw new TestEngineExecutionException(
+                    "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
+        }
+        
+        if (outputStr.equals(result)) {
+            return TestResult.ok(testName, getInput(), result);
+        }
+        
+        return TestResult.error(testName, getInput(), result, ResultCompareUtils.explainComparison(outputStr, result));
         
     }
 
 
-    public ITestResult evalResult(final Throwable t) {
+    public ITestResult evalResult(final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
-        return TestResult.error(getInput(), t);
+        return TestResult.error(testName, getInput(), t);
     }
     
     

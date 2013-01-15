@@ -32,7 +32,7 @@ public interface ITestReporter {
     public void iteratorStart(final ITestIterator iterator);
     public void iteratorEnd(final ITestIterator iterator, final long executionTimeNanos);
     
-    public void testStart(final ITest test);
-    public void testEnd(final ITest test, final long executionTimeNanos, final ITestResult result);
+    public void testStart(final ITest test, final String testName);
+    public void testEnd(final ITest test, final String testName, final long executionTimeNanos, final ITestResult result);
     
 }

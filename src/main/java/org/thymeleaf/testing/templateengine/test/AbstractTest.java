@@ -44,13 +44,15 @@ public abstract class AbstractTest
     private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC; 
     
     private final ITestResource input;
+    private final boolean inputCacheable;
+
     
     
     
-    
-    protected AbstractTest(final ITestResource input) {
+    protected AbstractTest(final ITestResource input, final boolean inputCacheable) {
         super();
         this.input = input;
+        this.inputCacheable = inputCacheable;
     }
 
 
@@ -94,6 +96,10 @@ public abstract class AbstractTest
 
     public ITestResource getInput() {
         return this.input;
+    }
+
+    public boolean isInputCacheable() {
+        return this.inputCacheable;
     }
 
     

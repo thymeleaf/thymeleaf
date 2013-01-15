@@ -17,29 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-
-import org.thymeleaf.dialect.IDialect;
+package org.thymeleaf.testing.templateengine.context;
 
 
 
 
-public interface ITestSuite {
 
-    public String getName();
 
-    public List<IDialect> getDialects();
+public class ContextNaming {
+
+    public static final String TEST_EXECUTION_CONTEXT_VARIABLE_NAME = "$test:context$";
     
-    public Map<Locale,Properties> getMessages();
     
-    public ITestSequence getSequence();
-    
-    public ITestReporter getReporter();
-    
+    private ContextNaming() {
+        super();
+    }
     
 }

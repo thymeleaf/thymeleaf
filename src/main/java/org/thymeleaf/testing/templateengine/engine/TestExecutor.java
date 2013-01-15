@@ -19,18 +19,30 @@
  */
 package org.thymeleaf.testing.templateengine.engine;
 
-import java.util.HashMap;
+import java.io.StringWriter;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.ProcessingContext;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.context.ContextNaming;
+import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestIterator;
 import org.thymeleaf.testing.templateengine.test.ITestReporter;
+import org.thymeleaf.testing.templateengine.test.ITestResource;
 import org.thymeleaf.testing.templateengine.test.ITestResult;
 import org.thymeleaf.testing.templateengine.test.ITestSequence;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
+import org.thymeleaf.testing.templateengine.test.StringTestResource;
+import org.thymeleaf.testing.templateengine.test.SuccessExpectedTest;
+import org.thymeleaf.testing.templateengine.test.TestSuite;
 import org.thymeleaf.util.Validate;
 
 
@@ -41,7 +53,7 @@ public class TestExecutor {
     
     
     
-    private static void execute(final ITestSuite suite) {
+    public static void execute(final ITestSuite suite) {
         try {
             executeSuite(suite);
         } catch (final TestEngineExecutionException e) {
@@ -55,18 +67,28 @@ public class TestExecutor {
     
     private static long executeSuite(final ITestSuite suite) {
 
-        validateSuite(suite);
+        Validate.notNull(suite, "Suite cannot be null");
+        if (suite.getName() == null) {
+            throw new TestEngineExecutionException("Test suites must have a name (null returned)");
+        }
         
         final ITestSequence sequence = suite.getSequence(); 
         final ITestReporter reporter = suite.getReporter();
         
         
-        final TemplateEngine templateEngine = null;
+        final TestTemplateResolver templateResolver = new TestTemplateResolver();
+        final List<IDialect> dialects = suite.getDialects();
+        
+        final TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.setTemplateResolver(templateResolver);
+        templateEngine.setDialects(new HashSet<IDialect>(dialects));
+        
+        final TestExecutionContext testExecutionContext = new TestExecutionContext(suite); 
         
         reporter.suiteStart(suite);
         
         final long executionTimeNanos = 
-                executeSequence(sequence, suite.getReporter(), templateEngine);
+                executeSequence(sequence, suite.getReporter(), templateEngine, testExecutionContext);
         
         reporter.suiteEnd(suite, executionTimeNanos);
         
@@ -76,7 +98,8 @@ public class TestExecutor {
 
 
     
-    private static long executeSequence(final ITestSequence sequence, final ITestReporter reporter, final TemplateEngine templateEngine) {
+    private static long executeSequence(final ITestSequence sequence, final ITestReporter reporter, 
+            final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
 
         reporter.sequenceStart(sequence);
         
@@ -88,15 +111,15 @@ public class TestExecutor {
             
             if (element instanceof ITestSequence) {
                 final long elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, reporter, templateEngine);
+                        executeSequence((ITestSequence)element, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
                 final long elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, reporter, templateEngine);
+                        executeIterator((ITestIterator)element, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
                 final long elementExecTimeNanos = 
-                        executeTest((ITest)element, reporter, templateEngine);
+                        executeTest((ITest)element, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
@@ -114,7 +137,8 @@ public class TestExecutor {
     
     
     
-    private static long executeIterator(final ITestIterator iterator, final ITestReporter reporter, final TemplateEngine templateEngine) {
+    private static long executeIterator(final ITestIterator iterator, final ITestReporter reporter, 
+            final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
 
         reporter.iteratorStart(iterator);
         
@@ -127,15 +151,15 @@ public class TestExecutor {
             
             if (element instanceof ITestSequence) {
                 final long elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, reporter, templateEngine);
+                        executeSequence((ITestSequence)element, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
                 final long elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, reporter, templateEngine);
+                        executeIterator((ITestIterator)element, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
                 final long elementExecTimeNanos = 
-                        executeTest((ITest)element, reporter, templateEngine);
+                        executeTest((ITest)element, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
@@ -153,21 +177,46 @@ public class TestExecutor {
     
     
     
-    private static long executeTest(final ITest test, final ITestReporter reporter, final TemplateEngine templateEngine) {
+    private static long executeTest(final ITest test, final ITestReporter reporter, 
+            final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
 
-        reporter.testStart(test);
         
-        long totalTimeNanos = 0L;
+        final String testName = testExecutionContext.registerTest(test);
+        
+        reporter.testStart(test, testName);
+        
+        final IContext context = test.getContext();
+        
+        final Map<String,Object> localVariables = 
+                Collections.singletonMap(
+                        ContextNaming.TEST_EXECUTION_CONTEXT_VARIABLE_NAME, (Object)testExecutionContext);
+        
+        final ProcessingContext processingContext = new ProcessingContext(context, localVariables);
+        
+        final IFragmentSpec fragmentSpec = test.getFragmentSpec();
 
-        final String input = test.getInput();
+        final StringWriter writer = new StringWriter();
+
+        ITestResult testResult = null;
         
-//        templateEngine.pro
-//        
-//        reporter.test(test, result, executionTimeNanos)
+        long startTimeNanos = System.nanoTime();
+        long endTimeNanos;
+        try {
+            
+            templateEngine.process(testName, processingContext, fragmentSpec, writer);
+            endTimeNanos = System.nanoTime();
+            
+            final String result = writer.toString();
+            testResult = test.evalResult(testName, result);
+            
+        } catch (final Throwable t) {
+            endTimeNanos = System.nanoTime();
+            testResult = test.evalResult(testName, t);
+        }
         
-        final ITestResult result = null;
+        final long totalTimeNanos = (endTimeNanos - startTimeNanos);
         
-        reporter.testEnd(test, totalTimeNanos, result);
+        reporter.testEnd(test, testName, totalTimeNanos, testResult);
         
         return totalTimeNanos;
         
@@ -176,28 +225,45 @@ public class TestExecutor {
   
     
     
-    
-    
-    private static void validateSuite(final ITestSuite suite) {
-        Validate.notNull(suite, "Suite cannot be null");
-        validateSequence(suite.getSequence(), new HashMap<String,ITestable>());
-    }
-    
-    
-    
-    private static void validateSequence(final ITestSequence sequence, final Map<String,ITestable> testablesByName) {
-        Validate.notNull(sequence, "Sequence cannot be null");
-         if (sequence.hasName()) {
-            final String name = sequence.getName();
-            final ITestable testable = 
-         }
-    }
-    
-    
-    
-    
     private TestExecutor() {
         super();
     }
+    
+    
+    
+    
+    
+    
+    
+    public static void main(final String[] args) {
+        
+        try {
+            
+            final ITestResource res0 = new StringTestResource("hello!");
+            final ITestResource res1 = new StringTestResource("goodbye!");
+            final ITestResource res2 = new StringTestResource("<span th:text=\"${'hey!'}\">cucu</span>");
+            final ITestResource res3 = new StringTestResource("<span>hey!</span>");
+            
+            final ITest test0 = new SuccessExpectedTest(res1, true, res0);
+            final ITest test1 = new SuccessExpectedTest(res2, false, res0);
+            final ITest test2 = new SuccessExpectedTest(res2, true, res3);
+            
+            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2);
+
+            
+            execute(testSuite);
+            
+            
+            
+        } catch (final Throwable t) {
+            t.printStackTrace();
+        }
+        
+        
+    }
+    
+    
+    
+    
     
 }

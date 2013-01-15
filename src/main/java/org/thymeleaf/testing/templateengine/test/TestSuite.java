@@ -43,11 +43,11 @@ public class TestSuite implements ITestSuite {
             Collections.singletonMap((Locale)null, (Properties)new UnmodifiableProperties());
     
     
-    private String name = null;
     private List<IDialect> dialects = DEFAULT_DIALECTS;
     private Map<Locale,Properties> messages = DEFAULT_MESSAGES;
     private ITestReporter reporter = null;
     
+    private final String name;
     private final ITestSequence sequence;
     
 
@@ -55,22 +55,34 @@ public class TestSuite implements ITestSuite {
     
     
     
-    public TestSuite(final ITestSequence sequence) {
+    public TestSuite(final String name, final ITestSequence sequence) {
         super();
+        Validate.notNull(name, "Name cannot be null");
         Validate.notNull(sequence, "Sequence cannot be null");
+        this.name = name;
         this.sequence = sequence;
     }
     
-    
-    
-    
-    public void setName(final String name) {
+
+    public TestSuite(final String name, final ITestable... testables) {
+        
+        super();
+        
+        Validate.notNull(name, "Name cannot be null");
+        Validate.notNull(testables, "Testable object assignation cannot be null");
+        
         this.name = name;
+        this.sequence = new TestSequence();
+        
+        for (int i = 0; i< testables.length; i++) {
+            ((TestSequence)this.sequence).addElement(testables[i]);
+        }
+        
     }
+
     
-    public boolean hasName() {
-        return this.name != null;
-    }
+    
+    
     
     public String getName() {
         return this.name;

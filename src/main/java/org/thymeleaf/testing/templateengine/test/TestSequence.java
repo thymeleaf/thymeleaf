@@ -43,6 +43,15 @@ public class TestSequence
     }
     
 
+    public TestSequence(final ITestable... testables) {
+        super();
+        Validate.notNull(testables, "Testable object assignation cannot be null");
+        for (int i = 0; i< testables.length; i++) {
+            addElement(testables[i]);
+        }
+    }
+
+    
     
     public void addElement(final ITestable testable) {
         Validate.notNull(testable, "Testable object cannot be null");

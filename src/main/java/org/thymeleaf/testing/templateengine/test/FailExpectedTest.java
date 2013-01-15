@@ -39,9 +39,9 @@ public class FailExpectedTest
     
     
     
-    public FailExpectedTest(final ITestResource input, 
+    public FailExpectedTest(final ITestResource input, final boolean inputCacheable, 
             final Class<? extends Throwable> outputThrowableClass, final String outputThrowableMessagePattern) {
-        super(input);
+        super(input, inputCacheable);
         Validate.notNull(outputThrowableClass, "Output throwable class cannot be null");
         this.outputThrowableClass = outputThrowableClass;
         this.outputThrowableMessagePattern = outputThrowableMessagePattern;
@@ -62,12 +62,12 @@ public class FailExpectedTest
 
 
 
-    public ITestResult evalResult(final String result) {
-        return TestResult.error(getInput(), result, "An exception of class " + this.outputThrowableClass.getName() + " was expected");
+    public ITestResult evalResult(final String testName, final String result) {
+        return TestResult.error(testName, getInput(), result, "An exception of class " + this.outputThrowableClass.getName() + " was expected");
     }
 
 
-    public ITestResult evalResult(final Throwable t) {
+    public ITestResult evalResult(final String testName, final Throwable t) {
         
         Validate.notNull(t, "Throwable cannot be null");
         
@@ -79,21 +79,21 @@ public class FailExpectedTest
                 if (throwableMessage != null) {
                     final Matcher matcher = this.outputThrowableMessagePatternObject.matcher(throwableMessage);
                     if (matcher.matches()) {
-                        return TestResult.ok(getInput(), t);
+                        return TestResult.ok(testName, getInput(), t);
                     }
                 }
                 
-                return TestResult.error(getInput(), 
+                return TestResult.error(testName, getInput(), 
                         "An exception of class " + t.getClass() + " was raised as expected, " +
                 		"but its message does not match pattern \"" + throwableMessage + "\"", t);
                 
             }
             
-            return TestResult.ok(getInput(), t);
+            return TestResult.ok(testName, getInput(), t);
             
         }
         
-        return TestResult.error(getInput(), 
+        return TestResult.error(testName, getInput(), 
                 "An exception of class " + t.getClass() + " was raised, but " + this.outputThrowableClass.getName() + " was expected instead", t);
         
     }

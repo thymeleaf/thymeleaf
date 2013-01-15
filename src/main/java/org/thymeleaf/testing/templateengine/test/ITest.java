@@ -24,7 +24,7 @@ import org.thymeleaf.fragment.IFragmentSpec;
 
 
 public interface ITest extends ITestable {
-
+    
     public IContext getContext();
     
     public boolean hasFragmentSpec();
@@ -33,8 +33,9 @@ public interface ITest extends ITestable {
     public String getTemplateMode();
     
     public ITestResource getInput();
+    public boolean isInputCacheable();
     
-    public ITestResult evalResult(final String result);
-    public ITestResult evalResult(final Throwable t);
+    public ITestResult evalResult(final String testName, final String result);
+    public ITestResult evalResult(final String testName, final Throwable t);
     
 }

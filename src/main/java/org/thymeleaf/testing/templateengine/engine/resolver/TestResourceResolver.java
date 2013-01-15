@@ -19,10 +19,14 @@
  */
 package org.thymeleaf.testing.templateengine.engine.resolver;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.test.ITestResource;
+import org.thymeleaf.util.Validate;
 
 
 
@@ -34,20 +38,19 @@ public class TestResourceResolver implements IResourceResolver {
     public static final String NAME = "TEST";
     
     
-    private InputStream stream = null;
+    private final ITestResource resource;
+    private final String characterEncoding;
     
 
-    public TestResourceResolver() {
+    public TestResourceResolver(final ITestResource resource, final String characterEncoding) {
         super();
+        Validate.notNull(resource, "Resource cannot be null");
+        Validate.notNull(characterEncoding, "Character encoding cannot be null");
+        this.resource = resource;
+        this.characterEncoding = characterEncoding;
     }
 
     
-    
-    
-    void setStream(final InputStream stream) {
-        this.stream = stream;
-    }
-
 
 
     public String getName() {
@@ -55,12 +58,29 @@ public class TestResourceResolver implements IResourceResolver {
     }
 
     
+    public ITestResource getTestResource() {
+        return this.resource;
+    }
+    
 
     
     public InputStream getResourceAsStream(
             final TemplateProcessingParameters templateProcessingParameters,
             final String resourceName) {
-        return this.stream;            
+
+        try {
+            
+            final String input = this.resource.read();
+            if (input == null) {
+                return null;
+            }
+            
+            return new ByteArrayInputStream(input.getBytes(this.characterEncoding));
+            
+        } catch (final Exception e) {
+            throw new TestEngineExecutionException("Exception resolving test template from in-memory String");
+        }
+        
     }
     
     
