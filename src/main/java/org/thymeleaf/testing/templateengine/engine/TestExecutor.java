@@ -35,14 +35,10 @@ import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestIterator;
 import org.thymeleaf.testing.templateengine.test.ITestReporter;
-import org.thymeleaf.testing.templateengine.test.ITestResource;
 import org.thymeleaf.testing.templateengine.test.ITestResult;
 import org.thymeleaf.testing.templateengine.test.ITestSequence;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
-import org.thymeleaf.testing.templateengine.test.StringTestResource;
-import org.thymeleaf.testing.templateengine.test.SuccessExpectedTest;
-import org.thymeleaf.testing.templateengine.test.TestSuite;
 import org.thymeleaf.util.Validate;
 
 
@@ -88,9 +84,13 @@ public class TestExecutor {
         reporter.suiteStart(suite);
         
         final long executionTimeNanos = 
-                executeSequence(sequence, suite.getReporter(), templateEngine, testExecutionContext);
+                executeSequence(sequence, 0, suite.getReporter(), templateEngine, testExecutionContext);
         
-        reporter.suiteEnd(suite, executionTimeNanos);
+        reporter.suiteEnd(
+                suite, 
+                testExecutionContext.getTotalTestsExecuted(), 
+                testExecutionContext.getTotalTestsOk(), 
+                executionTimeNanos);
         
         return executionTimeNanos;
         
@@ -98,28 +98,29 @@ public class TestExecutor {
 
 
     
-    private static long executeSequence(final ITestSequence sequence, final ITestReporter reporter, 
+    private static long executeSequence(final ITestSequence sequence, final int nestingLevel, final ITestReporter reporter, 
             final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
 
-        reporter.sequenceStart(sequence);
+        reporter.sequenceStart(sequence, nestingLevel);
         
         long totalTimeNanos = 0L;
         
         final List<ITestable> elements = sequence.getElements();
+        final int childNestingLevel = nestingLevel + 1;
         
         for (final ITestable element : elements) {
             
             if (element instanceof ITestSequence) {
                 final long elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, reporter, templateEngine, testExecutionContext);
+                        executeSequence((ITestSequence)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
                 final long elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, reporter, templateEngine, testExecutionContext);
+                        executeIterator((ITestIterator)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
                 final long elementExecTimeNanos = 
-                        executeTest((ITest)element, reporter, templateEngine, testExecutionContext);
+                        executeTest((ITest)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
@@ -129,7 +130,7 @@ public class TestExecutor {
             
         }
         
-        reporter.sequenceEnd(sequence, totalTimeNanos);
+        reporter.sequenceEnd(sequence, nestingLevel, totalTimeNanos);
         
         return totalTimeNanos;
         
@@ -137,13 +138,14 @@ public class TestExecutor {
     
     
     
-    private static long executeIterator(final ITestIterator iterator, final ITestReporter reporter, 
+    private static long executeIterator(final ITestIterator iterator, final int nestingLevel, final ITestReporter reporter, 
             final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
 
-        reporter.iteratorStart(iterator);
+        reporter.iteratorStart(iterator, nestingLevel);
         
         final int iterations = iterator.getIterations();
         final ITestable element = iterator.getIteratedElement();
+        final int childNestingLevel = nestingLevel + 1;
         
         long totalTimeNanos = 0L;
         
@@ -151,15 +153,15 @@ public class TestExecutor {
             
             if (element instanceof ITestSequence) {
                 final long elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, reporter, templateEngine, testExecutionContext);
+                        executeSequence((ITestSequence)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
                 final long elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, reporter, templateEngine, testExecutionContext);
+                        executeIterator((ITestIterator)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
                 final long elementExecTimeNanos = 
-                        executeTest((ITest)element, reporter, templateEngine, testExecutionContext);
+                        executeTest((ITest)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
@@ -169,7 +171,7 @@ public class TestExecutor {
             
         }
         
-        reporter.iteratorEnd(iterator, totalTimeNanos);
+        reporter.iteratorEnd(iterator, nestingLevel, totalTimeNanos);
         
         return totalTimeNanos;
         
@@ -177,13 +179,13 @@ public class TestExecutor {
     
     
     
-    private static long executeTest(final ITest test, final ITestReporter reporter, 
+    private static long executeTest(final ITest test, final int nestingLevel, final ITestReporter reporter, 
             final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
 
         
         final String testName = testExecutionContext.registerTest(test);
         
-        reporter.testStart(test, testName);
+        reporter.testStart(test, testName, nestingLevel);
         
         final IContext context = test.getContext();
         
@@ -216,7 +218,9 @@ public class TestExecutor {
         
         final long totalTimeNanos = (endTimeNanos - startTimeNanos);
         
-        reporter.testEnd(test, testName, totalTimeNanos, testResult);
+        reporter.testEnd(test, testName, nestingLevel, totalTimeNanos, testResult);
+        
+        testExecutionContext.registerResult(testResult.isOK());
         
         return totalTimeNanos;
         
@@ -228,41 +232,6 @@ public class TestExecutor {
     private TestExecutor() {
         super();
     }
-    
-    
-    
-    
-    
-    
-    
-    public static void main(final String[] args) {
-        
-        try {
-            
-            final ITestResource res0 = new StringTestResource("hello!");
-            final ITestResource res1 = new StringTestResource("goodbye!");
-            final ITestResource res2 = new StringTestResource("<span th:text=\"${'hey!'}\">cucu</span>");
-            final ITestResource res3 = new StringTestResource("<span>hey!</span>");
-            
-            final ITest test0 = new SuccessExpectedTest(res1, true, res0);
-            final ITest test1 = new SuccessExpectedTest(res2, false, res0);
-            final ITest test2 = new SuccessExpectedTest(res2, true, res3);
-            
-            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2);
-
-            
-            execute(testSuite);
-            
-            
-            
-        } catch (final Throwable t) {
-            t.printStackTrace();
-        }
-        
-        
-    }
-    
-    
     
     
     

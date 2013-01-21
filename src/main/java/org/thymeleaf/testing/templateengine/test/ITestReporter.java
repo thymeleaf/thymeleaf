@@ -24,15 +24,15 @@ package org.thymeleaf.testing.templateengine.test;
 public interface ITestReporter {
 
     public void suiteStart(final ITestSuite suite);
-    public void suiteEnd(final ITestSuite suite, final long executionTimeNanos);
+    public void suiteEnd(final ITestSuite suite, final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos);
     
-    public void sequenceStart(final ITestSequence sequence);
-    public void sequenceEnd(final ITestSequence sequence, final long executionTimeNanos);
+    public void sequenceStart(final ITestSequence sequence, final int nestingLevel);
+    public void sequenceEnd(final ITestSequence sequence, final int nestingLevel, final long executionTimeNanos);
     
-    public void iteratorStart(final ITestIterator iterator);
-    public void iteratorEnd(final ITestIterator iterator, final long executionTimeNanos);
+    public void iteratorStart(final ITestIterator iterator, final int nestingLevel);
+    public void iteratorEnd(final ITestIterator iterator, final int nestingLevel, final long executionTimeNanos);
     
-    public void testStart(final ITest test, final String testName);
-    public void testEnd(final ITest test, final String testName, final long executionTimeNanos, final ITestResult result);
+    public void testStart(final ITest test, final String testName, final int nestingLevel);
+    public void testEnd(final ITest test, final String testName, final int nestingLevel, final long executionTimeNanos, final ITestResult result);
     
 }

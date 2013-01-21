@@ -40,6 +40,9 @@ public final class TestExecutionContext {
     
     private final Map<String,Integer> counterByClassName = new HashMap<String,Integer>();
     
+    private int totalTestsExecuted = 0;
+    private int totalTestsOk = 0;
+    
 
     TestExecutionContext(final ITestSuite suite) {
         super();
@@ -88,6 +91,24 @@ public final class TestExecutionContext {
         
         return name;
             
+    }
+    
+
+    
+    synchronized void registerResult(final boolean ok) {
+        this.totalTestsExecuted++;
+        if (ok) {
+            this.totalTestsOk++;
+        }
+    }
+    
+    
+    public int getTotalTestsOk() {
+        return this.totalTestsOk;
+    }
+    
+    public int getTotalTestsExecuted() {
+        return this.totalTestsExecuted;
     }
     
     

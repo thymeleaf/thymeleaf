@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
+import org.thymeleaf.util.Validate;
+
 
 
 
@@ -28,22 +30,19 @@ public class TestIterator
         implements ITestIterator {
     
 
-    public static final int DEFAULT_ITERATIONS = 1;
-    
-    private int iterations = DEFAULT_ITERATIONS;
+    private final int iterations;
     private final ITestable iteratedElement;
     
     
-    public TestIterator(final ITestable iteratedElement) {
+    public TestIterator(final ITestable iteratedElement, final int iterations) {
         super();
+        Validate.notNull(iteratedElement, "Iterated element cannot be null");
+        Validate.isTrue(iterations > 0, "Iterations must be more than zero");
         this.iteratedElement = iteratedElement;
-    }
-
-
-    
-    public void setIterations(final int iterations) {
         this.iterations = iterations;
     }
+
+
     
     public int getIterations() {
         return this.iterations;
