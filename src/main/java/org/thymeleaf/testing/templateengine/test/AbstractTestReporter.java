@@ -61,7 +61,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
     
     public String msgSuiteStart(final ITestSuite suite) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[SUITESTART]");
+        strBuilder.append("[suite:begin]");
         strBuilder.append("[" + suite.getName() + "]");
         return strBuilder.toString();
     }
@@ -77,7 +77,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
     public String msgSuiteEnd(final ITestSuite suite, 
             final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[SUITEEND]");
+        strBuilder.append("[suite:end]");
         strBuilder.append("[" + suite.getName() + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         strBuilder.append("[" + totalTestsExecuted + "]");
@@ -97,7 +97,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
     
     public String msgSequenceStart(final ITestSequence sequence) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[SEQSTART]");
+        strBuilder.append("[sequence:start]");
         if (sequence.hasName()) {
             strBuilder.append("[" + sequence.getName() + "]");
         }
@@ -113,7 +113,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
     
     public String msgSequenceEnd(final ITestSequence sequence, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[SEQEND]");
+        strBuilder.append("[sequence:end]");
         if (sequence.hasName()) {
             strBuilder.append("[" + sequence.getName() + "]");
         }
@@ -131,7 +131,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
     
     public String msgIteratorStart(final ITestIterator iterator) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[ITERSTART]");
+        strBuilder.append("[iterator:begin]");
         strBuilder.append("[" + iterator.getIterations() + "]");
         if (iterator.hasName()) {
             strBuilder.append("[" + iterator.getName() + "]");
@@ -148,13 +148,51 @@ public abstract class AbstractTestReporter implements ITestReporter {
     
     public String msgIteratorEnd(final ITestIterator iterator, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[ITEREND]");
+        strBuilder.append("[iterator:end]");
         if (iterator.hasName()) {
             strBuilder.append("[" + iterator.getName() + "]");
         }
         strBuilder.append("[" + iterator.getIterations() + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         strBuilder.append(" Iterator executed in " + duration(executionTimeNanos));
+        return strBuilder.toString();
+    }
+
+    
+    
+    
+    public final void iterationStart(final ITestIterator iterator, final int iteration, final int nestingLevel) {
+        outputMessage(msgIterationStart(iterator, iteration), nestingLevel, false);
+    }
+    
+    public String msgIterationStart(final ITestIterator iterator, final int iteration) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[iteration:begin]");
+        if (iterator.hasName()) {
+            strBuilder.append("[" + iterator.getName() + "]");
+        }
+        strBuilder.append("[" + iteration + "]");
+        strBuilder.append("[" + iterator.getIterations() + "]");
+        return strBuilder.toString();
+    }
+
+    
+    
+    
+    public final void iterationEnd(final ITestIterator iterator, final int iteration, final int nestingLevel, final long executionTimeNanos) {
+        outputMessage(msgIterationEnd(iterator, iteration, executionTimeNanos), nestingLevel, false);
+    }
+    
+    public String msgIterationEnd(final ITestIterator iterator, final int iteration, final long executionTimeNanos) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[iteration:end]");
+        if (iterator.hasName()) {
+            strBuilder.append("[" + iterator.getName() + "]");
+        }
+        strBuilder.append("[" + iteration + "]");
+        strBuilder.append("[" + iterator.getIterations() + "]");
+        strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Iteration executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
 
@@ -184,7 +222,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
             final long executionTimeNanos, final ITestResult result) {
         
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[TEST]");
+        strBuilder.append("[test:end]");
         strBuilder.append("[" + testName + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         if (result.isOK()) {

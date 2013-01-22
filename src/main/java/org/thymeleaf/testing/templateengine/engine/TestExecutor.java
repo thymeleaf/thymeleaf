@@ -145,29 +145,36 @@ public class TestExecutor {
         
         final int iterations = iterator.getIterations();
         final ITestable element = iterator.getIteratedElement();
-        final int childNestingLevel = nestingLevel + 1;
+        final int iterationNestingLevel = nestingLevel + 1;
+        final int iterationContentNestingLevel = nestingLevel + 2;
         
         long totalTimeNanos = 0L;
         
         for (int i = 0; i < iterations; i++) {
             
+            reporter.iterationStart(iterator, (i + 1), iterationNestingLevel);
+            
+            long elementExecTimeNanos = -1L;
+            
             if (element instanceof ITestSequence) {
-                final long elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
+                elementExecTimeNanos = 
+                        executeSequence((ITestSequence)element, iterationContentNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
-                final long elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
+                elementExecTimeNanos = 
+                        executeIterator((ITestIterator)element, iterationContentNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
-                final long elementExecTimeNanos = 
-                        executeTest((ITest)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
+                elementExecTimeNanos = 
+                        executeTest((ITest)element, iterationContentNestingLevel, reporter, templateEngine, testExecutionContext);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
                 throw new TestEngineExecutionException(
                         "ITestable implementation \"" + element.getClass() + "\" is not recognized");
             }
+            
+            reporter.iterationEnd(iterator, (i + 1), iterationNestingLevel, elementExecTimeNanos);
             
         }
         

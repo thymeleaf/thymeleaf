@@ -60,11 +60,12 @@ public class TestExecutorTest {
             
             final ITest test0 = new SuccessExpectedTest(res1, true, res0);
             final ITest test1 = new SuccessExpectedTest(res2, false, res0);
-            final ITest test2 = new SuccessExpectedTest(res2, true, res3);
+            final ITest test2 = new SuccessExpectedTest(res2, false, res3);
             
-            final ITestIterator iter2 = new TestIterator(test2, 10);
+            final ITestIterator iter2 = new TestIterator(test2, 2);
             
-            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2, iter2);
+//            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2, iter2);
+            final ITestSuite testSuite = new TestSuite("testing01", iter2);
 
             
             TestExecutor.execute(testSuite);

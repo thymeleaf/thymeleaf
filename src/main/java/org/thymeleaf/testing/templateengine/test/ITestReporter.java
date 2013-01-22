@@ -31,6 +31,8 @@ public interface ITestReporter {
     
     public void iteratorStart(final ITestIterator iterator, final int nestingLevel);
     public void iteratorEnd(final ITestIterator iterator, final int nestingLevel, final long executionTimeNanos);
+    public void iterationStart(final ITestIterator iterator, final int iteration, final int nestingLevel);
+    public void iterationEnd(final ITestIterator iterator, final int iteration, final int nestingLevel, final long executionTimeNanos);
     
     public void testStart(final ITest test, final String testName, final int nestingLevel);
     public void testEnd(final ITest test, final String testName, final int nestingLevel, final long executionTimeNanos, final ITestResult result);
