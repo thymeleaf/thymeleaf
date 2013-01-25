@@ -172,35 +172,5 @@ public final class StandardTestFileReader {
     }
     
     
-
-    
-    
-    
-    public static void main(final String[] args) {
-        
-        final String test01 = 
-                "%TEST lala\n" +
-                "%MODE  \n" +
-                "%TUS   lele\n" +
-                "looolo\n" +
-                "%TUDD\n" +
-                "looolo\n" +
-                "looolo\n" +
-                "%FRAGMENT    \n" +
-                "looolo\n" +
-                "%INPUT    \n" +
-                "<div>\n" +
-                "</div>\n" +
-                "%OOOOP\n" +
-                " lsd aasdasd";
-        
-        final Reader test01Reader = new StringReader(test01);
-        
-        
-        
-        System.out.println(readTestFile(test01Reader, StandardTestFileNaming.DIRECTIVES_ALL));
-        
-    }
-    
     
 }
