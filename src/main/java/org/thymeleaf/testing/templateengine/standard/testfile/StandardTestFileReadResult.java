@@ -17,26 +17,19 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
+package org.thymeleaf.testing.templateengine.standard.testfile;
 
 
-public interface ITest extends ITestable {
+
+
+
+
+public class StandardTestFileReadResult {
+
     
-    public IContext getContext();
+    public StandardTestFileReadResult() {
+        super();
+    }
     
-    public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
-    
-    public String getTemplateMode();
-    
-    public ITestResource getInput();
-    public boolean isInputCacheable();
-    
-    public ITestResult evalResult(final String testName, final String result);
-    public ITestResult evalResult(final String testName, final Throwable t);
     
 }

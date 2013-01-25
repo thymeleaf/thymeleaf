@@ -17,26 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.standard.testfile;
 
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
+import java.io.Reader;
+import java.util.regex.Pattern;
+
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
-public interface ITest extends ITestable {
+
+
+
+public class StandardTestFileResolver {
+
     
-    public IContext getContext();
+    private static final String DIRECTIVE_PREFIX = "#";
+    private static final String DIRECTIVE_TEMPLATE_MODE = "MODE";
+    private static final String DIRECTIVE_CACHE = "CACHE";
+    private static final String DIRECTIVE_CACHE = "CACHE";
     
-    public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
     
-    public String getTemplateMode();
     
-    public ITestResource getInput();
-    public boolean isInputCacheable();
+    public StandardTestFileResolver(final String str) {
+        super();
+        this.str = str;
+    }
     
-    public ITestResult evalResult(final String testName, final String result);
-    public ITestResult evalResult(final String testName, final Throwable t);
+    
+    public String read() {
+        return this.str;
+    }
     
 }

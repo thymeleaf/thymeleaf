@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.testing.templateengine.test.report.ITestReporter;
 
 
 

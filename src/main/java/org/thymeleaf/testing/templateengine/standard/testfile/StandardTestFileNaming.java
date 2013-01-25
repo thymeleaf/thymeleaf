@@ -17,26 +17,28 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.standard.testfile;
 
 
 
 
 
-public class StringTestResource implements ITestResource {
+
+public final class StandardTestFileNaming {
 
     
-    private final String str;
+    public static final char COMMENT_PREFIX_CHAR = '#';
+    public static final char DIRECTIVE_PREFIX_CHAR = '%';
+    public static final String DIRECTIVE_TEMPLATE_MODE = "MODE";
+    public static final String DIRECTIVE_CACHE = "CACHE";
+    public static final String DIRECTIVE_CONTEXT = "CONTEXT";
+    public static final String DIRECTIVE_FRAGMENT = "FRAGMENT";
+    public static final String DIRECTIVE_INPUT = "INPUT";
+    public static final String DIRECTIVE_OUTPUT = "OUTPUT";
     
     
-    public StringTestResource(final String str) {
+    private StandardTestFileNaming() {
         super();
-        this.str = str;
-    }
-    
-    
-    public String read() {
-        return this.str;
     }
     
 }

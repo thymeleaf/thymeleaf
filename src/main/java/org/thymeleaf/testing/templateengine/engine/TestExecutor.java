@@ -34,11 +34,11 @@ import org.thymeleaf.testing.templateengine.context.ContextNaming;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestIterator;
-import org.thymeleaf.testing.templateengine.test.ITestReporter;
 import org.thymeleaf.testing.templateengine.test.ITestResult;
 import org.thymeleaf.testing.templateengine.test.ITestSequence;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
+import org.thymeleaf.testing.templateengine.test.report.ITestReporter;
 import org.thymeleaf.util.Validate;
 
 

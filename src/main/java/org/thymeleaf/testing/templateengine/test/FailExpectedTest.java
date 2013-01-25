@@ -22,6 +22,7 @@ package org.thymeleaf.testing.templateengine.test;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 

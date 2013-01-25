@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.test.resource;
 
 
 

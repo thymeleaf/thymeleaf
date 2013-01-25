@@ -22,12 +22,12 @@ package org.thymeleaf.testing.templateengine.engine;
 import org.junit.Test;
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestIterator;
-import org.thymeleaf.testing.templateengine.test.ITestResource;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.StringTestResource;
 import org.thymeleaf.testing.templateengine.test.SuccessExpectedTest;
 import org.thymeleaf.testing.templateengine.test.TestIterator;
 import org.thymeleaf.testing.templateengine.test.TestSuite;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.test.resource.StringTestResource;
 
 
 

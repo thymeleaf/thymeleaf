@@ -17,27 +17,26 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.test.resource;
 
 
 
 
-public class ConsoleTestReporter extends AbstractTestReporter {
+
+public class StringTestResource implements ITestResource {
 
     
+    private final String str;
     
-    public ConsoleTestReporter(final String reportName) {
-        super(reportName);
+    
+    public StringTestResource(final String str) {
+        super();
+        this.str = str;
     }
     
     
-    @Override
-    protected void output(final String line, final boolean error) {
-        System.out.println(line);
-        if (error) {
-            System.err.println(line);
-        }
+    public String read() {
+        return this.str;
     }
-    
     
 }

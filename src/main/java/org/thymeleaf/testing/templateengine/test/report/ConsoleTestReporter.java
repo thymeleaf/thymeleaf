@@ -17,26 +17,27 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
-
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
+package org.thymeleaf.testing.templateengine.test.report;
 
 
-public interface ITest extends ITestable {
+
+
+public class ConsoleTestReporter extends AbstractTestReporter {
+
     
-    public IContext getContext();
     
-    public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
+    public ConsoleTestReporter(final String reportName) {
+        super(reportName);
+    }
     
-    public String getTemplateMode();
     
-    public ITestResource getInput();
-    public boolean isInputCacheable();
+    @Override
+    protected void output(final String line, final boolean error) {
+        System.out.println(line);
+        if (error) {
+            System.err.println(line);
+        }
+    }
     
-    public ITestResult evalResult(final String testName, final String result);
-    public ITestResult evalResult(final String testName, final Throwable t);
     
 }

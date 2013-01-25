@@ -24,6 +24,7 @@ import java.util.Locale;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 

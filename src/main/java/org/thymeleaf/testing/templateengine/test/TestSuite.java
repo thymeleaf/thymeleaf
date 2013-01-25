@@ -29,6 +29,8 @@ import java.util.Properties;
 
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.testing.templateengine.test.report.ConsoleTestReporter;
+import org.thymeleaf.testing.templateengine.test.report.ITestReporter;
 import org.thymeleaf.testing.templateengine.util.UnmodifiableProperties;
 import org.thymeleaf.util.Validate;
 

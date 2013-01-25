@@ -17,7 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.test.report;
+
+import org.thymeleaf.testing.templateengine.test.ITest;
+import org.thymeleaf.testing.templateengine.test.ITestIterator;
+import org.thymeleaf.testing.templateengine.test.ITestResult;
+import org.thymeleaf.testing.templateengine.test.ITestSequence;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
 
 
 

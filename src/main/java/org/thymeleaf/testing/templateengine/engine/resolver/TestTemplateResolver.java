@@ -36,7 +36,7 @@ import org.thymeleaf.testing.templateengine.context.ContextNaming;
 import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.engine.TestExecutionContext;
 import org.thymeleaf.testing.templateengine.test.ITest;
-import org.thymeleaf.testing.templateengine.test.ITestResource;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 

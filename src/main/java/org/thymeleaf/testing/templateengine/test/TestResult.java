@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 
