@@ -31,11 +31,6 @@ import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 public class StandardTestFileResolver {
 
     
-    private static final String DIRECTIVE_PREFIX = "#";
-    private static final String DIRECTIVE_TEMPLATE_MODE = "MODE";
-    private static final String DIRECTIVE_CACHE = "CACHE";
-    private static final String DIRECTIVE_CACHE = "CACHE";
-    
     
     
     public StandardTestFileResolver(final String str) {

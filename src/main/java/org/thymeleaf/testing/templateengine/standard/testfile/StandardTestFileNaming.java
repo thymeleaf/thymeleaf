@@ -19,6 +19,10 @@
  */
 package org.thymeleaf.testing.templateengine.standard.testfile;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 
 
 
@@ -35,6 +39,42 @@ public final class StandardTestFileNaming {
     public static final String DIRECTIVE_FRAGMENT = "FRAGMENT";
     public static final String DIRECTIVE_INPUT = "INPUT";
     public static final String DIRECTIVE_OUTPUT = "OUTPUT";
+    
+    
+    public static final Set<String> DIRECTIVES_ALL;
+    public static final Set<String> DIRECTIVES_ALL_BUT_INPUT_OUTPUT;
+    public static final Set<String> DIRECTIVES_INPUT;
+    public static final Set<String> DIRECTIVES_OUTPUT;
+    
+    
+    
+    static {
+        
+        final Set<String> allButInputOutput = new HashSet<String>();
+        allButInputOutput.add(DIRECTIVE_TEMPLATE_MODE);
+        allButInputOutput.add(DIRECTIVE_CACHE);
+        allButInputOutput.add(DIRECTIVE_CONTEXT);
+        allButInputOutput.add(DIRECTIVE_FRAGMENT);
+        
+        final Set<String> input = new HashSet<String>();
+        input.add(DIRECTIVE_INPUT);
+        
+        final Set<String> output = new HashSet<String>();
+        output.add(DIRECTIVE_OUTPUT);
+        
+        final Set<String> all = new HashSet<String>();
+        all.addAll(allButInputOutput);
+        all.addAll(input);
+        all.addAll(output);
+        
+        DIRECTIVES_ALL = Collections.unmodifiableSet(all);
+        DIRECTIVES_ALL_BUT_INPUT_OUTPUT = Collections.unmodifiableSet(allButInputOutput);
+        DIRECTIVES_INPUT = Collections.unmodifiableSet(input);
+        DIRECTIVES_OUTPUT = Collections.unmodifiableSet(output);
+        
+    }
+    
+
     
     
     private StandardTestFileNaming() {

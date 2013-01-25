@@ -25,27 +25,24 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
+import org.thymeleaf.util.Validate;
 
 
 
 
 
 
-public class StandardTestFileReader {
+public final class StandardTestFileReader {
 
     
     
-    
-    public StandardTestFileReader() {
-        super();
-    }
-    
-    
-    
-    public Map<String,String> readTestFile(final Reader reader) {
-        
+    public static Map<String,String> readTestFile(final Reader reader, final Set<String> fields) {
+
+        Validate.notNull(reader, "Reader cannot be null");
+        Validate.notNull(fields, "Fields set cannot be null");
         
         final BufferedReader r = new BufferedReader(reader);
         final HashMap<String,String> data = new HashMap<String, String>();
@@ -89,15 +86,24 @@ public class StandardTestFileReader {
                 
                 final int lineLen = line.length();
                 currentDirectiveName = line.substring(1, directiveEnd);
-                strBuilder = new StringBuilder();
-                if (directiveEnd < (lineLen - 1)) {
-                    int valueStart = directiveEnd;
-                    while (valueStart < lineLen && Character.isWhitespace(line.charAt(valueStart))) { 
-                        valueStart++; 
+                
+                if (fields.contains(currentDirectiveName)) {
+                    
+                    strBuilder = new StringBuilder();
+                    if (directiveEnd < (lineLen - 1)) {
+                        int valueStart = directiveEnd;
+                        while (valueStart < lineLen && Character.isWhitespace(line.charAt(valueStart))) { 
+                            valueStart++; 
+                        }
+                        if (valueStart < (lineLen - 1)) {
+                            strBuilder.append(line.substring(valueStart));
+                        }
                     }
-                    if (valueStart < (lineLen - 1)) {
-                        strBuilder.append(line.substring(valueStart));
-                    }
+                    
+                } else {
+                    
+                    strBuilder = null;
+                    
                 }
                 
                 line = r.readLine();
@@ -111,19 +117,29 @@ public class StandardTestFileReader {
             return data;
             
         } catch (final IOException e) {
+            
             throw new TestEngineExecutionException(e);
+            
+        } finally {
+            
+            try {
+                r.close();
+            } catch (final Throwable t) {
+                // ignored
+            }
+            
         }
         
     }
 
     
     
-    protected boolean isComment(final String line) {
+    private static boolean isComment(final String line) {
         return (line.length() > 0 && line.charAt(0) == StandardTestFileNaming.COMMENT_PREFIX_CHAR);
     }
     
     
-    private int identifyDirective(final String line) {
+    private static int identifyDirective(final String line) {
     
         final int lineLen = line.length();
         if (lineLen <= 0) {
@@ -151,20 +167,30 @@ public class StandardTestFileReader {
 
     
     
+    private StandardTestFileReader() {
+        super();
+    }
+    
+    
+
+    
+    
+    
     public static void main(final String[] args) {
-        
-        final StandardTestFileReader r = new StandardTestFileReader();
         
         final String test01 = 
                 "%TEST lala\n" +
-                "%TEE  \n" +
+                "%MODE  \n" +
                 "%TUS   lele\n" +
                 "looolo\n" +
                 "%TUDD\n" +
                 "looolo\n" +
                 "looolo\n" +
-                "%TUD22    \n" +
+                "%FRAGMENT    \n" +
                 "looolo\n" +
+                "%INPUT    \n" +
+                "<div>\n" +
+                "</div>\n" +
                 "%OOOOP\n" +
                 " lsd aasdasd";
         
@@ -172,7 +198,7 @@ public class StandardTestFileReader {
         
         
         
-        System.out.println(r.readTestFile(test01Reader));
+        System.out.println(readTestFile(test01Reader, StandardTestFileNaming.DIRECTIVES_ALL));
         
     }
     
