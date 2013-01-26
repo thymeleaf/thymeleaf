@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public abstract class AbstractTestReporter implements ITestReporter {
+public abstract class AbstractTextualTestReporter implements ITestReporter {
 
     private static final String NOW_FORMAT = "yyyy-MM-dd HH:mm:ss"; 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(NOW_FORMAT);
@@ -45,7 +45,7 @@ public abstract class AbstractTestReporter implements ITestReporter {
     
     
     
-    protected AbstractTestReporter(final String reportName) {
+    protected AbstractTextualTestReporter(final String reportName) {
         super();
         Validate.notEmpty(reportName, "Report name cannot be null or empty");
         this.reportName = reportName;
@@ -67,7 +67,9 @@ public abstract class AbstractTestReporter implements ITestReporter {
     public String msgSuiteStart(final ITestSuite suite) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[suite:begin]");
-        strBuilder.append("[" + suite.getName() + "]");
+        if (suite.hasName()) {
+            strBuilder.append("[" + suite.getName() + "]");
+        }
         return strBuilder.toString();
     }
 
@@ -83,7 +85,9 @@ public abstract class AbstractTestReporter implements ITestReporter {
             final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[suite:end]");
-        strBuilder.append("[" + suite.getName() + "]");
+        if (suite.hasName()) {
+            strBuilder.append("[" + suite.getName() + "]");
+        }
         strBuilder.append("[" + executionTimeNanos + "]");
         strBuilder.append("[" + totalTestsExecuted + "]");
         strBuilder.append("[" + totalTestsOk + "]");

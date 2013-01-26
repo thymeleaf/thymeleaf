@@ -22,12 +22,12 @@ package org.thymeleaf.testing.templateengine.test.report;
 
 
 
-public class ConsoleTestReporter extends AbstractTestReporter {
+public class ConsoleTestReporter extends AbstractTextualTestReporter {
 
     
     
     public ConsoleTestReporter(final String reportName) {
-        super(reportName);
+        super(reportName != null? reportName : "CONSOLE REPORT");
     }
     
     

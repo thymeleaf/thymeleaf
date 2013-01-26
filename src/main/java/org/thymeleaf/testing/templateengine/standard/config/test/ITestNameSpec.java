@@ -17,31 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.test;
+package org.thymeleaf.testing.templateengine.standard.config.test;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
 
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.testing.templateengine.test.report.ITestReporter;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
+public interface ITestNameSpec {
 
-public interface ITestSuite {
-
-    public boolean hasName();
-    public String getName();
-
-    public List<IDialect> getDialects();
-    
-    public Map<Locale,Properties> getMessages();
-    
-    public ITestSequence getSequence();
-    
-    public ITestReporter getReporter();
-    
+    public String getTestName(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
 }

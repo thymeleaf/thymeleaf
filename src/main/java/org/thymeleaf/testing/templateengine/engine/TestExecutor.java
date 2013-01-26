@@ -64,9 +64,6 @@ public class TestExecutor {
     private static long executeSuite(final ITestSuite suite) {
 
         Validate.notNull(suite, "Suite cannot be null");
-        if (suite.getName() == null) {
-            throw new TestEngineExecutionException("Test suites must have a name (null returned)");
-        }
         
         final ITestSequence sequence = suite.getSequence(); 
         final ITestReporter reporter = suite.getReporter();
@@ -84,7 +81,7 @@ public class TestExecutor {
         reporter.suiteStart(suite);
         
         final long executionTimeNanos = 
-                executeSequence(sequence, 0, suite.getReporter(), templateEngine, testExecutionContext);
+                executeSequence(sequence, 1, suite.getReporter(), templateEngine, testExecutionContext);
         
         reporter.suiteEnd(
                 suite, 

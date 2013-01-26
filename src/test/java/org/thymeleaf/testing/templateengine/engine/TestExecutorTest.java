@@ -65,7 +65,7 @@ public class TestExecutorTest {
             final ITestIterator iter2 = new TestIterator(test2, 2);
             
 //            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2, iter2);
-            final ITestSuite testSuite = new TestSuite("testing01", iter2);
+            final ITestSuite testSuite = new TestSuite(iter2);
 
             
             TestExecutor.execute(testSuite);
