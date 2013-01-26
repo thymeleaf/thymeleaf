@@ -22,7 +22,6 @@ package org.thymeleaf.testing.templateengine.standard.testfile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
