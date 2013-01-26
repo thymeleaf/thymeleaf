@@ -33,6 +33,7 @@ public final class StandardTestFileNaming {
     
     public static final char COMMENT_PREFIX_CHAR = '#';
     public static final char DIRECTIVE_PREFIX_CHAR = '%';
+    public static final String DIRECTIVE_TEMPLATE_NAME = "NAME";
     public static final String DIRECTIVE_TEMPLATE_MODE = "MODE";
     public static final String DIRECTIVE_CACHE = "CACHE";
     public static final String DIRECTIVE_CONTEXT = "CONTEXT";
@@ -51,6 +52,7 @@ public final class StandardTestFileNaming {
     static {
         
         final Set<String> allButInputOutput = new HashSet<String>();
+        allButInputOutput.add(DIRECTIVE_TEMPLATE_NAME);
         allButInputOutput.add(DIRECTIVE_TEMPLATE_MODE);
         allButInputOutput.add(DIRECTIVE_CACHE);
         allButInputOutput.add(DIRECTIVE_CONTEXT);
