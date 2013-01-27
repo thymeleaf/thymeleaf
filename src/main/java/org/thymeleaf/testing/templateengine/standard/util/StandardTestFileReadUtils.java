@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.testfile;
+package org.thymeleaf.testing.templateengine.standard.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class StandardTestFileReader {
+public final class StandardTestFileReadUtils {
 
     
     
@@ -166,7 +166,7 @@ public final class StandardTestFileReader {
 
     
     
-    private StandardTestFileReader() {
+    private StandardTestFileReadUtils() {
         super();
     }
     

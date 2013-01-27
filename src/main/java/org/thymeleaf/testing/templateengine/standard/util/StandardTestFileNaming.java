@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.testfile;
+package org.thymeleaf.testing.templateengine.standard.util;
 
 import java.util.Collections;
 import java.util.HashSet;

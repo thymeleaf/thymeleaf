@@ -17,14 +17,18 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.io.Reader;
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
 
-public interface ITestInputSpec {
+public interface IStandardInputConfig {
 
-    public Reader getInputReader(final String testSetName, final String testName, final int iteration);
+    public ITestResource getInput(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
 }

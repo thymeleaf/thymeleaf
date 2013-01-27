@@ -26,19 +26,18 @@ import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public final class DefaultTestNameSpec implements ITestNameSpec {
+public class StandardCacheConfig implements IStandardCacheConfig {
 
-    public static final DefaultTestNameSpec INSTANCE = new DefaultTestNameSpec();
+    private final boolean cacheEnabled;
     
-    private DefaultTestNameSpec() {
+    public StandardCacheConfig(final boolean cacheEnabled) {
         super();
+        this.cacheEnabled = cacheEnabled;
     }
 
-    public String getTestName(final ITestSuite suite, final List<ITestable> path, final String fileName) {
-        final StringBuilder strBuilder = new StringBuilder();
-        if (suite.g)
-        return fileName;
+    public final boolean isCacheEnabled(
+            final ITestSuite suite, final List<ITestable> path, final String fileName) {
+        return this.cacheEnabled;
     }
-
-   
+    
 }

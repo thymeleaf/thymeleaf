@@ -17,12 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.List;
+
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
+public interface IStandardFragmentSpecConfig {
 
-public interface ITestTemplateModeSpec {
-
-    public String getTemplateMode(final String testSetName, final String testName, final int iteration);
+    public IFragmentSpec getFragmentSpec(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
 }

@@ -17,17 +17,27 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.List;
+
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
+public class StandardFragmentSpecConfig implements IStandardFragmentSpecConfig {
 
-public class Html5TestTemplateModeSpec extends TestTemplateModeSpec {
-
-    public static final Html5TestTemplateModeSpec INSTANCE = new Html5TestTemplateModeSpec();
-    private static final String HTML5_TEMPLATE_MODE = "HTML5";
+    private final IFragmentSpec fragmentSpec;
     
-    private Html5TestTemplateModeSpec() {
-        super(HTML5_TEMPLATE_MODE);
+    public StandardFragmentSpecConfig(final IFragmentSpec fragmentSpec) {
+        super();
+        this.fragmentSpec = fragmentSpec;
+    }
+
+    public IFragmentSpec getFragmentSpec(
+            final ITestSuite suite, final List<ITestable> path, final String fileName) {
+        return this.fragmentSpec;
     }
     
 }

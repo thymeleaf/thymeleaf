@@ -17,30 +17,39 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.testfile;
+package org.thymeleaf.testing.templateengine.standard.util;
 
 import java.io.Reader;
-import java.util.regex.Pattern;
+import java.util.List;
 
-import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.test.ITest;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
 
 
-public class StandardTestFileResolver {
 
+public final class StandardTestFileResolutionUtils {
+
+
+    // TODO Pass all directives to *Config methods? This would allow custom directives
+    // TODO Group all IStandard*Config method arguments into a "TestArguments" class
+    // TODO Pass this class the set of default *Config implementations to be used? This would allow better customization 
+    
+    public ITest resolveTestFile(
+            final ITestSuite suite, final List<ITestable> path, final String fileName, final Reader reader) {
+        
+        return null;
+        
+    }
     
     
     
-    public StandardTestFileResolver(final String str) {
+    private StandardTestFileResolutionUtils() {
         super();
-        this.str = str;
     }
     
-    
-    public String read() {
-        return this.str;
-    }
     
 }

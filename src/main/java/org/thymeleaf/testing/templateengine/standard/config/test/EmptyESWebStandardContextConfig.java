@@ -17,19 +17,23 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.Collections;
+import java.util.Locale;
 
 
 
 
-public interface ITestOutputSpec {
 
-    public boolean shouldFail(final String testSetName, final String testName, final int iteration);
+public class EmptyESWebStandardContextConfig extends StandardContextConfig {
+
+    private static final Locale LOCALE_ES= new Locale("es", "ES");
+
     
-    public String getDesiredOutput(final String testSetName, final String testName, final int iteration);
-    
-    public String getErrorMessage(final String testSetName, final String testName, final int iteration);
-    
-    public int getMaxExecutionTimeMilliseconds(final String testSetName, final String testName, final int iteration);
+    @SuppressWarnings("unchecked")
+    public EmptyESWebStandardContextConfig() {
+        super(LOCALE_ES, Collections.EMPTY_MAP);
+    }
     
 }

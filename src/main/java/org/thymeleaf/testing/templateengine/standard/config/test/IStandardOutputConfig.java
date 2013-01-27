@@ -17,13 +17,24 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import org.thymeleaf.context.IContext;
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
-public interface ITestContextSpec {
 
-    public IContext getContext(final String testSetName, final String testName, final int iteration);
+
+public interface IStandardOutputConfig {
+
+    public boolean isExceptionExpected(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    
+    public ITestResource getOutput(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    
+    public Class<? extends Throwable> getOutputThrowableClass(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public String getOutputThrowableMessagePattern(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
 }

@@ -17,13 +17,22 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import org.thymeleaf.fragment.IFragmentSpec;
+import java.util.Collections;
+import java.util.Locale;
 
 
-public interface ITestFragmentSpec {
 
-    public IFragmentSpec getFragmentSpec(final String testSetName, final String testName, final int iteration);
+
+
+public class EmptyUSWebStandardContextConfig extends StandardContextConfig {
+
+
+    
+    @SuppressWarnings("unchecked")
+    public EmptyUSWebStandardContextConfig() {
+        super(Locale.US, Collections.EMPTY_MAP);
+    }
     
 }

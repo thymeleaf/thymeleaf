@@ -17,16 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public class OneTestIterationSpec extends TestIterationSpec {
+public interface IStandardTestNameConfig {
 
-    public static final OneTestIterationSpec INSTANCE = new OneTestIterationSpec();
-    
-    private OneTestIterationSpec() {
-        super(1);
-    }
+    public String getTestName(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
 }

@@ -17,22 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public class TestTemplateModeSpec implements ITestTemplateModeSpec {
 
-    private final String templateMode;
+public class WholeTemplateStandardFragmentConfig extends StandardFragmentSpecConfig {
+
+    public static final WholeTemplateStandardFragmentConfig INSTANCE = new WholeTemplateStandardFragmentConfig();
     
-    public TestTemplateModeSpec(final String templateMode) {
-        super();
-        this.templateMode = templateMode;
-    }
-
-    public final String getTemplateMode(
-            final String testSetName, final String testName, final int iteration) {
-        return this.templateMode;
+    private WholeTemplateStandardFragmentConfig() {
+        super(null);
     }
     
 }

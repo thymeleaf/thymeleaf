@@ -26,8 +26,18 @@ import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public interface ITestNameSpec {
+public class StandardTemplateModeConfig implements IStandardTemplateModeConfig {
 
-    public String getTestName(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    private final String templateMode;
+    
+    public StandardTemplateModeConfig(final String templateMode) {
+        super();
+        this.templateMode = templateMode;
+    }
+
+    public final String getTemplateMode(
+            final ITestSuite suite, final List<ITestable> path, final String fileName) {
+        return this.templateMode;
+    }
     
 }

@@ -17,21 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.List;
+
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
+public interface IStandardContextConfig {
 
-public class IndexTestNameSpec implements ITestNameSpec {
-
-    public static final IndexTestNameSpec INSTANCE = new IndexTestNameSpec();
+    public IContext getContext(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
-    private IndexTestNameSpec() {
-        super();
-    }
-
-    public String getTestName(final String testSetName, final int testIndex) {
-        return testSetName + "." + String.format("%05d", Integer.valueOf(testIndex));
-    }
-
-   
 }

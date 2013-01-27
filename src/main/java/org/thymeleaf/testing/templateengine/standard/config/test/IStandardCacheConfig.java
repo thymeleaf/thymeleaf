@@ -17,12 +17,16 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
+public interface IStandardCacheConfig {
 
-public interface ITestNameSpec {
-
-    public String getTestName(final String testSetName, final int testIndex);
+    public boolean isCacheEnabled(final ITestSuite suite, final List<ITestable> path, final String fileName);
     
 }

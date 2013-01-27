@@ -17,19 +17,32 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.config;
+package org.thymeleaf.testing.templateengine.standard.config.test;
+
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public class TemplateProcessTestConfig implements Cloneable {
+public final class FileNameStandardTestNameConfig implements IStandardTestNameConfig {
 
-    public TemplateProcessTestConfig() {
+    
+    public static final FileNameStandardTestNameConfig INSTANCE = new FileNameStandardTestNameConfig();
+    
+    
+    private FileNameStandardTestNameConfig() {
         super();
     }
+
     
-    @Override
-    public TemplateProcessTestConfig clone() {
-        return new TemplateProcessTestConfig();
+    public String getTestName(final ITestSuite suite, final List<ITestable> path, final String fileName) {
+        if (fileName != null) {
+            return fileName;
+        }
+        return "TEST";
     }
-    
+
+   
 }
