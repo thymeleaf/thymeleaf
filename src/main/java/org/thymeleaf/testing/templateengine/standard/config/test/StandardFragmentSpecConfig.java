@@ -19,11 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
 import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 public class StandardFragmentSpecConfig implements IStandardFragmentSpecConfig {
@@ -35,8 +31,7 @@ public class StandardFragmentSpecConfig implements IStandardFragmentSpecConfig {
         this.fragmentSpec = fragmentSpec;
     }
 
-    public IFragmentSpec getFragmentSpec(
-            final ITestSuite suite, final List<ITestable> path, final String fileName) {
+    public IFragmentSpec getFragmentSpec(final StandardTestConfigArguments arguments) {
         return this.fragmentSpec;
     }
     

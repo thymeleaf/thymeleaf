@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -35,8 +31,7 @@ public class StandardCacheConfig implements IStandardCacheConfig {
         this.cacheEnabled = cacheEnabled;
     }
 
-    public final boolean isCacheEnabled(
-            final ITestSuite suite, final List<ITestable> path, final String fileName) {
+    public final boolean isCacheEnabled(final StandardTestConfigArguments arguments) {
         return this.cacheEnabled;
     }
     

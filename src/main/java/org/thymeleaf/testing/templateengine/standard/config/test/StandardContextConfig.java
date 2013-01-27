@@ -20,7 +20,6 @@
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,8 +30,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -124,7 +121,7 @@ public class StandardContextConfig implements IStandardContextConfig {
     
     
 
-    public IContext getContext(final ITestSuite suite, final List<ITestable> path, final String fileName) {
+    public IContext getContext(final StandardTestConfigArguments arguments) {
         return this.context;
     }
    

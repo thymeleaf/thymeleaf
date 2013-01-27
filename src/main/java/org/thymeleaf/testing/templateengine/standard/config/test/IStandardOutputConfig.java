@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
@@ -30,11 +26,11 @@ import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 public interface IStandardOutputConfig {
 
-    public boolean isExceptionExpected(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public boolean isExceptionExpected(final StandardTestConfigArguments arguments);
     
-    public ITestResource getOutput(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public ITestResource getOutput(final StandardTestConfigArguments arguments);
     
-    public Class<? extends Throwable> getOutputThrowableClass(final ITestSuite suite, final List<ITestable> path, final String fileName);
-    public String getOutputThrowableMessagePattern(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public Class<? extends Throwable> getOutputThrowableClass(final StandardTestConfigArguments arguments);
+    public String getOutputThrowableMessagePattern(final StandardTestConfigArguments arguments);
     
 }

@@ -19,15 +19,11 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
 public interface IStandardTestNameConfig {
 
-    public String getTestName(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public String getTestName(final StandardTestConfigArguments arguments);
     
 }

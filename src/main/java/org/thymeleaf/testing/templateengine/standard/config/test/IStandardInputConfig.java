@@ -19,16 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
 
 public interface IStandardInputConfig {
 
-    public ITestResource getInput(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public ITestResource getInput(final StandardTestConfigArguments arguments);
     
 }

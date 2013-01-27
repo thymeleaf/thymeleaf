@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -35,8 +31,7 @@ public class StandardTemplateModeConfig implements IStandardTemplateModeConfig {
         this.templateMode = templateMode;
     }
 
-    public final String getTemplateMode(
-            final ITestSuite suite, final List<ITestable> path, final String fileName) {
+    public final String getTemplateMode(final StandardTestConfigArguments arguments) {
         return this.templateMode;
     }
     

@@ -19,15 +19,11 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 public interface IStandardContextConfig {
 
-    public IContext getContext(final ITestSuite suite, final List<ITestable> path, final String fileName);
+    public IContext getContext(final StandardTestConfigArguments arguments);
     
 }
