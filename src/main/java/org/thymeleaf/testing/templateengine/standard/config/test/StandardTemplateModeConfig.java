@@ -22,7 +22,7 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public class StandardTemplateModeConfig implements IStandardTemplateModeConfig {
+public class StandardTemplateModeConfig implements IStandardConfig<String> {
 
     private final String templateMode;
     
@@ -31,7 +31,7 @@ public class StandardTemplateModeConfig implements IStandardTemplateModeConfig {
         this.templateMode = templateMode;
     }
 
-    public final String getTemplateMode(final StandardTestConfigArguments arguments) {
+    public final String getValue(final StandardTestConfigArguments arguments) {
         return this.templateMode;
     }
     

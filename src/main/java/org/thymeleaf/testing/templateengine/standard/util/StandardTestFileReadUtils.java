@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileDirectives;
 import org.thymeleaf.util.Validate;
 
 
@@ -134,7 +135,7 @@ public final class StandardTestFileReadUtils {
     
     
     private static boolean isComment(final String line) {
-        return (line.length() > 0 && line.charAt(0) == StandardTestFileNaming.COMMENT_PREFIX_CHAR);
+        return (line.length() > 0 && line.charAt(0) == StandardTestFileDirectives.COMMENT_PREFIX_CHAR);
     }
     
     
@@ -146,7 +147,7 @@ public final class StandardTestFileReadUtils {
         }
         
         char c = line.charAt(0);
-        if (c != StandardTestFileNaming.DIRECTIVE_PREFIX_CHAR) {
+        if (c != StandardTestFileDirectives.DIRECTIVE_PREFIX_CHAR) {
             return -1;
         }
         

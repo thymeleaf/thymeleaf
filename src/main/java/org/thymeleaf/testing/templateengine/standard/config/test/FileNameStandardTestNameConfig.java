@@ -23,7 +23,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class FileNameStandardTestNameConfig implements IStandardTestNameConfig {
+public final class FileNameStandardTestNameConfig implements IStandardConfig<String> {
 
     
     public static final FileNameStandardTestNameConfig INSTANCE = new FileNameStandardTestNameConfig();
@@ -34,7 +34,7 @@ public final class FileNameStandardTestNameConfig implements IStandardTestNameCo
     }
 
     
-    public String getTestName(final StandardTestConfigArguments arguments) {
+    public String getValue(final StandardTestConfigArguments arguments) {
         Validate.notNull(arguments, "Arguments cannot be null");
         final String fileName = arguments.getFileName();
         if (fileName != null) {

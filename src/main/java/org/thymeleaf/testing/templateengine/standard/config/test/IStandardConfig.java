@@ -22,8 +22,8 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public interface IStandardTestNameConfig {
+public interface IStandardConfig<T> {
 
-    public String getTestName(final StandardTestConfigArguments arguments);
+    public T getValue(final StandardTestConfigArguments arguments);
     
 }

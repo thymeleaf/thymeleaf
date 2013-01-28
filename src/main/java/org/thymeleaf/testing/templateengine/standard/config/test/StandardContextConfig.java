@@ -33,7 +33,7 @@ import org.thymeleaf.context.WebContext;
 
 
 
-public class StandardContextConfig implements IStandardContextConfig {
+public class StandardContextConfig implements IStandardConfig<IContext> {
 
     
     private final IContext context;
@@ -121,7 +121,7 @@ public class StandardContextConfig implements IStandardContextConfig {
     
     
 
-    public IContext getContext(final StandardTestConfigArguments arguments) {
+    public IContext getValue(final StandardTestConfigArguments arguments) {
         return this.context;
     }
    

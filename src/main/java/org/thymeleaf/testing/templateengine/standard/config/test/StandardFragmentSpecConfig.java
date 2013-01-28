@@ -22,7 +22,7 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 import org.thymeleaf.fragment.IFragmentSpec;
 
 
-public class StandardFragmentSpecConfig implements IStandardFragmentSpecConfig {
+public class StandardFragmentSpecConfig implements IStandardConfig<IFragmentSpec> {
 
     private final IFragmentSpec fragmentSpec;
     
@@ -31,7 +31,7 @@ public class StandardFragmentSpecConfig implements IStandardFragmentSpecConfig {
         this.fragmentSpec = fragmentSpec;
     }
 
-    public IFragmentSpec getFragmentSpec(final StandardTestConfigArguments arguments) {
+    public IFragmentSpec getValue(final StandardTestConfigArguments arguments) {
         return this.fragmentSpec;
     }
     

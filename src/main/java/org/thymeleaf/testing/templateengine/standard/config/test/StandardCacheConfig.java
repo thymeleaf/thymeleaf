@@ -22,16 +22,16 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public class StandardCacheConfig implements IStandardCacheConfig {
+public class StandardCacheConfig implements IStandardConfig<Boolean> {
 
-    private final boolean cacheEnabled;
+    private final Boolean cacheEnabled;
     
     public StandardCacheConfig(final boolean cacheEnabled) {
         super();
-        this.cacheEnabled = cacheEnabled;
+        this.cacheEnabled = Boolean.valueOf(cacheEnabled);
     }
 
-    public final boolean isCacheEnabled(final StandardTestConfigArguments arguments) {
+    public final Boolean getValue(final StandardTestConfigArguments arguments) {
         return this.cacheEnabled;
     }
     
