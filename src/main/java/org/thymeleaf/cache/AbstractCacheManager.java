@@ -129,6 +129,41 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
 
+    public void clearAllCaches() {
+
+        final ICache<String, Template> templateCacheObj = getTemplateCache();
+        if (templateCacheObj != null) {
+            templateCacheObj.clear();
+        }
+        
+        final ICache<String, List<Node>> fragmentCacheObj = getFragmentCache();
+        if (fragmentCacheObj != null) {
+            fragmentCacheObj.clear();
+        }
+        
+        final ICache<String, Properties> messageCacheObj = getMessageCache();
+        if (messageCacheObj != null) {
+            messageCacheObj.clear();
+        }
+        
+        final ICache<String, Object> expressionCacheObj = getExpressionCache();
+        if (expressionCacheObj != null) {
+            expressionCacheObj.clear();
+        }
+        
+        final List<String> allSpecificCacheNamesObj = getAllSpecificCacheNames();
+        if (allSpecificCacheNamesObj != null) {
+            for (final String specificCacheName : allSpecificCacheNamesObj) {
+                final ICache<?,?> specificCache = getSpecificCache(specificCacheName);
+                if (specificCache != null) {
+                    specificCache.clear();
+                }
+            }
+        }
+        
+    }
+
+
     protected abstract ICache<String,Template> initializeTemplateCache();
 
     protected abstract ICache<String,List<Node>> initializeFragmentCache();

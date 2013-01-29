@@ -187,6 +187,21 @@ public interface ICacheManager {
      * @since 2.0.16
      */
     public List<String> getAllSpecificCacheNames();
+
+    
+    /**
+     * <p>
+     *   Clears all the caches managed by this cache manager instance.
+     * </p>
+     * <p>
+     *   This method is mainly intended for use from external tools that
+     *   might need to clean all caches completely, without having to worry
+     *   about implementation details.  
+     * </p>
+     * 
+     * @since 2.0.16
+     */
+    public void clearAllCaches();
     
     
 }

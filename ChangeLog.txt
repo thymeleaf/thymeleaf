@@ -1,6 +1,7 @@
 2.0.16
 ======
 - Added method to retrieve all names of specific caches from ICacheManager implementations.
+- Added method to clear all caches in ICacheManager implementations.
 
 
 2.0.15
