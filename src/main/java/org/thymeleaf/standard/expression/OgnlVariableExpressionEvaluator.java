@@ -56,7 +56,8 @@ public class OgnlVariableExpressionEvaluator
 
     public static final OgnlVariableExpressionEvaluator INSTANCE = new OgnlVariableExpressionEvaluator();
     private static final String OGNL_CACHE_PREFIX = "{ognl}";
-
+    private static final String RESERVED_SIZE_VARIABLE_NAME = "size";
+    private static final String RESERVED_SIZE_VARIABLE_REPLACEMENT = "get('size')";
 
     private static boolean booleanFixApplied = false;
     
@@ -72,6 +73,12 @@ public class OgnlVariableExpressionEvaluator
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
             }
 
+            String exp = expression;
+            if (RESERVED_SIZE_VARIABLE_NAME.equals(exp) && 
+            	processingContext.getContext().getVariables().containsKey(RESERVED_SIZE_VARIABLE_NAME)) {
+            	
+            	exp = RESERVED_SIZE_VARIABLE_REPLACEMENT;
+            }
             
             Object expressionTree = null;
             ICache<String, Object> cache = null;
@@ -81,15 +88,15 @@ public class OgnlVariableExpressionEvaluator
                 if (cacheManager != null) {
                     cache = cacheManager.getExpressionCache();
                     if (cache != null) {
-                        expressionTree = cache.get(OGNL_CACHE_PREFIX + expression);
+                        expressionTree = cache.get(OGNL_CACHE_PREFIX + exp);
                     }
                 }
             }
             
             if (expressionTree == null) {
-                expressionTree = ognl.Ognl.parseExpression(expression);
+                expressionTree = ognl.Ognl.parseExpression(exp);
                 if (cache != null && null != expressionTree) {
-                    cache.put(OGNL_CACHE_PREFIX + expression, expressionTree);
+                    cache.put(OGNL_CACHE_PREFIX + exp, expressionTree);
                 }
             }
 
