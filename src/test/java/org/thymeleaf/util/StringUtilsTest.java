@@ -1,20 +1,20 @@
 /*
  * =============================================================================
- * 
+ *
  *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
- * 
+ *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
  *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
- * 
+ *
  * =============================================================================
  */
 package org.thymeleaf.util;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Le Roux Bernard
  * @since 1.1.2
- * 
+ *
  */
 //CHECKSTYLE:OFF
 public class StringUtilsTest {
@@ -43,7 +43,7 @@ public class StringUtilsTest {
 
     /**
      *
-     * @throws Exception 
+     * @throws Exception
      */
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -275,6 +275,53 @@ public class StringUtilsTest {
         Object s = "abcdef";
         String result = StringUtils.substring(s, 7);
     }
-
+    public void testEscapeJavaScriptUrl1() {
+        Object s = "http://www.test.com";
+        String expResult = "http://www.test.com";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl2() {
+        Object s = "https://www.test.com/someContext";
+        String expResult = "https://www.test.com/someContext";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl3() {
+        Object s = "https://www.test.com/someContext?param=value";
+        String expResult = "https://www.test.com/someContext?param=value";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl4() {
+        Object s = "https://www.test.com/someContext/?param=value";
+        String expResult = "https://www.test.com/someContext/?param=value";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl5() {
+        Object s = "https://www.test.com/someContext/?param=value&otherparam=value";
+        String expResult = "https://www.test.com/someContext/?param=value&otherparam=value";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl6() {
+        Object s = "ftp://username:pass@ftp.test.com/someContext/?param=value";
+        String expResult = "ftp://username:pass@ftp.test.com/someContext/?param=value";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl7() {
+        Object s = "ftp://username:pass@ftp.test.com/someContext/?param=${value}";
+        String expResult = "ftp://username:pass@ftp.test.com/someContext/?param=${value}";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
+    public void testEscapeJavaScriptUrl8() {
+        Object s = "ftp://username:pass@ftp.test.com/${someContext}/?param=${value}";
+        String expResult = "ftp://username:pass@ftp.test.com/${someContext}/?param=${value}";
+        String result = StringUtils.escapeJavaScript(s);
+        assertEquals(expResult, result);
+    }
 }
 //CHECKSTYLE:ON
