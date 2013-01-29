@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.cache;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -116,9 +117,15 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
     
-    public <K, V> ICache<K, V> getSpecificCache(String name) {
+    public <K, V> ICache<K, V> getSpecificCache(final String name) {
         // No specific caches are used by default
         return null;
+    }
+
+
+    public List<String> getAllSpecificCacheNames() {
+        // No specific caches are used by default
+        return Collections.emptyList();
     }
 
 

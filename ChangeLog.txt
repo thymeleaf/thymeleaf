@@ -1,3 +1,8 @@
+2.0.16
+======
+- Added method to retrieve all names of specific caches from ICacheManager implementations.
+
+
 2.0.15
 ======
 - Modified Link URL generation in @{...} expressions in order to use response.encodeURL(...) instead
