@@ -37,17 +37,19 @@ public class StandardTestConfigArguments {
     private final ITestSuite suite;
     private final List<ITestable> path;
     private final String fileName;
-    private final Map<String,String> directives;
+    private final String directiveValue;
+    private final Map<String,String> allDirectives;
     
     
     public StandardTestConfigArguments(
             final ITestSuite suite, final List<ITestable> path, final String fileName,
-            final Map<String,String> directives) {
+            final String directiveValue, final Map<String,String> allDirectives) {
         super();
         this.suite = suite;
         this.path = Collections.unmodifiableList(new ArrayList<ITestable>(path));
         this.fileName = fileName;
-        this.directives = Collections.unmodifiableMap(new HashMap<String,String>(directives));
+        this.directiveValue = directiveValue;
+        this.allDirectives = Collections.unmodifiableMap(new HashMap<String,String>(allDirectives));
     }
 
 
@@ -63,8 +65,12 @@ public class StandardTestConfigArguments {
         return this.fileName;
     }
     
-    public Map<String,String> getDirectives() {
-        return this.directives;
+    public String getDirectiveValue() {
+        return this.directiveValue;
+    }
+    
+    public Map<String,String> getAllDirectives() {
+        return this.allDirectives;
     }
     
 }

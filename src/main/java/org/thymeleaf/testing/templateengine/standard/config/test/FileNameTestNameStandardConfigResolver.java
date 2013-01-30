@@ -23,13 +23,13 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class FileNameStandardTestNameConfig implements IStandardConfig<String> {
+public final class FileNameTestNameStandardConfigResolver implements IStandardConfigResolver<String> {
 
     
-    public static final FileNameStandardTestNameConfig INSTANCE = new FileNameStandardTestNameConfig();
+    public static final FileNameTestNameStandardConfigResolver INSTANCE = new FileNameTestNameStandardConfigResolver();
     
     
-    private FileNameStandardTestNameConfig() {
+    private FileNameTestNameStandardConfigResolver() {
         super();
     }
 

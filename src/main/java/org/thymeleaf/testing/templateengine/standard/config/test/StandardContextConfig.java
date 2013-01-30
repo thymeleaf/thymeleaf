@@ -33,7 +33,7 @@ import org.thymeleaf.context.WebContext;
 
 
 
-public class StandardContextConfig implements IStandardConfig<IContext> {
+public class StandardContextConfig implements IStandardConfigResolver<IContext> {
 
     
     private final IContext context;

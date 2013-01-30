@@ -19,21 +19,11 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.Collections;
-import java.util.Locale;
 
 
 
+public interface IStandardConfigResolver<T> {
 
-
-public class EmptyESWebStandardContextConfig extends StandardContextConfig {
-
-    private static final Locale LOCALE_ES= new Locale("es", "ES");
-
-    
-    @SuppressWarnings("unchecked")
-    public EmptyESWebStandardContextConfig() {
-        super(LOCALE_ES, Collections.EMPTY_MAP);
-    }
+    public T getValue(final StandardTestConfigArguments arguments);
     
 }

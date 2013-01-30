@@ -22,7 +22,7 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public class StandardTemplateModeConfig implements IStandardConfig<String> {
+public class StandardTemplateModeConfig implements IStandardConfigResolver<String> {
 
     private final String templateMode;
     

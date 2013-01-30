@@ -19,20 +19,20 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import java.util.Collections;
+import java.util.Locale;
 
 
 
-public class StandardCacheConfig implements IStandardConfig<Boolean> {
 
-    private final Boolean cacheEnabled;
+
+public class EmptyUSWebContextStandardConfigResolver extends StandardContextConfig {
+
+
     
-    public StandardCacheConfig(final boolean cacheEnabled) {
-        super();
-        this.cacheEnabled = Boolean.valueOf(cacheEnabled);
-    }
-
-    public final Boolean getValue(final StandardTestConfigArguments arguments) {
-        return this.cacheEnabled;
+    @SuppressWarnings("unchecked")
+    public EmptyUSWebContextStandardConfigResolver() {
+        super(Locale.US, Collections.EMPTY_MAP);
     }
     
 }
