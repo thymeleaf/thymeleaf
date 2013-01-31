@@ -19,16 +19,20 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import org.thymeleaf.fragment.IFragmentSpec;
 
 
+public class StandardFragmentSpecConfigResolver implements IStandardConfigResolver<IFragmentSpec> {
 
-public class Html5StandardTemplateModeConfig extends StandardTemplateModeConfig {
-
-    public static final Html5StandardTemplateModeConfig INSTANCE = new Html5StandardTemplateModeConfig();
-    private static final String HTML5_TEMPLATE_MODE = "HTML5";
+    private final IFragmentSpec fragmentSpec;
     
-    private Html5StandardTemplateModeConfig() {
-        super(HTML5_TEMPLATE_MODE);
+    public StandardFragmentSpecConfigResolver(final IFragmentSpec fragmentSpec) {
+        super();
+        this.fragmentSpec = fragmentSpec;
+    }
+
+    public IFragmentSpec getValue(final String directiveName, final Class<IFragmentSpec> directiveClass, final StandardTestConfigArguments arguments) {
+        return this.fragmentSpec;
     }
     
 }

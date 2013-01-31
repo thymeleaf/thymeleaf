@@ -32,7 +32,8 @@ import org.thymeleaf.testing.templateengine.test.ITest;
 public final class StandardTestFileResolutionUtils {
 
 
-    // TODO Pass this class the set of default *Config implementations to be used? This would allow better customization 
+    // TODO Pass this class the set of default *Config implementations to be used? This would allow better customization
+    // TODO Also pass the directives and classes of these to be read
     
     public ITest resolveTestFile(final StandardTestConfigArguments arguments, final Reader reader) {
         

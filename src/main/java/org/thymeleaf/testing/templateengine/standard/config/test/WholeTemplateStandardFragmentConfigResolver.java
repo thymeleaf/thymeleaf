@@ -22,17 +22,12 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public class StandardTemplateModeConfig implements IStandardConfigResolver<String> {
+public class WholeTemplateStandardFragmentConfigResolver extends StandardFragmentSpecConfigResolver {
 
-    private final String templateMode;
+    public static final WholeTemplateStandardFragmentConfigResolver INSTANCE = new WholeTemplateStandardFragmentConfigResolver();
     
-    public StandardTemplateModeConfig(final String templateMode) {
-        super();
-        this.templateMode = templateMode;
-    }
-
-    public final String getValue(final StandardTestConfigArguments arguments) {
-        return this.templateMode;
+    private WholeTemplateStandardFragmentConfigResolver() {
+        super(null);
     }
     
 }

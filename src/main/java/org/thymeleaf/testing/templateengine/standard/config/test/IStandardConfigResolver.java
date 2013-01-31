@@ -24,6 +24,6 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 public interface IStandardConfigResolver<T> {
 
-    public T getValue(final StandardTestConfigArguments arguments);
+    public T getValue(final String directiveName, final Class<T> directiveClass, final StandardTestConfigArguments arguments);
     
 }

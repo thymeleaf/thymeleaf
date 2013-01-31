@@ -26,7 +26,7 @@ import java.util.Locale;
 
 
 
-public class EmptyUSWebContextStandardConfigResolver extends StandardContextConfig {
+public class EmptyUSWebContextStandardConfigResolver extends StandardContextConfigResolver {
 
 
     

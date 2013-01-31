@@ -33,24 +33,24 @@ import org.thymeleaf.context.WebContext;
 
 
 
-public class StandardContextConfig implements IStandardConfigResolver<IContext> {
+public class StandardContextConfigResolver implements IStandardConfigResolver<IContext> {
 
     
     private final IContext context;
 
     
     
-    public StandardContextConfig(final IContext context) {
+    public StandardContextConfigResolver(final IContext context) {
         super();
         this.context = context;
     }
     
-    public StandardContextConfig(final Locale locale, final Map<String,?> variables) {
+    public StandardContextConfigResolver(final Locale locale, final Map<String,?> variables) {
         super();
         this.context = new Context(locale, variables);
     }
 
-    public StandardContextConfig(final Locale locale, 
+    public StandardContextConfigResolver(final Locale locale, 
             final String variable1Name, final Object variable1Value) {
         super();
         final Map<String,Object> variables = new HashMap<String,Object>();
@@ -58,7 +58,7 @@ public class StandardContextConfig implements IStandardConfigResolver<IContext> 
         this.context = new Context(locale, variables);
     }
 
-    public StandardContextConfig(final Locale locale, 
+    public StandardContextConfigResolver(final Locale locale, 
             final String variable1Name, final Object variable1Value,
             final String variable2Name, final Object variable2Value) {
         super();
@@ -68,7 +68,7 @@ public class StandardContextConfig implements IStandardConfigResolver<IContext> 
         this.context = new Context(locale, variables);
     }
 
-    public StandardContextConfig(final Locale locale, 
+    public StandardContextConfigResolver(final Locale locale, 
             final String variable1Name, final Object variable1Value,
             final String variable2Name, final Object variable2Value,
             final String variable3Name, final Object variable3Value) {
@@ -80,7 +80,7 @@ public class StandardContextConfig implements IStandardConfigResolver<IContext> 
         this.context = new Context(locale, variables);
     }
 
-    public StandardContextConfig(final Locale locale, 
+    public StandardContextConfigResolver(final Locale locale, 
             final String variable1Name, final Object variable1Value,
             final String variable2Name, final Object variable2Value,
             final String variable3Name, final Object variable3Value,
@@ -94,7 +94,7 @@ public class StandardContextConfig implements IStandardConfigResolver<IContext> 
         this.context = new Context(locale, variables);
     }
 
-    public StandardContextConfig(final Locale locale, 
+    public StandardContextConfigResolver(final Locale locale, 
             final String variable1Name, final Object variable1Value,
             final String variable2Name, final Object variable2Value,
             final String variable3Name, final Object variable3Value,
@@ -110,7 +110,7 @@ public class StandardContextConfig implements IStandardConfigResolver<IContext> 
         this.context = new Context(locale, variables);
     }
     
-    public StandardContextConfig( 
+    public StandardContextConfigResolver( 
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,?> variables) {
         super();
@@ -121,7 +121,7 @@ public class StandardContextConfig implements IStandardConfigResolver<IContext> 
     
     
 
-    public IContext getValue(final StandardTestConfigArguments arguments) {
+    public IContext getValue(final String directiveName, final Class<IContext> directiveClass, final StandardTestConfigArguments arguments) {
         return this.context;
     }
    

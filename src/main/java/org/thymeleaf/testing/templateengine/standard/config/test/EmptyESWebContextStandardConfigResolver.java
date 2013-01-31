@@ -26,7 +26,7 @@ import java.util.Locale;
 
 
 
-public class EmptyESWebContextStandardConfigResolver extends StandardContextConfig {
+public class EmptyESWebContextStandardConfigResolver extends StandardContextConfigResolver {
 
     private static final Locale LOCALE_ES= new Locale("es", "ES");
 

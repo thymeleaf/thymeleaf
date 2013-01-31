@@ -34,7 +34,7 @@ public final class FileNameTestNameStandardConfigResolver implements IStandardCo
     }
 
     
-    public String getValue(final StandardTestConfigArguments arguments) {
+    public String getValue(final String directiveName, final Class<String> directiveClass, final StandardTestConfigArguments arguments) {
         Validate.notNull(arguments, "Arguments cannot be null");
         final String fileName = arguments.getFileName();
         if (fileName != null) {

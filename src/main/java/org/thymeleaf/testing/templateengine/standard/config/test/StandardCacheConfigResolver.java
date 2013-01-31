@@ -31,7 +31,7 @@ public class StandardCacheConfigResolver implements IStandardConfigResolver<Bool
         this.cacheEnabled = Boolean.valueOf(cacheEnabled);
     }
 
-    public final Boolean getValue(final StandardTestConfigArguments arguments) {
+    public final Boolean getValue(final String directiveName, final Class<Boolean> directiveClass, final StandardTestConfigArguments arguments) {
         return this.cacheEnabled;
     }
     
