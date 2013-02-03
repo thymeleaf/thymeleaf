@@ -19,29 +19,18 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import org.thymeleaf.util.Validate;
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public final class FileNameTestNameStandardConfigResolver implements IStandardConfigResolver<String> {
 
+public interface IStandardDirectiveResolver<T> {
+
+    public Class<T> getValueClass();
+    public T getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+            final String directiveName, final StandardTestFileData data);
     
-    public static final FileNameTestNameStandardConfigResolver INSTANCE = new FileNameTestNameStandardConfigResolver();
-    
-    
-    private FileNameTestNameStandardConfigResolver() {
-        super();
-    }
-
-    
-    public String getValue(final String directiveName, final Class<String> directiveClass, final StandardTestConfigArguments arguments) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        final String fileName = arguments.getFileName();
-        if (fileName != null) {
-            return fileName;
-        }
-        return "TEST";
-    }
-
-   
 }

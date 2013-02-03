@@ -19,11 +19,35 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import java.util.List;
+
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public interface IStandardConfigResolver<T> {
+public class DefaultContextStandardDirectiveResolver extends AbstractStandardDirectiveResolver<IContext> {
 
-    public T getValue(final String directiveName, final Class<T> directiveClass, final StandardTestConfigArguments arguments);
+    
+    public static final DefaultContextStandardDirectiveResolver INSTANCE = new DefaultContextStandardDirectiveResolver();
+    
+    
+    
+    private DefaultContextStandardDirectiveResolver() {
+        super(IContext.class);
+    }
+
+
+
+    @Override
+    protected IContext getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+            final String directiveName, final String directiveValue) {
+
+        throw new RuntimeException("To be implemented!!");
+        
+    }
+    
+   
     
 }

@@ -21,7 +21,7 @@ package org.thymeleaf.testing.templateengine.standard.util;
 
 import java.io.Reader;
 
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestConfigArguments;
+import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
 import org.thymeleaf.testing.templateengine.test.ITest;
 
 
@@ -35,7 +35,7 @@ public final class StandardTestFileResolutionUtils {
     // TODO Pass this class the set of default *Config implementations to be used? This would allow better customization
     // TODO Also pass the directives and classes of these to be read
     
-    public ITest resolveTestFile(final StandardTestConfigArguments arguments, final Reader reader) {
+    public ITest resolveTestFile(final StandardTestFileData arguments, final Reader reader) {
         
         return null;
         

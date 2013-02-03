@@ -19,52 +19,38 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
+public class DefaultFragmentStandardDirectiveResolver extends AbstractStandardDirectiveResolver<IFragmentSpec> {
 
-
-public class StandardTestConfigArguments {
-
-
-    private final ITestSuite suite;
-    private final List<ITestable> path;
-    private final String fileName;
-    private final Map<String,String> directiveValues;
     
+    public static final DefaultFragmentStandardDirectiveResolver INSTANCE = new DefaultFragmentStandardDirectiveResolver();
+    public static final IFragmentSpec DEFAULT_VALUE = WholeFragmentSpec.INSTANCE; 
+
     
-    public StandardTestConfigArguments(
-            final ITestSuite suite, final List<ITestable> path, final String fileName,
-            final Map<String,String> directiveValues) {
-        super();
-        this.suite = suite;
-        this.path = Collections.unmodifiableList(new ArrayList<ITestable>(path));
-        this.fileName = fileName;
-        this.directiveValues = Collections.unmodifiableMap(new HashMap<String,String>(directiveValues));
+    private DefaultFragmentStandardDirectiveResolver() {
+        super(IFragmentSpec.class);
     }
 
 
-    public ITestSuite getSuite() {
-        return this.suite;
-    }
+    @Override
+    protected IFragmentSpec getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+            final String directiveName, final String directiveValue) {
 
-    public List<ITestable> getPath() {
-        return this.path;
-    }
-
-    public String getFileName() {
-        return this.fileName;
+        if (directiveValue == null) {
+            return DEFAULT_VALUE;
+        }
+        
+        return new DOMSelectorFragmentSpec(directiveValue.trim());
+        
     }
     
-    public Map<String,String> getAllDirectives() {
-        return this.directiveValues;
-    }
     
 }

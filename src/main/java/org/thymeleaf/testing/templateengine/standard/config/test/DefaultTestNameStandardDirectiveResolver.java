@@ -19,20 +19,33 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public class StandardCacheConfigResolver implements IStandardConfigResolver<Boolean> {
+public final class DefaultTestNameStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
 
-    private final Boolean cacheEnabled;
+    public static final DefaultTestNameStandardDirectiveResolver INSTANCE = new DefaultTestNameStandardDirectiveResolver();
+    public static final String DEFAULT_VALUE = "TEST"; 
     
-    public StandardCacheConfigResolver(final boolean cacheEnabled) {
-        super();
-        this.cacheEnabled = Boolean.valueOf(cacheEnabled);
+    
+    private DefaultTestNameStandardDirectiveResolver() {
+        super(String.class);
     }
 
-    public final Boolean getValue(final String directiveName, final Class<Boolean> directiveClass, final StandardTestConfigArguments arguments) {
-        return this.cacheEnabled;
+
+    public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+            final String directiveName, final String directiveValue) {
+
+        if (fileName == null) {
+            return DEFAULT_VALUE;
+        }
+        return fileName;
+        
     }
-    
+
+   
 }

@@ -23,11 +23,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileDirectives;
+import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestFileDirectives;
+import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
 import org.thymeleaf.util.Validate;
 
 
@@ -39,7 +39,7 @@ public final class StandardTestFileReadUtils {
 
     
     
-    public static Map<String,String> readTestFile(final Reader reader, final Set<String> fields) {
+    public static StandardTestFileData readTestFile(final Reader reader, final Set<String> fields) {
 
         Validate.notNull(reader, "Reader cannot be null");
         Validate.notNull(fields, "Fields set cannot be null");
@@ -114,7 +114,7 @@ public final class StandardTestFileReadUtils {
                 data.put(currentDirectiveName, strBuilder.toString());
             }
 
-            return data;
+            return new StandardTestFileData(data);
             
         } catch (final IOException e) {
             

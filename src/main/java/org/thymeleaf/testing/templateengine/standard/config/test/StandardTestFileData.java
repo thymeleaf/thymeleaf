@@ -19,20 +19,34 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import org.thymeleaf.fragment.IFragmentSpec;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.thymeleaf.util.Validate;
 
 
-public class StandardFragmentSpecConfigResolver implements IStandardConfigResolver<IFragmentSpec> {
 
-    private final IFragmentSpec fragmentSpec;
+
+public class StandardTestFileData {
+
+    private final Map<String,String> directiveValues;
     
-    public StandardFragmentSpecConfigResolver(final IFragmentSpec fragmentSpec) {
+    
+    public StandardTestFileData(
+            final Map<String,String> directiveValues) {
         super();
-        this.fragmentSpec = fragmentSpec;
+        Validate.notNull(directiveValues, "Directive values map cannot be null");
+        this.directiveValues = Collections.unmodifiableMap(new HashMap<String,String>(directiveValues));
     }
 
-    public IFragmentSpec getValue(final String directiveName, final Class<IFragmentSpec> directiveClass, final StandardTestConfigArguments arguments) {
-        return this.fragmentSpec;
+    
+    public Map<String,String> getAllDirectives() {
+        return this.directiveValues;
+    }
+    
+    public String getDirectiveValue(final String directiveName) {
+        return this.directiveValues.get(directiveName);
     }
     
 }

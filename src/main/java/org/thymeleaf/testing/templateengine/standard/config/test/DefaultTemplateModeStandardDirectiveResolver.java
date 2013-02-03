@@ -19,20 +19,36 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import java.util.List;
+
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-public class StandardTemplateModeConfigResolver implements IStandardConfigResolver<String> {
 
-    private final String templateMode;
+
+public class DefaultTemplateModeStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
+
     
-    public StandardTemplateModeConfigResolver(final String templateMode) {
-        super();
-        this.templateMode = templateMode;
-    }
+    public static final DefaultTemplateModeStandardDirectiveResolver INSTANCE = new DefaultTemplateModeStandardDirectiveResolver();
+    public static final String DEFAULT_VALUE = "HTML5"; 
 
-    public final String getValue(final String directiveName, final Class<String> directiveClass, final StandardTestConfigArguments arguments) {
-        return this.templateMode;
+    
+    private DefaultTemplateModeStandardDirectiveResolver() {
+        super(String.class);
+    }
+    
+
+    public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+            final String directiveName, final String directiveValue) {
+        
+        if (directiveValue == null) {
+            return DEFAULT_VALUE;
+        }
+        
+        return directiveValue.trim();
+        
     }
     
 }
