@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 
@@ -48,6 +49,8 @@ import java.util.StringTokenizer;
  */
 public final class StringUtils {
 
+    private static final String ALPHA_NUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static Random RANDOM = new Random();
     
 
     
@@ -882,6 +885,17 @@ public final class StringUtils {
     }
     
     
+    
+    public String randomAlphanumeric(final int count) {
+        final StringBuilder strBuilder = new StringBuilder(count);
+        final int anLen = ALPHA_NUMERIC.length();
+        synchronized(RANDOM) {
+            for(int i = 0; i < count; i++) { 
+                strBuilder.append(ALPHA_NUMERIC.charAt(RANDOM.nextInt(anLen))) ;
+            }
+        }
+        return strBuilder.toString();
+    }
     
     
     
