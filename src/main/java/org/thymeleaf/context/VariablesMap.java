@@ -22,6 +22,10 @@ package org.thymeleaf.context;
 import java.util.HashMap;
 import java.util.Map;
 
+import ognl.MapPropertyAccessor;
+import ognl.OgnlException;
+import ognl.OgnlRuntime;
+
 /**
  * <p>
  *   Special implementation of the {@link Map} interface that
@@ -60,7 +64,46 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
         super(m);
     }
 
+    static {
+    	OgnlRuntime.setPropertyAccessor(VariablesMap.class, new VariablesMapPropertyAccessor());
+    }
     
-    
+    /**
+     * Extension of {@code MapPropertyAccessor} that handles getting of size property. When there is entry with 
+     * key "size" it is returned instead of size property from {@code VariablesMap}. Otherwise this property 
+     * accessor works exactly same like {@code MapPropertyAccessor}.
+     * 
+     * @author Michal Kreuzman
+     * 
+     * @see MapPropertyAccessor
+     * 
+     * @since 2.0
+     */
+    private static class VariablesMapPropertyAccessor extends MapPropertyAccessor {
+    	private static final String RESERVED_SIZE_PROPERTY_NAME = "size";
+    	
+    	VariablesMapPropertyAccessor () {
+    	}
+    	
+    	@Override
+    	@SuppressWarnings("rawtypes") 
+		public Object getProperty(Map context, Object target, Object name) throws OgnlException {
+    		if (!RESERVED_SIZE_PROPERTY_NAME.equals(name))
+    			return super.getProperty(context, target, name);
+    		
+    		Object result;
+            Map map = (Map) target;
+
+            if (name instanceof String) {
+               	result = map.get(RESERVED_SIZE_PROPERTY_NAME);
+               	if (result == null)
+                	result = new Integer(map.size());
+            } else {
+            	result = new Integer(map.size());
+            }
+            
+            return result;
+    	}
+    }
     
 }
