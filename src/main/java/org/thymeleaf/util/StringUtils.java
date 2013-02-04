@@ -886,7 +886,7 @@ public final class StringUtils {
     
     
     
-    public String randomAlphanumeric(final int count) {
+    public static String randomAlphanumeric(final int count) {
         final StringBuilder strBuilder = new StringBuilder(count);
         final int anLen = ALPHA_NUMERIC.length();
         synchronized(RANDOM) {
