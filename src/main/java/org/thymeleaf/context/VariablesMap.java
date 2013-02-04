@@ -83,25 +83,25 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
     	private static final String RESERVED_SIZE_PROPERTY_NAME = "size";
     	
     	VariablesMapPropertyAccessor () {
+    		super();
     	}
     	
     	@Override
     	@SuppressWarnings("rawtypes") 
 		public Object getProperty(Map context, Object target, Object name) throws OgnlException {
-    		if (!RESERVED_SIZE_PROPERTY_NAME.equals(name))
+    		if (!RESERVED_SIZE_PROPERTY_NAME.equals(name)) {
     			return super.getProperty(context, target, name);
+    		}
     		
-    		Object result;
+    		if (!(target instanceof VariablesMap)) {
+    			throw new IllegalStateException("Wrong target type. This property accessor is only usable for VariableMap class.");
+    		}
+    		
             Map map = (Map) target;
-
-            if (name instanceof String) {
-               	result = map.get(RESERVED_SIZE_PROPERTY_NAME);
-               	if (result == null)
-                	result = new Integer(map.size());
-            } else {
-            	result = new Integer(map.size());
+            Object result = map.get(RESERVED_SIZE_PROPERTY_NAME);
+            if (result == null) {
+            	result = Integer.valueOf(map.size());
             }
-            
             return result;
     	}
     }
