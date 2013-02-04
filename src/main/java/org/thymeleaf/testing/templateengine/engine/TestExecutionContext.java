@@ -21,7 +21,9 @@ package org.thymeleaf.testing.templateengine.engine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.util.Validate;
@@ -31,9 +33,14 @@ import org.thymeleaf.util.Validate;
 
 
 public final class TestExecutionContext {
+
+    private static final String ALPHA_NUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static Random RANDOM = new Random();
+    private static final int ID_SIZE = 6;
     
 
     private final ITestSuite suite;
+    private final String id;
     
     private final Map<String,ITest> testsByName = new HashMap<String,ITest>();
     private final Map<ITest,String> namesByTest = new HashMap<ITest,String>();
@@ -47,6 +54,12 @@ public final class TestExecutionContext {
     TestExecutionContext(final ITestSuite suite) {
         super();
         this.suite = suite;
+        this.id = randomAlphanumeric(ID_SIZE);
+    }
+
+    
+    public String getId() {
+        return this.id;
     }
     
 
@@ -121,6 +134,19 @@ public final class TestExecutionContext {
     public synchronized ITest getTestByName(final String name) {
         Validate.notNull(name, "Test name cannot be null");
         return this.testsByName.get(name);
+    }
+    
+  
+    
+    private static String randomAlphanumeric(final int count) {
+        final StringBuilder strBuilder = new StringBuilder(count);
+        final int anLen = ALPHA_NUMERIC.length();
+        synchronized(RANDOM) {
+            for(int i = 0; i < count; i++) { 
+                strBuilder.append(ALPHA_NUMERIC.charAt(RANDOM.nextInt(anLen))) ;
+            }
+        }
+        return strBuilder.toString();
     }
     
     

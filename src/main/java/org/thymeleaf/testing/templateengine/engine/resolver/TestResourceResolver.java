@@ -24,7 +24,7 @@ import java.io.InputStream;
 
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 

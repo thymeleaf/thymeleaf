@@ -40,9 +40,10 @@ public final class DefaultTestNameStandardDirectiveResolver extends AbstractStan
     public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
 
-        if (fileName == null) {
+        if (fileName == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
         }
+        
         return fileName;
         
     }

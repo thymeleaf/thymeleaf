@@ -25,7 +25,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestFileDirectives;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
 import org.thymeleaf.util.Validate;
@@ -39,7 +39,8 @@ public final class StandardTestFileReadUtils {
 
     
     
-    public static StandardTestFileData readTestFile(final Reader reader, final Set<String> fields) {
+    public static StandardTestFileData readTestFile(final String executionId, 
+            final Reader reader, final Set<String> fields) {
 
         Validate.notNull(reader, "Reader cannot be null");
         Validate.notNull(fields, "Fields set cannot be null");
@@ -118,7 +119,7 @@ public final class StandardTestFileReadUtils {
             
         } catch (final IOException e) {
             
-            throw new TestEngineExecutionException(e);
+            throw new TestEngineExecutionException(executionId, e);
             
         } finally {
             

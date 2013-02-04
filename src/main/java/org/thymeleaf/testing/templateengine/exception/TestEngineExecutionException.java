@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.engine;
+package org.thymeleaf.testing.templateengine.exception;
 
 
 
@@ -28,24 +28,43 @@ public class TestEngineExecutionException extends RuntimeException {
 
     
     private static final long serialVersionUID = -341588084846304479L;
+    
+    private final String executionId;
 
     
     
-    public TestEngineExecutionException() {
+    public TestEngineExecutionException(final String executionId) {
         super();
+        this.executionId = executionId;
     }
 
     
-    public TestEngineExecutionException(final String message, final Throwable throwable) {
+    public TestEngineExecutionException(final String executionId, final String message, final Throwable throwable) {
         super(message, throwable);
+        this.executionId = executionId;
     }
 
-    public TestEngineExecutionException(final String message) {
+    public TestEngineExecutionException(final String executionId, final String message) {
         super(message);
+        this.executionId = executionId;
     }
 
-    public TestEngineExecutionException(final Throwable throwable) {
+    public TestEngineExecutionException(final String executionId, final Throwable throwable) {
         super(throwable);
+        this.executionId = executionId;
     }
+
+
+    @Override
+    public String getLocalizedMessage() {
+        return "[" + this.executionId + "] " + super.getLocalizedMessage();
+    }
+
+
+    @Override
+    public String getMessage() {
+        return "[" + this.executionId + "] " + super.getMessage();
+    }
+    
     
 }

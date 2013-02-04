@@ -29,18 +29,18 @@ import org.thymeleaf.testing.templateengine.test.ITestSuite;
 
 public interface ITestReporter {
 
-    public void suiteStart(final ITestSuite suite);
-    public void suiteEnd(final ITestSuite suite, final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos);
+    public void suiteStart(final String executionId, final ITestSuite suite);
+    public void suiteEnd(final String executionId, final ITestSuite suite, final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos);
     
-    public void sequenceStart(final ITestSequence sequence, final int nestingLevel);
-    public void sequenceEnd(final ITestSequence sequence, final int nestingLevel, final long executionTimeNanos);
+    public void sequenceStart(final String executionId, final ITestSequence sequence, final int nestingLevel);
+    public void sequenceEnd(final String executionId, final ITestSequence sequence, final int nestingLevel, final long executionTimeNanos);
     
-    public void iteratorStart(final ITestIterator iterator, final int nestingLevel);
-    public void iteratorEnd(final ITestIterator iterator, final int nestingLevel, final long executionTimeNanos);
-    public void iterationStart(final ITestIterator iterator, final int iteration, final int nestingLevel);
-    public void iterationEnd(final ITestIterator iterator, final int iteration, final int nestingLevel, final long executionTimeNanos);
+    public void iteratorStart(final String executionId, final ITestIterator iterator, final int nestingLevel);
+    public void iteratorEnd(final String executionId, final ITestIterator iterator, final int nestingLevel, final long executionTimeNanos);
+    public void iterationStart(final String executionId, final ITestIterator iterator, final int iteration, final int nestingLevel);
+    public void iterationEnd(final String executionId, final ITestIterator iterator, final int iteration, final int nestingLevel, final long executionTimeNanos);
     
-    public void testStart(final ITest test, final String testName, final int nestingLevel);
-    public void testEnd(final ITest test, final String testName, final int nestingLevel, final long executionTimeNanos, final ITestResult result);
+    public void testStart(final String executionId, final ITest test, final String testName, final int nestingLevel);
+    public void testEnd(final String executionId, final ITest test, final String testName, final int nestingLevel, final long executionTimeNanos, final ITestResult result);
     
 }

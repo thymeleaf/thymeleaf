@@ -23,32 +23,33 @@ import java.util.List;
 
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
-
-
-
-public class DefaultTemplateModeStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
+public class DefaultInputStandardDirectiveResolver extends AbstractStandardDirectiveResolver<ITestResource> {
 
     
-    public static final DefaultTemplateModeStandardDirectiveResolver INSTANCE = new DefaultTemplateModeStandardDirectiveResolver();
-    public static final String DEFAULT_VALUE = "HTML5"; 
+    public static final DefaultInputStandardDirectiveResolver INSTANCE = new DefaultInputStandardDirectiveResolver();
+    public static final ITestResource DEFAULT_VALUE = null; 
 
     
-    private DefaultTemplateModeStandardDirectiveResolver() {
-        super(String.class);
+    private DefaultInputStandardDirectiveResolver() {
+        super(ITestResource.class);
     }
-    
 
-    public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+
+    @Override
+    protected ITestResource getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
-        
+
         if (directiveValue == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
         }
+
         
-        return directiveValue.trim();
+        return null;      
         
     }
+    
     
 }

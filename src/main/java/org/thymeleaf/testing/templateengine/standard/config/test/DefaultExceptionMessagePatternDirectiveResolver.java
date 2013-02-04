@@ -20,6 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
@@ -27,28 +28,30 @@ import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
-
-public class DefaultTemplateModeStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
-
-    
-    public static final DefaultTemplateModeStandardDirectiveResolver INSTANCE = new DefaultTemplateModeStandardDirectiveResolver();
-    public static final String DEFAULT_VALUE = "HTML5"; 
+public class DefaultExceptionMessagePatternDirectiveResolver 
+        extends AbstractStandardDirectiveResolver<Pattern> {
 
     
-    private DefaultTemplateModeStandardDirectiveResolver() {
-        super(String.class);
+    public static final DefaultExceptionMessagePatternDirectiveResolver INSTANCE = new DefaultExceptionMessagePatternDirectiveResolver();
+    public static final Pattern DEFAULT_VALUE = null; 
+    
+    
+    private DefaultExceptionMessagePatternDirectiveResolver() {
+        super(Pattern.class);
     }
-    
 
-    public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+
+
+    public Pattern getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
         }
         
-        return directiveValue.trim();
+        return Pattern.compile(directiveValue.trim());
         
     }
+
     
 }

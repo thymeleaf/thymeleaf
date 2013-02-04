@@ -41,7 +41,7 @@ public class DefaultCacheStandardDirectiveResolver extends AbstractStandardDirec
     public Boolean getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
         
-        if (directiveValue == null) {
+        if (directiveValue == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
         }
         

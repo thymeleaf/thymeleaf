@@ -24,11 +24,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultCacheStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultContextStandardDirectiveResolver;
+import org.thymeleaf.testing.templateengine.standard.config.test.DefaultExceptionDirectiveResolver;
+import org.thymeleaf.testing.templateengine.standard.config.test.DefaultExceptionMessagePatternDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultFragmentStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultTemplateModeStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultTestNameStandardDirectiveResolver;
@@ -67,11 +70,12 @@ public final class StandardTestFileDirectives {
     public static final StandardTestFileDirectiveSpec<ITestResource> OUTPUT_DIRECTIVE_NAME = 
             new StandardTestFileDirectiveSpec<ITestResource>("OUTPUT", ITestResource.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<Throwable> EXCEPTION_DIRECTIVE_NAME = 
-            new StandardTestFileDirectiveSpec<Throwable>("EXCEPTION", Throwable.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
+    @SuppressWarnings("unchecked")
+    public static final StandardTestFileDirectiveSpec<Class<? extends Throwable>> EXCEPTION_DIRECTIVE_NAME = 
+            new StandardTestFileDirectiveSpec<Class<? extends Throwable>>("EXCEPTION", (Class<Class<? extends Throwable>>)(Class<?>)Class.class, DefaultExceptionDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<String> EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_NAME = 
-            new StandardTestFileDirectiveSpec<String>("EXCEPTION_MESSAGE_PATTERN", String.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestFileDirectiveSpec<Pattern> EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_NAME = 
+            new StandardTestFileDirectiveSpec<Pattern>("EXCEPTION_MESSAGE_PATTERN", Pattern.class, DefaultExceptionMessagePatternDirectiveResolver.INSTANCE);
 
     
     public static final Map<String,Class<?>> CLASSES_BY_DIRECTIVE;

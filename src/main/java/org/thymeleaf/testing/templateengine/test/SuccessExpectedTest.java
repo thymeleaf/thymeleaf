@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
-import org.thymeleaf.testing.templateengine.engine.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
 import org.thymeleaf.util.Validate;
