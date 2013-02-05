@@ -38,6 +38,7 @@ import ognl.OgnlRuntime;
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
+ * @author Michal Kreuzman
  * 
  * @since 1.0
  *
@@ -69,9 +70,10 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
     }
     
     /**
-     * Extension of {@code MapPropertyAccessor} that handles getting of size property. When there is entry with 
-     * key "size" it is returned instead of size property from {@code VariablesMap}. Otherwise this property 
-     * accessor works exactly same like {@code MapPropertyAccessor}.
+     * Extension of {@code MapPropertyAccessor} that handles getting of size
+     * property. When there is entry with key "size" it is returned instead of
+     * size property from {@code VariablesMap}. Otherwise this property accessor
+     * works exactly same like {@code MapPropertyAccessor}.
      * 
      * @author Michal Kreuzman
      * 
@@ -80,30 +82,35 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
      * @since 2.0
      */
     private static class VariablesMapPropertyAccessor extends MapPropertyAccessor {
-    	private static final String RESERVED_SIZE_PROPERTY_NAME = "size";
-    	
-    	VariablesMapPropertyAccessor () {
-    		super();
-    	}
-    	
-    	@Override
-    	@SuppressWarnings("rawtypes") 
-		public Object getProperty(Map context, Object target, Object name) throws OgnlException {
-    		if (!RESERVED_SIZE_PROPERTY_NAME.equals(name)) {
-    			return super.getProperty(context, target, name);
-    		}
-    		
-    		if (!(target instanceof VariablesMap)) {
-    			throw new IllegalStateException("Wrong target type. This property accessor is only usable for VariableMap class.");
-    		}
-    		
+        
+        private static final String RESERVED_SIZE_PROPERTY_NAME = "size";
+
+        VariablesMapPropertyAccessor() {
+            super();
+        }
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Object getProperty(Map context, Object target, Object name) throws OgnlException {
+            
+            if (!RESERVED_SIZE_PROPERTY_NAME.equals(name)) {
+                return super.getProperty(context, target, name);
+            }
+
+            if (!(target instanceof VariablesMap)) {
+                throw new IllegalStateException(
+                        "Wrong target type. This property accessor is only usable for VariableMap class.");
+            }
+
             Map map = (Map) target;
             Object result = map.get(RESERVED_SIZE_PROPERTY_NAME);
             if (result == null) {
-            	result = Integer.valueOf(map.size());
+                result = Integer.valueOf(map.size());
             }
             return result;
-    	}
+            
+        }
+        
     }
     
 }
