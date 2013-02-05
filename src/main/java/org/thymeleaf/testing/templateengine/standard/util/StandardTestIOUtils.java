@@ -20,14 +20,19 @@
 package org.thymeleaf.testing.templateengine.standard.util;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.thymeleaf.testing.templateengine.exception.TestEngineConfigurationException;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestFileDirectives;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
+import org.thymeleaf.testing.templateengine.test.resource.FileTestResource;
+import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 
@@ -35,7 +40,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class StandardTestFileReadUtils {
+public final class StandardTestIOUtils {
 
     
     
@@ -168,10 +173,54 @@ public final class StandardTestFileReadUtils {
 
     
     
-    private StandardTestFileReadUtils() {
-        super();
+    
+    public static ITestResource createResource(final String suiteName, final String fileIdentifier, final String contents) {
+        
+        try {
+
+            final String prefix = 
+                    "thymeleaf-testing-" + 
+                    (suiteName != null? ("-" + suiteName) : "") + 
+                    (fileIdentifier != null? ("-" + fileIdentifier) : "") + "-";
+            
+            final File tempFile = File.createTempFile(prefix, null);
+            tempFile.deleteOnExit();
+            
+            FileWriter writer = null;
+            try {
+                writer = new FileWriter(tempFile, false);
+                writer.write(contents);
+            } catch (final Throwable t) {
+                throw new TestEngineConfigurationException(suiteName, 
+                        "Could not write contents of temporary file for suite \"" + suiteName + "\"", t);
+            } finally {
+                try {
+                    if (writer != null) {
+                        writer.close();
+                    }
+                } catch (final Throwable ignored) {
+                    // ignored
+                }
+            }
+            
+            return new FileTestResource(tempFile);
+            
+        } catch (final TestEngineConfigurationException e) {
+            throw e;
+        } catch (final Throwable t) {
+            throw new TestEngineConfigurationException(suiteName, 
+                    "Could not create temporary file for suite \"" + suiteName + "\"", t);
+        }
+        
     }
     
     
+    
+    
+    
+    private StandardTestIOUtils() {
+        super();
+    }
+
     
 }

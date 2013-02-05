@@ -21,19 +21,19 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 
 
-public class DefaultInputStandardDirectiveResolver extends AbstractTempFileResourceStandardDirectiveResolver {
+public class DefaultOutputStandardDirectiveResolver extends AbstractTempFileResourceStandardDirectiveResolver {
 
     
-    public static final DefaultInputStandardDirectiveResolver INSTANCE = new DefaultInputStandardDirectiveResolver();
+    public static final DefaultOutputStandardDirectiveResolver INSTANCE = new DefaultOutputStandardDirectiveResolver();
 
     
-    private DefaultInputStandardDirectiveResolver() {
+    private DefaultOutputStandardDirectiveResolver() {
         super();
     }
 
     
     protected String getFileIdentifier() {
-        return "INPUT";
+        return "OUTPUT";
     }
 
     

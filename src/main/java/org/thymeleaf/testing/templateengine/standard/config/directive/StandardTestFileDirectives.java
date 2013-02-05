@@ -20,9 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.config.directive;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -33,6 +31,8 @@ import org.thymeleaf.testing.templateengine.standard.config.test.DefaultContextS
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultExceptionDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultExceptionMessagePatternDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultFragmentStandardDirectiveResolver;
+import org.thymeleaf.testing.templateengine.standard.config.test.DefaultInputStandardDirectiveResolver;
+import org.thymeleaf.testing.templateengine.standard.config.test.DefaultOutputStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultTemplateModeStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.DefaultTestNameStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
@@ -49,89 +49,53 @@ public final class StandardTestFileDirectives {
     public static final char DIRECTIVE_PREFIX_CHAR = '%';
 
     
-    public static final StandardTestFileDirectiveSpec<String> TEST_NAME_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<String> TEST_NAME_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<String>("NAME", String.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<String> TEMPLATE_MODE_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<String> TEMPLATE_MODE_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<String>("MODE", String.class, DefaultTemplateModeStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<Boolean> CACHE_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<Boolean> CACHE_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<Boolean>("CACHE", Boolean.class, DefaultCacheStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<IContext> CONTEXT_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<IContext> CONTEXT_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<IContext>("CONTEXT", IContext.class, DefaultContextStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<IFragmentSpec> FRAGMENT_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<IFragmentSpec> FRAGMENT_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<IFragmentSpec>("FRAGMENT", IFragmentSpec.class, DefaultFragmentStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<ITestResource> INPUT_DIRECTIVE_NAME = 
-            new StandardTestFileDirectiveSpec<ITestResource>("INPUT", ITestResource.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestFileDirectiveSpec<ITestResource> INPUT_DIRECTIVE_SPEC = 
+            new StandardTestFileDirectiveSpec<ITestResource>("INPUT", ITestResource.class, DefaultInputStandardDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<ITestResource> OUTPUT_DIRECTIVE_NAME = 
-            new StandardTestFileDirectiveSpec<ITestResource>("OUTPUT", ITestResource.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestFileDirectiveSpec<ITestResource> OUTPUT_DIRECTIVE_SPEC = 
+            new StandardTestFileDirectiveSpec<ITestResource>("OUTPUT", ITestResource.class, DefaultOutputStandardDirectiveResolver.INSTANCE);
     
     @SuppressWarnings("unchecked")
-    public static final StandardTestFileDirectiveSpec<Class<? extends Throwable>> EXCEPTION_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<Class<? extends Throwable>> EXCEPTION_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<Class<? extends Throwable>>("EXCEPTION", (Class<Class<? extends Throwable>>)(Class<?>)Class.class, DefaultExceptionDirectiveResolver.INSTANCE);
     
-    public static final StandardTestFileDirectiveSpec<Pattern> EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_NAME = 
+    public static final StandardTestFileDirectiveSpec<Pattern> EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC = 
             new StandardTestFileDirectiveSpec<Pattern>("EXCEPTION_MESSAGE_PATTERN", Pattern.class, DefaultExceptionMessagePatternDirectiveResolver.INSTANCE);
 
     
-    public static final Map<String,Class<?>> CLASSES_BY_DIRECTIVE;
-    
-    public static final Set<String> DIRECTIVES_ALL;
-    public static final Set<String> DIRECTIVES_ALL_BUT_INPUT_OUTPUT;
-    public static final Set<String> DIRECTIVES_INPUT;
-    public static final Set<String> DIRECTIVES_OUTPUT;
+    public static final Set<StandardTestFileDirectiveSpec<?>> ALL_DIRECTIVE_SPECS;
     
     
     
     static {
 
-        final Map<String,Class<?>> classesByDirective = new HashMap<String, Class<?>>();
-        final Set<String> allButInputOutput = new HashSet<String>();
-        final Set<String> input = new HashSet<String>();
-        final Set<String> output = new HashSet<String>();
+        final Set<StandardTestFileDirectiveSpec<?>> all = new HashSet<StandardTestFileDirectiveSpec<?>>();
         
-        allButInputOutput.add(TEST_NAME_NAME);
-        classesByDirective.put(TEST_NAME_NAME, TEST_NAME_EXPECTED_CLASS);
+        all.add(TEST_NAME_DIRECTIVE_SPEC);
+        all.add(TEMPLATE_MODE_DIRECTIVE_SPEC);
+        all.add(CACHE_DIRECTIVE_SPEC);
+        all.add(CONTEXT_DIRECTIVE_SPEC);
+        all.add(INPUT_DIRECTIVE_SPEC);
+        all.add(OUTPUT_DIRECTIVE_SPEC);
+        all.add(EXCEPTION_DIRECTIVE_SPEC);
+        all.add(EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
         
-        allButInputOutput.add(TEMPLATE_MODE_NAME);
-        classesByDirective.put(TEMPLATE_MODE_NAME, TEMPLATE_MODE_EXPECTED_CLASS);
-        
-        allButInputOutput.add(CACHE_NAME);
-        classesByDirective.put(CACHE_NAME, CACHE_EXPECTED_CLASS);
-        
-        allButInputOutput.add(CONTEXT_NAME);
-        classesByDirective.put(CONTEXT_NAME, CONTEXT_EXPECTED_CLASS);
-        
-        allButInputOutput.add(FRAGMENT_NAME);
-        classesByDirective.put(FRAGMENT_NAME, FRAGMENT_EXPECTED_CLASS);
-        
-        input.add(INPUT_NAME);
-        classesByDirective.put(INPUT_NAME, INPUT_EXPECTED_CLASS);
-        
-        output.add(OUTPUT_NAME);
-        classesByDirective.put(OUTPUT_NAME, OUTPUT_EXPECTED_CLASS);
-        
-        output.add(EXCEPTION_NAME);
-        classesByDirective.put(EXCEPTION_NAME, EXCEPTION_EXPECTED_CLASS);
-        
-        output.add(EXCEPTION_MESSAGE_PATTERN_NAME);
-        classesByDirective.put(EXCEPTION_MESSAGE_PATTERN_NAME, EXCEPTION_MESSAGE_PATTERN_EXPECTED_CLASS);
-        
-        
-        final Set<String> all = new HashSet<String>();
-        all.addAll(allButInputOutput);
-        all.addAll(input);
-        all.addAll(output);
-        
-        DIRECTIVES_ALL = Collections.unmodifiableSet(all);
-        DIRECTIVES_ALL_BUT_INPUT_OUTPUT = Collections.unmodifiableSet(allButInputOutput);
-        DIRECTIVES_INPUT = Collections.unmodifiableSet(input);
-        DIRECTIVES_OUTPUT = Collections.unmodifiableSet(output);
-        CLASSES_BY_DIRECTIVE = Collections.unmodifiableMap(classesByDirective);
+        ALL_DIRECTIVE_SPECS = Collections.unmodifiableSet(all);
         
     }
     

@@ -21,7 +21,7 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 
 import java.util.List;
 
-import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.exception.TestEngineConfigurationException;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 import org.thymeleaf.testing.templateengine.test.ITestable;
 
@@ -54,13 +54,15 @@ public class DefaultExceptionDirectiveResolver
         try {
             specifiedClass = Class.forName(directiveValue.trim());
         } catch (final Throwable t) {
-            throw new TestEngineExecutionException(
+            throw new TestEngineConfigurationException(
+                    suite.getName(),
                     "Exception initializing directive \"" + directiveName + "\" in test file " +
             		"\"" + fileName + "\"", t);
         }
         
         if (!Throwable.class.isAssignableFrom(specifiedClass)) {
-            throw new TestEngineExecutionException(
+            throw new TestEngineConfigurationException(
+                    suite.getName(),
                     "Exception initializing directive \"" + directiveName + "\" in test file " +
                     "\"" + fileName + "\": Class \"" + specifiedClass.getClass().getName() + "\" does not " +
                     "extend from " + Throwable.class.getName());
