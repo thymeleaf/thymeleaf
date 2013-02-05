@@ -228,6 +228,10 @@ public class ExpressionTest extends TestCase {
         test("@{~/xx/yy(login=${logins})}", "/xx/yy?login=loceania&amp;login=meurope&amp;login=jafrica&amp;login=pamerica");
         test("@{~/xx/yy(login=${loginsArray})}", "/xx/yy?login=loceania&amp;login=meurope&amp;login=jafrica&amp;login=pamerica");
         test("@{~/xx/yy(a[0]=${pamerica.name},a[0]=${pamerica.name})}", "/xx/yy?a[0]=Petronila+America&amp;a[0]=Petronila+America");
+        test("${size}", "Size is 5");
+        test("${'x' + size}", "xSize is 5");
+        test("${size + 'y'}", "Size is 5y");
+        test("${'x' + size + 'y'}", "xSize is 5y");
     
     }
 
@@ -299,6 +303,7 @@ public class ExpressionTest extends TestCase {
         
         objects.put("logins", logins);
         objects.put("loginsArray", logins.toArray(new String[logins.size()]));
+        objects.put("size", "Size is 5");
         
         this.contextES.getVariables().putAll(objects);
         this.contextEN.getVariables().putAll(objects);
