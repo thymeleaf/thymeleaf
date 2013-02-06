@@ -37,6 +37,7 @@ public final class DefaultTestNameStandardDirectiveResolver extends AbstractStan
     }
 
 
+    @Override
     public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
 

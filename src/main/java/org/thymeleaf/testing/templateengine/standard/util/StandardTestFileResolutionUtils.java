@@ -19,10 +19,13 @@
  */
 package org.thymeleaf.testing.templateengine.standard.util;
 
-import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestFileDirectiveSpec;
+import org.thymeleaf.testing.templateengine.standard.config.test.IStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
-import org.thymeleaf.testing.templateengine.test.ITest;
 
 
 
@@ -31,16 +34,79 @@ import org.thymeleaf.testing.templateengine.test.ITest;
 
 public final class StandardTestFileResolutionUtils {
 
-
-    // TODO Pass this class the set of default *Config implementations to be used? This would allow better customization
-    // TODO Also pass the directives and classes of these to be read
+    public static final String CONFIG_RESOLVER_DIRECTIVE_SUFFIX = "_RESOLVER";
     
-    public ITest resolveTestFile(final StandardTestFileData arguments, final Reader reader) {
+
+    
+    public static Map<String,Object> resolveTestFile(final String executionId, final String fileName, 
+            final StandardTestFileData data, final Map<String,StandardTestFileDirectiveSpec<?>> directiveSpecs) {
+
+        final Map<String,String> directiveValues = data.getAllDirectiveValues();
+        final Map<String,StandardTestFileDirectiveSpec<?>> resolvedDirectiveSpecs =
+                resolveDirectiveSpecs(executionId, fileName, data, directiveSpecs);
+        
+        
+        for (final Map.Entry<String,String> directiveValueEntry : directiveValues.entrySet()) {
+            
+            final String directiveName = directiveValueEntry.getKey();
+            final String directiveValue = directiveValueEntry.getValue();
+            
+            if (!isResolverDirective(directiveName)) {
+                
+                final StandardTestFileDirectiveSpec<?> spec = resolvedDirectiveSpecs.get(directiveName);
+                final IStandardDirectiveResolver<?> resolver = spec.getResolver();
+                
+                final Object value = resolver.getValue(suite, path, fileName, directiveName, data);
+                
+            }
+            
+            
+        }
         
         return null;
         
     }
     
+    
+    
+    private static Map<String,StandardTestFileDirectiveSpec<?>> resolveDirectiveSpecs(
+            final String executionId, final String fileName, 
+            final StandardTestFileData data, final Map<String,StandardTestFileDirectiveSpec<?>> directiveSpecs) {
+        
+        final Map<String,StandardTestFileDirectiveSpec<?>> resolvedDirectiveSpecs =
+                new HashMap<String, StandardTestFileDirectiveSpec<?>>(directiveSpecs);
+        
+        final Map<String,String> directiveValues = data.getAllDirectiveValues();
+        
+        for (final Map.Entry<String,String> directiveValueEntry : directiveValues.entrySet()) {
+            
+            final String directiveName = directiveValueEntry.getKey();
+            if (isResolverDirective(directiveName)) {
+                // TODO implement this!
+                // Obtain the resolver class with CLass.forName, then create instance, then replace in resolvedDirectiveSpecs map
+                throw new RuntimeException("To be implemented!!");
+            } else {
+                if (!directiveSpecs.containsKey(directiveName)) {
+                    throw new TestEngineExecutionException(
+                            executionId, "No specification found for directive \"" + directiveName + "\" at file " +
+                            "\"" + fileName + "\"");
+                }
+            }
+            
+        }
+
+        return resolvedDirectiveSpecs;
+        
+        
+    }
+    
+    
+    
+    private static boolean isResolverDirective(final String directiveName) {
+        return directiveName != null && directiveName.endsWith(CONFIG_RESOLVER_DIRECTIVE_SUFFIX);
+    }
+    
+
     
     
     private StandardTestFileResolutionUtils() {

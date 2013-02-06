@@ -20,6 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.config.directive;
 
 import org.thymeleaf.testing.templateengine.standard.config.test.IStandardDirectiveResolver;
+import org.thymeleaf.util.Validate;
 
 
 
@@ -31,16 +32,19 @@ public final class StandardTestFileDirectiveSpec<T> {
     
     private final String name;
     private final Class<T> expectedClass;
-    private final IStandardDirectiveResolver<? extends T> defaultConfigResolver;
+    private final IStandardDirectiveResolver<? extends T> resolver;
 
     
     
     public StandardTestFileDirectiveSpec(
-            final String name, final Class<T> expectedClass, IStandardDirectiveResolver<? extends T> defaultConfigResolver) {
+            final String name, final Class<T> expectedClass, IStandardDirectiveResolver<? extends T> resolver) {
         super();
+        Validate.notNull(name, "Directive name cannot null");
+        Validate.notNull(expectedClass, "Directive expected class cannot be null");
+        Validate.notNull(resolver, "Directive resolver cannot be null");
         this.name = name;
         this.expectedClass = expectedClass;
-        this.defaultConfigResolver = defaultConfigResolver;
+        this.resolver = resolver;
     }
 
 
@@ -54,8 +58,8 @@ public final class StandardTestFileDirectiveSpec<T> {
     }
 
 
-    public IStandardDirectiveResolver<? extends T> getDefaultConfigResolver() {
-        return this.defaultConfigResolver;
+    public IStandardDirectiveResolver<? extends T> getResolver() {
+        return this.resolver;
     }
     
     

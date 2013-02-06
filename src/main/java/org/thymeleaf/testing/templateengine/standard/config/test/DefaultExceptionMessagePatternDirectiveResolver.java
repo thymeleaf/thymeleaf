@@ -42,6 +42,7 @@ public class DefaultExceptionMessagePatternDirectiveResolver
 
 
 
+    @Override
     public Pattern getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
         

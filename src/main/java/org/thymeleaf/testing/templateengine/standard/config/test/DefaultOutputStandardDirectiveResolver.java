@@ -32,6 +32,7 @@ public class DefaultOutputStandardDirectiveResolver extends AbstractTempFileReso
     }
 
     
+    @Override
     protected String getFileIdentifier() {
         return "OUTPUT";
     }

@@ -41,7 +41,7 @@ public class StandardTestFileData {
     }
 
     
-    public Map<String,String> getAllDirectives() {
+    public Map<String,String> getAllDirectiveValues() {
         return this.directiveValues;
     }
     

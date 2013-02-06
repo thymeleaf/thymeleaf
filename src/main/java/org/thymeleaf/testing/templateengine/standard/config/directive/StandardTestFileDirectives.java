@@ -20,8 +20,8 @@
 package org.thymeleaf.testing.templateengine.standard.config.directive;
 
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.context.IContext;
@@ -78,24 +78,24 @@ public final class StandardTestFileDirectives {
             new StandardTestFileDirectiveSpec<Pattern>("EXCEPTION_MESSAGE_PATTERN", Pattern.class, DefaultExceptionMessagePatternDirectiveResolver.INSTANCE);
 
     
-    public static final Set<StandardTestFileDirectiveSpec<?>> ALL_DIRECTIVE_SPECS;
+    public static final Map<String,StandardTestFileDirectiveSpec<?>> ALL_DIRECTIVE_SPECS;
     
     
     
     static {
 
-        final Set<StandardTestFileDirectiveSpec<?>> all = new HashSet<StandardTestFileDirectiveSpec<?>>();
+        final Map<String,StandardTestFileDirectiveSpec<?>> all = new HashMap<String,StandardTestFileDirectiveSpec<?>>();
         
-        all.add(TEST_NAME_DIRECTIVE_SPEC);
-        all.add(TEMPLATE_MODE_DIRECTIVE_SPEC);
-        all.add(CACHE_DIRECTIVE_SPEC);
-        all.add(CONTEXT_DIRECTIVE_SPEC);
-        all.add(INPUT_DIRECTIVE_SPEC);
-        all.add(OUTPUT_DIRECTIVE_SPEC);
-        all.add(EXCEPTION_DIRECTIVE_SPEC);
-        all.add(EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
+        all.put(TEST_NAME_DIRECTIVE_SPEC.getName(), TEST_NAME_DIRECTIVE_SPEC);
+        all.put(TEMPLATE_MODE_DIRECTIVE_SPEC.getName(), TEMPLATE_MODE_DIRECTIVE_SPEC);
+        all.put(CACHE_DIRECTIVE_SPEC.getName(), CACHE_DIRECTIVE_SPEC);
+        all.put(CONTEXT_DIRECTIVE_SPEC.getName(), CONTEXT_DIRECTIVE_SPEC);
+        all.put(INPUT_DIRECTIVE_SPEC.getName(), INPUT_DIRECTIVE_SPEC);
+        all.put(OUTPUT_DIRECTIVE_SPEC.getName(), OUTPUT_DIRECTIVE_SPEC);
+        all.put(EXCEPTION_DIRECTIVE_SPEC.getName(), EXCEPTION_DIRECTIVE_SPEC);
+        all.put(EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC.getName(), EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
         
-        ALL_DIRECTIVE_SPECS = Collections.unmodifiableSet(all);
+        ALL_DIRECTIVE_SPECS = Collections.unmodifiableMap(all);
         
     }
     

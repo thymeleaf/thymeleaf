@@ -44,6 +44,7 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
     protected IContext getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
             final String directiveName, final String directiveValue) {
 
+        // TODO implement this!
         throw new RuntimeException("To be implemented!!");
         
     }
