@@ -28,7 +28,7 @@ import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionExcepti
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSetSpec;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpec;
 import org.thymeleaf.testing.templateengine.standard.config.test.IStandardDirectiveResolver;
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
+import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 
@@ -43,14 +43,14 @@ public final class StandardTestDocumentResolutionUtils {
 
     
     public static Map<String,Object> resolveTestDocumentData(
-            final String executionId, final String documentName, 
-            final StandardTestDirectiveSetSpec directiveSetSpec, final StandardTestFileData data) {
+            final String executionId, final StandardTestDocumentData data, 
+            final StandardTestDirectiveSetSpec directiveSetSpec) {
 
         final Map<String,Object> values = new HashMap<String, Object>();
         final Set<String> directiveNames = data.getAllDirectiveValues().keySet();
         
         final Map<String,StandardTestDirectiveSpec<?>> resolvedDirectiveSpecs =
-                resolveAndValidateDirectiveSpecs(executionId, documentName, directiveSetSpec, data);        
+                resolveAndValidateDirectiveSpecs(executionId, data, directiveSetSpec);        
         
         for (final String directiveName : directiveNames) {
             
@@ -59,7 +59,7 @@ public final class StandardTestDocumentResolutionUtils {
                 final StandardTestDirectiveSpec<?> spec = resolvedDirectiveSpecs.get(directiveName);
                 final IStandardDirectiveResolver<?> resolver = spec.getResolver();
                 
-                final Object value = resolver.getValue(executionId, documentName, directiveName, data);
+                final Object value = resolver.getValue(executionId, data, directiveName);
                 
                 values.put(directiveName, value);
                 
@@ -74,8 +74,8 @@ public final class StandardTestDocumentResolutionUtils {
     
     
     private static Map<String,StandardTestDirectiveSpec<?>> resolveAndValidateDirectiveSpecs(
-            final String executionId, final String documentName, 
-            final StandardTestDirectiveSetSpec directiveSetSpec, final StandardTestFileData data) {
+            final String executionId, final StandardTestDocumentData data, 
+            final StandardTestDirectiveSetSpec directiveSetSpec) {
         
         final Map<String,StandardTestDirectiveSpec<?>> resolvedDirectiveSpecs =
                 new HashMap<String, StandardTestDirectiveSpec<?>>();
@@ -98,11 +98,11 @@ public final class StandardTestDocumentResolutionUtils {
                 if (!directiveSetSpec.contains(targetDirectiveSpec)) {
                     throw new TestEngineExecutionException(
                             executionId, "No specification found for directive \"" + directiveName + "\" in document " +
-                            "\"" + documentName + "\"");
+                            "\"" + data.getDocumentName() + "\"");
                 }
                 
                 final StandardTestDirectiveSpec<?> newSpec =
-                        initializeDirectiveResolver(executionId, documentName, directiveName, directiveValue);
+                        initializeDirectiveResolver(executionId, data.getDocumentName(), directiveName, directiveValue);
                 resolvedDirectiveSpecs.put(targetDirectiveSpec, newSpec);
                 
                 requiredDirectiveNames.remove(directiveName);
@@ -113,7 +113,7 @@ public final class StandardTestDocumentResolutionUtils {
                 if (!directiveSetSpec.contains(directiveName)) {
                     throw new TestEngineExecutionException(
                             executionId, "No specification found for directive \"" + directiveName + "\" in document " +
-                            "\"" + documentName + "\"");
+                            "\"" + data.getDocumentName() + "\"");
                 }
                 
                 requiredDirectiveNames.remove(directiveName);
@@ -125,7 +125,7 @@ public final class StandardTestDocumentResolutionUtils {
         if (!requiredDirectiveNames.isEmpty()) {
             throw new TestEngineExecutionException(
                     executionId, "No specification found for required directives " + requiredDirectiveNames + 
-                    " in document \"" + documentName + "\"");
+                    " in document \"" + data.getDocumentName() + "\"");
         }
         
         return resolvedDirectiveSpecs;
@@ -147,7 +147,7 @@ public final class StandardTestDocumentResolutionUtils {
     
     @SuppressWarnings("unchecked")
     private static StandardTestDirectiveSpec<?> initializeDirectiveResolver(
-            final String executionId, final String fileName, 
+            final String executionId, final String documentName, 
             final String directiveName, final String directiveValue){
         
         final String className = directiveValue.trim();
@@ -160,7 +160,7 @@ public final class StandardTestDocumentResolutionUtils {
             if (!IStandardDirectiveResolver.class.isAssignableFrom(resolverClass)) {
                 throw new TestEngineExecutionException(
                         executionId, "No specification found for directive \"" + directiveName + "\" at file " +
-                        "\"" + fileName + "\" selects class \"" + className + "\" as a directive resolver " +
+                        "\"" + documentName + "\" selects class \"" + className + "\" as a directive resolver " +
                         "implementation. But this class does not implement the " + 
                         IStandardDirectiveResolver.class.getName() + " interface");
             }
@@ -182,7 +182,7 @@ public final class StandardTestDocumentResolutionUtils {
         } catch (final Throwable t) {
             throw new TestEngineExecutionException(
                     executionId, "Error while processing directive \"" + directiveName + "\" at file " +
-                    "\"" + fileName + "\"", t);
+                    "\"" + documentName + "\"", t);
         }
         
         

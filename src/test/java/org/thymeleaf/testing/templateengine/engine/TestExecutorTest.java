@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
+import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestDocumentResolutionUtils;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
@@ -61,13 +61,13 @@ public class TestExecutorTest {
             
             final Reader reader = new StringReader(text);
             
-            final StandardTestFileData data = 
-                    StandardTestIOUtils.readTestDocument("001", reader, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
+            final StandardTestDocumentData data = 
+                    StandardTestIOUtils.readTestDocument("001", "testf", reader, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
             
             System.out.println(data.getAllDirectiveValues());
             
             final Map<String,Object> values =
-                    StandardTestDocumentResolutionUtils.resolveTestDocumentData("001", "onedoc", StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC, data);
+                    StandardTestDocumentResolutionUtils.resolveTestDocumentData("001", data, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
             
             System.out.println(values);
             System.out.println(((ITestResource)values.get(StandardTestDirectiveSpecs.INPUT_DIRECTIVE_SPEC.getName())).read());

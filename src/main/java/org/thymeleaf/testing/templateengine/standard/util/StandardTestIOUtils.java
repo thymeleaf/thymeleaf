@@ -30,7 +30,7 @@ import java.util.Set;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSetSpec;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
+import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.test.resource.FileTestResource;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
@@ -44,16 +44,19 @@ public final class StandardTestIOUtils {
 
     
     
-    public static StandardTestFileData readTestDocument(final String executionId, 
-            final Reader reader, final StandardTestDirectiveSetSpec directiveSetSpec) {
+    public static StandardTestDocumentData readTestDocument(final String executionId, 
+            final String documentName, final Reader reader, 
+            final StandardTestDirectiveSetSpec directiveSetSpec) {
 
+        Validate.notNull(executionId, "Execution ID cannot be null");
+        Validate.notNull(documentName, "Document name cannot be null");
         Validate.notNull(reader, "Reader cannot be null");
         Validate.notNull(directiveSetSpec, "Directive set spec cannot be null");
         
         final Set<String> directiveNames = directiveSetSpec.getAllDirectiveNames();
         
         final BufferedReader r = new BufferedReader(reader);
-        final HashMap<String,String> data = new HashMap<String, String>();
+        final HashMap<String,String> directiveValues = new HashMap<String, String>();
         
         try {
             
@@ -89,7 +92,7 @@ public final class StandardTestIOUtils {
                 }
                 
                 if (currentDirectiveName != null && strBuilder != null) {
-                    data.put(currentDirectiveName, strBuilder.toString());
+                    directiveValues.put(currentDirectiveName, strBuilder.toString());
                 }
                 
                 final int lineLen = line.length();
@@ -119,10 +122,10 @@ public final class StandardTestIOUtils {
             }
 
             if (currentDirectiveName != null && strBuilder != null) {
-                data.put(currentDirectiveName, strBuilder.toString());
+                directiveValues.put(currentDirectiveName, strBuilder.toString());
             }
 
-            return new StandardTestFileData(data);
+            return new StandardTestDocumentData(documentName, directiveValues);
             
         } catch (final IOException e) {
             
@@ -177,6 +180,10 @@ public final class StandardTestIOUtils {
     
     
     public static ITestResource createResource(final String executionId, final String fileSuffix, final String contents) {
+
+        Validate.notNull(executionId, "Execution ID cannot be null");
+        Validate.notNull(fileSuffix, "File suffix cannot be null");
+        Validate.notNull(contents, "Contents cannot be null");
         
         try {
 
