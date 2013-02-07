@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 import org.thymeleaf.util.Validate;
 
 
@@ -43,14 +39,12 @@ public abstract class AbstractStandardDirectiveResolver<T> implements IStandardD
         return this.expectedClass;
     }
 
-    public final T getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
-            final String directiveName, final StandardTestFileData data) {
-        return getValue(suite, path, fileName, directiveName, data.getDirectiveValue(directiveName));
+    public final T getValue(final String executionId, final String documentName, final String directiveName, final StandardTestFileData data) {
+        return getValue(executionId, documentName, directiveName, data.getDirectiveValue(directiveName));
     }
 
     
-    protected abstract T getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
-            final String directiveName, final String directiveValue);
+    protected abstract T getValue(final String executionId, final String documentName, final String directiveName, final String directiveValue);
 
     
 }

@@ -19,11 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.exception.TestEngineConfigurationException;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 
 
 
@@ -44,7 +40,8 @@ public class DefaultExceptionDirectiveResolver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Class<? extends Throwable> getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    public Class<? extends Throwable> getValue(
+            final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {
@@ -55,18 +52,18 @@ public class DefaultExceptionDirectiveResolver
         try {
             specifiedClass = Class.forName(directiveValue.trim());
         } catch (final Throwable t) {
-            throw new TestEngineConfigurationException(
-                    suite.getName(),
-                    "Exception initializing directive \"" + directiveName + "\" in test file " +
-            		"\"" + fileName + "\"", t);
+            throw new TestEngineExecutionException(
+                    executionId,
+                    "Exception initializing directive \"" + directiveName + "\" in document " +
+            		"\"" + documentName + "\"", t);
         }
         
         if (!Throwable.class.isAssignableFrom(specifiedClass)) {
-            throw new TestEngineConfigurationException(
-                    suite.getName(),
-                    "Exception initializing directive \"" + directiveName + "\" in test file " +
-                    "\"" + fileName + "\": Class \"" + specifiedClass.getClass().getName() + "\" does not " +
-                    "extend from " + Throwable.class.getName());
+            throw new TestEngineExecutionException(
+                    executionId,
+                    "Exception initializing directive \"" + directiveName + "\" in document " +
+                    "\"" + documentName + "\": Class \"" + specifiedClass.getClass().getName() + "\" does not " +
+                    "extend " + Throwable.class.getName());
         }
         
         return (Class<? extends Throwable>) specifiedClass;

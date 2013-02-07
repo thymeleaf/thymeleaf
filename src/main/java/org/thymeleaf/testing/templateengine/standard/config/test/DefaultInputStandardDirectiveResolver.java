@@ -33,7 +33,7 @@ public class DefaultInputStandardDirectiveResolver extends AbstractTempFileResou
 
     
     @Override
-    protected String getFileIdentifier() {
+    protected String getFileSuffix() {
         return "INPUT";
     }
 

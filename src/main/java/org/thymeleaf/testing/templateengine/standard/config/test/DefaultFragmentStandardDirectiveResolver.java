@@ -19,13 +19,9 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.fragment.WholeFragmentSpec;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 public class DefaultFragmentStandardDirectiveResolver extends AbstractStandardDirectiveResolver<IFragmentSpec> {
@@ -41,7 +37,7 @@ public class DefaultFragmentStandardDirectiveResolver extends AbstractStandardDi
 
 
     @Override
-    protected IFragmentSpec getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    protected IFragmentSpec getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
 
         if (directiveValue == null || directiveValue.trim().equals("")) {

@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -30,7 +26,6 @@ import org.thymeleaf.testing.templateengine.test.ITestable;
 public interface IStandardDirectiveResolver<T> {
 
     public Class<T> getValueClass();
-    public T getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
-            final String directiveName, final StandardTestFileData data);
+    public T getValue(final String executionId, final String documentName, final String directiveName, final StandardTestFileData data);
     
 }

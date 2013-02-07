@@ -27,9 +27,9 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.thymeleaf.testing.templateengine.exception.TestEngineConfigurationException;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestFileDirectives;
+import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSetSpec;
+import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestFileData;
 import org.thymeleaf.testing.templateengine.test.resource.FileTestResource;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
@@ -44,11 +44,13 @@ public final class StandardTestIOUtils {
 
     
     
-    public static StandardTestFileData readTestFile(final String executionId, 
-            final Reader reader, final Set<String> fields) {
+    public static StandardTestFileData readTestDocument(final String executionId, 
+            final Reader reader, final StandardTestDirectiveSetSpec directiveSetSpec) {
 
         Validate.notNull(reader, "Reader cannot be null");
-        Validate.notNull(fields, "Fields set cannot be null");
+        Validate.notNull(directiveSetSpec, "Directive set spec cannot be null");
+        
+        final Set<String> directiveNames = directiveSetSpec.getAllDirectiveNames();
         
         final BufferedReader r = new BufferedReader(reader);
         final HashMap<String,String> data = new HashMap<String, String>();
@@ -93,7 +95,7 @@ public final class StandardTestIOUtils {
                 final int lineLen = line.length();
                 currentDirectiveName = line.substring(1, directiveEnd);
                 
-                if (fields.contains(currentDirectiveName)) {
+                if (directiveNames.contains(currentDirectiveName)) {
                     
                     strBuilder = new StringBuilder();
                     if (directiveEnd < (lineLen - 1)) {
@@ -141,7 +143,7 @@ public final class StandardTestIOUtils {
     
     
     private static boolean isComment(final String line) {
-        return (line.length() > 0 && line.charAt(0) == StandardTestFileDirectives.COMMENT_PREFIX_CHAR);
+        return (line.length() > 0 && line.charAt(0) == StandardTestDirectiveSpecs.COMMENT_PREFIX_CHAR);
     }
     
     
@@ -153,7 +155,7 @@ public final class StandardTestIOUtils {
         }
         
         char c = line.charAt(0);
-        if (c != StandardTestFileDirectives.DIRECTIVE_PREFIX_CHAR) {
+        if (c != StandardTestDirectiveSpecs.DIRECTIVE_PREFIX_CHAR) {
             return -1;
         }
         
@@ -174,14 +176,14 @@ public final class StandardTestIOUtils {
     
     
     
-    public static ITestResource createResource(final String suiteName, final String fileIdentifier, final String contents) {
+    public static ITestResource createResource(final String executionId, final String fileSuffix, final String contents) {
         
         try {
 
             final String prefix = 
-                    "thymeleaf-testing-" + 
-                    (suiteName != null? ("-" + suiteName) : "") + 
-                    (fileIdentifier != null? ("-" + fileIdentifier) : "") + "-";
+                    "thymeleaf-testing" + 
+                    (executionId != null? ("-" + executionId) : "") + 
+                    (fileSuffix != null? ("-" + fileSuffix) : "") + "-";
             
             final File tempFile = File.createTempFile(prefix, null);
             tempFile.deleteOnExit();
@@ -191,8 +193,8 @@ public final class StandardTestIOUtils {
                 writer = new FileWriter(tempFile, false);
                 writer.write(contents);
             } catch (final Throwable t) {
-                throw new TestEngineConfigurationException(suiteName, 
-                        "Could not write contents of temporary file for suite \"" + suiteName + "\"", t);
+                throw new TestEngineExecutionException(executionId, 
+                        "Could not write contents of temporary file for execution \"" + executionId + "\"", t);
             } finally {
                 try {
                     if (writer != null) {
@@ -205,11 +207,11 @@ public final class StandardTestIOUtils {
             
             return new FileTestResource(tempFile);
             
-        } catch (final TestEngineConfigurationException e) {
+        } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Throwable t) {
-            throw new TestEngineConfigurationException(suiteName, 
-                    "Could not create temporary file for suite \"" + suiteName + "\"", t);
+            throw new TestEngineExecutionException(executionId, 
+                    "Could not create temporary file for execution \"" + executionId + "\"", t);
         }
         
     }

@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -39,7 +35,7 @@ public class DefaultCacheStandardDirectiveResolver extends AbstractStandardDirec
 
 
     @Override
-    public Boolean getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    public Boolean getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {

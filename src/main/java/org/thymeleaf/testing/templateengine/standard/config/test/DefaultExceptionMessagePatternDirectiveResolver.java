@@ -19,11 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
 import java.util.regex.Pattern;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -43,7 +39,7 @@ public class DefaultExceptionMessagePatternDirectiveResolver
 
 
     @Override
-    public Pattern getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    public Pattern getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {

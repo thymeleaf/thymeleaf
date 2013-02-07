@@ -21,7 +21,9 @@ package org.thymeleaf.testing.templateengine.standard.config.directive;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.util.Validate;
 
@@ -30,37 +32,47 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class StandardTestFileDirectivesSpec<T> {
+public final class StandardTestDirectiveSetSpec {
 
     
-    private final Map<String,StandardTestFileDirectiveSpec<?>> requiredDirectives;
-    private final Map<String,StandardTestFileDirectiveSpec<?>> optionalDirectives;
-
+    private final Map<String,StandardTestDirectiveSpec<?>> requiredDirectives;
+    private final Map<String,StandardTestDirectiveSpec<?>> optionalDirectives;
+    private final Set<String> allDirectiveNames;
     
 
 
-    public StandardTestFileDirectivesSpec(
-            final Map<String, StandardTestFileDirectiveSpec<?>> requiredDirectives,
-            final Map<String, StandardTestFileDirectiveSpec<?>> optionalDirectives) {
+    public StandardTestDirectiveSetSpec(
+            final Map<String, StandardTestDirectiveSpec<?>> requiredDirectives,
+            final Map<String, StandardTestDirectiveSpec<?>> optionalDirectives) {
         
         super();
         
         Validate.notNull(requiredDirectives, "Required directives map cannot be null");
         Validate.notNull(optionalDirectives, "Optional directives map cannot be null");
         
-        this.requiredDirectives = Collections.unmodifiableMap(new HashMap<String, StandardTestFileDirectiveSpec<?>>(requiredDirectives));
-        this.optionalDirectives = Collections.unmodifiableMap(new HashMap<String, StandardTestFileDirectiveSpec<?>>(optionalDirectives));
+        this.requiredDirectives = Collections.unmodifiableMap(new HashMap<String, StandardTestDirectiveSpec<?>>(requiredDirectives));
+        this.optionalDirectives = Collections.unmodifiableMap(new HashMap<String, StandardTestDirectiveSpec<?>>(optionalDirectives));
+        
+        final Set<String> allDirectiveNamesObj = new HashSet<String>();
+        allDirectiveNamesObj.addAll(this.requiredDirectives.keySet());
+        allDirectiveNamesObj.addAll(this.optionalDirectives.keySet());
+        this.allDirectiveNames = Collections.unmodifiableSet(allDirectiveNamesObj);
         
     }
 
 
 
-    public Map<String, StandardTestFileDirectiveSpec<?>> getRequiredDirectives() {
+    public Map<String, StandardTestDirectiveSpec<?>> getRequiredDirectives() {
         return this.requiredDirectives;
     }
 
-    public Map<String, StandardTestFileDirectiveSpec<?>> getOptionalDirectives() {
+    public Map<String, StandardTestDirectiveSpec<?>> getOptionalDirectives() {
         return this.optionalDirectives;
+    }
+    
+    
+    public Set<String> getAllDirectiveNames() {
+        return this.allDirectiveNames;
     }
     
     
@@ -78,7 +90,7 @@ public final class StandardTestFileDirectivesSpec<T> {
     }
 
     
-    public StandardTestFileDirectiveSpec<?> getDirective(final String directiveName) {
+    public StandardTestDirectiveSpec<?> getDirective(final String directiveName) {
         if (isRequired(directiveName)) {
             return this.requiredDirectives.get(directiveName);
         }

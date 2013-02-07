@@ -19,10 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -38,14 +34,14 @@ public final class DefaultTestNameStandardDirectiveResolver extends AbstractStan
 
 
     @Override
-    public String getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    public String getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
 
-        if (fileName == null || directiveValue.trim().equals("")) {
+        if (documentName == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
         }
         
-        return fileName;
+        return documentName;
         
     }
 

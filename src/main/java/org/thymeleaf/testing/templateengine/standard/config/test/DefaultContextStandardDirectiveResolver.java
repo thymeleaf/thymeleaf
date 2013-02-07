@@ -19,11 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
 import org.thymeleaf.context.IContext;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
@@ -41,7 +37,7 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
 
 
     @Override
-    protected IContext getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    protected IContext getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
 
         // TODO implement this!

@@ -19,11 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
-import java.util.List;
-
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.ITestable;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 
 
@@ -39,18 +35,18 @@ public abstract class AbstractTempFileResourceStandardDirectiveResolver extends 
 
 
     @Override
-    protected final ITestResource getValue(final ITestSuite suite, final List<ITestable> path, final String fileName, 
+    protected final ITestResource getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
 
         if (directiveValue == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
         }
 
-        return StandardTestIOUtils.createResource(suite.getName(), getFileIdentifier(), directiveValue);      
+        return StandardTestIOUtils.createResource(executionId, getFileSuffix(), directiveValue);      
         
     }
 
     
-    protected abstract String getFileIdentifier();
+    protected abstract String getFileSuffix();
     
 }

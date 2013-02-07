@@ -27,23 +27,23 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class StandardTestFileDirectiveSpec<T> {
+public final class StandardTestDirectiveSpec<T> {
 
     
     private final String name;
-    private final Class<T> expectedClass;
+    private final Class<T> valueClass;
     private final IStandardDirectiveResolver<? extends T> resolver;
 
     
     
-    public StandardTestFileDirectiveSpec(
-            final String name, final Class<T> expectedClass, IStandardDirectiveResolver<? extends T> resolver) {
+    public StandardTestDirectiveSpec(
+            final String name, final Class<T> valueClass, IStandardDirectiveResolver<? extends T> resolver) {
         super();
         Validate.notNull(name, "Directive name cannot null");
-        Validate.notNull(expectedClass, "Directive expected class cannot be null");
+        Validate.notNull(valueClass, "Directive value class cannot be null");
         Validate.notNull(resolver, "Directive resolver cannot be null");
         this.name = name;
-        this.expectedClass = expectedClass;
+        this.valueClass = valueClass;
         this.resolver = resolver;
     }
 
@@ -53,8 +53,8 @@ public final class StandardTestFileDirectiveSpec<T> {
     }
 
 
-    public Class<T> getExpectedClass() {
-        return this.expectedClass;
+    public Class<T> getValueClass() {
+        return this.valueClass;
     }
 
 
