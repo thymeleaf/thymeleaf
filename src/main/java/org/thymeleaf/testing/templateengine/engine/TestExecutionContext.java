@@ -23,9 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.report.ITestReporter;
 import org.thymeleaf.util.Validate;
 
 
@@ -39,8 +41,10 @@ public final class TestExecutionContext {
     private static final int ID_SIZE = 6;
     
 
+    private final String executionId;
     private final ITestSuite suite;
-    private final String id;
+    private final ITestReporter reporter;
+    private final TemplateEngine templateEngine;
     
     private final Map<String,ITest> testsByName = new HashMap<String,ITest>();
     private final Map<ITest,String> namesByTest = new HashMap<ITest,String>();
@@ -49,21 +53,52 @@ public final class TestExecutionContext {
     
     private int totalTestsExecuted = 0;
     private int totalTestsOk = 0;
+
+    
+    public static String generateExecutionId() {
+        return randomAlphanumeric(ID_SIZE);
+    }
     
 
-    TestExecutionContext(final ITestSuite suite) {
+    TestExecutionContext(final String executionId, final ITestSuite suite,
+            final ITestReporter reporter, final TemplateEngine templateEngine) {
+        
         super();
+        
+        Validate.notNull(executionId, "Execution ID cannot be null");
+        Validate.notNull(suite, "Suite cannot be null");
+        Validate.notNull(reporter, "Reporter cannot be null");
+        Validate.notNull(templateEngine, "Template engine cannot be nulL");
+        
+        this.executionId = executionId;
         this.suite = suite;
-        this.id = randomAlphanumeric(ID_SIZE);
+        this.reporter = reporter;
+        this.templateEngine = templateEngine;
+        
     }
 
     
-    public String getId() {
-        return this.id;
+    
+    public ITestSuite getSuite() {
+        return this.suite;
     }
     
+    public String getExecutionId() {
+        return this.executionId;
+    }
+
+
+    public ITestReporter getReporter() {
+        return this.reporter;
+    }
+
+
+    public TemplateEngine getTemplateEngine() {
+        return this.templateEngine;
+    }
 
     
+
     synchronized String registerTest(final ITest test) {
         
         Validate.notNull(test, "Test cannot be null");

@@ -60,8 +60,8 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
 
     
-    public final void suiteStart(final String executionId, final ITestSuite suite) {
-        outputMessage(executionId, msgSuiteStart(suite), 0, false);
+    public final void suiteStart(final String executionId, final int nestingLevel, final ITestSuite suite) {
+        outputMessage(executionId, msgSuiteStart(suite), nestingLevel, false);
     }
     
     public String msgSuiteStart(final ITestSuite suite) {
@@ -76,9 +76,9 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
 
     
     
-    public final void suiteEnd(final String executionId, final ITestSuite suite, 
+    public final void suiteEnd(final String executionId, final int nestingLevel, final ITestSuite suite, 
             final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos) {
-        outputMessage(executionId, msgSuiteEnd(suite, totalTestsExecuted, totalTestsOk, executionTimeNanos), 0, false);
+        outputMessage(executionId, msgSuiteEnd(suite, totalTestsExecuted, totalTestsOk, executionTimeNanos), nestingLevel, false);
     }
     
     public String msgSuiteEnd(final ITestSuite suite, 
@@ -100,7 +100,7 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void sequenceStart(final String executionId, final ITestSequence sequence, final int nestingLevel) {
+    public final void sequenceStart(final String executionId, final int nestingLevel, final ITestSequence sequence) {
         outputMessage(executionId, msgSequenceStart(sequence), nestingLevel, false);
     }
     
@@ -116,8 +116,8 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
 
     
-    public final void sequenceEnd(final String executionId, final ITestSequence sequence, 
-            final int nestingLevel, final long executionTimeNanos) {
+    public final void sequenceEnd(final String executionId, final int nestingLevel,  
+            final ITestSequence sequence, final long executionTimeNanos) {
         outputMessage(executionId, msgSequenceEnd(sequence, executionTimeNanos), nestingLevel, false);
     }
     
@@ -135,7 +135,7 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void iteratorStart(final String executionId, final ITestIterator iterator, final int nestingLevel) {
+    public final void iteratorStart(final String executionId, final int nestingLevel, final ITestIterator iterator) {
         outputMessage(executionId, msgIteratorStart(iterator), nestingLevel, false);
     }
     
@@ -152,8 +152,8 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void iteratorEnd(final String executionId, final ITestIterator iterator, 
-            final int nestingLevel, final long executionTimeNanos) {
+    public final void iteratorEnd(final String executionId, final int nestingLevel, 
+            final ITestIterator iterator, final long executionTimeNanos) {
         outputMessage(executionId, msgIteratorEnd(iterator, executionTimeNanos), nestingLevel, false);
     }
     
@@ -172,8 +172,8 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void iterationStart(final String executionId, final ITestIterator iterator, 
-            final int iteration, final int nestingLevel) {
+    public final void iterationStart(final String executionId, final int nestingLevel,  
+            final ITestIterator iterator, final int iteration) {
         outputMessage(executionId, msgIterationStart(iterator, iteration), nestingLevel, false);
     }
     
@@ -191,8 +191,8 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void iterationEnd(final String executionId, final ITestIterator iterator, 
-            final int iteration, final int nestingLevel, final long executionTimeNanos) {
+    public final void iterationEnd(final String executionId, final int nestingLevel,  
+            final ITestIterator iterator, final int iteration, final long executionTimeNanos) {
         outputMessage(executionId, msgIterationEnd(iterator, iteration, executionTimeNanos), nestingLevel, false);
     }
     
@@ -213,12 +213,12 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void testStart(final String executionId, final ITest test, final String testName, final int nestingLevel) {
-        outputMessage(executionId, msgTestStart(test, testName), nestingLevel, false);
+    public final void testStart(final String executionId, final int nestingLevel, final ITest test, final String testExecutionName) {
+        outputMessage(executionId, msgTestStart(test, testExecutionName), nestingLevel, false);
     }
     
     @SuppressWarnings("unused")
-    public String msgTestStart(final ITest test, final String testName) {
+    public String msgTestStart(final ITest test, final String testExecutionName) {
         // The standard implementation of this method is not outputting anything for test start events.
         return null;
     }
@@ -226,18 +226,17 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void testEnd(final String executionId, final ITest test, final String testName, final int nestingLevel, 
-            final long executionTimeNanos, final ITestResult result) {
-        outputMessage(executionId, msgTestEnd(test, testName, executionTimeNanos, result), nestingLevel, !result.isOK());
+    public final void testEnd(final String executionId, final int nestingLevel, final ITest test, 
+            final String testExecutionName, final ITestResult result, final long executionTimeNanos) {
+        outputMessage(executionId, msgTestEnd(test, testExecutionName, result, executionTimeNanos), nestingLevel, !result.isOK());
     }
-    
+
     @SuppressWarnings("unused")
-    public String msgTestEnd(final ITest test, final String testName, 
-            final long executionTimeNanos, final ITestResult result) {
+    public String msgTestEnd(final ITest test, final String testExecutionName, final ITestResult result, final long executionTimeNanos) {
         
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[test:end]");
-        strBuilder.append("[" + testName + "]");
+        strBuilder.append("[" + testExecutionName + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         if (result.isOK()) {
             strBuilder.append("[OK]");

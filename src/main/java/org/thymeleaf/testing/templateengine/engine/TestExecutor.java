@@ -49,27 +49,43 @@ import org.thymeleaf.util.Validate;
 public class TestExecutor {
     
     
+    public TestExecutor() {
+        super();
+    }
     
-    public static void execute(final ITestSuite suite) {
-        final TestExecutionContext testExecutionContext = new TestExecutionContext(suite); 
+    
+    
+    public void execute(final ITestSuiteBuilder testSuiteBuilder) {
+        final String executionId = TestExecutionContext.generateExecutionId();
         try {
-            executeSuite(suite, testExecutionContext);
+            final ITestSuite suite = testSuiteBuilder.buildTestSuite();
+            execute(executionId, suite);
         } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Exception e) {
-            throw new TestEngineExecutionException(testExecutionContext.getId(), e);
+            throw new TestEngineExecutionException(executionId, e);
         }
     }
     
  
     
-    private static long executeSuite(final ITestSuite suite, final TestExecutionContext testExecutionContext) {
+    public void execute(final ITestSuite suite) {
+        final String executionId = TestExecutionContext.generateExecutionId();
+        try {
+            execute(executionId, suite);
+        } catch (final TestEngineExecutionException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw new TestEngineExecutionException(executionId, e);
+        }
+    }
 
+    
+    
+    protected long execute(final String executionId, final ITestSuite suite) {
+
+        Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(suite, "Suite cannot be null");
-        
-        final ITestSequence sequence = suite.getSequence(); 
-        final ITestReporter reporter = suite.getReporter();
-        
         
         final TestTemplateResolver templateResolver = new TestTemplateResolver();
         final List<IDialect> dialects = suite.getDialects();
@@ -78,28 +94,54 @@ public class TestExecutor {
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.setDialects(new HashSet<IDialect>(dialects));
         
-        reporter.suiteStart(testExecutionContext.getId(), suite);
+        final TestExecutionContext context = 
+                new TestExecutionContext(executionId, suite, suite.getReporter(), templateEngine);
         
-        final long executionTimeNanos = 
-                executeSequence(sequence, 1, suite.getReporter(), templateEngine, testExecutionContext);
+        final long executionTimeNanos = executeSuite(suite, 0, context);
+        
+        return executionTimeNanos;
+        
+    }
+
+    
+    protected long executeSuite(final ITestSuite suite, final int nestingLevel, 
+            final TestExecutionContext context) {
+
+        Validate.notNull(suite, "Suite cannot be null");
+        Validate.isTrue(nestingLevel >= 0, "Nesting level must be equal or greater than zero");
+        Validate.notNull(context, "Test execution context cannot be null");
+        
+        final ITestReporter reporter = suite.getReporter();
+        
+        final ITestSequence sequence = suite.getSequence();
+        
+        reporter.suiteStart(context.getExecutionId(), nestingLevel, suite);
+        
+        final long executionTimeNanos = executeSequence(sequence, nestingLevel + 1, context);
         
         reporter.suiteEnd(
-                testExecutionContext.getId(),
+                context.getExecutionId(), 
+                nestingLevel,
                 suite, 
-                testExecutionContext.getTotalTestsExecuted(), 
-                testExecutionContext.getTotalTestsOk(), 
+                context.getTotalTestsExecuted(), 
+                context.getTotalTestsOk(), 
                 executionTimeNanos);
         
         return executionTimeNanos;
         
     }
 
-
     
-    private static long executeSequence(final ITestSequence sequence, final int nestingLevel, final ITestReporter reporter, 
-            final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
+    protected long executeSequence(final ITestSequence sequence, final int nestingLevel, 
+            final TestExecutionContext context) {
 
-        reporter.sequenceStart(testExecutionContext.getId(), sequence, nestingLevel);
+        Validate.notNull(sequence, "Sequence cannot be null");
+        Validate.isTrue(nestingLevel >= 0, "Nesting level must be equal or greater than zero");
+        Validate.notNull(context, "Test execution context cannot be null");
+
+        final ITestReporter reporter = context.getReporter();
+        
+        reporter.sequenceStart(context.getExecutionId(), nestingLevel, sequence);
         
         long totalTimeNanos = 0L;
         
@@ -110,15 +152,15 @@ public class TestExecutor {
             
             if (element instanceof ITestSequence) {
                 final long elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
+                        executeSequence((ITestSequence)element, childNestingLevel, context);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
                 final long elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
+                        executeIterator((ITestIterator)element, childNestingLevel, context);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
                 final long elementExecTimeNanos = 
-                        executeTest((ITest)element, childNestingLevel, reporter, templateEngine, testExecutionContext);
+                        executeTest((ITest)element, childNestingLevel, context);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
@@ -128,7 +170,7 @@ public class TestExecutor {
             
         }
         
-        reporter.sequenceEnd(testExecutionContext.getId(), sequence, nestingLevel, totalTimeNanos);
+        reporter.sequenceEnd(context.getExecutionId(), nestingLevel, sequence, totalTimeNanos);
         
         return totalTimeNanos;
         
@@ -136,10 +178,16 @@ public class TestExecutor {
     
     
     
-    private static long executeIterator(final ITestIterator iterator, final int nestingLevel, final ITestReporter reporter, 
-            final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
+    protected long executeIterator(final ITestIterator iterator, final int nestingLevel, 
+            final TestExecutionContext context) {
 
-        reporter.iteratorStart(testExecutionContext.getId(), iterator, nestingLevel);
+        Validate.notNull(iterator, "Iterator cannot be null");
+        Validate.isTrue(nestingLevel >= 0, "Nesting level must be equal or greater than zero");
+        Validate.notNull(context, "Test execution context cannot be null");
+
+        final ITestReporter reporter = context.getReporter();
+        
+        reporter.iteratorStart(context.getExecutionId(), nestingLevel, iterator);
         
         final int iterations = iterator.getIterations();
         final ITestable element = iterator.getIteratedElement();
@@ -150,21 +198,21 @@ public class TestExecutor {
         
         for (int i = 0; i < iterations; i++) {
             
-            reporter.iterationStart(testExecutionContext.getId(), iterator, (i + 1), iterationNestingLevel);
+            reporter.iterationStart(context.getExecutionId(), iterationNestingLevel, iterator, (i + 1));
             
             long elementExecTimeNanos = -1L;
             
             if (element instanceof ITestSequence) {
                 elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, iterationContentNestingLevel, reporter, templateEngine, testExecutionContext);
+                        executeSequence((ITestSequence)element, iterationContentNestingLevel, context);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITestIterator) {
                 elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, iterationContentNestingLevel, reporter, templateEngine, testExecutionContext);
+                        executeIterator((ITestIterator)element, iterationContentNestingLevel, context);
                 totalTimeNanos += elementExecTimeNanos;
             } else if (element instanceof ITest) {
                 elementExecTimeNanos = 
-                        executeTest((ITest)element, iterationContentNestingLevel, reporter, templateEngine, testExecutionContext);
+                        executeTest((ITest)element, iterationContentNestingLevel, context);
                 totalTimeNanos += elementExecTimeNanos;
             } else {
                 // Should never happen
@@ -172,11 +220,11 @@ public class TestExecutor {
                         "ITestable implementation \"" + element.getClass() + "\" is not recognized");
             }
             
-            reporter.iterationEnd(testExecutionContext.getId(), iterator, (i + 1), iterationNestingLevel, elementExecTimeNanos);
+            reporter.iterationEnd(context.getExecutionId(), iterationNestingLevel, iterator, (i + 1), elementExecTimeNanos);
             
         }
         
-        reporter.iteratorEnd(testExecutionContext.getId(), iterator, nestingLevel, totalTimeNanos);
+        reporter.iteratorEnd(context.getExecutionId(), nestingLevel, iterator, totalTimeNanos);
         
         return totalTimeNanos;
         
@@ -184,21 +232,27 @@ public class TestExecutor {
     
     
     
-    private static long executeTest(final ITest test, final int nestingLevel, final ITestReporter reporter, 
-            final TemplateEngine templateEngine, final TestExecutionContext testExecutionContext) {
+    protected long executeTest(final ITest test, final int nestingLevel, 
+            final TestExecutionContext context) {
 
+        Validate.notNull(test, "Test cannot be null");
+        Validate.isTrue(nestingLevel >= 0, "Nesting level must be equal or greater than zero");
+        Validate.notNull(context, "Test execution context cannot be null");
         
-        final String testName = testExecutionContext.registerTest(test);
+        final ITestReporter reporter = context.getReporter();
+        final TemplateEngine templateEngine = context.getTemplateEngine();
         
-        reporter.testStart(testExecutionContext.getId(), test, testName, nestingLevel);
+        final String testExecutionName = context.registerTest(test);
         
-        final IContext context = test.getContext();
+        reporter.testStart(context.getExecutionId(), nestingLevel, test, testExecutionName);
+        
+        final IContext ctx = test.getContext();
         
         final Map<String,Object> localVariables = 
                 Collections.singletonMap(
-                        ContextNaming.TEST_EXECUTION_CONTEXT_VARIABLE_NAME, (Object)testExecutionContext);
+                        ContextNaming.TEST_EXECUTION_CONTEXT_VARIABLE_NAME, (Object)context);
         
-        final ProcessingContext processingContext = new ProcessingContext(context, localVariables);
+        final ProcessingContext processingContext = new ProcessingContext(ctx, localVariables);
         
         final IFragmentSpec fragmentSpec = test.getFragmentSpec();
 
@@ -210,32 +264,28 @@ public class TestExecutor {
         long endTimeNanos;
         try {
             
-            templateEngine.process(testName, processingContext, fragmentSpec, writer);
+            templateEngine.process(testExecutionName, processingContext, fragmentSpec, writer);
             endTimeNanos = System.nanoTime();
             
             final String result = writer.toString();
-            testResult = test.evalResult(testName, result);
+            testResult = test.evalResult(testExecutionName, result);
             
         } catch (final Throwable t) {
             endTimeNanos = System.nanoTime();
-            testResult = test.evalResult(testName, t);
+            testResult = test.evalResult(testExecutionName, t);
         }
         
         final long totalTimeNanos = (endTimeNanos - startTimeNanos);
         
-        reporter.testEnd(testExecutionContext.getId(), test, testName, nestingLevel, totalTimeNanos, testResult);
+        reporter.testEnd(context.getExecutionId(), nestingLevel, test, testExecutionName, testResult, totalTimeNanos);
         
-        testExecutionContext.registerResult(testResult.isOK());
+        context.registerResult(testResult.isOK());
         
         return totalTimeNanos;
         
     }
     
     
-    
-    private TestExecutor() {
-        super();
-    }
     
     
     

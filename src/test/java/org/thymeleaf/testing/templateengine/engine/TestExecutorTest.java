@@ -29,7 +29,14 @@ import org.thymeleaf.testing.templateengine.standard.config.test.IStandardDirect
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestDocumentResolutionUtils;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
+import org.thymeleaf.testing.templateengine.test.ITest;
+import org.thymeleaf.testing.templateengine.test.ITestIterator;
+import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.SuccessExpectedTest;
+import org.thymeleaf.testing.templateengine.test.TestIterator;
+import org.thymeleaf.testing.templateengine.test.TestSuite;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.test.resource.StringTestResource;
 
 
 
@@ -75,22 +82,22 @@ public class TestExecutorTest {
             System.out.println(((ITestResource)values.get(StandardTestDirectiveSpecs.INPUT_DIRECTIVE_SPEC.getName())).read());
             
             
-//            final ITestResource res0 = new StringTestResource("hello!");
-//            final ITestResource res1 = new StringTestResource("goodbye!");
-//            final ITestResource res2 = new StringTestResource("<span th:text=\"${'hey!'}\">cucu</span>");
-//            final ITestResource res3 = new StringTestResource("<span>hey!</span>");
-//            
-//            final ITest test0 = new SuccessExpectedTest(res1, true, res0);
-//            final ITest test1 = new SuccessExpectedTest(res2, false, res0);
-//            final ITest test2 = new SuccessExpectedTest(res2, false, res3);
-//            
-//            final ITestIterator iter2 = new TestIterator(test2, 2);
-//            
-////            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2, iter2);
+            final ITestResource res0 = new StringTestResource("hello!");
+            final ITestResource res1 = new StringTestResource("goodbye!");
+            final ITestResource res2 = new StringTestResource("<span th:text=\"${'hey!'}\">cucu</span>");
+            final ITestResource res3 = new StringTestResource("<span>hey!</span>");
+            
+            final ITest test0 = new SuccessExpectedTest(res1, true, res0);
+            final ITest test1 = new SuccessExpectedTest(res2, false, res0);
+            final ITest test2 = new SuccessExpectedTest(res2, false, res3);
+            
+            final ITestIterator iter2 = new TestIterator(test2, 2);
+            
+            final ITestSuite testSuite = new TestSuite("testing01", test0, test2, test1, test2, iter2);
 //            final ITestSuite testSuite = new TestSuite(iter2);
-//
-//            
-//            TestExecutor.execute(testSuite);
+
+            final TestExecutor executor = new TestExecutor();
+            executor.execute(testSuite);
             
             
             

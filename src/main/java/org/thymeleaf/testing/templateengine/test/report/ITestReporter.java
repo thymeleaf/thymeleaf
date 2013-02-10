@@ -29,18 +29,23 @@ import org.thymeleaf.testing.templateengine.test.ITestSuite;
 
 public interface ITestReporter {
 
-    public void suiteStart(final String executionId, final ITestSuite suite);
-    public void suiteEnd(final String executionId, final ITestSuite suite, final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos);
+    public void suiteStart(final String executionId, final int nestingLevel, final ITestSuite suite);
+    public void suiteEnd(final String executionId, final int nestingLevel, final ITestSuite suite, final int totalTestsExecuted, final int totalTestsOk, final long executionTimeNanos);
     
-    public void sequenceStart(final String executionId, final ITestSequence sequence, final int nestingLevel);
-    public void sequenceEnd(final String executionId, final ITestSequence sequence, final int nestingLevel, final long executionTimeNanos);
+    public void sequenceStart(final String executionId, final int nestingLevel, final ITestSequence sequence);
+    public void sequenceEnd(final String executionId, final int nestingLevel, final ITestSequence sequence, final long executionTimeNanos);
     
-    public void iteratorStart(final String executionId, final ITestIterator iterator, final int nestingLevel);
-    public void iteratorEnd(final String executionId, final ITestIterator iterator, final int nestingLevel, final long executionTimeNanos);
-    public void iterationStart(final String executionId, final ITestIterator iterator, final int iteration, final int nestingLevel);
-    public void iterationEnd(final String executionId, final ITestIterator iterator, final int iteration, final int nestingLevel, final long executionTimeNanos);
-    
-    public void testStart(final String executionId, final ITest test, final String testName, final int nestingLevel);
-    public void testEnd(final String executionId, final ITest test, final String testName, final int nestingLevel, final long executionTimeNanos, final ITestResult result);
+    public void iteratorStart(final String executionId, final int nestingLevel, final ITestIterator iterator);
+    public void iteratorEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final long executionTimeNanos);
+    public void iterationStart(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iteration);
+    public void iterationEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iteration, final long executionTimeNanos);
+
+    /*
+     * "testExecutionName" is needed instead of using test.getName() because the same ITest instance could be
+     * used in different parts of a suite's sequence, and the TestExecutionContext ensures the same name is always used
+     * for it, even if it is null from test definition.
+     */
+    public void testStart(final String executionId, final int nestingLevel, final ITest test, final String testExecutionName);
+    public void testEnd(final String executionId, final int nestingLevel, final ITest test, final String testExecutionName, final ITestResult result, final long executionTimeNanos);
     
 }
