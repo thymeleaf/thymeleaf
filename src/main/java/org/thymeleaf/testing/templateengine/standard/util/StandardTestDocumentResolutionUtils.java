@@ -20,9 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.util;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSetSpec;
@@ -47,24 +45,34 @@ public final class StandardTestDocumentResolutionUtils {
             final StandardTestDirectiveSetSpec directiveSetSpec) {
 
         final Map<String,Object> values = new HashMap<String, Object>();
-        final Set<String> directiveNames = data.getAllDirectiveValues().keySet();
-        
+
         final Map<String,StandardTestDirectiveSpec<?>> resolvedDirectiveSpecs =
                 resolveAndValidateDirectiveSpecs(executionId, data, directiveSetSpec);        
         
-        for (final String directiveName : directiveNames) {
-            
+        for (final Map.Entry<String,StandardTestDirectiveSpec<?>> directiveEntry : resolvedDirectiveSpecs.entrySet()) {
+
+            final String directiveName = directiveEntry.getKey();
+            final StandardTestDirectiveSpec<?> spec = directiveEntry.getValue();
+                
             if (!isResolverDirective(directiveName)) {
                 
-                final StandardTestDirectiveSpec<?> spec = resolvedDirectiveSpecs.get(directiveName);
                 final IStandardDirectiveResolver<?> resolver = spec.getResolver();
                 
                 final Object value = resolver.getValue(executionId, data, directiveName);
                 
-                values.put(directiveName, value);
+                if (value == null) {
+                    if (directiveSetSpec.isRequired(directiveName)) {
+                        // This directive is required, but we have resolved no value for it. 
+                        throw new TestEngineExecutionException(
+                                executionId, "No (or null) value resolved for required directive \"" + directiveName + "\" in document " +
+                                "\"" + data.getDocumentName() + "\" in document \"" + data.getDocumentName() + "\"");
+                    }
+                }
                 
+                values.put(directiveName, value);
+
             }
-            
+
         }
         
         return values;
@@ -82,8 +90,6 @@ public final class StandardTestDocumentResolutionUtils {
         resolvedDirectiveSpecs.putAll(directiveSetSpec.getRequiredDirectives());
         resolvedDirectiveSpecs.putAll(directiveSetSpec.getOptionalDirectives());
         
-        final Set<String> requiredDirectiveNames = new HashSet<String>(directiveSetSpec.getRequiredDirectives().keySet());
-        
         final Map<String,String> directiveValues = data.getAllDirectiveValues();
         for (final Map.Entry<String,String> directiveValueEntry : directiveValues.entrySet()) {
             
@@ -97,16 +103,14 @@ public final class StandardTestDocumentResolutionUtils {
                 
                 if (!directiveSetSpec.contains(targetDirectiveSpec)) {
                     throw new TestEngineExecutionException(
-                            executionId, "No specification found for directive \"" + directiveName + "\" in document " +
-                            "\"" + data.getDocumentName() + "\"");
+                            executionId, "A resolver-configuration directive called \"" + directiveName +"\" " +
+                    		            "has been found in document \"" + data.getDocumentName() + "\", " +
+                                        "but test specification does not allow directive \"" + targetDirectiveSpec + "\"");
                 }
                 
                 final StandardTestDirectiveSpec<?> newSpec =
                         initializeDirectiveResolver(executionId, data.getDocumentName(), directiveName, directiveValue);
                 resolvedDirectiveSpecs.put(targetDirectiveSpec, newSpec);
-                
-                requiredDirectiveNames.remove(directiveName);
-                requiredDirectiveNames.remove(targetDirectiveSpec);
                 
             } else {
                 
@@ -116,16 +120,8 @@ public final class StandardTestDocumentResolutionUtils {
                             "\"" + data.getDocumentName() + "\"");
                 }
                 
-                requiredDirectiveNames.remove(directiveName);
-                
             }
             
-        }
-
-        if (!requiredDirectiveNames.isEmpty()) {
-            throw new TestEngineExecutionException(
-                    executionId, "No specification found for required directives " + requiredDirectiveNames + 
-                    " in document \"" + data.getDocumentName() + "\"");
         }
         
         return resolvedDirectiveSpecs;

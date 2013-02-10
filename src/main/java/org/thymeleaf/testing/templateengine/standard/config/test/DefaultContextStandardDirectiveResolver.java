@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 
 
@@ -39,9 +40,9 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
     @Override
     protected IContext getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
-
+return new Context();
         // TODO implement this!
-        throw new RuntimeException("To be implemented!!");
+//        throw new RuntimeException("To be implemented!!");
         
     }
     

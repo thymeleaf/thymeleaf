@@ -25,10 +25,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSetSpec;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.test.resource.FileTestResource;
@@ -45,15 +43,11 @@ public final class StandardTestIOUtils {
     
     
     public static StandardTestDocumentData readTestDocument(final String executionId, 
-            final String documentName, final Reader reader, 
-            final StandardTestDirectiveSetSpec directiveSetSpec) {
+            final String documentName, final Reader reader) {
 
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(documentName, "Document name cannot be null");
         Validate.notNull(reader, "Reader cannot be null");
-        Validate.notNull(directiveSetSpec, "Directive set spec cannot be null");
-        
-        final Set<String> directiveNames = directiveSetSpec.getAllDirectiveNames();
         
         final BufferedReader r = new BufferedReader(reader);
         final HashMap<String,String> directiveValues = new HashMap<String, String>();
@@ -98,23 +92,15 @@ public final class StandardTestIOUtils {
                 final int lineLen = line.length();
                 currentDirectiveName = line.substring(1, directiveEnd);
                 
-                if (directiveNames.contains(currentDirectiveName)) {
-                    
-                    strBuilder = new StringBuilder();
-                    if (directiveEnd < (lineLen - 1)) {
-                        int valueStart = directiveEnd;
-                        while (valueStart < lineLen && Character.isWhitespace(line.charAt(valueStart))) { 
-                            valueStart++; 
-                        }
-                        if (valueStart < (lineLen - 1)) {
-                            strBuilder.append(line.substring(valueStart));
-                        }
+                strBuilder = new StringBuilder();
+                if (directiveEnd < (lineLen - 1)) {
+                    int valueStart = directiveEnd;
+                    while (valueStart < lineLen && Character.isWhitespace(line.charAt(valueStart))) { 
+                        valueStart++; 
                     }
-                    
-                } else {
-                    
-                    strBuilder = null;
-                    
+                    if (valueStart < (lineLen - 1)) {
+                        strBuilder.append(line.substring(valueStart));
+                    }
                 }
                 
                 line = r.readLine();

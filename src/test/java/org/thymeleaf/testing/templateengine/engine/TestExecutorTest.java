@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
+import org.thymeleaf.testing.templateengine.standard.config.test.IStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestDocumentResolutionUtils;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
@@ -56,13 +57,14 @@ public class TestExecutorTest {
             
             
             final String text =
+                    "%NAME_RESOLVER org.thymeleaf.testing.templateengine.engine.TestExecutorTest$OneNameStandardDirectiveResolver\n" +
                     "%NAME this is a sample test!\n" +
                     "%INPUT \n<!DOCTYPE html>\n<html>\n  <body>\n    <h1>Hello!</h1>\n  </body>\n</html>";
             
             final Reader reader = new StringReader(text);
             
             final StandardTestDocumentData data = 
-                    StandardTestIOUtils.readTestDocument("001", "testf", reader, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
+                    StandardTestIOUtils.readTestDocument("001", "testf", reader);
             
             System.out.println(data.getAllDirectiveValues());
             
@@ -101,6 +103,18 @@ public class TestExecutorTest {
     
     
     
+    public static class OneNameStandardDirectiveResolver implements IStandardDirectiveResolver<String> {
+
+        public Class<String> getValueClass() {
+            return String.class;
+        }
+
+        public String getValue(String executionId,
+                StandardTestDocumentData data, String directiveName) {
+            return "LALEIRO";
+        }
+        
+    }
     
     
 }

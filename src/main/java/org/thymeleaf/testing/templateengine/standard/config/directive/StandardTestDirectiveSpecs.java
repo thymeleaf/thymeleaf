@@ -89,7 +89,7 @@ public final class StandardTestDirectiveSpecs {
         optional.put(TEST_NAME_DIRECTIVE_SPEC.getName(), TEST_NAME_DIRECTIVE_SPEC);
         optional.put(TEMPLATE_MODE_DIRECTIVE_SPEC.getName(), TEMPLATE_MODE_DIRECTIVE_SPEC);
         optional.put(CACHE_DIRECTIVE_SPEC.getName(), CACHE_DIRECTIVE_SPEC);
-        optional.put(CONTEXT_DIRECTIVE_SPEC.getName(), CONTEXT_DIRECTIVE_SPEC);
+        required.put(CONTEXT_DIRECTIVE_SPEC.getName(), CONTEXT_DIRECTIVE_SPEC);
         required.put(INPUT_DIRECTIVE_SPEC.getName(), INPUT_DIRECTIVE_SPEC);
         optional.put(OUTPUT_DIRECTIVE_SPEC.getName(), OUTPUT_DIRECTIVE_SPEC);
         optional.put(EXCEPTION_DIRECTIVE_SPEC.getName(), EXCEPTION_DIRECTIVE_SPEC);
