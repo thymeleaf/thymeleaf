@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.engine;
+package org.thymeleaf.testing.templateengine.builder;
 
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
 
@@ -27,6 +27,6 @@ import org.thymeleaf.testing.templateengine.test.ITestSuite;
 
 public interface ITestSuiteBuilder {
     
-    public ITestSuite buildTestSuite();
+    public ITestSuite buildTestSuite(final String executionId);
     
 }

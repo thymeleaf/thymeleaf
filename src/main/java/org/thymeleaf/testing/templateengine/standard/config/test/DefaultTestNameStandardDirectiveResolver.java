@@ -25,7 +25,7 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 public final class DefaultTestNameStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
 
     public static final DefaultTestNameStandardDirectiveResolver INSTANCE = new DefaultTestNameStandardDirectiveResolver();
-    public static final String DEFAULT_VALUE = "TEST"; 
+    public static final String DEFAULT_VALUE = null; 
     
     
     private DefaultTestNameStandardDirectiveResolver() {
@@ -37,11 +37,14 @@ public final class DefaultTestNameStandardDirectiveResolver extends AbstractStan
     public String getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
 
-        if (documentName == null || directiveValue.trim().equals("")) {
-            return DEFAULT_VALUE;
+        if (directiveValue != null && !(directiveValue.trim().equals(""))) {
+            return directiveValue;
+        }
+        if (documentName != null && !(documentName.trim().equals(""))) {
+            return documentName;
         }
         
-        return documentName;
+        return DEFAULT_VALUE;
         
     }
 

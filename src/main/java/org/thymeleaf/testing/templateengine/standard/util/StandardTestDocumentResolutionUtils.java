@@ -61,12 +61,26 @@ public final class StandardTestDocumentResolutionUtils {
                 final Object value = resolver.getValue(executionId, data, directiveName);
                 
                 if (value == null) {
+                    
                     if (directiveSetSpec.isRequired(directiveName)) {
                         // This directive is required, but we have resolved no value for it. 
                         throw new TestEngineExecutionException(
                                 executionId, "No (or null) value resolved for required directive \"" + directiveName + "\" in document " +
-                                "\"" + data.getDocumentName() + "\" in document \"" + data.getDocumentName() + "\"");
+                                "\"" + data.getDocumentName() + "\"");
                     }
+                    
+                } else {
+                    
+                    final Class<?> valueClass = spec.getValueClass();
+                    if (!valueClass.isAssignableFrom(value.getClass())) {
+                        // Value returned is not of the correct class
+                        throw new TestEngineExecutionException(
+                                executionId, "Value of class \"" + value.getClass().getName() + "\" resolved " +
+                        		"for directive \"" + directiveName + "\" in document " +
+                                "\"" + data.getDocumentName() + "\", but value was expected to be of class " +
+                        		"\"" + valueClass.getName() + "\"");
+                    }
+                    
                 }
                 
                 values.put(directiveName, value);

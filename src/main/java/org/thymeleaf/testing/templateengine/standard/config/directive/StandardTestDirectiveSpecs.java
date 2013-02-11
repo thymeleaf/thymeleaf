@@ -87,8 +87,8 @@ public final class StandardTestDirectiveSpecs {
         final Map<String,StandardTestDirectiveSpec<?>> optional = new HashMap<String,StandardTestDirectiveSpec<?>>();
         
         optional.put(TEST_NAME_DIRECTIVE_SPEC.getName(), TEST_NAME_DIRECTIVE_SPEC);
-        optional.put(TEMPLATE_MODE_DIRECTIVE_SPEC.getName(), TEMPLATE_MODE_DIRECTIVE_SPEC);
-        optional.put(CACHE_DIRECTIVE_SPEC.getName(), CACHE_DIRECTIVE_SPEC);
+        required.put(TEMPLATE_MODE_DIRECTIVE_SPEC.getName(), TEMPLATE_MODE_DIRECTIVE_SPEC);
+        required.put(CACHE_DIRECTIVE_SPEC.getName(), CACHE_DIRECTIVE_SPEC);
         required.put(CONTEXT_DIRECTIVE_SPEC.getName(), CONTEXT_DIRECTIVE_SPEC);
         required.put(INPUT_DIRECTIVE_SPEC.getName(), INPUT_DIRECTIVE_SPEC);
         optional.put(OUTPUT_DIRECTIVE_SPEC.getName(), OUTPUT_DIRECTIVE_SPEC);

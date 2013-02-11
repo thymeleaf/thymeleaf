@@ -30,6 +30,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.builder.ITestSuiteBuilder;
 import org.thymeleaf.testing.templateengine.context.ContextNaming;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
@@ -58,7 +59,7 @@ public class TestExecutor {
     public void execute(final ITestSuiteBuilder testSuiteBuilder) {
         final String executionId = TestExecutionContext.generateExecutionId();
         try {
-            final ITestSuite suite = testSuiteBuilder.buildTestSuite();
+            final ITestSuite suite = testSuiteBuilder.buildTestSuite(executionId);
             execute(executionId, suite);
         } catch (final TestEngineExecutionException e) {
             throw e;
