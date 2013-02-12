@@ -52,6 +52,11 @@ public abstract class AbstractStandardTestSuiteBuilder implements ITestSuiteBuil
     }
     
 
+    public String getSuiteName() {
+        return this.suiteName;
+    }
+    
+
     
     public List<? extends IDialect> getDialects() {
         return this.dialects;

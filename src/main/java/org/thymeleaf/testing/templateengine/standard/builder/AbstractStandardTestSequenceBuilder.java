@@ -42,7 +42,12 @@ public abstract class AbstractStandardTestSequenceBuilder implements ITestSequen
         this.sequenceName = sequenceName;
     }
     
+    
+    public String getSequenceName() {
+        return this.sequenceName;
+    }
 
+    
     
     protected abstract List<ITestable> getSequenceContent(final String executionId);
     

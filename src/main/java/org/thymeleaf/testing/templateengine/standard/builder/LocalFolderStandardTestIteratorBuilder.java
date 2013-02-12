@@ -20,11 +20,6 @@
 package org.thymeleaf.testing.templateengine.standard.builder;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.builder.ITestableBuilder;
 import org.thymeleaf.testing.templateengine.test.ITestable;
@@ -34,18 +29,15 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class LocalFolderStandardTestSequenceBuilder extends AbstractStandardTestSequenceBuilder {
-    
-    private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
-    
+public class LocalFolderStandardTestIteratorBuilder extends AbstractStandardTestIteratorBuilder {
     
     private final File folder;
     private final String fileNameSuffix;
     
     
     @SuppressWarnings("null")
-    public LocalFolderStandardTestSequenceBuilder(final File folder, final String fileNameSuffix) {
-        super((folder != null? folder.getName() : null));
+    public LocalFolderStandardTestIteratorBuilder(final File folder, final int iterations, final String fileNameSuffix) {
+        super((folder != null? folder.getName() : null), iterations);
         Validate.notNull(folder, "Folder cannot be null");
         Validate.isTrue(folder.exists(), "Specified file \"" + folder.getAbsolutePath() + "\" does not exist");
         Validate.isTrue(folder.isDirectory(), "Specified file \"" + folder.getAbsolutePath() + "\" is not a folder");
@@ -64,52 +56,27 @@ public class LocalFolderStandardTestSequenceBuilder extends AbstractStandardTest
     
     
     @Override
-    protected final List<ITestable> getSequenceContent(final String executionId) {
+    protected final ITestable getIteratedElement(final String executionId) {
         
         if (!this.folder.isDirectory()) {
-            return Collections.emptyList();
+            return null;
+        }
+
+        final ITestableBuilder builder = createBuilderForFolder(this.folder);
+        if (builder != null) {
+            return builder.build(executionId);
         }
         
-        final List<ITestable> testables = new ArrayList<ITestable>();
-        for (final File fileInFolder : this.folder.listFiles()) {
-            if (fileInFolder.isDirectory()) {
-                final ITestableBuilder builder = createBuilderForFolder(fileInFolder);
-                if (builder != null) {
-                    testables.add(builder.build(executionId));
-                }
-                continue;
-            }
-            if (this.fileNameSuffix == null || fileInFolder.getName().endsWith(this.fileNameSuffix)) {
-                final ITestableBuilder builder = createBuilderForFile(fileInFolder);
-                if (builder != null) {
-                    testables.add(builder.build(executionId));
-                }
-            }
-        }
-        return testables;
+        return null;
+
     }
     
-    
-    
-    protected ITestableBuilder createBuilderForFile(final File file) {
-        return new FileStandardTestBuilder(file);
-    }
-    
+        
     
     protected ITestableBuilder createBuilderForFolder(final File file) {
-        
-        final String folderName = file.getName();
-        
-        final Matcher iterMatcher = ITERATOR_PATTERN.matcher(folderName);
-        if (iterMatcher.matches()) {
-            final int iterations = Integer.parseInt(iterMatcher.group(2));
-            return new LocalFolderStandardTestIteratorBuilder(file, iterations, getFileNameSuffix());
-        }
-        
         return new LocalFolderStandardTestSequenceBuilder(file, getFileNameSuffix());
     }
 
-    
     
     
 }
