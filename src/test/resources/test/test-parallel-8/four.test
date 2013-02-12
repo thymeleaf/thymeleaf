@@ -1,0 +1,14 @@
+%INPUT
+<!DOCTYPE html>
+<html>
+  <body>
+      <h1>Hello!</h1>
+  </body>
+</html>
+%OUTPUT 
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Hello!</h1>
+  </body>
+</html>

@@ -20,10 +20,16 @@
 package org.thymeleaf.testing.templateengine.engine;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IContext;
@@ -251,46 +257,34 @@ public class TestExecutor {
 
         final ITestReporter reporter = context.getReporter();
         
-        reporter.parallelizerStart(context.getExecutionId(), nestingLevel, parallelizer);
-        
         final int numThreads = parallelizer.getNumThreads();
-        final ITestable element = parallelizer.getParallelizedElement();
-        final int iterationNestingLevel = nestingLevel + 1;
-        final int iterationContentNestingLevel = nestingLevel + 2;
+        final List<FutureTask<Long>> tasks = new ArrayList<FutureTask<Long>>();
         
         long totalTimeNanos = 0L;
         
+        final ThreadPoolExecutor threadExecutor = 
+                new ThreadPoolExecutor(numThreads, numThreads, Long.MAX_VALUE, TimeUnit.NANOSECONDS, new SynchronousQueue<Runnable>());
+        
+        reporter.parallelizerStart(context.getExecutionId(), nestingLevel, parallelizer);
+        
         for (int i = 0; i < numThreads; i++) {
-            
-            reporter.parallelThreadStart(context.getExecutionId(), iterationNestingLevel, parallelizer, (i + 1));
-            
-            long elementExecTimeNanos = -1L;
-            
-            if (element instanceof ITestSequence) {
-                elementExecTimeNanos = 
-                        executeSequence((ITestSequence)element, iterationContentNestingLevel, context);
-                totalTimeNanos += elementExecTimeNanos;
-            } else if (element instanceof ITestIterator) {
-                elementExecTimeNanos = 
-                        executeIterator((ITestIterator)element, iterationContentNestingLevel, context);
-                totalTimeNanos += elementExecTimeNanos;
-            } else if (element instanceof ITestParallelizer) {
-                elementExecTimeNanos = 
-                        executeParallelizer((ITestParallelizer)element, iterationContentNestingLevel, context);
-                totalTimeNanos += elementExecTimeNanos;
-            } else if (element instanceof ITest) {
-                elementExecTimeNanos = 
-                        executeTest((ITest)element, iterationContentNestingLevel, context);
-                totalTimeNanos += elementExecTimeNanos;
-            } else {
-                // Should never happen
-                throw new TestEngineExecutionException(
-                        "ITestable implementation \"" + element.getClass() + "\" is not recognized");
-            }
-            
-            reporter.parallelThreadEnd(context.getExecutionId(), iterationNestingLevel, parallelizer, (i + 1), elementExecTimeNanos);
-            
+            final ExecutorTask task = 
+                    new ExecutorTask(this, context, reporter, parallelizer, (i + 1), nestingLevel);
+            final FutureTask<Long> futureTask = new FutureTask<Long>(task);
+            tasks.add(futureTask);
+            threadExecutor.execute(futureTask);
         }
+
+        for (final FutureTask<Long> futureTask : tasks) {
+            try {
+                final Long time = futureTask.get();
+                totalTimeNanos += time.longValue();
+            } catch (final Throwable t) {
+                t.printStackTrace();
+            }
+        }
+        
+        threadExecutor.shutdown();
         
         reporter.parallelizerEnd(context.getExecutionId(), nestingLevel, parallelizer, totalTimeNanos);
         
@@ -355,6 +349,71 @@ public class TestExecutor {
     
     
     
+    
+    
+    static class ExecutorTask implements Callable<Long> {
+
+        private final TestExecutor executor;
+        private final TestExecutionContext context;
+        private final ITestReporter reporter;
+        private final ITestParallelizer parallelizer;
+        private final int threadNumber;
+        private final int nestingLevel;
+        
+
+                
+        ExecutorTask(final TestExecutor executor,
+                final TestExecutionContext context, final ITestReporter reporter,
+                final ITestParallelizer parallelizer, final int threadNumber,
+                final int nestingLevel) {
+            super();
+            this.executor = executor;
+            this.context = context;
+            this.reporter = reporter;
+            this.parallelizer = parallelizer;
+            this.threadNumber = threadNumber;
+            this.nestingLevel = nestingLevel;
+        }
+
+
+
+        public Long call() {
+
+            final int parallelizerNestingLevel = this.nestingLevel + 1;
+            final int parallelizedElementNestingLevel = this.nestingLevel + 2;
+            
+            final ITestable parallelizedElement = this.parallelizer.getParallelizedElement();
+            
+            this.reporter.parallelThreadStart(this.context.getExecutionId(), parallelizerNestingLevel, this.parallelizer, this.threadNumber);
+            
+            long execTimeNanos = 0L;
+            
+            if (parallelizedElement instanceof ITestSequence) {
+                execTimeNanos = 
+                        this.executor.executeSequence((ITestSequence)parallelizedElement, parallelizedElementNestingLevel, this.context);
+            } else if (parallelizedElement instanceof ITestIterator) {
+                execTimeNanos = 
+                        this.executor.executeIterator((ITestIterator)parallelizedElement, parallelizedElementNestingLevel, this.context);
+            } else if (parallelizedElement instanceof ITestParallelizer) {
+                execTimeNanos = 
+                        this.executor.executeParallelizer((ITestParallelizer)parallelizedElement, parallelizedElementNestingLevel, this.context);
+            } else if (parallelizedElement instanceof ITest) {
+                execTimeNanos = 
+                        this.executor.executeTest((ITest)parallelizedElement, parallelizedElementNestingLevel, this.context);
+            } else {
+                // Should never happen
+                throw new TestEngineExecutionException(
+                        "ITestable implementation \"" + parallelizedElement.getClass() + "\" is not recognized");
+            }
+            
+            this.reporter.parallelThreadEnd(this.context.getExecutionId(), parallelizerNestingLevel, this.parallelizer, this.threadNumber, execTimeNanos);
+
+            return Long.valueOf(execTimeNanos);
+            
+        }
+        
+        
+    }
     
     
 }

@@ -113,7 +113,7 @@ public final class TestExecutionContext {
 
             if (this.testsByName.containsKey(name)) {
                 throw new TestEngineExecutionException(
-                        "Duplicate test names: two or more tests with the same name \"" + name + "\" exist " +
+                        "Duplicate test names: two or more different tests with the same name \"" + name + "\" exist " +
                 		"in suite" + (this.suite.hasName()? (" \"" + this.suite.getName() + "\"") : ""));
             }
             

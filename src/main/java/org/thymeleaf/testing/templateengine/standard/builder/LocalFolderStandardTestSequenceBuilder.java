@@ -114,6 +114,7 @@ public class LocalFolderStandardTestSequenceBuilder extends AbstractStandardTest
         }
         
         return new LocalFolderStandardTestSequenceBuilder(file, getFileNameSuffix());
+        
     }
 
     
