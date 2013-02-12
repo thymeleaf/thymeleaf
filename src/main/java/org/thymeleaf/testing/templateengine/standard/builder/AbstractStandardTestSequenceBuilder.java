@@ -21,11 +21,10 @@ package org.thymeleaf.testing.templateengine.standard.builder;
 
 import java.util.List;
 
-import org.thymeleaf.testing.templateengine.builder.ITestBuilder;
 import org.thymeleaf.testing.templateengine.builder.ITestSequenceBuilder;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestSequence;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 import org.thymeleaf.testing.templateengine.test.TestSequence;
 import org.thymeleaf.util.Validate;
 
@@ -35,33 +34,40 @@ import org.thymeleaf.util.Validate;
 
 public abstract class AbstractStandardTestSequenceBuilder implements ITestSequenceBuilder {
     
-    protected AbstractStandardTestSequenceBuilder() {
+    private final String sequenceName;
+    
+    
+    protected AbstractStandardTestSequenceBuilder(final String sequenceName) {
         super();
+        this.sequenceName = sequenceName;
     }
     
 
     
-    protected abstract List<ITestBuilder> getTestBuilders(final String executionId);
+    protected abstract List<ITestable> getSequenceContent(final String executionId);
     
     
-    public final ITestSequence buildTestSequence(final String executionId) {
+    public final ITestSequence build(final String executionId) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
 
-        final List<ITestBuilder> testBuilders = getTestBuilders(executionId);
-        if (testBuilders == null || testBuilders.isEmpty()) {
-            throw new TestEngineExecutionException(
-                    executionId, "Test builder list was returned empty");
+        final TestSequence testSequence = new TestSequence();
+        if (this.sequenceName != null) {
+            testSequence.setName(this.sequenceName);
+        }
+        
+        final List<ITestable> sequenceContent = getSequenceContent(executionId);
+        
+        if (sequenceContent == null) {
+            return testSequence;
         }
 
-        final TestSequence testSequence = new TestSequence();
-        for (final ITestBuilder testBuilder : testBuilders) {
-            final ITest test = testBuilder.buildTest(executionId);
-            if (test == null) {
+        for (final ITestable testable : sequenceContent) {
+            if (testable == null) {
                 throw new TestEngineExecutionException(
-                        executionId, "Test builder returned a null test object");
+                        executionId, "Test sequence content contains null object");
             }
-            testSequence.addElement(test);
+            testSequence.addElement(testable);
         }
         
         return testSequence;

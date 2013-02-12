@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.thymeleaf.testing.templateengine.builder.ITestBuilder;
+import org.thymeleaf.testing.templateengine.builder.ITestableBuilder;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 import org.thymeleaf.util.Validate;
 
 
@@ -34,60 +35,64 @@ import org.thymeleaf.util.Validate;
 public class LocalFolderStandardTestSequenceBuilder extends AbstractStandardTestSequenceBuilder {
     
     private final File folder;
-    private final boolean recursive;
     private final String fileNameSuffix;
     
     
-    public LocalFolderStandardTestSequenceBuilder(final File folder, final boolean recursive, final String fileNameSuffix) {
-        super();
+    @SuppressWarnings("null")
+    public LocalFolderStandardTestSequenceBuilder(final File folder, final String fileNameSuffix) {
+        super((folder != null? folder.getName() : null));
         Validate.notNull(folder, "Folder cannot be null");
         Validate.isTrue(folder.exists(), "Specified file \"" + folder.getAbsolutePath() + "\" does not exist");
         Validate.isTrue(folder.isDirectory(), "Specified file \"" + folder.getAbsolutePath() + "\" is not a folder");
         this.folder = folder;
-        this.recursive = recursive;
         this.fileNameSuffix = fileNameSuffix;
     }
 
     
-    
-    @Override
-    protected final List<ITestBuilder> getTestBuilders(final String executionId) {
-
-        final List<File> files = getFilesInFolder(this.folder, this.recursive, this.fileNameSuffix);
-        final List<ITestBuilder> builders = new ArrayList<ITestBuilder>(); 
-        for (final File file : files) {
-            builders.add(createBuilderForFile(executionId, file));
-        }
-        return builders;
-        
+    public File getFolder() {
+        return this.folder;
     }
     
-
+    public String getFileNameSuffix() {
+        return this.fileNameSuffix;
+    }
     
-    private static List<File> getFilesInFolder(final File folder, final boolean recursive, final String fileNameSuffix) {
-        if (!folder.isDirectory()) {
+    
+    @Override
+    protected final List<ITestable> getSequenceContent(final String executionId) {
+        
+        if (!this.folder.isDirectory()) {
             return Collections.emptyList();
         }
-        final List<File> files = new ArrayList<File>();
-        for (final File fileInFolder : folder.listFiles()) {
+        
+        final List<ITestable> testables = new ArrayList<ITestable>();
+        for (final File fileInFolder : this.folder.listFiles()) {
             if (fileInFolder.isDirectory()) {
-                if (recursive) {
-                    files.addAll(getFilesInFolder(fileInFolder, recursive, fileNameSuffix));
+                final ITestableBuilder builder = createBuilderForFolder(fileInFolder);
+                if (builder != null) {
+                    testables.add(builder.build(executionId));
                 }
                 continue;
             }
-            if (fileNameSuffix == null || fileInFolder.getName().endsWith(fileNameSuffix)) { 
-                files.add(fileInFolder);
+            if (this.fileNameSuffix == null || fileInFolder.getName().endsWith(this.fileNameSuffix)) {
+                final ITestableBuilder builder = createBuilderForFile(fileInFolder);
+                if (builder != null) {
+                    testables.add(builder.build(executionId));
+                }
             }
         }
-        return files;
+        return testables;
     }
     
     
     
-    @SuppressWarnings("unused")
-    protected ITestBuilder createBuilderForFile(final String executionId, final File file) {
+    protected ITestableBuilder createBuilderForFile(final File file) {
         return new FileStandardTestBuilder(file);
+    }
+    
+    
+    protected ITestableBuilder createBuilderForFolder(final File file) {
+        return new LocalFolderStandardTestSequenceBuilder(file, getFileNameSuffix());
     }
 
     

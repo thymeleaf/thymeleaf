@@ -25,8 +25,8 @@ import org.thymeleaf.testing.templateengine.test.ITest;
 
 
 
-public interface ITestBuilder {
+public interface ITestBuilder extends ITestableBuilder {
     
-    public ITest buildTest(final String executionId);
+    public ITest build(final String executionId);
     
 }

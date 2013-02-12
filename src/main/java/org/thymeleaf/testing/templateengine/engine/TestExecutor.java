@@ -59,7 +59,7 @@ public class TestExecutor {
     public void execute(final ITestSuiteBuilder testSuiteBuilder) {
         final String executionId = TestExecutionContext.generateExecutionId();
         try {
-            final ITestSuite suite = testSuiteBuilder.buildTestSuite(executionId);
+            final ITestSuite suite = testSuiteBuilder.build(executionId);
             execute(executionId, suite);
         } catch (final TestEngineExecutionException e) {
             throw e;

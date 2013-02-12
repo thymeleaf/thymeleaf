@@ -20,11 +20,8 @@
 package org.thymeleaf.testing.templateengine.engine;
 
 import org.junit.Test;
-import org.thymeleaf.testing.templateengine.builder.ITestSequenceBuilder;
-import org.thymeleaf.testing.templateengine.standard.builder.ClassPathFolderStandardTestSequenceBuilder;
-import org.thymeleaf.testing.templateengine.test.ITestSequence;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.TestSuite;
+import org.thymeleaf.testing.templateengine.builder.ITestSuiteBuilder;
+import org.thymeleaf.testing.templateengine.standard.builder.ClassPathFolderStandardTestSuiteBuilder;
 
 
 
@@ -51,15 +48,11 @@ public class TestExecutorTest {
         try {
             
 
-            final ITestSequenceBuilder sequenceBuilder = 
-                    new ClassPathFolderStandardTestSequenceBuilder("test", true, ".test");
-            
-            final ITestSequence seq = sequenceBuilder.buildTestSequence("001");
-            final ITestSuite suite = new TestSuite(seq);
-            
+            final ITestSuiteBuilder sequenceBuilder = 
+                    new ClassPathFolderStandardTestSuiteBuilder("test-suite", "test/", ".test");
             
             final TestExecutor executor = new TestExecutor();
-            executor.execute(suite);
+            executor.execute(sequenceBuilder);
             
             
 //            final String text =

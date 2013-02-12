@@ -53,7 +53,7 @@ public abstract class AbstractStandardTestBuilder implements ITestBuilder {
     
     
     @SuppressWarnings("unchecked")
-    public final ITest buildTest(final String executionId) {
+    public final ITest build(final String executionId) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
         

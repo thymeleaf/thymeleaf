@@ -30,11 +30,11 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class ClassPathFolderStandardTestSequenceBuilder extends LocalFolderStandardTestSequenceBuilder {
+public class ClassPathFolderStandardTestSuiteBuilder extends LocalFolderStandardTestSuiteBuilder {
+
     
-    
-    public ClassPathFolderStandardTestSequenceBuilder(final String classPathFolderName, final String fileNameSuffix) {
-        super(resolveFile(classPathFolderName), fileNameSuffix);
+    public ClassPathFolderStandardTestSuiteBuilder(final String suiteName, final String classPathFolderName, final String fileNameSuffix) {
+        super(suiteName, resolveFile(classPathFolderName), fileNameSuffix);
     }
 
 
@@ -50,5 +50,6 @@ public class ClassPathFolderStandardTestSequenceBuilder extends LocalFolderStand
         }
     }
 
+    
     
 }

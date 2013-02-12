@@ -19,14 +19,14 @@
  */
 package org.thymeleaf.testing.templateengine.builder;
 
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
+import org.thymeleaf.testing.templateengine.test.ITestable;
 
 
 
 
 
-public interface ITestSuiteBuilder {
+public interface ITestableBuilder {
     
-    public ITestSuite build(final String executionId);
+    public ITestable build(final String executionId);
     
 }
