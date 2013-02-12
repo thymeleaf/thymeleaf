@@ -30,10 +30,10 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class ClassPathFolderStandardTestIteratorBuilder extends LocalFolderStandardTestIteratorBuilder {
+public class ClassPathFolderStandardTestParallelizerBuilder extends LocalFolderStandardTestParallelizerBuilder {
     
     
-    public ClassPathFolderStandardTestIteratorBuilder(
+    public ClassPathFolderStandardTestParallelizerBuilder(
             final String classPathFolderName, final int iterations, final String fileNameSuffix) {
         super(resolveFile(classPathFolderName), iterations, fileNameSuffix);
     }
@@ -41,14 +41,14 @@ public class ClassPathFolderStandardTestIteratorBuilder extends LocalFolderStand
 
     private static final File resolveFile(final String classPathFolderName) {
         Validate.notNull(classPathFolderName, "ClassPath folder name cannot be null");
-        final ClassLoader cl = ClassLoaderUtils.getClassLoader(ClassPathFolderStandardTestIteratorBuilder.class);
+        final ClassLoader cl = ClassLoaderUtils.getClassLoader(ClassPathFolderStandardTestParallelizerBuilder.class);
         final URL url = cl.getResource(classPathFolderName);
         try {
             return new File(url.toURI());
         } catch (final URISyntaxException e) {
             throw new IllegalArgumentException(
                     "ClassPath folder name resulted in an unusable URL: \"" + url + "\". " +
-                    "Note that this builder cannot be used for resources contained in .jars", e);
+            		"Note that this builder cannot be used for resources contained in .jars", e);
         }
     }
 

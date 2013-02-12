@@ -27,6 +27,7 @@ import java.util.Calendar;
 
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestIterator;
+import org.thymeleaf.testing.templateengine.test.ITestParallelizer;
 import org.thymeleaf.testing.templateengine.test.ITestResult;
 import org.thymeleaf.testing.templateengine.test.ITestSequence;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
@@ -173,17 +174,17 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void iterationStart(final String executionId, final int nestingLevel,  
-            final ITestIterator iterator, final int iteration) {
-        outputMessage(executionId, msgIterationStart(iterator, iteration), nestingLevel, false);
+            final ITestIterator iterator, final int iterationNumber) {
+        outputMessage(executionId, msgIterationStart(iterator, iterationNumber), nestingLevel, false);
     }
     
-    public String msgIterationStart(final ITestIterator iterator, final int iteration) {
+    public String msgIterationStart(final ITestIterator iterator, final int iterationNumber) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[iteration:begin]");
         if (iterator.hasName()) {
             strBuilder.append("[" + iterator.getName() + "]");
         }
-        strBuilder.append("[" + iteration + "]");
+        strBuilder.append("[" + iterationNumber + "]");
         strBuilder.append("[" + iterator.getIterations() + "]");
         return strBuilder.toString();
     }
@@ -192,24 +193,106 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void iterationEnd(final String executionId, final int nestingLevel,  
-            final ITestIterator iterator, final int iteration, final long executionTimeNanos) {
-        outputMessage(executionId, msgIterationEnd(iterator, iteration, executionTimeNanos), nestingLevel, false);
+            final ITestIterator iterator, final int iterationNumber, final long executionTimeNanos) {
+        outputMessage(executionId, msgIterationEnd(iterator, iterationNumber, executionTimeNanos), nestingLevel, false);
     }
     
     public String msgIterationEnd(final ITestIterator iterator, 
-            final int iteration, final long executionTimeNanos) {
+            final int iterationNumber, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[iteration:end]");
         if (iterator.hasName()) {
             strBuilder.append("[" + iterator.getName() + "]");
         }
-        strBuilder.append("[" + iteration + "]");
+        strBuilder.append("[" + iterationNumber + "]");
         strBuilder.append("[" + iterator.getIterations() + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         strBuilder.append(" Iteration executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
 
+    
+    
+
+    
+    
+    
+    public final void parallelizerStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer) {
+        outputMessage(executionId, msgParallelizerStart(parallelizer), nestingLevel, false);
+    }
+    
+    public String msgParallelizerStart(final ITestParallelizer parallelizer) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[parallelizer:begin]");
+        strBuilder.append("[" + parallelizer.getNumThreads() + "]");
+        if (parallelizer.hasName()) {
+            strBuilder.append("[" + parallelizer.getName() + "]");
+        }
+        return strBuilder.toString();
+    }
+
+    
+    
+    
+    public final void parallelizerEnd(final String executionId, final int nestingLevel, 
+            final ITestParallelizer parallelizer, final long executionTimeNanos) {
+        outputMessage(executionId, msgParallelizerEnd(parallelizer, executionTimeNanos), nestingLevel, false);
+    }
+    
+    public String msgParallelizerEnd(final ITestParallelizer parallelizer, final long executionTimeNanos) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[parallelizer:end]");
+        if (parallelizer.hasName()) {
+            strBuilder.append("[" + parallelizer.getName() + "]");
+        }
+        strBuilder.append("[" + parallelizer.getNumThreads() + "]");
+        strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Parallelizer executed in " + duration(executionTimeNanos));
+        return strBuilder.toString();
+    }
+
+    
+    
+    
+    public final void parallelThreadStart(final String executionId, final int nestingLevel,  
+            final ITestParallelizer parallelizer, final int threadNumber) {
+        outputMessage(executionId, msgParallelThreadStart(parallelizer, threadNumber), nestingLevel, false);
+    }
+    
+    public String msgParallelThreadStart(final ITestParallelizer parallelizer, final int threadNumber) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[parallelthread:begin]");
+        if (parallelizer.hasName()) {
+            strBuilder.append("[" + parallelizer.getName() + "]");
+        }
+        strBuilder.append("[" + threadNumber + "]");
+        strBuilder.append("[" + parallelizer.getNumThreads() + "]");
+        return strBuilder.toString();
+    }
+
+    
+    
+    
+    public final void parallelThreadEnd(final String executionId, final int nestingLevel,  
+            final ITestParallelizer parallelizer, final int threadNumber, final long executionTimeNanos) {
+        outputMessage(executionId, msgParallelThreadEnd(parallelizer, threadNumber, executionTimeNanos), nestingLevel, false);
+    }
+    
+    public String msgParallelThreadEnd(final ITestParallelizer parallelizer, 
+            final int threadNumber, final long executionTimeNanos) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[parallelthread:end]");
+        if (parallelizer.hasName()) {
+            strBuilder.append("[" + parallelizer.getName() + "]");
+        }
+        strBuilder.append("[" + threadNumber + "]");
+        strBuilder.append("[" + parallelizer.getNumThreads() + "]");
+        strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Parallel thread executed in " + duration(executionTimeNanos));
+        return strBuilder.toString();
+    }
+    
+    
     
     
     
@@ -292,8 +375,9 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
 
     
     protected String formatLine(final String executionId, final String message, final int nestingLevel) {
+        final String threadName = Thread.currentThread().getName();
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("[" + now() + "][" + this.reportName + "][" + executionId + "] ");
+        strBuilder.append("[" + now() + "][" + this.reportName + "][" + executionId + "][" + threadName + "] ");
         for (int i = 0; i < nestingLevel; i++) {
             strBuilder.append("  ");
         }

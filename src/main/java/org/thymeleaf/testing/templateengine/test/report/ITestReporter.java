@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.test.report;
 
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.ITestIterator;
+import org.thymeleaf.testing.templateengine.test.ITestParallelizer;
 import org.thymeleaf.testing.templateengine.test.ITestResult;
 import org.thymeleaf.testing.templateengine.test.ITestSequence;
 import org.thymeleaf.testing.templateengine.test.ITestSuite;
@@ -37,8 +38,13 @@ public interface ITestReporter {
     
     public void iteratorStart(final String executionId, final int nestingLevel, final ITestIterator iterator);
     public void iteratorEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final long executionTimeNanos);
-    public void iterationStart(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iteration);
-    public void iterationEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iteration, final long executionTimeNanos);
+    public void iterationStart(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iterationNumber);
+    public void iterationEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iterationNumber, final long executionTimeNanos);
+    
+    public void parallelizerStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer);
+    public void parallelizerEnd(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final long executionTimeNanos);
+    public void parallelThreadStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final int threadNumber);
+    public void parallelThreadEnd(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final int threadNumber, final long executionTimeNanos);
 
     /*
      * "testExecutionName" is needed instead of using test.getName() because the same ITest instance could be

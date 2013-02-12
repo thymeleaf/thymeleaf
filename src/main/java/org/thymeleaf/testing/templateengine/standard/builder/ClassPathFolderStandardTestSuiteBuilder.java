@@ -46,7 +46,8 @@ public class ClassPathFolderStandardTestSuiteBuilder extends LocalFolderStandard
             return new File(url.toURI());
         } catch (final URISyntaxException e) {
             throw new IllegalArgumentException(
-                    "ClassPath folder name resulted in an unusable URL: \"" + url + "\"", e);
+                    "ClassPath folder name resulted in an unusable URL: \"" + url + "\". " +
+                    "Note that this builder cannot be used for resources contained in .jars", e);
         }
     }
 

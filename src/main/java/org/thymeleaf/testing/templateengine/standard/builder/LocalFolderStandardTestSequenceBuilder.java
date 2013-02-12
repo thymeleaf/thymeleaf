@@ -37,6 +37,7 @@ import org.thymeleaf.util.Validate;
 public class LocalFolderStandardTestSequenceBuilder extends AbstractStandardTestSequenceBuilder {
     
     private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
+    private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
     
     
     private final File folder;
@@ -97,13 +98,19 @@ public class LocalFolderStandardTestSequenceBuilder extends AbstractStandardTest
     
     
     protected ITestableBuilder createBuilderForFolder(final File file) {
-        
+
         final String folderName = file.getName();
         
         final Matcher iterMatcher = ITERATOR_PATTERN.matcher(folderName);
         if (iterMatcher.matches()) {
             final int iterations = Integer.parseInt(iterMatcher.group(2));
             return new LocalFolderStandardTestIteratorBuilder(file, iterations, getFileNameSuffix());
+        }
+        
+        final Matcher paralMatcher = PARALLELIZER_PATTERN.matcher(folderName);
+        if (paralMatcher.matches()) {
+            final int numThreads = Integer.parseInt(paralMatcher.group(2));
+            return new LocalFolderStandardTestParallelizerBuilder(file, numThreads, getFileNameSuffix());
         }
         
         return new LocalFolderStandardTestSequenceBuilder(file, getFileNameSuffix());
