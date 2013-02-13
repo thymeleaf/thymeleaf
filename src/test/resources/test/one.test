@@ -1,8 +1,10 @@
+%CONTEXT
+onevar = Goodbye!
 %INPUT
 <!DOCTYPE html>
 <html>
   <body>
-      <h1>Hello!</h1>
+      <h1 th:text="${onevar}">Hello!</h1>
   </body>
 </html>
 %OUTPUT 

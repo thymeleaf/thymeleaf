@@ -19,8 +19,14 @@
  */
 package org.thymeleaf.testing.templateengine.standard.config.test;
 
+import java.io.ByteArrayInputStream;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 
 
 
@@ -28,6 +34,8 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
 
     
     public static final DefaultContextStandardDirectiveResolver INSTANCE = new DefaultContextStandardDirectiveResolver();
+    
+    public static final String LOCALE_PROPERTY_NAME = "locale";
     
     
     
@@ -40,9 +48,40 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
     @Override
     protected IContext getValue(final String executionId, final String documentName, 
             final String directiveName, final String directiveValue) {
-return new Context();
-        // TODO implement this!
-//        throw new RuntimeException("To be implemented!!");
+        
+        if (directiveValue == null || directiveValue.trim().equals("")) {
+            return new Context();
+        }
+
+        final Properties valueAsProperties = new Properties();
+
+        try {
+            
+            /*
+             * This String -> byte[] conversion is needed because java.util.Properties 
+             * did not allow using a java.io.Reader for loading properties until Java 6.
+             */
+            final byte[] valueAsBytes = directiveValue.getBytes("ISO-8859-1");
+            final ByteArrayInputStream inputStream = new ByteArrayInputStream(valueAsBytes);
+
+            valueAsProperties.load(inputStream);
+            
+        } catch (final Throwable t) {
+            throw new TestEngineExecutionException(executionId, 
+                    "Error while reading context specification", t);
+        }
+        
+        final Locale locale = 
+                (valueAsProperties.containsKey(LOCALE_PROPERTY_NAME)? 
+                        new Locale(valueAsProperties.getProperty(LOCALE_PROPERTY_NAME)) : Locale.US);
+        
+        final Context ctx = new Context(locale);
+        
+        for (final Map.Entry<?,?> entry : valueAsProperties.entrySet()) {
+            ctx.setVariable((String)entry.getKey(), (String)entry.getValue());
+        }
+
+        return ctx;
         
     }
     
