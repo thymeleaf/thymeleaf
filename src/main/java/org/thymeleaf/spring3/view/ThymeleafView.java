@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring3.view;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.TemplateEngine;
@@ -58,8 +60,39 @@ import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 public class ThymeleafView 
         extends AbstractThymeleafView {
 
+    /*
+     * If this is not null, we are using Spring 3.1+ and there is the possibility
+     * to automatically add @PathVariable's to models. This will be computed at class
+     * initialization time.
+     */
+    private static String pathVariablesSelector;
+    
     private IFragmentSpec fragmentSpec = null;
 
+
+    
+    static {
+        
+        /*
+         * Compute whether we can obtain @PathVariable's from the request and add them
+         * automatically to the model (Spring 3.1+) 
+         */
+        
+        final Class<View> viewClass = View.class;
+        try {
+            // We are looking for the value of the View.PATH_VARIABLES constant, which is a String
+            final Field pathVariablesField = viewClass.getDeclaredField("PATH_VARIABLES");
+            pathVariablesSelector = (String) pathVariablesField.get(null);
+        } catch (final NoSuchFieldException e) {
+            pathVariablesSelector = null;
+        } catch (final IllegalAccessException e) {
+            pathVariablesSelector = null;
+        }
+        
+    }
+    
+    
+    
 
     /**
      * <p>
@@ -169,11 +202,16 @@ public class ThymeleafView
         if (templateStaticVariables != null) {
             mergedModel.putAll(templateStaticVariables);
         }
+        if (pathVariablesSelector != null) {
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> pathVars = (Map<String, Object>) request.getAttribute(pathVariablesSelector);
+            if (pathVars != null) {
+                mergedModel.putAll(pathVars);
+            }
+        }
         if (model != null) {
             mergedModel.putAll(model);
         }
-
-        
 
         final RequestContext requestContext = 
                 new RequestContext(request, response, getServletContext(), mergedModel);

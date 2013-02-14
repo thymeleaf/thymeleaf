@@ -1,3 +1,8 @@
+2.0.16
+======
+- Automatically add @PathVariable's to model when using Spring 3.1 or newer. 
+
+
 2.0.15
 ======
 - Made "beans" context variable not override a variable with the same name, if such variable comes
