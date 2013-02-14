@@ -34,6 +34,7 @@ import org.thymeleaf.util.Validate;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
+ * @author Michal Kreuzman
  * 
  * @since 2.0.0
  *
@@ -43,23 +44,41 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
     
     private final String elementName;
     private final Map<String,String> attributeValuesByNameFilter;
+    private final boolean applyDialectPrefix;
     
     
     
     
     
     public ElementNameProcessorMatcher(final String elementName) {
-        this(elementName, null);
+        this(elementName, true);
     }
 
+
+    public ElementNameProcessorMatcher(final String elementName, final boolean applyDialectPrefix) {
+        this(elementName, null, applyDialectPrefix);
+    }
+    
     
     public ElementNameProcessorMatcher(final String elementName, 
             final String filterAttributeName, final String filterAttributeValue) {
-        this(elementName, Collections.singletonMap(filterAttributeName, filterAttributeValue));
+        this(elementName, filterAttributeName, filterAttributeValue, true);
     }
 
+
+    public ElementNameProcessorMatcher(final String elementName, final String filterAttributeName, 
+            final String filterAttributeValue, final boolean applyDialectPrefix) {
+        this(elementName, Collections.singletonMap(filterAttributeName, filterAttributeValue), applyDialectPrefix);
+    }
+    
     
     public ElementNameProcessorMatcher(final String elementName, final Map<String,String> attributeValuesByNameFilter) {
+        this(elementName, attributeValuesByNameFilter, true);
+    }
+    
+    
+    public ElementNameProcessorMatcher(final String elementName, final Map<String,String> attributeValuesByNameFilter,
+            final boolean applyDialectPrefix) {
         super();
         Validate.notEmpty(elementName, "Element name cannot be null or empty");
         this.elementName = elementName;
@@ -70,13 +89,20 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
             newAttributeValuesByNameFilter.putAll(attributeValuesByNameFilter);
             this.attributeValuesByNameFilter = Collections.unmodifiableMap(newAttributeValuesByNameFilter);
         }
+        this.applyDialectPrefix = applyDialectPrefix;
     }
     
 
 
     
     public String getElementName(final ProcessorMatchingContext context) {
-        return Node.applyDialectPrefix(this.elementName, context.getDialectPrefix());
+        
+        if (this.applyDialectPrefix) {
+            return Node.applyDialectPrefix(this.elementName, context.getDialectPrefix());
+        } 
+        
+        return this.elementName;
+        
     }
     
     public Map<String,String> getAttributeValuesByNameFilter() {
