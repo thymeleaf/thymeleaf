@@ -3,6 +3,8 @@
 - Added method to retrieve all names of specific caches from ICacheManager implementations.
 - Added method to clear all caches in ICacheManager implementations.
 - Added StringUtils.randomAlphanumeric(...) utility method.
+- Added to ElementNameProcessorMatcher the possibility not to apply dialect prefix to element name 
+  when matching.
 
 
 2.0.15
