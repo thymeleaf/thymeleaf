@@ -43,6 +43,7 @@ import java.util.StringTokenizer;
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Le Roux Bernard
+ * @author Soraya S&aacute;nchez Labandeira
  * 
  * @since 1.0
  *
@@ -93,6 +94,35 @@ public final class StringUtils {
     
     
 
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static Boolean equals(final Object target, String string) {
+        
+        if (target == null && string == null) {
+            return Boolean.TRUE;
+        }
+        if (target == null || string == null) {
+            return Boolean.FALSE;
+        }
+        return Boolean.valueOf(target.toString().equals(string));
+        
+    }
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static Boolean equalsIgnoreCase(final Object target, String string) {
+        if (target == null && string == null) {
+            return Boolean.TRUE;
+        }
+        if (target == null || string == null) {
+            return Boolean.FALSE;
+        }
+        return Boolean.valueOf(target.toString().toUpperCase().equals(string.toUpperCase()));
+    }
     
     public static Boolean contains(final Object target, final String fragment) {
         
@@ -242,9 +272,31 @@ public final class StringUtils {
         return target + suffix;
     }
 
-    
-    
-    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static String concat(final Object target, final String nullValue, final String ... strings) {
+        
+        final StringBuilder sb = new StringBuilder();
+        
+        if (target == null) {
+            sb.append(nullValue);
+        } else {
+            sb.append(target);
+        }
+        for (String string : strings) {
+            if (string == null) {
+                sb.append(nullValue);
+            } else {
+                sb.append(string);
+            }                
+        }
+        
+        return sb.toString();
+        
+    }
+
     public static Integer indexOf(final Object target, final String fragment) {
         
         Validate.notNull(target, "Cannot apply indexOf on null");
