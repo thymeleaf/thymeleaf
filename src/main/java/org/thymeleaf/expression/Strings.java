@@ -185,16 +185,16 @@ public final class Strings {
      * 
      * @since 2.0.16
      */
-    public Boolean equals(final Object target, final String string) {
-        return StringUtils.equals(target, string);
+    public Boolean equals(final Object first, final Object second) {
+        return StringUtils.equals(first, second);
     }
     
     /**
      * 
      * @since 2.0.16
      */
-    public Boolean equalsIgnoreCase(final Object target, final String string) {
-        return StringUtils.equalsIgnoreCase(target, string);
+    public Boolean equalsIgnoreCase(final Object first, final Object second) {
+        return StringUtils.equalsIgnoreCase(first, second);
     }
     
     
