@@ -181,6 +181,21 @@ public final class Strings {
 
     
     
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public Boolean equals(final Object target, final String string) {
+        return StringUtils.equals(target, string);
+    }
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public Boolean equalsIgnoreCase(final Object target, final String string) {
+        return StringUtils.equalsIgnoreCase(target, string);
+    }
     
     
     public Boolean contains(final Object target, final String fragment) {
@@ -564,6 +579,14 @@ public final class Strings {
         return StringUtils.append(target, suffix);
     }
     
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public String concat(final Object target, final String nullValue, final String ... strings) {
+        return StringUtils.concat(target, nullValue, strings);
+    }
+        
     public String[] arrayAppend(final Object[] target, final String suffix) {
         Validate.notNull(target, "Target cannot be null");
         final String[] result = new String[target.length];
