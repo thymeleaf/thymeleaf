@@ -43,6 +43,7 @@ import java.util.StringTokenizer;
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Le Roux Bernard
+ * @author Soraya S&aacute;nchez Labandeira
  * 
  * @since 1.0
  *
@@ -93,6 +94,35 @@ public final class StringUtils {
     
     
 
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static Boolean equals(final Object first, Object second) {
+        
+        if (first == null && second == null) {
+            return Boolean.TRUE;
+        }
+        if (first == null || second == null) {
+            return Boolean.FALSE;
+        }
+        return Boolean.valueOf(first.toString().equals(second.toString()));
+        
+    }
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static Boolean equalsIgnoreCase(final Object first, Object second) {
+        if (first == null && second == null) {
+            return Boolean.TRUE;
+        }
+        if (first == null || second == null) {
+            return Boolean.FALSE;
+        }
+        return Boolean.valueOf(first.toString().equalsIgnoreCase(second.toString()));
+    }
     
     public static Boolean contains(final Object target, final String fragment) {
         
@@ -242,9 +272,36 @@ public final class StringUtils {
         return target + suffix;
     }
 
-    
-    
-    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static String concat(final Object ... values) {
+        return concatReplaceNulls("", values);
+    }
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static String concatReplaceNulls(final String nullValue, final Object ... values) {
+        
+        if (values == null) {
+            return "";
+        } 
+        
+        final StringBuilder sb = new StringBuilder();
+        for (Object value : values) {
+            if (value == null) {
+                sb.append(nullValue);
+            } else {
+                sb.append(value.toString());
+            }                
+        }
+        
+        return sb.toString();
+        
+    }
+
     public static Integer indexOf(final Object target, final String fragment) {
         
         Validate.notNull(target, "Cannot apply indexOf on null");
