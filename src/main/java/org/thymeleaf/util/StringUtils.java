@@ -98,15 +98,15 @@ public final class StringUtils {
      * 
      * @since 2.0.16
      */
-    public static Boolean equals(final Object target, String string) {
+    public static Boolean equals(final Object first, Object second) {
         
-        if (target == null && string == null) {
+        if (first == null && second == null) {
             return Boolean.TRUE;
         }
-        if (target == null || string == null) {
+        if (first == null || second == null) {
             return Boolean.FALSE;
         }
-        return Boolean.valueOf(target.toString().equals(string));
+        return Boolean.valueOf(first.toString().equals(second.toString()));
         
     }
     
@@ -114,14 +114,14 @@ public final class StringUtils {
      * 
      * @since 2.0.16
      */
-    public static Boolean equalsIgnoreCase(final Object target, String string) {
-        if (target == null && string == null) {
+    public static Boolean equalsIgnoreCase(final Object first, Object second) {
+        if (first == null && second == null) {
             return Boolean.TRUE;
         }
-        if (target == null || string == null) {
+        if (first == null || second == null) {
             return Boolean.FALSE;
         }
-        return Boolean.valueOf(target.toString().toUpperCase().equals(string.toUpperCase()));
+        return Boolean.valueOf(first.toString().equalsIgnoreCase(second.toString()));
     }
     
     public static Boolean contains(final Object target, final String fragment) {
@@ -276,20 +276,25 @@ public final class StringUtils {
      * 
      * @since 2.0.16
      */
-    public static String concat(final Object target, final String nullValue, final String ... strings) {
+    public static String concat(final Object ... values) {
+        return concatReplaceNulls("", values);
+    }
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public static String concatReplaceNulls(final String nullValue, final Object ... values) {
+        
+        if (values == null) {
+            return "";
+        } 
         
         final StringBuilder sb = new StringBuilder();
-        
-        if (target == null) {
-            sb.append(nullValue);
-        } else {
-            sb.append(target);
-        }
-        for (String string : strings) {
-            if (string == null) {
+        for (Object value : values) {
+            if (value == null) {
                 sb.append(nullValue);
             } else {
-                sb.append(string);
+                sb.append(value.toString());
             }                
         }
         

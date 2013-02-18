@@ -583,10 +583,18 @@ public final class Strings {
      * 
      * @since 2.0.16
      */
-    public String concat(final Object target, final String nullValue, final String ... strings) {
-        return StringUtils.concat(target, nullValue, strings);
+    public String concat(final Object ... values) {
+        return StringUtils.concat(values);
     }
-        
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public String concatReplaceNulls(final String nullValue, final Object ... values) {
+        return StringUtils.concatReplaceNulls(nullValue, values);
+    }
+    
     public String[] arrayAppend(final Object[] target, final String suffix) {
         Validate.notNull(target, "Target cannot be null");
         final String[] result = new String[target.length];
