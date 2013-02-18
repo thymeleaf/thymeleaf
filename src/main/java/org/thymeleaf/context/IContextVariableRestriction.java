@@ -17,23 +17,24 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.expression;
+package org.thymeleaf.context;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+
 
 /**
+ * <p>
+ *   Models a restriction over a specific variable in context.
+ * </p>
+ * <p>
+ *   This allows some context variables to be accessed only in specific circumstances
+ *   depending on for example user permissions, context, etc.
+ * </p>
  * 
- * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.0.9
+ * @since 2.0.16
  *
  */
-public interface IStandardVariableExpressionEvaluator {
-    
-    public Object evaluate(
-            final Configuration configuration, final IProcessingContext processingContext, 
-            final String expression, final StandardExpressionExecutionContext expContext, 
-            final boolean useSelectionAsRoot);
+public interface IContextVariableRestriction {
+
+    public void checkAccess(final VariablesMap<?,?> variablesMap, final String variableName);
     
 }

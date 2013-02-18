@@ -218,7 +218,8 @@ public final class LinkExpression extends SimpleExpression {
 
     static Object executeLink(final Configuration configuration,
             final IProcessingContext processingContext, final LinkExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -226,7 +227,7 @@ public final class LinkExpression extends SimpleExpression {
         
         final Expression baseExpression = expression.getBase();
         Object base = 
-            Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator);
+            Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator, expContext);
         base = LiteralValue.unwrap(base);
         if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
             throw new TemplateProcessingException(
@@ -246,7 +247,7 @@ public final class LinkExpression extends SimpleExpression {
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression.getParameters(), expressionEvaluator) :
+                    resolveParameters(configuration, processingContext, expression.getParameters(), expressionEvaluator, expContext) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -385,7 +386,8 @@ public final class LinkExpression extends SimpleExpression {
     
     private static Map<String,List<Object>> resolveParameters(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
         
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
@@ -405,7 +407,7 @@ public final class LinkExpression extends SimpleExpression {
                 currentParameterValues.add(URL_PARAM_NO_VALUE);
             } else {
                 final Object value = 
-                        Expression.execute(configuration, processingContext, parameterExpression, expressionEvaluator);
+                        Expression.execute(configuration, processingContext, parameterExpression, expressionEvaluator, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
                     currentParameterValues.add("");

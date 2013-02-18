@@ -19,21 +19,37 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import java.util.Arrays;
+import java.util.List;
+
+import org.thymeleaf.context.ForbiddenContextVariableRestriction;
+import org.thymeleaf.context.IContextVariableRestriction;
+
+
+
 
 /**
+ * <p>
+ *   Class containing constants that specify different sets of
+ *   variable restrictions to be applied during Standard Expression 
+ *   executions.
+ * </p>
  * 
- * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.0.9
+ * @since 2.0.16
  *
  */
-public interface IStandardVariableExpressionEvaluator {
+public class StandardVariableRestrictions {
+
     
-    public Object evaluate(
-            final Configuration configuration, final IProcessingContext processingContext, 
-            final String expression, final StandardExpressionExecutionContext expContext, 
-            final boolean useSelectionAsRoot);
+    public static final List<IContextVariableRestriction> PREPROCESSING_RESTRICTIONS =
+            Arrays.asList(new IContextVariableRestriction[] {
+                    new ForbiddenContextVariableRestriction(
+                            "param", "Request parameters are forbidden in preprocessing expressions")
+            });
+    
+    
+    private StandardVariableRestrictions() {
+        super();
+    }
     
 }

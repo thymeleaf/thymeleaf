@@ -203,7 +203,8 @@ public final class MessageExpression extends SimpleExpression {
 
     static Object executeMessage(final Configuration configuration,
             final IProcessingContext processingContext, final MessageExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating message: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -221,7 +222,7 @@ public final class MessageExpression extends SimpleExpression {
         
         final Expression baseExpression = expression.getBase();
         Object messageKey = 
-            Expression.execute(configuration, arguments, baseExpression, expressionEvaluator);
+            Expression.execute(configuration, arguments, baseExpression, expressionEvaluator, expContext);
         messageKey = LiteralValue.unwrap(messageKey);
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
@@ -238,7 +239,7 @@ public final class MessageExpression extends SimpleExpression {
         if (expression.hasParameters()) {
             for (final Expression parameter  : expression.getParameters()) {
                 final Object result = 
-                    Expression.execute(configuration, arguments, parameter, expressionEvaluator);
+                    Expression.execute(configuration, arguments, parameter, expressionEvaluator, expContext);
                 messageParameters[parIndex++] = LiteralValue.unwrap(result);
             }
         }

@@ -93,7 +93,8 @@ public final class TextLiteralExpression extends SimpleExpression {
     
     static Object executeTextLiteral(
             @SuppressWarnings("unused") final IProcessingContext processingContext, 
-            final TextLiteralExpression expression) {
+            final TextLiteralExpression expression,
+            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating text literal: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

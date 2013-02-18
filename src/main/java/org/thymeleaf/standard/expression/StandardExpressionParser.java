@@ -354,7 +354,8 @@ public final class StandardExpressionParser {
                 }
                 
                 final Object result =
-                    this.executor.executeExpression(configuration, processingContext, expression);
+                    this.executor.executeExpression(
+                            configuration, processingContext, expression, StandardExpressionExecutionContext.PREPROCESSING);
                 
                 strBuilder.append(result);
                 

@@ -121,7 +121,8 @@ public final class StandardExpressionProcessor {
     
     
     public static Object executeExpression(final Arguments arguments, final Expression expression) {
-        return getExecutorAttribute(arguments.getConfiguration()).executeExpression(arguments, expression);
+        return getExecutorAttribute(arguments.getConfiguration()).executeExpression(
+                arguments, expression, StandardExpressionExecutionContext.NORMAL);
     }
     
     /**
@@ -129,7 +130,8 @@ public final class StandardExpressionProcessor {
      */
     public static Object executeExpression(final Configuration configuration, 
             final IProcessingContext processingContext, final Expression expression) {
-        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression);
+        return getExecutorAttribute(configuration).executeExpression(
+                configuration, processingContext, expression, StandardExpressionExecutionContext.NORMAL);
     }
     
     

@@ -19,21 +19,40 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+
+
+
+
+
 
 /**
+ * <p>
+ *   Context class that contains several conditions that might be of interest to the
+ *   expression executor (like for instance, whether the expression comes from preprocessing or not)
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.9
+ * @since 2.0.16
  *
  */
-public interface IStandardVariableExpressionEvaluator {
+public final class StandardExpressionExecutionContext {
+
+    public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false);
+    public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true);
+
+    private final boolean preprocessing;
     
-    public Object evaluate(
-            final Configuration configuration, final IProcessingContext processingContext, 
-            final String expression, final StandardExpressionExecutionContext expContext, 
-            final boolean useSelectionAsRoot);
+    
+    
+    public StandardExpressionExecutionContext(final boolean preprocessing) {
+        super();
+        this.preprocessing = preprocessing;
+    }
+    
+    
+    public boolean isPreprocessing() {
+        return this.preprocessing;
+    }
     
 }

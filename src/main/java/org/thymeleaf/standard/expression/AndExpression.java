@@ -76,14 +76,15 @@ public final class AndExpression extends BinaryOperationExpression {
 
     
     static Object executeAnd(final Configuration configuration, final IProcessingContext processingContext, 
-            final AndExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final AndExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating AND expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         final Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
         
         // Short circuit
         final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
@@ -92,7 +93,7 @@ public final class AndExpression extends BinaryOperationExpression {
         }
 
         final Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
         
         final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);
         return Boolean.valueOf(rightBooleanValue);

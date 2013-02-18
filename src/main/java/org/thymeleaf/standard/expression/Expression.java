@@ -224,12 +224,13 @@ public abstract class Expression implements Serializable {
     
     
     static Object execute(final Configuration configuration, final IProcessingContext processingContext, 
-            final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof SimpleExpression) {
-            return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator);
+            return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
         } else  if (expression instanceof ComplexExpression) {
-            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expressionEvaluator);
+            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expressionEvaluator, expContext);
         }
         
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());

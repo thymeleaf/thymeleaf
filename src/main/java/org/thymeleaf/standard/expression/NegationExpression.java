@@ -145,14 +145,15 @@ public final class NegationExpression extends ComplexExpression {
     
 
     static Object executeNegation(final Configuration configuration, final IProcessingContext processingContext, 
-            final NegationExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final NegationExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating negation expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object operandValue = 
-            Expression.execute(configuration, processingContext, expression.getOperand(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getOperand(), expressionEvaluator, expContext);
         
         final boolean operandBooleanValue = ObjectUtils.evaluateAsBoolean(operandValue);
         

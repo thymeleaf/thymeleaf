@@ -63,17 +63,18 @@ public final class LessThanExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeLessThan(final Configuration configuration, final IProcessingContext processingContext, 
-            final LessThanExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final LessThanExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating LESS THAN expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
 
         Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
 
         if (leftValue == null || rightValue == null) {
             throw new TemplateProcessingException(

@@ -5,6 +5,7 @@
 - Added StringUtils.randomAlphanumeric(...) utility method.
 - Added to ElementNameProcessorMatcher the possibility not to apply dialect prefix to element name 
   when matching.
+- Forbidden the inclusion of request parameter variables ('param.*') in preprocessing expressions.
 
 
 2.0.15

@@ -387,20 +387,21 @@ public abstract class SimpleExpression extends Expression {
     
     
     static Object executeSimple(final Configuration configuration, final IProcessingContext processingContext, final SimpleExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof VariableExpression) {
-            return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator);
+            return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator, expContext);
         } else  if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expressionEvaluator);
+            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expressionEvaluator, expContext);
         } else  if (expression instanceof TextLiteralExpression) {
-            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression);
+            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression, expContext);
         } else  if (expression instanceof NumberLiteralExpression) {
-            return NumberLiteralExpression.executeNumberLiteral(processingContext, (NumberLiteralExpression)expression);
+            return NumberLiteralExpression.executeNumberLiteral(processingContext, (NumberLiteralExpression)expression, expContext);
         } else  if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expressionEvaluator);
+            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expressionEvaluator, expContext);
         } else  if (expression instanceof SelectionVariableExpression) {
-            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator);
+            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
         }
         
         throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());

@@ -20,6 +20,7 @@
 package org.thymeleaf.context;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import ognl.MapPropertyAccessor;
@@ -46,9 +47,18 @@ import ognl.OgnlRuntime;
 public class VariablesMap<K,V> extends HashMap<K,V> {
 
     private static final long serialVersionUID = 6785956724279950873L;
-    
-    
 
+    private List<IContextVariableRestriction> restrictions = null;
+
+    
+    
+    static {
+        OgnlRuntime.setPropertyAccessor(VariablesMap.class, new VariablesMapPropertyAccessor());
+    }
+
+    
+    
+    
     public VariablesMap() {
         super();
     }
@@ -65,9 +75,36 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
         super(m);
     }
 
-    static {
-    	OgnlRuntime.setPropertyAccessor(VariablesMap.class, new VariablesMapPropertyAccessor());
+
+    
+    
+    public List<IContextVariableRestriction> getRestrictions() {
+        return this.restrictions;
     }
+
+    public void setRestrictions(List<IContextVariableRestriction> restrictions) {
+        this.restrictions = restrictions;
+    }
+    
+    
+
+    @Override
+    public V get(final Object key) {
+
+        if (this.restrictions != null && !this.restrictions.isEmpty()) {
+            for (final IContextVariableRestriction restriction : this.restrictions) {
+                if (restriction != null) {
+                    restriction.checkAccess(this, (String)key);
+                }
+            }
+        }
+        
+        return super.get(key);
+
+    }
+
+    
+    
     
     /**
      * Extension of {@code MapPropertyAccessor} that handles getting of size
@@ -88,10 +125,10 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
         VariablesMapPropertyAccessor() {
             super();
         }
-
+        
         @Override
         @SuppressWarnings("rawtypes")
-        public Object getProperty(Map context, Object target, Object name) throws OgnlException {
+        public Object getProperty(final Map context, final Object target, final Object name) throws OgnlException {
             
             if (!RESERVED_SIZE_PROPERTY_NAME.equals(name)) {
                 return super.getProperty(context, target, name);
@@ -102,7 +139,7 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
                         "Wrong target type. This property accessor is only usable for VariableMap class.");
             }
 
-            Map map = (Map) target;
+            final Map map = (Map) target;
             Object result = map.get(RESERVED_SIZE_PROPERTY_NAME);
             if (result == null) {
                 result = Integer.valueOf(map.size());
