@@ -21,6 +21,7 @@ package org.thymeleaf.spring3.expression;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -32,9 +33,15 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IContextVariableRestriction;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
+import org.thymeleaf.standard.expression.StandardVariableRestrictions;
 
 /**
  * 
@@ -70,7 +77,7 @@ public class SpelVariableExpressionEvaluator
     
     
     public final Object evaluate(final Configuration configuration, final IProcessingContext processingContext, 
-            final String spelExpression, final boolean useSelectionAsRoot) {
+            final String spelExpression, final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] SpringEL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), spelExpression);
@@ -81,7 +88,7 @@ public class SpelVariableExpressionEvaluator
             final Map<String,Object> contextVariables = 
                     computeContextVariables(configuration, processingContext);
             
-            final SpelEvaluationContext context = 
+            final SpelEvaluationContext evaluationContext = 
                     new SpelEvaluationContext(DEFAULT_EVALUATION_CONTEXT, contextVariables);
 
             final SpelExpression exp = getExpression(configuration, spelExpression);
@@ -91,7 +98,9 @@ public class SpelVariableExpressionEvaluator
                             processingContext.getExpressionSelectionEvaluationRoot() :
                             processingContext.getExpressionEvaluationRoot());
             
-            return exp.getValue(context, evaluationRoot);
+            setVariableRestrictions(expContext, evaluationRoot, contextVariables);
+            
+            return exp.getValue(evaluationContext, evaluationRoot);
             
         } catch (final TemplateProcessingException e) {
             throw e;
@@ -163,6 +172,26 @@ public class SpelVariableExpressionEvaluator
 
     
     
+    protected void setVariableRestrictions(final StandardExpressionExecutionContext expContext, 
+            final Object evaluationRoot, final Map<String,Object> contextVariables) {
+        
+        final List<IContextVariableRestriction> restrictions =
+                (expContext.isPreprocessing()? 
+                        StandardVariableRestrictions.PREPROCESSING_RESTRICTIONS : null);
+        
+        final Object context = contextVariables.get(ExpressionEvaluatorObjects.CONTEXT_VARIABLE_NAME);
+        if (context != null && context instanceof IContext) {
+            final VariablesMap<?,?> variablesMap = ((IContext)context).getVariables();
+            variablesMap.setRestrictions(restrictions);
+        }
+        if (evaluationRoot != null && evaluationRoot instanceof VariablesMap<?,?>) {
+            ((VariablesMap<?,?>)evaluationRoot).setRestrictions(restrictions);
+        }
+        
+    }
+    
+    
+
     @Override
     public String toString() {
         return "SpringEL";
