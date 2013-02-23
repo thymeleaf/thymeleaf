@@ -41,10 +41,11 @@ import org.thymeleaf.context.IContextVariableRestriction;
 public class StandardVariableRestrictions {
 
     
-    public static final List<IContextVariableRestriction> PREPROCESSING_RESTRICTIONS =
+    public static final List<IContextVariableRestriction> REQUEST_PARAMETERS_FORBIDDEN =
             Arrays.asList(new IContextVariableRestriction[] {
                     new ForbiddenContextVariableRestriction(
-                            "param", "Request parameters are forbidden in preprocessing expressions")
+                            "param", 
+                            "Accessing request parameters (param.*) is forbidden in preprocessing or unescaped expressions")
             });
     
     

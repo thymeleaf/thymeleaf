@@ -28,7 +28,8 @@ package org.thymeleaf.standard.expression;
 /**
  * <p>
  *   Context class that contains several conditions that might be of interest to the
- *   expression executor (like for instance, whether the expression comes from preprocessing or not)
+ *   expression executor (like for instance, whether the expression comes from 
+ *   preprocessing or not)
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -40,19 +41,20 @@ public final class StandardExpressionExecutionContext {
 
     public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false);
     public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true);
+    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION = new StandardExpressionExecutionContext(true);
 
-    private final boolean preprocessing;
+    private final boolean forbidRequestParameters;
     
     
     
-    public StandardExpressionExecutionContext(final boolean preprocessing) {
+    public StandardExpressionExecutionContext(final boolean forbidRequestParameters) {
         super();
-        this.preprocessing = preprocessing;
+        this.forbidRequestParameters = forbidRequestParameters;
     }
     
     
-    public boolean isPreprocessing() {
-        return this.preprocessing;
+    public boolean getForbidRequestParameters() {
+        return this.forbidRequestParameters;
     }
     
 }

@@ -143,8 +143,8 @@ public class OgnlVariableExpressionEvaluator
             final Object evaluationRoot, final Map<String,Object> contextVariables) {
         
         final List<IContextVariableRestriction> restrictions =
-                (expContext.isPreprocessing()? 
-                        StandardVariableRestrictions.PREPROCESSING_RESTRICTIONS : null);
+                (expContext.getForbidRequestParameters()? 
+                        StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
         
         final Object context = contextVariables.get(ExpressionEvaluatorObjects.CONTEXT_VARIABLE_NAME);
         if (context != null && context instanceof IContext) {

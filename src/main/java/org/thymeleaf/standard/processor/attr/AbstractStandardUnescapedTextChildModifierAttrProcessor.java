@@ -23,6 +23,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractUnescapedTextChildModifierAttrProcessor;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 
 /**
@@ -58,7 +59,8 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final Object result = 
-            StandardExpressionProcessor.processExpression(arguments, attributeValue);
+            StandardExpressionProcessor.processExpression(
+                    arguments, attributeValue, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
         
         return (result == null? "" : result.toString());
         
