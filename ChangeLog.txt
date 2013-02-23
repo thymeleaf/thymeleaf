@@ -1,7 +1,8 @@
 2.0.16
 ======
 - Automatically add @PathVariable's to model when using Spring 3.1 or newer. 
-- Forbidden the inclusion of request parameter variables ('param.*') in preprocessing expressions.
+- Forbidden the inclusion of request parameter variables ('param.*') in preprocessing expressions
+  and th:utext attribute values.
 
 
 2.0.15
