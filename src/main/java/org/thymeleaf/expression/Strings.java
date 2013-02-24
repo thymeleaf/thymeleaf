@@ -181,6 +181,21 @@ public final class Strings {
 
     
     
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public Boolean equals(final Object first, final Object second) {
+        return StringUtils.equals(first, second);
+    }
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public Boolean equalsIgnoreCase(final Object first, final Object second) {
+        return StringUtils.equalsIgnoreCase(first, second);
+    }
     
     
     public Boolean contains(final Object target, final String fragment) {
@@ -562,6 +577,22 @@ public final class Strings {
     
     public String append(final Object target, final String suffix) {
         return StringUtils.append(target, suffix);
+    }
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public String concat(final Object ... values) {
+        return StringUtils.concat(values);
+    }
+    
+    /**
+     * 
+     * @since 2.0.16
+     */
+    public String concatReplaceNulls(final String nullValue, final Object ... values) {
+        return StringUtils.concatReplaceNulls(nullValue, values);
     }
     
     public String[] arrayAppend(final Object[] target, final String suffix) {
