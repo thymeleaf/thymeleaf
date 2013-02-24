@@ -9,6 +9,7 @@
   and th:utext attribute values.
 - Added null-safe #strings.equals(...) and #strings.equalsIgnoreCase(...) utility methods.
 - Added null-safe #strings.concat(...) and #strings.concatReplaceNulls(...) utility methods.
+- Modified JavaScript escaping so that '/' is only escaped if appears after '<'.  
 
 
 2.0.15
