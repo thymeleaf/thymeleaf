@@ -7,6 +7,8 @@
   when matching.
 - Forbidden the inclusion of request parameter variables ('param.*') in preprocessing expressions
   and th:utext attribute values.
+- Added null-safe #strings.equals(...) and #strings.equalsIgnoreCase(...) utility methods.
+- Added null-safe #strings.concat(...) and #strings.concatReplaceNulls(...) utility methods.
 
 
 2.0.15

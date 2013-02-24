@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * @author Le Roux Bernard
+ * @author Bernard Le Roux
  * 
  * @since 1.0
  *
