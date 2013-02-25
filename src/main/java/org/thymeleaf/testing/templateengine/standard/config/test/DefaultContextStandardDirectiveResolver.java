@@ -47,7 +47,7 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
 
     @Override
     protected IContext getValue(final String executionId, final String documentName, 
-            final String directiveName, final String directiveValue) {
+            final String directiveName, final String directiveValue, final String directiveQualifier) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {
             return new Context();

@@ -42,7 +42,8 @@ public class DefaultExceptionDirectiveResolver
     @SuppressWarnings("unchecked")
     public Class<? extends Throwable> getValue(
             final String executionId, final String documentName, 
-            final String directiveName, final String directiveValue) {
+            final String directiveName, final String directiveValue, 
+            final String directiveQualifier) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;

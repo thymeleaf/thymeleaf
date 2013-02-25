@@ -57,8 +57,9 @@ public final class StandardTestDocumentResolutionUtils {
             if (!isResolverDirective(directiveName)) {
                 
                 final IStandardDirectiveResolver<?> resolver = spec.getResolver();
-                
-                final Object value = resolver.getValue(executionId, data, directiveName);
+
+// TODO pass a real qualifier!
+                final Object value = resolver.getValue(executionId, data, directiveName, null);
                 
                 if (value == null) {
                     

@@ -26,6 +26,6 @@ package org.thymeleaf.testing.templateengine.standard.config.test;
 public interface IStandardDirectiveResolver<T> {
 
     public Class<T> getValueClass();
-    public T getValue(final String executionId, final StandardTestDocumentData data, final String directiveName);
+    public T getValue(final String executionId, final StandardTestDocumentData data, final String directiveName, final String directiveQualifier);
     
 }

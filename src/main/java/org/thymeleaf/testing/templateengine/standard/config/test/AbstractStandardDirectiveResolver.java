@@ -39,12 +39,13 @@ public abstract class AbstractStandardDirectiveResolver<T> implements IStandardD
         return this.expectedClass;
     }
 
-    public final T getValue(final String executionId, final StandardTestDocumentData data, final String directiveName) {
-        return getValue(executionId, data.getDocumentName(), directiveName, data.getDirectiveValue(directiveName));
+    public final T getValue(final String executionId, final StandardTestDocumentData data, 
+            final String directiveName, final String directiveQualifier) {
+        return getValue(executionId, data.getDocumentName(), directiveName, data.getDirectiveValue(directiveName), directiveQualifier);
     }
 
     
-    protected abstract T getValue(final String executionId, final String documentName, final String directiveName, final String directiveValue);
+    protected abstract T getValue(final String executionId, final String documentName, final String directiveName, final String directiveValue, final String directiveQualifier);
 
     
 }
