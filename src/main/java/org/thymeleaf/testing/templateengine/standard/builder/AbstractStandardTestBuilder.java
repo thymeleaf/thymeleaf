@@ -26,8 +26,10 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.builder.ITestBuilder;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpec;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
 import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
+import org.thymeleaf.testing.templateengine.standard.util.DirectiveUtils;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestDocumentResolutionUtils;
 import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
 import org.thymeleaf.testing.templateengine.test.FailExpectedTest;
@@ -63,23 +65,24 @@ public abstract class AbstractStandardTestBuilder implements ITestBuilder {
         final StandardTestDocumentData data = 
                 StandardTestIOUtils.readTestDocument(executionId, documentName, documentReader);
 
-        final Map<String,Object> values =
+        final Map<String,Map<String,Object>> values =
                 StandardTestDocumentResolutionUtils.resolveTestDocumentData(
                         executionId, data, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
         
+System.out.println(values);        
         // input, cache, context, and template mode are required, cannot be null at this point 
-        final ITestResource input = (ITestResource) values.get(StandardTestDirectiveSpecs.INPUT_DIRECTIVE_SPEC.getName());
-        final Boolean cache = (Boolean) values.get(StandardTestDirectiveSpecs.CACHE_DIRECTIVE_SPEC.getName());
-        final IContext ctx = (IContext) values.get(StandardTestDirectiveSpecs.CONTEXT_DIRECTIVE_SPEC.getName());
-        final String templateMode = (String) values.get(StandardTestDirectiveSpecs.TEMPLATE_MODE_DIRECTIVE_SPEC.getName());
+        final ITestResource input = (ITestResource) getMainDirectiveValue(values,StandardTestDirectiveSpecs.INPUT_DIRECTIVE_SPEC);
+        final Boolean cache = (Boolean) getMainDirectiveValue(values,StandardTestDirectiveSpecs.CACHE_DIRECTIVE_SPEC);
+        final IContext ctx = (IContext) getMainDirectiveValue(values,StandardTestDirectiveSpecs.CONTEXT_DIRECTIVE_SPEC);
+        final String templateMode = (String) getMainDirectiveValue(values,StandardTestDirectiveSpecs.TEMPLATE_MODE_DIRECTIVE_SPEC);
         
         // name and fragmentspec are optional, might be null at this point
-        final String name = (String) values.get(StandardTestDirectiveSpecs.TEST_NAME_DIRECTIVE_SPEC.getName());
-        final IFragmentSpec fragmentSpec = (IFragmentSpec) values.get(StandardTestDirectiveSpecs.FRAGMENT_DIRECTIVE_SPEC.getName());
+        final String name = (String) getMainDirectiveValue(values,StandardTestDirectiveSpecs.TEST_NAME_DIRECTIVE_SPEC);
+        final IFragmentSpec fragmentSpec = (IFragmentSpec) getMainDirectiveValue(values,StandardTestDirectiveSpecs.FRAGMENT_DIRECTIVE_SPEC);
 
         // The presence of output or exception will determine whether this is a success- or a fail-expected test
-        final ITestResource output = (ITestResource) values.get(StandardTestDirectiveSpecs.OUTPUT_DIRECTIVE_SPEC.getName()); 
-        final Class<? extends Throwable> exception = (Class<? extends Throwable>) values.get(StandardTestDirectiveSpecs.EXCEPTION_DIRECTIVE_SPEC.getName());
+        final ITestResource output = (ITestResource) getMainDirectiveValue(values,StandardTestDirectiveSpecs.OUTPUT_DIRECTIVE_SPEC); 
+        final Class<? extends Throwable> exception = (Class<? extends Throwable>) getMainDirectiveValue(values,StandardTestDirectiveSpecs.EXCEPTION_DIRECTIVE_SPEC);
         
         if (output == null && exception == null) {
             throw new TestEngineExecutionException(
@@ -100,7 +103,7 @@ public abstract class AbstractStandardTestBuilder implements ITestBuilder {
             
         }
             
-        final String exceptionMessagePattern = (String) values.get(StandardTestDirectiveSpecs.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC.getName());
+        final String exceptionMessagePattern = (String) getMainDirectiveValue(values,StandardTestDirectiveSpecs.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
 
         final FailExpectedTest test = 
                 new FailExpectedTest(input, cache.booleanValue(), exception, exceptionMessagePattern);
@@ -112,5 +115,19 @@ public abstract class AbstractStandardTestBuilder implements ITestBuilder {
         return test;
         
     }
+    
+    
+    
+    
+    private static Object getMainDirectiveValue(final Map<String,Map<String,Object>> values, final StandardTestDirectiveSpec<?> directiveSpec) {
+        
+        final Map<String,Object> directiveValuesByQualifier = values.get(directiveSpec.getName());
+        if (directiveValuesByQualifier == null) {
+            return null;
+        }
+        return directiveValuesByQualifier.get(DirectiveUtils.MAIN_DIRECTIVE_QUALIFIER);
+    }
+    
+    
     
 }

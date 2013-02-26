@@ -111,7 +111,7 @@ public final class StandardTestIOUtils {
                 directiveValues.put(currentDirectiveName, strBuilder.toString());
             }
 
-            return new StandardTestDocumentData(documentName, directiveValues);
+            return new StandardTestDocumentData(executionId, documentName, directiveValues);
             
         } catch (final IOException e) {
             

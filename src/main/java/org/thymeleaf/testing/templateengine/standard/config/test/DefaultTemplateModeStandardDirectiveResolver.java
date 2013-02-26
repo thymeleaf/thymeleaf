@@ -38,8 +38,7 @@ public class DefaultTemplateModeStandardDirectiveResolver extends AbstractStanda
 
     @Override
     public String getValue(final String executionId, final String documentName, 
-            final String directiveName, final String directiveValue, 
-            final String directiveQualifier) {
+            final String directiveName, final String directiveQualifier, final String directiveValue) {
         
         if (directiveValue == null || directiveValue.trim().equals("")) {
             return DEFAULT_VALUE;
