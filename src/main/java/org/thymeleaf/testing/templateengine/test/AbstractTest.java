@@ -19,7 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
@@ -38,21 +43,27 @@ public abstract class AbstractTest
     
     public static String DEFAULT_TEMPLATE_MODE = "HTML5";
     public static IFragmentSpec DEFAULT_FRAGMENT_SPEC = null;
+    private static final String DEFAULT_MAIN_INPUT = "main";
     
 
     private IContext context = new Context(Locale.ENGLISH);
     private String templateMode = DEFAULT_TEMPLATE_MODE; 
-    private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC; 
+    private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC;
+    private String mainInputName = DEFAULT_MAIN_INPUT;
     
-    private final ITestResource input;
+    private final Map<String,ITestResource> inputs;
     private final boolean inputCacheable;
 
     
     
     
-    protected AbstractTest(final ITestResource input, final boolean inputCacheable) {
+    protected AbstractTest(final Map<String,ITestResource> inputs, final boolean inputCacheable) {
         super();
-        this.input = input;
+        if (inputs == null) {
+            this.inputs = Collections.emptyMap();
+        } else {
+            this.inputs = new HashMap<String,ITestResource>(inputs);
+        }
         this.inputCacheable = inputCacheable;
     }
 
@@ -95,10 +106,43 @@ public abstract class AbstractTest
 
     
 
-    public ITestResource getInput() {
-        return this.input;
+    public String getMainInputName() {
+        return this.mainInputName;
+    }
+    
+    public void setMainInputName(final String mainInputName) {
+        this.mainInputName = mainInputName;
+    }
+    
+    
+    
+
+    public Set<String> getInputNames() {
+        final Set<String> inputNames = new HashSet<String>(this.inputs.keySet());
+        inputNames.remove(null);
+        inputNames.add(getMainInputName());
+        return Collections.unmodifiableSet(inputNames);
     }
 
+    
+    public Map<String,ITestResource> getAllInputs() {
+        final Map<String,ITestResource> allInputs = new HashMap<String, ITestResource>(this.inputs);
+        final ITestResource mainInput = allInputs.get(null);
+        allInputs.remove(null);
+        allInputs.put(getMainInputName(), mainInput);
+        return Collections.unmodifiableMap(allInputs);
+    }
+    
+    
+    public ITestResource getInput(final String inputName) {
+        Validate.notNull(inputName, "Input name cannot be null");
+        if (inputName.equals(getMainInputName())) {
+            return this.inputs.get(null);
+        }
+        return this.inputs.get(inputName);
+    }
+
+    
     public boolean isInputCacheable() {
         return this.inputCacheable;
     }

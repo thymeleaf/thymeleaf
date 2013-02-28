@@ -21,6 +21,9 @@ package org.thymeleaf.testing.templateengine.engine.resolver;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -38,15 +41,16 @@ public class TestResourceResolver implements IResourceResolver {
     public static final String NAME = "TEST";
     
     
-    private final ITestResource resource;
+    private final Map<String,ITestResource> resources;
     private final String characterEncoding;
     
 
-    public TestResourceResolver(final ITestResource resource, final String characterEncoding) {
+    public TestResourceResolver(
+            final Map<String,ITestResource> resources, final String characterEncoding) {
         super();
-        Validate.notNull(resource, "Resource cannot be null");
+        Validate.notNull(resources, "Resources map cannot be null");
         Validate.notNull(characterEncoding, "Character encoding cannot be null");
-        this.resource = resource;
+        this.resources = Collections.unmodifiableMap(new HashMap<String,ITestResource>(resources));
         this.characterEncoding = characterEncoding;
     }
 
@@ -58,8 +62,14 @@ public class TestResourceResolver implements IResourceResolver {
     }
 
     
-    public ITestResource getTestResource() {
-        return this.resource;
+    public Map<String,ITestResource> getTestResources() {
+        return this.resources;
+    }
+
+    
+    public ITestResource getTestResource(final String resourceName) {
+        Validate.notNull(resourceName, "Resource name cannot be null");
+        return this.resources.get(resourceName);
     }
     
 
@@ -70,7 +80,12 @@ public class TestResourceResolver implements IResourceResolver {
 
         try {
             
-            final String input = this.resource.read();
+            final ITestResource resource = this.resources.get(resourceName);
+            if (resource == null) {
+                return null;
+            }
+            
+            final String input = resource.read();
             if (input == null) {
                 return null;
             }
@@ -78,7 +93,8 @@ public class TestResourceResolver implements IResourceResolver {
             return new ByteArrayInputStream(input.getBytes(this.characterEncoding));
             
         } catch (final Exception e) {
-            throw new TestEngineExecutionException("Exception resolving test template from in-memory String");
+            throw new TestEngineExecutionException(
+                    "Exception resolving test resource \"" + resourceName + "\"");
         }
         
     }

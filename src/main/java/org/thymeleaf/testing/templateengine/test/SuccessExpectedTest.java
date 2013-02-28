@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
+import java.util.Map;
+
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
@@ -36,8 +38,8 @@ public class SuccessExpectedTest
     
     
     
-    public SuccessExpectedTest(final ITestResource input, final boolean inputCacheable, final ITestResource output) {
-        super(input, inputCacheable);
+    public SuccessExpectedTest(final Map<String,ITestResource> inputs, final boolean inputCacheable, final ITestResource output) {
+        super(inputs, inputCacheable);
         Validate.notNull(output, "Output cannot be null");
         this.output = output;
     }
@@ -55,7 +57,7 @@ public class SuccessExpectedTest
     public ITestResult evalResult(final String testName, final String result) {
         
         if (result == null) {
-            TestResult.error(testName, getInput(), result, "Result is null");
+            TestResult.error(testName, "Result is null");
         }
         
         final String outputStr = this.output.read();
@@ -66,17 +68,17 @@ public class SuccessExpectedTest
         }
         
         if (outputStr.equals(result)) {
-            return TestResult.ok(testName, getInput(), result);
+            return TestResult.ok(testName);
         }
         
-        return TestResult.error(testName, getInput(), result, ResultCompareUtils.explainComparison(outputStr, result));
+        return TestResult.error(testName, ResultCompareUtils.explainComparison(outputStr, result));
         
     }
 
 
     public ITestResult evalResult(final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
-        return TestResult.error(testName, getInput(), t);
+        return TestResult.error(testName, t);
     }
     
     

@@ -39,9 +39,9 @@ public interface ITestSuite {
     
     public Map<Locale,Properties> getMessages();
     
-    public ITestSequence getSequence();
-    
     public ITestReporter getReporter();
+    
+    public String getTestableName();
     
     
 }

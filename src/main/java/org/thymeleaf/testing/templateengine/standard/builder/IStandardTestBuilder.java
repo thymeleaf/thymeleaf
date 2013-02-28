@@ -17,16 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.builder;
+package org.thymeleaf.testing.templateengine.standard.builder;
 
-import org.thymeleaf.testing.templateengine.test.ITestIterator;
+import java.util.Map;
+
+import org.thymeleaf.testing.templateengine.test.ITest;
 
 
 
 
 
-public interface ITestIteratorBuilder extends ITestableBuilder {
+public interface IStandardTestBuilder {
     
-    public ITestIterator build(final String executionId);
+    public ITest buildTest(
+            final String executionId, final String documentName, 
+            final Map<String,Map<String,Object>> dataByDirectiveAndQualifier);
     
 }

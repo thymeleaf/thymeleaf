@@ -19,19 +19,14 @@
  */
 package org.thymeleaf.testing.templateengine.standard.builder;
 
-import java.io.Reader;
 import java.util.Map;
 
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateengine.builder.ITestBuilder;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpec;
 import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.standard.util.DirectiveUtils;
-import org.thymeleaf.testing.templateengine.standard.util.StandardTestDocumentResolutionUtils;
-import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
 import org.thymeleaf.testing.templateengine.test.FailExpectedTest;
 import org.thymeleaf.testing.templateengine.test.ITest;
 import org.thymeleaf.testing.templateengine.test.SuccessExpectedTest;
@@ -42,47 +37,40 @@ import org.thymeleaf.util.Validate;
 
 
 
-public abstract class AbstractStandardTestBuilder implements ITestBuilder {
+public class StandardTestBuilder implements IStandardTestBuilder {
+
     
-    protected AbstractStandardTestBuilder() {
+    public StandardTestBuilder() {
         super();
     }
     
 
     
-    protected abstract String getDocumentName(final String executionId);
-    protected abstract Reader getDocumentReader(final String executionId);
-    
-    
     @SuppressWarnings("unchecked")
-    public final ITest build(final String executionId) {
+    public final ITest buildTest(final String executionId, 
+            final String documentName, final Map<String,Map<String,Object>> dataByDirectiveAndQualifier) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
-        
-        final String documentName = getDocumentName(executionId);
-        final Reader documentReader = getDocumentReader(executionId);
-        
-        final StandardTestDocumentData data = 
-                StandardTestIOUtils.readTestDocument(executionId, documentName, documentReader);
+        Validate.notNull(dataByDirectiveAndQualifier, "Data cannot be null");
 
-        final Map<String,Map<String,Object>> values =
-                StandardTestDocumentResolutionUtils.resolveTestDocumentData(
-                        executionId, data, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
         
-System.out.println(values);        
-        // input, cache, context, and template mode are required, cannot be null at this point 
-        final ITestResource input = (ITestResource) getMainDirectiveValue(values,StandardTestDirectiveSpecs.INPUT_DIRECTIVE_SPEC);
-        final Boolean cache = (Boolean) getMainDirectiveValue(values,StandardTestDirectiveSpecs.CACHE_DIRECTIVE_SPEC);
-        final IContext ctx = (IContext) getMainDirectiveValue(values,StandardTestDirectiveSpecs.CONTEXT_DIRECTIVE_SPEC);
-        final String templateMode = (String) getMainDirectiveValue(values,StandardTestDirectiveSpecs.TEMPLATE_MODE_DIRECTIVE_SPEC);
+        // Retrieve and process the map of inputs 
+        final Map<String,ITestResource> inputs = 
+                (Map<String,ITestResource>)(Map<?,?>) dataByDirectiveAndQualifier.get(StandardTestDirectiveSpecs.INPUT_DIRECTIVE_SPEC.getName());
+        
+        
+        // cache, context, and template mode are required, cannot be null at this point 
+        final Boolean cache = (Boolean) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.CACHE_DIRECTIVE_SPEC);
+        final IContext ctx = (IContext) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.CONTEXT_DIRECTIVE_SPEC);
+        final String templateMode = (String) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.TEMPLATE_MODE_DIRECTIVE_SPEC);
         
         // name and fragmentspec are optional, might be null at this point
-        final String name = (String) getMainDirectiveValue(values,StandardTestDirectiveSpecs.TEST_NAME_DIRECTIVE_SPEC);
-        final IFragmentSpec fragmentSpec = (IFragmentSpec) getMainDirectiveValue(values,StandardTestDirectiveSpecs.FRAGMENT_DIRECTIVE_SPEC);
+        final String name = (String) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.TEST_NAME_DIRECTIVE_SPEC);
+        final IFragmentSpec fragmentSpec = (IFragmentSpec) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.FRAGMENT_DIRECTIVE_SPEC);
 
         // The presence of output or exception will determine whether this is a success- or a fail-expected test
-        final ITestResource output = (ITestResource) getMainDirectiveValue(values,StandardTestDirectiveSpecs.OUTPUT_DIRECTIVE_SPEC); 
-        final Class<? extends Throwable> exception = (Class<? extends Throwable>) getMainDirectiveValue(values,StandardTestDirectiveSpecs.EXCEPTION_DIRECTIVE_SPEC);
+        final ITestResource output = (ITestResource) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.OUTPUT_DIRECTIVE_SPEC); 
+        final Class<? extends Throwable> exception = (Class<? extends Throwable>) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.EXCEPTION_DIRECTIVE_SPEC);
         
         if (output == null && exception == null) {
             throw new TestEngineExecutionException(
@@ -93,7 +81,7 @@ System.out.println(values);
         if (output != null) {
             
             final SuccessExpectedTest test = 
-                    new SuccessExpectedTest(input, cache.booleanValue(), output);
+                    new SuccessExpectedTest(inputs, cache.booleanValue(), output);
             test.setName(name);
             test.setTemplateMode(templateMode);
             test.setContext(ctx);
@@ -103,10 +91,10 @@ System.out.println(values);
             
         }
             
-        final String exceptionMessagePattern = (String) getMainDirectiveValue(values,StandardTestDirectiveSpecs.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
+        final String exceptionMessagePattern = (String) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpecs.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
 
         final FailExpectedTest test = 
-                new FailExpectedTest(input, cache.booleanValue(), exception, exceptionMessagePattern);
+                new FailExpectedTest(inputs, cache.booleanValue(), exception, exceptionMessagePattern);
         test.setName(name);
         test.setTemplateMode(templateMode);
         test.setContext(ctx);

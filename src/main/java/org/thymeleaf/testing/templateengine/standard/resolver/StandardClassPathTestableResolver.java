@@ -17,12 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.builder;
+package org.thymeleaf.testing.templateengine.standard.resolver;
 
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.thymeleaf.testing.templateengine.standard.builder.IStandardTestBuilder;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
@@ -30,19 +31,28 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class ClassPathFolderStandardTestIteratorBuilder extends LocalFolderStandardTestIteratorBuilder {
+
+public class StandardClassPathTestableResolver extends AbstractStandardLocalFileTestableResolver {
+
+    private final IStandardTestBuilder builder;
     
     
-    public ClassPathFolderStandardTestIteratorBuilder(
-            final String classPathFolderName, final int iterations, final String fileNameSuffix) {
-        super(resolveFile(classPathFolderName), iterations, fileNameSuffix);
+    public StandardClassPathTestableResolver(final IStandardTestBuilder builder) {
+        super();
+        Validate.notNull(builder, "Test builder cannot be null");
+        this.builder = builder;
     }
 
-
-    private static final File resolveFile(final String classPathFolderName) {
-        Validate.notNull(classPathFolderName, "ClassPath folder name cannot be null");
-        final ClassLoader cl = ClassLoaderUtils.getClassLoader(ClassPathFolderStandardTestIteratorBuilder.class);
-        final URL url = cl.getResource(classPathFolderName);
+    
+    
+    @Override
+    protected File getFileFromTestableName(final String executionId, final String testableName) {
+        
+        Validate.notNull(testableName, "Testable name cannot be null");
+        
+        final ClassLoader cl = 
+                ClassLoaderUtils.getClassLoader(StandardClassPathTestableResolver.class);
+        final URL url = cl.getResource(testableName);
         try {
             return new File(url.toURI());
         } catch (final URISyntaxException e) {
@@ -50,7 +60,14 @@ public class ClassPathFolderStandardTestIteratorBuilder extends LocalFolderStand
                     "ClassPath folder name resulted in an unusable URL: \"" + url + "\". " +
                     "Note that this builder cannot be used for resources contained in .jars", e);
         }
+        
     }
 
+
+    @Override
+    protected IStandardTestBuilder getTestBuilder() {
+        return this.builder;
+    }
+    
     
 }

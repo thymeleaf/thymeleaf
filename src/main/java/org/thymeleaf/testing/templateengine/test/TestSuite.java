@@ -50,45 +50,23 @@ public class TestSuite implements ITestSuite {
     private ITestReporter reporter = null;
     
     private final String name;
-    private final ITestSequence sequence;
+    private final String testableName;
     
 
     
     
     
     
-    public TestSuite(final ITestSequence sequence) {
-        this(null, sequence);
+    public TestSuite(final String testableName) {
+        this(null, testableName);
     }
     
-    public TestSuite(final String name, final ITestSequence sequence) {
+    public TestSuite(final String name, final String testableName) {
         super();
-        Validate.notNull(sequence, "Sequence cannot be null");
+        Validate.notNull(testableName, "Testable name cannot be null");
         this.name = name;
-        this.sequence = sequence;
+        this.testableName = testableName;
     }
-    
-
-    
-    public TestSuite(final ITestable... testables) {
-        this(null, testables);
-    }
-    
-    public TestSuite(final String name, final ITestable... testables) {
-        
-        super();
-        
-        Validate.notNull(testables, "Testable object assignation cannot be null");
-        
-        this.name = name;
-        this.sequence = new TestSequence();
-        
-        for (int i = 0; i< testables.length; i++) {
-            ((TestSequence)this.sequence).addElement(testables[i]);
-        }
-        
-    }
-
     
     
 
@@ -156,8 +134,8 @@ public class TestSuite implements ITestSuite {
     
     
     
-    public ITestSequence getSequence() {
-        return this.sequence;
+    public String getTestableName() {
+        return this.testableName;
     }
 
     

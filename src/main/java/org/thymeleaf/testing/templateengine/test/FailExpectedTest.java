@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,9 +41,9 @@ public class FailExpectedTest
     
     
     
-    public FailExpectedTest(final ITestResource input, final boolean inputCacheable, 
+    public FailExpectedTest(final Map<String,ITestResource> inputs, final boolean inputCacheable, 
             final Class<? extends Throwable> outputThrowableClass, final String outputThrowableMessagePattern) {
-        super(input, inputCacheable);
+        super(inputs, inputCacheable);
         Validate.notNull(outputThrowableClass, "Output throwable class cannot be null");
         this.outputThrowableClass = outputThrowableClass;
         this.outputThrowableMessagePattern = outputThrowableMessagePattern;
@@ -64,7 +65,7 @@ public class FailExpectedTest
 
 
     public ITestResult evalResult(final String testName, final String result) {
-        return TestResult.error(testName, getInput(), result, "An exception of class " + this.outputThrowableClass.getName() + " was expected");
+        return TestResult.error(testName, "An exception of class " + this.outputThrowableClass.getName() + " was expected");
     }
 
 
@@ -80,21 +81,21 @@ public class FailExpectedTest
                 if (throwableMessage != null) {
                     final Matcher matcher = this.outputThrowableMessagePatternObject.matcher(throwableMessage);
                     if (matcher.matches()) {
-                        return TestResult.ok(testName, getInput(), t);
+                        return TestResult.ok(testName, t);
                     }
                 }
                 
-                return TestResult.error(testName, getInput(), 
+                return TestResult.error(testName, 
                         "An exception of class " + t.getClass() + " was raised as expected, " +
                 		"but its message does not match pattern \"" + throwableMessage + "\"", t);
                 
             }
             
-            return TestResult.ok(testName, getInput(), t);
+            return TestResult.ok(testName, t);
             
         }
         
-        return TestResult.error(testName, getInput(), 
+        return TestResult.error(testName, 
                 "An exception of class " + t.getClass() + " was raised, but " + this.outputThrowableClass.getName() + " was expected instead", t);
         
     }

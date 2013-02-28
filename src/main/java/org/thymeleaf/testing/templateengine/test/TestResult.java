@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.test;
 
-import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 
@@ -27,62 +26,54 @@ import org.thymeleaf.util.Validate;
 public class TestResult implements ITestResult {
 
     private final String testName;
-    private final ITestResource input;
-    private final String result;
-    private final boolean resultSet;
     private final boolean ok;
     private final String message;
     private final Throwable throwable;
     
     
-    public static TestResult ok(final String testName, final ITestResource input, final String result) {
-        return new TestResult(testName, input, result, true, true, null, null);
+    public static TestResult ok(final String testName) {
+        return new TestResult(testName, true, null, null);
     }
     
-    public static TestResult ok(final String testName, final ITestResource input, final String result, final String message) {
+    public static TestResult ok(final String testName, final String message) {
         Validate.notEmpty(message, "Message cannot be null or empty");
-        return new TestResult(testName, input, result, true, true, message, null);
+        return new TestResult(testName, true, message, null);
     }
     
-    public static TestResult ok(final String testName, final ITestResource input, final Throwable t) {
+    public static TestResult ok(final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, input, null, false, true, null, t);
+        return new TestResult(testName, true, null, t);
     }
     
-    public static TestResult ok(final String testName, final ITestResource input, final String message, final Throwable t) {
-        Validate.notEmpty(message, "Message cannot be null or empty");
-        Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, input, null, false, true, message, t);
-    }
-    
-    public static TestResult error(final String testName, final ITestResource input, final String result, final String message) {
-        Validate.notEmpty(message, "Message cannot be null or empty");
-        return new TestResult(testName, input, result, true, false, message, null);
-    }
-    
-    public static TestResult error(final String testName, final ITestResource input, final String message, final Throwable t) {
+    public static TestResult ok(final String testName, final String message, final Throwable t) {
         Validate.notEmpty(message, "Message cannot be null or empty");
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, input, null, false, false, message, t);
+        return new TestResult(testName, true, message, t);
     }
     
-    public static TestResult error(final String testName, final ITestResource input, final Throwable t) {
+    public static TestResult error(final String testName, final String message) {
+        Validate.notEmpty(message, "Message cannot be null or empty");
+        return new TestResult(testName, false, message, null);
+    }
+    
+    public static TestResult error(final String testName, final String message, final Throwable t) {
+        Validate.notEmpty(message, "Message cannot be null or empty");
         Validate.notNull(t, "Throwable cannot be null");
-        return new TestResult(testName, input, null, false, false, t.getMessage(), t);
+        return new TestResult(testName, false, message, t);
+    }
+    
+    public static TestResult error(final String testName, final Throwable t) {
+        Validate.notNull(t, "Throwable cannot be null");
+        return new TestResult(testName, false, t.getMessage(), t);
     }
     
     
     
     protected TestResult(
-            final String testName, final ITestResource input, final String result, final boolean resultSet, 
-            final boolean ok, final String message, final Throwable throwable) {
+            final String testName, final boolean ok, final String message, final Throwable throwable) {
         super();
         Validate.notNull(testName, "Test name cannot be null. Remember this must be the context-registered name.");
-        Validate.notNull(input, "Input cannot be null");
         this.testName = testName;
-        this.input = input;
-        this.result = result;
-        this.resultSet = resultSet;
         this.ok = ok;
         this.message = message;
         this.throwable = throwable;
@@ -91,18 +82,6 @@ public class TestResult implements ITestResult {
     
     public String getTestName() {
         return this.testName;
-    }
-    
-    public ITestResource getInput() {
-        return this.input;
-    }
-    
-    public boolean hasResult() {
-        return this.resultSet;
-    }
-    
-    public String getResult() {
-        return this.result;
     }
     
     public boolean isOK() {

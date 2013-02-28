@@ -23,9 +23,6 @@ package org.thymeleaf.testing.templateengine.test;
 
 public interface ITestResult {
 
-    public boolean hasResult();
-    public String getResult();
-    
     public boolean isOK();
     
     public boolean hasMessage();

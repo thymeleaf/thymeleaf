@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.testing.templateengine.engine.resolver;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.PatternSpec;
@@ -249,33 +252,38 @@ public class TestTemplateResolver implements ITemplateResolver {
 
         // The TestExecutionContext is a local variable, so we must retrieve it
         final IProcessingContext processingContext = templateProcessingParameters.getProcessingContext();
+        
         final TestExecutionContext testExecutionContext = 
                 (TestExecutionContext) processingContext.getLocalVariable(ContextNaming.TEST_EXECUTION_CONTEXT_VARIABLE_NAME);
-        
-        // The template name is in fact the registered test name
-        final String registeredTestName = templateProcessingParameters.getTemplateName();
+        final String testExecutionName = 
+                (String) processingContext.getLocalVariable(ContextNaming.TEST_EXECUTION_NAME_VARIABLE_NAME);
         
         // Retrieve the ITest object from context
         final ITest test = 
-                testExecutionContext.getTestByName(registeredTestName);
+                testExecutionContext.getTestByName(testExecutionName);
 
         // Check template mode
         final String templateMode = test.getTemplateMode();
         if (templateMode == null) {
             throw new TestEngineExecutionException(
-                    "Template mode cannot be null for test \"" + registeredTestName + "\"");
+                    "Template mode cannot be null for test \"" + testExecutionName + "\"");
         }
 
-        // Check input
-        final ITestResource inputResource = test.getInput();
-        if (inputResource == null) {
+        // Organize inputs
+        final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>(test.getAllInputs());
+        final ITestResource mainInput = allInputs.get(test.getMainInputName());
+        allInputs.remove(test.getMainInputName());
+        if (allInputs.containsKey(testExecutionName)) {
             throw new TestEngineExecutionException(
-                    "Input resource cannot be null for test \"" + registeredTestName + "\"");
+                    "An input with name \"" + testExecutionName + "\" is defined at the test with " + 
+                    "the same name, which is forbidden. Input names (qualifiers) at tests cannot equal " +
+                    "the test name");
         }
+        allInputs.put(testExecutionName, mainInput);
         
         // The resource resolver is created instead of reusing one for concurrency reasons 
         final TestResourceResolver resourceResolver = 
-                new TestResourceResolver(inputResource, TEST_TEMPLATE_CONVERSION_CHARSET);
+                new TestResourceResolver(allInputs, TEST_TEMPLATE_CONVERSION_CHARSET);
         
         // Compute validity according to the "inputCacheable" property established at the test
         final ITemplateResolutionValidity validity =
