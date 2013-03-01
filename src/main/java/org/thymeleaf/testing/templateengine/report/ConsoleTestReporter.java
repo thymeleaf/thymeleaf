@@ -17,16 +17,27 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
-
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+package org.thymeleaf.testing.templateengine.report;
 
 
 
 
+public class ConsoleTestReporter extends AbstractTextualTestReporter {
 
-public interface ITestableResolver {
     
-    public ITestable resolve(final String executionId, final String testableName);
+    
+    public ConsoleTestReporter() {
+        super();
+    }
+    
+    
+    @Override
+    protected void output(final String line, final boolean error) {
+        System.out.println(line);
+        if (error) {
+            System.err.println(line);
+        }
+    }
+    
     
 }

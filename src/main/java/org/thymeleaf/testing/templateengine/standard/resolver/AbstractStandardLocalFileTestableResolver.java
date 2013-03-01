@@ -23,25 +23,28 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
-import org.thymeleaf.testing.templateengine.standard.builder.IStandardTestBuilder;
-import org.thymeleaf.testing.templateengine.standard.config.directive.StandardTestDirectiveSpecs;
-import org.thymeleaf.testing.templateengine.standard.config.test.StandardTestDocumentData;
-import org.thymeleaf.testing.templateengine.standard.util.StandardTestDocumentResolutionUtils;
-import org.thymeleaf.testing.templateengine.standard.util.StandardTestIOUtils;
-import org.thymeleaf.testing.templateengine.test.ITest;
-import org.thymeleaf.testing.templateengine.test.ITestIterator;
-import org.thymeleaf.testing.templateengine.test.ITestParallelizer;
-import org.thymeleaf.testing.templateengine.test.ITestSequence;
-import org.thymeleaf.testing.templateengine.test.ITestable;
-import org.thymeleaf.testing.templateengine.test.TestIterator;
-import org.thymeleaf.testing.templateengine.test.TestParallelizer;
-import org.thymeleaf.testing.templateengine.test.TestSequence;
+import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
+import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpecSet;
+import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveUtils;
+import org.thymeleaf.testing.templateengine.standard.reader.StandardTestReaderUtils;
+import org.thymeleaf.testing.templateengine.standard.testbuilder.IStandardTestBuilder;
+import org.thymeleaf.testing.templateengine.standard.testbuilder.StandardTestBuilder;
+import org.thymeleaf.testing.templateengine.testable.ITest;
+import org.thymeleaf.testing.templateengine.testable.ITestIterator;
+import org.thymeleaf.testing.templateengine.testable.ITestParallelizer;
+import org.thymeleaf.testing.templateengine.testable.ITestSequence;
+import org.thymeleaf.testing.templateengine.testable.ITestable;
+import org.thymeleaf.testing.templateengine.testable.TestIterator;
+import org.thymeleaf.testing.templateengine.testable.TestParallelizer;
+import org.thymeleaf.testing.templateengine.testable.TestSequence;
 import org.thymeleaf.util.Validate;
 
 
@@ -55,8 +58,8 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     private static String TEST_FILE_SUFFIX = ".test";
     private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
-    
 
+    private static final IStandardTestBuilder DEFAULT_TEST_BUILDER = new StandardTestBuilder();
     
     
     protected AbstractStandardLocalFileTestableResolver() {
@@ -159,26 +162,46 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         }
         
         final StandardTestDocumentData data = 
-                StandardTestIOUtils.readTestDocument(executionId, documentName, documentReader);
+                StandardTestReaderUtils.readDocument(executionId, documentName, documentReader);
 
-        final Map<String,Map<String,Object>> dataByDirectiveAndQualifier =
-                StandardTestDocumentResolutionUtils.resolveTestDocumentData(
-                        executionId, data, StandardTestDirectiveSpecs.STANDARD_DIRECTIVES_SET_SPEC);
+        final StandardTestDirectiveSpecSet directiveSpecSet = getTestDirectiveSpecSet();
+        if (directiveSpecSet == null) {
+            throw new TestEngineExecutionException(
+                    executionId, "A null directive spec set has been specified");
+        }
         
+        final Map<String,Map<String,Object>> dataByDirectiveAndQualifier =
+                StandardTestDirectiveUtils.resolveDirectiveValues(executionId, data, directiveSpecSet);
         
         final IStandardTestBuilder builder = getTestBuilder();
+        if (builder == null) {
+            throw new TestEngineExecutionException(
+                    executionId, "A null test builder has been specified");
+        }
         
         return builder.buildTest(executionId, documentName, dataByDirectiveAndQualifier);
         
     }
     
     
+    /*
+     * Meant to be overriden
+     */
+    protected StandardTestDirectiveSpecSet getTestDirectiveSpecSet() {
+        return StandardTestDirectiveSpecSet.STANDARD_DIRECTIVES_SPEC_SET;
+    }
+
     
-    protected abstract IStandardTestBuilder getTestBuilder();
+    /*
+     * Meant to be overriden
+     */
+    protected IStandardTestBuilder getTestBuilder() {
+        return DEFAULT_TEST_BUILDER;
+    }
     
     
     
-    protected ITestSequence resolveAsTestSequence(final String executionId, final File file) {
+    protected final ITestSequence resolveAsTestSequence(final String executionId, final File file) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(file, "File cannot be null");
@@ -188,7 +211,10 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         final TestSequence testSequence = new TestSequence();
         testSequence.setName(fileName);
         
-        for (final File fileInFolder : file.listFiles()) {
+        final List<File> orderedFiles = 
+                orderFolderFilesInSequence(Arrays.asList(file.listFiles()));
+        
+        for (final File fileInFolder : orderedFiles) {
             final ITestable testable = resolveFile(executionId, fileInFolder);
             if (testable != null) {
                 testSequence.addElement(testable);
@@ -197,6 +223,14 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
         return testSequence;
         
+    }
+    
+    
+    /*
+     * Meant to be overriden
+     */
+    protected List<File> orderFolderFilesInSequence(final List<File> fileList) {
+        return fileList;
     }
     
     

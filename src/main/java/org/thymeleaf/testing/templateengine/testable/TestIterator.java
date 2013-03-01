@@ -17,16 +17,41 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
+package org.thymeleaf.testing.templateengine.testable;
 
-import org.thymeleaf.testing.templateengine.testable.ITestable;
-
-
+import org.thymeleaf.util.Validate;
 
 
 
-public interface ITestableResolver {
+
+
+public class TestIterator 
+        extends AbstractTestable 
+        implements ITestIterator {
     
-    public ITestable resolve(final String executionId, final String testableName);
+
+    private final int iterations;
+    private final ITestable iteratedElement;
+    
+    
+    public TestIterator(final ITestable iteratedElement, final int iterations) {
+        super();
+        Validate.notNull(iteratedElement, "Iterated element cannot be null");
+        Validate.isTrue(iterations > 0, "Iterations must be more than zero");
+        this.iteratedElement = iteratedElement;
+        this.iterations = iterations;
+    }
+
+
+    
+    public int getIterations() {
+        return this.iterations;
+    }
+
+    
+    
+    public ITestable getIteratedElement() {
+        return this.iteratedElement;
+    }
     
 }

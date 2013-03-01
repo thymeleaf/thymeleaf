@@ -17,16 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
-
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+package org.thymeleaf.testing.templateengine.testable;
 
 
 
+public interface ITestable {
 
+    public boolean hasName();
+    public String getName();
 
-public interface ITestableResolver {
-    
-    public ITestable resolve(final String executionId, final String testableName);
-    
 }

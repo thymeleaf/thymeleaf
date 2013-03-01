@@ -17,16 +17,32 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
+package org.thymeleaf.testing.templateengine.testable;
 
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+import java.util.Map;
+import java.util.Set;
+
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 
 
-
-
-
-public interface ITestableResolver {
+public interface ITest extends ITestable {
     
-    public ITestable resolve(final String executionId, final String testableName);
+    public IContext getContext();
+    
+    public boolean hasFragmentSpec();
+    public IFragmentSpec getFragmentSpec();
+    
+    public String getTemplateMode();
+
+    public String getMainInputName();
+    public Set<String> getInputNames();
+    public Map<String,ITestResource> getAllInputs();
+    public ITestResource getInput(final String inputName);
+    public boolean isInputCacheable();
+    
+    public ITestResult evalResult(final String testName, final String result);
+    public ITestResult evalResult(final String testName, final Throwable t);
     
 }

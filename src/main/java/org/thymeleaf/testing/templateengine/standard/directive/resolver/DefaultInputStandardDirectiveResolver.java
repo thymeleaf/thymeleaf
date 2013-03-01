@@ -17,16 +17,25 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
-
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+package org.thymeleaf.testing.templateengine.standard.directive.resolver;
 
 
 
+public class DefaultInputStandardDirectiveResolver extends AbstractTempFileResourceStandardDirectiveResolver {
 
-
-public interface ITestableResolver {
     
-    public ITestable resolve(final String executionId, final String testableName);
+    public static final DefaultInputStandardDirectiveResolver INSTANCE = new DefaultInputStandardDirectiveResolver();
+
+    
+    private DefaultInputStandardDirectiveResolver() {
+        super();
+    }
+
+    
+    @Override
+    protected String getFileSuffix() {
+        return "INPUT";
+    }
+
     
 }

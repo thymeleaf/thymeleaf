@@ -17,16 +17,39 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
+package org.thymeleaf.testing.templateengine.testable;
 
-import org.thymeleaf.testing.templateengine.testable.ITestable;
-
-
+import org.thymeleaf.util.Validate;
 
 
 
-public interface ITestableResolver {
+
+
+public class TestParallelizer 
+        extends AbstractTestable 
+        implements ITestParallelizer {
     
-    public ITestable resolve(final String executionId, final String testableName);
+
+    private final int numThreads;
+    private final ITestable parallelizedElement;
+    
+    
+    public TestParallelizer(final ITestable parallelizedElement, final int numThreads) {
+        super();
+        Validate.notNull(parallelizedElement, "Parallelized element cannot be null");
+        Validate.isTrue(numThreads > 0, "Number of threads must be more than zero");
+        this.parallelizedElement = parallelizedElement;
+        this.numThreads = numThreads;
+    }
+
+
+    public int getNumThreads() {
+        return this.numThreads;
+    }
+
+    public ITestable getParallelizedElement() {
+        return this.parallelizedElement;
+    }
+
     
 }

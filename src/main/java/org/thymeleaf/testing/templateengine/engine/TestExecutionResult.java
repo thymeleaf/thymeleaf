@@ -19,40 +19,53 @@
  */
 package org.thymeleaf.testing.templateengine.engine;
 
-import org.junit.Test;
 
 
 
 
 
-public class TestExecutorTest {
+final class TestExecutionResult {
     
+
+    private int totalTestsExecuted = 0;
+    private int totalTestsOk = 0;
+    private long totalTimeNanos = 0L;
+
     
-    
-    
-    public TestExecutorTest() {
+
+    TestExecutionResult() {
         super();
     }
     
     
     
     
-    
-    
-    
-    @Test
-    public void testExecutor() throws Exception {
-        
-        try {
-
-            final TestExecutor executor = new TestExecutor();
-            executor.execute("test");
-            
-        } catch (final Throwable t) {
-            t.printStackTrace();
+    synchronized void addTestResult(final boolean ok, final long timeNanos) {
+        this.totalTestsExecuted++;
+        if (ok) {
+            this.totalTestsOk++;
         }
-        
-        
+        this.totalTimeNanos += timeNanos;
+    }
+    
+    
+    synchronized void addResult(final TestExecutionResult result) {
+        this.totalTestsExecuted += result.getTotalTestsExecuted();
+        this.totalTestsOk += result.getTotalTestsOk();
+        this.totalTimeNanos += result.getTotalTimeNanos();
+    }
+    
+    
+    public int getTotalTestsOk() {
+        return this.totalTestsOk;
+    }
+    
+    public int getTotalTestsExecuted() {
+        return this.totalTestsExecuted;
+    }
+    
+    public long getTotalTimeNanos() {
+        return this.totalTimeNanos;
     }
     
     

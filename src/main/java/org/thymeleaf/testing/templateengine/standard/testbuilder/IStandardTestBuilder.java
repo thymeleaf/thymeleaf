@@ -17,16 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
+package org.thymeleaf.testing.templateengine.standard.testbuilder;
 
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+import java.util.Map;
+
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
 
 
 
-public interface ITestableResolver {
+public interface IStandardTestBuilder {
     
-    public ITestable resolve(final String executionId, final String testableName);
+    public ITest buildTest(
+            final String executionId, final String documentName, 
+            final Map<String,Map<String,Object>> dataByDirectiveAndQualifier);
     
 }

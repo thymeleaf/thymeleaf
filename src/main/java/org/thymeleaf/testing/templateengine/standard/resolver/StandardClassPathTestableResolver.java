@@ -23,7 +23,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.thymeleaf.testing.templateengine.standard.builder.IStandardTestBuilder;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
@@ -34,13 +33,10 @@ import org.thymeleaf.util.Validate;
 
 public class StandardClassPathTestableResolver extends AbstractStandardLocalFileTestableResolver {
 
-    private final IStandardTestBuilder builder;
     
     
-    public StandardClassPathTestableResolver(final IStandardTestBuilder builder) {
+    public StandardClassPathTestableResolver() {
         super();
-        Validate.notNull(builder, "Test builder cannot be null");
-        this.builder = builder;
     }
 
     
@@ -63,11 +59,6 @@ public class StandardClassPathTestableResolver extends AbstractStandardLocalFile
         
     }
 
-
-    @Override
-    protected IStandardTestBuilder getTestBuilder() {
-        return this.builder;
-    }
     
     
 }

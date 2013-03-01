@@ -26,8 +26,7 @@ package org.thymeleaf.testing.templateengine.context;
 
 public class ContextNaming {
 
-    public static final String TEST_EXECUTION_CONTEXT_VARIABLE_NAME = "$test:context$";
-    public static final String TEST_EXECUTION_NAME_VARIABLE_NAME = "$test:executionname$";
+    public static final String TEST_BEING_EXECUTED = "$test:in:execution$";
     
     
     private ContextNaming() {

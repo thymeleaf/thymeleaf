@@ -17,44 +17,38 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.engine;
+package org.thymeleaf.testing.templateengine.standard.directive.resolver;
 
-import org.junit.Test;
-
-
+import java.util.regex.Pattern;
 
 
 
-public class TestExecutorTest {
+
+public class DefaultExceptionMessagePatternDirectiveResolver 
+        extends AbstractStandardDirectiveResolver<Pattern> {
+
+    
+    public static final DefaultExceptionMessagePatternDirectiveResolver INSTANCE = new DefaultExceptionMessagePatternDirectiveResolver();
+    public static final Pattern DEFAULT_VALUE = null; 
     
     
-    
-    
-    public TestExecutorTest() {
-        super();
+    private DefaultExceptionMessagePatternDirectiveResolver() {
+        super(Pattern.class);
     }
-    
-    
-    
-    
-    
-    
-    
-    @Test
-    public void testExecutor() throws Exception {
-        
-        try {
 
-            final TestExecutor executor = new TestExecutor();
-            executor.execute("test");
-            
-        } catch (final Throwable t) {
-            t.printStackTrace();
+
+
+    @Override
+    public Pattern getValue(final String executionId, final String documentName, 
+            final String directiveName, final String directiveQualifier, final String directiveValue) {
+        
+        if (directiveValue == null || directiveValue.trim().equals("")) {
+            return DEFAULT_VALUE;
         }
         
+        return Pattern.compile(directiveValue.trim());
         
     }
-    
-    
+
     
 }

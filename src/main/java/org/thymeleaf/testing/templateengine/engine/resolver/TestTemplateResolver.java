@@ -36,10 +36,10 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.NonCacheableTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.testing.templateengine.context.ContextNaming;
-import org.thymeleaf.testing.templateengine.engine.TestExecutionContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.test.ITest;
-import org.thymeleaf.testing.templateengine.test.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.testable.ITest;
+import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -253,33 +253,29 @@ public class TestTemplateResolver implements ITemplateResolver {
         // The TestExecutionContext is a local variable, so we must retrieve it
         final IProcessingContext processingContext = templateProcessingParameters.getProcessingContext();
         
-        final TestExecutionContext testExecutionContext = 
-                (TestExecutionContext) processingContext.getLocalVariable(ContextNaming.TEST_EXECUTION_CONTEXT_VARIABLE_NAME);
-        final String testExecutionName = 
-                (String) processingContext.getLocalVariable(ContextNaming.TEST_EXECUTION_NAME_VARIABLE_NAME);
-        
         // Retrieve the ITest object from context
         final ITest test = 
-                testExecutionContext.getTestByName(testExecutionName);
+                (ITest) processingContext.getLocalVariable(ContextNaming.TEST_BEING_EXECUTED);
+        final String testName = TestNamingUtils.nameTest(test);
 
         // Check template mode
         final String templateMode = test.getTemplateMode();
         if (templateMode == null) {
             throw new TestEngineExecutionException(
-                    "Template mode cannot be null for test \"" + testExecutionName + "\"");
+                    "Template mode cannot be null for test \"" + testName + "\"");
         }
 
         // Organize inputs
         final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>(test.getAllInputs());
         final ITestResource mainInput = allInputs.get(test.getMainInputName());
         allInputs.remove(test.getMainInputName());
-        if (allInputs.containsKey(testExecutionName)) {
+        if (allInputs.containsKey(testName)) {
             throw new TestEngineExecutionException(
-                    "An input with name \"" + testExecutionName + "\" is defined at the test with " + 
+                    "An input with name \"" + testName + "\" is defined at the test with " + 
                     "the same name, which is forbidden. Input names (qualifiers) at tests cannot equal " +
                     "the test name");
         }
-        allInputs.put(testExecutionName, mainInput);
+        allInputs.put(testName, mainInput);
         
         // The resource resolver is created instead of reusing one for concurrency reasons 
         final TestResourceResolver resourceResolver = 

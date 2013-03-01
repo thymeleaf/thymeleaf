@@ -17,16 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
+package org.thymeleaf.testing.templateengine.standard.directive.resolver;
 
-import org.thymeleaf.testing.templateengine.testable.ITestable;
-
-
+import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
 
 
 
-public interface ITestableResolver {
-    
-    public ITestable resolve(final String executionId, final String testableName);
+
+
+public interface IStandardDirectiveResolver<T> {
+
+    public Class<T> getValueClass();
+    public T getValue(final String executionId, final StandardTestDocumentData data, final String directiveName, final String directiveQualifier);
     
 }

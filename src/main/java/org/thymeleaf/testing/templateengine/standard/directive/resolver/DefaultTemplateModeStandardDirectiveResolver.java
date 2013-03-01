@@ -17,44 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.engine;
-
-import org.junit.Test;
+package org.thymeleaf.testing.templateengine.standard.directive.resolver;
 
 
 
 
 
-public class TestExecutorTest {
+
+public class DefaultTemplateModeStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
+
     
+    public static final DefaultTemplateModeStandardDirectiveResolver INSTANCE = new DefaultTemplateModeStandardDirectiveResolver();
+    public static final String DEFAULT_VALUE = "HTML5"; 
+
     
-    
-    
-    public TestExecutorTest() {
-        super();
+    private DefaultTemplateModeStandardDirectiveResolver() {
+        super(String.class);
     }
     
-    
-    
-    
-    
-    
-    
-    @Test
-    public void testExecutor() throws Exception {
-        
-        try {
 
-            final TestExecutor executor = new TestExecutor();
-            executor.execute("test");
-            
-        } catch (final Throwable t) {
-            t.printStackTrace();
+    @Override
+    public String getValue(final String executionId, final String documentName, 
+            final String directiveName, final String directiveQualifier, final String directiveValue) {
+        
+        if (directiveValue == null || directiveValue.trim().equals("")) {
+            return DEFAULT_VALUE;
         }
         
+        return directiveValue.trim();
         
     }
-    
-    
     
 }

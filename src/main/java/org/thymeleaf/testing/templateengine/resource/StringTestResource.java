@@ -17,16 +17,26 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
-
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+package org.thymeleaf.testing.templateengine.resource;
 
 
 
 
 
-public interface ITestableResolver {
+public class StringTestResource implements ITestResource {
+
     
-    public ITestable resolve(final String executionId, final String testableName);
+    private final String str;
+    
+    
+    public StringTestResource(final String str) {
+        super();
+        this.str = str;
+    }
+    
+    
+    public String read() {
+        return this.str;
+    }
     
 }

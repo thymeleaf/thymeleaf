@@ -17,16 +17,34 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.resolver;
-
-import org.thymeleaf.testing.templateengine.testable.ITestable;
+package org.thymeleaf.testing.templateengine.testable;
 
 
 
 
 
-public interface ITestableResolver {
+public abstract class AbstractTestable implements ITestable {
+
+    private String name = null;
+
     
-    public ITestable resolve(final String executionId, final String testableName);
+    public AbstractTestable() {
+        super();
+    }
+    
+    
+    
+    public boolean hasName() {
+        return this.name != null;
+    }
+    
+    public void setName(final String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return this.name;
+    }
+
     
 }

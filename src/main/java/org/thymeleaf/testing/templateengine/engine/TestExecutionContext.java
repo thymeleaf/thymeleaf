@@ -19,22 +19,15 @@
  */
 package org.thymeleaf.testing.templateengine.engine;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.test.ITest;
-import org.thymeleaf.testing.templateengine.test.ITestSuite;
-import org.thymeleaf.testing.templateengine.test.report.ITestReporter;
-import org.thymeleaf.util.Validate;
 
 
 
 
 
-public final class TestExecutionContext {
+final class TestExecutionContext {
 
     private static final String ALPHA_NUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static Random RANDOM = new Random();
@@ -42,136 +35,55 @@ public final class TestExecutionContext {
     
 
     private final String executionId;
-    private final ITestSuite suite;
-    private final ITestReporter reporter;
-    private final TemplateEngine templateEngine;
     
-    private final Map<String,ITest> testsByName = new HashMap<String,ITest>();
-    private final Map<ITest,String> namesByTest = new HashMap<ITest,String>();
-    
-    private final Map<String,Integer> counterByClassName = new HashMap<String,Integer>();
-    
-    private int totalTestsExecuted = 0;
-    private int totalTestsOk = 0;
+    private int nestingLevel = 0;
+    private TemplateEngine templateEngine = null;
 
     
-    public static String generateExecutionId() {
-        return randomAlphanumeric(ID_SIZE);
-    }
-    
 
-    TestExecutionContext(final String executionId, final ITestSuite suite,
-            final ITestReporter reporter, final TemplateEngine templateEngine) {
-        
+    TestExecutionContext() {
         super();
-        
-        Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(suite, "Suite cannot be null");
-        Validate.notNull(reporter, "Reporter cannot be null");
-        Validate.notNull(templateEngine, "Template engine cannot be nulL");
-        
-        this.executionId = executionId;
-        this.suite = suite;
-        this.reporter = reporter;
-        this.templateEngine = templateEngine;
-        
+        this.executionId = randomAlphanumeric(ID_SIZE);
     }
 
     
-    
-    public ITestSuite getSuite() {
-        return this.suite;
+    private TestExecutionContext(final String executionId, final TemplateEngine templateEngine, final int nestingLevel) {
+        super();
+        this.executionId = executionId;
+        this.nestingLevel = nestingLevel;
+        this.templateEngine = templateEngine; 
     }
+    
+    
+    
     
     public String getExecutionId() {
         return this.executionId;
     }
-
-
-    public ITestReporter getReporter() {
-        return this.reporter;
+    
+    public int getNestingLevel() {
+        return this.nestingLevel;
     }
 
-
+    
+    
+    
     public TemplateEngine getTemplateEngine() {
         return this.templateEngine;
     }
 
-    
-
-    synchronized String registerTest(final ITest test) {
-        
-        Validate.notNull(test, "Test cannot be null");
-
-        if (this.namesByTest.containsKey(test)) {
-            return this.namesByTest.get(test);
-        }
-        
-        if (test.hasName()) {
-            
-            final String name = test.getName();
-
-            if (this.testsByName.containsKey(name)) {
-                throw new TestEngineExecutionException(
-                        "Duplicate test names: two or more different tests with the same name \"" + name + "\" exist " +
-                		"in suite" + (this.suite.hasName()? (" \"" + this.suite.getName() + "\"") : ""));
-            }
-            
-            this.testsByName.put(name, test);
-            this.namesByTest.put(test, name);
-            
-            return name;
-            
-        }
-            
-        final String className = test.getClass().getSimpleName();
-        Integer counter = this.counterByClassName.get(className);
-        if (counter == null) {
-            counter = Integer.valueOf(1);
-        }
-        
-        final String name = String.format("%s-%05d", className, counter);
-        
-        this.counterByClassName.put(className, Integer.valueOf(counter.intValue() + 1));
-        
-        this.testsByName.put(name, test);
-        this.namesByTest.put(test, name);
-        
-        return name;
-            
+    public void setTemplateEngine(final TemplateEngine templateEngine) {
+        this.templateEngine = templateEngine;
     }
-    
 
     
-    synchronized void registerResult(final boolean ok) {
-        this.totalTestsExecuted++;
-        if (ok) {
-            this.totalTestsOk++;
-        }
+    
+
+    public TestExecutionContext nest() {
+        return new TestExecutionContext(this.executionId, this.templateEngine, this.nestingLevel + 1);
     }
     
     
-    public int getTotalTestsOk() {
-        return this.totalTestsOk;
-    }
-    
-    public int getTotalTestsExecuted() {
-        return this.totalTestsExecuted;
-    }
-    
-    
-    
-    public ITestSuite getTestSuite() {
-        return this.suite;
-    }
-    
-    
-    public synchronized ITest getTestByName(final String name) {
-        Validate.notNull(name, "Test name cannot be null");
-        return this.testsByName.get(name);
-    }
-    
-  
     
     private static String randomAlphanumeric(final int count) {
         final StringBuilder strBuilder = new StringBuilder(count);
@@ -183,7 +95,6 @@ public final class TestExecutionContext {
         }
         return strBuilder.toString();
     }
-    
     
     
 }
