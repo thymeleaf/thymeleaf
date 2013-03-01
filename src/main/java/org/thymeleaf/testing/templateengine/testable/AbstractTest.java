@@ -54,6 +54,7 @@ public abstract class AbstractTest
     private final Map<String,ITestResource> inputs;
     private final boolean inputCacheable;
 
+    private final Map<String,Object> extraData;
     
     
     
@@ -65,6 +66,7 @@ public abstract class AbstractTest
             this.inputs = new HashMap<String,ITestResource>(inputs);
         }
         this.inputCacheable = inputCacheable;
+        this.extraData = new HashMap<String,Object>();
     }
 
 
@@ -147,6 +149,24 @@ public abstract class AbstractTest
         return this.inputCacheable;
     }
 
+
+
+    
+    public void addExtraData(final String name, final String value) {
+        this.extraData.put(name, value);
+    }
+    
+    public void addExtraData(final Map<String,Object> newExtraData) {
+        this.extraData.putAll(newExtraData);
+    }
+    
+    public Object getExtraData(final String name) {
+        return this.extraData.get(name);
+    }
+
+    public Map<String,Object> getAllExtraData() {
+        return Collections.unmodifiableMap(new HashMap<String,Object>(this.extraData));
+    }
     
     
 }
