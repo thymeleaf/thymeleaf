@@ -23,6 +23,7 @@ package org.thymeleaf.testing.templateengine.testable;
 
 
 
+
 public abstract class AbstractTestable implements ITestable {
 
     private String name = null;

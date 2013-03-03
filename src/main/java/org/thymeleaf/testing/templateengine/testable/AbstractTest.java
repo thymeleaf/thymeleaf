@@ -21,16 +21,13 @@ package org.thymeleaf.testing.templateengine.testable;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
-import org.thymeleaf.util.Validate;
 
 
 
@@ -39,34 +36,24 @@ import org.thymeleaf.util.Validate;
 public abstract class AbstractTest 
         extends AbstractTestable
         implements ITest {
-
     
     public static String DEFAULT_TEMPLATE_MODE = "HTML5";
     public static IFragmentSpec DEFAULT_FRAGMENT_SPEC = null;
-    private static final String DEFAULT_MAIN_INPUT = "main";
+    public static boolean DEFAULT_INPUT_CACHEABLE = true;
     
 
     private IContext context = new Context(Locale.ENGLISH);
     private String templateMode = DEFAULT_TEMPLATE_MODE; 
     private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC;
-    private String mainInputName = DEFAULT_MAIN_INPUT;
-    
-    private final Map<String,ITestResource> inputs;
-    private final boolean inputCacheable;
+    private ITestResource input = null;
+    private boolean inputCacheable = DEFAULT_INPUT_CACHEABLE;
 
-    private final Map<String,Object> extraData;
+    private Map<String,ITestResource> additionalInputs = new HashMap<String, ITestResource>();
     
     
     
-    protected AbstractTest(final Map<String,ITestResource> inputs, final boolean inputCacheable) {
+    protected AbstractTest() {
         super();
-        if (inputs == null) {
-            this.inputs = Collections.emptyMap();
-        } else {
-            this.inputs = new HashMap<String,ITestResource>(inputs);
-        }
-        this.inputCacheable = inputCacheable;
-        this.extraData = new HashMap<String,Object>();
     }
 
 
@@ -84,7 +71,6 @@ public abstract class AbstractTest
     
     
     public void setTemplateMode(final String templateMode) {
-        Validate.notNull(templateMode, "Template mode cannot be null");
         this.templateMode = templateMode;
     }
     
@@ -108,65 +94,41 @@ public abstract class AbstractTest
 
     
 
-    public String getMainInputName() {
-        return this.mainInputName;
-    }
-    
-    public void setMainInputName(final String mainInputName) {
-        this.mainInputName = mainInputName;
-    }
-    
-    
-    
 
-    public Set<String> getInputNames() {
-        final Set<String> inputNames = new HashSet<String>(this.inputs.keySet());
-        inputNames.remove(null);
-        inputNames.add(getMainInputName());
-        return Collections.unmodifiableSet(inputNames);
+    
+    public ITestResource getInput() {
+        return this.input;
+    }
+    
+    public void setInput(final ITestResource input) {
+        this.input = input;
     }
 
     
-    public Map<String,ITestResource> getAllInputs() {
-        final Map<String,ITestResource> allInputs = new HashMap<String, ITestResource>(this.inputs);
-        final ITestResource mainInput = allInputs.get(null);
-        allInputs.remove(null);
-        allInputs.put(getMainInputName(), mainInput);
-        return Collections.unmodifiableMap(allInputs);
-    }
-    
-    
-    public ITestResource getInput(final String inputName) {
-        Validate.notNull(inputName, "Input name cannot be null");
-        if (inputName.equals(getMainInputName())) {
-            return this.inputs.get(null);
-        }
-        return this.inputs.get(inputName);
+        
+    public Map<String,ITestResource> getAdditionalInputs() {
+        return Collections.unmodifiableMap(this.additionalInputs);
     }
 
+    public void setAdditionalInputs(final Map<String,ITestResource> additionalInputs) {
+        this.additionalInputs = new HashMap<String,ITestResource>(additionalInputs);
+    }
+    
+    public void addAdditionalInput(final String name, final ITestResource resource) {
+        this.additionalInputs.put(name, resource);
+    }
+    
+    
+    
     
     public boolean isInputCacheable() {
         return this.inputCacheable;
     }
 
-
-
-    
-    public void addExtraData(final String name, final String value) {
-        this.extraData.put(name, value);
+    public void setInputCacheable(final boolean inputCacheale) {
+        this.inputCacheable = inputCacheale;
     }
     
-    public void addExtraData(final Map<String,Object> newExtraData) {
-        this.extraData.putAll(newExtraData);
-    }
-    
-    public Object getExtraData(final String name) {
-        return this.extraData.get(name);
-    }
-
-    public Map<String,Object> getAllExtraData() {
-        return Collections.unmodifiableMap(new HashMap<String,Object>(this.extraData));
-    }
     
     
 }

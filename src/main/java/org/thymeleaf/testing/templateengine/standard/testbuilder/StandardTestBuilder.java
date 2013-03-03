@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.testbuilder;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.context.IContext;
@@ -51,11 +52,13 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(dataByDirectiveAndQualifier, "Data cannot be null");
-
         
         // Retrieve and process the map of inputs 
-        final Map<String,ITestResource> inputs = 
-                (Map<String,ITestResource>)(Map<?,?>) dataByDirectiveAndQualifier.get(StandardTestDirectiveSpec.INPUT_DIRECTIVE_SPEC.getName());
+        final Map<String,ITestResource> allInputs =
+                new HashMap<String, ITestResource>(
+                        (Map<String,ITestResource>)(Map<?,?>) dataByDirectiveAndQualifier.get(StandardTestDirectiveSpec.INPUT_DIRECTIVE_SPEC.getName()));
+        final ITestResource input = allInputs.get(null);
+        allInputs.remove(null);
         
         
         // cache, context, and template mode are required, cannot be null at this point 
@@ -76,11 +79,18 @@ public class StandardTestBuilder implements IStandardTestBuilder {
                     executionId, "Neither output nor exception have been specified for test in document " +
                     		     "\"" + documentName + "\". At least one of these must be specified.");
         }
+        
 
         if (output != null) {
+            /*
+             *  There is an expected output, so this test expects a success
+             */
             
-            final SuccessExpectedTest test = 
-                    new SuccessExpectedTest(inputs, cache.booleanValue(), output);
+            final SuccessExpectedTest test =  new SuccessExpectedTest();
+            test.setInput(input);
+            test.setAdditionalInputs(allInputs);
+            test.setInputCacheable(cache.booleanValue());
+            test.setOutput(output);
             test.setName(name);
             test.setTemplateMode(templateMode);
             test.setContext(ctx);
@@ -89,11 +99,19 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             return test;
             
         }
-            
+
+        /*
+         * There is no expected output, so this test expects an exception
+         */
+        
         final String exceptionMessagePattern = (String) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpec.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
 
-        final FailExpectedTest test = 
-                new FailExpectedTest(inputs, cache.booleanValue(), exception, exceptionMessagePattern);
+        final FailExpectedTest test = new FailExpectedTest();
+        test.setInput(input);
+        test.setAdditionalInputs(allInputs);
+        test.setInputCacheable(cache.booleanValue());
+        test.setOutputThrowableClass(exception);
+        test.setOutputThrowableMessagePattern(exceptionMessagePattern);
         test.setName(name);
         test.setTemplateMode(templateMode);
         test.setContext(ctx);

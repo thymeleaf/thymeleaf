@@ -20,7 +20,6 @@
 package org.thymeleaf.testing.templateengine.testable;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
@@ -35,14 +34,11 @@ public interface ITest extends ITestable {
     public IFragmentSpec getFragmentSpec();
     
     public String getTemplateMode();
-
-    public String getMainInputName();
-    public Set<String> getInputNames();
-    public Map<String,ITestResource> getAllInputs();
-    public ITestResource getInput(final String inputName);
+    public ITestResource getInput();
+    public Map<String,ITestResource> getAdditionalInputs();
     public boolean isInputCacheable();
     
-    public ITestResult evalResult(final String testName, final String result);
-    public ITestResult evalResult(final String testName, final Throwable t);
+    public ITestResult evalResult(final String executionId, final String testName, final String result);
+    public ITestResult evalResult(final String executionId, final String testName, final Throwable t);
     
 }

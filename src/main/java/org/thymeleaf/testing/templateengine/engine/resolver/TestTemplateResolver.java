@@ -266,16 +266,8 @@ public class TestTemplateResolver implements ITemplateResolver {
         }
 
         // Organize inputs
-        final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>(test.getAllInputs());
-        final ITestResource mainInput = allInputs.get(test.getMainInputName());
-        allInputs.remove(test.getMainInputName());
-        if (allInputs.containsKey(testName)) {
-            throw new TestEngineExecutionException(
-                    "An input with name \"" + testName + "\" is defined at the test with " + 
-                    "the same name, which is forbidden. Input names (qualifiers) at tests cannot equal " +
-                    "the test name");
-        }
-        allInputs.put(testName, mainInput);
+        final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>(test.getAdditionalInputs());
+        allInputs.put(testName, test.getInput());
         
         // The resource resolver is created instead of reusing one for concurrency reasons 
         final TestResourceResolver resourceResolver = 

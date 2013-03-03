@@ -19,11 +19,10 @@
  */
 package org.thymeleaf.testing.templateengine.testable;
 
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.util.Validate;
 
 
@@ -34,20 +33,15 @@ public class FailExpectedTest
         extends AbstractTest {
 
 
-    private final Class<? extends Throwable> outputThrowableClass;
-    private final String outputThrowableMessagePattern;
-    private final Pattern outputThrowableMessagePatternObject;
+    private Class<? extends Throwable> outputThrowableClass;
+    private String outputThrowableMessagePattern;
+    private Pattern outputThrowableMessagePatternObject;
     
     
     
     
-    public FailExpectedTest(final Map<String,ITestResource> inputs, final boolean inputCacheable, 
-            final Class<? extends Throwable> outputThrowableClass, final String outputThrowableMessagePattern) {
-        super(inputs, inputCacheable);
-        Validate.notNull(outputThrowableClass, "Output throwable class cannot be null");
-        this.outputThrowableClass = outputThrowableClass;
-        this.outputThrowableMessagePattern = outputThrowableMessagePattern;
-        this.outputThrowableMessagePatternObject = Pattern.compile(this.outputThrowableMessagePattern);
+    public FailExpectedTest() {
+        super();
     }
 
     
@@ -56,22 +50,44 @@ public class FailExpectedTest
     public Class<? extends Throwable> getOutputThrowableClass() {
         return this.outputThrowableClass;
     }
+    
+    public void setOutputThrowableClass(final Class<? extends Throwable> outputThrowableClass) {
+        this.outputThrowableClass = outputThrowableClass;
+    }
+    
 
+    
     public String getOutputThrowableMessagePattern() {
         return this.outputThrowableMessagePattern;
+    }
+    
+    public void setOutputThrowableMessagePattern(final String outputThrowableMessagePattern) {
+        this.outputThrowableMessagePattern = outputThrowableMessagePattern;
+        if (this.outputThrowableMessagePattern != null) {
+            this.outputThrowableMessagePatternObject = Pattern.compile(this.outputThrowableMessagePattern);
+        } else {
+            this.outputThrowableMessagePatternObject = null;
+        }
     }
 
 
 
 
-    public ITestResult evalResult(final String testName, final String result) {
+    public ITestResult evalResult(final String executionId, final String testName, final String result) {
         return TestResult.error(testName, "An exception of class " + this.outputThrowableClass.getName() + " was expected");
     }
 
 
-    public ITestResult evalResult(final String testName, final Throwable t) {
+    public ITestResult evalResult(final String executionId, final String testName, final Throwable t) {
         
         Validate.notNull(t, "Throwable cannot be null");
+        
+        if (this.outputThrowableClass == null) {
+            throw new TestEngineExecutionException(
+                    executionId, 
+                    "Test \"" + testName + "\" does not specify an output throwable, but fail-expected " +
+                    "tests should always specify one");
+        }
         
         if (this.outputThrowableClass.isAssignableFrom(t.getClass())) {
             

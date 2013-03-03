@@ -354,11 +354,11 @@ public final class TestExecutor {
             endTimeNanos = System.nanoTime();
             
             final String result = writer.toString();
-            testResult = test.evalResult(testName, result);
+            testResult = test.evalResult(context.getExecutionId(), testName, result);
             
         } catch (final Throwable t) {
             endTimeNanos = System.nanoTime();
-            testResult = test.evalResult(testName, t);
+            testResult = test.evalResult(context.getExecutionId(), testName, t);
         }
         
         final long totalTimeNanos = (endTimeNanos - startTimeNanos);

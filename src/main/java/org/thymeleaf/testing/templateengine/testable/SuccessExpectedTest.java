@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.testing.templateengine.testable;
 
-import java.util.Map;
-
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
@@ -34,14 +32,12 @@ public class SuccessExpectedTest
         extends AbstractTest {
 
     
-    private final ITestResource output;
+    private ITestResource output;
     
     
     
-    public SuccessExpectedTest(final Map<String,ITestResource> inputs, final boolean inputCacheable, final ITestResource output) {
-        super(inputs, inputCacheable);
-        Validate.notNull(output, "Output cannot be null");
-        this.output = output;
+    public SuccessExpectedTest() {
+        super();
     }
 
 
@@ -51,20 +47,31 @@ public class SuccessExpectedTest
         return this.output;
     }
 
+    public void setOutput(final ITestResource output) {
+        this.output = output;
+    }
 
 
+    
 
-    public ITestResult evalResult(final String testName, final String result) {
+    public ITestResult evalResult(final String executionId, final String testName, final String result) {
         
         if (result == null) {
             TestResult.error(testName, "Result is null");
+        }
+        
+        if (this.output == null) {
+            throw new TestEngineExecutionException(
+                    executionId, 
+                    "Test \"" + testName + "\" does not specify an output, but success-expected " +
+            		"tests should always specify one");
         }
         
         final String outputStr = this.output.read();
         
         if (outputStr == null) {
             throw new TestEngineExecutionException(
-                    "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
+                    executionId, "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
         }
         
         if (outputStr.equals(result)) {
@@ -76,7 +83,7 @@ public class SuccessExpectedTest
     }
 
 
-    public ITestResult evalResult(final String testName, final Throwable t) {
+    public ITestResult evalResult(final String executionId, final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
         return TestResult.error(testName, t);
     }
