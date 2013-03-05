@@ -253,20 +253,37 @@ public class TestTemplateResolver implements ITemplateResolver {
         // The TestExecutionContext is a local variable, so we must retrieve it
         final IProcessingContext processingContext = templateProcessingParameters.getProcessingContext();
         
+        // Retrieve the execution ID
+        final String executionId = 
+                (String) processingContext.getLocalVariable(ContextNaming.EXECUTION_ID);
+        
         // Retrieve the ITest object from context
         final ITest test = 
-                (ITest) processingContext.getLocalVariable(ContextNaming.TEST_BEING_EXECUTED);
+                (ITest) processingContext.getLocalVariable(ContextNaming.TEST_OBJECT);
+        
         final String testName = TestNamingUtils.nameTest(test);
 
         // Check template mode
         final String templateMode = test.getTemplateMode();
         if (templateMode == null) {
-            throw new TestEngineExecutionException(
-                    "Template mode cannot be null for test \"" + testName + "\"");
+            throw new TestEngineExecutionException(executionId, 
+                    "Template mode is null for test \"" + testName + "\", which is forbidden");
         }
 
+        
+        // Check input
+        final ITestResource input = test.getInput();
+        if (input == null) {
+            throw new TestEngineExecutionException(executionId, 
+                    "Input is null for test \"" + testName + "\", which is forbidden");
+        }
+        
         // Organize inputs
-        final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>(test.getAdditionalInputs());
+        final Map<String,ITestResource> allInputs = new HashMap<String,ITestResource>();
+        final Map<String,ITestResource> additionalInputs = test.getAdditionalInputs();
+        if (additionalInputs != null) {
+            allInputs.putAll(additionalInputs);
+        }
         allInputs.put(testName, test.getInput());
         
         // The resource resolver is created instead of reusing one for concurrency reasons 

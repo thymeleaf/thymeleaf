@@ -124,17 +124,17 @@ public final class StandardTestDirectiveUtils {
     
     public static Map<String,Map<String,Object>> resolveDirectiveValues(
             final String executionId, final StandardTestDocumentData data, 
-            final StandardTestDirectiveSpecSet directiveSpecSet) {
+            final Set<StandardTestDirectiveSpec> directiveSpecSet) {
 
         final Map<String,Map<String,Object>> values = new HashMap<String, Map<String,Object>>();
 
-        final Map<String,StandardTestDirectiveSpec<?>> resolvedDirectiveSpecs =
+        final Map<String,StandardTestDirectiveSpec> resolvedDirectiveSpecs =
                 resolveAndValidateDirectiveSpecs(executionId, data, directiveSpecSet);        
         
-        for (final Map.Entry<String,StandardTestDirectiveSpec<?>> directiveEntry : resolvedDirectiveSpecs.entrySet()) {
+        for (final Map.Entry<String,StandardTestDirectiveSpec> directiveEntry : resolvedDirectiveSpecs.entrySet()) {
 
             final String directiveName = directiveEntry.getKey();
-            final StandardTestDirectiveSpec<?> spec = directiveEntry.getValue();
+            final StandardTestDirectiveSpec spec = directiveEntry.getValue();
             final IStandardDirectiveResolver<?> resolver = spec.getResolver();
 
             Map<String,Object> valuesByDirectiveForName = values.get(directiveName);
@@ -158,18 +158,9 @@ public final class StandardTestDirectiveUtils {
                 final Object value = 
                         resolver.getValue(executionId, data, directiveName, directiveQualifier);
                 
-                if (value == null) {
+                if (value != null) {
                     
-                    if (directiveSpecSet.isRequired(directiveName)) {
-                        // This directive is required, but we have resolved no value for it. 
-                        throw new TestEngineExecutionException(
-                                executionId, "No (or null) value resolved for required directive \"" + directiveName + "\" in document " +
-                                "\"" + data.getDocumentName() + "\"");
-                    }
-                    
-                } else {
-                    
-                    final Class<?> valueClass = spec.getValueClass();
+                    final Class<?> valueClass = spec.getResolver().getValueClass();
                     if (!valueClass.isAssignableFrom(value.getClass())) {
                         // Value returned is not of the correct class
                         throw new TestEngineExecutionException(
@@ -181,8 +172,8 @@ public final class StandardTestDirectiveUtils {
                     
                 }
                 
-                
                 valuesByDirectiveForName.put(directiveQualifier, value);
+                
             }
 
         }
@@ -195,19 +186,20 @@ public final class StandardTestDirectiveUtils {
     
     
     
-    private static Map<String,StandardTestDirectiveSpec<?>> resolveAndValidateDirectiveSpecs(
+    private static Map<String,StandardTestDirectiveSpec> resolveAndValidateDirectiveSpecs(
             final String executionId, final StandardTestDocumentData data, 
-            final StandardTestDirectiveSpecSet directiveSpecSet) {
+            final Set<StandardTestDirectiveSpec> directiveSpecSet) {
         
         
-        final Map<String,StandardTestDirectiveSpec<?>> resolvedDirectiveSpecs =
-                new HashMap<String, StandardTestDirectiveSpec<?>>();
+        final Map<String,StandardTestDirectiveSpec> resolvedDirectiveSpecs =
+                new HashMap<String, StandardTestDirectiveSpec>();
         
         /*
          * We add to the map all the specs defined at the spec set.
          */
-        resolvedDirectiveSpecs.putAll(directiveSpecSet.getRequiredDirectives());
-        resolvedDirectiveSpecs.putAll(directiveSpecSet.getOptionalDirectives());
+        for (final StandardTestDirectiveSpec spec : directiveSpecSet) {
+            resolvedDirectiveSpecs.put(spec.getName(), spec);
+        }
         
         /*
          * The data coming from reading the file is processed in order to find
@@ -216,7 +208,7 @@ public final class StandardTestDirectiveUtils {
         final Set<String> directiveNames = data.getAllDirectiveNames();
         for (final String directiveName : directiveNames) {
             
-            if (!directiveSpecSet.contains(directiveName)) {
+            if (!resolvedDirectiveSpecs.containsKey(directiveName)) {
                 throw new TestEngineExecutionException(
                         executionId, "A directive called \"" + directiveName +"\" " +
                                     "has been found in document \"" + data.getDocumentName() + "\", " +
@@ -228,7 +220,7 @@ public final class StandardTestDirectiveUtils {
 
             if (directiveResolverValue != null) {
                 
-                final StandardTestDirectiveSpec<?> newSpec =
+                final StandardTestDirectiveSpec newSpec =
                         initializeDirectiveResolver(executionId, data.getDocumentName(), directiveName, directiveResolverValue);
                 resolvedDirectiveSpecs.put(directiveName, newSpec);
                 
@@ -245,8 +237,7 @@ public final class StandardTestDirectiveUtils {
 
     
     
-    @SuppressWarnings("unchecked")
-    private static StandardTestDirectiveSpec<?> initializeDirectiveResolver(
+    private static StandardTestDirectiveSpec initializeDirectiveResolver(
             final String executionId, final String documentName, 
             final String directiveName, final String directiveValue){
         
@@ -267,11 +258,9 @@ public final class StandardTestDirectiveUtils {
             
             final IStandardDirectiveResolver<?> directiveResolver = 
                     (IStandardDirectiveResolver<?>) resolverClass.newInstance();
-            final Class<?> directiveValueClass = directiveResolver.getValueClass();
             
-            final StandardTestDirectiveSpec<?> newSpec =
-                    new StandardTestDirectiveSpec<Object>(
-                            directiveName, (Class<Object>) directiveValueClass, directiveResolver);
+            final StandardTestDirectiveSpec newSpec =
+                    new StandardTestDirectiveSpec(directiveName, directiveResolver);
             
             return newSpec;
             

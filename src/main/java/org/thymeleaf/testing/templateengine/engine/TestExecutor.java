@@ -337,10 +337,18 @@ public final class TestExecutor {
         this.reporter.testStart(context.getExecutionId(), context.getNestingLevel(), test, testName);
         
         final IFragmentSpec fragmentSpec = test.getFragmentSpec();
+        
         final IContext ctx = test.getContext();
-        final ProcessingContext processingContext = 
-                new ProcessingContext(
-                        ctx, Collections.singletonMap(ContextNaming.TEST_BEING_EXECUTED, (Object)test));
+        if (ctx == null) {
+            throw new TestEngineExecutionException(context.getExecutionId(), 
+                    "Resolved context is null for test \"" + testName + "\"");
+        }
+        
+        final Map<String,Object> localVariables = new HashMap<String, Object>();
+        localVariables.put(ContextNaming.EXECUTION_ID, context.getExecutionId());
+        localVariables.put(ContextNaming.TEST_OBJECT, test);
+        
+        final ProcessingContext processingContext = new ProcessingContext(ctx, localVariables);
         
         final StringWriter writer = new StringWriter();
 
@@ -372,6 +380,7 @@ public final class TestExecutor {
         
     }
     
+
     
     
     

@@ -17,21 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.context;
+package org.thymeleaf.testing.templateengine.standard.directive.resolver;
 
 
 
 
 
 
-public class ContextNaming {
+public class DefaultExtendsStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
 
-    public static final String EXECUTION_ID = "$test:executionid$";
-    public static final String TEST_OBJECT = "$test:object$";
     
+    public static final DefaultExtendsStandardDirectiveResolver INSTANCE = new DefaultExtendsStandardDirectiveResolver();
+    public static final String DEFAULT_VALUE = null; 
     
-    private ContextNaming() {
-        super();
+    private DefaultExtendsStandardDirectiveResolver() {
+        super(String.class);
     }
+
+
+    @Override
+    public String getValue(final String executionId, final String documentName, 
+            final String directiveName, final String directiveQualifier, final String directiveValue) {
+        
+        if (directiveValue == null || directiveValue.trim().equals("")) {
+            return DEFAULT_VALUE;
+        }
+
+        return directiveValue;
+        
+    }
+
     
 }

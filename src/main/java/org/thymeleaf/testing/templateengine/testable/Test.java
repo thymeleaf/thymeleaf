@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.testable;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
@@ -39,7 +40,6 @@ public class Test
 
     private Class<? extends Throwable> outputThrowableClass;
     private String outputThrowableMessagePattern;
-    private Pattern outputThrowableMessagePatternObject;
 
     
     
@@ -79,27 +79,51 @@ public class Test
     
     public void setOutputThrowableMessagePattern(final String outputThrowableMessagePattern) {
         this.outputThrowableMessagePattern = outputThrowableMessagePattern;
-        if (this.outputThrowableMessagePattern != null) {
-            this.outputThrowableMessagePatternObject = Pattern.compile(this.outputThrowableMessagePattern);
-        } else {
-            this.outputThrowableMessagePatternObject = null;
-        }
     }
 
 
     
     
-    private void validate() {
-        if (this.output != null) {
-            if (this.outputThrowableClass != null || this.outputThrowableMessagePattern != null) {
-                throw new IllegalStateException(
+    public void initializeFrom(final ITest test) {
+        setName(test.getName());
+        setContext(test.getContext());
+        setFragmentSpec(test.getFragmentSpec());
+        setTemplateMode(test.getTemplateMode());
+        setInput(test.getInput());
+        setAdditionalInputs(test.getAdditionalInputs());
+        setInputCacheable(test.isInputCacheable());
+        if (test instanceof Test) {
+            final Test specificTest = (Test) test;
+            setOutput(specificTest.getOutput());
+            setOutputThrowableClass(specificTest.getOutputThrowableClass());
+            setOutputThrowableMessagePattern(specificTest.getOutputThrowableMessagePattern());
+        }
+    }
+    
+    
+    
+    
+    
+    public boolean isSuccessExpected() {
+        return getOutputThrowableClass() == null;
+    }
+    
+    
+    
+    
+    private void validate(final String executionId) {
+        if (getOutput() != null) {
+            if (getOutputThrowableClass() != null || getOutputThrowableMessagePattern() != null) {
+                throw new TestEngineExecutionException(
+                        executionId,
                         "Test \"" + TestNamingUtils.nameTest(this) + "\" specifies both an output " +
                         "(as if success was expected) and an exception or exception pattern (as if fail " +
                         "was expected). Only one is allowed.");
             }
         } else {
-            if (this.outputThrowableClass == null) {
-                throw new IllegalStateException(
+            if (getOutputThrowableClass() == null) {
+                throw new TestEngineExecutionException(
+                        executionId,
                         "Test \"" + TestNamingUtils.nameTest(this) + "\" specifies neither an output " +
                         "(as if success was expected) nor an exception or exception pattern (as if fail " +
                         "was expected).");
@@ -109,27 +133,44 @@ public class Test
     }
     
     
-    public boolean isSuccessExpected() {
-        return this.outputThrowableClass == null;
+    
+
+    public final ITestResult evalResult(final String executionId, final String testName, final String result) {
+        validate(executionId);
+        if (!isSuccessExpected()) {
+            return evalResultFailExpected(executionId, testName, result);
+        }
+        return evalResultSuccessExpected(executionId, testName, result);
+    }
+
+    
+    public final ITestResult evalResult(final String executionId, final String testName, final Throwable t) {
+        validate(executionId);
+        if (!isSuccessExpected()) {
+            return evalResultFailExpected(executionId, testName, t);
+        }
+        return evalResultSuccessExpected(executionId, testName, t);
     }
     
     
     
 
-    public ITestResult evalResult(final String executionId, final String testName, final String result) {
+    
+    protected ITestResult evalResultSuccessExpected(final String executionId, final String testName, final String result) {
         
         if (result == null) {
             TestResult.error(testName, "Result is null");
         }
         
-        if (this.output == null) {
+        final ITestResource outputEval = getOutput();
+        if (outputEval == null) {
             throw new TestEngineExecutionException(
                     executionId, 
                     "Test \"" + testName + "\" does not specify an output, but success-expected " +
-            		"tests should always specify one");
+                    "tests should always specify one");
         }
         
-        final String outputStr = this.output.read();
+        final String outputStr = outputEval.read();
         
         if (outputStr == null) {
             throw new TestEngineExecutionException(
@@ -143,12 +184,73 @@ public class Test
         return TestResult.error(testName, ResultCompareUtils.explainComparison(outputStr, result));
         
     }
+ 
 
+    
+    
+    protected ITestResult evalResultFailExpected(
+            @SuppressWarnings("unused") final String executionId, final String testName, 
+            @SuppressWarnings("unused") final String result) {
+        return TestResult.error(testName, "An exception of class " + getOutputThrowableClass().getName() + " was expected");
+    }
 
-    public ITestResult evalResult(final String executionId, final String testName, final Throwable t) {
+    
+    
+    protected ITestResult evalResultSuccessExpected(
+            @SuppressWarnings("unused") final String executionId, final String testName, final Throwable t) {
         Validate.notNull(t, "Throwable cannot be null");
         return TestResult.error(testName, t);
     }
+ 
+
+    
+    protected ITestResult evalResultFailExpected(final String executionId, final String testName, final Throwable t) {
+        
+        Validate.notNull(t, "Throwable cannot be null");
+
+        final Class<? extends Throwable> outputThrowableClassEval = getOutputThrowableClass();
+        
+        if (outputThrowableClassEval == null) {
+            throw new TestEngineExecutionException(
+                    executionId, 
+                    "Test \"" + testName + "\" does not specify an output throwable, but fail-expected " +
+                    "tests should always specify one");
+        }
+        
+        if (outputThrowableClassEval.isAssignableFrom(t.getClass())) {
+            
+            final String outputThrowableMessagePatternEval = getOutputThrowableMessagePattern();
+            
+            if (outputThrowableMessagePatternEval != null) {
+
+                // Cannot cache this Pattern object because the value returned by
+                // getOutputThrowableMessagePattern() could be overridden by a subclass
+                final Pattern outputThrowableMessagePatternObjectEval = 
+                        Pattern.compile(outputThrowableMessagePatternEval);
+                
+                final String throwableMessage = t.getMessage();
+                if (throwableMessage != null) {
+                    final Matcher matcher = outputThrowableMessagePatternObjectEval.matcher(throwableMessage);
+                    if (matcher.matches()) {
+                        return TestResult.ok(testName, t);
+                    }
+                }
+                
+                return TestResult.error(testName, 
+                        "An exception of class " + t.getClass() + " was raised as expected, " +
+                        "but its message does not match pattern \"" + throwableMessage + "\"", t);
+                
+            }
+            
+            return TestResult.ok(testName, t);
+            
+        }
+        
+        return TestResult.error(testName, 
+                "An exception of class " + t.getClass() + " was raised, but " + this.outputThrowableClass.getName() + " was expected instead", t);
+        
+    }
+
     
     
 }

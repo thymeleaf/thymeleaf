@@ -26,13 +26,14 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
-import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpecSet;
+import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpec;
 import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveUtils;
 import org.thymeleaf.testing.templateengine.standard.reader.StandardTestReaderUtils;
 import org.thymeleaf.testing.templateengine.standard.testbuilder.IStandardTestBuilder;
@@ -59,7 +60,8 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
 
-    private static final IStandardTestBuilder DEFAULT_TEST_BUILDER = new StandardTestBuilder();
+    
+    private final IStandardTestBuilder testBuilder = new StandardTestBuilder(this);
     
     
     protected AbstractStandardLocalFileTestableResolver() {
@@ -164,7 +166,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         final StandardTestDocumentData data = 
                 StandardTestReaderUtils.readDocument(executionId, documentName, documentReader);
 
-        final StandardTestDirectiveSpecSet directiveSpecSet = getTestDirectiveSpecSet();
+        final Set<StandardTestDirectiveSpec> directiveSpecSet = getTestDirectiveSpecSet();
         if (directiveSpecSet == null) {
             throw new TestEngineExecutionException(
                     executionId, "A null directive spec set has been specified");
@@ -187,8 +189,8 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     /*
      * Meant to be overriden
      */
-    protected StandardTestDirectiveSpecSet getTestDirectiveSpecSet() {
-        return StandardTestDirectiveSpecSet.STANDARD_DIRECTIVES_SPEC_SET;
+    protected Set<StandardTestDirectiveSpec> getTestDirectiveSpecSet() {
+        return StandardTestDirectiveSpec.STANDARD_DIRECTIVES;
     }
 
     
@@ -196,7 +198,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
      * Meant to be overriden
      */
     protected IStandardTestBuilder getTestBuilder() {
-        return DEFAULT_TEST_BUILDER;
+        return this.testBuilder;
     }
     
     

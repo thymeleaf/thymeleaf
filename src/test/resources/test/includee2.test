@@ -1,0 +1,14 @@
+%EXTENDS test/include.test
+%CONTEXT
+onevar = <b>Goodbye!</b>
+%INPUT[header]
+    <title>Heyhey!</title>
+%OUTPUT 
+<!DOCTYPE html>
+
+<html>
+  <head><title>Heyhey!</title></head>
+  <body>
+      <h1><b>Goodbye!</b></h1>
+  </body>
+</html>

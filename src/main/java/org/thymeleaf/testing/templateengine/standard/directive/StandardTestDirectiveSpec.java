@@ -19,15 +19,16 @@
  */
 package org.thymeleaf.testing.templateengine.standard.directive;
 
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultCacheStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultContextStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultExceptionDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultExceptionMessagePatternDirectiveResolver;
+import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultExtendsStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultFragmentStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultInputStandardDirectiveResolver;
 import org.thymeleaf.testing.templateengine.standard.directive.resolver.DefaultOutputStandardDirectiveResolver;
@@ -41,60 +42,63 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class StandardTestDirectiveSpec<T> {
+public final class StandardTestDirectiveSpec {
 
     
     public static final char COMMENT_PREFIX_CHAR = '#';
     public static final char DIRECTIVE_PREFIX_CHAR = '%';
 
     
-    public static final StandardTestDirectiveSpec<String> TEST_NAME_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<String>("NAME", String.class, DefaultTestNameStandardDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<String> TEMPLATE_MODE_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<String>("MODE", String.class, DefaultTemplateModeStandardDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<Boolean> CACHE_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<Boolean>("CACHE", Boolean.class, DefaultCacheStandardDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<IContext> CONTEXT_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<IContext>("CONTEXT", IContext.class, DefaultContextStandardDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<IFragmentSpec> FRAGMENT_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<IFragmentSpec>("FRAGMENT", IFragmentSpec.class, DefaultFragmentStandardDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<ITestResource> INPUT_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<ITestResource>("INPUT", ITestResource.class, DefaultInputStandardDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<ITestResource> OUTPUT_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<ITestResource>("OUTPUT", ITestResource.class, DefaultOutputStandardDirectiveResolver.INSTANCE);
-    
-    @SuppressWarnings("unchecked")
-    public static final StandardTestDirectiveSpec<Class<? extends Throwable>> EXCEPTION_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<Class<? extends Throwable>>("EXCEPTION", (Class<Class<? extends Throwable>>)(Class<?>)Class.class, DefaultExceptionDirectiveResolver.INSTANCE);
-    
-    public static final StandardTestDirectiveSpec<Pattern> EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC = 
-            new StandardTestDirectiveSpec<Pattern>("EXCEPTION_MESSAGE_PATTERN", Pattern.class, DefaultExceptionMessagePatternDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec TEST_NAME_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("NAME", DefaultTestNameStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec TEMPLATE_MODE_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("MODE", DefaultTemplateModeStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec CACHE_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("CACHE", DefaultCacheStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec CONTEXT_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("CONTEXT", DefaultContextStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec FRAGMENT_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("FRAGMENT", DefaultFragmentStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec INPUT_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("INPUT", DefaultInputStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec OUTPUT_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("OUTPUT", DefaultOutputStandardDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec EXCEPTION_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("EXCEPTION", DefaultExceptionDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("EXCEPTION_MESSAGE_PATTERN", DefaultExceptionMessagePatternDirectiveResolver.INSTANCE);
+    public static final StandardTestDirectiveSpec EXTENDS_DIRECTIVE_SPEC = 
+            new StandardTestDirectiveSpec("EXTENDS", DefaultExtendsStandardDirectiveResolver.INSTANCE);
 
-    
 
+    public static final Set<StandardTestDirectiveSpec> STANDARD_DIRECTIVES =
+            Collections.unmodifiableSet(
+                    new HashSet<StandardTestDirectiveSpec>(Arrays.asList(
+                            new StandardTestDirectiveSpec[] {
+                                    StandardTestDirectiveSpec.TEST_NAME_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.TEMPLATE_MODE_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.CACHE_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.CONTEXT_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.INPUT_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.OUTPUT_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.EXCEPTION_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC,
+                                    StandardTestDirectiveSpec.EXTENDS_DIRECTIVE_SPEC
+                            })));
+    
+    
     
     
     private final String name;
-    private final Class<T> valueClass;
-    private final IStandardDirectiveResolver<? extends T> resolver;
-
+    private final IStandardDirectiveResolver<?> resolver;
     
     
     
-    public StandardTestDirectiveSpec(
-            final String name, final Class<T> valueClass, IStandardDirectiveResolver<? extends T> resolver) {
+    public StandardTestDirectiveSpec(final String name, final IStandardDirectiveResolver<?> resolver) {
         super();
         Validate.notNull(name, "Directive name cannot null");
-        Validate.notNull(valueClass, "Directive value class cannot be null");
         Validate.notNull(resolver, "Directive resolver cannot be null");
         this.name = name;
-        this.valueClass = valueClass;
         this.resolver = resolver;
     }
 
@@ -104,12 +108,7 @@ public final class StandardTestDirectiveSpec<T> {
     }
 
 
-    public Class<T> getValueClass() {
-        return this.valueClass;
-    }
-
-
-    public IStandardDirectiveResolver<? extends T> getResolver() {
+    public IStandardDirectiveResolver<?> getResolver() {
         return this.resolver;
     }
     

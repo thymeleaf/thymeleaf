@@ -114,7 +114,7 @@ public abstract class AbstractTest
         this.additionalInputs = new HashMap<String,ITestResource>(additionalInputs);
     }
     
-    public void addAdditionalInput(final String name, final ITestResource resource) {
+    public void setAdditionalInput(final String name, final ITestResource resource) {
         this.additionalInputs.put(name, resource);
     }
     

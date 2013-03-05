@@ -25,12 +25,13 @@ import java.util.Map;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpec;
 import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveUtils;
-import org.thymeleaf.testing.templateengine.testable.FailExpectedTest;
 import org.thymeleaf.testing.templateengine.testable.ITest;
-import org.thymeleaf.testing.templateengine.testable.SuccessExpectedTest;
+import org.thymeleaf.testing.templateengine.testable.ITestable;
+import org.thymeleaf.testing.templateengine.testable.Test;
 import org.thymeleaf.util.Validate;
 
 
@@ -40,12 +41,36 @@ import org.thymeleaf.util.Validate;
 public class StandardTestBuilder implements IStandardTestBuilder {
 
     
+    private ITestableResolver testableResolver = null;
+    
+    
+
     public StandardTestBuilder() {
         super();
     }
+
+    
+    public StandardTestBuilder(final ITestableResolver testableResolver) {
+        super();
+        setTestableResolver(testableResolver);
+    }
+    
     
 
     
+    public ITestableResolver getTestableResolver() {
+        return this.testableResolver;
+    }
+
+    public void setTestableResolver(final ITestableResolver testableResolver) {
+        this.testableResolver = testableResolver;
+    }
+
+
+
+
+
+
     @SuppressWarnings("unchecked")
     public final ITest buildTest(final String executionId, 
             final String documentName, final Map<String,Map<String,Object>> dataByDirectiveAndQualifier) {
@@ -53,12 +78,14 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(dataByDirectiveAndQualifier, "Data cannot be null");
         
+        
+        
         // Retrieve and process the map of inputs 
-        final Map<String,ITestResource> allInputs =
+        final Map<String,ITestResource> additionalInputs =
                 new HashMap<String, ITestResource>(
                         (Map<String,ITestResource>)(Map<?,?>) dataByDirectiveAndQualifier.get(StandardTestDirectiveSpec.INPUT_DIRECTIVE_SPEC.getName()));
-        final ITestResource input = allInputs.get(null);
-        allInputs.remove(null);
+        final ITestResource input = additionalInputs.get(null);
+        additionalInputs.remove(null);
         
         
         // cache, context, and template mode are required, cannot be null at this point 
@@ -74,49 +101,76 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         final ITestResource output = (ITestResource) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpec.OUTPUT_DIRECTIVE_SPEC); 
         final Class<? extends Throwable> exception = (Class<? extends Throwable>) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpec.EXCEPTION_DIRECTIVE_SPEC);
         
-        if (output == null && exception == null) {
-            throw new TestEngineExecutionException(
-                    executionId, "Neither output nor exception have been specified for test in document " +
-                    		     "\"" + documentName + "\". At least one of these must be specified.");
-        }
-        
-
-        if (output != null) {
-            /*
-             *  There is an expected output, so this test expects a success
-             */
-            
-            final SuccessExpectedTest test =  new SuccessExpectedTest();
-            test.setInput(input);
-            test.setAdditionalInputs(allInputs);
-            test.setInputCacheable(cache.booleanValue());
-            test.setOutput(output);
-            test.setName(name);
-            test.setTemplateMode(templateMode);
-            test.setContext(ctx);
-            test.setFragmentSpec(fragmentSpec);
-            
-            return test;
-            
-        }
-
-        /*
-         * There is no expected output, so this test expects an exception
-         */
-        
         final String exceptionMessagePattern = (String) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpec.EXCEPTION_MESSAGE_PATTERN_DIRECTIVE_SPEC);
 
-        final FailExpectedTest test = new FailExpectedTest();
-        test.setInput(input);
-        test.setAdditionalInputs(allInputs);
-        test.setInputCacheable(cache.booleanValue());
-        test.setOutputThrowableClass(exception);
-        test.setOutputThrowableMessagePattern(exceptionMessagePattern);
-        test.setName(name);
-        test.setTemplateMode(templateMode);
-        test.setContext(ctx);
-        test.setFragmentSpec(fragmentSpec);
 
+        /*
+         * Initialize the test object
+         */
+
+        final Test test =  new Test();
+        
+        // If this test is supposed to extend another one, get the parent test 
+        final String extendsValue = (String) getMainDirectiveValue(dataByDirectiveAndQualifier,StandardTestDirectiveSpec.EXTENDS_DIRECTIVE_SPEC);
+        if (extendsValue != null) {
+            
+            if (this.testableResolver == null) {
+                throw new TestEngineExecutionException(executionId, 
+                        "Cannot execute \"" + StandardTestDirectiveSpec.EXTENDS_DIRECTIVE_SPEC.getName() + "\" " +
+                		"directive: no " + ITestableResolver.class.getSimpleName() + " has been specified at the test builder.");
+            }
+            
+            final ITestable parentTestable = 
+                    this.testableResolver.resolve(executionId, extendsValue);
+            if (parentTestable == null) {
+                throw new TestEngineExecutionException(executionId, 
+                        "Cannot execute \"" + StandardTestDirectiveSpec.EXTENDS_DIRECTIVE_SPEC.getName() + "\" " +
+                        "directive: \"" + extendsValue + "\" resolved as null.");
+            }
+            if (!(parentTestable instanceof ITest)) {
+                throw new TestEngineExecutionException(executionId, 
+                        "Cannot execute \"" + StandardTestDirectiveSpec.EXTENDS_DIRECTIVE_SPEC.getName() + "\" " +
+                        "directive: \"" + extendsValue + "\" resolved as a " + parentTestable.getClass().getName() + 
+                        " object instead of an " + ITest.class.getName() + " implementation.");
+            }
+            final ITest testParent = (ITest) parentTestable;
+            test.initializeFrom(testParent);
+            
+        }
+        
+        if (input != null) {
+            test.setInput(input);
+        }
+        if (additionalInputs.size() > 0) {
+            for (final Map.Entry<String,ITestResource> additionalInputEntry : additionalInputs.entrySet()) {
+                test.setAdditionalInput(additionalInputEntry.getKey(), additionalInputEntry.getValue());
+            }
+        }
+        if (cache != null) {
+            test.setInputCacheable(cache.booleanValue());
+        }
+        if (output != null) {
+            test.setOutput(output);
+        }
+        if (exception != null) {
+            test.setOutputThrowableClass(exception);
+        }
+        if (exceptionMessagePattern != null) {
+            test.setOutputThrowableMessagePattern(exceptionMessagePattern);
+        }
+        if (name != null) {
+            test.setName(name);
+        }
+        if (templateMode != null) {
+            test.setTemplateMode(templateMode);
+        }
+        if (ctx != null) {
+            test.setContext(ctx);
+        }
+        if (fragmentSpec != null) {
+            test.setFragmentSpec(fragmentSpec);
+        }
+        
         return test;
         
     }
@@ -124,7 +178,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
     
     
     
-    private static Object getMainDirectiveValue(final Map<String,Map<String,Object>> values, final StandardTestDirectiveSpec<?> directiveSpec) {
+    private static Object getMainDirectiveValue(final Map<String,Map<String,Object>> values, final StandardTestDirectiveSpec directiveSpec) {
         
         final Map<String,Object> directiveValuesByQualifier = values.get(directiveSpec.getName());
         if (directiveValuesByQualifier == null) {
