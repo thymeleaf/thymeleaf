@@ -21,12 +21,14 @@ package org.thymeleaf.testing.templateengine.standard.testbuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
 import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpec;
 import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveUtils;
 import org.thymeleaf.testing.templateengine.testable.ITest;
@@ -57,6 +59,13 @@ public class StandardTestBuilder implements IStandardTestBuilder {
     
     
 
+
+    public Set<StandardTestDirectiveSpec> getTestDirectiveSpecSet() {
+        return StandardTestDirectiveSpec.STANDARD_DIRECTIVES;
+    }
+
+
+    
     
     public ITestableResolver getTestableResolver() {
         return this.testableResolver;
@@ -72,13 +81,16 @@ public class StandardTestBuilder implements IStandardTestBuilder {
 
 
     @SuppressWarnings("unchecked")
-    public final ITest buildTest(final String executionId, 
-            final String documentName, final Map<String,Map<String,Object>> dataByDirectiveAndQualifier) {
+    public final ITest buildTest(
+            final String executionId, final String documentName, final StandardTestDocumentData data) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(dataByDirectiveAndQualifier, "Data cannot be null");
+        Validate.notNull(data, "Data cannot be null");
         
-        
+
+        final Map<String,Map<String,Object>> dataByDirectiveAndQualifier =
+                StandardTestDirectiveUtils.resolveDirectiveValues(
+                        executionId, data, StandardTestDirectiveSpec.STANDARD_DIRECTIVES);
         
         // Retrieve and process the map of inputs 
         final Map<String,ITestResource> additionalInputs =

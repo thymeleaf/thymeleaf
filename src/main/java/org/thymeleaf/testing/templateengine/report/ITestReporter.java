@@ -48,7 +48,7 @@ public interface ITestReporter {
      * used in different parts of a suite's sequence, and the TestExecutionContext ensures the same name is always used
      * for it, even if it is null from test definition.
      */
-    public void testStart(final String executionId, final int nestingLevel, final ITest test, final String testExecutionName);
-    public void testEnd(final String executionId, final int nestingLevel, final ITest test, final String testExecutionName, final ITestResult result, final long executionTimeNanos);
+    public void testStart(final String executionId, final int nestingLevel, final ITest test, final String testName);
+    public void testEnd(final String executionId, final int nestingLevel, final ITest test, final String testName, final ITestResult result, final long executionTimeNanos);
     
 }

@@ -20,6 +20,7 @@
 package org.thymeleaf.testing.templateengine.engine;
 
 import org.junit.Test;
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardClassPathTestableResolver;
 
 
 
@@ -45,7 +46,11 @@ public class TestExecutorTest {
         
         try {
 
+            final StandardClassPathTestableResolver resolver = new StandardClassPathTestableResolver();
+//            resolver.setDefaultDirective("CONTEXT", "onevar=<b>Arrivederci!</b>");
+            
             final TestExecutor executor = new TestExecutor();
+            executor.setTestableResolver(resolver);
             executor.execute("test");
             
         } catch (final Throwable t) {

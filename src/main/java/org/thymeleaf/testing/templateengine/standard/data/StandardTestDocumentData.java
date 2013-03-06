@@ -38,16 +38,13 @@ public class StandardTestDocumentData {
     private final Map<String,Map<String,String>> directivesByName;
     
     
-    public StandardTestDocumentData(
-            final String executionId, final String documentName,
-            final Map<String,String> directiveValues) {
+    public StandardTestDocumentData(final String executionId, final String documentName) {
         super();
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(documentName, "Document name cannot be null");
-        Validate.notNull(directiveValues, "Directive values map cannot be null");
         this.executionId = executionId;
         this.documentName = documentName;
-        this.directivesByName = groupDirectivesByName(executionId, documentName, directiveValues);
+        this.directivesByName = new HashMap<String, Map<String,String>>();
     }
 
     
@@ -58,7 +55,8 @@ public class StandardTestDocumentData {
     public String getDocumentName() {
         return this.documentName;
     }
-
+    
+    
     public Set<String> getAllDirectiveNames() {
         return this.directivesByName.keySet();
     }
@@ -114,38 +112,25 @@ public class StandardTestDocumentData {
         
     }
 
-    
-    
-    private static Map<String,Map<String,String>> groupDirectivesByName(
-            final String executionId, final String documentName, 
-            final Map<String,String> directiveValues) {
-        
-        final Map<String,Map<String,String>> directivesByName = new HashMap<String,Map<String,String>>();
-        
-        for (final Map.Entry<String,String> directivesValuesEntry : directiveValues.entrySet()) {
-            
-            final String directive = directivesValuesEntry.getKey();
-            final String directiveValue = directivesValuesEntry.getValue();
-            
-            final String directiveName = StandardTestDirectiveUtils.extractDirectiveName(directive);
-            final String directiveQualifier = StandardTestDirectiveUtils.extractDirectiveQualifier(directive);
-            
-            if (directiveName == null) {
-                throw new TestEngineExecutionException(
-                        executionId, "Invalid directive name \"" + directive +"\" " +
-                                    "found in document \"" + documentName + "\"");
-            }
-            
-            Map<String,String> directivesForNameByQualifier = directivesByName.get(directiveName);
-            if (directivesForNameByQualifier == null) {
-                directivesForNameByQualifier = new HashMap<String,String>();
-                directivesByName.put(directiveName, directivesForNameByQualifier);
-            }
-            directivesForNameByQualifier.put(directiveQualifier, directiveValue);
-            
-        }
 
-        return directivesByName;
+    
+    public void setDirectiveValue(final String directive, final String directiveValue) {
+        
+        final String directiveName = StandardTestDirectiveUtils.extractDirectiveName(directive);
+        final String directiveQualifier = StandardTestDirectiveUtils.extractDirectiveQualifier(directive);
+        
+        if (directiveName == null) {
+            throw new TestEngineExecutionException(
+                    this.executionId, "Invalid directive name \"" + directive +"\" " +
+                                "specified for document \"" + this.documentName + "\"");
+        }
+            
+        Map<String,String> directivesForNameByQualifier = this.directivesByName.get(directiveName);
+        if (directivesForNameByQualifier == null) {
+            directivesForNameByQualifier = new HashMap<String,String>();
+            this.directivesByName.put(directiveName, directivesForNameByQualifier);
+        }
+        directivesForNameByQualifier.put(directiveQualifier, directiveValue);
         
     }
     

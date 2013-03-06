@@ -123,7 +123,7 @@ public final class StandardTestDirectiveUtils {
     
     
     public static Map<String,Map<String,Object>> resolveDirectiveValues(
-            final String executionId, final StandardTestDocumentData data, 
+            final String executionId, final StandardTestDocumentData data,
             final Set<StandardTestDirectiveSpec> directiveSpecSet) {
 
         final Map<String,Map<String,Object>> values = new HashMap<String, Map<String,Object>>();

@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.FileTestResource;
@@ -42,15 +41,14 @@ public final class StandardTestReaderUtils {
 
     
     
-    public static StandardTestDocumentData readDocument(final String executionId, 
-            final String documentName, final Reader reader) {
+    public static void readDocument(final Reader documentReader, 
+            final StandardTestDocumentData data) 
+            throws IOException {
 
-        Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(documentName, "Document name cannot be null");
-        Validate.notNull(reader, "Reader cannot be null");
+        Validate.notNull(documentReader, "Document reader cannot be null");
+        Validate.notNull(data, "Data object cannot be null");
         
-        final BufferedReader r = new BufferedReader(reader);
-        final HashMap<String,String> directiveValues = new HashMap<String, String>();
+        final BufferedReader r = new BufferedReader(documentReader);
         
         try {
             
@@ -86,7 +84,7 @@ public final class StandardTestReaderUtils {
                 }
                 
                 if (currentDirectiveName != null && strBuilder != null) {
-                    directiveValues.put(currentDirectiveName, strBuilder.toString());
+                    data.setDirectiveValue(currentDirectiveName, strBuilder.toString());
                 }
                 
                 final int lineLen = line.length();
@@ -108,14 +106,8 @@ public final class StandardTestReaderUtils {
             }
 
             if (currentDirectiveName != null && strBuilder != null) {
-                directiveValues.put(currentDirectiveName, strBuilder.toString());
+                data.setDirectiveValue(currentDirectiveName, strBuilder.toString());
             }
-
-            return new StandardTestDocumentData(executionId, documentName, directiveValues);
-            
-        } catch (final IOException e) {
-            
-            throw new TestEngineExecutionException(executionId, e);
             
         } finally {
             

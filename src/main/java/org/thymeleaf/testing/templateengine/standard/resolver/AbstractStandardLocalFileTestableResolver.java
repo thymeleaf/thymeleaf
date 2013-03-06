@@ -22,19 +22,19 @@ package org.thymeleaf.testing.templateengine.standard.resolver;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
-import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpec;
-import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveUtils;
 import org.thymeleaf.testing.templateengine.standard.reader.StandardTestReaderUtils;
 import org.thymeleaf.testing.templateengine.standard.testbuilder.IStandardTestBuilder;
 import org.thymeleaf.testing.templateengine.standard.testbuilder.StandardTestBuilder;
@@ -61,13 +61,42 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
 
     
-    private final IStandardTestBuilder testBuilder = new StandardTestBuilder(this);
+    private IStandardTestBuilder testBuilder = new StandardTestBuilder(this);
+    private Map<String,String> defaultDirectives = new HashMap<String,String>();
+    
+    
     
     
     protected AbstractStandardLocalFileTestableResolver() {
         super();
     }
 
+    
+    
+    
+    public Map<String,String> getDefaultDirectives() {
+        return Collections.unmodifiableMap(this.defaultDirectives);
+    }
+
+    
+    public void setDefaultDirective(final String directive, final String value) {
+        this.defaultDirectives.put(directive, value);
+    }
+    
+    
+    public void setDefaultDirectives(final Map<String,String> directives) {
+        this.defaultDirectives.putAll(directives);
+    }
+
+    
+    
+    public IStandardTestBuilder getTestBuilder() {
+        return this.testBuilder;
+    }
+    
+    public void setTestBuilder(final IStandardTestBuilder testBuilder) {
+        this.testBuilder = testBuilder;
+    }
     
     
     
@@ -163,17 +192,14 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
                     executionId, "Test file \"" + file.getAbsolutePath() + "\" does not exist");
         }
         
-        final StandardTestDocumentData data = 
-                StandardTestReaderUtils.readDocument(executionId, documentName, documentReader);
-
-        final Set<StandardTestDirectiveSpec> directiveSpecSet = getTestDirectiveSpecSet();
-        if (directiveSpecSet == null) {
-            throw new TestEngineExecutionException(
-                    executionId, "A null directive spec set has been specified");
-        }
+        final StandardTestDocumentData data = new StandardTestDocumentData(executionId, documentName);
         
-        final Map<String,Map<String,Object>> dataByDirectiveAndQualifier =
-                StandardTestDirectiveUtils.resolveDirectiveValues(executionId, data, directiveSpecSet);
+        try {
+            StandardTestReaderUtils.readDocument(documentReader, data);
+        } catch (final IOException e) {
+            throw new TestEngineExecutionException(executionId, "Error reading document \"" + documentName + "\"", e);
+        }
+
         
         final IStandardTestBuilder builder = getTestBuilder();
         if (builder == null) {
@@ -181,25 +207,11 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
                     executionId, "A null test builder has been specified");
         }
         
-        return builder.buildTest(executionId, documentName, dataByDirectiveAndQualifier);
+        return builder.buildTest(executionId, documentName, data);
         
     }
     
-    
-    /*
-     * Meant to be overriden
-     */
-    protected Set<StandardTestDirectiveSpec> getTestDirectiveSpecSet() {
-        return StandardTestDirectiveSpec.STANDARD_DIRECTIVES;
-    }
 
-    
-    /*
-     * Meant to be overriden
-     */
-    protected IStandardTestBuilder getTestBuilder() {
-        return this.testBuilder;
-    }
     
     
     

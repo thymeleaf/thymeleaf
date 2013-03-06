@@ -41,6 +41,7 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.context.ContextNaming;
+import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.report.ConsoleTestReporter;
@@ -78,11 +79,32 @@ public final class TestExecutor {
     protected ITestReporter reporter = DEFAULT_TEST_REPORTER;
     
     
+    private static ThreadLocal<String> threadExecutionId = new ThreadLocal<String>();
+    private static ThreadLocal<String> threadTestName = new ThreadLocal<String>();
+    
+    
+    
+    public static String getThreadExecutionId() {
+        return threadExecutionId.get();
+    }
+    
+    public static String getThreadTestName() {
+        return threadTestName.get();
+    }
+    
+    public static void setThreadLocalVariables(final String executionId, final String testName) {
+        threadExecutionId.set(executionId);
+        threadTestName.set(testName);
+    }
+    
+    
+    
     
     public TestExecutor() {
         super();
     }
 
+    
     
     
     public ITestableResolver getTestableResolver() {
@@ -195,10 +217,12 @@ public final class TestExecutor {
         Validate.notNull(context, "Test execution context cannot be null");
         
         final TestTemplateResolver templateResolver = new TestTemplateResolver();
+        final TestCacheManager cacheManager = new TestCacheManager();
         
         final TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
         templateEngine.setDialects(new HashSet<IDialect>(this.dialects));
+        templateEngine.setCacheManager(cacheManager);
         
         context.setTemplateEngine(templateEngine);
         
@@ -207,7 +231,7 @@ public final class TestExecutor {
     }
 
     
-    
+    // protected in order to be accessed from parallelizer threads
     protected TestExecutionResult executeTestable(final ITestable testable, final TestExecutionContext context) {
 
         Validate.notNull(testable, "Testable cannot be null");
@@ -330,22 +354,25 @@ public final class TestExecutor {
 
         Validate.notNull(test, "Test cannot be null");
         Validate.notNull(context, "Test execution context cannot be null");
-        
+
+        final String executionId = context.getExecutionId();
         final String testName = TestNamingUtils.nameTest(test);
         final TemplateEngine templateEngine = context.getTemplateEngine();
         
-        this.reporter.testStart(context.getExecutionId(), context.getNestingLevel(), test, testName);
+        setThreadLocalVariables(executionId, testName);
+        
+        this.reporter.testStart(executionId, context.getNestingLevel(), test, testName);
         
         final IFragmentSpec fragmentSpec = test.getFragmentSpec();
         
         final IContext ctx = test.getContext();
         if (ctx == null) {
-            throw new TestEngineExecutionException(context.getExecutionId(), 
+            throw new TestEngineExecutionException(executionId, 
                     "Resolved context is null for test \"" + testName + "\"");
         }
         
         final Map<String,Object> localVariables = new HashMap<String, Object>();
-        localVariables.put(ContextNaming.EXECUTION_ID, context.getExecutionId());
+        localVariables.put(ContextNaming.EXECUTION_ID, executionId);
         localVariables.put(ContextNaming.TEST_OBJECT, test);
         
         final ProcessingContext processingContext = new ProcessingContext(ctx, localVariables);
@@ -362,16 +389,16 @@ public final class TestExecutor {
             endTimeNanos = System.nanoTime();
             
             final String result = writer.toString();
-            testResult = test.evalResult(context.getExecutionId(), testName, result);
+            testResult = test.evalResult(executionId, testName, result);
             
         } catch (final Throwable t) {
             endTimeNanos = System.nanoTime();
-            testResult = test.evalResult(context.getExecutionId(), testName, t);
+            testResult = test.evalResult(executionId, testName, t);
         }
         
         final long totalTimeNanos = (endTimeNanos - startTimeNanos);
         
-        this.reporter.testEnd(context.getExecutionId(), context.getNestingLevel(), test, testName, testResult, totalTimeNanos);
+        this.reporter.testEnd(executionId, context.getNestingLevel(), test, testName, testResult, totalTimeNanos);
         
         final TestExecutionResult result = new TestExecutionResult();
         result.addTestResult(testResult.isOK(), totalTimeNanos);

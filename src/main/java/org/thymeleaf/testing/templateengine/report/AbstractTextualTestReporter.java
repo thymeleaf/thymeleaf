@@ -245,12 +245,12 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void testStart(final String executionId, final int nestingLevel, final ITest test, final String testExecutionName) {
-        outputMessage(executionId, msgTestStart(test, testExecutionName), nestingLevel, false);
+    public final void testStart(final String executionId, final int nestingLevel, final ITest test, final String testName) {
+        outputMessage(executionId, msgTestStart(test, testName), nestingLevel, false);
     }
     
     @SuppressWarnings("unused")
-    public String msgTestStart(final ITest test, final String testExecutionName) {
+    public String msgTestStart(final ITest test, final String testName) {
         // The standard implementation of this method is not outputting anything for test start events.
         return null;
     }
@@ -259,16 +259,16 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void testEnd(final String executionId, final int nestingLevel, final ITest test, 
-            final String testExecutionName, final ITestResult result, final long executionTimeNanos) {
-        outputMessage(executionId, msgTestEnd(test, testExecutionName, result, executionTimeNanos), nestingLevel, !result.isOK());
+            final String testName, final ITestResult result, final long executionTimeNanos) {
+        outputMessage(executionId, msgTestEnd(test, testName, result, executionTimeNanos), nestingLevel, !result.isOK());
     }
 
     @SuppressWarnings("unused")
-    public String msgTestEnd(final ITest test, final String testExecutionName, final ITestResult result, final long executionTimeNanos) {
+    public String msgTestEnd(final ITest test, final String testName, final ITestResult result, final long executionTimeNanos) {
         
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[test:end]");
-        strBuilder.append("[" + testExecutionName + "]");
+        strBuilder.append("[" + testName + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
         if (result.isOK()) {
             strBuilder.append("[OK]");
