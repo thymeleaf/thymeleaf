@@ -111,11 +111,11 @@ public class Test
     
     
     
-    private void validate(final String executionId) {
+    private void validateTestOutput() {
+        
         if (getOutput() != null) {
             if (getOutputThrowableClass() != null || getOutputThrowableMessagePattern() != null) {
                 throw new TestEngineExecutionException(
-                        executionId,
                         "Test \"" + TestNamingUtils.nameTest(this) + "\" specifies both an output " +
                         "(as if success was expected) and an exception or exception pattern (as if fail " +
                         "was expected). Only one is allowed.");
@@ -123,7 +123,6 @@ public class Test
         } else {
             if (getOutputThrowableClass() == null) {
                 throw new TestEngineExecutionException(
-                        executionId,
                         "Test \"" + TestNamingUtils.nameTest(this) + "\" specifies neither an output " +
                         "(as if success was expected) nor an exception or exception pattern (as if fail " +
                         "was expected).");
@@ -136,7 +135,7 @@ public class Test
     
 
     public final ITestResult evalResult(final String executionId, final String testName, final String result) {
-        validate(executionId);
+        validateTestOutput();
         if (!isSuccessExpected()) {
             return evalResultFailExpected(executionId, testName, result);
         }
@@ -145,7 +144,7 @@ public class Test
 
     
     public final ITestResult evalResult(final String executionId, final String testName, final Throwable t) {
-        validate(executionId);
+        validateTestOutput();
         if (!isSuccessExpected()) {
             return evalResultFailExpected(executionId, testName, t);
         }
@@ -156,7 +155,8 @@ public class Test
     
 
     
-    protected ITestResult evalResultSuccessExpected(final String executionId, final String testName, final String result) {
+    protected ITestResult evalResultSuccessExpected(
+            @SuppressWarnings("unused") final String executionId, final String testName, final String result) {
         
         if (result == null) {
             TestResult.error(testName, "Result is null");
@@ -165,7 +165,6 @@ public class Test
         final ITestResource outputEval = getOutput();
         if (outputEval == null) {
             throw new TestEngineExecutionException(
-                    executionId, 
                     "Test \"" + testName + "\" does not specify an output, but success-expected " +
                     "tests should always specify one");
         }
@@ -174,7 +173,7 @@ public class Test
         
         if (outputStr == null) {
             throw new TestEngineExecutionException(
-                    executionId, "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
+                    "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
         }
         
         if (outputStr.equals(result)) {
@@ -204,7 +203,8 @@ public class Test
  
 
     
-    protected ITestResult evalResultFailExpected(final String executionId, final String testName, final Throwable t) {
+    protected ITestResult evalResultFailExpected(
+            @SuppressWarnings("unused") final String executionId, final String testName, final Throwable t) {
         
         Validate.notNull(t, "Throwable cannot be null");
 
@@ -212,7 +212,6 @@ public class Test
         
         if (outputThrowableClassEval == null) {
             throw new TestEngineExecutionException(
-                    executionId, 
                     "Test \"" + testName + "\" does not specify an output throwable, but fail-expected " +
                     "tests should always specify one");
         }

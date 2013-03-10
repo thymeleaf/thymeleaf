@@ -17,34 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.fragment.WholeFragmentSpec;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
-public class DefaultFragmentStandardDirectiveResolver extends AbstractStandardDirectiveResolver<IFragmentSpec> {
+public class DefaultFragmentStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
 
     
-    public static final DefaultFragmentStandardDirectiveResolver INSTANCE = new DefaultFragmentStandardDirectiveResolver();
+    public static final DefaultFragmentStandardTestFieldEvaluator INSTANCE = new DefaultFragmentStandardTestFieldEvaluator();
     public static final IFragmentSpec DEFAULT_VALUE = WholeFragmentSpec.INSTANCE; 
 
     
-    private DefaultFragmentStandardDirectiveResolver() {
+    private DefaultFragmentStandardTestFieldEvaluator() {
         super(IFragmentSpec.class);
     }
 
 
     @Override
-    protected IFragmentSpec getValue(final String executionId, final String documentName, 
-            final String directiveName, final String directiveQualifier, final String directiveValue) {
+    protected StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+            final String fieldName, final String fieldQualifier, final String fieldValue) {
 
-        if (directiveValue == null || directiveValue.trim().equals("")) {
-            return DEFAULT_VALUE;
+        if (fieldValue == null || fieldValue.trim().equals("")) {
+            return StandardTestEvaluatedField.forDefaultValue(DEFAULT_VALUE);
         }
         
-        return new DOMSelectorFragmentSpec(directiveValue.trim());
+        return StandardTestEvaluatedField.forSpecifiedValue(new DOMSelectorFragmentSpec(fieldValue.trim()));
         
     }
     

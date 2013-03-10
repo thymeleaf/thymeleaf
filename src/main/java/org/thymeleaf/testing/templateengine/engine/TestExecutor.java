@@ -92,8 +92,12 @@ public final class TestExecutor {
         return threadTestName.get();
     }
     
-    public static void setThreadLocalVariables(final String executionId, final String testName) {
+    // protected in order to be accessed from parallelizer threads
+    protected static void setThreadExecutionId(final String executionId) {
         threadExecutionId.set(executionId);
+    }
+    
+    private static void setThreadTestName(final String testName) {
         threadTestName.set(testName);
     }
     
@@ -192,11 +196,13 @@ public final class TestExecutor {
         final TestExecutionContext context = new TestExecutionContext();
         final String executionId = context.getExecutionId();
         
+        TestExecutor.setThreadExecutionId(executionId);
+        
         try {
             
             final ITestable testable = this.testableResolver.resolve(executionId, testableName);
             if (testable == null) {
-                throw new TestEngineExecutionException(executionId, "Main testable element resolved as null");
+                throw new TestEngineExecutionException("Main testable element resolved as null");
             }
             
             execute(testable, context);
@@ -204,7 +210,7 @@ public final class TestExecutor {
         } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Exception e) {
-            throw new TestEngineExecutionException(executionId, e);
+            throw new TestEngineExecutionException("Error executing testable \"" + testableName + "\"", e);
         }
         
     }
@@ -359,7 +365,7 @@ public final class TestExecutor {
         final String testName = TestNamingUtils.nameTest(test);
         final TemplateEngine templateEngine = context.getTemplateEngine();
         
-        setThreadLocalVariables(executionId, testName);
+        setThreadTestName(testName);
         
         this.reporter.testStart(executionId, context.getNestingLevel(), test, testName);
         
@@ -367,12 +373,10 @@ public final class TestExecutor {
         
         final IContext ctx = test.getContext();
         if (ctx == null) {
-            throw new TestEngineExecutionException(executionId, 
-                    "Resolved context is null for test \"" + testName + "\"");
+            throw new TestEngineExecutionException("Resolved context is null for test \"" + testName + "\"");
         }
         
         final Map<String,Object> localVariables = new HashMap<String, Object>();
-        localVariables.put(ContextNaming.EXECUTION_ID, executionId);
         localVariables.put(ContextNaming.TEST_OBJECT, test);
         
         final ProcessingContext processingContext = new ProcessingContext(ctx, localVariables);
@@ -436,6 +440,8 @@ public final class TestExecutor {
         public TestExecutionResult call() {
 
             final TestExecutionContext threadExecutionContext = this.context.nest();
+            
+            TestExecutor.setThreadExecutionId(threadExecutionContext.getExecutionId());
             
             final ITestable parallelizedElement = this.parallelizer.getParallelizedElement();
             

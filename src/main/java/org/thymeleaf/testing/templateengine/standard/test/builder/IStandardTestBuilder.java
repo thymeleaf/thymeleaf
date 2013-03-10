@@ -17,12 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.testbuilder;
+package org.thymeleaf.testing.templateengine.standard.test.builder;
 
-import java.util.Set;
-
-import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
-import org.thymeleaf.testing.templateengine.standard.directive.StandardTestDirectiveSpec;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
@@ -31,11 +28,6 @@ import org.thymeleaf.testing.templateengine.testable.ITest;
 
 public interface IStandardTestBuilder {
     
-    
-    public Set<StandardTestDirectiveSpec> getTestDirectiveSpecSet();
-    
-    public ITest buildTest(
-            final String executionId, final String documentName, 
-            final StandardTestDocumentData data);
+    public ITest buildTest(final String executionId, final StandardTestEvaluatedData data);
     
 }

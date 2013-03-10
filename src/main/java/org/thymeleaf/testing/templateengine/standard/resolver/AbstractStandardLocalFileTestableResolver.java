@@ -24,20 +24,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
-import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
-import org.thymeleaf.testing.templateengine.standard.reader.StandardTestReaderUtils;
-import org.thymeleaf.testing.templateengine.standard.testbuilder.IStandardTestBuilder;
-import org.thymeleaf.testing.templateengine.standard.testbuilder.StandardTestBuilder;
+import org.thymeleaf.testing.templateengine.standard.test.builder.IStandardTestBuilder;
+import org.thymeleaf.testing.templateengine.standard.test.builder.StandardTestBuilder;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
+import org.thymeleaf.testing.templateengine.standard.test.evaluator.IStandardTestEvaluator;
+import org.thymeleaf.testing.templateengine.standard.test.evaluator.StandardTestEvaluator;
+import org.thymeleaf.testing.templateengine.standard.test.reader.IStandardTestReader;
+import org.thymeleaf.testing.templateengine.standard.test.reader.StandardTestReader;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.testable.ITestIterator;
 import org.thymeleaf.testing.templateengine.testable.ITestParallelizer;
@@ -61,8 +60,9 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
 
     
+    private IStandardTestReader testReader = new StandardTestReader();
+    private IStandardTestEvaluator testEvaluator = new StandardTestEvaluator();
     private IStandardTestBuilder testBuilder = new StandardTestBuilder(this);
-    private Map<String,String> defaultDirectives = new HashMap<String,String>();
     
     
     
@@ -73,20 +73,6 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
 
     
     
-    
-    public Map<String,String> getDefaultDirectives() {
-        return Collections.unmodifiableMap(this.defaultDirectives);
-    }
-
-    
-    public void setDefaultDirective(final String directive, final String value) {
-        this.defaultDirectives.put(directive, value);
-    }
-    
-    
-    public void setDefaultDirectives(final Map<String,String> directives) {
-        this.defaultDirectives.putAll(directives);
-    }
 
     
     
@@ -95,11 +81,35 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     }
     
     public void setTestBuilder(final IStandardTestBuilder testBuilder) {
+        Validate.notNull(testBuilder, "Test Builder cannot be null");
         this.testBuilder = testBuilder;
     }
     
     
-    
+    public IStandardTestReader getTestReader() {
+        return this.testReader;
+    }
+
+    public void setTestReader(final IStandardTestReader testReader) {
+        Validate.notNull(testReader, "Test Reader cannot be null");
+        this.testReader = testReader;
+    }
+
+
+    public IStandardTestEvaluator getTestEvaluator() {
+        return this.testEvaluator;
+    }
+
+    public void setTestEvaluator(final IStandardTestEvaluator testEvaluator) {
+        Validate.notNull(testEvaluator, "Test Evaluator cannot be null");
+        this.testEvaluator = testEvaluator;
+    }
+
+
+
+
+
+
     public final ITestable resolve(final String executionId, final String testableName) {
 
         Validate.notNull(executionId, "Execution ID cannot be null");
@@ -182,32 +192,46 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     protected final ITest resolveAsTest(final String executionId, final File file) {
         
-        final String documentName = file.getName();
+        Validate.notNull(executionId, "Execution ID cannot be null");
+        Validate.notNull(file, "Test document file cannot be null");
         
+        final String documentName = file.getName();
+
+        final IStandardTestReader reader = getTestReader();
+        if (reader == null) {
+            throw new TestEngineExecutionException("A null test reader has been configured");
+        }
+        final IStandardTestEvaluator evaluator = getTestEvaluator();
+        if (evaluator == null) {
+            throw new TestEngineExecutionException("A null test evaluator has been configured");
+        }
+        final IStandardTestBuilder builder = getTestBuilder();
+        if (builder == null) {
+            throw new TestEngineExecutionException("A null test builder has been configured");
+        }
+        
+        
+        /*
+         * Initialization: create a java.io.Reader on the document file
+         */
         final Reader documentReader;
         try {
             documentReader = new FileReader(file);
         } catch (final FileNotFoundException e) {
             throw new TestEngineExecutionException( 
-                    executionId, "Test file \"" + file.getAbsolutePath() + "\" does not exist");
+                    "Test file \"" + file.getAbsolutePath() + "\" does not exist");
         }
         
-        final StandardTestDocumentData data = new StandardTestDocumentData(executionId, documentName);
-        
+        final StandardTestRawData rawData;
         try {
-            StandardTestReaderUtils.readDocument(documentReader, data);
+            rawData = reader.readTestDocument(executionId, documentName, documentReader);
         } catch (final IOException e) {
-            throw new TestEngineExecutionException(executionId, "Error reading document \"" + documentName + "\"", e);
-        }
-
-        
-        final IStandardTestBuilder builder = getTestBuilder();
-        if (builder == null) {
-            throw new TestEngineExecutionException(
-                    executionId, "A null test builder has been specified");
+            throw new TestEngineExecutionException("Error reading document \"" + documentName + "\"", e);
         }
         
-        return builder.buildTest(executionId, documentName, data);
+        final StandardTestEvaluatedData evaluatedData = evaluator.evaluateTestData(executionId, rawData);
+        
+        return builder.buildTest(executionId, evaluatedData);
         
     }
     
@@ -215,7 +239,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    protected final ITestSequence resolveAsTestSequence(final String executionId, final File file) {
+    protected ITestSequence resolveAsTestSequence(final String executionId, final File file) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(file, "File cannot be null");
@@ -225,10 +249,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         final TestSequence testSequence = new TestSequence();
         testSequence.setName(fileName);
         
-        final List<File> orderedFiles = 
-                orderFolderFilesInSequence(Arrays.asList(file.listFiles()));
-        
-        for (final File fileInFolder : orderedFiles) {
+        for (final File fileInFolder : file.listFiles()) {
             final ITestable testable = resolveFile(executionId, fileInFolder);
             if (testable != null) {
                 testSequence.addElement(testable);
@@ -237,14 +258,6 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
         return testSequence;
         
-    }
-    
-    
-    /*
-     * Meant to be overriden
-     */
-    protected List<File> orderFolderFilesInSequence(final List<File> fileList) {
-        return fileList;
     }
     
     
@@ -258,7 +271,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         final Matcher iterMatcher = ITERATOR_PATTERN.matcher(fileName);
         if (!iterMatcher.matches()) {
             throw new TestEngineExecutionException(
-                    executionId, "Cannot match \"" + fileName + "\" as a valid folder name for an iterator");
+                    "Cannot match \"" + fileName + "\" as a valid folder name for an iterator");
         }
         final int iterations = Integer.parseInt(iterMatcher.group(2));
 
@@ -279,7 +292,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         final Matcher iterMatcher = PARALLELIZER_PATTERN.matcher(fileName);
         if (!iterMatcher.matches()) {
             throw new TestEngineExecutionException(
-                    executionId, "Cannot match \"" + fileName + "\" as a valid folder name for a parallelizer");
+                    "Cannot match \"" + fileName + "\" as a valid folder name for a parallelizer");
         }
         final int numThreads = Integer.parseInt(iterMatcher.group(2));
 
@@ -289,6 +302,10 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
     }
 
+    
+    
+    
+    
     
     
 }

@@ -17,35 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field;
+
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
 
 
 
 
+public interface IStandardTestFieldEvaluator {
 
-public class DefaultExtendsStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
-
+    public Class<?> getValueClass();
     
-    public static final DefaultExtendsStandardDirectiveResolver INSTANCE = new DefaultExtendsStandardDirectiveResolver();
-    public static final String DEFAULT_VALUE = null; 
-    
-    private DefaultExtendsStandardDirectiveResolver() {
-        super(String.class);
-    }
-
-
-    @Override
-    public String getValue(final String executionId, final String documentName, 
-            final String directiveName, final String directiveQualifier, final String directiveValue) {
-        
-        if (directiveValue == null || directiveValue.trim().equals("")) {
-            return DEFAULT_VALUE;
-        }
-
-        return directiveValue;
-        
-    }
-
+    public StandardTestEvaluatedField getValue(
+            final String executionId, final StandardTestRawData data, 
+            final String fieldName, final String fieldQualifier);
     
 }

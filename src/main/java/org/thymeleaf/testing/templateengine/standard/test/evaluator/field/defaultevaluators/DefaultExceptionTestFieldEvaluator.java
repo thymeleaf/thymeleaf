@@ -17,56 +17,51 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
 
 
-public class DefaultExceptionDirectiveResolver 
-        extends AbstractStandardDirectiveResolver<Class<? extends Throwable>> {
+public class DefaultExceptionTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
 
     
-    public static final DefaultExceptionDirectiveResolver INSTANCE = new DefaultExceptionDirectiveResolver();
-    public static final Class<? extends Throwable> DEFAULT_VALUE = null; 
+    public static final DefaultExceptionTestFieldEvaluator INSTANCE = new DefaultExceptionTestFieldEvaluator();
     
     
-    @SuppressWarnings("unchecked")
-    private DefaultExceptionDirectiveResolver() {
-        super((Class<Class<? extends Throwable>>)(Class<?>)Class.class);
+    private DefaultExceptionTestFieldEvaluator() {
+        super(Class.class);
     }
 
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Class<? extends Throwable> getValue(
+    public StandardTestEvaluatedField getValue(
             final String executionId, final String documentName, 
-            final String directiveName, final String directiveQualifier, final String directiveValue) {
+            final String fieldName, final String fieldQualifier, final String fieldValue) {
         
-        if (directiveValue == null || directiveValue.trim().equals("")) {
-            return DEFAULT_VALUE;
+        if (fieldValue == null || fieldValue.trim().equals("")) {
+            return StandardTestEvaluatedField.forNoValue();
         }
 
         Class<?> specifiedClass = null;
         try {
-            specifiedClass = Class.forName(directiveValue.trim());
+            specifiedClass = Class.forName(fieldValue.trim());
         } catch (final Throwable t) {
             throw new TestEngineExecutionException(
-                    executionId,
-                    "Exception initializing directive \"" + directiveName + "\" in document " +
+                    "Exception initializing field \"" + fieldName + "\" in document " +
             		"\"" + documentName + "\"", t);
         }
         
         if (!Throwable.class.isAssignableFrom(specifiedClass)) {
             throw new TestEngineExecutionException(
-                    executionId,
-                    "Exception initializing directive \"" + directiveName + "\" in document " +
+                    "Exception initializing field \"" + fieldName + "\" in document " +
                     "\"" + documentName + "\": Class \"" + specifiedClass.getClass().getName() + "\" does not " +
                     "extend " + Throwable.class.getName());
         }
         
-        return (Class<? extends Throwable>) specifiedClass;
+        return StandardTestEvaluatedField.forSpecifiedValue(specifiedClass);
         
     }
 

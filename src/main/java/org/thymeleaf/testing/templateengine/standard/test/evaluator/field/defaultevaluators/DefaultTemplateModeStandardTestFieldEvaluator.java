@@ -17,34 +17,37 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
+
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
 
 
 
 
-public class DefaultTemplateModeStandardDirectiveResolver extends AbstractStandardDirectiveResolver<String> {
+public class DefaultTemplateModeStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
 
     
-    public static final DefaultTemplateModeStandardDirectiveResolver INSTANCE = new DefaultTemplateModeStandardDirectiveResolver();
+    public static final DefaultTemplateModeStandardTestFieldEvaluator INSTANCE = 
+            new DefaultTemplateModeStandardTestFieldEvaluator();
     public static final String DEFAULT_VALUE = "HTML5"; 
 
     
-    private DefaultTemplateModeStandardDirectiveResolver() {
+    private DefaultTemplateModeStandardTestFieldEvaluator() {
         super(String.class);
     }
     
 
     @Override
-    public String getValue(final String executionId, final String documentName, 
-            final String directiveName, final String directiveQualifier, final String directiveValue) {
+    public StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+            final String fieldName, final String fieldQualifier, final String fieldValue) {
         
-        if (directiveValue == null || directiveValue.trim().equals("")) {
-            return DEFAULT_VALUE;
+        if (fieldValue == null || fieldValue.trim().equals("")) {
+            return StandardTestEvaluatedField.forDefaultValue(DEFAULT_VALUE);
         }
         
-        return directiveValue.trim();
+        return StandardTestEvaluatedField.forSpecifiedValue(fieldValue.trim());
         
     }
     

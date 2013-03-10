@@ -17,25 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.reader;
+
+import java.io.IOException;
+import java.io.Reader;
+
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
 
 
-public class DefaultInputStandardDirectiveResolver extends AbstractTempFileResourceStandardDirectiveResolver {
-
-    
-    public static final DefaultInputStandardDirectiveResolver INSTANCE = new DefaultInputStandardDirectiveResolver();
-
-    
-    private DefaultInputStandardDirectiveResolver() {
-        super();
-    }
+public interface IStandardTestReader {
 
     
-    @Override
-    protected String getFileSuffix() {
-        return "INPUT";
-    }
-
+    public StandardTestRawData readTestDocument(
+            final String executionId, final String documentName, final Reader documentReader) 
+            throws IOException;
     
 }

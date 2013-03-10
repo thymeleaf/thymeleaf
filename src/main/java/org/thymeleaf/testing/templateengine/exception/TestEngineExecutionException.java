@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.testing.templateengine.exception;
 
+import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+
 
 
 
@@ -28,42 +30,39 @@ public class TestEngineExecutionException extends RuntimeException {
 
     
     private static final long serialVersionUID = -341588084846304479L;
-    
-    private final String executionId;
 
     
     
-    public TestEngineExecutionException(final String executionId) {
-        super();
-        this.executionId = executionId;
-    }
-
-    
-    public TestEngineExecutionException(final String executionId, final String message, final Throwable throwable) {
+    public TestEngineExecutionException(final String message, final Throwable throwable) {
         super(message, throwable);
-        this.executionId = executionId;
     }
 
-    public TestEngineExecutionException(final String executionId, final String message) {
+    public TestEngineExecutionException(final String message) {
         super(message);
-        this.executionId = executionId;
     }
 
-    public TestEngineExecutionException(final String executionId, final Throwable throwable) {
+    public TestEngineExecutionException(final Throwable throwable) {
         super(throwable);
-        this.executionId = executionId;
     }
 
 
     @Override
     public String getLocalizedMessage() {
-        return "[" + this.executionId + "] " + super.getLocalizedMessage();
+        final String executionId = TestExecutor.getThreadExecutionId();
+        if (executionId != null) {
+            return "[" + executionId + "] " + super.getLocalizedMessage();
+        }
+        return super.getLocalizedMessage();
     }
 
 
     @Override
     public String getMessage() {
-        return "[" + this.executionId + "] " + super.getMessage();
+        final String executionId = TestExecutor.getThreadExecutionId();
+        if (executionId != null) {
+            return "[" + executionId + "] " + super.getMessage();
+        }
+        return super.getMessage();
     }
     
     

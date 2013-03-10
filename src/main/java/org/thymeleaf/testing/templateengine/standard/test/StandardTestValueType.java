@@ -17,20 +17,6 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.context;
+package org.thymeleaf.testing.templateengine.standard.test;
 
-
-
-
-
-
-public class ContextNaming {
-
-    public static final String TEST_OBJECT = "$test:object$";
-    
-    
-    private ContextNaming() {
-        super();
-    }
-    
-}
+public enum StandardTestValueType { SPECIFIED, DEFAULT, NO_VALUE }

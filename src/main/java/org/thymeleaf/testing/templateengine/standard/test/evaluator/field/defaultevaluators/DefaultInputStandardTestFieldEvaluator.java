@@ -17,24 +17,25 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 
 
-public class DefaultOutputStandardDirectiveResolver extends AbstractTempFileResourceStandardDirectiveResolver {
 
-    
-    public static final DefaultOutputStandardDirectiveResolver INSTANCE = new DefaultOutputStandardDirectiveResolver();
+public class DefaultInputStandardTestFieldEvaluator extends AbstractTempFileResourceStandardTestFieldEvaluator {
 
     
-    private DefaultOutputStandardDirectiveResolver() {
+    public static final DefaultInputStandardTestFieldEvaluator INSTANCE = new DefaultInputStandardTestFieldEvaluator();
+
+    
+    private DefaultInputStandardTestFieldEvaluator() {
         super();
     }
 
     
     @Override
     protected String getFileSuffix() {
-        return "OUTPUT";
+        return "INPUT";
     }
 
     

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import java.io.ByteArrayInputStream;
 import java.util.Locale;
@@ -27,30 +27,32 @@ import java.util.Properties;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
 
-public class DefaultContextStandardDirectiveResolver extends AbstractStandardDirectiveResolver<IContext> {
+public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
 
     
-    public static final DefaultContextStandardDirectiveResolver INSTANCE = new DefaultContextStandardDirectiveResolver();
+    public static final DefaultContextStandardTestFieldEvaluator INSTANCE = 
+            new DefaultContextStandardTestFieldEvaluator();
     
     public static final String LOCALE_PROPERTY_NAME = "locale";
     
     
     
-    private DefaultContextStandardDirectiveResolver() {
+    private DefaultContextStandardTestFieldEvaluator() {
         super(IContext.class);
     }
 
 
 
     @Override
-    protected IContext getValue(final String executionId, final String documentName, 
-            final String directiveName, final String directiveQualifier, final String directiveValue) {
+    protected StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+            final String fieldName, final String fieldQualifier, final String fieldValue) {
         
-        if (directiveValue == null || directiveValue.trim().equals("")) {
-            return new Context();
+        if (fieldValue == null || fieldValue.trim().equals("")) {
+            return StandardTestEvaluatedField.forDefaultValue(new Context());
         }
 
         final Properties valueAsProperties = new Properties();
@@ -61,13 +63,13 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
              * This String -> byte[] conversion is needed because java.util.Properties 
              * did not allow using a java.io.Reader for loading properties until Java 6.
              */
-            final byte[] valueAsBytes = directiveValue.getBytes("ISO-8859-1");
+            final byte[] valueAsBytes = fieldValue.getBytes("ISO-8859-1");
             final ByteArrayInputStream inputStream = new ByteArrayInputStream(valueAsBytes);
 
             valueAsProperties.load(inputStream);
             
         } catch (final Throwable t) {
-            throw new TestEngineExecutionException(executionId, 
+            throw new TestEngineExecutionException( 
                     "Error while reading context specification", t);
         }
         
@@ -81,7 +83,7 @@ public class DefaultContextStandardDirectiveResolver extends AbstractStandardDir
             ctx.setVariable((String)entry.getKey(), (String)entry.getValue());
         }
 
-        return ctx;
+        return StandardTestEvaluatedField.forSpecifiedValue(ctx);
         
     }
     

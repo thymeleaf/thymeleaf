@@ -253,10 +253,6 @@ public class TestTemplateResolver implements ITemplateResolver {
         // The TestExecutionContext is a local variable, so we must retrieve it
         final IProcessingContext processingContext = templateProcessingParameters.getProcessingContext();
         
-        // Retrieve the execution ID
-        final String executionId = 
-                (String) processingContext.getLocalVariable(ContextNaming.EXECUTION_ID);
-        
         // Retrieve the ITest object from context
         final ITest test = 
                 (ITest) processingContext.getLocalVariable(ContextNaming.TEST_OBJECT);
@@ -266,7 +262,7 @@ public class TestTemplateResolver implements ITemplateResolver {
         // Check template mode
         final String templateMode = test.getTemplateMode();
         if (templateMode == null) {
-            throw new TestEngineExecutionException(executionId, 
+            throw new TestEngineExecutionException(
                     "Template mode is null for test \"" + testName + "\", which is forbidden");
         }
 
@@ -274,7 +270,7 @@ public class TestTemplateResolver implements ITemplateResolver {
         // Check input
         final ITestResource input = test.getInput();
         if (input == null) {
-            throw new TestEngineExecutionException(executionId, 
+            throw new TestEngineExecutionException(
                     "Input is null for test \"" + testName + "\", which is forbidden");
         }
         

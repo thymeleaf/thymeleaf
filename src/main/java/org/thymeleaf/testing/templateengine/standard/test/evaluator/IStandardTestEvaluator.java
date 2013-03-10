@@ -17,17 +17,17 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.directive.resolver;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator;
 
-import org.thymeleaf.testing.templateengine.standard.data.StandardTestDocumentData;
-
-
-
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
 
-public interface IStandardDirectiveResolver<T> {
 
-    public Class<T> getValueClass();
-    public T getValue(final String executionId, final StandardTestDocumentData data, final String directiveName, final String directiveQualifier);
+public interface IStandardTestEvaluator {
+
+    
+    public StandardTestEvaluatedData evaluateTestData(
+            final String executionId, final StandardTestRawData rawData);
     
 }

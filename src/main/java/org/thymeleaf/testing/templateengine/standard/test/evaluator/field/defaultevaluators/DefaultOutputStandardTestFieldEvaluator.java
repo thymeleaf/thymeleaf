@@ -17,20 +17,26 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.context;
+package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 
 
 
+public class DefaultOutputStandardTestFieldEvaluator extends AbstractTempFileResourceStandardTestFieldEvaluator {
 
-
-public class ContextNaming {
-
-    public static final String TEST_OBJECT = "$test:object$";
     
+    public static final DefaultOutputStandardTestFieldEvaluator INSTANCE = new DefaultOutputStandardTestFieldEvaluator();
+
     
-    private ContextNaming() {
+    private DefaultOutputStandardTestFieldEvaluator() {
         super();
     }
+
+    
+    @Override
+    protected String getFileSuffix() {
+        return "OUTPUT";
+    }
+
     
 }
