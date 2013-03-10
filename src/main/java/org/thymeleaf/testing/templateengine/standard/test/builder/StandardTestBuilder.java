@@ -29,9 +29,9 @@ import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.StandardTest;
 import org.thymeleaf.testing.templateengine.standard.test.StandardTestValueType;
-import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestFieldNaming;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
+import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestFieldNaming;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
 import org.thymeleaf.testing.templateengine.testable.Test;
@@ -141,7 +141,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
          * Initialize the test object
          */
 
-        final StandardTest test =  new StandardTest();
+        final StandardTest test =  createTestInstance();
         
         if (name != null && name.hasValue()) {
             test.setName((String)name.getValue(), name.getValueType());
@@ -256,6 +256,8 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             }
             
         }
+
+        additionalInitialization(test, parentTest, data);
         
         return test;
         
@@ -292,6 +294,18 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         
         return false;
         
+    }
+    
+    
+    
+    protected StandardTest createTestInstance() {
+        return new StandardTest();
+    }
+    
+
+    @SuppressWarnings("unused")
+    protected void additionalInitialization(final StandardTest test, final ITest parentTest, final StandardTestEvaluatedData data) {
+        // nothing to do here, meant to be overridden
     }
     
     
