@@ -275,7 +275,10 @@ public final class TestExecutor {
             result.addResult(executeTestable(element, context.nest()));
         }
         
-        this.reporter.sequenceEnd(context.getExecutionId(), context.getNestingLevel(), sequence, result.getTotalTimeNanos());
+        this.reporter.sequenceEnd(
+                context.getExecutionId(), context.getNestingLevel(), sequence,
+                result.getTotalTestsOk(), result.getTotalTestsExecuted(), 
+                result.getTotalTimeNanos());
         
         return result;
         
@@ -302,13 +305,19 @@ public final class TestExecutor {
 
             final TestExecutionResult elementResult = executeTestable(element, iterationContext.nest());
             
-            this.reporter.iterationEnd(context.getExecutionId(), iterationContext.getNestingLevel(), iterator, i, elementResult.getTotalTimeNanos());
+            this.reporter.iterationEnd(
+                    context.getExecutionId(), iterationContext.getNestingLevel(), iterator, i,
+                    elementResult.getTotalTestsOk(), elementResult.getTotalTestsExecuted(), 
+                    elementResult.getTotalTimeNanos());
             
             result.addResult(elementResult);
             
         }
         
-        this.reporter.iteratorEnd(context.getExecutionId(), context.getNestingLevel(), iterator, result.getTotalTimeNanos());
+        this.reporter.iteratorEnd(
+                context.getExecutionId(), context.getNestingLevel(), iterator,
+                result.getTotalTestsOk(), result.getTotalTestsExecuted(), 
+                result.getTotalTimeNanos());
         
         return result;
         
@@ -348,7 +357,10 @@ public final class TestExecutor {
         
         threadExecutor.shutdown();
         
-        this.reporter.parallelizerEnd(context.getExecutionId(), context.getNestingLevel(), parallelizer, result.getTotalTimeNanos());
+        this.reporter.parallelizerEnd(
+                context.getExecutionId(), context.getNestingLevel(), parallelizer,
+                result.getTotalTestsOk(), result.getTotalTestsExecuted(), 
+                result.getTotalTimeNanos());
         
         return result;
         
@@ -452,7 +464,9 @@ public final class TestExecutor {
                     this.executor.executeTestable(parallelizedElement, threadExecutionContext.nest());
             
             this.executor.reporter.parallelThreadEnd(
-                    this.context.getExecutionId(), threadExecutionContext.getNestingLevel(), this.parallelizer, this.threadNumber, result.getTotalTimeNanos());
+                    this.context.getExecutionId(), threadExecutionContext.getNestingLevel(), this.parallelizer, this.threadNumber,
+                    result.getTotalTestsOk(), result.getTotalTestsExecuted(),
+                    result.getTotalTimeNanos());
 
             return result;
             

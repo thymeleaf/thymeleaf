@@ -31,22 +31,22 @@ public interface ITestReporter {
 
 
     public void sequenceStart(final String executionId, final int nestingLevel, final ITestSequence sequence);
-    public void sequenceEnd(final String executionId, final int nestingLevel, final ITestSequence sequence, final long executionTimeNanos);
+    public void sequenceEnd(final String executionId, final int nestingLevel, final ITestSequence sequence, final int okTests, final int totalTests, final long executionTimeNanos);
     
     public void iteratorStart(final String executionId, final int nestingLevel, final ITestIterator iterator);
-    public void iteratorEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final long executionTimeNanos);
+    public void iteratorEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final int okTests, final int totalTests, final long executionTimeNanos);
     public void iterationStart(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iterationNumber);
-    public void iterationEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iterationNumber, final long executionTimeNanos);
+    public void iterationEnd(final String executionId, final int nestingLevel, final ITestIterator iterator, final int iterationNumber, final int okTests, final int totalTests, final long executionTimeNanos);
     
     public void parallelizerStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer);
-    public void parallelizerEnd(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final long executionTimeNanos);
+    public void parallelizerEnd(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final int okTests, final int totalTests, final long executionTimeNanos);
     public void parallelThreadStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final int threadNumber);
-    public void parallelThreadEnd(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final int threadNumber, final long executionTimeNanos);
+    public void parallelThreadEnd(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer, final int threadNumber, final int okTests, final int totalTests, final long executionTimeNanos);
 
     /*
      * "testExecutionName" is needed instead of using test.getName() because the same ITest instance could be
-     * used in different parts of a suite's sequence, and the TestExecutionContext ensures the same name is always used
-     * for it, even if it is null from test definition.
+     * used in different parts of a test set, and it should be identifiable by its name, even if it is null 
+     * from test definition (one is synthetically created for it in such case).
      */
     public void testStart(final String executionId, final int nestingLevel, final ITest test, final String testName);
     public void testEnd(final String executionId, final int nestingLevel, final ITest test, final String testName, final ITestResult result, final long executionTimeNanos);

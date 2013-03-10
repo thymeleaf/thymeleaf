@@ -67,17 +67,21 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
 
     
     public final void sequenceEnd(final String executionId, final int nestingLevel,  
-            final ITestSequence sequence, final long executionTimeNanos) {
-        outputMessage(executionId, msgSequenceEnd(sequence, executionTimeNanos), nestingLevel, false);
+            final ITestSequence sequence, final int okTests, final int totalTests, final long executionTimeNanos) {
+        outputMessage(executionId, msgSequenceEnd(sequence, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
     
-    public String msgSequenceEnd(final ITestSequence sequence, final long executionTimeNanos) {
+    public String msgSequenceEnd(final ITestSequence sequence, final int okTests, final int totalTests, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[sequence:end]");
         if (sequence.hasName()) {
             strBuilder.append("[" + sequence.getName() + "]");
         }
+        strBuilder.append("[" + okTests + "]");
+        strBuilder.append("[" + totalTests + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Tests OK: " + okTests + " of " + totalTests + 
+                (okTests < totalTests ? (" (FAILED: " + (totalTests - okTests) + ")") : "") + ".");
         strBuilder.append(" Sequence executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
@@ -103,18 +107,22 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void iteratorEnd(final String executionId, final int nestingLevel, 
-            final ITestIterator iterator, final long executionTimeNanos) {
-        outputMessage(executionId, msgIteratorEnd(iterator, executionTimeNanos), nestingLevel, false);
+            final ITestIterator iterator, final int okTests, final int totalTests, final long executionTimeNanos) {
+        outputMessage(executionId, msgIteratorEnd(iterator, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
     
-    public String msgIteratorEnd(final ITestIterator iterator, final long executionTimeNanos) {
+    public String msgIteratorEnd(final ITestIterator iterator, final int okTests, final int totalTests, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[iterator:end]");
         if (iterator.hasName()) {
             strBuilder.append("[" + iterator.getName() + "]");
         }
         strBuilder.append("[" + iterator.getIterations() + "]");
+        strBuilder.append("[" + okTests + "]");
+        strBuilder.append("[" + totalTests + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Tests OK: " + okTests + " of " + totalTests + 
+                (okTests < totalTests ? (" (FAILED: " + (totalTests - okTests) + ")") : "") + ".");
         strBuilder.append(" Iterator executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
@@ -142,12 +150,12 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void iterationEnd(final String executionId, final int nestingLevel,  
-            final ITestIterator iterator, final int iterationNumber, final long executionTimeNanos) {
-        outputMessage(executionId, msgIterationEnd(iterator, iterationNumber, executionTimeNanos), nestingLevel, false);
+            final ITestIterator iterator, final int iterationNumber, final int okTests, final int totalTests, final long executionTimeNanos) {
+        outputMessage(executionId, msgIterationEnd(iterator, iterationNumber, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
     
     public String msgIterationEnd(final ITestIterator iterator, 
-            final int iterationNumber, final long executionTimeNanos) {
+            final int iterationNumber, final int okTests, final int totalTests, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[iteration:end]");
         if (iterator.hasName()) {
@@ -155,7 +163,11 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
         }
         strBuilder.append("[" + iterationNumber + "]");
         strBuilder.append("[" + iterator.getIterations() + "]");
+        strBuilder.append("[" + okTests + "]");
+        strBuilder.append("[" + totalTests + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Tests OK: " + okTests + " of " + totalTests + 
+                (okTests < totalTests ? (" (FAILED: " + (totalTests - okTests) + ")") : "") + ".");
         strBuilder.append(" Iteration executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
@@ -184,18 +196,22 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void parallelizerEnd(final String executionId, final int nestingLevel, 
-            final ITestParallelizer parallelizer, final long executionTimeNanos) {
-        outputMessage(executionId, msgParallelizerEnd(parallelizer, executionTimeNanos), nestingLevel, false);
+            final ITestParallelizer parallelizer, final int okTests, final int totalTests, final long executionTimeNanos) {
+        outputMessage(executionId, msgParallelizerEnd(parallelizer, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
     
-    public String msgParallelizerEnd(final ITestParallelizer parallelizer, final long executionTimeNanos) {
+    public String msgParallelizerEnd(final ITestParallelizer parallelizer, final int okTests, final int totalTests, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[parallelizer:end]");
         if (parallelizer.hasName()) {
             strBuilder.append("[" + parallelizer.getName() + "]");
         }
         strBuilder.append("[" + parallelizer.getNumThreads() + "]");
+        strBuilder.append("[" + okTests + "]");
+        strBuilder.append("[" + totalTests + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Tests OK: " + okTests + " of " + totalTests + 
+                (okTests < totalTests ? (" (FAILED: " + (totalTests - okTests) + ")") : "") + ".");
         strBuilder.append(" Parallelizer executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
@@ -223,12 +239,12 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     public final void parallelThreadEnd(final String executionId, final int nestingLevel,  
-            final ITestParallelizer parallelizer, final int threadNumber, final long executionTimeNanos) {
-        outputMessage(executionId, msgParallelThreadEnd(parallelizer, threadNumber, executionTimeNanos), nestingLevel, false);
+            final ITestParallelizer parallelizer, final int threadNumber, final int okTests, final int totalTests, final long executionTimeNanos) {
+        outputMessage(executionId, msgParallelThreadEnd(parallelizer, threadNumber, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
     
     public String msgParallelThreadEnd(final ITestParallelizer parallelizer, 
-            final int threadNumber, final long executionTimeNanos) {
+            final int threadNumber, final int okTests, final int totalTests, final long executionTimeNanos) {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append("[parallelthread:end]");
         if (parallelizer.hasName()) {
@@ -236,7 +252,11 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
         }
         strBuilder.append("[" + threadNumber + "]");
         strBuilder.append("[" + parallelizer.getNumThreads() + "]");
+        strBuilder.append("[" + okTests + "]");
+        strBuilder.append("[" + totalTests + "]");
         strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Tests OK: " + okTests + " of " + totalTests + 
+                (okTests < totalTests ? (" (FAILED: " + (totalTests - okTests) + ")") : "") + ".");
         strBuilder.append(" Parallel thread executed in " + duration(executionTimeNanos));
         return strBuilder.toString();
     }
