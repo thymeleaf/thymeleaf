@@ -21,6 +21,7 @@
       <directory>${basedir}/</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
+        <include>CONTRIBUTING.markdown</include>
         <include>LICENSE.txt</include>
         <include>README.txt</include>
         <include>BUILD.txt</include>
