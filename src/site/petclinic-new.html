@@ -3,7 +3,7 @@
 
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Bringing HTML5 to the Spring PetClinic with Thymeleaf - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <title>Bringing Thymeleaf and Natural Templates to the Spring PetClinic - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
     <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
     <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
     <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
@@ -64,18 +64,24 @@
       :: 
       articles
       ::
-      <span class="current">bringing html5 to the spring petclinic with thymeleaf</span>
+      <span class="current">bringing thymeleaf and natural templates to the spring petclinic</span>
    </div>
 
 
    <div id="content">
 
-     <h1>Bringing HTML5 to the Spring PetClinic with Thymeleaf</h1>
+     <h1>Bringing Thymeleaf and Natural Templates to the Spring PetClinic</h1>
 
      <p id="author">
        <i>By Soraya S&aacute;nchez &lt;sschz AT users.sourceforge.net&gt;</i>
      </p>
 
+
+    <p>
+      <b>Note</b>: The Spring PetClinic application received a major update from SpringSource in March 2013,
+      and the <i>thymeleafexamples-petclinic</i> application has been updated consequently, along with
+      this article.
+    </p>
 
 
     <h2>The Spring PetClinic application</h2>
@@ -83,26 +89,22 @@
     
     <p><i>PetClinic</i> is one of the example applications created by SpringSource for
        the Spring Framework. It is designed to display and manage information 
-       related to pets and veterinarians in a pet clinic. More info can be obtained 
-       <a href="http://static.springsource.org/docs/petclinic.html">here</a>,
-       and the source code can be obtained 
+       related to pets and veterinarians in a pet clinic. The original SpringSource
+       version lives in GitHub
        <a href="https://github.com/SpringSource/spring-petclinic">here</a>.</p>
     
     <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
-
-
-    <p>[ADD NOTE ABOUT NEW VERSION]</p>
     
     <p><i>Pet Clinic</i> originally includes a view layer created with JSP, which we will replace using Thymeleaf:</p>
     
     <ul>
         <li>Modifications will be focused on the view layer: the JSP files will be replaced
-            and the application will be reconfigured. Controllers will be left untouched.</li>
+            and the application will be reconfigured. All Java code will be left untouched.</li>
         <li>The original XHTML will be replaced with HTML5, and some HTML5-specific features will be 
             added (i.e. form input fields with type <kbd>tel</kbd>, <kbd>date</kbd>,...).</li>
         <li>Apart from the switch to HTML5, all the application's interface will have to display exactly the same
             as the original.</li>
-        <li>Thymeleaf template files should display OK when opened statically on a browser (<i>Natural templating</i>).</li>
+        <li>Thymeleaf template files should display OK when opened statically on a browser (<i>Natural templates</i>).</li>
     </ul>
     
     <p>
@@ -113,7 +115,7 @@
     </p>
     
     <p>
-      The version of the PetClinic application used as a base is the state of its <i>master branch at Github</i> as of March 2013.
+      The version of the PetClinic application used as a base is the state of its <i>master branch at Github</i> as of 17 March 2013.
     </p>
     
     
@@ -134,11 +136,11 @@
         <li>The original JSP templates are not well-formed HTML documents. For example, 
             the <i>"ownersList"</i> page:
             <ol> 
-                <li>Does not contain a head tag but a JSP include one (=> not understandable by the browser) linking to the page
-                containing the head content</li>
-                <li>Header and footer contents have been replaced by JSP include tags (=> not understandable by the browser) 
-                so the pages can't be displayed statically including their header and footer. Anyway, even if those contents
-                were in the page, as pages contain JSP and JSTL tags, we could not see a real prototype</li>
+                <li>Does not contain a head tag, adding insteadone from another JSP using a <i>JSP include</i> 
+                (=> not understandable by browsers).</li>
+                <li>Header and footer contents have been replaced by JSP include tags (=> not understandable by browsers) 
+                so the pages can't be displayed statically including their header and footer. And anyway, even if those contents
+                were in the page, as pages contain JSP and JSTL tags, we wouldn't be able to see a real prototype.</li>
             </ol>
         </li>
     </ul>         
@@ -155,6 +157,7 @@
     <ul>
       <li>The <kbd>pom.xml</kbd> file will be modified in order to add the Thymeleaf dependencies to it and remove the 
           JSP-related ones.</li>
+      <li>The <kbd>web.xml</kbd> file will be modified in order to remove JSP-related servlets and filters.</li>
     </ul>
     
 
@@ -164,7 +167,7 @@
 	
     <p>
       Our next configuration step will be to add three required beans at the Spring beans configuration file,
-      <kbd>petclinic-servlet.xml</kbd>:
+      <kbd>mvc-view-config.xml</kbd>:
     </p>
     <ul>
       <li>The Thymeleaf <i>template resolver</i> that will be in charge of reading the 
@@ -178,71 +181,64 @@
 <code>
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateResolver&quot;</span>&nbsp;
+&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateResolver&quot;</span>&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Template&nbsp;cache&nbsp;is&nbsp;set&nbsp;to&nbsp;false&nbsp;(default&nbsp;is&nbsp;true).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Template&nbsp;cache&nbsp;is&nbsp;set&nbsp;to&nbsp;false&nbsp;(default&nbsp;is&nbsp;true).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+&lt;<b>/bean</b>&gt;
 <br />
 
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.ContentNegotiatingViewResolver&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;contentNegotiationManager&quot;</span>&nbsp;ref=<span class="string">&quot;cnManager&quot;</span>/&gt;
+&lt;<b>/bean</b>&gt;
+
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;viewResolvers&quot;</span>&gt;
+&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.ContentNegotiatingViewResolver&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    &lt;<b>list</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;contentNegotiationManager&quot;</span>&nbsp;ref=<span class="string">&quot;cnManager&quot;</span>/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;viewResolvers&quot;</span>&gt;
 <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Used&nbsp;here&nbsp;for&nbsp;&#39;xml&#39;&nbsp;and&nbsp;&#39;atom&#39;&nbsp;views&nbsp;&nbsp;--&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>list</b>&gt;
 <br />
-            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.BeanNameViewResolver&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Used&nbsp;here&nbsp;for&nbsp;&#39;xml&#39;&nbsp;and&nbsp;&#39;atom&#39;&nbsp;views&nbsp;&nbsp;--&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;1&quot;</span>/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.BeanNameViewResolver&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;1&quot;</span>/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Used&nbsp;for&nbsp;Thymeleaf&nbsp;views&nbsp;&nbsp;--&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>/&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    &lt;<b>/list</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/list</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
 <br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+&lt;<b>/bean</b>&gt;
 <br />
 
 
@@ -282,7 +278,6 @@
       page (<kbd>findOwners.jsp</kbd>):
     </p>
     
-    [REPLACE IMAGE]
     <img src="images/thymeleafpetclinic_owners.png" alt="Owners page"/> 
 
     
