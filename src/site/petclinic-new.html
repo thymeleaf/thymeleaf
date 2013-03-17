@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Bringing HTML5 to the Spring PetClinic with Thymeleaf - Thymeleaf: java XML/XHTML/HTML5 template engine</title>
+    <link rel="stylesheet" type="text/css" media="all" href="css/thymeleaf.css" />
+    <link rel="shortcut icon" href="http://www.thymeleaf.org/favicon.ico" />
+    <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+      {lang:'en', parsetags:'explicit'}
+    </script>
+    
+    <style type="text/css">
+        /* ---------------------- */
+        /* PETCLINIC IMAGES       */
+        /* ---------------------- */
+        #content img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-1276954-9']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+  </head>
+
+
+  <body lang="en" dir="ltr">
+
+  <div id="page">
+
+  
+   <div id="menu">
+     <ul>
+       <li><a href="index.html" title="Home">Home</a></li>
+       <li><a href="features.html" title="Features">Features</a></li>
+       <li><a href="download.html" title="Download">Download</a></li>
+       <li><a href="documentation.html" title="Documentation">Documentation</a></li>
+       <li><a href="ecosystem.html" title="Ecosystem">Ecosystem</a></li>
+       <li><a href="http://forum.thymeleaf.org" title="User Forum">User Forum</a></li>
+       <li><a href="issuetracking.html" title="Issue Tracking">Issue Tracking</a></li>
+     </ul>
+   </div>
+
+   <div id="header">
+     <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
+   </div>
+
+   <div id="breadcrumb">
+      <a href="index.html">thymeleaf</a>
+      ::
+      <a href="documentation.html">documentation</a> 
+      :: 
+      articles
+      ::
+      <span class="current">bringing html5 to the spring petclinic with thymeleaf</span>
+   </div>
+
+
+   <div id="content">
+
+     <h1>Bringing HTML5 to the Spring PetClinic with Thymeleaf</h1>
+
+     <p id="author">
+       <i>By Soraya S&aacute;nchez &lt;sschz AT users.sourceforge.net&gt;</i>
+     </p>
+
+
+
+    <h2>The Spring PetClinic application</h2>
+    
+    
+    <p><i>PetClinic</i> is one of the example applications created by SpringSource for
+       the Spring Framework. It is designed to display and manage information 
+       related to pets and veterinarians in a pet clinic. More info can be obtained 
+       <a href="http://static.springsource.org/docs/petclinic.html">here</a>,
+       and the source code can be obtained 
+       <a href="https://github.com/SpringSource/spring-petclinic">here</a>.</p>
+    
+    <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
+
+
+    <p>[ADD NOTE ABOUT NEW VERSION]</p>
+    
+    <p><i>Pet Clinic</i> originally includes a view layer created with JSP, which we will replace using Thymeleaf:</p>
+    
+    <ul>
+        <li>Modifications will be focused on the view layer: the JSP files will be replaced
+            and the application will be reconfigured. Controllers will be left untouched.</li>
+        <li>The original XHTML will be replaced with HTML5, and some HTML5-specific features will be 
+            added (i.e. form input fields with type <kbd>tel</kbd>, <kbd>date</kbd>,...).</li>
+        <li>Apart from the switch to HTML5, all the application's interface will have to display exactly the same
+            as the original.</li>
+        <li>Thymeleaf template files should display OK when opened statically on a browser (<i>Natural templating</i>).</li>
+    </ul>
+    
+    <p>
+      All the code of the PetClinic+Thymeleaf application can be obtained at the 
+      <a href="documentation.html">Thymeleaf Project's Documentation</a> page. Note that the original JSP files and JSP tags
+      have not been removed from the source tree but rather moved to the <kbd>doc/old_viewlayer</kbd> folder at the source tree,
+      so that you can still access them in order to compare with the new templates.
+    </p>
+    
+    <p>
+      The version of the PetClinic application used as a base is the state of its <i>master branch at Github</i> as of March 2013.
+    </p>
+    
+    
+    <h3>The original JSP view layer</h3>
+    
+    <p>The original JSP view layer has a number of problems we will try to fix when converting the view layer
+       to Thymeleaf:</p>
+    <ul>
+        <li>The JSP templates seem to define an XHTML interface, although no <kbd>DOCTYPE</kbd> declaration
+            is applied and several minor format errors appear &mdash;like e.g. minimized tags without
+            a space before the <kbd>/</kbd> like <kbd>&lt;br/&gt;</kbd> instead of <kbd>&lt;br /&gt;</kbd>&mdash;. 
+            We will convert this application to <b>HTML5</b>.</li>
+        <li>JSPs include both JSTL and Spring-specific tags. None of which are understandable 
+            by browsers, so there is no way for it to represent the pages statically (no static 
+            prototyping possible).</li>
+        <li>JSTL tags use the JSP EL (Expression Language), whereas the tags from the JSP Spring taglibs
+            use Spring EL. Two different expression languages are therefore mixed in the same pages.</li>
+        <li>The original JSP templates are not well-formed HTML documents. For example, 
+            the <i>"ownersList"</i> page:
+            <ol> 
+                <li>Does not contain a head tag but a JSP include one (=> not understandable by the browser) linking to the page
+                containing the head content</li>
+                <li>Header and footer contents have been replaced by JSP include tags (=> not understandable by the browser) 
+                so the pages can't be displayed statically including their header and footer. Anyway, even if those contents
+                were in the page, as pages contain JSP and JSTL tags, we could not see a real prototype</li>
+            </ol>
+        </li>
+    </ul>         
+        
+        
+    <h2>Configuration</h2>
+
+    <h3>Basic project configuration</h3>
+    
+    <p>
+      Some basic configuration steps will be needed:
+    </p>
+    
+    <ul>
+      <li>The <kbd>pom.xml</kbd> file will be modified in order to add the Thymeleaf dependencies to it and remove the 
+          JSP-related ones.</li>
+    </ul>
+    
+
+    <h3>mvc-view-config.xml</h3>
+    
+	<h4>Adding the Thymeleaf Spring beans</h4>
+	
+    <p>
+      Our next configuration step will be to add three required beans at the Spring beans configuration file,
+      <kbd>petclinic-servlet.xml</kbd>:
+    </p>
+    <ul>
+      <li>The Thymeleaf <i>template resolver</i> that will be in charge of reading the 
+          template files to be processed. For this application we will use a <kbd>ServletContextTemplateResolver</kbd>.</li>
+      <li>The Thymeleaf <i>template engine</i> instance, of class <kbd>SpringTemplateEngine</kbd>.</li>
+      <li>The Thymeleaf <i>view resolver</i>, a <kbd>ThymeleafViewResolver</kbd> instance implementing Spring's 
+          <kbd>org.springframework.web.servlet.ViewResolver</kbd> interface. This bean will substitute the
+          original <kbd>InternalResourceViewResolver</kbd> bean which enabled JSP support in the original application.</li>
+    </ul>
+        
+<code>
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateResolver&quot;</span>&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Template&nbsp;cache&nbsp;is&nbsp;set&nbsp;to&nbsp;false&nbsp;(default&nbsp;is&nbsp;true).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.ContentNegotiatingViewResolver&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;contentNegotiationManager&quot;</span>&nbsp;ref=<span class="string">&quot;cnManager&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;viewResolvers&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    &lt;<b>list</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Used&nbsp;here&nbsp;for&nbsp;&#39;xml&#39;&nbsp;and&nbsp;&#39;atom&#39;&nbsp;views&nbsp;&nbsp;--&gt;
+<br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.BeanNameViewResolver&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;1&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    &lt;<b>/list</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
+<br />
+
+
+</code>
+    
+        <p>Note that, as a difference from the original application, our templates will live at the 
+           <kbd>/WEB-INF/thymeleaf</kbd> folder instead of the original <kbd>/WEB-INF/jsp</kbd>.</p>
+
+        
+        
+        
+    <h2>From JSP to Thymeleaf</h2>
+    
+    <p>
+      PetClinic includes more than 10 JSP XHTML templates, and we will rewrite all of them using Thymeleaf and HTML5.
+      However, for the sake of brevity, we will only inspect two of them in detail in this article:
+    </p>
+    
+    <ul>
+        <li><kbd>owners/ownerslist.jsp</kbd> &#187; <kbd>owners/ownersList.html</kbd></li>
+        <li><kbd>exception.jsp</kbd> &#187; <kbd>exception.html</kbd></li>
+    </ul>
+        
+    <p>
+      Remember you can see all the templates at the source code, downloadable from 
+      <a href="documentation.html">the documentation page</a>, and also that you can review the original
+      JSP files at the <kbd>doc/old_viewlayer</kbd> folder.
+    </p>
+       
+
+     
+    <h3>owners/ownersList.jsp</h3>
+    
+         
+    <p>
+      This page shows the list of owners that match the last name we introduced in a previous 
+      page (<kbd>findOwners.jsp</kbd>):
+    </p>
+    
+    [REPLACE IMAGE]
+    <img src="images/thymeleafpetclinic_owners.png" alt="Owners page"/> 
+
+    
+    <p>In order to convert this page to Thymeleaf, we will:</p>
+    <ul>
+        <li>Rename <kbd>ownersList.jsp</kbd> to <kbd>ownersList.html</kbd>.</li>
+        <li>Remove all <kbd>&lt;%@ taglib %&gt;</kbd> directives as we do not need any JSP tag libraries</li>
+        <li>Replace the <kbd>jsp:include</kbd> tags which add head, header and footer to the page with tags containing 
+        the thymeleaf attributes <kbd>th:substituteby</kbd> or <kbd>th:include</kbd>. Those page fragments 
+        have been kept in the folder fragments and converted to thymeleaf as well</li>
+        
+                <code>
+<span class="comment">&lt;!--&nbsp;ownersList.jsp&nbsp;--&gt;</span>
+
+&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;spring&quot;</span>&nbsp;uri=<span class="string">&quot;http://www.springframework.org/tags&quot;</span>&nbsp;%&gt;
+<br />
+&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;fmt&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/fmt&quot;</span>&nbsp;%&gt;
+<br />
+&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;c&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/core&quot;</span>&nbsp;%&gt;
+<br />
+&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;fn&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/functions&quot;</span>&nbsp;%&gt;
+<br />
+&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;datatables&quot;</span>&nbsp;uri=<span class="string">&quot;http://github.com/dandelion/datatables&quot;</span>&nbsp;%&gt;
+<br />
+
+<br />
+&lt;<b>html</b>&nbsp;lang=<span class="string">&quot;en&quot;</span>&gt;
+<br />
+
+<br />
+&lt;<b>jsp:include</b>&nbsp;page=<span class="string">&quot;../fragments/headTag.jsp&quot;</span>/&gt;
+<br />
+
+<br />
+&lt;<b>body</b>&gt;
+<br />
+&lt;<b>div</b>&nbsp;class=<span class="string">&quot;container&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>jsp:include</b>&nbsp;page=<span class="string">&quot;../fragments/bodyHeader.jsp&quot;</span>/&gt;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;...&nbsp;--&gt;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>jsp:include</b>&nbsp;page=<span class="string">&quot;../fragments/footer.jsp&quot;</span>/&gt;
+<br />
+
+<br />
+&lt;<b>/div</b>&gt;
+<br />
+&lt;<b>/body</b>&gt;
+<br />
+
+<br />
+&lt;<b>/html</b>&gt;
+<br />
+
+
+</code>                <code>
+
+<span class="comment">&lt;!--&nbsp;ownersList.html&nbsp;--&gt;</span>
+<br />
+
+
+&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
+<br />
+
+<br />
+&lt;<b>html</b>&nbsp;lang=<span class="string">&quot;en&quot;</span>&gt;
+<br />
+
+<br />
+
+<br />
+&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;fragments/headTag&nbsp;::&nbsp;headTag&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;PetClinic&nbsp;::&nbsp;a&nbsp;Spring&nbsp;Framework&nbsp;demonstration&lt;<b>/title</b>&gt;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;href=<span class="string">&quot;http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap.min.css&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}&quot;</span>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;href=<span class="string">&quot;../../../resources/css/petclinic.css&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{/resources/css/petclinic.css}&quot;</span>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>script</b>&nbsp;&nbsp;src=<span class="string">&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:src=<span class="string">&quot;@{/webjars/jquery/1.9.0/jquery.js}&quot;</span>&gt;&lt;<b>/script</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>script</b>&nbsp;src=<span class="string">&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:src=<span class="string">&quot;@{/webjars/jquery-ui/1.9.2/js/jquery-ui-1.9.2.custom.js}&quot;</span>&gt;&lt;<b>/script</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;href=<span class="string">&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{/webjars/jquery-ui/1.9.2/css/smoothness/jquery-ui-1.9.2.custom.css}&quot;</span>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&gt;&lt;<b>/link</b>&gt;
+<br />
+&lt;<b>/head</b>&gt;
+<br />
+
+<br />
+&lt;<b>body</b>&gt;
+<br />
+&lt;<b>div</b>&nbsp;class=<span class="string">&quot;container&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;fragments/bodyHeader&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>img</b>&nbsp;th:src=<span class="string">&quot;@{/resources/images/banner-graphic.png}&quot;</span>&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;src=<span class="string">&quot;../../../resources/images/banner-graphic.png&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;navbar&quot;</span>&nbsp;style=<span class="string">&quot;width:&nbsp;601px;&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;navbar-inner&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&nbsp;class=<span class="string">&quot;nav&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;100px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;../welcome.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/}&quot;</span>&gt;&lt;<b>i</b>&nbsp;class=<span class="string">&quot;icon-home&quot;</span>&gt;&lt;<b>/i</b>&gt;Home&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;130px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;../owners/findOwners.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/owners/find.html}&quot;</span>&gt;&lt;<b>i</b>&nbsp;class=<span class="string">&quot;icon-search&quot;</span>&gt;&lt;<b>/i</b>&gt;Find&nbsp;owners&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;140px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;../vets/vetList.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/vets.html}&quot;</span>&gt;&lt;<b>i</b>&nbsp;class=<span class="string">&quot;icon-th-list&quot;</span>&gt;&lt;<b>/i</b>&gt;Veterinarians&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;90px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;../exception.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/oups.html}&quot;</span>&nbsp;title=<span class="string">&quot;trigger&nbsp;a&nbsp;RuntimeException&nbsp;to&nbsp;see&nbsp;how&nbsp;it&nbsp;is&nbsp;handled&quot;</span>&gt;&lt;<b>i</b>&nbsp;class=<span class="string">&quot;icon-warning-sign&quot;</span>&gt;&lt;<b>/i</b>&gt;Error&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;80px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;#&quot;</span>&nbsp;title=<span class="string">&quot;not&nbsp;available&nbsp;yet.&nbsp;Work&nbsp;in&nbsp;progress!!&quot;</span>&gt;&lt;<b>i</b>&nbsp;class=<span class="string">&quot;&nbsp;icon-question-sign&quot;</span>&gt;&lt;<b>/i</b>&gt;Help&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+
+<br />
+&lt;<b>!--</b>&nbsp;...&nbsp;--&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>table</b>&nbsp;th:substituteby=<span class="string">&quot;fragments/footer&nbsp;::&nbsp;footer&quot;</span>&nbsp;class=<span class="string">&quot;footer&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;align=<span class="string">&quot;right&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>img</b>&nbsp;src=<span class="string">&quot;../../../resources/images/springsource-logo.png&quot;</span>
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:src=<span class="string">&quot;@{/resources/images/springsource-logo.png}&quot;</span>&nbsp;alt=<span class="string">&quot;Sponsored&nbsp;by&nbsp;SpringSource&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/table</b>&gt;
+<br />
+
+<br />
+&lt;<b>/div</b>&gt;
+<br />
+&lt;<b>/body</b>&gt;
+<br />
+
+<br />
+&lt;<b>/html</b>&gt;
+<br />
+
+
+</code>                
+                Note how <kbd>ownersList.html</kbd> contains more code at its <kbd>&lt;head&gt;</kbd>, <kbd>&lt;header&gt;</kbd> and <kbd>&lt;footer&gt;</kbd>
+                sections than the original JSP file. Doing it this way is merely optional, and its only aim is to allow the <kbd>ownersList.html</kbd> Thymeleaf template to 
+                display statically as a prototype (something nearly impossible with JSP). The <kbd>&lt;head&gt;</kbd> tag in <kbd>ownersList.html</kbd> will in fact be 
+                substituted by the <kbd>header</kbd> fragment in <kbd>fragments/bodyHeader.html</kbd> when executed by means of the <kbd>th:include</kbd> attribute seen above.
+        </li>
+        <li>
+            Change the page body. The original code looks like this:
+
+<code>
+
+
+<span class="comment">&lt;!--&nbsp;ownersList.jsp&nbsp;--&gt;</span>
+<br />
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:table</b>&nbsp;id=<span class="string">&quot;owners&quot;</span>&nbsp;data=<span class="string">&quot;${selections}&quot;</span>&nbsp;cdn=<span class="string">&quot;true&quot;</span>&nbsp;row=<span class="string">&quot;owner&quot;</span>&nbsp;theme=<span class="string">&quot;bootstrap2&quot;</span>&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cssClass=<span class="string">&quot;table&nbsp;table-striped&quot;</span>&nbsp;paginate=<span class="string">&quot;false&quot;</span>&nbsp;info=<span class="string">&quot;false&quot;</span>&nbsp;export=<span class="string">&quot;pdf&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Name&quot;</span>&nbsp;cssStyle=<span class="string">&quot;width:&nbsp;150px;&quot;</span>&nbsp;display=<span class="string">&quot;html&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>spring:url</b>&nbsp;value=<span class="string">&quot;owners/{ownerId}.html&quot;</span>&nbsp;var=<span class="string">&quot;ownerUrl&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>spring:param</b>&nbsp;name=<span class="string">&quot;ownerId&quot;</span>&nbsp;value=<span class="string">&quot;${owner.id}&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/spring:url</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;${fn:escapeXml(ownerUrl)}&quot;</span>&gt;&lt;<b>c:out</b>&nbsp;value=<span class="string">&quot;${owner.firstName}&nbsp;${owner.lastName}&quot;</span>/&gt;&lt;<b>/a</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:column</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Name&quot;</span>&nbsp;display=<span class="string">&quot;pdf&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:out</b>&nbsp;value=<span class="string">&quot;${owner.firstName}&nbsp;${owner.lastName}&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:column</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Address&quot;</span>&nbsp;property=<span class="string">&quot;address&quot;</span>&nbsp;cssStyle=<span class="string">&quot;width:&nbsp;200px;&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;City&quot;</span>&nbsp;property=<span class="string">&quot;city&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Telephone&quot;</span>&nbsp;property=<span class="string">&quot;telephone&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Pets&quot;</span>&nbsp;cssStyle=<span class="string">&quot;width:&nbsp;100px;&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:forEach</b>&nbsp;var=<span class="string">&quot;pet&quot;</span>&nbsp;items=<span class="string">&quot;${owner.pets}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:out</b>&nbsp;value=<span class="string">&quot;${pet.name}&quot;</span>/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/c:forEach</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:column</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:export</b>&nbsp;type=<span class="string">&quot;pdf&quot;</span>&nbsp;cssClass=<span class="string">&quot;btn&nbsp;btn-small&quot;</span>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:table</b>&gt;
+<br />
+
+
+</code>
+Which we will replace with:
+
+<code>
+
+
+<span class="comment">&lt;!--&nbsp;ownersList.html&nbsp;file&nbsp;--&gt;</span>
+<br />
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>table</b>&nbsp;class=<span class="string">&quot;table&nbsp;table-striped&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>thead</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&nbsp;style=<span class="string">&quot;width:&nbsp;150px;&quot;</span>&gt;Name&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&nbsp;style=<span class="string">&quot;width:&nbsp;200px;&quot;</span>&gt;Address&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;City&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Telephone&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&nbsp;style=<span class="string">&quot;width:&nbsp;100px;&quot;</span>&gt;Pets&lt;<b>/th</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/thead</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;href=<span class="string">&quot;ownerDetails.html&quot;</span>&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;&#39;&nbsp;&#39;&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;[firstname&nbsp;lastname]&lt;<b>/a</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;[address]&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;[city]&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;[telephone]&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:text=<span class="string">&quot;${pet.name}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[pet&nbsp;name]
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/table</b>&gt;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+
+
+</code>
+[UPDATE BASED ON DATATABLES TAGS]
+              In the code above you can see how, for example, we replaced the use of the <kbd>c:foreach</kbd> tag with 
+              a <kbd>th:each</kbd> attribute in a <kbd>&lt;tr&gt;</kbd> tag.
+              Also, our Thymeleaf version is longer because we have added some prototyping code (an additional
+              row in the table) just to be displayed when 
+              the page is statically open. So we use the <kbd>th:remove</kbd> attribute
+              to avoid this prototyping code being rendered when deployed into a server.
+        </li>
+    </ul>
+
+     
+    <h3>uncaughtException</h3>     
+
+
+    <p>
+      This is the page the user will be redirected to when an unexpected exception arises:
+    </p>
+    
+    <img src="images/thymeleafpetclinic_uncaughtexception.png" alt="Uncaught Exception page"/>
+    
+    <p>
+      The JSP version of this page is not as the others, as instead of JSP tags it contains <i>scriptlets with 
+      java code</i> (yes...that's why we called it <i>ugly</i> before). So, in order to create the Thymeleaf 
+      version of that page, we have to replace all that java code with plain HTML with Thymeleaf attributes 
+      in it that work exactly as the original code.
+    </p>
+    
+    
+    <code>
+<span class="comment">&lt;!--&nbsp;uncaughtException.jsp&nbsp;--&gt;</span>
+<br />
+&lt;<b>h2/</b>&gt;Internal&nbsp;error&lt;<b>/h2</b>&gt;
+<br />
+&lt;<b>p/</b>&gt;
+<br />
+
+<br />
+&lt;<b>%</b>&nbsp;
+<br />
+
+
+
+<b>try</b>&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;The&nbsp;Servlet&nbsp;spec&nbsp;guarantees&nbsp;this&nbsp;attribute&nbsp;will&nbsp;be&nbsp;available
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;Throwable&nbsp;exception&nbsp;=&nbsp;(Throwable)&nbsp;request.getAttribute(<span class="string">&quot;javax.servlet.error.exception&quot;</span>);&nbsp;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b>&nbsp;(exception&nbsp;!=&nbsp;<b>null</b>)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b>&nbsp;(exception&nbsp;<b>instanceof</b>&nbsp;ServletException)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;It&#39;s&nbsp;a&nbsp;ServletException:&nbsp;we&nbsp;should&nbsp;extract&nbsp;the&nbsp;root&nbsp;cause
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ServletException&nbsp;sex&nbsp;=&nbsp;(ServletException)&nbsp;exception;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Throwable&nbsp;rootCause&nbsp;=&nbsp;sex.getRootCause();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b>&nbsp;(rootCause&nbsp;==&nbsp;<b>null</b>)
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rootCause&nbsp;=&nbsp;sex;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.println(<span class="string">&quot;**&nbsp;Root&nbsp;cause&nbsp;is:&nbsp;&quot;</span>+&nbsp;rootCause.getMessage());
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rootCause.printStackTrace(<b>new</b>&nbsp;java.io.PrintWriter(out));&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>else</b>&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;It&#39;s&nbsp;not&nbsp;a&nbsp;ServletException,&nbsp;so&nbsp;we&#39;ll&nbsp;just&nbsp;show&nbsp;it
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exception.printStackTrace(<b>new</b>&nbsp;java.io.PrintWriter(out));&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>else</b>&nbsp;&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.println(<span class="string">&quot;No&nbsp;error&nbsp;information&nbsp;available&quot;</span>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;
+<br />
+
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Display&nbsp;cookies
+</span><br />
+&nbsp;&nbsp;&nbsp;&nbsp;out.println(<span class="string">&quot;\nCookies:\n&quot;</span>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;Cookie[]&nbsp;cookies&nbsp;=&nbsp;request.getCookies();
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;<b>if</b>&nbsp;(cookies&nbsp;!=&nbsp;null)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>for</b>&nbsp;(<b>int</b>&nbsp;i&nbsp;=&nbsp;0;&nbsp;i&nbsp;&lt;&nbsp;cookies.length;&nbsp;i++)&nbsp;{
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out.println(cookies[i].getName()&nbsp;+&nbsp;<span class="string">&quot;=[&quot;</span>&nbsp;+&nbsp;cookies[i].getValue()&nbsp;+&nbsp;<span class="string">&quot;]&quot;</span>);
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;}
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+}&nbsp;<b>catch</b>&nbsp;(Exception&nbsp;ex)&nbsp;{&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;ex.printStackTrace(<b>new</b>&nbsp;java.io.PrintWriter(out));
+<br />
+}
+<br />
+
+
+<br />
+<b>%</b>&gt;
+<br />
+
+<br />
+&lt;<b>p/</b>&gt;
+<br />
+&lt;<b>br/</b>&gt;
+<br />
+
+</code>
+
+
+    <p>
+      Once converted to Thymeleaf, it looks much better:
+    </p> 
+
+
+
+
+
+<code>
+
+<span class="comment">&lt;!--&nbsp;uncaughtException.html&nbsp;--&gt;</span>
+<br />
+
+&lt;<b>div</b>&nbsp;id=<span class="string">&quot;main&quot;</span>&nbsp;th:with=<span class="string">&quot;exception&nbsp;=&nbsp;${#httpServletRequest.getAttribute(&#39;javax.servlet.error.exception&#39;)},
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cookies&nbsp;&nbsp;&nbsp;=&nbsp;${#httpServletRequest.cookies}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;Internal&nbsp;error&lt;<b>/h2</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;!=&nbsp;null}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:object=<span class="string">&quot;${exception.rootCause}&nbsp;?:&nbsp;${exception}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;**&nbsp;Root&nbsp;cause&nbsp;is:&nbsp;&lt;<b>span</b>&nbsp;th:utext=<span class="string">&quot;*{message}&quot;</span>&gt;ClassNotFound&lt;<b>/span</b>&gt;&lt;<b>/p</b>&gt;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;*{stackTrace}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${st}&quot;</span>&gt;a.b.c.MainController.do(MainController:5)&lt;<b>/span</b>&gt;&lt;<b>br</b>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:unless=<span class="string">&quot;${exception&nbsp;instanceof&nbsp;T(javax.servlet.ServletException)}&quot;</span>&nbsp;&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${exception.class.name}&quot;</span>&gt;NullPointerException&lt;<b>/span</b>&gt;:&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${exception.message}&quot;</span>&gt;null&lt;<b>/span</b>&gt;&lt;<b>br</b>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:each=<span class="string">&quot;st&nbsp;:&nbsp;${exception.stackTrace}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;at&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${st}&quot;</span>&gt;a.b.c.MainController.do(MainController:5)&lt;<b>/span</b>&gt;&lt;<b>br</b>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${exception&nbsp;==&nbsp;null}&quot;</span>&gt;No&nbsp;error&nbsp;information&nbsp;available&lt;<b>/p</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;Cookies:
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;c&nbsp;:&nbsp;${cookies}&quot;</span>&nbsp;th:text=<span class="string">&quot;${c.name&nbsp;+&nbsp;&#39;=[&#39;&nbsp;+&nbsp;c.value&nbsp;+&nbsp;&#39;]&#39;}&quot;</span>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user&nbsp;=[anonymous]
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
+<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
+<br />
+<br />
+&lt;<b>/div</b>&gt;
+<br />
+
+</code>
+
+
+       <p>
+         A couple of things to note: first, that the original page almost had no format at all, so we did add it here &mdash;just a couple of <kbd>&lt;p&gt;</kbd>s
+         and <kbd>&lt;span&gt;</kbd>s&mdash;. Second, see how we made use of the <kbd>th:with</kbd> attribute in order to define a couple of variables 
+         that would be used several times along the template.
+       </p>
+       <p>
+         Also note how we access the <kbd>HttpServletRequest</kbd> object with <kbd>#httpServletRequest</kbd> in our Spring EL expressions.
+       </p>
+
+
+     <h2>HTML5-specific elements</h2>
+     
+     <p>
+       As we mentioned previously, using Thymeleaf would allow us to add some HTML5 advanced features, like for example using the new form input types.
+     </p>
+     <p>
+       The <kbd>pets/form.html</kbd> template offers us an opportunity to do so, as it includes a form
+       input element for a date:
+     </p>         
+     
+     <code>
+&lt;<b>input</b>&nbsp;type=<span class="string">&quot;date&quot;</span>&nbsp;th:field=<span class="string">&quot;*{birthDate}&quot;</span>&nbsp;/&gt;      
+     </code>
+
+     <p>
+       ...which behaves wonderfully when displayed at a browser with good HTML5 support (Opera, in this case):
+     </p>
+
+     <img src="images/thymeleafpetclinic_petsform_date.png" alt="An HTML5 date input"/>
+
+     <h2>And what about the <i>Natural Templating</i> thing?</h2>    
+
+     <p>
+       We also mentioned that our new Thymeleaf templates would be able to display correctly when opened
+       statically in a browser because of the <i>Natural Templating</i> capabilities of Thymeleaf. Well,
+       let's have a look at how the original <kbd>owners/list.jsp</kbd> template looks like when seen
+       statically:
+     </p> 
+     
+     <img src="images/thymeleafpetclinic_ownerslist_jsp_static.png" alt="Owners list (JSP), statically opened"/>
+     
+     <p>
+       ...and now let's have a look at our new Thymeleaf-powered <kbd>owners/list.html</kbd>:
+     </p>
+     
+     <img src="images/thymeleafpetclinic_ownerslist_thymeleaf_static.png" alt="Owners list (thymeleaf), statically opened"/>
+     
+     <p>
+       There we are. Data is not valid, because it is a prototype. But it looks good!
+     </p>
+
+   </div>
+   
+   
+   <div id="footer">
+     <div id="googleplus">
+       <div id="plusone-div" class="plusone"></div>
+       <script type="text/javascript">
+           gapi.plusone.render('plusone-div',{"size": "small", "count": "true", "href": "http://www.thymeleaf.org"});
+       </script>
+     </div>
+     <div id="twitter">
+       <a href="http://twitter.com/thymeleaf" class="twitter-follow-button" data-show-count="false">Follow @thymeleaf</a>
+       <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+     </div>
+     <div id="copy">
+       Copyright &copy; The <a href="team.html">THYMELEAF Team</a>. See <a href="documentation.html">applicable licenses</a>.
+     </div>
+   </div>
+   
+  </div>
+  </body>
+  
+</html>
