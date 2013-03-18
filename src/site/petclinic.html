@@ -125,10 +125,6 @@
     <p>The original JSP view layer has a number of problems we will try to fix when converting the view layer
        to Thymeleaf:</p>
     <ul>
-        <li>The JSP templates seem to define an XHTML interface, although no <kbd>DOCTYPE</kbd> declaration
-            is applied and several minor format errors appear &mdash;like e.g. minimized tags without
-            a space before the <kbd>/</kbd> like <kbd>&lt;br/&gt;</kbd> instead of <kbd>&lt;br /&gt;</kbd>&mdash;. 
-            We will clean this code and use <b>HTML5</b>.</li>
         <li>JSPs include tags from JSTL, Spring Tag Libs and other external libraries. None of these are understandable 
             by browsers, so there is no way for them to display the pages statically (no static 
             prototyping possible).</li>
@@ -137,7 +133,7 @@
         <li>The original JSP templates are not well-formed HTML documents. For example, 
             the <i>"ownersList"</i> page:
             <ol> 
-                <li>Does not contain a head tag, adding insteadone from another JSP using a <i>JSP include</i> 
+                <li>Does not contain a head tag, adding instead one from another JSP using a <i>JSP include</i> 
                 (=> not understandable by browsers).</li>
                 <li>Header and footer contents have been replaced by JSP include tags (=> not understandable by browsers) 
                 so the pages can't be displayed statically including their header and footer. And anyway, even if those contents
