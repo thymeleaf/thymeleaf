@@ -60,7 +60,7 @@ public class SpelVariableExpressionEvaluator
     
     
     public static final String FIELDS_EVALUATION_VARIABLE_NAME = "fields";
-    
+    public static final String THEMES_EVALUATION_VARIABLE_NAME = "themes";
     
     private static final Logger logger = LoggerFactory.getLogger(SpelVariableExpressionEvaluator.class);
 
@@ -86,7 +86,7 @@ public class SpelVariableExpressionEvaluator
         try {
     
             final Map<String,Object> contextVariables = 
-                    computeContextVariables(configuration, processingContext);
+                    computeExpressionObjects(configuration, processingContext);
             
             final SpelEvaluationContext evaluationContext = 
                     new SpelEvaluationContext(DEFAULT_EVALUATION_CONTEXT, contextVariables);
@@ -138,25 +138,31 @@ public class SpelVariableExpressionEvaluator
 
     
     
-    public Map<String,Object> computeContextVariables(
+    public Map<String,Object> computeExpressionObjects(
             final Configuration configuration, final IProcessingContext processingContext) {
         
-        final Map<String,Object> contextVariables = new HashMap<String, Object>();
+        final Map<String,Object> expressionObjects = new HashMap<String, Object>();
         
-        final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
-        if (expressionObjects != null) {
-            contextVariables.putAll(expressionObjects);
+        final Map<String,Object> processingContextExpressionObjects = processingContext.getExpressionObjects();
+        if (processingContextExpressionObjects != null) {
+            expressionObjects.putAll(processingContextExpressionObjects);
         }
         
         final Fields fields = new Fields(configuration, processingContext);
-        contextVariables.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
+        expressionObjects.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
         
-        final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
-        if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
-            contextVariables.putAll(additionalContextVariables);
+        final VariablesMap<String,Object> variables = processingContext.getContext().getVariables();
+        if (!variables.containsKey(THEMES_EVALUATION_VARIABLE_NAME)) {
+            variables.put(THEMES_EVALUATION_VARIABLE_NAME, new Themes(processingContext));
+        }
+        expressionObjects.put(THEMES_EVALUATION_VARIABLE_NAME, variables.get(THEMES_EVALUATION_VARIABLE_NAME));
+        
+        final Map<String,Object> additionalExpressionObjects = computeAdditionalExpressionObjects(processingContext);
+        if (additionalExpressionObjects != null && !additionalExpressionObjects.isEmpty()) {
+            expressionObjects.putAll(additionalExpressionObjects);
         }
         
-        return contextVariables;
+        return expressionObjects;
         
     }
     
@@ -165,7 +171,7 @@ public class SpelVariableExpressionEvaluator
     /*
      * Meant to be overwritten
      */
-    protected Map<String,Object> computeAdditionalContextVariables(
+    protected Map<String,Object> computeAdditionalExpressionObjects(
             @SuppressWarnings("unused") final IProcessingContext processingContext) {
         return Collections.emptyMap();
     }

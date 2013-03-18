@@ -1,3 +1,10 @@
+2.0.17
+======
+- Added a "#themes.code('key')" expression object which looks up and returns the value of
+  'key' in the current Spring theme's properties file.  This is the equivalent of Spring's
+  <spring:theme code='key'> JSP tag.
+
+
 2.0.16
 ======
 - Automatically add @PathVariable's to model when using Spring 3.1 or newer. 
