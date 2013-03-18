@@ -91,7 +91,9 @@
        the Spring Framework. It is designed to display and manage information 
        related to pets and veterinarians in a pet clinic. The original SpringSource
        version lives in GitHub
-       <a href="https://github.com/SpringSource/spring-petclinic">here</a>.</p>
+       <a href="https://github.com/SpringSource/spring-petclinic">here</a>, and
+       the thymeleaf-enabled version lives also in GitHub 
+       <a href="https://github.com/thymeleaf/thymeleafexamples-petclinic">here</a>.</p>
     
     <img src="images/thymeleafpetclinic_home.png" alt="PetClinic home page"/>
     
@@ -127,8 +129,8 @@
             is applied and several minor format errors appear &mdash;like e.g. minimized tags without
             a space before the <kbd>/</kbd> like <kbd>&lt;br/&gt;</kbd> instead of <kbd>&lt;br /&gt;</kbd>&mdash;. 
             We will clean this code and use <b>HTML5</b>.</li>
-        <li>JSPs include both JSTL and Spring-specific tags. None of which are understandable 
-            by browsers, so there is no way for it to represent the pages statically (no static 
+        <li>JSPs include tags from JSTL, Spring Tag Libs and other external libraries. None of these are understandable 
+            by browsers, so there is no way for them to display the pages statically (no static 
             prototyping possible).</li>
         <li>JSTL tags use the JSP EL (Expression Language), whereas the tags from the JSP Spring taglibs
             use Spring EL. Two different expression languages are therefore mixed in the same pages.</li>
@@ -161,8 +163,6 @@
     
 
     <h3>mvc-view-config.xml</h3>
-    
-	<h4>Adding the Thymeleaf Spring beans</h4>
 	
     <p>
       Our next configuration step will be to add three required beans at the Spring beans configuration file,
@@ -252,7 +252,7 @@
     <h2>From JSP to Thymeleaf</h2>
     
     <p>
-      PetClinic includes more than 10 JSP XHTML templates, and we will rewrite all of them using Thymeleaf and HTML5.
+      PetClinic includes more than 10 JSP templates, and we will rewrite all of them using Thymeleaf.
       However, for the sake of brevity, we will focus on <kbd>owners/ownerslist.jsp</kbd>, which we will 
       convert into <kbd>owners/ownersList.html</kbd>.
     </p>
@@ -262,15 +262,10 @@
       <a href="documentation.html">the documentation page</a>, and also that you can review the original
       JSP files at the <kbd>doc/old_viewlayer</kbd> folder.
     </p>
-       
-
-     
-    <h3>owners/ownersList.jsp</h3>
     
          
     <p>
-      This page shows the list of owners that match the last name we introduced in a previous 
-      page (<kbd>findOwners.jsp</kbd>):
+      The <i>owners/ownersList</i> page looks like this:
     </p>
     
     <img src="images/thymeleafpetclinic_owners.png" alt="Owners page"/> 
