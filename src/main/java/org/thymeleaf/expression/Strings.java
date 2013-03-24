@@ -773,20 +773,6 @@ public final class Strings {
     public String replace(final Object target, final String before, final String after) {
         return StringUtils.replace(target, before, after);
     }
-    
-	public String multipleReplace(final Object target, final String[] before,
-			final String[] after) {
-        Validate.notNull(target, "Target cannot be null");
-		String ret = target.toString();
-		if (before.length != after.length)
-		{
-			return ret;
-		}
-		for (int i = 0; i < before.length; i++) {
-			ret=StringUtils.replace(ret, before[i], after[i]);
-		}
-		return ret;
-	}
 
     public String[] arrayReplace(final Object[] target, final String before, final String after) {
         Validate.notNull(target, "Target cannot be null");
@@ -797,31 +783,11 @@ public final class Strings {
         return result;
     }
     
-	public String[] arrayMultipleReplace(final Object[] target, final String[] before,
-			final String[] after) {
-        Validate.notNull(target, "Target cannot be null");
-        final String[] result = new String[target.length];
-        for (int i = 0; i < target.length; i++) {
-            result[i] = multipleReplace(target[i], before, after);
-        }
-        return result;
-	}
-    
     public List<String> listReplace(final List<?> target, final String before, final String after) {
         Validate.notNull(target, "Target cannot be null");
         final List<String> result = new ArrayList<String>();
         for (final Object element : target) {
             result.add(replace(element, before, after));
-        }
-        return result;
-    }
-    
-	public List<String> listMultipleReplace(final List<?> target, final String[] before,
-			final String[] after) {
-        Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
-        for (final Object element : target) {
-            result.add(multipleReplace(element, before, after));
         }
         return result;
     }
@@ -834,9 +800,51 @@ public final class Strings {
         }
         return result;
     }
+
+    
+    
+
+
+    
+    public String multipleReplace(final Object target, 
+            final String[] before, final String[] after) {
+        
+        Validate.notNull(target, "Target cannot be null");
+        Validate.notNull(before, "Array of 'before' values cannot be null");
+        Validate.notNull(after, "Array of 'after' values cannot be null");
+        Validate.isTrue(before.length == after.length, 
+                "Arrays of 'before' and 'after' values must have the same length");
+        
+        String ret = target.toString();
+        for (int i = 0; i < before.length; i++) {
+            ret = StringUtils.replace(ret, before[i], after[i]);
+        }
+        return ret;
+        
+    }
+    
+    public String[] arrayMultipleReplace(final Object[] target, 
+            final String[] before, final String[] after) {
+        Validate.notNull(target, "Target cannot be null");
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = multipleReplace(target[i], before, after);
+        }
+        return result;
+    }
+    
+    public List<String> listMultipleReplace(final List<?> target, 
+            final String[] before, final String[] after) {
+        Validate.notNull(target, "Target cannot be null");
+        final List<String> result = new ArrayList<String>();
+        for (final Object element : target) {
+            result.add(multipleReplace(element, before, after));
+        }
+        return result;
+    }
     
     public Set<String> setMultipleReplace(final Set<?> target, final String[] before,
-			final String[] after) {
+            final String[] after) {
         Validate.notNull(target, "Target cannot be null");
         final Set<String> result = new LinkedHashSet<String>();
         for (final Object element : target) {
@@ -845,8 +853,8 @@ public final class Strings {
         return result;
     }
     
-
     
+   
     
 
     
