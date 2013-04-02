@@ -20,6 +20,7 @@
 package org.thymeleaf.util;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -281,7 +282,8 @@ public final class MessageResolutionUtils {
         }
         final Properties properties = new Properties();
         try {
-            properties.load(propertiesIS);
+            InputStreamReader propertiesReader = new InputStreamReader(propertiesIS);
+            properties.load(propertiesReader);
         } catch (final Exception e) {
             throw new TemplateInputException("Exception loading messages file", e);
         } finally {
