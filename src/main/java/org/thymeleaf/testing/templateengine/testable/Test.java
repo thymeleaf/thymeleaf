@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
+import org.thymeleaf.testing.templateengine.util.ResultCompareUtils.ResultComparison;
 import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.util.Validate;
 
@@ -175,12 +176,14 @@ public class Test
             throw new TestEngineExecutionException(
                     "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
         }
+
+        final ResultComparison comparison = ResultCompareUtils.compareResults(outputStr,result);
         
-        if (outputStr.equals(result)) {
+        if (comparison.getResult()) {
             return TestResult.ok(testName);
         }
         
-        return TestResult.error(testName, ResultCompareUtils.explainComparison(outputStr, result));
+        return TestResult.error(testName, comparison.getExplanation());
         
     }
  

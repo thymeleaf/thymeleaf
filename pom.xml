@@ -88,6 +88,7 @@
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <thymeleaf.version>2.0.16</thymeleaf.version>
+    <attoparser.version>1.2-SNAPSHOT</attoparser.version>
   </properties>
 
   
@@ -206,6 +207,13 @@
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
       <version>${thymeleaf.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.attoparser</groupId>
+      <artifactId>attoparser</artifactId>
+      <version>${attoparser.version}</version>
       <scope>compile</scope>
     </dependency>
     

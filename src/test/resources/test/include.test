@@ -4,7 +4,7 @@ onevar = <b>Goodbye!</b>
 %INPUT
 <!DOCTYPE html>
 <html>
-  <head th:include="header">
+  <head class="a" th:include="header">
   </head>
   <body>
       <h1 th:utext="${onevar}">Hello!</h1>
@@ -19,9 +19,8 @@ onevar = <b>Goodbye!</b>
 #
 %OUTPUT 
 <!DOCTYPE html>
-
 <html>
-  <head><title>Heyju!</title></head>
+  <head class="a"><title>Heyju!</title></head>
   <body>
       <h1><b>Goodbye!</b></h1>
   </body>
