@@ -83,7 +83,13 @@ public class ResultCompareUtils {
 
     private static List<TraceEvent> normalizeTrace(final List<TraceEvent> trace) {
         
+        // We will avoid a whitespace at the end of an open/standalone tag (at the end of its
+        // attribute sequence). In order to do so, we will only add whitespace events when
+        // the next attribute is found.
+        TraceEvent lastWhitespaceEvent = null;
+        
         final List<TraceEvent> newTrace = new ArrayList<TraceEvent>();
+        
         for (final TraceEvent event : trace) {
             
             final String eventType = event.getType();
@@ -98,11 +104,17 @@ public class ResultCompareUtils {
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
                 // We need to compress all whitespace in order to perform a correct lenient check
                 final String text = event.getContent()[0];
-                newTrace.add(
+                lastWhitespaceEvent = 
                         new TraceEvent(
                                 event.getLine(), event.getCol(), 
-                                TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT, 
-                                compressWhitespace(text)));
+                                TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE, 
+                                compressWhitespace(text));
+            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType)) {
+                if (lastWhitespaceEvent != null) {
+                    newTrace.add(lastWhitespaceEvent);
+                    lastWhitespaceEvent = null;
+                }
+                newTrace.add(event);
             } else {
                 newTrace.add(event);
             }
