@@ -37,6 +37,7 @@ public class StandardTestFieldNaming {
     public static final String FIELD_NAME_OUTPUT = "OUTPUT";
     public static final String FIELD_NAME_EXCEPTION = "EXCEPTION";
     public static final String FIELD_NAME_EXCEPTION_MESSAGE_PATTERN = "EXCEPTION_MESSAGE_PATTERN";
+    public static final String FIELD_NAME_EXACT_MATCH = "EXACT_MATCH";
     public static final String FIELD_NAME_EXTENDS = "EXTENDS";
     
     public static final String FIELD_QUALIFIER_MAIN = null;

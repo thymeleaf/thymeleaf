@@ -22,8 +22,6 @@ package org.thymeleaf.testing.templateengine.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.ComparisonCompactor;
-
 import org.attoparser.AttoParseException;
 import org.attoparser.markup.MarkupAttoParser;
 import org.attoparser.markup.html.trace.TracingDetailedHtmlAttoHandler;
@@ -39,14 +37,13 @@ import org.thymeleaf.util.Validate;
 public class ResultCompareUtils {
 
     
-    private static final int CONTEXT_LENGTH = 30;
-    
+
     private static final MarkupAttoParser parser = new MarkupAttoParser();
     
     
 
     
-    public static ResultComparison compareResults(final String expected, final String actual) {
+    public static ResultComparison compareResults(final String expected, final String actual, final boolean lenient) {
         
         Validate.notNull(expected, "Expected result cannot be null");
         Validate.notNull(actual, "Actual result cannot be null");
@@ -61,19 +58,60 @@ public class ResultCompareUtils {
             throw new TestEngineExecutionException("Error while trying to compare results", e);
         }
         
-        final List<TraceEvent> expectedTrace = normalizeTrace(expectedHandler.getTrace());
-        final List<TraceEvent> actualTrace = normalizeTrace(actualHandler.getTrace());
+        final List<TraceEvent> expectedTrace = 
+                (lenient? normalizeTrace(expectedHandler.getTrace()) : expectedHandler.getTrace());
+        final List<TraceEvent> actualTrace = 
+                (lenient? normalizeTrace(actualHandler.getTrace()) : actualHandler.getTrace());
+
+        final int actualTraceSize = actualTrace.size();
+        final int expectedTraceSize = expectedTrace.size();
         
-        if (matchTraces(expectedTrace,actualTrace)) {
-            return new ResultComparison(true, null);
+        for (int i = 0; i < actualTraceSize; i++) {
+            
+            final TraceEvent actualTraceItem = actualTrace.get(i);
+            final TraceEvent expectedTraceItem = 
+                    (expectedTraceSize > i? expectedTrace.get(i) : null);
+            
+            if (expectedTraceItem == null) {
+                
+                final String actualFragment =
+                        getFragmentSurrounding(
+                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, 80);
+                final String expectedFragment =
+                        getFragmentSurrounding(
+                                expected, Integer.MAX_VALUE, Integer.MAX_VALUE, 20, 0);
+               
+                final String explanation =
+                        createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
+                
+                return new ResultComparison(false, explanation);
+                
+            }
+            
+            
+            final boolean itemMatches = 
+                    (lenient? actualTraceItem.matchesTypeAndContent(expectedTraceItem) : actualTraceItem.equals(expectedTraceItem));
+            
+            if (!itemMatches) {
+                
+                final String actualFragment =
+                        getFragmentSurrounding(
+                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, 80);
+                final String expectedFragment =
+                        getFragmentSurrounding(
+                                expected, expectedTraceItem.getLine(), expectedTraceItem.getCol(), 20, 80);
+               
+                final String explanation =
+                        createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
+                
+                return new ResultComparison(false, explanation);
+                
+            }
+            
         }
         
-        /*
-         * JUnit's comparison reporter will be used
-         */
-        final ComparisonCompactor compactor =
-                new ComparisonCompactor(CONTEXT_LENGTH, expected, actual);
-        return new ResultComparison(false, compactor.compact("Result does not match -"));
+        
+        return new ResultComparison(true, "OK");
         
     }
     
@@ -127,6 +165,8 @@ public class ResultCompareUtils {
     
     
     
+    
+    
     private static String compressWhitespace(final String text) {
         
         final StringBuilder strBuilder = new StringBuilder();
@@ -154,25 +194,51 @@ public class ResultCompareUtils {
     
     
     
-    private static boolean matchTraces(final List<TraceEvent> trace1, final List<TraceEvent> trace2) {
+    private static String getFragmentSurrounding(
+            final String text, final int line, final int col, final int before, final int after) {
         
-        final int trace1Size = trace1.size();
-        final int trace2Size = trace2.size();
+        final int textLen = text.length();
         
-        if (trace1Size != trace2Size) {
-            return false;
-        }
+        int cline = 1;
+        int ccol = 1;
+        int pos = 0;
         
-        for (int i = 0; i < trace1Size; i++) {
-            final TraceEvent trace1Item = trace1.get(i);
-            final TraceEvent trace2Item = trace2.get(i);
-            if (!trace1Item.matchesTypeAndContent(trace2Item)) {
-                return false;
+        while (pos < textLen) {
+            if (cline >= line && ccol >= col) {
+                break;
             }
+            final char c = text.charAt(pos);
+            if (c == '\n') {
+                cline++;
+                ccol = 1;
+            } else {
+                ccol++;
+            }
+            pos++;
         }
         
-        return true;
+        if (pos >= textLen) {
+            pos = textLen - 1;
+        }
         
+        // pos contains the position in text marking the desired location
+        // we should get 50 chars before, 50 chars after
+        
+        final int startPos = Math.max(0, (pos - before));
+        final int endPos = Math.min(textLen, (pos + after));
+
+        return new String(text.substring(startPos, endPos));
+        
+    }    
+
+
+    
+    
+    public static String createExplanation(
+            final String actualFragment, final int actualLine, final int actualCol, final String expectedFragment) {
+        return "Actual result does not match expected result. Obtained: [" + actualFragment + "] " +
+               "at line " + actualLine + " col " + actualCol + ", but " +
+               "expected [" + expectedFragment + "]";
     }
     
     
@@ -206,6 +272,25 @@ public class ResultCompareUtils {
         public String getExplanation() {
             return this.explanation;
         }
+        
+    }
+    
+    
+    
+    
+    public static void main(String[] args) {
+        
+        final String m1 =
+                "<!DOCTYPE html>\n" +
+                "<html>\n" +
+                "  <head class=\"a\" th:include=\"header\">\n" +
+                "  </head>\n" +
+                "  <body>\n" +
+                "      <h1 th:utext=\"${onevar}\">Hello!</h1>\n" +
+                "  </body>\n" +
+                "</html>";
+        
+        System.out.println("[" + getFragmentSurrounding(m1, 3, 10, 50, 60) + "]");
         
     }
     

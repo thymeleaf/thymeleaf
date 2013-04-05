@@ -27,6 +27,7 @@ import java.util.Set;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestFieldNaming;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultCacheStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultContextStandardTestFieldEvaluator;
+import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultExactMatchStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultExceptionMessagePatternTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultExceptionTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultExtendsStandardTestFieldEvaluator;
@@ -91,6 +92,11 @@ public class StandardTestFieldEvaluationSpec {
                     StandardTestFieldNaming.FIELD_NAME_EXCEPTION_MESSAGE_PATTERN, 
                     DefaultExceptionMessagePatternTestFieldEvaluator.INSTANCE);
     
+    public static final StandardTestFieldEvaluationSpec EXACT_MATCH_FIELD_SPEC = 
+            new StandardTestFieldEvaluationSpec(
+                    StandardTestFieldNaming.FIELD_NAME_EXACT_MATCH, 
+                    DefaultExactMatchStandardTestFieldEvaluator.INSTANCE);
+    
     public static final StandardTestFieldEvaluationSpec EXTENDS_FIELD_SPEC = 
             new StandardTestFieldEvaluationSpec(
                     StandardTestFieldNaming.FIELD_NAME_EXTENDS, 
@@ -110,6 +116,7 @@ public class StandardTestFieldEvaluationSpec {
                                     StandardTestFieldEvaluationSpec.OUTPUT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.EXCEPTION_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.EXCEPTION_MESSAGE_PATTERN_FIELD_SPEC,
+                                    StandardTestFieldEvaluationSpec.EXACT_MATCH_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.EXTENDS_FIELD_SPEC
                             })));
     

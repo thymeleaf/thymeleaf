@@ -95,6 +95,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         final StandardTestEvaluatedField output = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_OUTPUT);
         final StandardTestEvaluatedField exception = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXCEPTION);
         final StandardTestEvaluatedField exceptionMessagePattern = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXCEPTION_MESSAGE_PATTERN);
+        final StandardTestEvaluatedField exactMatch = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXACT_MATCH);
         final StandardTestEvaluatedField extendsTest = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_EXTENDS);
 
         
@@ -176,6 +177,9 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         if (exceptionMessagePattern != null && exceptionMessagePattern.hasValue()) {
             test.setOutputThrowableMessagePattern((String)exceptionMessagePattern.getValue(), exceptionMessagePattern.getValueType());
         }
+        if (exactMatch != null && exactMatch.hasNotNullValue()) {
+            test.setExactMatch(((Boolean)exactMatch.getValue()).booleanValue(), exactMatch.getValueType());
+        }
 
         
         
@@ -251,6 +255,10 @@ public class StandardTestBuilder implements IStandardTestBuilder {
                 
                 if (shouldSetValueFromParent(test.getOutputThrowableMessagePatternValueType(), (standardParentTest != null? standardParentTest.getOutputThrowableMessagePatternValueType() : null))) {
                     test.setOutputThrowableMessagePattern(((Test)parentTest).getOutputThrowableMessagePattern(), StandardTestValueType.SPECIFIED);
+                }
+                
+                if (shouldSetValueFromParent(test.getExactMatchValueType(), (standardParentTest != null? standardParentTest.getExactMatchValueType() : null))) {
+                    test.setExactMatch(((Test)parentTest).isExactMatch(), StandardTestValueType.SPECIFIED);
                 }
                 
             }

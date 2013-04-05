@@ -5,9 +5,8 @@
 #
 %OUTPUT 
 <!DOCTYPE html>
-
 <html>
-  <head><title>Heyjee!</title></head>
+  <head class="a"><title>Heyjee!</title></head>
   <body>
       <h1><b>Goodbye!</b></h1>
   </body>

@@ -36,11 +36,15 @@ import org.thymeleaf.util.Validate;
 public class Test 
         extends AbstractTest {
 
+    public static boolean DEFAULT_EXACT_MATCH = false;
+    
     
     private ITestResource output;
 
     private Class<? extends Throwable> outputThrowableClass;
     private String outputThrowableMessagePattern;
+    
+    private boolean exactMatch = DEFAULT_EXACT_MATCH;
 
     
     
@@ -82,27 +86,19 @@ public class Test
         this.outputThrowableMessagePattern = outputThrowableMessagePattern;
     }
 
+    
+    
 
-    
-    
-    public void initializeFrom(final ITest test) {
-        setName(test.getName());
-        setContext(test.getContext());
-        setFragmentSpec(test.getFragmentSpec());
-        setTemplateMode(test.getTemplateMode());
-        setInput(test.getInput());
-        setAdditionalInputs(test.getAdditionalInputs());
-        setInputCacheable(test.isInputCacheable());
-        if (test instanceof Test) {
-            final Test specificTest = (Test) test;
-            setOutput(specificTest.getOutput());
-            setOutputThrowableClass(specificTest.getOutputThrowableClass());
-            setOutputThrowableMessagePattern(specificTest.getOutputThrowableMessagePattern());
-        }
+    public boolean isExactMatch() {
+        return this.exactMatch;
     }
-    
-    
-    
+
+    public void setExactMatch(final boolean exactMatch) {
+        this.exactMatch = exactMatch;
+    }
+
+
+
     
     
     public boolean isSuccessExpected() {
@@ -177,7 +173,8 @@ public class Test
                     "Cannot execute: Test with name \"" + testName + "\" resolved its output resource as null");
         }
 
-        final ResultComparison comparison = ResultCompareUtils.compareResults(outputStr,result);
+        final ResultComparison comparison = 
+                ResultCompareUtils.compareResults(outputStr,result, !this.exactMatch);
         
         if (comparison.getResult()) {
             return TestResult.ok(testName);

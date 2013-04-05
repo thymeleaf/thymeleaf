@@ -49,6 +49,7 @@ public class StandardTest extends Test {
     private StandardTestValueType templateModeValueType = StandardTestValueType.NO_VALUE; 
     private StandardTestValueType outputThrowableClassValueType = StandardTestValueType.NO_VALUE; 
     private StandardTestValueType outputThrowableMessagePatternValueType = StandardTestValueType.NO_VALUE; 
+    private StandardTestValueType exactMatchValueType = StandardTestValueType.NO_VALUE; 
     
     
     
@@ -189,6 +190,12 @@ public class StandardTest extends Test {
         super.setName(name);
         this.nameValueType = valueType;
     }
+    
+    public void setExactMatch(final boolean exactMatch, final StandardTestValueType valueType) {
+        Validate.notNull(valueType, "Value type cannot be null");
+        super.setExactMatch(exactMatch);
+        this.exactMatchValueType = valueType;
+    }
 
 
 
@@ -241,7 +248,11 @@ public class StandardTest extends Test {
     public StandardTestValueType getOutputThrowableMessagePatternValueType() {
         return this.outputThrowableMessagePatternValueType;
     }
-    
+
+    public StandardTestValueType getExactMatchValueType() {
+        return this.exactMatchValueType;
+    }
+
     
     
     
