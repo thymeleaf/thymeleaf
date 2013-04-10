@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.resolver;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -55,6 +56,8 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
 
     public static enum TestableType { NONE, TEST, SEQUENCE, ITERATOR, PARALLELIZER }
 
+    public static final String INDEX_FILE_NAME = "TEST.INDEX";
+    
     private static String TEST_FILE_SUFFIX = ".test";
     private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
@@ -126,15 +129,13 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
 
     
     
-    protected TestableType computeTestableType(
-            @SuppressWarnings("unused") final String executionId, final File file) {
+    protected TestableType computeTestableTypeFromFileName(final String fileName, final boolean isDirectory) {
         
-        if (file == null) {
+        if (fileName == null) {
             return TestableType.NONE;
         }
         
-        final String fileName = file.getName();
-        if (!file.isDirectory()) {
+        if (!isDirectory) {
             
             if (fileName.endsWith(TEST_FILE_SUFFIX)) {
                 return TestableType.TEST;
@@ -168,7 +169,14 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
             return null;
         }
         
-        final TestableType type = computeTestableType(executionId, file);
+        final String fileName = file.getName();
+        final boolean isDirectory = file.isDirectory();
+        if (!isDirectory && !file.isFile()) {
+            return null;
+        }
+        
+        final TestableType type = computeTestableTypeFromFileName(fileName, isDirectory);
+        
         if (type == null) {
             return null;
         }
@@ -249,16 +257,60 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         final TestSequence testSequence = new TestSequence();
         testSequence.setName(fileName);
         
+        if (!file.isDirectory()) {
+            return null;
+        }
+        
+        File indexFile = null;
         for (final File fileInFolder : file.listFiles()) {
-            final ITestable testable = resolveFile(executionId, fileInFolder);
-            if (testable != null) {
-                testSequence.addElement(testable);
+            if (INDEX_FILE_NAME.equalsIgnoreCase(fileInFolder.getName())) {
+                indexFile = fileInFolder;
+                break;
             }
         }
         
-        return testSequence;
+        if (indexFile == null) {
+            for (final File fileInFolder : file.listFiles()) {
+                final ITestable testable = resolveFile(executionId, fileInFolder);
+                if (testable != null) {
+                    testSequence.addElement(testable);
+                }
+            }
+            return testSequence;
+        }
+        
+        
+        BufferedReader reader = null; 
+        try {
+            
+            reader = new BufferedReader(new FileReader(indexFile));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }   
+            
+            throw new RuntimeException("booh");
+            
+        } catch (final Exception e) {
+            throw new TestEngineExecutionException(
+                    "Exception raised while reading test index file '" + indexFile.getAbsolutePath() + "'", e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final Throwable ignored) {
+                    // ignored
+                }
+            }
+        }
+        
+        
+        
+        
         
     }
+    
+    
     
     
     
@@ -273,6 +325,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
             throw new TestEngineExecutionException(
                     "Cannot match \"" + fileName + "\" as a valid folder name for an iterator");
         }
+        
         final int iterations = Integer.parseInt(iterMatcher.group(2));
 
         final ITestSequence iteratedSequence = resolveAsTestSequence(executionId, file);
@@ -301,11 +354,6 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         return new TestParallelizer(iteratedSequence, numThreads);
         
     }
-
-    
-    
-    
-    
     
     
 }
