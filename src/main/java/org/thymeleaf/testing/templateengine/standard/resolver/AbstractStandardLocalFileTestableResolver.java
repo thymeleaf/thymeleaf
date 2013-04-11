@@ -60,8 +60,16 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     private static final Pattern INDEX_FILE_LINE_PATTERN = Pattern.compile("(.*?)(\\[(.*?)])?\\s*$");
     
     private static String TEST_FILE_SUFFIX = ".test";
-    private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
-    private static Pattern PARALLELIZER_PATTERN = Pattern.compile("^(.*?)-parallel-(\\d*)$");
+    
+    private static String ITERATOR_SUFFIX_PATTERN_STR = "iter-(\\d*)$";
+    private static String ITERATOR_PATTERN_STR = "^(.*?)-" + ITERATOR_SUFFIX_PATTERN_STR;
+    private static Pattern ITERATOR_SUFFIX_PATTERN = Pattern.compile(ITERATOR_SUFFIX_PATTERN_STR);
+    private static Pattern ITERATOR_PATTERN = Pattern.compile(ITERATOR_PATTERN_STR);
+    
+    private static String PARALLELIZER_SUFFIX_PATTERN_STR = "parallel-(\\d*)$";
+    private static String PARALLELIZER_PATTERN_STR = "^(.*?)-" + PARALLELIZER_SUFFIX_PATTERN_STR;
+    private static Pattern PARALLELIZER_SUFFIX_PATTERN = Pattern.compile(PARALLELIZER_SUFFIX_PATTERN_STR);
+    private static Pattern PARALLELIZER_PATTERN = Pattern.compile(PARALLELIZER_PATTERN_STR);
 
     
     private IStandardTestReader testReader = new StandardTestReader();
@@ -306,11 +314,42 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
                             (indexFile.getParentFile() != null? indexFile.getParentFile().getAbsolutePath() : "") +
                             File.separator + testFileName); 
 
-                final ITestable testable = resolveFile(executionId, testFile);
+                ITestable testable = resolveFile(executionId, testFile);
                 if (testable == null) {
                     throw new TestEngineExecutionException(
                             "Error resolving file '" + testFileName + "' " +
                     		"specified in test index file: '" + indexFile.getAbsolutePath() + "'"); 
+                }
+                
+                if (testSpec != null) {
+                    
+                    final Matcher iterMatcher = ITERATOR_SUFFIX_PATTERN.matcher(testSpec);
+                    if (iterMatcher.matches()) {
+                        
+                        final int iterations = Integer.parseInt(iterMatcher.group(1));
+                        final TestIterator testIterator = new TestIterator(testable, iterations);
+                        testable = testIterator;
+                        
+                    } else {
+                    
+                        final Matcher parMatcher = PARALLELIZER_SUFFIX_PATTERN.matcher(testSpec);
+                        if (parMatcher.matches()) {
+                            
+                            final int numThreads = Integer.parseInt(parMatcher.group(1));
+                            final TestParallelizer testParallelizer = new TestParallelizer(testable, numThreads);
+                            testable = testParallelizer;
+                            
+                        } else {
+                            
+                            throw new TestEngineExecutionException(
+                                    "Error resolving file '" + testFileName + "' " +
+                                    "specified in test index file: '" + indexFile.getAbsolutePath() + "'. " +
+                            		"Unrecognized specification '[" + testSpec + "]'");
+                            
+                        }
+                        
+                    }
+                    
                 }
                 
                 testSequence.addElement(testable);
@@ -367,8 +406,6 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    
-    
     protected ITestIterator resolveAsTestIterator(final String executionId, final File file) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
@@ -397,12 +434,12 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         Validate.notNull(file, "File cannot be null");
         
         final String fileName = file.getName();
-        final Matcher iterMatcher = PARALLELIZER_PATTERN.matcher(fileName);
-        if (!iterMatcher.matches()) {
+        final Matcher parMatcher = PARALLELIZER_PATTERN.matcher(fileName);
+        if (!parMatcher.matches()) {
             throw new TestEngineExecutionException(
                     "Cannot match \"" + fileName + "\" as a valid folder name for a parallelizer");
         }
-        final int numThreads = Integer.parseInt(iterMatcher.group(2));
+        final int numThreads = Integer.parseInt(parMatcher.group(2));
 
         final ITestSequence iteratedSequence = resolveAsTestSequence(executionId, file);
         
