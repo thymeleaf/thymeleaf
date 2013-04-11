@@ -57,6 +57,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     public static enum TestableType { NONE, TEST, SEQUENCE, ITERATOR, PARALLELIZER }
 
     public static final String INDEX_FILE_NAME = "TEST.INDEX";
+    private static final Pattern INDEX_FILE_LINE_PATTERN = Pattern.compile("(.*?)(\\[(.*?)])?\\s*$");
     
     private static String TEST_FILE_SUFFIX = ".test";
     private static Pattern ITERATOR_PATTERN = Pattern.compile("^(.*?)-iter-(\\d*)$");
@@ -286,10 +287,37 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
             reader = new BufferedReader(new FileReader(indexFile));
             String line = null;
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+                
+                if (line.trim().equals("")) {
+                    continue;
+                }
+                
+                final String[] lineComponents = parseTestIndexLine(line);
+                if (lineComponents == null) {
+                    throw new TestEngineExecutionException(
+                            "Error parsing test index file line: '" + line + "'"); 
+                }
+                
+                final String testFileName = lineComponents[0];
+                final String testSpec = lineComponents[1];
+                
+                final File testFile = 
+                        new File(
+                            (indexFile.getParentFile() != null? indexFile.getParentFile().getAbsolutePath() : "") +
+                            File.separator + testFileName); 
+
+                final ITestable testable = resolveFile(executionId, testFile);
+                if (testable == null) {
+                    throw new TestEngineExecutionException(
+                            "Error resolving file '" + testFileName + "' " +
+                    		"specified in test index file: '" + indexFile.getAbsolutePath() + "'"); 
+                }
+                
+                testSequence.addElement(testable);
+                
             }   
             
-            throw new RuntimeException("booh");
+            return testSequence;
             
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
@@ -307,6 +335,33 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
         
         
+        
+    }
+    
+    
+    
+    private static final String[] parseTestIndexLine(final String line) {
+        
+        if (line == null) {
+            return null;
+        }
+
+        final Matcher m;
+        synchronized (INDEX_FILE_LINE_PATTERN) {
+            m = INDEX_FILE_LINE_PATTERN.matcher(line);
+        }
+        if (m == null || !m.matches()) {
+            return null;
+        }
+        final String fileName = m.group(1);
+        final String lineSpec = m.group(3);
+        if (fileName == null || fileName.trim().equals("")) {
+            return null;
+        }
+        final String[] result = new String[2];
+        result[0] = fileName.trim();
+        result[1] = (lineSpec == null? null : lineSpec.trim());
+        return result;
         
     }
     
