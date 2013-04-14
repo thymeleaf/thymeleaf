@@ -296,7 +296,8 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
             String line = null;
             while ((line = reader.readLine()) != null) {
                 
-                if (line.trim().equals("")) {
+                if (line.trim().equals("") || line.startsWith("#")) {
+                    // Empty or commented out line
                     continue;
                 }
                 
