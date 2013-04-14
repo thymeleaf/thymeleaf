@@ -20,14 +20,21 @@
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import ognl.Ognl;
+import ognl.OgnlException;
+
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
+import org.thymeleaf.testing.templateengine.util.OrderedProperties;
 
 
 
@@ -55,7 +62,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             return StandardTestEvaluatedField.forDefaultValue(new Context());
         }
 
-        final Properties valueAsProperties = new Properties();
+        final Properties valueAsProperties = new OrderedProperties();
 
         try {
             
@@ -77,13 +84,57 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
                 (valueAsProperties.containsKey(LOCALE_PROPERTY_NAME)? 
                         new Locale(valueAsProperties.getProperty(LOCALE_PROPERTY_NAME)) : Locale.US);
         
-        final Context ctx = new Context(locale);
         
+        final Map<String,Object> contextVariables = new HashMap<String, Object>();
+        final Map<String,Object> expressionUtilityObjects =
+                ExpressionEvaluatorObjects.getExpressionEvaluationUtilityObjectsForLocale(locale);
+        if (expressionUtilityObjects != null) {
+            contextVariables.putAll(expressionUtilityObjects);
+        }
+        
+        
+        final Context ctx = new Context(locale);
+
         for (final Map.Entry<?,?> entry : valueAsProperties.entrySet()) {
-            ctx.setVariable((String)entry.getKey(), (String)entry.getValue());
+            
+            final String varName = (String)entry.getKey();
+            final String varValue = (String)entry.getValue();
+            
+            final Object varObjectValue;
+            if (varValue != null && varValue.trim().startsWith("${") && varValue.trim().endsWith("}")) {
+                // value is an expression
+                varObjectValue = evaluateAsOgnlExpression(varValue, contextVariables, ctx.getVariables());
+            } else {
+                varObjectValue = varValue;
+            }
+            
+            ctx.setVariable(varName, varObjectValue);
+            
         }
 
         return StandardTestEvaluatedField.forSpecifiedValue(ctx);
+        
+    }
+    
+    
+    
+
+    
+    private static final Object evaluateAsOgnlExpression(final String varValue, 
+            final Map<String,Object> contextVariables, final Object evaluationRoot) {
+        
+        final String varExpressionStr = varValue.trim().substring(2, varValue.length() - 1);
+
+        try {
+            
+            final Object varExpression = Ognl.parseExpression(varExpressionStr);
+            
+            return Ognl.getValue(varExpression, contextVariables, evaluationRoot);
+            
+        } catch (final OgnlException e) {
+            throw new TemplateProcessingException(
+                    "Exception evaluating OGNL expression: \"" + varExpressionStr + "\"", e);
+        }
         
     }
     
