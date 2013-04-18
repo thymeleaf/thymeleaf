@@ -101,28 +101,19 @@ Test structures at the `org.thymeleaf.testing.templateengine.testable` package:
 |`ITestResult`                 | Represents the results of executing a test and evaluating its results. |  | `TestResult` |
 
 
-
-
-      * `ITestable` implemented by objects designed for being *tested*, be it a simple test or an aggregating structure of any kind. Every other interface in this package extends this one.
-         * Abstract base implementation: `AbstractTestable` class.
-      * `ITest` represents tests, the basic unit for testing and simplest `ITestable` implementation. Tests are in charge not only of containing test data, but also of evaluating/checking test results.
-         * Abstract base implementation: `AbstractTest` class.
-         * Default implementation (including result evaluation): `Test` class.
-      * `ITestSequence` represents sequences of tests, test structures or any combination of theses (sequences of objects implementing the `ITestable` interface).
-         * Default implementation: `TestSequence` class.
-      * `ITestIterator` represents objects capable of iterating (executing a number of times) other test structures.
-         * Default implementation: `TestIterator` class.
-      * `ITestParallelizer` represents objects capable of using several threads for executing the same test structure in each thread, concurrently.
-         * Default implementation: `TestParallelizer` class.
-      * `ITestResult` represents the results of executing a test and evaluating its results.
-         * Default implementation: `TestResult` class.
-
-
 Interfaces at the `org.thymeleaf.testing.templateengine.resolver` package:
 
-      * `ITestableResolver` implemented by objects in charge of *resolving testables*, this is, of creating the `ITestable` objects and structures that will be executed. A *standard test resolution* implementation is provided out of the box that builds these testable structures from text files and their containing folders in disk.
-   * Interfaces at the `org.thymeleaf.testing.templateengine.report` package:
-      * `ITestReporter` implemented by objects in charge of reporting the results of executing tests, sequences, etc. along with their associated execution times.
+| Interface                  | Description |
+|----------------------------|-------------|
+|`ITestableResolver`                 | Implemented by objects in charge of *resolving testables*, this is, of creating the `ITestable` objects and structures that will be executed. A *standard test resolution* implementation is provided out of the box that builds these testable structures from text files and their containing folders in disk. |
+
+
+Interfaces at the `org.thymeleaf.testing.templateengine.report` package:
+
+| Interface                  | Description |
+|----------------------------|-------------|
+|`ITestReporter`                 | Implemented by objects in charge of reporting the results of executing tests, sequences, etc. along with their associated execution times. |
+
 
 In addition to these interfaces, this testing API also includes the `org.thymeleaf.testing.templateengine.engine.TestExecutor` class, in charge of executing the test structures.
 
