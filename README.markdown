@@ -11,7 +11,7 @@ This is an auxiliary testing library, not directly a part of the Thymeleaf core 
 
 Current versions: 
 
-  * **Version 2.0.0** - for Thymeleaf 2.0 (requires 2.0.16+) 
+  * **Version 2.0.0-beta1** - for Thymeleaf 2.0 (requires 2.0.16+) 
 
 
 License
@@ -150,7 +150,7 @@ Let's see each topic separately.
 
 #### Test file format ####
 
-A test file `simple.test` can look like this:
+A test file is a text file with a name ending in `.test` It can look like this:
 
 ```
 %CONTEXT
@@ -206,6 +206,46 @@ We can see there that tests are configured by means of *directives*, and that th
 |----------------------------|-------------|
 |`%EXTENDS`                  | Test specification (in a format understandable by the implementation of `ITestableResolver` being used) from which this test must inherit all its directives, overriding only those that are explicitly specified in the current test along with this `%EXTENDS` directive.<br />Example: `%EXTENDS test/bases/base1.test` |
 
+
+#### Test folder format ####
+
+The folders that contain tests will themselves be resolved as test structures, and their names will be used to indicate the existence of *iterations* or *parallelizers*.
+
+Imagine we have this folder structure at our classpath:
+
+    /tests
+     |
+     +->/warmup
+     |   |
+     |   +->testw1.test
+     |   |
+     |   +->testw2.test
+     |
+     +->/expressions-iter-10
+         |
+         +->expression1.test
+         |
+         +->/expression-stress-parallel-3
+             |
+             +->expression21.test
+             |
+             +->expression22.test
+
+When we ask the standard test resolver to resolve `"tests"`, it will create the following *testable* structure:
+
+   * A *Test Sequence* called `tests`, containing:
+     * A *Test Sequence* called `warmup` containing:
+       * Two tests: `testw1.test` and `testw2.test`.
+     * A *Test Iterator* called `expressions`, iterated 10 times, containing:
+       * One test: `expression1.test`.
+       * A *Test Parallelizer* called `expression-stress`, executed by 3 concurrent threads, containing:
+         * Two tests: `expression21.test` and `expression22.test`.
+
+So, as can be extracted from the example above:
+
+   * Any folder will create a *test sequence*
+   * A folder with a name ending in `-iter-X` will create a *test iterator* iterating `X` times.
+   * A folder with a name ending in `-parallel-X` will create a *test parallelizer* executing its contents with `X` concurrent threads.
 
 
 ### Extending the standard test resolution mechanism ###
