@@ -89,7 +89,20 @@ The meaning and working of the *dialects* an *messages* properties is pretty obv
 
 The Thymeleaf testing framework is based on interfaces, and therefore defines an API that specifies the diverse structures involved in the testing process:
 
-   * Test structures at the `org.thymeleaf.testing.templateengine.testable` package:
+Test structures at the `org.thymeleaf.testing.templateengine.testable` package:
+
+| Interface                  | Description |Base Impl| Default Impl|
+|----------------------------|-------------|------------------|-------------|
+|`ITestable`                 | Implemented by objects designed for being *tested*, be it a simple test or an aggregating structure of any kind. Every other interface in this package extends this one. | `AbstractTestable` | |
+|`ITest`                 | Represents tests, the basic unit for testing and simplest `ITestable` implementation. Tests are in charge not only of containing test data, but also of evaluating/checking test results. | `AbstractTest` | `Test` |
+|`ITestSequence`                 | Represents sequences of tests, test structures or any combination of theses (sequences of objects implementing the `ITestable` interface). |  | `TestSequence` |
+|`ITestIterator`                 | Represents objects capable of iterating (executing a number of times) other test structures. |  | `TestIterator` |
+|`ITestParallelizer`                 | Represents objects capable of using several threads for executing the same test structure in each thread, concurrently. |  | `TestParallelizer` |
+|`ITestResult`                 | Represents the results of executing a test and evaluating its results. |  | `TestResult` |
+
+
+
+
       * `ITestable` implemented by objects designed for being *tested*, be it a simple test or an aggregating structure of any kind. Every other interface in this package extends this one.
          * Abstract base implementation: `AbstractTestable` class.
       * `ITest` represents tests, the basic unit for testing and simplest `ITestable` implementation. Tests are in charge not only of containing test data, but also of evaluating/checking test results.
@@ -103,7 +116,10 @@ The Thymeleaf testing framework is based on interfaces, and therefore defines an
          * Default implementation: `TestParallelizer` class.
       * `ITestResult` represents the results of executing a test and evaluating its results.
          * Default implementation: `TestResult` class.
-   * Interfaces at the `org.thymeleaf.testing.templateengine.resolver` package:
+
+
+Interfaces at the `org.thymeleaf.testing.templateengine.resolver` package:
+
       * `ITestableResolver` implemented by objects in charge of *resolving testables*, this is, of creating the `ITestable` objects and structures that will be executed. A *standard test resolution* implementation is provided out of the box that builds these testable structures from text files and their containing folders in disk.
    * Interfaces at the `org.thymeleaf.testing.templateengine.report` package:
       * `ITestReporter` implemented by objects in charge of reporting the results of executing tests, sequences, etc. along with their associated execution times.
