@@ -124,11 +124,87 @@ It's easy to create new reporters that could write test results to different for
 
 ## Testable Resolvers ##
 
-Standard test resolution is provided by means of two implementations of the `org.thymeleaf.testing.templateengine.resolver.ITestableResolver` interface, both living at the `org.thymeleaf.testing.templateengine.resolver` package:
+Standard test resolution is provided by means of two implementations of the `org.thymeleaf.testing.templateengine.resolver.ITestableResolver` interface, both living at the `org.thymeleaf.testing.templateengine.resolver` package. They are basically two flavors of the same resolution mechanism:
 
-   * `StandardClassPathTestableResolver`
-   * `StandardFileTestableResolver`
+   * `StandardClassPathTestableResolver` for resolving tests from the classpath.
+   * `StandardFileTestableResolver` for resolving tests from anywhere in the file system.
 
 
+### The Standard Resolution mechanism ###
+
+The standard test resolution mechanism works like this:
+
+   * Tests are specified in text files, following a specific directive-based format.
+   * Folders can be used for grouping tests into sequences, iterators or parallelizers.
+   * Test ordering and sequencing can be configured through the use of *index files*.
+
+Let's see each topic separately.
+
+
+#### Test file format ####
+
+A test file `simple.test` can look like this:
+
+```
+%CONTEXT
+onevar = Goodbye!
+%TEMPLATE_MODE HTML5
+%INPUT
+<!DOCTYPE html>
+<html>
+  <body>
+      <h1 th:text="${onevar}">Hello!</h1>
+  </body>
+</html>
+%OUTPUT 
+<!DOCTYPE html>
+<html>
+  <body>
+      <h1>Goodbye!</h1>
+  </body>
+</html>
+```
+
+We can see there that tests are configured by means of *directives*, and that this directives are specified in the form of `%NAME`. The available directives are:
+
+*Test Configuration:*
+
+| Name                       | Description |
+|----------------------------|-------------|
+|`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. *Optional*. |
+|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables can be specified in the form of *properties* (like Java `.properties` files), and property values can optionally be OGNL expressions when enclosed in `${...}`.<br /> Also, a special property called `locale` can be specified in order to configure the locale to be used for template execution.<br />Context is *optional*. |
+
+*Test input:*
+
+| Name                       | Description |
+|----------------------------|-------------|
+|`%INPUT`                    | Test input, in the form of an HTML template or fragment. This parameter is *required*. |
+|`%INPUT[qualif]`              | Additional inputs can be specified by adding a *qualifier* to its name. These additional inputs can be used as external template fragments in `th:include`, `th:substituteby`, etc. |
+|`%FRAGMENT`                 | Fragment specification (in the same format as used in `th:include` attributes) to be applied on the test input before processing. *Optional*. |
+|`%TEMPLATE_MODE`            | Template mode to be used: `HTML5`, `XHTML`, etc. |
+|`%CACHE`                    | Whether template cache should be `on` or `off`. If cache is *on*, the input for this test will be parsed only the first time it is processed.|
+
+*Test expected output:*
+
+| Name                       | Description |
+|----------------------------|-------------|
+|`%OUTPUT`                   | Test output to be expected, if we expect template execution to finish successfully. Either this or the `%EXCEPTION` directive must be specified. |
+|`%EXACT_MATCH`              | Whether *exact matching* should be used. By default, *lenient matching* is used, which means excess whitespace (*ignorable whitespace*) will not be taken into account for matching test results. Setting this flag to `true` will perform exact *character-by-character* matching. |
+|`%EXCEPTION`                | Exception to be expected, if we expect template execution to raise an exception. Either this or the `%OUTPUT` directive must be specified.  |
+|`%EXCEPTION_MESSAGE_PATTERN`| Pattern (in `java.util.regex.Pattern` syntax) expected to match the message of the exception raised during template execution. This directive needs the `%EXCEPTION` directive to be specified too. |
+
+*Inheritance:*
+
+| Name                       | Description |
+|----------------------------|-------------|
+|`%EXTENDS`                  | Test specification (in a format understandable by the implementation of `ITestableResolver` being used) from which this test must inherit all its directives, overriding only those that are explicitly specified in the current test along with this `%EXTENDS` directive.<br />Example: `%EXTENDS test/bases/base1.test` |
+
+
+
+### Extending the standard test resolution mechanism ###
+
+In fact, the way all these directives are evaluated can be changed and extended by specifying different *directive evaluators*
+
+IStandardTestBuilder, IStandardTestEvaluator, IStandardTestFieldEvaluator, IStandardTestReader
 
 
