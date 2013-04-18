@@ -178,8 +178,8 @@ We can see there that tests are configured by means of *directives*, and that th
 
 | Name                       | Description |
 |----------------------------|-------------|
-|`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. *Optional*. |
-|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables can be specified in the form of *properties* (like Java `.properties` files), and property values can optionally be OGNL expressions when enclosed in `${...}`.<br /> Also, a special property called `locale` can be specified in order to configure the locale to be used for template execution.<br />Context is *optional*. |
+|`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. This is *optional*. If not specified, the file name will be used as test name. |
+|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values can optionally be OGNL expressions enclosed in `${...}` and include the usage of thymeleaf's utility objects like `#strings`, `#lists`, etc.<br /> Also, a special property called `locale` can be specified in order to configure the locale to be used for template execution.<br />Defining context variables is *optional*. |
 
 *Test input:*
 
