@@ -250,8 +250,12 @@ So, as can be extracted from the example above:
 
 ### Extending the standard test resolution mechanism ###
 
-In fact, the way all these directives are evaluated can be changed and extended by specifying different *directive evaluators*
+The standard resolution mechanism can be extended in several ways, by means of a series of *setter* methods in the `StandardClassPathTestableResolver` and `StandardFileTestableResolver` classes:
 
-IStandardTestBuilder, IStandardTestEvaluator, IStandardTestFieldEvaluator, IStandardTestReader
+| Setter                       | Description |
+|----------------------------|-------------|
+|`setTestReader(IStandardTestReader)`      | Specifies the implementation that will be in charge of reading test files and return its raw data. Default is `org.thymeleaf.testing.templateengine.standard.test.reader.StandardTestReader`. |
+|`setTestEvaluator(IStandardTestEvaluator)` | Specifies the implementation that will be in charge of evaluating the *raw data* returned by the test reader into the different values that will be used for building the test object. Default is `org.thymeleaf.testing.templateengine.standard.test.evaluator.StandardTestEvaluator`. |
+|`setTestBuilder(IStandardTestBuilder)` | Specifies the implementation that will be in charge of actually building test objects from the values evaluated by the *test evaluator* in the previous step. Default is `org.thymeleaf.testing.templateengine.standard.test.builder.StandardTestBuilder`. |
 
 
