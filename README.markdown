@@ -216,6 +216,8 @@ We can see there that tests are configured by means of *directives*, and that th
 |----------------------------|-------------|
 |`%EXTENDS`                  | Test specification (in a format understandable by the implementation of `ITestableResolver` being used) from which this test must inherit all its directives, overriding only those that are explicitly specified in the current test along with this `%EXTENDS` directive.<br />Example: `%EXTENDS test/bases/base1.test` |
 
+Also, any line starting by `#` in a test file will be considered **a comment** and simply ignored.
+
 
 #### Test folder format ####
 
@@ -256,6 +258,22 @@ So, as can be extracted from the example above:
    * Any folder will create a *test sequence*
    * A folder with a name ending in `-iter-X` will create a *test iterator* iterating `X` times.
    * A folder with a name ending in `-parallel-X` will create a *test parallelizer* executing its contents with `X` concurrent threads.
+
+
+#### Test index files ####
+
+Folders can contain *index files*. These files have to be named `test.index` and allow developers to specify which tests and in which order they want to be executed. They also allow the specification of iteration or parallelization without having to change the name of a folder.
+
+Example contents for a `test.index` file:
+
+```
+exp.test
+include.test
+text.test [iter-20]
+test2 [parallel-3]
+```
+
+According to the above index, the `text.test` file will be executed in third position, 20 times. And the `test2` folder will be considered a parallelizer, just as if it was called `test2-parallel-3` instead.
 
 
 ### Extending the standard test resolution mechanism ###
