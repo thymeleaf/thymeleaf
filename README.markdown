@@ -250,12 +250,12 @@ So, as can be extracted from the example above:
 
 ### Extending the standard test resolution mechanism ###
 
-The standard resolution mechanism can be extended in several ways, by means of a series of *setter* methods in the `StandardClassPathTestableResolver` and `StandardFileTestableResolver` classes:
+The standard resolution mechanism can be extended in several ways, by means of a series of *setter* methods in the `StandardClassPathTestableResolver` and `StandardFileTestableResolver` classes which allow developers to configure how each step of test resolution is performed:
 
 | Setter                       | Description |
 |----------------------------|-------------|
-|`setTestReader(IStandardTestReader)`      | Specifies the implementation that will be in charge of reading test files and return its raw data. Default is `org.thymeleaf.testing.templateengine.standard.test.reader.StandardTestReader`. |
-|`setTestEvaluator(IStandardTestEvaluator)` | Specifies the implementation that will be in charge of evaluating the *raw data* returned by the test reader into the different values that will be used for building the test object. Default is `org.thymeleaf.testing.templateengine.standard.test.evaluator.StandardTestEvaluator`. |
-|`setTestBuilder(IStandardTestBuilder)` | Specifies the implementation that will be in charge of actually building test objects from the values evaluated by the *test evaluator* in the previous step. Default is `org.thymeleaf.testing.templateengine.standard.test.builder.StandardTestBuilder`. |
+|`setTestReader(IStandardTestReader)`      | Specifies the implementation that will be in charge of reading test files and return its raw data. Default implementation is the `StandardTestReader` class. |
+|`setTestEvaluator(IStandardTestEvaluator)` | Specifies the implementation that will be in charge of evaluating the *raw data* returned by the test reader into the different values that will be used for building the test object. Default implementation is `StandardTestEvaluator`. |
+|`setTestBuilder(IStandardTestBuilder)` | Specifies the implementation that will be in charge of actually building test objects from the values evaluated by the *test evaluator* in the previous step. Default implementation is `StandardTestBuilder`. |
 
 
