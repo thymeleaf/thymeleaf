@@ -126,6 +126,16 @@ Out of the box, thymeleaf-testing provides two implementations at the `org.thyme
    * `AbstractTextualTestReporter`, an abstract text-based implementation suitable for easily creating reporters that output text.
    * `ConsoleTestReporter`, extending the former, which writes these *text report items* to the console.
 
+Console reporting looks like this:
+
+```
+[2013-04-19 02:23:29][KE1OMC][main] [sequence:start][maintests]
+[2013-04-19 02:23:29][KE1OMC][main]   [test:end][text.test][175729614][OK] Test executed OK.  Time: 175729614ns (175ms).
+[2013-04-19 02:23:29][KE1OMC][main]   [test:end][utext.test][3365839][OK] Test executed OK.  Time: 3365839ns (3ms).
+[2013-04-19 02:23:29][KE1OMC][main] [sequence:end][maintests][2][2][179095453] Tests OK: 2 of 2. Sequence executed in 179095453ns (179ms)
+```
+
+
 It's easy to create new reporters that could write test results to different formats like CSV, Excel, etc. or even write results to a database.
 
 
