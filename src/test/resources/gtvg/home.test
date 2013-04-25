@@ -1,0 +1,90 @@
+%CONTEXT
+session.user = I'm a user!
+
+#
+#
+#
+%INPUT
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+  </head>
+
+  <body>
+
+    <div>
+      <img src="../../images/gtvglogo.png" alt="GTVG logo" title="GTVG logo" 
+           th:src="@{/images/gtvglogo.png}" th:alt-title="#{logo}" />
+    </div>
+  
+    <p th:utext="#{home.welcome(${session.user.name})}">Welcome to our grocery store, Sebastian!</p>
+  
+    <p>
+      Today is: <span th:with="df=#{date.format}" th:text="${#calendars.format(today,df)}">13 February 2011</span>
+    </p>
+    
+    <p>Please select an option</p>
+    <ol>
+      <li><a href="product/list.html" th:href="@{/product/list}">Product List</a></li>
+      <li><a href="order/list.html" th:href="@{/order/list}">Order List</a></li>
+      <li><a href="subscribe.html" th:href="@{/subscribe}">Subscribe to our Newsletter</a></li>
+      <li><a href="userprofile.html" th:href="@{/userprofile}">See User Profile</a></li>
+    </ol>
+      
+    <p>Now you are looking at a <span th:text="'working web application'">template file</span>.</p>
+  
+    <div th:include="footer::copy">&copy; 2011 The Static Templates</div>
+  
+  </body>
+  
+</html>
+#
+#
+#
+%OUTPUT 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/gtvg/css/gtvg.css;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" />
+  </head>
+
+  <body>
+
+    <div>
+      <img src="/gtvg/images/gtvglogo.png;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" alt="Good Thymes Virtual Grocery logo" title="Good Thymes Virtual Grocery logo" />
+    </div>
+  
+    <p>Welcome to our grocery store, John Apricot (from default messages)!</p>
+  
+    <p>
+      Today is: <span>April 24, 2013</span>
+    </p>
+    
+    <p>Please select an option</p>
+    <ol>
+      <li><a href="/gtvg/product/list;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">Product List</a></li>
+      <li><a href="/gtvg/order/list;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">Order List</a></li>
+      <li><a href="/gtvg/subscribe;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">Subscribe to our Newsletter</a></li>
+      <li><a href="/gtvg/userprofile;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">See User Profile</a></li>
+    </ol>
+      
+    <p>Now you are looking at a <span>working web application</span>.</p>
+  
+    <div>
+      &copy; 2011 The Good Thymes Virtual Grocery
+    </div>
+  
+  </body>
+  
+</html>

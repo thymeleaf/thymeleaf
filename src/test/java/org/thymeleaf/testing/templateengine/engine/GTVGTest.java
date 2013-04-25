@@ -20,43 +20,26 @@
 package org.thymeleaf.testing.templateengine.engine;
 
 import org.junit.Test;
-import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
-import org.thymeleaf.testing.templateengine.standard.resolver.StandardClassPathTestableResolver;
 
 
 
 
 
-public class TestExecutorTest {
+public class GTVGTest {
     
     
-    
-    
-    public TestExecutorTest() {
+    public GTVGTest() {
         super();
     }
     
     
     
     
-    
-    
-    
     @Test
     public void testExecutor() throws Exception {
-        
-        try {
 
-            final ITestableResolver resolver = new StandardClassPathTestableResolver();
-            
-            final TestExecutor executor = new TestExecutor();
-            executor.setTestableResolver(resolver);
-            executor.execute("test");
-            executor.execute("maintests");
-            
-        } catch (final Throwable t) {
-            t.printStackTrace();
-        }
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("gtvg");
         
         
     }
