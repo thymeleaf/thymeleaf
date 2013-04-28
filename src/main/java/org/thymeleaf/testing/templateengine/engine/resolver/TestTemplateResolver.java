@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.PatternSpec;
 import org.thymeleaf.TemplateProcessingParameters;
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.templateresolver.AbstractTemplateResolver;
@@ -35,11 +34,10 @@ import org.thymeleaf.templateresolver.ITemplateResolutionValidity;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.NonCacheableTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.TemplateResolution;
-import org.thymeleaf.testing.templateengine.context.ContextNaming;
+import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.testable.ITest;
-import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -250,14 +248,8 @@ public class TestTemplateResolver implements ITemplateResolver {
         
         Validate.notNull(templateProcessingParameters, "Template Processing Parameters cannot be null");
 
-        // The TestExecutionContext is a local variable, so we must retrieve it
-        final IProcessingContext processingContext = templateProcessingParameters.getProcessingContext();
-        
-        // Retrieve the ITest object from context
-        final ITest test = 
-                (ITest) processingContext.getLocalVariable(ContextNaming.TEST_OBJECT);
-        
-        final String testName = TestNamingUtils.nameTest(test);
+        final ITest test = TestExecutor.getThreadTest(); 
+        final String testName = TestExecutor.getThreadTestName();
 
         // Check template mode
         final String templateMode = test.getTemplateMode();

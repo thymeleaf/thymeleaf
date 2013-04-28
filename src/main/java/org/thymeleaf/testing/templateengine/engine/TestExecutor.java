@@ -40,7 +40,6 @@ import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.testing.templateengine.context.ContextNaming;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
@@ -81,6 +80,7 @@ public final class TestExecutor {
     
     private static ThreadLocal<String> threadExecutionId = new ThreadLocal<String>();
     private static ThreadLocal<String> threadTestName = new ThreadLocal<String>();
+    private static ThreadLocal<ITest> threadTest = new ThreadLocal<ITest>();
     
     
     
@@ -92,6 +92,10 @@ public final class TestExecutor {
         return threadTestName.get();
     }
     
+    public static ITest getThreadTest() {
+        return threadTest.get();
+    }
+    
     // protected in order to be accessed from parallelizer threads
     protected static void setThreadExecutionId(final String executionId) {
         threadExecutionId.set(executionId);
@@ -99,6 +103,10 @@ public final class TestExecutor {
     
     private static void setThreadTestName(final String testName) {
         threadTestName.set(testName);
+    }
+    
+    private static void setThreadTest(final ITest test) {
+        threadTest.set(test);
     }
     
     
@@ -377,6 +385,7 @@ public final class TestExecutor {
         final String testName = TestNamingUtils.nameTest(test);
         final TemplateEngine templateEngine = context.getTemplateEngine();
         
+        setThreadTest(test);
         setThreadTestName(testName);
         
         this.reporter.testStart(executionId, context.getNestingLevel(), test, testName);
@@ -388,10 +397,7 @@ public final class TestExecutor {
             throw new TestEngineExecutionException("Resolved context is null for test \"" + testName + "\"");
         }
         
-        final Map<String,Object> localVariables = new HashMap<String, Object>();
-        localVariables.put(ContextNaming.TEST_OBJECT, test);
-        
-        final ProcessingContext processingContext = new ProcessingContext(ctx, localVariables);
+        final ProcessingContext processingContext = new ProcessingContext(ctx);
         
         final StringWriter writer = new StringWriter();
 
@@ -418,6 +424,9 @@ public final class TestExecutor {
         
         final TestExecutionResult result = new TestExecutionResult();
         result.addTestResult(testResult.isOK(), totalTimeNanos);
+
+        setThreadTestName(null);
+        setThreadTest(null);
         
         return result;
         
