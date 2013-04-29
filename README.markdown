@@ -189,7 +189,7 @@ We can see there that tests are configured by means of *directives*, and that th
 | Name                       | Description |
 |----------------------------|-------------|
 |`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. This is *optional*. If not specified, the file name will be used as test name. |
-|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values will be considered OGNL expressions. These expressions can include the usage of thymeleaf's utility objects like `#strings`, `#lists`, etc.<br /> Also, a special property called `locale` can be specified in order to configure the locale to be used for template execution.<br />Request parameters, request attributes, session attributes and servlet context attributes can be specified with the `param.`, `request.`, `session.` and `application.` prefixes, respectively.<br />Context variables can be inherited from parent tests (see `%EXTENDS`).<br />Defining context variables is *optional*. |
+|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values will be considered OGNL expressions. You can read more about context specification below.<br />Also note that defining context variables is *optional*. |
 
 *Test input:*
 
@@ -217,6 +217,60 @@ We can see there that tests are configured by means of *directives*, and that th
 |`%EXTENDS`                  | Test specification (in a format understandable by the implementation of `ITestableResolver` being used) from which this test must inherit all its directives, overriding only those that are explicitly specified in the current test along with this `%EXTENDS` directive.<br />Example: `%EXTENDS test/bases/base1.test` |
 
 Also, any line starting by `#` in a test file will be considered **a comment** and simply ignored.
+
+
+
+##### More on context specification #####
+
+As already said, context is specified like:
+
+```
+%CONTEXT
+onevar = 'Goodbye!'
+twovar = 'Hello!'
+```
+
+And those literals are specified between commas because all context values are in fact OGNL expressions, so we could in fact use previous variables in new ones:
+
+```
+%CONTEXT
+onevar = 'Hello, '
+twovar = onevar + 'World!'
+```
+
+We can also create objects, and set its properties:
+
+```
+%CONTEXT
+user = new com.myapp.User()
+user.firstName = 'John'
+user.lastName = 'Apricot'
+```
+
+Also maps:
+
+```
+%CONTEXT
+user = new java.util.HashMap()
+user['firstName'] = 'John'
+user['lastName'] = 'Apricot'
+```
+
+We can set request parameters (multivalued), request attributes, session attributes and servlet context attributes using the `param`, `request`, `session` and `application` prefixes:
+```
+%CONTEXT
+session.userLogin = 'japricot'
+param.selection = 'admin'
+param.selection = 'manager'
+```
+
+Utility objects like `#strings`, `#dates`, `#lists`, etc. can be used:
+```
+%CONTEXT
+request.timestamp = #calendars.createNow()
+```
+
+Finally, note that **context variables are inherited** when a test is set as an extension of another one by means of the `%EXTENDS` directive.
 
 
 #### Test folder format ####
