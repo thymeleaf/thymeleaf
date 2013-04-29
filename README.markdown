@@ -189,7 +189,7 @@ We can see there that tests are configured by means of *directives*, and that th
 | Name                       | Description |
 |----------------------------|-------------|
 |`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. This is *optional*. If not specified, the file name will be used as test name. |
-|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values will be considered OGNL expressions. You can read more about context specification below.<br />Also note that defining context variables is *optional*. |
+|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values will be considered OGNL expressions.<br />You can read more about context specification below.Also note that defining context variables is *optional*. |
 
 *Test input:*
 
