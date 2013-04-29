@@ -40,6 +40,7 @@ import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
@@ -53,6 +54,7 @@ import org.thymeleaf.testing.templateengine.testable.ITestParallelizer;
 import org.thymeleaf.testing.templateengine.testable.ITestResult;
 import org.thymeleaf.testing.templateengine.testable.ITestSequence;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
+import org.thymeleaf.testing.templateengine.util.TestContextResolutionUtils;
 import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.testing.templateengine.util.UnmodifiableProperties;
 import org.thymeleaf.util.Validate;
@@ -392,7 +394,8 @@ public final class TestExecutor {
         
         final IFragmentSpec fragmentSpec = test.getFragmentSpec();
         
-        final IContext ctx = test.getContext();
+        final ITestContext testContext = test.getContext();
+        final IContext ctx = TestContextResolutionUtils.resolveTestContext(testContext);
         if (ctx == null) {
             throw new TestEngineExecutionException("Resolved context is null for test \"" + testName + "\"");
         }
@@ -433,6 +436,8 @@ public final class TestExecutor {
     }
     
 
+    
+    
     
     
     

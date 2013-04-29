@@ -20,36 +20,19 @@
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import ognl.Ognl;
-import ognl.OgnlException;
-
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.testing.templateengine.context.ITestContext;
+import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
+import org.thymeleaf.testing.templateengine.context.OgnlTestContextExpression;
+import org.thymeleaf.testing.templateengine.context.TestContext;
+import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
-import org.thymeleaf.testing.templateengine.util.OrderedProperties;
+import org.thymeleaf.testing.templateengine.util.MultiValueProperties;
 
 
 public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
@@ -69,7 +52,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
     
     
     private DefaultContextStandardTestFieldEvaluator() {
-        super(IContext.class);
+        super(ITestContext.class);
     }
 
 
@@ -82,7 +65,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             return StandardTestEvaluatedField.forDefaultValue(new Context());
         }
 
-        final Properties valueAsProperties = new OrderedProperties();
+        final MultiValueProperties properties = new MultiValueProperties();
 
         try {
             
@@ -93,328 +76,78 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             final byte[] valueAsBytes = fieldValue.getBytes("ISO-8859-1");
             final ByteArrayInputStream inputStream = new ByteArrayInputStream(valueAsBytes);
 
-            valueAsProperties.load(inputStream);
+            properties.load(inputStream);
             
         } catch (final Throwable t) {
             throw new TestEngineExecutionException( 
                     "Error while reading context specification", t);
         }
         
-        final Locale locale = 
-                (valueAsProperties.containsKey(LOCALE_PROPERTY_NAME)? 
-                        new Locale(valueAsProperties.getProperty(LOCALE_PROPERTY_NAME)) : Locale.US);
         
+        final TestContext testContext = new TestContext();
         
-        final Map<String,Object> contextVariables = new HashMap<String, Object>();
-        final Map<String,Object> expressionUtilityObjects =
-                ExpressionEvaluatorObjects.getExpressionEvaluationUtilityObjectsForLocale(locale);
-        if (expressionUtilityObjects != null) {
-            contextVariables.putAll(expressionUtilityObjects);
-        }
-        
-        
-        final ServletContext servletContext = createServletContext();
-        final HttpSession session = createHttpSession(servletContext);
-        final HttpServletRequest request = createHttpServletRequest(session);
-        final HttpServletResponse response = createHttpServletResponse();
-        
-        final WebContext ctx = new WebContext(request, response, servletContext, locale);
+        for (final Map.Entry<String,List<String>> entry : properties.entrySet()) {
+            
+            final String varName = entry.getKey();
+            final List<String> varValue = entry.getValue();
 
-        final Map<String,List<Object>> requestParameters = new HashMap<String,List<Object>>();
-        
-        for (final Map.Entry<?,?> entry : valueAsProperties.entrySet()) {
-            
-            final String varName = (String)entry.getKey();
-            final String varValue = (String)entry.getValue();
-            
-            final Object varObjectValue;
-            if (varValue != null && varValue.trim().startsWith("${") && varValue.trim().endsWith("}")) {
-                // value is an expression
-                varObjectValue = evaluateAsOgnlExpression(varValue, contextVariables, ctx.getVariables());
-            } else {
-                varObjectValue = varValue;
+            if (varName.equalsIgnoreCase(LOCALE_PROPERTY_NAME)) {
+                checkForbiddenMultiValue(varName, varValue);
+                testContext.setLocale(new Locale(varValue.get(0)));
+                continue;
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_PARAM)) {
-                final String unprefixedName = varName.substring(VAR_NAME_PREFIX_PARAM.length());
-                List<Object> currentValues = requestParameters.get(unprefixedName);
-                if (currentValues == null) {
-                    currentValues = new ArrayList<Object>();
-                    requestParameters.put(unprefixedName, currentValues);
+                final int valueLen = varValue.size();
+                final ITestContextExpression[] expressions = new ITestContextExpression[valueLen];
+                for (int i = 0; i < valueLen; i++) {
+                    expressions[i] = new OgnlTestContextExpression(varValue.get(i));
                 }
-                currentValues.add(varObjectValue);
-            } else if (varName.startsWith(VAR_NAME_PREFIX_REQUEST)) {
-                final String unprefixedName = varName.substring(VAR_NAME_PREFIX_REQUEST.length());
-                request.setAttribute(unprefixedName, varObjectValue);
-            } else if (varName.startsWith(VAR_NAME_PREFIX_SESSION)) {
-                final String unprefixedName = varName.substring(VAR_NAME_PREFIX_SESSION.length());
-                session.setAttribute(unprefixedName, varObjectValue);
-            } else if (varName.startsWith(VAR_NAME_PREFIX_APPLICATION)) {
-                final String unprefixedName = varName.substring(VAR_NAME_PREFIX_APPLICATION.length());
-                servletContext.setAttribute(unprefixedName, varObjectValue);
-            } else {
-                ctx.setVariable(varName, varObjectValue);
+                testContext.getRequestParameters().put(varName.substring(VAR_NAME_PREFIX_PARAM.length()), expressions);
+                continue;
             }
             
-        }
-        
-        initializeRequestParameters(request, requestParameters);
-
-        return StandardTestEvaluatedField.forSpecifiedValue(ctx);
-        
-    }
-    
-    
-    
-
-    
-    private static final Object evaluateAsOgnlExpression(final String varValue, 
-            final Map<String,Object> contextVariables, final Object evaluationRoot) {
-        
-        final String varExpressionStr = varValue.trim().substring(2, varValue.length() - 1);
-
-        try {
+            if (varName.startsWith(VAR_NAME_PREFIX_REQUEST)) {
+                checkForbiddenMultiValue(varName, varValue);
+                testContext.getRequestAttributes().put(varName.substring(VAR_NAME_PREFIX_REQUEST.length()), new OgnlTestContextExpression(varValue.get(0)));
+                continue;
+            }
             
-            final Object varExpression = Ognl.parseExpression(varExpressionStr);
+            if (varName.startsWith(VAR_NAME_PREFIX_SESSION)) {
+                checkForbiddenMultiValue(varName, varValue);
+                testContext.getSessionAttributes().put(varName.substring(VAR_NAME_PREFIX_SESSION.length()), new OgnlTestContextExpression(varValue.get(0)));
+                continue;
+            }
             
-            return Ognl.getValue(varExpression, contextVariables, evaluationRoot);
+            if (varName.startsWith(VAR_NAME_PREFIX_APPLICATION)) {
+                checkForbiddenMultiValue(varName, varValue);
+                testContext.getServletContextAttributes().put(varName.substring(VAR_NAME_PREFIX_APPLICATION.length()), new OgnlTestContextExpression(varValue.get(0)));
+                continue;
+            }
+
+            checkForbiddenMultiValue(varName, varValue);
+            testContext.getVariables().put(varName, new OgnlTestContextExpression(varValue.get(0)));
             
-        } catch (final OgnlException e) {
-            throw new TemplateProcessingException(
-                    "Exception evaluating OGNL expression: \"" + varExpressionStr + "\"", e);
         }
-        
-    }
-    
-   
-    
-    
-    private static final HttpServletRequest createHttpServletRequest(final HttpSession session) {
-        
-        final Map<String,Object> variables = new HashMap<String, Object>();
-        final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        
-        Mockito.when(request.getContextPath()).thenReturn("thymeleaf-test");
-        Mockito.when(request.getSession()).thenReturn(session);
-        Mockito.when(request.getSession(Matchers.anyBoolean())).thenReturn(session);
 
-        Mockito.when(request.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(variables));
-        Mockito.when(request.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(variables));
-        Mockito.doAnswer(new SetAttributeAnswer(variables)).when(request).setAttribute(Matchers.anyString(), Matchers.anyObject());
         
-        return request;
-        
-    }
-    
-    
-    private static final void initializeRequestParameters(final HttpServletRequest request, final Map<String,List<Object>> variables) {
-        
-        Mockito.when(request.getParameterNames()).thenAnswer(new GetVariableNamesAnswer(variables));
-        Mockito.when(request.getParameterValues(Matchers.anyString())).thenAnswer(new GetParameterValuesAnswer(variables));
-        Mockito.when(request.getParameterMap()).thenAnswer(new GetParameterMapAnswer(variables));
-        Mockito.when(request.getParameter(Matchers.anyString())).thenAnswer(new GetParameterAnswer(variables));
-        
-    }
-    
-
-    
-    private static final HttpSession createHttpSession(final ServletContext context) {
-        
-        final Map<String,Object> variables = new HashMap<String, Object>();
-        final HttpSession session = Mockito.mock(HttpSession.class);
-        
-        Mockito.when(session.getServletContext()).thenReturn(context);
-
-        Mockito.when(session.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(variables));
-        Mockito.when(session.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(variables));
-        Mockito.doAnswer(new SetAttributeAnswer(variables)).when(session).setAttribute(Matchers.anyString(), Matchers.anyObject());
-        
-        return session;
+        return StandardTestEvaluatedField.forSpecifiedValue(testContext);
         
     }
     
     
     
-    private static final HttpServletResponse createHttpServletResponse() {
-        final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        return response;
-    }
-
-    
-    
-    private static final ServletContext createServletContext() {
-        
-        final Map<String,Object> variables = new HashMap<String, Object>();
-        final ServletContext servletContext = Mockito.mock(ServletContext.class);
-        
-        Mockito.when(servletContext.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(variables));
-        Mockito.when(servletContext.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(variables));
-        Mockito.doAnswer(new SetAttributeAnswer(variables)).when(servletContext).setAttribute(Matchers.anyString(), Matchers.anyObject());
-        
-        return servletContext;
-    }
-    
-
-    
-    
-    
-    
-    
-    private static class VariableEnumeration implements Enumeration<String> {
-
-        private final Iterator<String> iterator;
-        
-        public VariableEnumeration(final Collection<String> values) {
-            super();
-            this.iterator = values.iterator();
+    private static void checkForbiddenMultiValue(final String varName, final List<String> varValue) {
+        if (varValue.size() > 1) {
+            throw new TestEngineExecutionException(
+                    "Variable \"" + varName + "\" in context for test \"" + TestExecutor.getThreadTestName() + "\" " +
+            		"cannot be multi-valued");
         }
-        
-        public boolean hasMoreElements() {
-            return this.iterator.hasNext();
-        }
-
-        public String nextElement() {
-            return this.iterator.next();
-        }
-        
     }
     
     
     
-    private static class GetVariableNamesAnswer implements Answer<Enumeration<?>> {
-
-        private final Map<String,?> values;
-        
-        public GetVariableNamesAnswer(final Map<String,?> values) {
-            super();
-            this.values = values;
-        }
-        
-        public Enumeration<?> answer(final InvocationOnMock invocation) throws Throwable {
-            return new VariableEnumeration(this.values.keySet());
-        }
-        
-    }
     
-    
-    
-    private static class GetAttributeAnswer implements Answer<Object> {
-
-        private final Map<String,Object> values;
-        
-        public GetAttributeAnswer(final Map<String,Object> values) {
-            super();
-            this.values = values;
-        }
-        
-        public Object answer(final InvocationOnMock invocation) throws Throwable {
-            final String attributeName = (String) invocation.getArguments()[0];
-            return this.values.get(attributeName);
-        }
-        
-    }
-    
-    
-    
-    private static class SetAttributeAnswer implements Answer<Object> {
-
-        private final Map<String,Object> values;
-        
-        public SetAttributeAnswer(final Map<String,Object> values) {
-            super();
-            this.values = values;
-        }
-        
-        public Object answer(final InvocationOnMock invocation) throws Throwable {
-            final String attributeName = (String) invocation.getArguments()[0];
-            final Object attributeValue = invocation.getArguments()[1];
-            this.values.put(attributeName, attributeValue);
-            return null;
-        }
-        
-    }
-    
-    
-    
-    private static class GetParameterValuesAnswer implements Answer<String[]> {
-
-        private final Map<String,List<Object>> values;
-        
-        public GetParameterValuesAnswer(final Map<String,List<Object>> values) {
-            super();
-            this.values = values;
-        }
-        
-        public String[] answer(final InvocationOnMock invocation) throws Throwable {
-            final String parameterName = (String) invocation.getArguments()[0];
-            final List<?> parameterValues = this.values.get(parameterName);
-            if (parameterValues == null) {
-                return null;
-            }
-            final String[] parameterValuesArray = new String[parameterValues.size()];
-            for (int i = 0; i < parameterValuesArray.length; i++) {
-                final Object value = parameterValues.get(i);
-                parameterValuesArray[i] = (value == null? null : value.toString());
-            }
-            return parameterValuesArray;
-        }
-        
-    }
-    
-    
-    
-    private static class GetParameterAnswer implements Answer<String> {
-
-        private final Map<String,List<Object>> values;
-        
-        public GetParameterAnswer(final Map<String,List<Object>> values) {
-            super();
-            this.values = values;
-        }
-        
-        public String answer(final InvocationOnMock invocation) throws Throwable {
-            final String parameterName = (String) invocation.getArguments()[0];
-            final List<?> parameterValues = this.values.get(parameterName);
-            if (parameterValues == null) {
-                return null;
-            }
-            final Object value = parameterValues.get(0);
-            return (value == null? null : value.toString());
-        }
-        
-    }
-    
-    
-    
-    private static class GetParameterMapAnswer implements Answer<Map<String,String[]>> {
-
-        private final Map<String,List<Object>> values;
-        
-        public GetParameterMapAnswer(final Map<String,List<Object>> values) {
-            super();
-            this.values = values;
-        }
-        
-        public Map<String,String[]> answer(final InvocationOnMock invocation) throws Throwable {
-            final Map<String,String[]> parameterMap = new HashMap<String, String[]>();
-            for (final Map.Entry<String,List<Object>> valueEntry : this.values.entrySet()) {
-                final String parameterName = valueEntry.getKey();
-                final List<Object> parameterValues = valueEntry.getValue();
-                if (parameterValues == null) {
-                    parameterMap.put(parameterName, null);
-                    continue;
-                }
-                final String[] parameterValuesArray = new String[parameterValues.size()];
-                for (int i = 0; i < parameterValuesArray.length; i++) {
-                    final Object value = parameterValues.get(i);
-                    parameterValuesArray[i] = (value == null? null : value.toString());
-                }
-                parameterMap.put(parameterName, parameterValuesArray);
-            }
-            return parameterMap;
-        }
-        
-    }
     
     
 }

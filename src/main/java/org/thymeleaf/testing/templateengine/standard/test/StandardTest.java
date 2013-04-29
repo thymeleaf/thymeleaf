@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.testable.Test;
 import org.thymeleaf.util.Validate;
@@ -76,7 +76,7 @@ public class StandardTest extends Test {
     }
 
     @Override
-    public final void setContext(final IContext context) {
+    public final void setContext(final ITestContext context) {
         setContext(context, DEFAULT_VALUE_TYPE);
     }
 
@@ -139,7 +139,7 @@ public class StandardTest extends Test {
         this.outputThrowableMessagePatternValueType = valueType;
     }
 
-    public void setContext(final IContext context, final StandardTestValueType valueType) {
+    public void setContext(final ITestContext context, final StandardTestValueType valueType) {
         Validate.notNull(valueType, "Value type cannot be null");
         super.setContext(context);
         this.contextValueType = valueType;

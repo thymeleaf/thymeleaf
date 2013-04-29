@@ -17,28 +17,22 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.testable;
+package org.thymeleaf.testing.templateengine.context;
 
+import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.testing.templateengine.context.ITestContext;
-import org.thymeleaf.testing.templateengine.resource.ITestResource;
 
+public interface ITestContext {
 
-public interface ITest extends ITestable {
+    public Locale getLocale();
     
-    public ITestContext getContext();
+    public Map<String,ITestContextExpression> getVariables();
+    public Map<String,ITestContextExpression[]> getRequestParameters();
+    public Map<String,ITestContextExpression> getRequestAttributes();
+    public Map<String,ITestContextExpression> getSessionAttributes();
+    public Map<String,ITestContextExpression> getServletContextAttributes();
     
-    public boolean hasFragmentSpec();
-    public IFragmentSpec getFragmentSpec();
-    
-    public String getTemplateMode();
-    public ITestResource getInput();
-    public Map<String,ITestResource> getAdditionalInputs();
-    public boolean isInputCacheable();
-    
-    public ITestResult evalResult(final String executionId, final String testName, final String result);
-    public ITestResult evalResult(final String executionId, final String testName, final Throwable t);
+    public ITestContext add(final ITestContext context);
     
 }

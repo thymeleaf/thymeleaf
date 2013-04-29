@@ -22,8 +22,8 @@ package org.thymeleaf.testing.templateengine.standard.test.builder;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
@@ -151,7 +151,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             test.setTemplateMode((String)templateMode.getValue(), templateMode.getValueType());
         }
         if (context != null && context.hasValue()) {
-            test.setContext((IContext)context.getValue(), context.getValueType());
+            test.setContext((ITestContext)context.getValue(), context.getValueType());
         }
         if (cache != null && cache.hasNotNullValue()) {
             test.setInputCacheable(((Boolean)cache.getValue()).booleanValue(), cache.getValueType());
@@ -188,6 +188,12 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             /*
              * Values are set from parent this way:
              * 
+             * For context:
+             *   - If a parent context exists, the new context will be the addition of this parent context
+             *     plus the child context (in this order, in case of override).
+             * 
+             * For everyting but context:
+             * 
              *   - If a value for the test being built has been directly specified, just use it.
              *   - If the value used for the test being built is a default:
              *       - If the parent test is not a StandardTest (and therefore we have no info about
@@ -200,6 +206,12 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         
             final StandardTest standardParentTest = 
                     (parentTest instanceof StandardTest ? (StandardTest)parentTest : null);
+
+            
+            // Context is special, will just add parent and child
+            final ITestContext parentContext = (standardParentTest != null? standardParentTest.getContext() : null);
+            final ITestContext newContext = (parentContext != null? parentContext.add(test.getContext()) : test.getContext());
+            test.setContext(newContext, StandardTestValueType.SPECIFIED);
             
             if (shouldSetValueFromParent(test.getNameValueType(), (standardParentTest != null? standardParentTest.getNameValueType() : null))) {
                 test.setName(parentTest.getName(), StandardTestValueType.SPECIFIED);
@@ -207,10 +219,6 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             
             if (shouldSetValueFromParent(test.getTemplateModeValueType(), (standardParentTest != null? standardParentTest.getTemplateModeValueType() : null))) {
                 test.setTemplateMode(parentTest.getTemplateMode(), StandardTestValueType.SPECIFIED);
-            }
-            
-            if (shouldSetValueFromParent(test.getContextValueType(), (standardParentTest != null? standardParentTest.getContextValueType() : null))) {
-                test.setContext(parentTest.getContext(), StandardTestValueType.SPECIFIED);
             }
             
             if (shouldSetValueFromParent(test.getCacheValueType(), (standardParentTest != null? standardParentTest.getCacheValueType() : null))) {

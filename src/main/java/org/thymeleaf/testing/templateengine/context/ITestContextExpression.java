@@ -19,18 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.context;
 
+import java.util.Locale;
+import java.util.Map;
 
 
-
-
-
-public class ContextNaming {
-
-    public static final String TEST_OBJECT = "$test:object$";
+public interface ITestContextExpression {
     
-    
-    private ContextNaming() {
-        super();
-    }
+    public Object evaluate(final Map<String,Object> context, final Locale locale);
     
 }

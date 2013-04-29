@@ -164,7 +164,7 @@ A test file is a text file with a name ending in `.test` It can look like this:
 
 ```
 %CONTEXT
-onevar = Goodbye!
+onevar = 'Goodbye!'
 %TEMPLATE_MODE HTML5
 %INPUT
 <!DOCTYPE html>
@@ -189,7 +189,7 @@ We can see there that tests are configured by means of *directives*, and that th
 | Name                       | Description |
 |----------------------------|-------------|
 |`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. This is *optional*. If not specified, the file name will be used as test name. |
-|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values can optionally be OGNL expressions enclosed in `${...}` and include the usage of thymeleaf's utility objects like `#strings`, `#lists`, etc.<br /> Also, a special property called `locale` can be specified in order to configure the locale to be used for template execution.<br />Defining context variables is *optional*. |
+|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values will be considered OGNL expressions. These expressions can include the usage of thymeleaf's utility objects like `#strings`, `#lists`, etc.<br /> Also, a special property called `locale` can be specified in order to configure the locale to be used for template execution.<br />Request parameters, request attributes, session attributes and servlet context attributes can be specified with the `param.`, `request.`, `session.` and `application.` prefixes, respectively.<br />Context variables can be inherited from parent tests (see `%EXTENDS`).<br />Defining context variables is *optional*. |
 
 *Test input:*
 

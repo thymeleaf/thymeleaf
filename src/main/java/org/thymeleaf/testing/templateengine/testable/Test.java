@@ -33,8 +33,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class Test 
-        extends AbstractTest {
+public class Test extends AbstractTest {
 
     public static boolean DEFAULT_EXACT_MATCH = false;
     

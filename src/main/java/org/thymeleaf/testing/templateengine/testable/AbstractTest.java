@@ -21,13 +21,13 @@ package org.thymeleaf.testing.templateengine.testable;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.context.Context;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.testing.templateengine.context.ITestContext;
+import org.thymeleaf.testing.templateengine.context.TestContext;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.util.Validate;
 
 
 
@@ -42,7 +42,7 @@ public abstract class AbstractTest
     public static boolean DEFAULT_INPUT_CACHEABLE = true;
     
 
-    private IContext context = new Context(Locale.ENGLISH);
+    private ITestContext context = new TestContext();
     private String templateMode = DEFAULT_TEMPLATE_MODE; 
     private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC;
     private ITestResource input = null;
@@ -60,11 +60,12 @@ public abstract class AbstractTest
     
 
     
-    public void setContext(final IContext context) {
+    public void setContext(final ITestContext context) {
+        Validate.notNull(context, "Context cannot be null");
         this.context = context;
     }
     
-    public IContext getContext() {
+    public ITestContext getContext() {
         return this.context;
     }
     
