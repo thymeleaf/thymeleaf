@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.util;
+package org.thymeleaf.testing.templateengine.engine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,54 +31,59 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class TestNamingUtils {
+final class TestNamer {
 
     
-    private static final Map<String,ITest> testsByName = new HashMap<String,ITest>();
-    private static final Map<ITest,String> namesByTest = new HashMap<ITest,String>();
+    private final Map<String,ITest> testsByName = new HashMap<String,ITest>();
+    private final Map<ITest,String> namesByTest = new HashMap<ITest,String>();
     
-    private static final Map<String,Integer> counterByClassName = new HashMap<String,Integer>();
+    private final Map<String,Integer> counterByClassName = new HashMap<String,Integer>();
 
     
     
     
+    TestNamer() {
+        super();
+    }
+    
+    
 
-    public static synchronized String nameTest(final ITest test) {
+    public synchronized String nameTest(final ITest test) {
         
         Validate.notNull(test, "Test cannot be null");
 
-        if (namesByTest.containsKey(test)) {
-            return namesByTest.get(test);
+        if (this.namesByTest.containsKey(test)) {
+            return this.namesByTest.get(test);
         }
         
         if (test.hasName()) {
             
             final String name = test.getName();
 
-            if (testsByName.containsKey(name)) {
+            if (this.testsByName.containsKey(name)) {
                 throw new TestEngineExecutionException(
                         "Duplicate test names: two or more different tests with the same name \"" + name + "\" exist");
             }
             
-            testsByName.put(name, test);
-            namesByTest.put(test, name);
+            this.testsByName.put(name, test);
+            this.namesByTest.put(test, name);
             
             return name;
             
         }
             
         final String className = test.getClass().getSimpleName();
-        Integer counter = counterByClassName.get(className);
+        Integer counter = this.counterByClassName.get(className);
         if (counter == null) {
             counter = Integer.valueOf(1);
         }
         
         final String name = String.format("%s-%05d", className, counter);
         
-        counterByClassName.put(className, Integer.valueOf(counter.intValue() + 1));
+        this.counterByClassName.put(className, Integer.valueOf(counter.intValue() + 1));
         
-        testsByName.put(name, test);
-        namesByTest.put(test, name);
+        this.testsByName.put(name, test);
+        this.namesByTest.put(test, name);
         
         return name;
             
@@ -86,11 +91,6 @@ public class TestNamingUtils {
     
     
     
-    
-    
-    private TestNamingUtils() {
-        super();
-    }
     
     
     

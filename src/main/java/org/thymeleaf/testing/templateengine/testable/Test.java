@@ -22,11 +22,11 @@ package org.thymeleaf.testing.templateengine.testable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils.ResultComparison;
-import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -112,14 +112,14 @@ public class Test extends AbstractTest {
         if (getOutput() != null) {
             if (getOutputThrowableClass() != null || getOutputThrowableMessagePattern() != null) {
                 throw new TestEngineExecutionException(
-                        "Test \"" + TestNamingUtils.nameTest(this) + "\" specifies both an output " +
+                        "Test \"" + TestExecutor.getThreadTestName() + "\" specifies both an output " +
                         "(as if success was expected) and an exception or exception pattern (as if fail " +
                         "was expected). Only one is allowed.");
             }
         } else {
             if (getOutputThrowableClass() == null) {
                 throw new TestEngineExecutionException(
-                        "Test \"" + TestNamingUtils.nameTest(this) + "\" specifies neither an output " +
+                        "Test \"" + TestExecutor.getThreadTestName() + "\" specifies neither an output " +
                         "(as if success was expected) nor an exception or exception pattern (as if fail " +
                         "was expected).");
             }

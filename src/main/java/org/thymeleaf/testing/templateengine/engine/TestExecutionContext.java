@@ -38,6 +38,8 @@ final class TestExecutionContext {
     
     private int nestingLevel = 0;
     private TemplateEngine templateEngine = null;
+    
+    private final TestNamer testNamer = new TestNamer();
 
     
 
@@ -55,6 +57,12 @@ final class TestExecutionContext {
     }
     
     
+
+    
+    public TestNamer getTestNamer() {
+        return this.testNamer;
+    }
+
     
     
     public String getExecutionId() {
@@ -64,7 +72,6 @@ final class TestExecutionContext {
     public int getNestingLevel() {
         return this.nestingLevel;
     }
-
     
     
     

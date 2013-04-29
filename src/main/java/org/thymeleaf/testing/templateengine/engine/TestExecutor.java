@@ -55,7 +55,6 @@ import org.thymeleaf.testing.templateengine.testable.ITestResult;
 import org.thymeleaf.testing.templateengine.testable.ITestSequence;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
 import org.thymeleaf.testing.templateengine.util.TestContextResolutionUtils;
-import org.thymeleaf.testing.templateengine.util.TestNamingUtils;
 import org.thymeleaf.testing.templateengine.util.UnmodifiableProperties;
 import org.thymeleaf.util.Validate;
 
@@ -384,7 +383,7 @@ public final class TestExecutor {
         Validate.notNull(context, "Test execution context cannot be null");
 
         final String executionId = context.getExecutionId();
-        final String testName = TestNamingUtils.nameTest(test);
+        final String testName = context.getTestNamer().nameTest(test);
         final TemplateEngine templateEngine = context.getTemplateEngine();
         
         setThreadTest(test);
