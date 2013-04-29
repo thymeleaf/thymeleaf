@@ -1,6 +1,7 @@
 %CONTEXT
-onevar = ${'Juju'}
-twovar = ${onevar + 's'}
+onevar = 'Juju'
+twovar = onevar + 's'
+
 %INPUT
 <!DOCTYPE html>
 <html>

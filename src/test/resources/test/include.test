@@ -1,5 +1,5 @@
 %CONTEXT
-onevar = <b>Goodbye!</b>
+onevar = '<b>Goodbye!</b>'
 %INPUT
 <!DOCTYPE html>
 <html>

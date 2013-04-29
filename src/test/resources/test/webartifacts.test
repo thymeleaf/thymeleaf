@@ -1,0 +1,30 @@
+%CONTEXT
+onevar = 'Juju'
+twovar = onevar + 's'
+request.la = onevar
+session.one = twovar
+application.three = twovar + ' from application'
+param.ha = onevar
+param.ha = twovar
+%INPUT
+<!DOCTYPE html>
+<html>
+  <body>
+      <span th:utext="${la}">Hello!</span>
+      <span th:utext="${session.one}">Hello!</span>
+      <span th:utext="${application.three}">Hello!</span>
+      <span th:text="${param.ha[0]}">Hello!</span>
+      <span th:text="${param.ha[1]}">Hello!</span>
+  </body>
+</html>
+%OUTPUT 
+<!DOCTYPE html>
+<html>
+  <body>
+      <span>Juju</span>
+      <span>Jujus</span>
+      <span>Jujus from application</span>
+      <span>Juju</span>
+      <span>Jujus</span>
+  </body>
+</html>

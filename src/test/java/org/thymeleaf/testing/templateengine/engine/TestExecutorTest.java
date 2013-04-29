@@ -52,7 +52,7 @@ public class TestExecutorTest {
             final TestExecutor executor = new TestExecutor();
             executor.setTestableResolver(resolver);
             executor.execute("test");
-            executor.execute("maintests");
+//            executor.execute("maintests");
             
         } catch (final Throwable t) {
             t.printStackTrace();
