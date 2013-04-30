@@ -28,7 +28,6 @@ import org.thymeleaf.PatternSpec;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.exceptions.NotInitializedException;
-import org.thymeleaf.templateresolver.AbstractTemplateResolver;
 import org.thymeleaf.templateresolver.AlwaysValidTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.ITemplateResolutionValidity;
 import org.thymeleaf.templateresolver.ITemplateResolver;
@@ -50,7 +49,7 @@ public class TestTemplateResolver implements ITemplateResolver {
 
     public static final String TEST_TEMPLATE_CONVERSION_CHARSET = "UTF-8";
     
-    private static final Logger logger = LoggerFactory.getLogger(AbstractTemplateResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestTemplateResolver.class);
 
     
     private String name = null;

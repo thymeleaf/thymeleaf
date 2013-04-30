@@ -26,6 +26,8 @@ import java.util.Map;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.TestContext;
+import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.messages.TestMessages;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
@@ -43,6 +45,7 @@ public abstract class AbstractTest
     
 
     private ITestContext context = new TestContext();
+    private ITestMessages messages = new TestMessages();
     private String templateMode = DEFAULT_TEMPLATE_MODE; 
     private IFragmentSpec fragmentSpec = DEFAULT_FRAGMENT_SPEC;
     private ITestResource input = null;
@@ -67,6 +70,17 @@ public abstract class AbstractTest
     
     public ITestContext getContext() {
         return this.context;
+    }
+    
+    
+    
+    public void setMessages(final ITestMessages messages) {
+        Validate.notNull(messages, "Messages cannot be null");
+        this.messages = messages;
+    }
+    
+    public ITestMessages getMessages() {
+        return this.messages;
     }
     
     

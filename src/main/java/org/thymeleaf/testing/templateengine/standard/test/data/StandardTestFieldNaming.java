@@ -32,6 +32,7 @@ public class StandardTestFieldNaming {
     public static final String FIELD_NAME_TEMPLATE_MODE = "TEMPLATE_MODE";
     public static final String FIELD_NAME_CACHE = "CACHE";
     public static final String FIELD_NAME_CONTEXT = "CONTEXT";
+    public static final String FIELD_NAME_MESSAGES = "MESSAGES";
     public static final String FIELD_NAME_FRAGMENT = "FRAGMENT";
     public static final String FIELD_NAME_INPUT = "INPUT";
     public static final String FIELD_NAME_OUTPUT = "OUTPUT";

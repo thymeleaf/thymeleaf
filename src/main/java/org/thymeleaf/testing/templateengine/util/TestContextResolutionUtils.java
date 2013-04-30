@@ -51,7 +51,7 @@ import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionExcepti
 
 public final class TestContextResolutionUtils {
 
-    public static final Locale DEFAULT_LOCALE = Locale.US;
+    public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
     private static final String REQUEST_PARAMS_PREFIX = "param";
     private static final String REQUEST_ATTRS_PREFIX = "request";

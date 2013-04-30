@@ -17,22 +17,19 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.context;
+package org.thymeleaf.testing.templateengine.messages;
 
 import java.util.Locale;
-import java.util.Map;
+import java.util.Set;
 
 
-public interface ITestContext {
+public interface ITestMessages {
 
-    public Locale getLocale();
+    public Set<Locale> getLocales();
+    public ITestMessagesForLocale getMessagesForLocale(final Locale locale);
     
-    public Map<String,ITestContextExpression> getVariables();
-    public Map<String,ITestContextExpression[]> getRequestParameters();
-    public Map<String,ITestContextExpression> getRequestAttributes();
-    public Map<String,ITestContextExpression> getSessionAttributes();
-    public Map<String,ITestContextExpression> getServletContextAttributes();
+    public String computeMessage(final Locale locale, final String key, final Object[] messageParameters);
     
-    public ITestContext aggregate(final ITestContext context);
+    public ITestMessages aggregate(final ITestMessages messages);
     
 }

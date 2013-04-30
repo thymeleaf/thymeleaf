@@ -33,6 +33,7 @@ import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaul
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultExtendsStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultFragmentStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultInputStandardTestFieldEvaluator;
+import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultMessagesStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultOutputStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultTemplateModeStandardTestFieldEvaluator;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators.DefaultTestNameStandardTestFieldEvaluator;
@@ -66,6 +67,11 @@ public class StandardTestFieldEvaluationSpec {
             new StandardTestFieldEvaluationSpec(
                     StandardTestFieldNaming.FIELD_NAME_CONTEXT, 
                     DefaultContextStandardTestFieldEvaluator.INSTANCE);
+    
+    public static final StandardTestFieldEvaluationSpec MESSAGES_FIELD_SPEC = 
+            new StandardTestFieldEvaluationSpec(
+                    StandardTestFieldNaming.FIELD_NAME_MESSAGES, 
+                    DefaultMessagesStandardTestFieldEvaluator.INSTANCE);
     
     public static final StandardTestFieldEvaluationSpec FRAGMENT_FIELD_SPEC = 
             new StandardTestFieldEvaluationSpec(
@@ -112,6 +118,7 @@ public class StandardTestFieldEvaluationSpec {
                                     StandardTestFieldEvaluationSpec.TEMPLATE_MODE_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.CACHE_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.CONTEXT_FIELD_SPEC,
+                                    StandardTestFieldEvaluationSpec.MESSAGES_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.INPUT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.OUTPUT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.EXCEPTION_FIELD_SPEC,

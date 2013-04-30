@@ -74,7 +74,7 @@ public final class TestContext implements ITestContext {
  
     
     
-    public ITestContext add(final ITestContext context) {
+    public ITestContext aggregate(final ITestContext context) {
         
         final TestContext newContext = new TestContext();
         

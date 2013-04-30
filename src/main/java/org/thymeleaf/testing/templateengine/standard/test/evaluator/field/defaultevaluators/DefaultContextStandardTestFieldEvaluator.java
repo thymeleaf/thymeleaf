@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.context.Context;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
 import org.thymeleaf.testing.templateengine.context.OgnlTestContextExpression;
@@ -62,7 +61,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {
-            return StandardTestEvaluatedField.forDefaultValue(new Context());
+            return StandardTestEvaluatedField.forDefaultValue(new TestContext());
         }
 
         final MultiValueProperties properties = new MultiValueProperties();

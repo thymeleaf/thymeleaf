@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
+import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.testable.Test;
 import org.thymeleaf.util.Validate;
@@ -40,6 +41,7 @@ public class StandardTest extends Test {
     
     private Map<String,StandardTestValueType> additionalInputsValueTypes = new HashMap<String, StandardTestValueType>(); 
     private StandardTestValueType contextValueType = StandardTestValueType.NO_VALUE; 
+    private StandardTestValueType messagesValueType = StandardTestValueType.NO_VALUE; 
     private StandardTestValueType fragmentValueType = StandardTestValueType.NO_VALUE; 
     private StandardTestValueType inputValueType = StandardTestValueType.NO_VALUE;
     private StandardTestValueType inputCacheableValueType = StandardTestValueType.NO_VALUE;
@@ -78,6 +80,11 @@ public class StandardTest extends Test {
     @Override
     public final void setContext(final ITestContext context) {
         setContext(context, DEFAULT_VALUE_TYPE);
+    }
+
+    @Override
+    public final void setMessages(final ITestMessages messages) {
+        setMessages(messages, DEFAULT_VALUE_TYPE);
     }
 
     @Override
@@ -143,6 +150,12 @@ public class StandardTest extends Test {
         Validate.notNull(valueType, "Value type cannot be null");
         super.setContext(context);
         this.contextValueType = valueType;
+    }
+
+    public void setMessages(final ITestMessages messages, final StandardTestValueType valueType) {
+        Validate.notNull(valueType, "Value type cannot be null");
+        super.setMessages(messages);
+        this.messagesValueType = valueType;
     }
 
     public void setTemplateMode(final String templateMode, final StandardTestValueType valueType) {
@@ -211,6 +224,10 @@ public class StandardTest extends Test {
 
     public StandardTestValueType getContextValueType() {
         return this.contextValueType;
+    }
+
+    public StandardTestValueType getMessagesValueType() {
+        return this.messagesValueType;
     }
 
     public StandardTestValueType getFragmentValueType() {

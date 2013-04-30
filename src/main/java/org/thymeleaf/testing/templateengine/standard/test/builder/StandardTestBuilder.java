@@ -20,11 +20,15 @@
 package org.thymeleaf.testing.templateengine.standard.test.builder;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.messages.ITestMessagesForLocale;
+import org.thymeleaf.testing.templateengine.messages.TestMessages;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.StandardTest;
@@ -35,6 +39,7 @@ import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestField
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
 import org.thymeleaf.testing.templateengine.testable.Test;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -89,6 +94,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         final StandardTestEvaluatedField name = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_NAME);
         final StandardTestEvaluatedField cache = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_CACHE);
         final StandardTestEvaluatedField context = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_CONTEXT); 
+        final Map<String,StandardTestEvaluatedField> messages = data.getValuesByQualifierForField(StandardTestFieldNaming.FIELD_NAME_MESSAGES); 
         final StandardTestEvaluatedField templateMode = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_TEMPLATE_MODE); 
         final StandardTestEvaluatedField fragmentSpec = getFieldValueForMainQualifier(data, StandardTestFieldNaming.FIELD_NAME_FRAGMENT);
         final Map<String,StandardTestEvaluatedField> inputs = data.getValuesByQualifierForField(StandardTestFieldNaming.FIELD_NAME_INPUT);
@@ -107,8 +113,12 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         final Map<String,StandardTestEvaluatedField> additionalInputs = 
                 (inputs != null ? new HashMap<String, StandardTestEvaluatedField>(inputs) : new HashMap<String, StandardTestEvaluatedField>());
         additionalInputs.remove(StandardTestFieldNaming.FIELD_QUALIFIER_MAIN);
+        
 
-
+        
+        /*
+         * Obtain parent test (if any)
+         */
         ITest parentTest = null;
         if (extendsTest != null && extendsTest.hasNotNullValue()) {
             
@@ -137,6 +147,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             
         }
 
+        
 
         /*
          * Initialize the test object
@@ -147,36 +158,58 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         if (name != null && name.hasValue()) {
             test.setName((String)name.getValue(), name.getValueType());
         }
+        
         if (templateMode != null && templateMode.hasValue()) {
             test.setTemplateMode((String)templateMode.getValue(), templateMode.getValueType());
         }
+        
         if (context != null && context.hasValue()) {
             test.setContext((ITestContext)context.getValue(), context.getValueType());
         }
+        
+        if (messages != null) {
+            final TestMessages testMessages = new TestMessages();
+            for (Map.Entry<String,StandardTestEvaluatedField> entry : messages.entrySet()) {
+                final Locale locale = (StringUtils.isEmpty(entry.getKey()).booleanValue()? null : new Locale(entry.getKey()));
+                final StandardTestEvaluatedField field = entry.getValue();
+                if (field != null && field.hasNotNullValue()) {
+                    testMessages.setMessagesForLocale(locale, ((ITestMessagesForLocale)field.getValue()));
+                }
+            }
+            test.setMessages(testMessages, StandardTestValueType.SPECIFIED);
+        }
+        
         if (cache != null && cache.hasNotNullValue()) {
             test.setInputCacheable(((Boolean)cache.getValue()).booleanValue(), cache.getValueType());
         }
+        
         if (fragmentSpec != null && fragmentSpec.hasValue()) {
             test.setFragmentSpec((IFragmentSpec)fragmentSpec.getValue(), fragmentSpec.getValueType());
         }
+        
         if (mainInput != null && mainInput.hasValue()) {
             test.setInput((ITestResource)mainInput.getValue(), mainInput.getValueType());
         }
+        
         for (final Map.Entry<String,StandardTestEvaluatedField> additionalInputEntry : additionalInputs.entrySet()) {
             final StandardTestEvaluatedField additionalInputField = additionalInputEntry.getValue();
             if (additionalInputField != null) {
                 test.setAdditionalInput(additionalInputEntry.getKey(), (ITestResource)additionalInputField.getValue(), additionalInputField.getValueType());
             }
         }
+        
         if (output != null && output.hasValue()) {
             test.setOutput((ITestResource)output.getValue(), output.getValueType());
         }
+        
         if (exception != null && exception.hasValue()) {
             test.setOutputThrowableClass((Class<? extends Throwable>)exception.getValue(), exception.getValueType());
         }
+        
         if (exceptionMessagePattern != null && exceptionMessagePattern.hasValue()) {
             test.setOutputThrowableMessagePattern((String)exceptionMessagePattern.getValue(), exceptionMessagePattern.getValueType());
         }
+        
         if (exactMatch != null && exactMatch.hasNotNullValue()) {
             test.setExactMatch(((Boolean)exactMatch.getValue()).booleanValue(), exactMatch.getValueType());
         }
@@ -188,9 +221,9 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             /*
              * Values are set from parent this way:
              * 
-             * For context:
-             *   - If a parent context exists, the new context will be the addition of this parent context
-             *     plus the child context (in this order, in case of override).
+             * For context and messages:
+             *   - If a parent test exists, the new context/messages will be the addition of the parent context/messages
+             *     plus the child one (in this order, in case of override).
              * 
              * For everyting but context:
              * 
@@ -210,8 +243,14 @@ public class StandardTestBuilder implements IStandardTestBuilder {
             
             // Context is special, will just add parent and child
             final ITestContext parentContext = (standardParentTest != null? standardParentTest.getContext() : null);
-            final ITestContext newContext = (parentContext != null? parentContext.add(test.getContext()) : test.getContext());
+            final ITestContext newContext = (parentContext != null? parentContext.aggregate(test.getContext()) : test.getContext());
             test.setContext(newContext, StandardTestValueType.SPECIFIED);
+
+            // Messages is also special, will just add parent and child
+            final ITestMessages parentMessages = (standardParentTest != null? standardParentTest.getMessages() : null);
+            final ITestMessages newMessages = (parentMessages != null? parentMessages.aggregate(test.getMessages()) : test.getMessages());
+            test.setMessages(newMessages, StandardTestValueType.SPECIFIED);
+            
             
             if (shouldSetValueFromParent(test.getNameValueType(), (standardParentTest != null? standardParentTest.getNameValueType() : null))) {
                 test.setName(parentTest.getName(), StandardTestValueType.SPECIFIED);

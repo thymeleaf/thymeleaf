@@ -17,44 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.util;
-
-import java.util.LinkedHashMap;
-import java.util.Properties;
-import java.util.Set;
+package org.thymeleaf.testing.templateengine.messages;
 
 
 
 
-
-
-public class OrderedProperties extends Properties {
-
+public interface ITestMessagesForLocale {
     
-    private static final long serialVersionUID = -3538830402772374054L;
-    
-    private final LinkedHashMap<Object,Object> values = new LinkedHashMap<Object,Object>();
-
-    
-    
-    public OrderedProperties() {
-        super();
-    }
-
-
-
-    @Override
-    public synchronized Object put(final Object key, final Object value) {
-        this.values.put(key,value);
-        return super.put(key, value);
-    }
-
-
-
-    @Override
-    public Set<java.util.Map.Entry<Object, Object>> entrySet() {
-        return this.values.entrySet();
-    }
-
+    public String getMessageForKey(final String key);
+    public ITestMessagesForLocale aggregate(final ITestMessagesForLocale messages);
     
 }

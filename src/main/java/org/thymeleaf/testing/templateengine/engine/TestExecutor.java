@@ -22,12 +22,8 @@ package org.thymeleaf.testing.templateengine.engine;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.SynchronousQueue;
@@ -42,6 +38,7 @@ import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
+import org.thymeleaf.testing.templateengine.engine.resolver.TestMessageResolver;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.report.ConsoleTestReporter;
@@ -55,7 +52,6 @@ import org.thymeleaf.testing.templateengine.testable.ITestResult;
 import org.thymeleaf.testing.templateengine.testable.ITestSequence;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
 import org.thymeleaf.testing.templateengine.util.TestContextResolutionUtils;
-import org.thymeleaf.testing.templateengine.util.UnmodifiableProperties;
 import org.thymeleaf.util.Validate;
 
 
@@ -68,14 +64,11 @@ public final class TestExecutor {
             new StandardClassPathTestableResolver();
     public static final List<IDialect> DEFAULT_DIALECTS = 
             Collections.singletonList((IDialect)new StandardDialect());
-    public static final Map<Locale,Properties> DEFAULT_MESSAGES = 
-            Collections.singletonMap((Locale)null, (Properties)new UnmodifiableProperties());
     public static final ITestReporter DEFAULT_TEST_REPORTER = new ConsoleTestReporter();
     
     
     private ITestableResolver testableResolver = DEFAULT_TESTABLE_RESOLVER;
     private List<IDialect> dialects = DEFAULT_DIALECTS;
-    private Map<Locale,Properties> messages = DEFAULT_MESSAGES;
     protected ITestReporter reporter = DEFAULT_TEST_REPORTER;
     
     
@@ -145,41 +138,6 @@ public final class TestExecutor {
 
     
     
-    
-    
-    public void setMessages(final Map<Locale,Properties> messages) {
-        Validate.notNull(messages, "Messages cannot be null");
-        this.messages = new HashMap<Locale, Properties>();
-        this.messages.putAll(messages);
-    }
-    
-    public Map<Locale,Properties> getMessages() {
-        return Collections.unmodifiableMap(this.messages);
-    }
-    
-    
-    public void setMessagesForLocale(final Locale locale, final Properties messagesForLocale) {
-        
-        Validate.notNull(locale, "Locale cannot be null");
-        Validate.notNull(messagesForLocale, "Messages for locale cannot be null");
-        
-        if (this.messages == DEFAULT_MESSAGES) {
-            // the default messages map is immutable, so we should change it
-            final Map<Locale,Properties> newMessages = new HashMap<Locale, Properties>();
-            newMessages.putAll(this.messages);
-            this.messages = newMessages;
-        }
-        
-        final Properties newMessagesForLocale = new Properties();
-        newMessagesForLocale.putAll(messagesForLocale);
-        this.messages.put(locale, new UnmodifiableProperties(newMessagesForLocale));
-        
-    }
-    
-    public Properties getMessagesForLocale(final Locale locale) {
-        Validate.notNull(locale, "Locale cannot be null");
-        return this.messages.get(locale);
-    }
 
     
 
@@ -195,10 +153,9 @@ public final class TestExecutor {
 
     
     
-    
-    
-    
 
+    
+    
 
     public void execute(final String testableName) {
         
@@ -232,10 +189,12 @@ public final class TestExecutor {
         Validate.notNull(context, "Test execution context cannot be null");
         
         final TestTemplateResolver templateResolver = new TestTemplateResolver();
+        final TestMessageResolver messageResolver = new TestMessageResolver();
         final TestCacheManager cacheManager = new TestCacheManager();
         
         final TemplateEngine templateEngine = new TemplateEngine();
         templateEngine.setTemplateResolver(templateResolver);
+        templateEngine.setMessageResolver(messageResolver);
         templateEngine.setDialects(new HashSet<IDialect>(this.dialects));
         templateEngine.setCacheManager(cacheManager);
         
