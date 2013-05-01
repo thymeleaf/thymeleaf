@@ -1,5 +1,0 @@
-exp.test
-include.test
-webartifacts.test
-text.test [iter-20]
-test2 [parallel-3]

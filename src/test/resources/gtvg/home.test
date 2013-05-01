@@ -1,8 +1,11 @@
+%EXTENDS gtvg/common.test
 %CONTEXT
-session.user = I'm a user!
-
+today = #calendars.create(2011,11,11)
 #
-#
+%MESSAGES
+home.welcome=Welcome to our grocery store, {0} (from default messages)!
+logo=Good Thymes Virtual Grocery logo
+date.format=MMMM dd',' yyyy
 #
 %INPUT
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
@@ -45,8 +48,6 @@ session.user = I'm a user!
   
 </html>
 #
-#
-#
 %OUTPUT 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
@@ -56,27 +57,27 @@ session.user = I'm a user!
   <head>
     <title>Good Thymes Virtual Grocery</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" media="all" href="/gtvg/css/gtvg.css;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
   </head>
 
   <body>
 
     <div>
-      <img src="/gtvg/images/gtvglogo.png;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" alt="Good Thymes Virtual Grocery logo" title="Good Thymes Virtual Grocery logo" />
+      <img src="/testing/images/gtvglogo.png" alt="Good Thymes Virtual Grocery logo" title="Good Thymes Virtual Grocery logo" />
     </div>
   
     <p>Welcome to our grocery store, John Apricot (from default messages)!</p>
   
     <p>
-      Today is: <span>April 24, 2013</span>
+      Today is: <span>November 11, 2011</span>
     </p>
     
     <p>Please select an option</p>
     <ol>
-      <li><a href="/gtvg/product/list;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">Product List</a></li>
-      <li><a href="/gtvg/order/list;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">Order List</a></li>
-      <li><a href="/gtvg/subscribe;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">Subscribe to our Newsletter</a></li>
-      <li><a href="/gtvg/userprofile;jsessionid=3090864C71EF5ED2DD7C34FF10FAC8CC" shape="rect">See User Profile</a></li>
+      <li><a href="/testing/product/list" shape="rect">Product List</a></li>
+      <li><a href="/testing/order/list" shape="rect">Order List</a></li>
+      <li><a href="/testing/subscribe" shape="rect">Subscribe to our Newsletter</a></li>
+      <li><a href="/testing/userprofile" shape="rect">See User Profile</a></li>
     </ol>
       
     <p>Now you are looking at a <span>working web application</span>.</p>

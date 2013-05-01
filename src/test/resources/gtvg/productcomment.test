@@ -1,0 +1,68 @@
+%EXTENDS gtvg/common.test
+%CONTEXT
+prod = prod2
+#
+%MESSAGES
+#
+%INPUT
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+  </head>
+
+  <body id="body">
+
+    <h1>Comments for product: <span th:text="${prod.name}">Hot Garlic</span></h1>
+  
+    <table>
+      <tr th:each="c : ${prod.comments}" th:class="${cStat.odd}? 'odd'">
+        <td th:text="${c.text}">Garlic is just fantastic!</td>
+      </tr>
+    </table>
+  
+    <p>
+      <a href="list.html" th:href="@{/product/list}">Return to product list</a>
+    </p>
+    
+  </body>
+  
+</html>
+
+#
+%OUTPUT 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
+  </head>
+
+  <body id="body">
+
+    <h1>Comments for product: <span>Italian Tomato</span></h1>
+  
+    <table>
+      <tr>
+        <td rowspan="1" colspan="1">I&#39;m so sad this product is no longer available!</td>
+      </tr><tr class="odd">
+        <td rowspan="1" colspan="1">When do you expect to have it back?</td>
+      </tr>
+    </table>
+  
+    <p>
+      <a href="/testing/product/list" shape="rect">Return to product list</a>
+    </p>
+    
+  </body>
+  
+</html>

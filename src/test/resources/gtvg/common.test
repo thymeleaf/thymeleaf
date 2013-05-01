@@ -1,0 +1,55 @@
+%CONTEXT
+session.user = #{ 'name':'John Apricot',\
+                  'firstName':'John',\
+                  'lastName':'Apricot',\
+                  'nationality':'Antarctica',\
+                  'age':'(no age specified)'}
+
+comment1 = #{ 'id' : 1,\
+              'text' : 'I\\'m so sad this product is no longer available!'}
+comment2 = #{ 'id' : 2,\
+              'text' : 'When do you expect to have it back?'}
+comment3 = #{ 'id' : 3,\
+              'text' : 'Very tasty! I\\'d definitely buy it again!'}
+
+prod1 = #{ 'id': 1,\
+           'name': 'Fresh Sweet Basil',\
+           'inStock': true,\
+           'price' : new java.math.BigDecimal('4.99'),\
+           'comments': {}}
+prod2 = #{ 'id': 2,\
+           'name': 'Italian Tomato',\
+           'inStock': false,\
+           'price' : new java.math.BigDecimal('1.25'),\
+           'comments': {comment1,comment2}}
+prod3 = #{ 'id': 3,\
+           'name': 'Yellow Bell Pepper',\
+           'inStock': true,\
+           'price' : new java.math.BigDecimal('2.50'),\
+           'comments': {}}
+prod4 = #{ 'id': 4,\
+           'name': 'Old Cheddar',\
+           'inStock': true,\
+           'price' : new java.math.BigDecimal('18.75'),\
+           'comments': {comment3}}
+prods = { prod1, prod2, prod3, prod4 }
+
+%MESSAGES
+true=yes
+false=no
+#
+%INPUT[footer]
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <body>
+  
+    <div th:fragment="copy">
+      &copy; 2011 The Good Thymes Virtual Grocery
+    </div>
+  
+  </body>
+  
+</html>

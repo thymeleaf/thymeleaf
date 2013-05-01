@@ -1,0 +1,139 @@
+%EXTENDS gtvg/common.test
+%CONTEXT
+#
+%MESSAGES
+#
+%INPUT
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+  </head>
+
+  <body>
+
+    <h1>Product list</h1>
+  
+    <table>
+      <thead>
+        <tr>
+          <th>NAME</th>
+          <th>PRICE</th>
+          <th>IN STOCK</th>
+          <th>COMMENTS</th>
+        </tr>
+      </thead>
+      <tbody th:remove="all-but-first">
+        <tr th:each="prod : ${prods}" th:class="${prodStat.odd}? 'odd'">
+          <td th:text="${prod.name}">Onions</td>
+          <td th:text="${prod.price}">2.41</td>
+          <td th:text="${prod.inStock}? #{true} : #{false}">yes</td>
+          <td>
+            <span th:text="${#lists.size(prod.comments)}">2</span> comment/s
+            <a href="comments.html" 
+               th:href="@{/product/comments(prodId=${prod.id})}" 
+               th:unless="${#lists.isEmpty(prod.comments)}">view</a>
+          </td>
+        </tr>
+        <tr class="odd">
+          <td>Blue Lettuce</td>
+          <td>9.55</td>
+          <td>no</td>
+          <td>
+            <span>0</span> comment/s
+          </td>
+        </tr>
+        <tr>
+          <td>Mild Cinnamon</td>
+          <td>1.99</td>
+          <td>yes</td>
+          <td>
+            <span>3</span> comment/s
+            <a href="comments.html">view</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <p>
+      <a href="../home.html" th:href="@{/}">Return to home</a>
+    </p>
+    
+  </body>
+  
+</html>
+#
+%OUTPUT 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
+  </head>
+
+  <body>
+
+    <h1>Product list</h1>
+  
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="1" colspan="1">NAME</th>
+          <th rowspan="1" colspan="1">PRICE</th>
+          <th rowspan="1" colspan="1">IN STOCK</th>
+          <th rowspan="1" colspan="1">COMMENTS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="1" colspan="1">Fresh Sweet Basil</td>
+          <td rowspan="1" colspan="1">4.99</td>
+          <td rowspan="1" colspan="1">yes</td>
+          <td rowspan="1" colspan="1">
+            <span>0</span> comment/s
+            
+          </td>
+        </tr><tr class="odd">
+          <td rowspan="1" colspan="1">Italian Tomato</td>
+          <td rowspan="1" colspan="1">1.25</td>
+          <td rowspan="1" colspan="1">no</td>
+          <td rowspan="1" colspan="1">
+            <span>2</span> comment/s
+            <a href="/testing/product/comments?prodId=2" shape="rect">view</a>
+          </td>
+        </tr><tr>
+          <td rowspan="1" colspan="1">Yellow Bell Pepper</td>
+          <td rowspan="1" colspan="1">2.50</td>
+          <td rowspan="1" colspan="1">yes</td>
+          <td rowspan="1" colspan="1">
+            <span>0</span> comment/s
+            
+          </td>
+        </tr><tr class="odd">
+          <td rowspan="1" colspan="1">Old Cheddar</td>
+          <td rowspan="1" colspan="1">18.75</td>
+          <td rowspan="1" colspan="1">yes</td>
+          <td rowspan="1" colspan="1">
+            <span>1</span> comment/s
+            <a href="/testing/product/comments?prodId=4" shape="rect">view</a>
+          </td>
+        </tr>
+        </tbody>
+    </table>
+  
+    <p>
+      <a href="/testing/" shape="rect">Return to home</a>
+    </p>
+    
+  </body>
+  
+</html>
