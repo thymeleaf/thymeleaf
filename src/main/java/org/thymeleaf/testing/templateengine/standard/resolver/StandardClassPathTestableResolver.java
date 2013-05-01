@@ -23,6 +23,7 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
@@ -49,6 +50,10 @@ public class StandardClassPathTestableResolver extends AbstractStandardLocalFile
         final ClassLoader cl = 
                 ClassLoaderUtils.getClassLoader(StandardClassPathTestableResolver.class);
         final URL url = cl.getResource(testableName);
+        if (url == null) {
+            throw new TestEngineExecutionException(
+                    "Cannot resolve testable with name: \"" + testableName + "\"");
+        }
         try {
             return new File(url.toURI());
         } catch (final URISyntaxException e) {
