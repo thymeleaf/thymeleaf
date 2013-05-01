@@ -150,7 +150,7 @@ public final class TestContextResolutionUtils {
         
         final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-        Mockito.when(request.getContextPath()).thenReturn("testing");
+        Mockito.when(request.getContextPath()).thenReturn("/testing");
         Mockito.when(request.getLocale()).thenReturn(locale);
         Mockito.when(request.getLocales()).thenReturn(new ObjectEnumeration<Locale>(Arrays.asList(new Locale[]{locale})));
         
@@ -191,6 +191,7 @@ public final class TestContextResolutionUtils {
     
     private static final HttpServletResponse createHttpServletResponse() {
         final HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+        Mockito.when(response.encodeURL(Matchers.anyString())).thenAnswer(new EncodeUrlAnswer());
         return response;
     }
 
@@ -366,6 +367,20 @@ public final class TestContextResolutionUtils {
                 parameterMap.put(parameterName, parameterValuesArray);
             }
             return parameterMap;
+        }
+        
+    }
+    
+
+    
+    private static class EncodeUrlAnswer implements Answer<String> {
+
+        public EncodeUrlAnswer() {
+            super();
+        }
+        
+        public String answer(final InvocationOnMock invocation) throws Throwable {
+            return (String) invocation.getArguments()[0];
         }
         
     }
