@@ -56,10 +56,12 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
 
     public static enum TestableType { NONE, TEST, SEQUENCE, ITERATOR, PARALLELIZER }
 
-    public static final String INDEX_FILE_NAME = "TEST.INDEX";
+    public static final String FOLDER_INDEX_FILE_PREFIX = "FOLDER";
+    private static String TEST_FILE_SUFFIX = ".THTEST";
+    private static String INDEX_FILE_SUFFIX = ".THINDEX";
+    public static final String FOLDER_INDEX_FILE_NAME = FOLDER_INDEX_FILE_PREFIX + INDEX_FILE_SUFFIX;
+
     private static final Pattern INDEX_FILE_LINE_PATTERN = Pattern.compile("(.*?)(\\[(.*?)])?\\s*$");
-    
-    private static String TEST_FILE_SUFFIX = ".test";
     
     private static String ITERATOR_SUFFIX_PATTERN_STR = "iter-(\\d*)$";
     private static String ITERATOR_PATTERN_STR = "^(.*?)-" + ITERATOR_SUFFIX_PATTERN_STR;
@@ -146,8 +148,11 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
         if (!isDirectory) {
             
-            if (fileName.endsWith(TEST_FILE_SUFFIX)) {
+            if (fileName.toUpperCase().endsWith(TEST_FILE_SUFFIX)) {
                 return TestableType.TEST;
+            }
+            if (fileName.toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
+                return TestableType.SEQUENCE;
             }
             return TestableType.NONE;
             
@@ -265,16 +270,26 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
         final TestSequence testSequence = new TestSequence();
         testSequence.setName(fileName);
+
+        File indexFile = null;
         
         if (!file.isDirectory()) {
-            return null;
+            if (!file.isFile()) {
+                return null;
+            }
+            if (file.getName().toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
+                indexFile = file;
+            } else {
+                return null;
+            }
         }
         
-        File indexFile = null;
-        for (final File fileInFolder : file.listFiles()) {
-            if (INDEX_FILE_NAME.equalsIgnoreCase(fileInFolder.getName())) {
-                indexFile = fileInFolder;
-                break;
+        if (indexFile == null) {
+            for (final File fileInFolder : file.listFiles()) {
+                if (FOLDER_INDEX_FILE_NAME.equalsIgnoreCase(fileInFolder.getName())) {
+                    indexFile = fileInFolder;
+                    break;
+                }
             }
         }
         
@@ -310,7 +325,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
                 final String testFileName = lineComponents[0];
                 final String testSpec = lineComponents[1];
                 
-                final File testFile = 
+                final File testFile =
                         new File(
                             (indexFile.getParentFile() != null? indexFile.getParentFile().getAbsolutePath() : "") +
                             File.separator + testFileName); 
