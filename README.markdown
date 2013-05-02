@@ -177,7 +177,7 @@ A test file is a text file with a name ending in `.thtest` It can look like this
 %TEMPLATE_MODE HTML5
 # ------------ separator comment -----------
 %CONTEXT
-onevar = 'Goodbye!'
+onevar = 'Goodbye,'
 # ------------------------------------------
 %MESSAGES
 one.msg = Crisis
@@ -186,8 +186,8 @@ one.msg = Crisis
 <!DOCTYPE html>
 <html>
   <body>
-      <h1 th:text="${onevar}">Hello!</h1>
-      <p th:text="#{one.msg}">World!</p>
+      <span th:text="${onevar}">Hello,</span>
+      <span th:text="#{one.msg}">World!</span>
   </body>
 </html>
 # ------------------------------------------
@@ -195,8 +195,8 @@ one.msg = Crisis
 <!DOCTYPE html>
 <html>
   <body>
-      <h1>Goodbye!</h1>
-      <p>Crisis</p>
+      <span>Goodbye,</span>
+      <span>Crisis</span>
   </body>
 </html>
 ```
@@ -272,9 +272,7 @@ Also maps:
 
 ```
 %CONTEXT
-user = new java.util.HashMap()
-user['firstName'] = 'John'
-user['lastName'] = 'Apricot'
+user = #{ 'firstName' : 'John', 'lastName' : 'Apricot' }
 ```
 
 We can set request parameters (multivalued), request attributes, session attributes and servlet context attributes using the `param`, `request`, `session` and `application` prefixes:
@@ -337,9 +335,9 @@ So, as can be extracted from the example above:
 
 #### Test index files ####
 
-Folders can contain *index files*. These files have to be named `test.index` and allow developers to specify which tests and in which order they want to be executed. They also allow the specification of iteration or parallelization without having to change the name of a folder.
+Index files are files with a name ending with `.thindex`. They allow developers to specify which tests and in which order they want to be executed, this is, in practice, create *a test sequence*. They also allow the specification of iteration or parallelization without having to change the name of a folder.
 
-Example contents for a `thtest.index` file:
+Example contents for a `sample.thindex` file:
 
 ```
 exp.thtest
@@ -349,6 +347,8 @@ test2 [parallel-3]
 ```
 
 According to the above index, the `text.thtest` file will be executed in third position, 20 times. And the `test2` folder will be considered a parallelizer, just as if it was called `test2-parallel-3` instead.
+
+Also, note that when a folder includes a special file named `folder.thindex`, this will be considered to specify the sequence in which the folder files have to be executed, even if this `folder.thindex` file isn't explicitly called.
 
 
 ### Extending the standard test resolution mechanism ###
