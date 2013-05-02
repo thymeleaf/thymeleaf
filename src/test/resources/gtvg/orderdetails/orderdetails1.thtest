@@ -1,0 +1,67 @@
+%EXTENDS gtvg/orderdetails/orderdetails.common.thtest
+# ------------------------------------------------------------
+%CONTEXT
+order = order1
+# ------------------------------------------------------------
+%OUTPUT 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
+  </head>
+
+  <body>
+
+    <h1>Order details</h1>
+
+    <div>
+      <p><b>Code:</b> <span>1</span></p>
+      <p><b>Date:</b> <span>12 Jan 2009</span></p>
+    </div>
+
+    <h2>Customer</h2>
+      
+    <div>
+      <p><b>Name:</b> <span>Shannon Parsley</span></p>
+      <p><b>Since:</b> <span>24 Mar 2009</span></p>
+    </div>
+  
+    <h2>Products</h2>
+  
+    <table>
+      <tr>
+        <th rowspan="1" colspan="1">PRODUCT</th>
+        <th rowspan="1" colspan="1">AMOUNT</th>
+        <th rowspan="1" colspan="1">PURCHASE PRICE</th>
+      </tr>
+      <tr>
+        <td rowspan="1" colspan="1">Italian Tomato</td>
+        <td class="number" rowspan="1" colspan="1">2</td>
+        <td class="number" rowspan="1" colspan="1">0.99</td>
+      </tr><tr class="odd">
+        <td rowspan="1" colspan="1">Yellow Bell Pepper</td>
+        <td class="number" rowspan="1" colspan="1">4</td>
+        <td class="number" rowspan="1" colspan="1">2.50</td>
+      </tr><tr>
+        <td rowspan="1" colspan="1">Old Cheddar</td>
+        <td class="number" rowspan="1" colspan="1">1</td>
+        <td class="number" rowspan="1" colspan="1">15.50</td>
+      </tr>
+    </table>
+
+    <div>
+      <b>TOTAL:</b> <span>27.48</span>
+    </div>
+  
+    <p>
+      <a href="/testing/order/list" shape="rect">Return to order list</a>
+    </p>
+    
+  </body>
+  
+</html>

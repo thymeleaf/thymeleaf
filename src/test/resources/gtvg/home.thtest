@@ -1,12 +1,13 @@
-%EXTENDS gtvg/common.test
+%EXTENDS gtvg/gtvg.common.thtest
+# ------------------------------------------------------------
 %CONTEXT
 today = #calendars.create(2011,11,11)
-#
+# ------------------------------------------------------------
 %MESSAGES
 home.welcome=Welcome to our grocery store, {0} (from default messages)!
 logo=Good Thymes Virtual Grocery logo
 date.format=MMMM dd',' yyyy
-#
+# ------------------------------------------------------------
 %INPUT
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
 
@@ -47,7 +48,7 @@ date.format=MMMM dd',' yyyy
   </body>
   
 </html>
-#
+# ------------------------------------------------------------
 %OUTPUT 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 

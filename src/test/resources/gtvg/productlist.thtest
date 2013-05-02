@@ -1,8 +1,5 @@
-%EXTENDS gtvg/common.test
-%CONTEXT
-#
-%MESSAGES
-#
+%EXTENDS gtvg/gtvg.common.thtest
+# ------------------------------------------------------------
 %INPUT
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
 
@@ -67,7 +64,7 @@
   </body>
   
 </html>
-#
+# ------------------------------------------------------------
 %OUTPUT 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 

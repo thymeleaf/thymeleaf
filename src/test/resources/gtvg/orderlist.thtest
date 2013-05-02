@@ -1,0 +1,100 @@
+%EXTENDS gtvg/gtvg.common.thtest
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="../../../css/gtvg.css" th:href="@{/css/gtvg.css}" />
+  </head>
+
+  <body>
+
+    <h1>Order list</h1>
+  
+    <table>
+      <tr>
+        <th>DATE</th>
+        <th>CUSTOMER</th>
+        <th>TOTAL</th>
+        <th></th>
+      </tr>
+      <tr th:each="o : ${orders}" th:class="${oStat.odd}? 'odd'">
+        <td th:text="${#calendars.format(o.date,'dd/MMM/yyyy')}">13 jan 2011</td>
+        <td th:text="${o.customer.name}">Frederic Tomato</td>
+        <td th:text="${#aggregates.sum(o.orderLines.{purchasePrice * amount})}">23.32</td>
+        <td>
+          <a href="details.html" th:href="@{/order/details(orderId=${o.id})}">view</a>
+        </td>
+      </tr>
+    </table>
+
+  
+    <p>
+      <a href="../home.html" th:href="@{/}">Return to home</a>
+    </p>
+    
+  </body>
+  
+</html>
+# ------------------------------------------------------------
+%OUTPUT 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Good Thymes Virtual Grocery</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" media="all" href="/testing/css/gtvg.css" />
+  </head>
+
+  <body>
+
+    <h1>Order list</h1>
+  
+    <table>
+      <tr>
+        <th rowspan="1" colspan="1">DATE</th>
+        <th rowspan="1" colspan="1">CUSTOMER</th>
+        <th rowspan="1" colspan="1">TOTAL</th>
+        <th rowspan="1" colspan="1"></th>
+      </tr>
+      <tr>
+        <td rowspan="1" colspan="1">12/Jan/2009</td>
+        <td rowspan="1" colspan="1">Shannon Parsley</td>
+        <td rowspan="1" colspan="1">27.48</td>
+        <td rowspan="1" colspan="1">
+          <a href="/testing/order/details?orderId=1" shape="rect">view</a>
+        </td>
+      </tr><tr class="odd">
+        <td rowspan="1" colspan="1">09/Jun/2010</td>
+        <td rowspan="1" colspan="1">George Garlic</td>
+        <td rowspan="1" colspan="1">54.73</td>
+        <td rowspan="1" colspan="1">
+          <a href="/testing/order/details?orderId=2" shape="rect">view</a>
+        </td>
+      </tr><tr>
+        <td rowspan="1" colspan="1">18/Jul/2010</td>
+        <td rowspan="1" colspan="1">James Cucumber</td>
+        <td rowspan="1" colspan="1">47.92</td>
+        <td rowspan="1" colspan="1">
+          <a href="/testing/order/details?orderId=3" shape="rect">view</a>
+        </td>
+      </tr>
+    </table>
+
+  
+    <p>
+      <a href="/testing/" shape="rect">Return to home</a>
+    </p>
+    
+  </body>
+  
+</html>
+

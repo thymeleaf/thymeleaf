@@ -1,9 +1,5 @@
-%EXTENDS gtvg/common.test
-%CONTEXT
-#
-%MESSAGES
-subscribe.submit=Subscribe me!
-#
+%EXTENDS gtvg/gtvg.common.thtest
+# ------------------------------------------------------------
 %INPUT
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
 
@@ -17,25 +13,26 @@ subscribe.submit=Subscribe me!
   </head>
 
   <body>
-  
-    <p>Subscribe to our newsletter:</p>
-  
-    <form action="subscribe.html" th:action="@{/subscribe}">
-      <fieldset>
-        <input type="text" name="email" />
-        <input type="submit" value="Subscribe me!" th:value="#{subscribe.submit}" />
-      </fieldset>
-    </form>
+
+    <h1>User profile</h1>
+
+    <div th:object="${session.user}">
+       <p>Name: <span th:text="*{firstName}">Sebastian</span>.</p>
+       <p>Surname: <span th:text="*{lastName}">Pepper</span>.</p>
+       <p>Nationality: <span th:text="*{nationality}">Saturn</span>.</p>
+       <p>Age: <span th:text="*{age}?: '(no age specified)'">27</span>.</p>
+    </div>
   
     <p>
       <a href="home.html" th:href="@{/}">Return to home</a>
     </p>
-  
+    
   </body>
   
 </html>
-#
+# ------------------------------------------------------------
 %OUTPUT 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 
@@ -48,20 +45,20 @@ subscribe.submit=Subscribe me!
   </head>
 
   <body>
-  
-    <p>Subscribe to our newsletter:</p>
-  
-    <form action="/testing/subscribe" method="get" enctype="application/x-www-form-urlencoded">
-      <fieldset>
-        <input type="text" name="email" />
-        <input type="submit" value="Subscribe me!" />
-      </fieldset>
-    </form>
+
+    <h1>User profile</h1>
+
+    <div>
+       <p>Name: <span>John</span>.</p>
+       <p>Surname: <span>Apricot</span>.</p>
+       <p>Nationality: <span>Antarctica</span>.</p>
+       <p>Age: <span>(no age specified)</span>.</p>
+    </div>
   
     <p>
       <a href="/testing/" shape="rect">Return to home</a>
     </p>
-  
+    
   </body>
   
 </html>
