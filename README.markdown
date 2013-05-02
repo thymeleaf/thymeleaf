@@ -63,7 +63,6 @@ executor.execute("test");
 Note how here we are only specifying the name of the *testable* to be resolved: `"test"` (more on testables later). But anyway this is only two lines, and therefore we are accepting some defaults, namely:
 
    * Dialects. By default only the *Standard Dialect* will be enabled.
-   * Messages. By default no internationalization messages will be available.
    * Resolvers. By default the *standard test resolution* mechanism will be used (more on it later).
    * Reporters. By default a console reporter will be used.
 
@@ -71,19 +70,17 @@ Let's see the whole `TestExecutor` configuration process:
 
 ```java
 final List<IDialect> dialects = ...
-final Map<Locale,Properties> messages = ...
 final ITestableResolver resolver = ...
 final ITestReporter reporter = ...
 
 final TestExecutor executor = new TestExecutor();
 executor.setDialects(dialects);
-executor.setMessages(messages);
 executor.setTestableResolver(resolver);
 executor.setReporter(reporter);
 executor.execute("test");
 ```
 
-The meaning and working of the *dialects* an *messages* properties is pretty obvious and straightforward. As for the *resolvers* and *reporters*, we will see more on them in next sections.
+The meaning and working of the *dialects* property is pretty obvious and straightforward. As for the *resolvers* and *reporters*, we will see more on them in next sections.
 
 ## API ##
 
@@ -105,14 +102,28 @@ Interfaces at the `org.thymeleaf.testing.templateengine.resolver` package:
 
 | Interface                  | Description |
 |----------------------------|-------------|
-|`ITestableResolver`                 | Implemented by objects in charge of *resolving testables*, this is, of creating the `ITestable` objects and structures that will be executed. A *standard test resolution* implementation is provided out of the box that builds these testable structures from text files and their containing folders in disk. |
+|`ITestableResolver`         | Implemented by objects in charge of *resolving testables*, this is, of creating the `ITestable` objects and structures that will be executed. A *standard test resolution* implementation is provided out of the box that builds these testable structures from text files and their containing folders in disk. |
 
 
 Interfaces at the `org.thymeleaf.testing.templateengine.report` package:
 
 | Interface                  | Description |
 |----------------------------|-------------|
-|`ITestReporter`                 | Implemented by objects in charge of reporting the results of executing tests, sequences, etc. along with their associated execution times. |
+|`ITestReporter`             | Implemented by objects in charge of reporting the results of executing tests, sequences, etc. along with their associated execution times. |
+
+
+Interfaces at the `org.thymeleaf.testing.templateengine.context` package:
+
+| Interface                  | Description |
+|----------------------------|-------------|
+|`ITestContext`              | Implemented by objects representing the context (variables, locale, etc.) to be used for executing tests. |
+
+
+Interfaces at the `org.thymeleaf.testing.templateengine.messages` package:
+
+| Interface                  | Description |
+|----------------------------|-------------|
+|`ITestMessages`             | Implemented by objects representing the set of externalized (or *internationalized*) messages to be used for executing tests. |
 
 
 In addition to these interfaces, this testing API also includes the `org.thymeleaf.testing.templateengine.engine.TestExecutor` class, in charge of executing the test structures.
@@ -160,36 +171,46 @@ Let's see each topic separately.
 
 #### Test file format ####
 
-A test file is a text file with a name ending in `.test` It can look like this:
+A test file is a text file with a name ending in `.thtest` It can look like this:
 
 ```
+%TEMPLATE_MODE HTML5
+# ------------ separator comment -----------
 %CONTEXT
 onevar = 'Goodbye!'
-%TEMPLATE_MODE HTML5
+# ------------------------------------------
+%MESSAGES
+one.msg = Crisis
+# ------------------------------------------
 %INPUT
 <!DOCTYPE html>
 <html>
   <body>
       <h1 th:text="${onevar}">Hello!</h1>
+      <p th:text="#{one.msg}">World!</p>
   </body>
 </html>
+# ------------------------------------------
 %OUTPUT 
 <!DOCTYPE html>
 <html>
   <body>
       <h1>Goodbye!</h1>
+      <p>Crisis</p>
   </body>
 </html>
 ```
 
-We can see there that tests are configured by means of *directives*, and that this directives are specified in the form of `%NAME`. The available directives are:
+We can see there that tests are configured by means of *directives*, and that these directives are specified in the form of `%DIRECTIVENAME`. The available directives are:
 
 *Test Configuration:*
 
 | Name                       | Description |
 |----------------------------|-------------|
 |`%NAME`                     | Name of the test, in order to make it identifiable in reports/logs. This is *optional*. If not specified, the file name will be used as test name. |
-|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and property values will be considered OGNL expressions.<br />You can read more about context specification below.Also note that defining context variables is *optional*. |
+|`%CONTEXT`                  | Context variables to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files), and **property values are parsed and executed as OGNL expressions**. Specifying context variables is *optional* and they can be inherited from parent tests.<br />You can read more about the specification of context variables below.|
+|`%MESSAGES`                 | Default (no locale-specific) externalized/internationalized messages to be made available to the tested template. These variables should be specified in the form of *properties* (same syntax as Java `.properties` files). Specifying messages is *optional* and they can be inherited from parent tests. |
+|`%MESSAGES[es]`             | Same as `%MESSAGES`, but specifying messages for a specific locale: `es`, `en_US`, `gl_ES`, etc. |
 
 *Test input:*
 
@@ -283,29 +304,29 @@ Imagine we have this folder structure at our classpath:
      |
      +->/warmup
      |   |
-     |   +->testw1.test
+     |   +->testw1.thtest
      |   |
-     |   +->testw2.test
+     |   +->testw2.thtest
      |
      +->/expressions-iter-10
          |
-         +->expression1.test
+         +->expression1.thtest
          |
          +->/expression-stress-parallel-3
              |
-             +->expression21.test
+             +->expression21.thtest
              |
-             +->expression22.test
+             +->expression22.thtest
 
 When we ask the standard test resolver to resolve `"tests"`, it will create the following *testable* structure:
 
    * A *Test Sequence* called `tests`, containing:
      * A *Test Sequence* called `warmup` containing:
-       * Two tests: `testw1.test` and `testw2.test`.
+       * Two tests: `testw1.thtest` and `testw2.thtest`.
      * A *Test Iterator* called `expressions`, iterated 10 times, containing:
-       * One test: `expression1.test`.
+       * One test: `expression1.thtest`.
        * A *Test Parallelizer* called `expression-stress`, executed by 3 concurrent threads, containing:
-         * Two tests: `expression21.test` and `expression22.test`.
+         * Two tests: `expression21.thtest` and `expression22.thtest`.
 
 So, as can be extracted from the example above:
 
@@ -318,16 +339,16 @@ So, as can be extracted from the example above:
 
 Folders can contain *index files*. These files have to be named `test.index` and allow developers to specify which tests and in which order they want to be executed. They also allow the specification of iteration or parallelization without having to change the name of a folder.
 
-Example contents for a `test.index` file:
+Example contents for a `thtest.index` file:
 
 ```
-exp.test
-include.test
-text.test [iter-20]
+exp.thtest
+include.thtest
+text.thtest [iter-20]
 test2 [parallel-3]
 ```
 
-According to the above index, the `text.test` file will be executed in third position, 20 times. And the `test2` folder will be considered a parallelizer, just as if it was called `test2-parallel-3` instead.
+According to the above index, the `text.thtest` file will be executed in third position, 20 times. And the `test2` folder will be considered a parallelizer, just as if it was called `test2-parallel-3` instead.
 
 
 ### Extending the standard test resolution mechanism ###
