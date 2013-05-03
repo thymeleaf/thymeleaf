@@ -31,12 +31,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.ProcessingContext;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.testing.templateengine.context.ITestContext;
+import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
+import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestMessageResolver;
 import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
@@ -51,7 +51,6 @@ import org.thymeleaf.testing.templateengine.testable.ITestParallelizer;
 import org.thymeleaf.testing.templateengine.testable.ITestResult;
 import org.thymeleaf.testing.templateengine.testable.ITestSequence;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
-import org.thymeleaf.testing.templateengine.util.TestContextResolutionUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -62,12 +61,15 @@ public final class TestExecutor {
 
     public static final ITestableResolver DEFAULT_TESTABLE_RESOLVER =
             new StandardClassPathTestableResolver();
+    public static final IProcessingContextBuilder DEFAULT_PROCESSING_CONTEXT_BUILDER =
+            new WebProcessingContextBuilder();
     public static final List<IDialect> DEFAULT_DIALECTS = 
             Collections.singletonList((IDialect)new StandardDialect());
     public static final ITestReporter DEFAULT_TEST_REPORTER = new ConsoleTestReporter();
     
     
     private ITestableResolver testableResolver = DEFAULT_TESTABLE_RESOLVER;
+    private IProcessingContextBuilder processingContextBuilder = DEFAULT_PROCESSING_CONTEXT_BUILDER; 
     private List<IDialect> dialects = DEFAULT_DIALECTS;
     protected ITestReporter reporter = DEFAULT_TEST_REPORTER;
     
@@ -120,10 +122,21 @@ public final class TestExecutor {
     public void setTestableResolver(final ITestableResolver testableResolver) {
         this.testableResolver = testableResolver;
     }
-
     
 
+    
+    
+    public IProcessingContextBuilder getProcessingContextBuilder() {
+        return this.processingContextBuilder;
+    }
 
+    public void setProcessingContextBuilder(final IProcessingContextBuilder processingContextBuilder) {
+        Validate.notNull(processingContextBuilder, "Processing Context Builder cannot be null");
+        this.processingContextBuilder = processingContextBuilder;
+    }
+
+    
+    
     
     
     public void setDialects(final List<? extends IDialect> dialects) {
@@ -352,13 +365,8 @@ public final class TestExecutor {
         
         final IFragmentSpec fragmentSpec = test.getFragmentSpec();
         
-        final ITestContext testContext = test.getContext();
-        final IContext ctx = TestContextResolutionUtils.resolveTestContext(testContext);
-        if (ctx == null) {
-            throw new TestEngineExecutionException("Resolved context is null for test \"" + testName + "\"");
-        }
-        
-        final ProcessingContext processingContext = new ProcessingContext(ctx);
+        final IProcessingContext processingContext = 
+                this.processingContextBuilder.build(test.getContext());
         
         final StringWriter writer = new StringWriter();
 

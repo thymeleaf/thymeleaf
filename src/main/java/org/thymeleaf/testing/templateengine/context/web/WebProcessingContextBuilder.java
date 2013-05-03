@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.util;
+package org.thymeleaf.testing.templateengine.context.web;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,18 +38,18 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.context.WebContext;
+import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 
 
+public class WebProcessingContextBuilder implements IProcessingContextBuilder {
 
-
-
-public final class TestContextResolutionUtils {
 
     public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
@@ -57,9 +57,17 @@ public final class TestContextResolutionUtils {
     private static final String REQUEST_ATTRS_PREFIX = "request";
     private static final String SESSION_ATTRS_PREFIX = "session";
     private static final String SERVLETCONTEXT_ATTRS_PREFIX = "application";
+
+    
+
+    
+    public WebProcessingContextBuilder() {
+        super();
+    }
     
     
-    public static IContext resolveTestContext(final ITestContext testContext) {
+    
+    public final IProcessingContext build(final ITestContext testContext) {
         
         if (testContext == null) {
             return null;
@@ -126,24 +134,29 @@ public final class TestContextResolutionUtils {
         variables.remove(REQUEST_ATTRS_PREFIX);
         variables.remove(SESSION_ATTRS_PREFIX);
         variables.remove(SERVLETCONTEXT_ATTRS_PREFIX);
-        
-        return new WebContext(request, response, servletContext, locale, variables);
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    private TestContextResolutionUtils() {
-        super();
-    }
-    
-    
 
+        doAdditionalVariableProcessing(testContext, request, response, servletContext, locale, variables);
+        
+        final WebContext context = 
+                new WebContext(request, response, servletContext, locale, variables);
+        
+        return new ProcessingContext(context);
+        
+    }
+
+    
+    
+    
+    @SuppressWarnings("unused")
+    protected void doAdditionalVariableProcessing(
+            final ITestContext testContext, final HttpServletRequest request,
+            final HttpServletResponse response, final ServletContext servletContext,
+            final Locale locale, final Map<String,Object> variables) {
+        // Nothing to be done here, meant to be overriden
+    }
+    
+    
+    
     
     
     private static final HttpServletRequest createHttpServletRequest(final HttpSession session, final Map<String,Object> attributes, final Map<String,Object[]> parameters, final Locale locale) {
