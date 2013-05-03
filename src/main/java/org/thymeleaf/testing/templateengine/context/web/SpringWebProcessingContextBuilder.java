@@ -51,15 +51,13 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
             final ITestContext testContext, final HttpServletRequest request,
             final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
+        
+        final WebApplicationContext applicationContext = new GenericWebApplicationContext(servletContext);
+        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
 
         final RequestContext requestContext = 
                 new RequestContext(request, response, servletContext, new HashMap<String,Object>());
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
-        
-        
-        final WebApplicationContext applicationContext = new GenericWebApplicationContext(servletContext);
-        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
-        
         
     }
     
