@@ -1,6 +1,22 @@
 %TEMPLATE_MODE HTML5
 # ------------------------------------------------------------
 %CONTEXT
+
+typePlastic = @org.thymeleaf.tests.stsm.model.Type@PLASTIC
+typeWood = @org.thymeleaf.tests.stsm.model.Type@WOOD
+allTypes = { typePlastic, typeWood }
+
+featureSubstrate = @org.thymeleaf.tests.stsm.model.Feature@SEEDSTARTER_SPECIFIC_SUBSTRATE 
+featureFertilizer = @org.thymeleaf.tests.stsm.model.Feature@FERTILIZER 
+featurePhCorrector = @org.thymeleaf.tests.stsm.model.Feature@PH_CORRECTOR
+allFeatures = { featureSubstrate, featureFertilizer, featurePhCorrector }
+
+varietyRepository = new org.thymeleaf.tests.stsm.model.repository.VarietyRepository()
+allVarieties = varietyRepository.findAll()
+
+seedStarterRepository = new org.thymeleaf.tests.stsm.model.repository.SeedStarterRepository()
+allSeedStarters = seedStarterRepository.findAll()
+
 # ------------------------------------------------------------
 %MESSAGES
 title.application=Spring Thyme Seed-Starter Manager

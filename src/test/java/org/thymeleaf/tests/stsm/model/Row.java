@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 
- *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011, The THYMELEAF team (http://www.thymeleaf.org)
  * 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,33 +17,45 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.engine;
-
-import org.junit.Test;
+package org.thymeleaf.tests.stsm.model;
 
 
 
+public class Row {
 
-
-public class GTVGTest {
+    private Variety variety = null;
+    private Integer seedsPerCell = null;
     
     
-    public GTVGTest() {
+    
+    
+    public Row() {
         super();
     }
-    
-    
-    
-    
-    @Test
-    public void testExecutor() throws Exception {
 
-        final TestExecutor executor = new TestExecutor();
-        executor.execute("gtvg");
-        
-        
+
+    public Variety getVariety() {
+        return this.variety;
     }
-    
-    
+
+
+    public void setVariety(final Variety variety) {
+        this.variety = variety;
+    }
+
+    public Integer getSeedsPerCell() {
+        return this.seedsPerCell;
+    }
+
+    public void setSeedsPerCell(final Integer seedsPerCell) {
+        this.seedsPerCell = seedsPerCell;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Row [variety=" + this.variety + ", seedsPerCell=" + this.seedsPerCell + "]";
+    }
+
     
 }
