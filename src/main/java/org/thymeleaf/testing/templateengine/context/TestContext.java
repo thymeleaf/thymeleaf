@@ -93,29 +93,43 @@ public final class TestContext implements ITestContext {
             }
             final Map<String,ITestContextExpression> contextVariables = context.getVariables();
             if (contextVariables != null) {
-                newContext.getVariables().putAll(contextVariables);
+                mergeMaps(newContext.getVariables(),contextVariables);
             }
             final Map<String,ITestContextExpression[]> contextRequestParameters = context.getRequestParameters();
             if (contextRequestParameters != null) {
-                newContext.getRequestParameters().putAll(contextRequestParameters);
+                mergeMaps(newContext.getRequestParameters(),contextRequestParameters);
             }
             final Map<String,ITestContextExpression> contextRequestAttributes = context.getRequestAttributes();
             if (contextRequestAttributes != null) {
-                newContext.getRequestAttributes().putAll(contextRequestAttributes);
+                mergeMaps(newContext.getRequestAttributes(),contextRequestAttributes);
             }
             final Map<String,ITestContextExpression> contextSessionAttributes = context.getSessionAttributes();
             if (contextSessionAttributes != null) {
-                newContext.getSessionAttributes().putAll(contextSessionAttributes);
+                mergeMaps(newContext.getSessionAttributes(),contextSessionAttributes);
             }
             final Map<String,ITestContextExpression> contextServletContextAttributes = context.getServletContextAttributes();
             if (contextServletContextAttributes != null) {
-                newContext.getServletContextAttributes().putAll(contextServletContextAttributes);
+                mergeMaps(newContext.getServletContextAttributes(),contextServletContextAttributes);
             }
             
         }
         
         return newContext;
         
+    }
+    
+    
+    
+    private static <T> void mergeMaps(final Map<String,T> target, final Map<String,T> newEntries) {
+        // This merging method is needed in order to make sure that an entry (a key) with several
+        // appearances appears in its last position, an not in a previous one in which not all its required
+        // data might be available.
+        for (final Map.Entry<String,T> newEntry : newEntries.entrySet()) {
+            final String newEntryKey = newEntry.getKey();
+            final T newEntryValue = newEntry.getValue();
+            target.remove(newEntryKey);
+            target.put(newEntryKey, newEntryValue);
+        }
     }
     
     

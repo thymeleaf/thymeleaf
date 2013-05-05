@@ -28,7 +28,6 @@ import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
 import org.thymeleaf.testing.templateengine.context.OgnlTestContextExpression;
 import org.thymeleaf.testing.templateengine.context.TestContext;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.util.MultiValueProperties;
@@ -91,7 +90,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             final List<String> varValue = entry.getValue();
 
             if (varName.equalsIgnoreCase(LOCALE_PROPERTY_NAME)) {
-                checkForbiddenMultiValue(varName, varValue);
+                checkForbiddenMultiValue(documentName, varName, varValue);
                 testContext.setLocale(new Locale(varValue.get(0)));
                 continue;
             }
@@ -107,24 +106,24 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_REQUEST)) {
-                checkForbiddenMultiValue(varName, varValue);
+                checkForbiddenMultiValue(documentName, varName, varValue);
                 testContext.getRequestAttributes().put(varName.substring(VAR_NAME_PREFIX_REQUEST.length()), new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_SESSION)) {
-                checkForbiddenMultiValue(varName, varValue);
+                checkForbiddenMultiValue(documentName, varName, varValue);
                 testContext.getSessionAttributes().put(varName.substring(VAR_NAME_PREFIX_SESSION.length()), new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_APPLICATION)) {
-                checkForbiddenMultiValue(varName, varValue);
+                checkForbiddenMultiValue(documentName, varName, varValue);
                 testContext.getServletContextAttributes().put(varName.substring(VAR_NAME_PREFIX_APPLICATION.length()), new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
 
-            checkForbiddenMultiValue(varName, varValue);
+            checkForbiddenMultiValue(documentName, varName, varValue);
             testContext.getVariables().put(varName, new OgnlTestContextExpression(varValue.get(0)));
             
         }
@@ -136,10 +135,10 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
     
     
     
-    private static void checkForbiddenMultiValue(final String varName, final List<String> varValue) {
+    private static void checkForbiddenMultiValue(final String documentName, final String varName, final List<String> varValue) {
         if (varValue.size() > 1) {
             throw new TestEngineExecutionException(
-                    "Variable \"" + varName + "\" in context for test \"" + TestExecutor.getThreadTestName() + "\" " +
+                    "Variable \"" + varName + "\" in context for test \"" + documentName + "\" " +
             		"cannot be multi-valued");
         }
     }

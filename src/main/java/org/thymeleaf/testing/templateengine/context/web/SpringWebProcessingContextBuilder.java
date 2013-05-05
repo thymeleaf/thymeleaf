@@ -30,7 +30,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
@@ -40,7 +40,7 @@ import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 
 public class SpringWebProcessingContextBuilder extends WebProcessingContextBuilder {
 
-    public static final String BINDING_MODEL_NAME_VARIABLE_NAME = "bindingModelName";
+    public static final String BINDING_MODEL_NAME_VARIABLE_NAME = "modelName";
     
 
     
@@ -74,7 +74,9 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         }
         
         
-        final WebApplicationContext applicationContext = new GenericWebApplicationContext(servletContext);
+        final StaticWebApplicationContext applicationContext = new StaticWebApplicationContext();
+        applicationContext.setServletContext(servletContext);
+        initApplicationContext(testContext, testMessages, applicationContext, locale);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
 
         
@@ -91,9 +93,15 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
             final String bindingModelName, final Object bindingModelObject,
             final ITestContext testContext, final ITestMessages testMessages,
             final DataBinder dataBinder, final Locale locale) {
-        // Nothing to be done. Meant to be overriden.
+        // Nothing to be done. Meant to be overridden.
     }
     
     
+    @SuppressWarnings("unused")
+    protected void initApplicationContext(
+            final ITestContext testContext, final ITestMessages testMessages,
+            final StaticWebApplicationContext applicationContext, final Locale locale) {
+        // Nothing to be done. Meant to be overridden.
+    }
     
 }

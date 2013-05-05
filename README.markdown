@@ -117,6 +117,7 @@ Interfaces at the `org.thymeleaf.testing.templateengine.context` package:
 | Interface                  | Description |
 |----------------------------|-------------|
 |`ITestContext`              | Implemented by objects representing the context (variables, locale, etc.) to be used for executing tests. |
+|`IProcessingContextBuilder` | Implemented by objects in charge of creating the `IContext` to be used for test excecution from the resolved `ITestContext`. |
 
 
 Interfaces at the `org.thymeleaf.testing.templateengine.messages` package:
@@ -361,4 +362,59 @@ The standard resolution mechanism can be extended in several ways, by means of a
 |`setTestEvaluator(IStandardTestEvaluator)` | Specifies the implementation that will be in charge of evaluating the *raw data* returned by the test reader into the different values that will be used for building the test object. Default implementation is `StandardTestEvaluator`. |
 |`setTestBuilder(IStandardTestBuilder)` | Specifies the implementation that will be in charge of actually building test objects from the values evaluated by the *test evaluator* in the previous step. Default implementation is `StandardTestBuilder`. |
 
+
+
+## Executing Spring-based tests ##
+
+In order to execute thymeleaf tests using the **SpringStandard** dialect in its entirety, we need to activate certain Spring mechanisms that support some Spring-integrated processors included in this dialect (like `th:field`).
+
+Initialization would look like this:
+
+```java
+final List<IDialect> dialects = new ArrayList<IDialect>();
+dialects.add(new SpringStandardDialect());
+
+final IProcessingContextBuilder springPCBuilder = new SpringWebProcessingContextBuilder();
+
+final TestExecutor executor = new TestExecutor();
+executor.setProcessingContextBuilder(springPCBuilder);
+executor.setDialects(dialects);
+
+executor.execute("tests");
+```
+
+Note that `org.thymeleaf.testing.templateengine.context.web.SpringWebProcessContextBuilder` class that we will use in order to create test execution contexts, which will activate the needed Spring mechanisms.
+
+### Extending Spring support ###
+
+What's more, the `SpringWebProcessContextBuilder` class can be overridden if we need to do one of these things:
+
+   * Initialize *binders*, such as registering *property editors*.
+   * Initialize the *application context*, in order to make specific beans available.
+
+Let's see an example of this extension:
+
+```java
+
+public class STSMWebProcessingContextBuilder 
+        extends SpringWebProcessingContextBuilder {
+
+    public STSMWebProcessingContextBuilder() {
+        super();
+    }
+    
+    protected void initBinders(
+            final String bindingModelName, final Object bindingModelObject,
+            final ITestContext testContext, final ITestMessages testMessages,
+            final DataBinder dataBinder, final Locale locale) {
+        
+        final String dateformat = testMessages.computeMessage(locale, "date.format", null);
+        final SimpleDateFormat sdf = new SimpleDateFormat(dateformat);
+        sdf.setLenient(false);
+        dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));
+        
+    }
+    
+}
+```
 
