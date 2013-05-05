@@ -24,8 +24,8 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
-import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.tests.stsm.testing.STSMWebProcessingContextBuilder;
 
 
 
@@ -45,7 +45,7 @@ public class STSMTest {
     public void testExecutor() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.setProcessingContextBuilder(new SpringWebProcessingContextBuilder());
+        executor.setProcessingContextBuilder(new STSMWebProcessingContextBuilder());
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
         executor.execute("stsm");
         
