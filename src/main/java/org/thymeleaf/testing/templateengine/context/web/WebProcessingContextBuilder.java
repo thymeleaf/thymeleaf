@@ -46,6 +46,7 @@ import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 
 
 public class WebProcessingContextBuilder implements IProcessingContextBuilder {
@@ -67,7 +68,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     
-    public final IProcessingContext build(final ITestContext testContext) {
+    public final IProcessingContext build(final ITestContext testContext, final ITestMessages testMessages) {
         
         if (testContext == null) {
             return null;
@@ -135,7 +136,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         variables.remove(SESSION_ATTRS_PREFIX);
         variables.remove(SERVLETCONTEXT_ATTRS_PREFIX);
 
-        doAdditionalVariableProcessing(testContext, request, response, servletContext, locale, variables);
+        doAdditionalVariableProcessing(testContext, testMessages, request, response, servletContext, locale, variables);
         
         final WebContext context = 
                 new WebContext(request, response, servletContext, locale, variables);
@@ -149,8 +150,8 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     @SuppressWarnings("unused")
     protected void doAdditionalVariableProcessing(
-            final ITestContext testContext, final HttpServletRequest request,
-            final HttpServletResponse response, final ServletContext servletContext,
+            final ITestContext testContext, final ITestMessages testMessages,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
         // Nothing to be done here, meant to be overriden
     }

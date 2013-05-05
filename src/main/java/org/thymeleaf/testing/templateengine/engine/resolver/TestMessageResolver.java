@@ -64,41 +64,14 @@ public class TestMessageResolver extends AbstractMessageResolver {
                     "messages object is null.");
         }
 
-        String message = null;
-        
-        synchronized (messages) {
-            // We synchronize just in case, as we don't know how this ITestMessages implementation works
-            message = messages.computeMessage(locale, key, messageParameters);
-            if (message == null) {
-                message = messages.computeMessage(getLocaleWithLanguageCountry(locale), key, messageParameters);
-            }
-            if (message == null) {
-                message = messages.computeMessage(getLocaleWithLanguage(locale), key, messageParameters);
-            }
-            if (message == null) {
-                message = messages.computeMessage(null, key, messageParameters);
-            }
-        }
+        String message = messages.computeMessage(locale, key, messageParameters);
         
         if (message == null) {
             message = MessageResolutionUtils.getAbsentMessageRepresentation(key, locale);
         }
         
-        
         return new MessageResolution(message);
         
-    }
-    
-    
-    
-    
-    
-    private static Locale getLocaleWithLanguageCountry(final Locale locale) {
-        return new Locale(locale.getLanguage() + "_" + locale.getCountry());
-    }
-    
-    private static Locale getLocaleWithLanguage(final Locale locale) {
-        return new Locale(locale.getLanguage());
     }
     
     

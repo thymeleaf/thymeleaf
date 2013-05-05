@@ -366,7 +366,7 @@ public final class TestExecutor {
         final IFragmentSpec fragmentSpec = test.getFragmentSpec();
         
         final IProcessingContext processingContext = 
-                this.processingContextBuilder.build(test.getContext());
+                this.processingContextBuilder.build(test.getContext(), test.getMessages());
         
         final StringWriter writer = new StringWriter();
 

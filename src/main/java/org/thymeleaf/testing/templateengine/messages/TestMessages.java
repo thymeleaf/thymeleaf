@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -70,6 +71,30 @@ public class TestMessages implements ITestMessages {
         
         Validate.notNull(key, "Message key cannot be null");
         
+        String message = doComputeMessage(locale, key, messageParameters);
+        if (message == null) {
+            message = doComputeMessage(getLocaleWithLanguageCountry(locale), key, messageParameters);
+        }
+        if (message == null) {
+            message = doComputeMessage(getLocaleWithLanguage(locale), key, messageParameters);
+        }
+        if (message == null) {
+            message = doComputeMessage(null, key, messageParameters);
+        }
+        
+        if (message == null) {
+            message = MessageResolutionUtils.getAbsentMessageRepresentation(key, locale);
+        }
+        
+        return message;
+        
+    }
+    
+    
+    private String doComputeMessage(final Locale locale, final String key, final Object[] messageParameters) {
+        
+        Validate.notNull(key, "Message key cannot be null");
+        
         final ITestMessagesForLocale messagesForLocale = this.messagesByLocale.get(locale);
         if (messagesForLocale == null) {
             return null;
@@ -92,6 +117,16 @@ public class TestMessages implements ITestMessages {
     
     
     
+    
+    private static Locale getLocaleWithLanguageCountry(final Locale locale) {
+        return new Locale(locale.getLanguage() + "_" + locale.getCountry());
+    }
+    
+    private static Locale getLocaleWithLanguage(final Locale locale) {
+        return new Locale(locale.getLanguage());
+    }
+    
+
     
     
     
