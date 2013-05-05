@@ -5,6 +5,16 @@
 seedStarter = new org.thymeleaf.tests.stsm.model.SeedStarter()
 seedStarter.datePlanted = #dates.create(2013,5,3)
 
+seedStarterRow0 = new org.thymeleaf.tests.stsm.model.Row()
+seedStarterRow0.variety = varietyRepository.findById(3)
+seedStarterRow0.seedsPerCell = 20
+
+seedStarterRow1 = new org.thymeleaf.tests.stsm.model.Row()
+seedStarterRow1.variety = varietyRepository.findById(4)
+seedStarterRow1.seedsPerCell = 15
+
+seedStarter.rows = { seedStarterRow0, seedStarterRow1 }
+
 modelName = 'seedStarter'
 
 # ------------------------------------------------------------
@@ -90,7 +100,33 @@ modelName = 'seedStarter'
                 </tr>
               </thead>
               <tbody>
-                
+                <tr>
+                  <td>1</td>
+                  <td>
+                    <select id="rows0.variety" name="rows[0].variety">
+                      <option value="1">Thymus vulgaris</option><option value="2">Thymus x citriodorus</option><option value="3" selected="selected">Thymus herba-barona</option><option value="4">Thymus pseudolaginosus</option><option value="5">Thymus serpyllum</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" id="rows0.seedsPerCell" name="rows[0].seedsPerCell" value="20" />
+                  </td>
+                  <td>
+                    <button type="submit" name="removeRow" value="0">Remove row</button>
+                  </td>
+                </tr><tr>
+                  <td>2</td>
+                  <td>
+                    <select id="rows1.variety" name="rows[1].variety">
+                      <option value="1">Thymus vulgaris</option><option value="2">Thymus x citriodorus</option><option value="3">Thymus herba-barona</option><option value="4" selected="selected">Thymus pseudolaginosus</option><option value="5">Thymus serpyllum</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input type="text" id="rows1.seedsPerCell" name="rows[1].seedsPerCell" value="15" />
+                  </td>
+                  <td>
+                    <button type="submit" name="removeRow" value="1">Remove row</button>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>

@@ -95,6 +95,11 @@ public class SeedStarter {
     }
 
 
+    public void setRows(List<Row> rows) {
+        this.rows = rows;
+    }
+
+
     @Override
     public String toString() {
         return "SeedStarter [id=" + this.id + ", datePlanted=" + this.datePlanted
