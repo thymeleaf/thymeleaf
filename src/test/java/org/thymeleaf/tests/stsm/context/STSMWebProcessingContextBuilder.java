@@ -17,8 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.tests.stsm.testing;
+package org.thymeleaf.tests.stsm.context;
 
+import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -28,6 +29,8 @@ import org.springframework.validation.DataBinder;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.tests.stsm.model.Variety;
+import org.thymeleaf.tests.stsm.model.repository.VarietyRepository;
 
 
 
@@ -50,8 +53,36 @@ public class STSMWebProcessingContextBuilder extends SpringWebProcessingContextB
         sdf.setLenient(false);
         dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));
         
+        dataBinder.registerCustomEditor(Variety.class, new VarietyPropertyEditor(new VarietyRepository()));
+        
     }
     
+    
+    
+    static class VarietyPropertyEditor extends PropertyEditorSupport {
+
+        private final VarietyRepository varietyRepository;
+        
+        public VarietyPropertyEditor(final VarietyRepository varietyRepository) {
+            super();
+            this.varietyRepository = varietyRepository;
+        }
+        
+        
+        @Override
+        public String getAsText() {
+            final Variety value = (Variety) getValue();
+            return (value != null ? value.getId().toString() : "");
+        }
+
+        @Override
+        public void setAsText(final String text) throws IllegalArgumentException {
+            final Integer varietyId = Integer.valueOf(text);
+            setValue(this.varietyRepository.findById(varietyId));
+        }
+        
+        
+    }
     
     
 }

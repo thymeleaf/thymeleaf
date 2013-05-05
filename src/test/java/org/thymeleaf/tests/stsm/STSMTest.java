@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-import org.thymeleaf.tests.stsm.testing.STSMWebProcessingContextBuilder;
+import org.thymeleaf.tests.stsm.context.STSMWebProcessingContextBuilder;
 
 
 
