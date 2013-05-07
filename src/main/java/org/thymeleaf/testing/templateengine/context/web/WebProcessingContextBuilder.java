@@ -21,9 +21,11 @@ package org.thymeleaf.testing.templateengine.context.web;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -219,6 +221,9 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         Mockito.when(servletContext.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(attributes));
         Mockito.doAnswer(new SetAttributeAnswer(attributes)).when(servletContext).setAttribute(Matchers.anyString(), Matchers.anyObject());
         
+        Mockito.when(servletContext.getInitParameterNames()).thenReturn(new ObjectEnumeration<String>(null));
+        Mockito.when(servletContext.getInitParameter(Matchers.anyString())).thenReturn(null);
+        
         return servletContext;
     }
     
@@ -232,9 +237,14 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
 
         private final Iterator<T> iterator;
         
+        @SuppressWarnings("unchecked")
         public ObjectEnumeration(final Collection<T> values) {
             super();
-            this.iterator = values.iterator();
+            if (values != null) {
+                this.iterator = values.iterator();
+            } else {
+                this.iterator = ((List<T>)Collections.emptyList()).iterator();
+            }
         }
         
         public boolean hasMoreElements() {

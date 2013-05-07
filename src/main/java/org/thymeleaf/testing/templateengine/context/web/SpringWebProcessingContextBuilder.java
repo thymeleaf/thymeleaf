@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.testing.templateengine.context.web;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -39,8 +42,6 @@ import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 
 
 public class SpringWebProcessingContextBuilder extends WebProcessingContextBuilder {
-
-    public static final String BINDING_MODEL_NAME_VARIABLE_NAME = "modelName";
     
 
     
@@ -52,34 +53,31 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     
     
     @Override
-    protected void doAdditionalVariableProcessing(
+    protected final void doAdditionalVariableProcessing(
             final ITestContext testContext, final ITestMessages testMessages,
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
 
         
-        final Object modelNameObj = variables.get(BINDING_MODEL_NAME_VARIABLE_NAME);
-        if (modelNameObj != null) {
+        final List<String> bindingVariableNames = 
+                getBindingVariableNames(testContext, testMessages, request, response, servletContext, locale, variables);
+        for (final String bindingVariableName : bindingVariableNames) {
+                
+            final Object bindingObject = variables.get(bindingVariableName);
+            final WebDataBinder dataBinder = new WebDataBinder(bindingObject, bindingVariableName);
             
-            final String modelName = modelNameObj.toString();
-            final Object modelObject = variables.get(modelName);
-
-            final WebDataBinder dataBinder = new WebDataBinder(modelObject, modelName);
+            initBinders(bindingVariableName, bindingObject, testContext, testMessages, dataBinder, locale);
             
-            initBinders(modelName, modelObject, testContext, testMessages, dataBinder, locale);
-            
-            final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + modelName;
+            final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + bindingVariableName;
             variables.put(bindingResultName, dataBinder.getBindingResult());
             
         }
         
-        
-        final StaticWebApplicationContext applicationContext = new StaticWebApplicationContext();
-        applicationContext.setServletContext(servletContext);
-        initApplicationContext(testContext, testMessages, applicationContext, locale);
-        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
+        final WebApplicationContext appCtx = 
+                createApplicationContext(
+                        testContext, testMessages, request, response, servletContext, locale, variables);
+        servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appCtx);
 
-        
         final RequestContext requestContext = 
                 new RequestContext(request, response, servletContext, variables);
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
@@ -87,10 +85,53 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     }
     
     
+    /**
+     * <p>
+     *   Returns the name of the variables that must be considered "binding models", usually
+     *   those that serve as form-backing beans.
+     * </p>
+     * <p>
+     *   Default behaviour is:
+     * </p>
+     * <ul>
+     *   <li>Look for a context variable called <tt>binding</tt>. If this variable exists,
+     *       it will be considered to contain the name (single-valued) or names (list) of
+     *       the binding variables (as literal/s).</li>
+     *   <li>If <tt>binding</tt> does not exist, look for a context variable called <tt>model</tt>.
+     *       The object contained in that variable will be considered to be the binding model itself.</li>
+     * </ul>
+     * 
+     * @return the binding variable names
+     */
+    @SuppressWarnings("unused")
+    protected List<String> getBindingVariableNames(
+            final ITestContext testContext, final ITestMessages testMessages,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
+            final Locale locale, final Map<String,Object> variables) {
+        
+        final Object bindingObj = variables.get("binding");
+        
+        if (bindingObj == null) {
+            return Collections.singletonList("model");
+        }
+        
+        if (bindingObj instanceof List) {
+            final List<String> variableNames = new ArrayList<String>();
+            for (final Object bindingObjValue : ((List<?>)bindingObj)) {
+                variableNames.add(bindingObjValue != null? bindingObjValue.toString() : null);
+            }
+            return variableNames;
+        }
+        
+        return Collections.singletonList(bindingObj.toString());
+        
+    }
+    
+    
     
     @SuppressWarnings("unused")
     protected void initBinders(
-            final String bindingModelName, final Object bindingModelObject,
+            final String bindingVariableName, final Object bindingObject,
             final ITestContext testContext, final ITestMessages testMessages,
             final DataBinder dataBinder, final Locale locale) {
         // Nothing to be done. Meant to be overridden.
@@ -98,10 +139,16 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     
     
     @SuppressWarnings("unused")
-    protected void initApplicationContext(
+    protected WebApplicationContext createApplicationContext(
             final ITestContext testContext, final ITestMessages testMessages,
-            final StaticWebApplicationContext applicationContext, final Locale locale) {
-        // Nothing to be done. Meant to be overridden.
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
+            final Locale locale, final Map<String,Object> variables) {
+
+        final StaticWebApplicationContext applicationContext = new StaticWebApplicationContext();
+        applicationContext.setServletContext(servletContext);
+        return applicationContext;
+
     }
+    
     
 }
