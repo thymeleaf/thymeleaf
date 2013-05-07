@@ -43,8 +43,9 @@ public class STSMWebProcessingContextBuilder extends SpringWebProcessingContextB
     }
 
     
+    @Override
     protected void initBinders(
-            final String bindingModelName, final Object bindingModelObject,
+            final String bindingVariableName, final Object bindingObject,
             final ITestContext testContext, final ITestMessages testMessages,
             final DataBinder dataBinder, final Locale locale) {
         

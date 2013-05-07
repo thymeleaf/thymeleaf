@@ -5,7 +5,7 @@
 seedStarter = new org.thymeleaf.tests.stsm.model.SeedStarter()
 seedStarter.datePlanted = #dates.create(2013,5,3)
 
-modelName = 'seedStarter'
+binding = 'seedStarter'
 
 # ------------------------------------------------------------
 %OUTPUT

@@ -89,8 +89,10 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <thymeleaf.version>2.0.17-SNAPSHOT</thymeleaf.version>
     <thymeleaf-testing.version>2.0.0-beta4-SNAPSHOT</thymeleaf-testing.version>
+    <thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>
-    </properties>
+    <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+  </properties>
 
   
   <build>
@@ -99,6 +101,14 @@
     
       <resource>
         <directory>src/main/resources</directory>
+      </resource>
+      
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.xml</include>
+        </includes>
       </resource>
     
       <resource>
@@ -224,6 +234,13 @@
       <version>${thymeleaf-testing.version}</version>
       <scope>compile</scope>
     </dependency>
+    
+    <dependency>
+      <groupId>org.thymeleaf.extras</groupId>
+      <artifactId>thymeleaf-extras-springsecurity3</artifactId>
+      <version>${thymeleaf-extras-springsecurity3.version}</version>
+      <scope>compile</scope>
+    </dependency>
         
     <dependency>
       <groupId>org.springframework</groupId>
@@ -272,6 +289,27 @@
       <artifactId>spring-webmvc</artifactId>
       <version>${springframework.version}</version>
       <scope>compile</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+      <version>${springsecurity.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-web</artifactId>
+      <version>${springsecurity.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-config</artifactId>
+      <version>${springsecurity.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-taglibs</artifactId>
+      <version>${springsecurity.version}</version>
     </dependency>
     
     <dependency>

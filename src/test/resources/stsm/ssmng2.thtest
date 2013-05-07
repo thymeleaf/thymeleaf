@@ -36,7 +36,7 @@ seedStarter.rows = { seedStarterRow0, seedStarterRow1 }
 
 
 
-modelName = 'seedStarter'
+binding = 'seedStarter'
 
 # ------------------------------------------------------------
 %OUTPUT
