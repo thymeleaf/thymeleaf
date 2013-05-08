@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.context.web;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,14 +30,18 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.BeanDefinitionStoreException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.context.ITestContext;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 
 
@@ -44,6 +49,11 @@ import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 public class SpringWebProcessingContextBuilder extends WebProcessingContextBuilder {
     
 
+    public final static String DEFAULT_APPLICATION_CONTEXT_CONFIG_LOCATION = "classpath:applicationContext.xml";
+
+    
+    private String applicationContextConfigLocation = DEFAULT_APPLICATION_CONTEXT_CONFIG_LOCATION;
+    
     
     public SpringWebProcessingContextBuilder() {
         super();
@@ -52,6 +62,18 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     
     
     
+    public String getApplicationContextConfigLocation() {
+        return this.applicationContextConfigLocation;
+    }
+
+    public void setApplicationContextConfigLocation(final String applicationContextConfigLocation) {
+        this.applicationContextConfigLocation = applicationContextConfigLocation;
+    }
+
+
+
+
+
     @Override
     protected final void doAdditionalVariableProcessing(
             final ITestContext testContext, final ITestMessages testMessages,
@@ -81,6 +103,8 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         final RequestContext requestContext = 
                 new RequestContext(request, response, servletContext, variables);
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
+
+        initSpring(appCtx, testContext, testMessages, request, response, servletContext, locale, variables);
         
     }
     
@@ -138,17 +162,61 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     }
     
     
+    
+    
     @SuppressWarnings("unused")
     protected WebApplicationContext createApplicationContext(
             final ITestContext testContext, final ITestMessages testMessages,
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
 
+        if (this.applicationContextConfigLocation == null) {
+            return createEmptyStaticApplicationContext(servletContext);
+        }
+        
+        final XmlWebApplicationContext appCtx = new XmlWebApplicationContext();
+        
+        appCtx.setServletContext(servletContext);
+        appCtx.setConfigLocation(this.applicationContextConfigLocation);
+        
+        try {
+            appCtx.refresh();
+        } catch (final BeanDefinitionStoreException e) {
+            if (e.getCause() != null && (e.getCause() instanceof FileNotFoundException)) {
+                throw new TestEngineExecutionException(
+                        "Cannot find ApplicationContext config location " +
+                        "\"" + this.applicationContextConfigLocation + "\". If your tests don't need " +
+                        "to define any Spring beans, set the 'applicationContextConfigLocation' field of " +
+                        "your ProcessingContext builder to null.", e);
+            }
+            throw e;
+        }
+
+        return appCtx;
+
+    }
+    
+    
+    
+    private static WebApplicationContext createEmptyStaticApplicationContext(final ServletContext servletContext) {
         final StaticWebApplicationContext applicationContext = new StaticWebApplicationContext();
         applicationContext.setServletContext(servletContext);
         return applicationContext;
-
     }
+    
+    
+    
+    
+    
+    @SuppressWarnings("unused")
+    protected void initSpring(
+            final ApplicationContext applicationContext,
+            final ITestContext testContext, final ITestMessages testMessages,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
+            final Locale locale, final Map<String,Object> variables) {
+        // Nothing to be done. Meant to be overridden.
+    }
+    
     
     
 }
