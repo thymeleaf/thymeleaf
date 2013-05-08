@@ -40,6 +40,7 @@ public class STSMWebProcessingContextBuilder extends SpringWebProcessingContextB
     
     public STSMWebProcessingContextBuilder() {
         super();
+        setApplicationContextConfigLocation(null);
     }
 
     
