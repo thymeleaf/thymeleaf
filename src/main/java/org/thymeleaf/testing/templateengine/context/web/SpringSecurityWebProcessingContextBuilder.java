@@ -43,10 +43,11 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
 
     
     public static final String DEFAULT_AUTHENTICATION_MANAGER_BEAN_NAME = "authenticationManager";
-
+    public static final String DEFAULT_USERNAME_VARIABLE_NAME = "j_username";
+    public static final String DEFAULT_PASSWORD_VARIABLE_NAME = "j_password";
+    
     
     private String authenticationManagerBeanName = DEFAULT_AUTHENTICATION_MANAGER_BEAN_NAME;
-    
     
     
     public SpringSecurityWebProcessingContextBuilder() {
@@ -89,19 +90,51 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
                 getAuthentication(applicationContext, testContext, testMessages, 
                         request, response, servletContext, locale, variables);
         
-        final Authentication fullAuthentication = 
-                authenticationManager.authenticate(authentication);
-        
-        final SecurityContext securityContext = SecurityContextHolder.getContext();
-        securityContext.setAuthentication(fullAuthentication);
-        
-        final HttpSession session = request.getSession(true);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+        if (authentication != null) {
+            
+            final Authentication fullAuthentication = 
+                    authenticationManager.authenticate(authentication);
+            
+            final SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(fullAuthentication);
+            
+            final HttpSession session = request.getSession(true);
+            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+            
+        }
         
     }
     
     
     
+    /**
+     * <p>
+     *   Computes and returns a Spring Security {@link Authentication} object to be used 
+     *   for authenticating the desired user for testing purposes.
+     * </p>
+     * <p>
+     *   By default, an {@link UsernamePasswordAuthenticationToken} object is returned,
+     *   built with the values of two context variables:
+     * </p>
+     * <ul>
+     *   <li><tt>j_username</tt> for the user name.</li>
+     *   <li><tt>j_password</tt> for the user password.</li>
+     * </ul>
+     * <p>
+     *   If one or both of these variables are not present, null is returned and therefore
+     *   no user will be considered to be authenticated.
+     * </p>
+     * 
+     * @param applicationContext the application context, already initialized
+     * @param testContext the {@link ITestContext} object
+     * @param testMessages the {@link ITestMessages} object
+     * @param request the HTTP request object
+     * @param response the HTTP response object
+     * @param servletContext the ServletContext object
+     * @param locale the locale being used for this test
+     * @param variables the context variables
+     * @return the Authentication object, null if no user is to be considered authenticated.
+     */
     @SuppressWarnings("unused")
     protected Authentication getAuthentication(final ApplicationContext applicationContext,
             final ITestContext testContext, final ITestMessages testMessages,
@@ -109,7 +142,14 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
             final ServletContext servletContext, final Locale locale,
             final Map<String, Object> variables) {
         
-        return new UsernamePasswordAuthenticationToken("jim", "demo");
+        final Object usernameObj = variables.get(DEFAULT_USERNAME_VARIABLE_NAME);
+        final Object passwordObj = variables.get(DEFAULT_PASSWORD_VARIABLE_NAME);
+        
+        if (usernameObj == null || passwordObj == null) {
+            return null;
+        }
+        
+        return new UsernamePasswordAuthenticationToken(usernameObj.toString(), passwordObj.toString());
         
     }
     

@@ -48,7 +48,9 @@ import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 
 public class SpringWebProcessingContextBuilder extends WebProcessingContextBuilder {
     
-
+    public final static String DEFAULT_BINDING_VARIABLE_NAME = "binding";
+    public final static String DEFAULT_BINDING_MODEL_VARIABLE_NAME = "model";
+    
     public final static String DEFAULT_APPLICATION_CONTEXT_CONFIG_LOCATION = "classpath:applicationContext.xml";
 
     
@@ -133,10 +135,10 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
         
-        final Object bindingObj = variables.get("binding");
+        final Object bindingObj = variables.get(DEFAULT_BINDING_VARIABLE_NAME);
         
         if (bindingObj == null) {
-            return Collections.singletonList("model");
+            return Collections.singletonList(DEFAULT_BINDING_MODEL_VARIABLE_NAME);
         }
         
         if (bindingObj instanceof List) {
