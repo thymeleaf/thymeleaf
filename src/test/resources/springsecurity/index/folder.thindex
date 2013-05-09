@@ -1,2 +1,5 @@
-#unauth.thtest
+unauth.thtest
 authadmin.thtest
+authuser.thtest
+authuseradmin.thtest
+
