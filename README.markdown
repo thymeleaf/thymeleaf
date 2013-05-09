@@ -37,9 +37,9 @@ Maven info
 Features
 --------
 
-  *   Works as an independent library, callable from multiple testing frameworks like e.g. JUnit.
-  *   Tests only the view layer: template processing and its result.
-  *   Includes benchmarking facilities: all tests are timed, times are aggregated.
+  *   Works as an independent library, **callable from multiple testing frameworks** like e.g. JUnit.
+  *   **Tests only the view layer**: template processing and its result.
+  *   Includes **benchmarking** facilities: all tests are timed, times are aggregated.
   *   Highly extensible and configurable
   *   Versatile testing structures: test sequences, iteration, concurrent execution.
   *   Based on interfaces, out-of-the-box *standard test resolution* allows:
@@ -47,6 +47,7 @@ Features
 	  * Advanced test configuration.
 	  * Test inheritance.
 	  * *Lenient result matching*, ignoring excess unneeded whitespace etc.
+  * **Spring Framework** and **Spring Security** integration.
 
 ------------------------------------------------------------------------------
 
@@ -246,7 +247,7 @@ Also, any line starting by `#` in a test file will be considered **a comment** a
 
 As already said, context is specified like:
 
-```
+```properties
 %CONTEXT
 onevar = 'Goodbye!'
 twovar = 'Hello!'
@@ -254,7 +255,7 @@ twovar = 'Hello!'
 
 And those literals are specified between commas because all context values are in fact OGNL expressions, so we could in fact use previous variables in new ones:
 
-```
+```properties
 %CONTEXT
 onevar = 'Hello, '
 twovar = onevar + 'World!'
@@ -262,7 +263,7 @@ twovar = onevar + 'World!'
 
 We can also create objects, and set its properties:
 
-```
+```properties
 %CONTEXT
 user = new com.myapp.User()
 user.firstName = 'John'
@@ -271,13 +272,14 @@ user.lastName = 'Apricot'
 
 Also maps:
 
-```
+```properties
 %CONTEXT
 user = #{ 'firstName' : 'John', 'lastName' : 'Apricot' }
 ```
 
 We can set request parameters (multivalued), request attributes, session attributes and servlet context attributes using the `param`, `request`, `session` and `application` prefixes:
-```
+
+```properties
 %CONTEXT
 session.userLogin = 'japricot'
 param.selection = 'admin'
@@ -285,7 +287,8 @@ param.selection = 'manager'
 ```
 
 Utility objects like `#strings`, `#dates`, `#lists`, etc. can be used:
-```
+
+```properties
 %CONTEXT
 request.timestamp = #calendars.createNow()
 ```
@@ -364,7 +367,7 @@ The standard resolution mechanism can be extended in several ways, by means of a
 
 
 
-## Executing Spring-based tests ##
+## Spring integration ##
 
 In order to execute thymeleaf tests using the **SpringStandard** dialect in its entirety, we need to activate certain Spring mechanisms that support some Spring-integrated processors included in this dialect (like `th:field`).
 
@@ -383,11 +386,49 @@ executor.setDialects(dialects);
 executor.execute("tests");
 ```
 
-Note that `org.thymeleaf.testing.templateengine.context.web.SpringWebProcessContextBuilder` class that we will use in order to create test execution contexts, which will activate the needed Spring mechanisms.
+Pay special attention to that instantiation of `org.thymeleaf.testing.templateengine.context.web.SpringWebProcessContextBuilder`. That is the class which will activate the needed Spring mechanisms.
 
-### Extending Spring support ###
+This Spring-based context builder will try to initialize a Spring application context from an `applicationContext.xml` file present in the classpath. The name of this file can be overridden or even set to `null` if we do not wish to initialize any beans:
 
-What's more, the `SpringWebProcessContextBuilder` class can be overridden if we need to do one of these things:
+```java
+final IProcessingContextBuilder springPCBuilder = new SpringWebProcessingContextBuilder();
+springPCBuilder.setApplicationContextConfigLocation("classpath:springConfig/spring.xml");
+```
+
+### Model binding ###
+
+If we want to test a page including bindings like, for example, a form with a *form-backing bean* (or *command*), we can specify the context variables on which we desire to create bindings by means of the specification of the `binding` variable:
+
+```properties
+%CONTEXT
+user = new my.company.User()
+user.name = 'John'
+user.surname = 'Apricot'
+# We will create a binding for the 'user' variable
+binding = 'user'
+# Could be multivalued:
+# binding = {'user','configuration'}
+```
+
+We could directly use the `model` variable name. This would be equivalent to the previous context definition:
+
+```properties
+%CONTEXT
+model = new my.company.User()
+model.name = 'John'
+model.surname = 'Apricot'
+```
+
+
+### Spring Security ###
+
+
+
+
+
+### Initializing binders ###
+
+The `SpringWebProcessContextBuilder` class can be overridden if we need to do one of these things:
 
    * Initialize *binders*, such as registering *property editors*.
    * Initialize the *application context*, in order to make specific beans available.
@@ -417,4 +458,6 @@ public class STSMWebProcessingContextBuilder
     
 }
 ```
+
+### Extending the Spring support ###
 
