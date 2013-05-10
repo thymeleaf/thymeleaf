@@ -420,18 +420,10 @@ model.surname = 'Apricot'
 ```
 
 
-### Spring Security ###
+#### Initializing bindings: property editors ####
 
+The `SpringWebProcessContextBuilder` class can be overridden if we need to initialize bindings in our own way, for example for registering *property editors*.
 
-
-
-
-### Initializing binders ###
-
-The `SpringWebProcessContextBuilder` class can be overridden if we need to do one of these things:
-
-   * Initialize *binders*, such as registering *property editors*.
-   * Initialize the *application context*, in order to make specific beans available.
 
 Let's see an example of this extension:
 
@@ -445,7 +437,7 @@ public class STSMWebProcessingContextBuilder
     }
     
     protected void initBinders(
-            final String bindingModelName, final Object bindingModelObject,
+            final String bindingVariableName, final Object bindingObject,
             final ITestContext testContext, final ITestMessages testMessages,
             final DataBinder dataBinder, final Locale locale) {
         
@@ -459,5 +451,38 @@ public class STSMWebProcessingContextBuilder
 }
 ```
 
-### Extending the Spring support ###
+
+### Spring Security ###
+
+The testing library can also be integrated with Spring Security. This allows the use of the `thymeleaf-extras-springsecurity3` dialect and testing template rendering in different authentication/authorization scenarios.
+
+Example of usage:
+
+```java
+final SpringSecurityWebProcessingContextBuilder processingContextBuilder =
+        new SpringSecurityWebProcessingContextBuilder();
+processingContextBuilder.setApplicationContextConfigLocation(
+        "classpath:springsecurity/applicationContext-security.xml");
+        
+final TestExecutor executor = new TestExecutor();
+executor.setProcessingContextBuilder(processingContextBuilder);
+executor.setDialects(
+        Arrays.asList(new IDialect[] { new SpringStandardDialect(), new SpringSecurityDialect()}));
+executor.execute("springsecurity");
+```
+
+By default, authentication will be specified in a user/password basis, by means of the `j_username` and `j_password`.
+
+```properties
+%CONTEXT
+j_username = 'ted'
+j_password = 'demo'
+```
+
+
+
+
+
+
+
 
