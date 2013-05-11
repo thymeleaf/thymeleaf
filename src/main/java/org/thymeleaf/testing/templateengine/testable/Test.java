@@ -215,7 +215,7 @@ public class Test extends AbstractTest {
                     "tests should always specify one");
         }
         
-        if (outputThrowableClassEval.isAssignableFrom(t.getClass())) {
+        if (throwableClassMatches(outputThrowableClassEval, t)) {
             
             final String outputThrowableMessagePatternEval = getOutputThrowableMessagePattern();
             
@@ -226,17 +226,13 @@ public class Test extends AbstractTest {
                 final Pattern outputThrowableMessagePatternObjectEval = 
                         Pattern.compile(outputThrowableMessagePatternEval);
                 
-                final String throwableMessage = t.getMessage();
-                if (throwableMessage != null) {
-                    final Matcher matcher = outputThrowableMessagePatternObjectEval.matcher(throwableMessage);
-                    if (matcher.matches()) {
-                        return TestResult.ok(testName, t);
-                    }
+                if (throwableMessageMatches(outputThrowableMessagePatternObjectEval, t)) {
+                    return TestResult.ok(testName, t);
                 }
                 
                 return TestResult.error(testName, 
                         "An exception of class " + t.getClass() + " was raised as expected, " +
-                        "but its message does not match pattern \"" + throwableMessage + "\"", t);
+                        "but its message does not match pattern \"" + outputThrowableMessagePatternEval + "\"", t);
                 
             }
             
@@ -250,5 +246,38 @@ public class Test extends AbstractTest {
     }
 
     
+    
+    private static boolean throwableClassMatches(
+            final Class<? extends Throwable> outputThrowableClass, final Throwable throwable) {
+        
+        if (outputThrowableClass.isAssignableFrom(throwable.getClass())) {
+            return true;
+        }
+        if (throwable.getCause() != null) {
+            return throwableClassMatches(outputThrowableClass, throwable.getCause());
+        }
+        return false;
+        
+    }
+    
+    
+    private static boolean throwableMessageMatches(
+            final Pattern throwableMessagePattern, final Throwable throwable) {
+
+        final String throwableMessage = throwable.getMessage();
+        if (throwableMessage != null) {
+            final Matcher matcher = throwableMessagePattern.matcher(throwableMessage);
+            if (matcher.matches()) {
+                return true;
+            }
+        }
+        
+        if (throwable.getCause() != null) {
+            return throwableMessageMatches(throwableMessagePattern, throwable.getCause());
+        }
+        
+        return false;
+        
+    }
     
 }
