@@ -33,7 +33,7 @@ import org.thymeleaf.testing.templateengine.testable.ITestSequence;
 
 
 
-public abstract class AbstractTextualTestReporter implements ITestReporter {
+public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
 
     private static final String NOW_FORMAT = "yyyy-MM-dd HH:mm:ss"; 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(NOW_FORMAT);
@@ -265,7 +265,7 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void testStart(final String executionId, final int nestingLevel, final ITest test, final String testName) {
+    public final void reportTestStart(final String executionId, final int nestingLevel, final ITest test, final String testName) {
         outputMessage(executionId, msgTestStart(test, testName), nestingLevel, false);
     }
     
@@ -278,11 +278,12 @@ public abstract class AbstractTextualTestReporter implements ITestReporter {
     
     
     
-    public final void testEnd(final String executionId, final int nestingLevel, final ITest test, 
+    public final void reportTestEnd(final String executionId, final int nestingLevel, final ITest test, 
             final String testName, final ITestResult result, final long executionTimeNanos) {
         outputMessage(executionId, msgTestEnd(test, testName, result, executionTimeNanos), nestingLevel, !result.isOK());
     }
 
+    
     @SuppressWarnings("unused")
     public String msgTestEnd(final ITest test, final String testName, final ITestResult result, final long executionTimeNanos) {
         

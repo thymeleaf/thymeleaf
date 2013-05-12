@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.testing.templateengine.report;
 
+import java.util.Set;
+
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.testable.ITestIterator;
 import org.thymeleaf.testing.templateengine.testable.ITestParallelizer;
@@ -50,5 +52,14 @@ public interface ITestReporter {
      */
     public void testStart(final String executionId, final int nestingLevel, final ITest test, final String testName);
     public void testEnd(final String executionId, final int nestingLevel, final ITest test, final String testName, final ITestResult result, final long executionTimeNanos);
+    
+    
+    
+    public boolean isAllOK();
+    public long getTotalExecutionTimeMs();
+    public Set<String> getAllTestNames();
+    public ITestResult getResultByTestName(final String testName);
+    public long getExecutionTimeMsByTestName(final String testName);
+
     
 }
