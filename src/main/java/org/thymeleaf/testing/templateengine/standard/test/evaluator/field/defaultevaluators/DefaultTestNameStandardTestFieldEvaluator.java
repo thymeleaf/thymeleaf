@@ -40,7 +40,7 @@ public final class DefaultTestNameStandardTestFieldEvaluator extends AbstractSta
             final String fieldName, final String fieldQualifier, final String fieldValue) {
 
         if (fieldValue != null && !(fieldValue.trim().equals(""))) {
-            return StandardTestEvaluatedField.forNoValue();
+            return StandardTestEvaluatedField.forSpecifiedValue(fieldValue.trim());
         }
         if (documentName != null && !(documentName.trim().equals(""))) {
             return StandardTestEvaluatedField.forSpecifiedValue(documentName.trim());

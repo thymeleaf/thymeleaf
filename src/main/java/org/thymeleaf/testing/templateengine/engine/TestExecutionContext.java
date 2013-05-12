@@ -39,21 +39,25 @@ final class TestExecutionContext {
     private int nestingLevel = 0;
     private TemplateEngine templateEngine = null;
     
-    private final TestNamer testNamer = new TestNamer();
+    private final TestNamer testNamer;
 
     
 
     TestExecutionContext() {
         super();
         this.executionId = randomAlphanumeric(ID_SIZE);
+        this.testNamer = new TestNamer();
     }
 
     
-    private TestExecutionContext(final String executionId, final TemplateEngine templateEngine, final int nestingLevel) {
+    private TestExecutionContext(
+            final String executionId, final TemplateEngine templateEngine, final int nestingLevel,
+            final TestNamer testNamer) {
         super();
         this.executionId = executionId;
         this.nestingLevel = nestingLevel;
-        this.templateEngine = templateEngine; 
+        this.templateEngine = templateEngine;
+        this.testNamer = testNamer;
     }
     
     
@@ -87,7 +91,7 @@ final class TestExecutionContext {
     
 
     public TestExecutionContext nest() {
-        return new TestExecutionContext(this.executionId, this.templateEngine, this.nestingLevel + 1);
+        return new TestExecutionContext(this.executionId, this.templateEngine, this.nestingLevel + 1, this.testNamer);
     }
     
     

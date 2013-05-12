@@ -22,7 +22,6 @@ package org.thymeleaf.testing.templateengine.engine;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.util.Validate;
 
@@ -34,10 +33,8 @@ import org.thymeleaf.util.Validate;
 final class TestNamer {
 
     
-    private final Map<String,ITest> testsByName = new HashMap<String,ITest>();
     private final Map<ITest,String> namesByTest = new HashMap<ITest,String>();
-    
-    private final Map<String,Integer> counterByClassName = new HashMap<String,Integer>();
+    private final Map<String,Integer> countersByName = new HashMap<String, Integer>();
 
     
     
@@ -58,38 +55,39 @@ final class TestNamer {
         
         if (test.hasName()) {
             
-            final String name = test.getName();
-
-            if (this.testsByName.containsKey(name)) {
-                throw new TestEngineExecutionException(
-                        "Duplicate test names: two or more different tests with the same name \"" + name + "\" exist");
+            String name = test.getName();
+            Integer idForName = this.countersByName.get(name);
+            if (idForName == null) {
+                idForName = Integer.valueOf(1);
+            } else {
+                idForName = Integer.valueOf(idForName.intValue() + 1);
             }
+
+            final String indexedName = String.format("%s-%03d", name, idForName);
             
-            this.testsByName.put(name, test);
-            this.namesByTest.put(test, name);
+            this.namesByTest.put(test, indexedName);
+            this.countersByName.put(name, idForName); // we don't use the indexed name, but the original one
             
-            return name;
+            return indexedName;
             
         }
             
         final String className = test.getClass().getSimpleName();
-        Integer counter = this.counterByClassName.get(className);
-        if (counter == null) {
-            counter = Integer.valueOf(1);
+        Integer idForName = this.countersByName.get(className);
+        if (idForName == null) {
+            idForName = Integer.valueOf(1);
+        } else {
+            idForName = Integer.valueOf(idForName.intValue() + 1);
         }
         
-        final String name = String.format("%s-%05d", className, counter);
+        final String indexedName = String.format("%s-%03d", className, idForName);
         
-        this.counterByClassName.put(className, Integer.valueOf(counter.intValue() + 1));
+        this.namesByTest.put(test, indexedName);
+        this.countersByName.put(className, idForName); // we don't use the indexed name, but the original one
         
-        this.testsByName.put(name, test);
-        this.namesByTest.put(test, name);
-        
-        return name;
+        return indexedName;
             
     }
-    
-    
     
     
     
