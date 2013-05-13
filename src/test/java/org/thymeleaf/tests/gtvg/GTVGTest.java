@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.tests.gtvg;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
@@ -42,6 +43,7 @@ public class GTVGTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("gtvg");
         
+        Assert.assertTrue(executor.getReporter().isAllOK());
         
     }
     

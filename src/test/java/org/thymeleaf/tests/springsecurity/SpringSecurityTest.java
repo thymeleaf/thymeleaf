@@ -21,6 +21,7 @@ package org.thymeleaf.tests.springsecurity;
 
 import java.util.Arrays;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
@@ -55,6 +56,8 @@ public class SpringSecurityTest {
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new SpringStandardDialect(), new SpringSecurityDialect()}));
         executor.execute("springsecurity");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
         
         
     }

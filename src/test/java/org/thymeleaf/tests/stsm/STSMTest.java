@@ -21,6 +21,7 @@ package org.thymeleaf.tests.stsm;
 
 import java.util.Arrays;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
@@ -48,6 +49,8 @@ public class STSMTest {
         executor.setProcessingContextBuilder(new STSMWebProcessingContextBuilder());
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
         executor.execute("stsm");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
         
         
     }
