@@ -83,8 +83,8 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
                 response, servletContext, locale, variables);
         
         
-        SecurityContextHolder.clearContext();
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_THREADLOCAL);
+        SecurityContextHolder.clearContext();
         
         final AuthenticationManager authenticationManager = 
                 (AuthenticationManager) applicationContext.getBean(this.authenticationManagerBeanName);
