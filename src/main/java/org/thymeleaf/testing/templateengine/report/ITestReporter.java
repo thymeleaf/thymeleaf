@@ -60,6 +60,6 @@ public interface ITestReporter {
     public Set<String> getAllTestNames();
     public ITestResult getResultByTestName(final String testName);
     public long getExecutionTimeMsByTestName(final String testName);
-
+    public void reset();
     
 }

@@ -152,6 +152,71 @@ Console reporting looks like this:
 It's easy to create new reporters that could write test results to different formats like CSV, Excel, etc. or even write results to a database.
 
 
+### Integrating with JUnit ###
+
+The easiest way to integrate with JUnit is to use JUnit tests to launch sets of tests, using afterwards JUnit's assertion mechanism to check results:
+
+```java
+final TestExecutor executor = new TestExecutor();
+executor.execute("mytestset");
+Assert.assertTrue(executor.getReporter().isAllOK());
+```
+
+...or the equivalent, more convenient:
+
+```java
+final TestExecutor executor = new TestExecutor();
+executor.execute("mytestset");
+Assert.assertTrue(executor.isAllOK());
+```
+
+Note that this *test set* can be a single test:
+
+```java
+final TestExecutor executor = new TestExecutor();
+executor.execute("mytestset/onetest.thtest");
+Assert.assertTrue(executor.isAllOK());
+```
+
+You can reuse your test executor by resetting its reporter after each execution:
+
+```java
+final TestExecutor executor = new TestExecutor();
+executor.execute("mytestset/onetest.thtest");
+Assert.assertTrue(executor.isAllOK());
+executor.getReporter().reset();
+```
+
+...or the equivalent, more convenient:
+
+```java
+final TestExecutor executor = new TestExecutor();
+executor.execute("mytestset/onetest.thtest");
+Assert.assertTrue(executor.isAllOK());
+executor.reset();
+```
+
+So you can use your executor for executing several *test sets* (or single tests) in the same JUnit test method:
+
+```java
+final TestExecutor executor = new TestExecutor();
+...
+executor.execute("mytestset/onetest.thtest");
+Assert.assertTrue(executor.isAllOK());
+executor.reset();
+...
+executor.execute("mytestset/twotest.thtest");
+Assert.assertTrue(executor.isAllOK());
+executor.reset();
+...
+executor.execute("anothertestset");
+Assert.assertTrue(executor.isAllOK());
+executor.reset();
+```
+
+Note that each execution of `executor.execute(...)` will create its own `TemplateEngine` instance and resolvers, an so no templates will be cached from one execution to the next.
+
+
 ## Testable Resolvers ##
 
 Standard test resolution is provided by means of two implementations of the `org.thymeleaf.testing.templateengine.resolver.ITestableResolver` interface, both living at the `org.thymeleaf.testing.templateengine.resolver` package. They are basically two flavors of the same resolution mechanism:

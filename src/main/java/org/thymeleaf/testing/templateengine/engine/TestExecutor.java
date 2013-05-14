@@ -404,6 +404,20 @@ public final class TestExecutor {
 
     
     
+    public final void reset() {
+        if (this.reporter != null) {
+            this.reporter.reset();
+        }
+    }
+    
+    
+    public final boolean isAllOK() {
+        if (this.reporter != null) {
+            this.reporter.isAllOK();
+        }
+        throw new TestEngineExecutionException(
+                "Cannot execute 'isAllOK()' call: no test reporter has been set");
+    }
     
     
     

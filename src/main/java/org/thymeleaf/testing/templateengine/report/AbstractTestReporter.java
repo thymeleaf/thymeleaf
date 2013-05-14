@@ -105,6 +105,14 @@ public abstract class AbstractTestReporter implements ITestReporter {
         }
         return value.longValue();
     }
-        
+    
+    
+    public synchronized void reset() {
+        this.resultByTestName.clear();
+        this.executionTimeMsByTestName.clear();
+        this.allOK = true;
+        this.totalExecutionTimeMs = 0L;
+    }
+
     
 }
