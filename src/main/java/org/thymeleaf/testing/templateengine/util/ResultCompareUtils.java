@@ -20,6 +20,8 @@
 package org.thymeleaf.testing.templateengine.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.attoparser.AttoParseException;
@@ -36,9 +38,8 @@ import org.thymeleaf.util.Validate;
 
 public class ResultCompareUtils {
 
-    
-
-    private static final MarkupAttoParser parser = new MarkupAttoParser();
+    private static final AttributeEventComparator ATTRIBUTE_EVENT_COMPARATOR = new AttributeEventComparator();
+    private static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
     
 
@@ -52,8 +53,8 @@ public class ResultCompareUtils {
         final TracingDetailedHtmlAttoHandler actualHandler = new TracingDetailedHtmlAttoHandler();
         
         try {
-            parser.parse(expected, expectedHandler);
-            parser.parse(actual, actualHandler);
+            PARSER.parse(expected, expectedHandler);
+            PARSER.parse(actual, actualHandler);
         } catch (final AttoParseException e) {
             throw new TestEngineExecutionException("Error while trying to compare results", e);
         }
@@ -121,16 +122,23 @@ public class ResultCompareUtils {
 
     private static List<TraceEvent> normalizeTrace(final List<TraceEvent> trace) {
         
-        // We will avoid a whitespace at the end of an open/standalone tag (at the end of its
-        // attribute sequence). In order to do so, we will only add whitespace events when
-        // the next attribute is found.
-        TraceEvent lastWhitespaceEvent = null;
-        
         final List<TraceEvent> newTrace = new ArrayList<TraceEvent>();
+
+        final List<TraceEvent> currentAttributeList = new ArrayList<TraceEvent>();
         
         for (final TraceEvent event : trace) {
             
             final String eventType = event.getType();
+            
+            if (!currentAttributeList.isEmpty()) {
+                if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType) &&
+                        !TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
+                    Collections.sort(currentAttributeList, ATTRIBUTE_EVENT_COMPARATOR);
+                    newTrace.addAll(currentAttributeList);
+                    currentAttributeList.clear();
+                }
+            }
+            
             if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventType)) {
                 // We need to compress all whitespace in order to perform a correct lenient check
                 final String text = event.getContent()[0];
@@ -140,19 +148,10 @@ public class ResultCompareUtils {
                                 TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT, 
                                 compressWhitespace(text)));
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
-                // We need to compress all whitespace in order to perform a correct lenient check
-                final String text = event.getContent()[0];
-                lastWhitespaceEvent = 
-                        new TraceEvent(
-                                event.getLine(), event.getCol(), 
-                                TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE, 
-                                compressWhitespace(text));
+                // These events are not relevant for result matching, so we just ignore them 
+                // (they represent mere inter-attribute whitespace)
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType)) {
-                if (lastWhitespaceEvent != null) {
-                    newTrace.add(lastWhitespaceEvent);
-                    lastWhitespaceEvent = null;
-                }
-                newTrace.add(event);
+                currentAttributeList.add(event);
             } else {
                 newTrace.add(event);
             }
@@ -190,6 +189,8 @@ public class ResultCompareUtils {
         return strBuilder.toString();
         
     }
+    
+    
     
     
     
@@ -251,6 +252,42 @@ public class ResultCompareUtils {
     }
     
     
+    
+    
+    private static class AttributeEventComparator implements Comparator<TraceEvent> {
+
+        
+        AttributeEventComparator() {
+            super();
+        }
+        
+        public int compare(final TraceEvent o1, final TraceEvent o2) {
+            
+            if (o1 == null) {
+                return -1;
+            }
+            if (o2 == null) {
+                return 1;
+            }
+            
+            final String name1 = 
+                    (o1.getContent().length > 0 ? o1.getContent()[0] : null);
+            final String name2 = 
+                    (o2.getContent().length > 0 ? o2.getContent()[0] : null);
+
+            if (name1 == null) {
+                return -1;
+            }
+            if (name2 == null) {
+                return 1;
+            }
+            
+            return name1.compareTo(name2);
+            
+        }
+        
+    }
+    
 
     
     
@@ -278,7 +315,7 @@ public class ResultCompareUtils {
     
     
     
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         
         final String m1 =
                 "<!DOCTYPE html>\n" +
