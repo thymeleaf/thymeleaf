@@ -165,7 +165,7 @@ public class Test extends AbstractTest {
                     "tests should always specify one");
         }
         
-        final String outputStr = outputEval.read();
+        final String outputStr = outputEval.readAsText();
         
         if (outputStr == null) {
             throw new TestEngineExecutionException(

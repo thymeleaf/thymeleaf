@@ -21,7 +21,8 @@ package org.thymeleaf.testing.templateengine.resource;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 import org.thymeleaf.util.Validate;
 
@@ -29,26 +30,37 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class FileTestResource implements ITestResource {
-
+public class FileTestResource extends AbstractTestResource {
+    
     
     private final File file;
+    private final String characterEncoding;
     
     
-    public FileTestResource(final File file) {
-        super();
-        Validate.notNull(file, "Resource file cannot be null");
+    public FileTestResource(final File file, final FileTestResourceResolver resolver) {
+        super(validateFile(file), resolver);
+        Validate.notNull(resolver, "Test resource resolver cannot be null");
         this.file = file;
+        this.characterEncoding = resolver.getCharacterEncoding();
     }
     
     
-    public String read() {
+    private static String validateFile(final File file) {
+        Validate.notNull(file, "Resource file cannot be null");
+        return file.getName();
+    }
+
+    
+    
+    public String readAsText() {
 
         synchronized (this.file) {
             BufferedReader reader = null;
             try {
                 
-                reader = new BufferedReader(new FileReader(this.file));
+                final FileInputStream is = new FileInputStream(this.file);
+                
+                reader = new BufferedReader(new InputStreamReader(is, this.characterEncoding));
                 final StringBuilder strBuilder = new StringBuilder();
                 String line = reader.readLine();
                 if (line != null) {
@@ -74,6 +86,7 @@ public class FileTestResource implements ITestResource {
                 }
             }
         }
+        
     }
     
 }

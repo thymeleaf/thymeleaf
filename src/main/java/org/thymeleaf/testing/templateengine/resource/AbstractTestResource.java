@@ -21,10 +21,29 @@ package org.thymeleaf.testing.templateengine.resource;
 
 
 
-public interface ITestResource {
 
-    public String getName();
-    public String readAsText();
-    public ITestResourceResolver getResolver();
+
+
+public abstract class AbstractTestResource implements ITestResource {
+
+    
+    private final String name;
+    private final ITestResourceResolver resolver;
+    
+    
+    public AbstractTestResource(final String name, final ITestResourceResolver resolver) {
+        super();
+        this.name = name;
+        this.resolver = resolver;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public ITestResourceResolver getResolver() {
+        return this.resolver;
+    }
+    
     
 }

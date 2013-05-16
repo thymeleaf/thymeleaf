@@ -23,19 +23,19 @@ package org.thymeleaf.testing.templateengine.resource;
 
 
 
-public class StringTestResource implements ITestResource {
+public class StringTestResource extends AbstractTestResource {
 
     
     private final String str;
     
     
-    public StringTestResource(final String str) {
-        super();
+    public StringTestResource(final String name, final String str, final ITestResourceResolver resolver) {
+        super(name, resolver);
         this.str = str;
     }
     
     
-    public String read() {
+    public String readAsText() {
         return this.str;
     }
     

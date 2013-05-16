@@ -20,13 +20,12 @@
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import java.io.File;
-import java.io.FileWriter;
 
-import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.FileTestResource;
+import org.thymeleaf.testing.templateengine.resource.FileTestResourceResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
-import org.thymeleaf.util.Validate;
+import org.thymeleaf.testing.templateengine.util.TempFileUtils;
 
 
 public abstract class AbstractTempFileResourceStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
@@ -45,58 +44,15 @@ public abstract class AbstractTempFileResourceStandardTestFieldEvaluator extends
             return StandardTestEvaluatedField.forNoValue();
         }
 
-        return StandardTestEvaluatedField.forSpecifiedValue(
-                    createResource(executionId, getFileSuffix(), fieldValue));      
+        final FileTestResourceResolver resolver = FileTestResourceResolver.UTF8_RESOLVER;
+
+        final File tempFile =
+                TempFileUtils.createTempFile(executionId, getFileSuffix(), fieldValue, resolver.getCharacterEncoding());
+        final ITestResource resource = new FileTestResource(tempFile, resolver);
+        
+        return StandardTestEvaluatedField.forSpecifiedValue(resource);      
         
     }
-
-    
-    
-    
-    protected ITestResource createResource(final String executionId, final String fileSuffix, final String contents) {
-
-        Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(fileSuffix, "File suffix cannot be null");
-        Validate.notNull(contents, "Contents cannot be null");
-        
-        try {
-
-            final String prefix = 
-                    "thymeleaf-testing" + 
-                    (executionId != null? ("-" + executionId) : "") + 
-                    (fileSuffix != null? ("-" + fileSuffix) : "") + "-";
-            
-            final File tempFile = File.createTempFile(prefix, null);
-            tempFile.deleteOnExit();
-            
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(tempFile, false);
-                writer.write(contents);
-            } catch (final Throwable t) {
-                throw new TestEngineExecutionException( 
-                        "Could not write contents of temporary file for execution \"" + executionId + "\"", t);
-            } finally {
-                try {
-                    if (writer != null) {
-                        writer.close();
-                    }
-                } catch (final Throwable ignored) {
-                    // ignored
-                }
-            }
-            
-            return new FileTestResource(tempFile);
-            
-        } catch (final TestEngineExecutionException e) {
-            throw e;
-        } catch (final Throwable t) {
-            throw new TestEngineExecutionException( 
-                    "Could not create temporary file for execution \"" + executionId + "\"", t);
-        }
-        
-    }
-    
     
     
     

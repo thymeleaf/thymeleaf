@@ -85,7 +85,7 @@ public class TestResourceResolver implements IResourceResolver {
                 return null;
             }
             
-            final String input = resource.read();
+            final String input = resource.readAsText();
             if (input == null) {
                 return null;
             }

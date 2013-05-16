@@ -21,10 +21,10 @@ package org.thymeleaf.testing.templateengine.resource;
 
 
 
-public interface ITestResource {
+public interface ITestResourceResolver {
 
-    public String getName();
-    public String readAsText();
-    public ITestResourceResolver getResolver();
+    
+    public ITestResource resolve(final String resourceName);
+    public ITestResource resolveRelative(final String resourceName, final ITestResource relative);
     
 }
