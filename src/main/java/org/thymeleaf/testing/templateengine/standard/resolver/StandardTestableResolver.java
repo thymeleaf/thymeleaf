@@ -20,16 +20,16 @@
 package org.thymeleaf.testing.templateengine.standard.resolver;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
+import org.thymeleaf.testing.templateengine.resource.ClassPathTestResourceResolver;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.builder.IStandardTestBuilder;
 import org.thymeleaf.testing.templateengine.standard.test.builder.StandardTestBuilder;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
@@ -52,7 +52,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public abstract class AbstractStandardLocalFileTestableResolver implements ITestableResolver {
+public class StandardTestableResolver implements ITestableResolver {
 
     public static enum TestableType { NONE, TEST, SEQUENCE, ITERATOR, PARALLELIZER }
 
@@ -74,6 +74,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile(PARALLELIZER_PATTERN_STR);
 
     
+    private ITestResourceResolver testResourceResolver = ClassPathTestResourceResolver.UTF8_RESOLVER;
     private IStandardTestReader testReader = new StandardTestReader();
     private IStandardTestEvaluator testEvaluator = new StandardTestEvaluator();
     private IStandardTestBuilder testBuilder = new StandardTestBuilder(this);
@@ -81,12 +82,21 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    protected AbstractStandardLocalFileTestableResolver() {
+    public StandardTestableResolver() {
         super();
     }
 
     
+
     
+    public final ITestResourceResolver getTestResourceResolver() {
+        return this.testResourceResolver;
+    }
+    
+    public final void setTestResourceResolver(final ITestResourceResolver testResourceResolver) {
+        Validate.notNull(testResourceResolver, "Test Resource Resolver cannot be null");
+        this.testResourceResolver = testResourceResolver;
+    }
 
     
     
@@ -129,12 +139,12 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(testableName, "Testable name cannot be null");
 
-        final File testableFile = getFileFromTestableName(executionId, testableName);
-        if (testableFile == null) {
+        final ITestResource resolver = this.testResourceResolver.resolve(testableName);
+        if (resolver == null) {
             return null;
         }
 
-        return resolveFile(executionId, testableFile);
+        return resolveResource(executionId, resolver);
 
     }    
 
@@ -173,19 +183,16 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     }
     
     
-    protected abstract File getFileFromTestableName(final String executionId, final String testableName);
-
     
-    
-    protected final ITestable resolveFile(final String executionId, final File file) {
+    protected final ITestable resolveResource(final String executionId, final ITestResource resource) {
         
-        if (file == null) {
+        if (resource == null) {
             return null;
         }
         
-        final String fileName = file.getName();
-        final boolean isDirectory = file.isDirectory();
-        if (!isDirectory && !file.isFile()) {
+        final String fileName = resource.getName();
+        final boolean isDirectory = resource.isDirectory();
+        if (!isDirectory && !resource.isFile()) {
             return null;
         }
         
@@ -196,10 +203,10 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         }
 
         switch (type) {
-            case TEST: return resolveAsTest(executionId, file);
-            case SEQUENCE: return resolveAsTestSequence(executionId, file);
-            case ITERATOR: return resolveAsTestIterator(executionId, file);
-            case PARALLELIZER: return resolveAsTestParallelizer(executionId, file);
+            case TEST: return resolveAsTest(executionId, resource);
+            case SEQUENCE: return resolveAsTestSequence(executionId, resource);
+            case ITERATOR: return resolveAsTestIterator(executionId, resource);
+            case PARALLELIZER: return resolveAsTestParallelizer(executionId, resource);
             case NONE: return null;
         }
         
@@ -212,12 +219,12 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    protected final ITest resolveAsTest(final String executionId, final File file) {
+    protected final ITest resolveAsTest(final String executionId, final ITestResource resource) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(file, "Test document file cannot be null");
+        Validate.notNull(resource, "Test resource cannot be null");
         
-        final String documentName = file.getName();
+        final String documentName = resource.getName();
 
         final IStandardTestReader reader = getTestReader();
         if (reader == null) {
@@ -232,21 +239,9 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
             throw new TestEngineExecutionException("A null test builder has been configured");
         }
         
-        
-        /*
-         * Initialization: create a java.io.Reader on the document file
-         */
-        final Reader documentReader;
-        try {
-            documentReader = new FileReader(file);
-        } catch (final FileNotFoundException e) {
-            throw new TestEngineExecutionException( 
-                    "Test file \"" + file.getAbsolutePath() + "\" does not exist");
-        }
-        
         final StandardTestRawData rawData;
         try {
-            rawData = reader.readTestDocument(executionId, documentName, documentReader);
+            rawData = reader.readTestDocument(executionId, documentName, resource);
         } catch (final IOException e) {
             throw new TestEngineExecutionException("Error reading document \"" + documentName + "\"", e);
         }
@@ -261,41 +256,41 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    protected ITestSequence resolveAsTestSequence(final String executionId, final File file) {
+    protected ITestSequence resolveAsTestSequence(final String executionId, final ITestResource resource) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(file, "File cannot be null");
+        Validate.notNull(resource, "Test resource be null");
         
-        final String fileName = file.getName();
+        final String fileName = resource.getName();
         
         final TestSequence testSequence = new TestSequence();
         testSequence.setName(fileName);
 
-        File indexFile = null;
+        ITestResource index = null;
         
-        if (!file.isDirectory()) {
-            if (!file.isFile()) {
+        if (!resource.isDirectory()) {
+            if (!resource.isFile()) {
                 return null;
             }
-            if (file.getName().toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
-                indexFile = file;
+            if (resource.getName().toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
+                index = resource;
             } else {
                 return null;
             }
         }
         
-        if (indexFile == null) {
-            for (final File fileInFolder : file.listFiles()) {
-                if (FOLDER_INDEX_FILE_NAME.equalsIgnoreCase(fileInFolder.getName())) {
-                    indexFile = fileInFolder;
+        if (index == null) {
+            for (final ITestResource resourceInFolder : resource.getContainedResources()) {
+                if (FOLDER_INDEX_FILE_NAME.equalsIgnoreCase(resourceInFolder.getName())) {
+                    index = resourceInFolder;
                     break;
                 }
             }
         }
         
-        if (indexFile == null) {
-            for (final File fileInFolder : file.listFiles()) {
-                final ITestable testable = resolveFile(executionId, fileInFolder);
+        if (index == null) {
+            for (final ITestResource resourceInFolder : resource.getContainedResources()) {
+                final ITestable testable = resolveResource(executionId, resourceInFolder);
                 if (testable != null) {
                     testSequence.addElement(testable);
                 }
@@ -303,93 +298,10 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
             return testSequence;
         }
         
-        
-        BufferedReader reader = null; 
-        try {
-            
-            reader = new BufferedReader(new FileReader(indexFile));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                
-                if (line.trim().equals("") || line.startsWith("#")) {
-                    // Empty or commented out line
-                    continue;
-                }
-                
-                final String[] lineComponents = parseTestIndexLine(line);
-                if (lineComponents == null) {
-                    throw new TestEngineExecutionException(
-                            "Error parsing test index file line: '" + line + "'"); 
-                }
-                
-                final String testFileName = lineComponents[0];
-                final String testSpec = lineComponents[1];
-                
-                final File testFile =
-                        new File(
-                            (indexFile.getParentFile() != null? indexFile.getParentFile().getAbsolutePath() : "") +
-                            File.separator + testFileName); 
 
-                ITestable testable = resolveFile(executionId, testFile);
-                if (testable == null) {
-                    throw new TestEngineExecutionException(
-                            "Error resolving file '" + testFileName + "' " +
-                    		"specified in test index file: '" + indexFile.getAbsolutePath() + "'"); 
-                }
-                
-                if (testSpec != null) {
-                    
-                    final Matcher iterMatcher = ITERATOR_SUFFIX_PATTERN.matcher(testSpec);
-                    if (iterMatcher.matches()) {
-                        
-                        final int iterations = Integer.parseInt(iterMatcher.group(1));
-                        final TestIterator testIterator = new TestIterator(testable, iterations);
-                        testable = testIterator;
-                        
-                    } else {
-                    
-                        final Matcher parMatcher = PARALLELIZER_SUFFIX_PATTERN.matcher(testSpec);
-                        if (parMatcher.matches()) {
-                            
-                            final int numThreads = Integer.parseInt(parMatcher.group(1));
-                            final TestParallelizer testParallelizer = new TestParallelizer(testable, numThreads);
-                            testable = testParallelizer;
-                            
-                        } else {
-                            
-                            throw new TestEngineExecutionException(
-                                    "Error resolving file '" + testFileName + "' " +
-                                    "specified in test index file: '" + indexFile.getAbsolutePath() + "'. " +
-                            		"Unrecognized specification '[" + testSpec + "]'");
-                            
-                        }
-                        
-                    }
-                    
-                }
-                
-                testSequence.addElement(testable);
-                
-            }   
-            
-            return testSequence;
-            
-        } catch (final Exception e) {
-            throw new TestEngineExecutionException(
-                    "Exception raised while reading test index file '" + indexFile.getAbsolutePath() + "'", e);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final Throwable ignored) {
-                    // ignored
-                }
-            }
-        }
-        
-        
-        
-        
+        readIndex(executionId, index, testSequence); 
+
+        return testSequence;
         
     }
     
@@ -422,12 +334,12 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    protected ITestIterator resolveAsTestIterator(final String executionId, final File file) {
+    protected ITestIterator resolveAsTestIterator(final String executionId, final ITestResource resource) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(file, "File cannot be null");
+        Validate.notNull(resource, "Test resource cannot be null");
         
-        final String fileName = file.getName();
+        final String fileName = resource.getName();
         final Matcher iterMatcher = ITERATOR_PATTERN.matcher(fileName);
         if (!iterMatcher.matches()) {
             throw new TestEngineExecutionException(
@@ -436,7 +348,7 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         
         final int iterations = Integer.parseInt(iterMatcher.group(2));
 
-        final ITestSequence iteratedSequence = resolveAsTestSequence(executionId, file);
+        final ITestSequence iteratedSequence = resolveAsTestSequence(executionId, resource);
         
         return new TestIterator(iteratedSequence, iterations);
         
@@ -444,12 +356,12 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
     
     
     
-    protected ITestParallelizer resolveAsTestParallelizer(final String executionId, final File file) {
+    protected ITestParallelizer resolveAsTestParallelizer(final String executionId, final ITestResource resource) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(file, "File cannot be null");
+        Validate.notNull(resource, "Test resource cannot be null");
         
-        final String fileName = file.getName();
+        final String fileName = resource.getName();
         final Matcher parMatcher = PARALLELIZER_PATTERN.matcher(fileName);
         if (!parMatcher.matches()) {
             throw new TestEngineExecutionException(
@@ -457,9 +369,100 @@ public abstract class AbstractStandardLocalFileTestableResolver implements ITest
         }
         final int numThreads = Integer.parseInt(parMatcher.group(2));
 
-        final ITestSequence iteratedSequence = resolveAsTestSequence(executionId, file);
+        final ITestSequence iteratedSequence = resolveAsTestSequence(executionId, resource);
         
         return new TestParallelizer(iteratedSequence, numThreads);
+        
+    }
+    
+    
+    
+    
+    private void readIndex(final String executionId, final ITestResource indexResource, final TestSequence testSequence) {
+
+        
+        BufferedReader reader = null; 
+        try {
+            
+            final String indexContents = indexResource.readAsText();
+            
+            reader = new BufferedReader(new StringReader(indexContents));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                
+                if (line.trim().equals("") || line.startsWith("#")) {
+                    // Empty or commented out line
+                    continue;
+                }
+                
+                final String[] lineComponents = parseTestIndexLine(line);
+                if (lineComponents == null) {
+                    throw new TestEngineExecutionException(
+                            "Error parsing test index file line: '" + line + "'"); 
+                }
+                
+                final String testResourceName = lineComponents[0];
+                final String testSpec = lineComponents[1];
+                
+                final ITestResource testResource =
+                        indexResource.getResolver().resolveRelative(testResourceName, indexResource);
+
+                ITestable testable = resolveResource(executionId, testResource);
+                if (testable == null) {
+                    throw new TestEngineExecutionException(
+                            "Error resolving file '" + testResourceName + "' " +
+                            "specified in test index file: '" + indexResource.getName() + "'"); 
+                }
+                
+                if (testSpec != null) {
+                    
+                    final Matcher iterMatcher = ITERATOR_SUFFIX_PATTERN.matcher(testSpec);
+                    if (iterMatcher.matches()) {
+                        
+                        final int iterations = Integer.parseInt(iterMatcher.group(1));
+                        final TestIterator testIterator = new TestIterator(testable, iterations);
+                        testable = testIterator;
+                        
+                    } else {
+                    
+                        final Matcher parMatcher = PARALLELIZER_SUFFIX_PATTERN.matcher(testSpec);
+                        if (parMatcher.matches()) {
+                            
+                            final int numThreads = Integer.parseInt(parMatcher.group(1));
+                            final TestParallelizer testParallelizer = new TestParallelizer(testable, numThreads);
+                            testable = testParallelizer;
+                            
+                        } else {
+                            
+                            throw new TestEngineExecutionException(
+                                    "Error resolving file '" + testResourceName + "' " +
+                                    "specified in test index file: '" + indexResource.getName() + "'. " +
+                                    "Unrecognized specification '[" + testSpec + "]'");
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+                testSequence.addElement(testable);
+                
+            }   
+        
+            
+        } catch (final Exception e) {
+            throw new TestEngineExecutionException(
+                    "Exception raised while reading test index file '" + indexResource.getName() + "'", e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final Throwable ignored) {
+                    // ignored
+                }
+            }
+        }
+        
         
     }
     

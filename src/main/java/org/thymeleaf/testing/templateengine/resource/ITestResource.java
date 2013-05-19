@@ -19,12 +19,18 @@
  */
 package org.thymeleaf.testing.templateengine.resource;
 
+import java.util.List;
+
 
 
 public interface ITestResource {
 
     public String getName();
     public String readAsText();
-    public ITestResourceResolver getResolver();
+    
+    public boolean isContainer();
+    public List<ITestResource> getContainedResources();
+    
+    public ITestResource resolveRelative(final String resourceNames);
     
 }

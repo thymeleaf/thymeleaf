@@ -22,7 +22,6 @@ package org.thymeleaf.testing.templateengine.resource;
 
 
 public interface ITestResourceResolver {
-
     
     public ITestResource resolve(final String resourceName);
     public ITestResource resolveRelative(final String resourceName, final ITestResource relative);

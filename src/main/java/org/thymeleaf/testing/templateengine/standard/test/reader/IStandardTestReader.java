@@ -20,8 +20,8 @@
 package org.thymeleaf.testing.templateengine.standard.test.reader;
 
 import java.io.IOException;
-import java.io.Reader;
 
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
 
@@ -30,7 +30,7 @@ public interface IStandardTestReader {
 
     
     public StandardTestRawData readTestDocument(
-            final String executionId, final String documentName, final Reader documentReader) 
+            final String executionId, final String documentName, final ITestResource resource) 
             throws IOException;
     
 }

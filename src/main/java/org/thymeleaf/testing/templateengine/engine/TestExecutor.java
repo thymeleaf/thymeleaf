@@ -44,7 +44,7 @@ import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionExcepti
 import org.thymeleaf.testing.templateengine.report.ConsoleTestReporter;
 import org.thymeleaf.testing.templateengine.report.ITestReporter;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
-import org.thymeleaf.testing.templateengine.standard.resolver.StandardClassPathTestableResolver;
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardTestableResolver;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.testable.ITestIterator;
 import org.thymeleaf.testing.templateengine.testable.ITestParallelizer;
@@ -60,7 +60,7 @@ import org.thymeleaf.util.Validate;
 public final class TestExecutor {
 
     public static final ITestableResolver DEFAULT_TESTABLE_RESOLVER =
-            new StandardClassPathTestableResolver();
+            new StandardTestableResolver();
     public static final IProcessingContextBuilder DEFAULT_PROCESSING_CONTEXT_BUILDER =
             new WebProcessingContextBuilder();
     public static final List<IDialect> DEFAULT_DIALECTS = 

@@ -23,6 +23,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.thymeleaf.util.Validate;
 
@@ -37,11 +40,24 @@ public class FileTestResource extends AbstractTestResource {
     private final String characterEncoding;
     
     
-    public FileTestResource(final File file, final FileTestResourceResolver resolver) {
-        super(validateFile(file), resolver);
-        Validate.notNull(resolver, "Test resource resolver cannot be null");
+
+    
+    public static ITestResource resolve(final String resourceName, final String characterEncoding) {
+        if (resourceName == null) {
+            return null;
+        }
+        final File file = new File(resourceName);
+        return new FileTestResource(file, characterEncoding);
+    }
+    
+
+    
+    
+    public FileTestResource(final File file, final String characterEncoding) {
+        super(validateFile(file));
+        Validate.notNull(characterEncoding, "Character encoding cannot be null");
         this.file = file;
-        this.characterEncoding = resolver.getCharacterEncoding();
+        this.characterEncoding = characterEncoding;
     }
     
     
@@ -88,5 +104,36 @@ public class FileTestResource extends AbstractTestResource {
         }
         
     }
+
+
+    
+    public boolean isContainer() {
+        return this.file.isDirectory();
+    }
+    
+    
+
+    public List<ITestResource> getContainedResources() {
+        if (this.file.isDirectory()) {
+            final List<ITestResource> containedResources = new ArrayList<ITestResource>();
+            final File[] fileList = this.file.listFiles();
+            for (final File containedFile : fileList) {
+                containedResources.add(new FileTestResource(containedFile, this.characterEncoding));
+            }
+            return Collections.unmodifiableList(containedResources);
+        }
+        return Collections.emptyList();
+    }
+    
+    
+    
+    public ITestResource resolveRelative(final String resourceName) {
+        if (resourceName == null) {
+            return null;
+        }
+        final File file = new File(resourceName);
+        return new FileTestResource(file, this.characterEncoding);
+    }
+
     
 }

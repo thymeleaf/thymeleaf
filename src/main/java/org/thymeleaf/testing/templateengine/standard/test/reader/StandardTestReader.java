@@ -21,10 +21,11 @@ package org.thymeleaf.testing.templateengine.standard.test.reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 import org.thymeleaf.util.Validate;
 
@@ -58,14 +59,15 @@ public class StandardTestReader implements IStandardTestReader {
     
     
     public StandardTestRawData readTestDocument(
-            final String executionId, final String documentName, final Reader documentReader) 
+            final String executionId, final String documentName, final ITestResource resource) 
             throws IOException {
 
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(documentName, "Document name cannot be null");
-        Validate.notNull(documentReader, "Document reader cannot be null");
-        
-        final BufferedReader r = new BufferedReader(documentReader);
+        Validate.notNull(resource, "Test reader cannot be null");
+ 
+        final String resourceContents = resource.readAsText();
+        final BufferedReader r = new BufferedReader(new StringReader(resourceContents));
 
         final StandardTestRawData data = new StandardTestRawData(documentName);
         

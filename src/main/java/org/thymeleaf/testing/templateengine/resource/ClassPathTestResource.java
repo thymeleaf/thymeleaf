@@ -20,8 +20,13 @@
 package org.thymeleaf.testing.templateengine.resource;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
@@ -33,12 +38,33 @@ import org.thymeleaf.util.Validate;
 public final class ClassPathTestResource extends AbstractTestResource {
 
     private final String characterEncoding;
+    private final URL resourceURL;
+    private final boolean container;
+
     
     
-    public ClassPathTestResource(final String classPathResourceName, final ClassPathTestResourceResolver resolver) {
-        super(classPathResourceName, resolver);
-        Validate.notNull(resolver, "Test resource resolver cannot be null");
-        this.characterEncoding = resolver.getCharacterEncoding();
+    public static ITestResource resolve(final String resourceName, final String characterEncoding) {
+        if (resourceName == null) {
+            return null;
+        }
+        return new ClassPathTestResource(resourceName, characterEncoding);
+    }
+    
+
+
+    
+    public ClassPathTestResource(final String classPathResourceName, final String characterEncoding) {
+        
+        super(classPathResourceName);
+        Validate.notNull(classPathResourceName, "ClassPath resource name cannot be null");
+        
+        this.characterEncoding = characterEncoding;
+        
+        final ClassLoader cl = 
+                ClassLoaderUtils.getClassLoader(ClassPathTestResource.class);
+        this.resourceURL = cl.getResource(classPathResourceName);
+        this.container = new File(this.resourceURL.toURI());
+        
     }
     
     
@@ -82,5 +108,38 @@ public final class ClassPathTestResource extends AbstractTestResource {
         }
 
     }
+    
+
+    
+    public boolean isContainer() {
+        
+        return this.file.isDirectory();
+    }
+    
+    
+
+    public List<ITestResource> getContainedResources() {
+        if (this.file.isDirectory()) {
+            final List<ITestResource> containedResources = new ArrayList<ITestResource>();
+            final File[] fileList = this.file.listFiles();
+            for (final File containedFile : fileList) {
+                containedResources.add(new FileTestResource(containedFile, this.characterEncoding));
+            }
+            return Collections.unmodifiableList(containedResources);
+        }
+        return Collections.emptyList();
+    }
+    
+    
+    
+    public ITestResource resolveRelative(final String resourceName) {
+        if (resourceName == null) {
+            return null;
+        }
+        final File file = new File(resourceName);
+        return new FileTestResource(file, this.characterEncoding);
+    }
+
+    
     
 }
