@@ -19,65 +19,74 @@
  */
 package org.thymeleaf.testing.templateengine.resource;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;
+import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
 
 
 
 
-public class FileTestResource 
+public final class ClassPathFileTestResource 
         extends AbstractTestResource implements ITestResourceItem {
-    
-    
-    private final File resourceFile;
+
     private final String characterEncoding;
+    private final URL resourceURL;
 
     
-    public FileTestResource(final File file, final String characterEncoding) {
-        super(validateFile(file));
+    public ClassPathFileTestResource(
+            final String resourceName, final String characterEncoding) {
+        
+        super(resourceName);
+        
+        Validate.notNull(resourceName, "Resource name cannot be null");
         Validate.notNull(characterEncoding, "Character encoding cannot be null");
-        this.resourceFile = file;
+        
         this.characterEncoding = characterEncoding;
+        
+        final ClassLoader cl = 
+                ClassLoaderUtils.getClassLoader(ClassPathFileTestResource.class);
+        this.resourceURL = cl.getResource(resourceName);
+
+        if (this.resourceURL == null) {
+            throw new TestEngineExecutionException(
+                    "Error while reading classpath resource \"" + resourceName + "\". " +
+            		"Could not obtain resource as URL.");
+        }
+        
     }
     
-    
-    private static String validateFile(final File file) {
-        Validate.notNull(file, "Resource file cannot be null");
-        return file.getName();
-    }
 
     
     
-    
-    
-    public File getResourceFile() {
-        return this.resourceFile;
-    }
-
     public String getCharacterEncoding() {
         return this.characterEncoding;
     }
 
-    
+    public URL getResourceURL() {
+        return this.resourceURL;
+    }
+
+
     
 
     public String readAsText() {
         try {
-            final InputStream is = new FileInputStream(this.resourceFile);
+            final InputStream is = this.resourceURL.openStream();
             return ResourceUtils.read(is, this.characterEncoding);
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
-                    "Error reading file resource: \"" + getName() + "\"");
+                    "Error reading class path resource: \"" + getName() + "\" from URL " +
+                    "\"" + this.resourceURL + "\"");
         }
     }
-
     
+
+
     
     
 }

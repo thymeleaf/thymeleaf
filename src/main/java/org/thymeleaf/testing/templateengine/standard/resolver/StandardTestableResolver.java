@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
-import org.thymeleaf.testing.templateengine.resource.ClassPathTestResourceResolver;
+import org.thymeleaf.testing.templateengine.resource.StandardTestResourceResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.builder.IStandardTestBuilder;
@@ -74,7 +74,7 @@ public class StandardTestableResolver implements ITestableResolver {
     private static Pattern PARALLELIZER_PATTERN = Pattern.compile(PARALLELIZER_PATTERN_STR);
 
     
-    private ITestResourceResolver testResourceResolver = ClassPathTestResourceResolver.UTF8_RESOLVER;
+    private ITestResourceResolver testResourceResolver = StandardTestResourceResolver.UTF8_RESOLVER;
     private IStandardTestReader testReader = new StandardTestReader();
     private IStandardTestEvaluator testEvaluator = new StandardTestEvaluator();
     private IStandardTestBuilder testBuilder = new StandardTestBuilder(this);

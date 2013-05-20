@@ -22,8 +22,8 @@ package org.thymeleaf.testing.templateengine.resource;
 
 
 
-public interface ITestResource {
+public interface ITestResourceItem extends ITestResource {
 
-    public String getName();
+    public String readAsText();
     
 }

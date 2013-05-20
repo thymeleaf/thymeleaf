@@ -25,7 +25,7 @@ import org.thymeleaf.testing.templateengine.resource.FileTestResource;
 import org.thymeleaf.testing.templateengine.resource.FileTestResourceResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
-import org.thymeleaf.testing.templateengine.util.TempFileUtils;
+import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 
 
 public abstract class AbstractTempFileResourceStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
@@ -47,7 +47,7 @@ public abstract class AbstractTempFileResourceStandardTestFieldEvaluator extends
         final FileTestResourceResolver resolver = FileTestResourceResolver.UTF8_RESOLVER;
 
         final File tempFile =
-                TempFileUtils.createTempFile(executionId, getFileSuffix(), fieldValue, resolver.getCharacterEncoding());
+                ResourceUtils.createTempFile(executionId, getFileSuffix(), fieldValue, resolver.getCharacterEncoding());
         final ITestResource resource = new FileTestResource(tempFile, resolver);
         
         return StandardTestEvaluatedField.forSpecifiedValue(resource);      

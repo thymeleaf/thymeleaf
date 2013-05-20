@@ -19,11 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.resource;
 
+import java.util.List;
 
 
 
-public interface ITestResource {
+public interface ITestResourceContainer extends ITestResource {
 
-    public String getName();
+    public List<ITestResource> getContainedResources();
     
 }

@@ -19,18 +19,23 @@
  */
 package org.thymeleaf.testing.templateengine.resource;
 
+import org.thymeleaf.util.Validate;
 
 
 
 
-public class StringTestResource extends AbstractTestResource {
+
+public class StringTestResource 
+        extends AbstractTestResource implements ITestResourceItem {
 
     
     private final String str;
     
     
-    public StringTestResource(final String name, final String str, final ITestResourceResolver resolver) {
-        super(name, resolver);
+    public StringTestResource(final String name, final String str) {
+        super(name);
+        Validate.notNull(name, "Name cannot be null");
+        Validate.notNull(str, "Resource string cannot be null");
         this.str = str;
     }
     

@@ -20,31 +20,43 @@
 package org.thymeleaf.testing.templateengine.resource;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 import org.thymeleaf.util.Validate;
 
 
 
 
 
-public class FileTestResource 
-        extends AbstractTestResource implements ITestResourceItem {
+public class FolderTestResource 
+        extends AbstractTestResource implements ITestResourceContainer {
     
     
     private final File resourceFile;
     private final String characterEncoding;
 
+
     
-    public FileTestResource(final File file, final String characterEncoding) {
+    public FolderTestResource(final File file, final String characterEncoding) {
+        
         super(validateFile(file));
+        
         Validate.notNull(characterEncoding, "Character encoding cannot be null");
+        
         this.resourceFile = file;
         this.characterEncoding = characterEncoding;
+        
+        if (!this.resourceFile.isDirectory()) {
+            throw new TestEngineExecutionException(
+                    "Error while reading folder resource container \"" + this.resourceFile.getName() + "\". " +
+            		"Resource is NOT a folder.");
+        }
+        
     }
+
     
     
     private static String validateFile(final File file) {
@@ -52,9 +64,9 @@ public class FileTestResource
         return file.getName();
     }
 
+
     
-    
-    
+
     
     public File getResourceFile() {
         return this.resourceFile;
@@ -64,17 +76,22 @@ public class FileTestResource
         return this.characterEncoding;
     }
 
-    
+
     
 
-    public String readAsText() {
-        try {
-            final InputStream is = new FileInputStream(this.resourceFile);
-            return ResourceUtils.read(is, this.characterEncoding);
-        } catch (final Exception e) {
-            throw new TestEngineExecutionException(
-                    "Error reading file resource: \"" + getName() + "\"");
+    public List<ITestResource> getContainedResources() {
+        
+        final List<ITestResource> containedResources = new ArrayList<ITestResource>();
+        final File[] fileList = this.resourceFile.listFiles();
+        for (final File containedFile : fileList) {
+            final ITestResource containedResource =
+                    (containedFile.isDirectory()?
+                            new FolderTestResource(containedFile, this.characterEncoding) :
+                            new FileTestResource(containedFile, this.characterEncoding)); 
+            containedResources.add(containedResource);
         }
+        return Collections.unmodifiableList(containedResources);
+
     }
 
     

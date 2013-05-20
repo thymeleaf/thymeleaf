@@ -19,9 +19,14 @@
  */
 package org.thymeleaf.testing.templateengine.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
@@ -32,7 +37,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public final class TempFileUtils {
+public final class ResourceUtils {
 
     
     
@@ -80,7 +85,43 @@ public final class TempFileUtils {
     
     
     
-    private TempFileUtils() {
+    
+    public static String read(final InputStream is, final String characterEncoding) 
+            throws UnsupportedEncodingException, IOException {
+
+        BufferedReader reader = null;
+        try {
+            
+            reader = new BufferedReader(new InputStreamReader(is, characterEncoding));
+            final StringBuilder strBuilder = new StringBuilder();
+            String line = reader.readLine();
+            if (line != null) {
+                strBuilder.append(line);
+                while ((line = reader.readLine()) != null) {
+                    strBuilder.append('\n');
+                    strBuilder.append(line);
+                }
+            }
+
+            return strBuilder.toString();
+            
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (final Throwable ignored) {
+                // ignored
+            }
+        }
+
+    }
+    
+    
+    
+    
+    
+    private ResourceUtils() {
         super();
     }
     
