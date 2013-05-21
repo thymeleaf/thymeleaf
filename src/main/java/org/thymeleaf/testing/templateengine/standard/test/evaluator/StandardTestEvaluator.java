@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestFieldNaming;
@@ -60,7 +61,7 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(rawData, "Data cannot be null");
 
-        final StandardTestEvaluatedData data = new StandardTestEvaluatedData(rawData.getDocumentName());
+        final StandardTestEvaluatedData data = new StandardTestEvaluatedData(rawData.getTestResource());
 
         final Set<StandardTestFieldEvaluationSpec> fieldSpecSet = getFieldSpecSet();
         
@@ -98,8 +99,8 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
                             // Value returned is not of the correct class
                             throw new TestEngineExecutionException(
                                     "A value of class \"" + value.getClass().getName() + "\" resulted from evaluation " +
-                                    "of field \"" + fieldName + "\" in document " +
-                                    "\"" + data.getDocumentName() + "\", but value was expected to be of class " +
+                                    "of field \"" + fieldName + "\" in " +
+                                    "\"" + data.getTestResource().getName() + "\", but value was expected to be of class " +
                                     "\"" + valueClass.getName() + "\"");
                         }
                         
@@ -143,7 +144,7 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
             if (!resolvedFieldSpecs.containsKey(fieldName)) {
                 throw new TestEngineExecutionException(
                             "A field called \"" + fieldName +"\" " +
-                            "has been found in document \"" + data.getDocumentName() + "\", " +
+                            "has been found in \"" + data.getTestResource().getName() + "\", " +
                             "but test field specifications do not allow field \"" + fieldName + "\"");
             }
 
@@ -153,7 +154,7 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
             if (fieldEvaluatorValue != null) {
                 
                 final StandardTestFieldEvaluationSpec newSpec =
-                        initializeFieldSpec(data.getDocumentName(), fieldName, fieldEvaluatorValue);
+                        initializeFieldSpec(data.getTestResource(), fieldName, fieldEvaluatorValue);
                 resolvedFieldSpecs.put(fieldName, newSpec);
                 
             }
@@ -170,7 +171,7 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
     
     
     private static StandardTestFieldEvaluationSpec initializeFieldSpec(
-            final String documentName, final String fieldName, final String fieldValue){
+            final ITestResource resource, final String fieldName, final String fieldValue){
         
         final String className = fieldValue.trim();
         try {
@@ -181,8 +182,8 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
             
             if (!IStandardTestFieldEvaluator.class.isAssignableFrom(evaluatorClass)) {
                 throw new TestEngineExecutionException(
-                        "Specification found for field \"" + fieldName + "\" at document " +
-                        "\"" + documentName + "\" selects class \"" + className + "\" as evaluator " +
+                        "Specification found for field \"" + fieldName + "\" in " +
+                        "\"" + resource.getName() + "\" selects class \"" + className + "\" as evaluator " +
                         "implementation. But this class does not implement the " + 
                         IStandardTestFieldEvaluator.class.getName() + " interface");
             }
@@ -199,8 +200,8 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
             throw e;
         } catch (final Throwable t) {
             throw new TestEngineExecutionException(
-                    "Error while initializing evaluator for field \"" + fieldName + "\" at file " +
-                    "\"" + documentName + "\"", t);
+                    "Error while initializing evaluator for field \"" + fieldName + "\" in " +
+                    "\"" + resource.getName() + "\"", t);
         }
         
         

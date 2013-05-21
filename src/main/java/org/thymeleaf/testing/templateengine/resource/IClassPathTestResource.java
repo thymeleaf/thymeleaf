@@ -17,26 +17,16 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
+package org.thymeleaf.testing.templateengine.resource;
+
+import java.net.URL;
 
 
 
 
-public class DefaultOutputStandardTestFieldEvaluator extends AbstractTestResourceStandardTestFieldEvaluator {
+public interface IClassPathTestResource extends ITestResource {
 
-    
-    public static final DefaultOutputStandardTestFieldEvaluator INSTANCE = new DefaultOutputStandardTestFieldEvaluator();
-
-    
-    private DefaultOutputStandardTestFieldEvaluator() {
-        super();
-    }
-
-    
-    @Override
-    protected String getFileSuffix() {
-        return "OUTPUT";
-    }
-
+    public URL getResourceURL();
+    public String getCharacterEncoding();
     
 }

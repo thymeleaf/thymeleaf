@@ -22,7 +22,7 @@ package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defau
 
 
 
-public class DefaultInputStandardTestFieldEvaluator extends AbstractTempFileResourceStandardTestFieldEvaluator {
+public class DefaultInputStandardTestFieldEvaluator extends AbstractTestResourceStandardTestFieldEvaluator {
 
     
     public static final DefaultInputStandardTestFieldEvaluator INSTANCE = new DefaultInputStandardTestFieldEvaluator();

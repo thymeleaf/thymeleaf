@@ -25,7 +25,9 @@ import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceItem;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 import org.thymeleaf.util.Validate;
 
@@ -58,18 +60,23 @@ public class StandardTestReader implements IStandardTestReader {
     
     
     
-    public StandardTestRawData readTestDocument(
-            final String executionId, final String documentName, final ITestResource resource) 
+    public StandardTestRawData readTestResource(
+            final String executionId, final ITestResource resource) 
             throws IOException {
 
         Validate.notNull(executionId, "Execution ID cannot be null");
-        Validate.notNull(documentName, "Document name cannot be null");
-        Validate.notNull(resource, "Test reader cannot be null");
+        Validate.notNull(resource, "Resource cannot be null");
  
-        final String resourceContents = resource.readAsText();
+        if (!(resource instanceof ITestResourceItem)) {
+            throw new TestEngineExecutionException(
+                    "Document resource specified for test \"" + resource.getName() + "\" which is a container, not an item " +
+                    "(maybe a folder?)");
+        }
+        
+        final String resourceContents = ((ITestResourceItem)resource).readAsText();
         final BufferedReader r = new BufferedReader(new StringReader(resourceContents));
 
-        final StandardTestRawData data = new StandardTestRawData(documentName);
+        final StandardTestRawData data = new StandardTestRawData(resource);
         
         try {
             

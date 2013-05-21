@@ -45,11 +45,11 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class TestTemplateResolver implements ITemplateResolver {
+public class TestEngineTemplateResolver implements ITemplateResolver {
 
     public static final String TEST_TEMPLATE_CONVERSION_CHARSET = "UTF-8";
     
-    private static final Logger logger = LoggerFactory.getLogger(TestTemplateResolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestEngineTemplateResolver.class);
 
     
     private String name = null;
@@ -61,7 +61,7 @@ public class TestTemplateResolver implements ITemplateResolver {
     private volatile boolean initialized;
     
                    
-    public TestTemplateResolver() {
+    public TestEngineTemplateResolver() {
         super();
         this.initialized = false;
     }
@@ -274,8 +274,8 @@ public class TestTemplateResolver implements ITemplateResolver {
         allInputs.put(testName, test.getInput());
         
         // The resource resolver is created instead of reusing one for concurrency reasons 
-        final TestResourceResolver resourceResolver = 
-                new TestResourceResolver(allInputs, TEST_TEMPLATE_CONVERSION_CHARSET);
+        final TestEngineResourceResolver resourceResolver = 
+                new TestEngineResourceResolver(allInputs, TEST_TEMPLATE_CONVERSION_CHARSET);
         
         // Compute validity according to the "inputCacheable" property established at the test
         final ITemplateResolutionValidity validity =

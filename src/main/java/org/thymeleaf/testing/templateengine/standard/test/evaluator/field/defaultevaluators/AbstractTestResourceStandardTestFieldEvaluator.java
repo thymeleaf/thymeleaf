@@ -21,36 +21,41 @@ package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defau
 
 import java.io.File;
 
-import org.thymeleaf.testing.templateengine.resource.FileTestResource;
-import org.thymeleaf.testing.templateengine.resource.FileTestResourceResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.LocalFileTestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 
 
-public abstract class AbstractTempFileResourceStandardTestFieldEvaluator extends AbstractStandardTestFieldEvaluator {
+public abstract class AbstractTestResourceStandardTestFieldEvaluator 
+        extends AbstractStandardTestFieldEvaluator {
 
     
-    protected AbstractTempFileResourceStandardTestFieldEvaluator() {
+    protected AbstractTestResourceStandardTestFieldEvaluator() {
         super(ITestResource.class);
     }
 
 
     @Override
-    protected final StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+    protected final StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
 
         if (fieldValue == null || fieldValue.trim().equals("")) {
             return StandardTestEvaluatedField.forNoValue();
         }
 
-        final FileTestResourceResolver resolver = FileTestResourceResolver.UTF8_RESOLVER;
-
-        final File tempFile =
-                ResourceUtils.createTempFile(executionId, getFileSuffix(), fieldValue, resolver.getCharacterEncoding());
-        final ITestResource resource = new FileTestResource(tempFile, resolver);
+        String value = fieldValue.trim();
         
-        return StandardTestEvaluatedField.forSpecifiedValue(resource);      
+        if (value.startsWith("(") && value.endsWith(")")) {
+            value = value.substring(0, value.length() - 2);
+            
+        }
+        
+        final File tempFile =
+                ResourceUtils.createTempFile(executionId, getFileSuffix(), value, "UTF-8");
+        final ITestResource tempResource = new LocalFileTestResource(tempFile, "UTF-8");
+        
+        return StandardTestEvaluatedField.forSpecifiedValue(tempResource);      
         
     }
     

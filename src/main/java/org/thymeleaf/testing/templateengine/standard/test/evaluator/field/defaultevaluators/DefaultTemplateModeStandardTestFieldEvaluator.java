@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
@@ -40,7 +41,7 @@ public class DefaultTemplateModeStandardTestFieldEvaluator extends AbstractStand
     
 
     @Override
-    public StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+    public StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {

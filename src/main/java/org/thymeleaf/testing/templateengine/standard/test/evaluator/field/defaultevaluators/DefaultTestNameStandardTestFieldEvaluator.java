@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
@@ -36,14 +37,14 @@ public final class DefaultTestNameStandardTestFieldEvaluator extends AbstractSta
 
 
     @Override
-    public StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+    public StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
 
         if (fieldValue != null && !(fieldValue.trim().equals(""))) {
             return StandardTestEvaluatedField.forSpecifiedValue(fieldValue.trim());
         }
-        if (documentName != null && !(documentName.trim().equals(""))) {
-            return StandardTestEvaluatedField.forSpecifiedValue(documentName.trim());
+        if (resource != null && resource.getName() != null && !(resource.getName().trim().equals(""))) {
+            return StandardTestEvaluatedField.forSpecifiedValue(resource.getName().trim());
         }
         
         return StandardTestEvaluatedField.forNoValue();

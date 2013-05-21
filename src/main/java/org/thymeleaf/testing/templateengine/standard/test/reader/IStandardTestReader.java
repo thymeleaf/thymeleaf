@@ -29,8 +29,8 @@ import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawDa
 public interface IStandardTestReader {
 
     
-    public StandardTestRawData readTestDocument(
-            final String executionId, final String documentName, final ITestResource resource) 
+    public StandardTestRawData readTestResource(
+            final String executionId, final ITestResource resource) 
             throws IOException;
     
 }

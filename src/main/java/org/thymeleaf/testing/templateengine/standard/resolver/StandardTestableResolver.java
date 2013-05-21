@@ -27,9 +27,11 @@ import java.util.regex.Pattern;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
-import org.thymeleaf.testing.templateengine.resource.StandardTestResourceResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceContainer;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceItem;
 import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
+import org.thymeleaf.testing.templateengine.resource.StandardTestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.builder.IStandardTestBuilder;
 import org.thymeleaf.testing.templateengine.standard.test.builder.StandardTestBuilder;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
@@ -77,7 +79,7 @@ public class StandardTestableResolver implements ITestableResolver {
     private ITestResourceResolver testResourceResolver = StandardTestResourceResolver.UTF8_RESOLVER;
     private IStandardTestReader testReader = new StandardTestReader();
     private IStandardTestEvaluator testEvaluator = new StandardTestEvaluator();
-    private IStandardTestBuilder testBuilder = new StandardTestBuilder(this);
+    private IStandardTestBuilder testBuilder = new StandardTestBuilder();
     
     
     
@@ -139,46 +141,79 @@ public class StandardTestableResolver implements ITestableResolver {
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(testableName, "Testable name cannot be null");
 
-        final ITestResource resolver = this.testResourceResolver.resolve(testableName);
-        if (resolver == null) {
+        final ITestResource resource = this.testResourceResolver.resolve(testableName);
+        if (resource == null) {
             return null;
         }
 
-        return resolveResource(executionId, resolver);
+        return resolveResource(executionId, resource);
+
+    }    
+    
+
+    public final ITestable resolveRelative(
+            final String executionId, final String testableName, final ITestResource relativeTo) {
+
+        Validate.notNull(executionId, "Execution ID cannot be null");
+        Validate.notNull(testableName, "Testable name cannot be null");
+        
+        if (relativeTo == null) {
+            return resolve(executionId, testableName);
+        }
+
+        final ITestResource resource = 
+                this.testResourceResolver.resolveRelative(testableName, relativeTo);
+        if (resource == null) {
+            return null;
+        }
+
+        return resolveResource(executionId, resource);
 
     }    
 
     
     
-    protected TestableType computeTestableTypeFromFileName(final String fileName, final boolean isDirectory) {
+    protected TestableType computeTestableType(final ITestResource resource) {
         
-        if (fileName == null) {
+        if (resource == null) {
             return TestableType.NONE;
         }
+
+        final String resourceName = resource.getName();
+        if (resourceName == null) {
+            return null;
+        }
         
-        if (!isDirectory) {
-            
-            if (fileName.toUpperCase().endsWith(TEST_FILE_SUFFIX)) {
+        if (resource instanceof ITestResourceItem) {
+        
+            if (resourceName.toUpperCase().endsWith(TEST_FILE_SUFFIX)) {
                 return TestableType.TEST;
             }
-            if (fileName.toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
+            if (resourceName.toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
                 return TestableType.SEQUENCE;
             }
             return TestableType.NONE;
             
         }
         
-        final Matcher iterMatcher = ITERATOR_PATTERN.matcher(fileName);
-        if (iterMatcher.matches()) {
-            return TestableType.ITERATOR;
+        if (resource instanceof ITestResourceContainer) {
+            
+            final Matcher iterMatcher = ITERATOR_PATTERN.matcher(resourceName);
+            if (iterMatcher.matches()) {
+                return TestableType.ITERATOR;
+            }
+            
+            final Matcher paralMatcher = PARALLELIZER_PATTERN.matcher(resourceName);
+            if (paralMatcher.matches()) {
+                return TestableType.PARALLELIZER;
+            }
+            
+            return TestableType.SEQUENCE;
+            
         }
         
-        final Matcher paralMatcher = PARALLELIZER_PATTERN.matcher(fileName);
-        if (paralMatcher.matches()) {
-            return TestableType.PARALLELIZER;
-        }
-        
-        return TestableType.SEQUENCE;
+        // Should never reach here!
+        throw new IllegalStateException("Unknown resource type " + resource.getClass().getName());
         
     }
     
@@ -190,13 +225,7 @@ public class StandardTestableResolver implements ITestableResolver {
             return null;
         }
         
-        final String fileName = resource.getName();
-        final boolean isDirectory = resource.isDirectory();
-        if (!isDirectory && !resource.isFile()) {
-            return null;
-        }
-        
-        final TestableType type = computeTestableTypeFromFileName(fileName, isDirectory);
+        final TestableType type = computeTestableType(resource);
         
         if (type == null) {
             return null;
@@ -224,8 +253,6 @@ public class StandardTestableResolver implements ITestableResolver {
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(resource, "Test resource cannot be null");
         
-        final String documentName = resource.getName();
-
         final IStandardTestReader reader = getTestReader();
         if (reader == null) {
             throw new TestEngineExecutionException("A null test reader has been configured");
@@ -238,17 +265,21 @@ public class StandardTestableResolver implements ITestableResolver {
         if (builder == null) {
             throw new TestEngineExecutionException("A null test builder has been configured");
         }
+        final ITestResourceResolver resolver = getTestResourceResolver();
+        if (resolver == null) {
+            throw new TestEngineExecutionException("A null test resource resolver has been configured");
+        }
         
         final StandardTestRawData rawData;
         try {
-            rawData = reader.readTestDocument(executionId, documentName, resource);
+            rawData = reader.readTestResource(executionId, resource);
         } catch (final IOException e) {
-            throw new TestEngineExecutionException("Error reading document \"" + documentName + "\"", e);
+            throw new TestEngineExecutionException("Error reading resource \"" + resource.getName() + "\"", e);
         }
         
         final StandardTestEvaluatedData evaluatedData = evaluator.evaluateTestData(executionId, rawData);
         
-        return builder.buildTest(executionId, evaluatedData);
+        return builder.buildTest(executionId, evaluatedData, this);
         
     }
     
@@ -266,36 +297,43 @@ public class StandardTestableResolver implements ITestableResolver {
         final TestSequence testSequence = new TestSequence();
         testSequence.setName(fileName);
 
-        ITestResource index = null;
+        ITestResourceItem index = null;
         
-        if (!resource.isDirectory()) {
-            if (!resource.isFile()) {
-                return null;
-            }
+        if (resource instanceof ITestResourceItem) {
             if (resource.getName().toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
-                index = resource;
+                index = (ITestResourceItem) resource;
             } else {
                 return null;
             }
         }
         
-        if (index == null) {
-            for (final ITestResource resourceInFolder : resource.getContainedResources()) {
-                if (FOLDER_INDEX_FILE_NAME.equalsIgnoreCase(resourceInFolder.getName())) {
-                    index = resourceInFolder;
-                    break;
+        if (resource instanceof ITestResourceContainer) {
+
+            final ITestResourceContainer containerResource = (ITestResourceContainer) resource;
+            
+            if (index == null) {
+                for (final ITestResource resourceInFolder : containerResource.getContainedResources()) {
+                    if (resourceInFolder instanceof ITestResourceItem) {
+                        final String resourceInFolderName = resourceInFolder.getName();
+                        if (resourceInFolderName != null && 
+                                resourceInFolderName.toUpperCase().endsWith(FOLDER_INDEX_FILE_NAME)) {
+                            index = (ITestResourceItem) resourceInFolder;
+                            break;
+                        }
+                    }
                 }
             }
-        }
-        
-        if (index == null) {
-            for (final ITestResource resourceInFolder : resource.getContainedResources()) {
-                final ITestable testable = resolveResource(executionId, resourceInFolder);
-                if (testable != null) {
-                    testSequence.addElement(testable);
+            
+            if (index == null) {
+                for (final ITestResource resourceInFolder : containerResource.getContainedResources()) {
+                    final ITestable testable = resolveResource(executionId, resourceInFolder);
+                    if (testable != null) {
+                        testSequence.addElement(testable);
+                    }
                 }
+                return testSequence;
             }
-            return testSequence;
+            
         }
         
 
@@ -378,7 +416,7 @@ public class StandardTestableResolver implements ITestableResolver {
     
     
     
-    private void readIndex(final String executionId, final ITestResource indexResource, final TestSequence testSequence) {
+    private void readIndex(final String executionId, final ITestResourceItem indexResource, final TestSequence testSequence) {
 
         
         BufferedReader reader = null; 
@@ -405,7 +443,7 @@ public class StandardTestableResolver implements ITestableResolver {
                 final String testSpec = lineComponents[1];
                 
                 final ITestResource testResource =
-                        indexResource.getResolver().resolveRelative(testResourceName, indexResource);
+                        this.testResourceResolver.resolveRelative(testResourceName, indexResource);
 
                 ITestable testable = resolveResource(executionId, testResource);
                 if (testable == null) {
@@ -450,6 +488,8 @@ public class StandardTestableResolver implements ITestableResolver {
             }   
         
             
+        } catch (final TestEngineExecutionException e) {
+            throw e;
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
                     "Exception raised while reading test index file '" + indexResource.getName() + "'", e);

@@ -28,6 +28,7 @@ import org.thymeleaf.util.Validate;
 public class StringTestResource 
         extends AbstractTestResource implements ITestResourceItem {
 
+    private final String TYPE = "classpath";
     
     private final String str;
     
@@ -39,6 +40,10 @@ public class StringTestResource
         this.str = str;
     }
     
+    
+    public String getType() {
+        return this.TYPE;
+    }
     
     public String readAsText() {
         return this.str;

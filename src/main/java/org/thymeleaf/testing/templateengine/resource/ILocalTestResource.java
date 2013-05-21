@@ -17,26 +17,16 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
+package org.thymeleaf.testing.templateengine.resource;
+
+import java.io.File;
 
 
 
 
-public class DefaultOutputStandardTestFieldEvaluator extends AbstractTestResourceStandardTestFieldEvaluator {
+public interface ILocalTestResource extends ITestResource {
 
-    
-    public static final DefaultOutputStandardTestFieldEvaluator INSTANCE = new DefaultOutputStandardTestFieldEvaluator();
-
-    
-    private DefaultOutputStandardTestFieldEvaluator() {
-        super();
-    }
-
-    
-    @Override
-    protected String getFileSuffix() {
-        return "OUTPUT";
-    }
-
+    public File getResourceFile();
+    public String getCharacterEncoding();
     
 }

@@ -32,8 +32,8 @@ import org.thymeleaf.util.Validate;
 
 
 public final class ClassPathFileTestResource 
-        extends AbstractTestResource implements ITestResourceItem {
-
+        extends AbstractTestResource implements ITestResourceItem, IClassPathTestResource {
+    
     private final String characterEncoding;
     private final URL resourceURL;
 
@@ -62,7 +62,6 @@ public final class ClassPathFileTestResource
     
 
     
-    
     public String getCharacterEncoding() {
         return this.characterEncoding;
     }
@@ -78,10 +77,12 @@ public final class ClassPathFileTestResource
         try {
             final InputStream is = this.resourceURL.openStream();
             return ResourceUtils.read(is, this.characterEncoding);
+        } catch (final TestEngineExecutionException e) {
+            throw e;
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
                     "Error reading class path resource: \"" + getName() + "\" from URL " +
-                    "\"" + this.resourceURL + "\"");
+                    "\"" + this.resourceURL + "\"", e);
         }
     }
     

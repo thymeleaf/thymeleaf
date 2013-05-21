@@ -20,6 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.IStandardTestFieldEvaluator;
@@ -47,7 +48,7 @@ public abstract class AbstractStandardTestFieldEvaluator implements IStandardTes
             final String fieldName, final String fieldQualifier) {
 
         final StandardTestEvaluatedField evaluation =
-                getValue(executionId, data.getDocumentName(), fieldName, fieldQualifier, data.getValueForFieldAndQualifier(fieldName, fieldQualifier));
+                getValue(executionId, data.getTestResource(), fieldName, fieldQualifier, data.getValueForFieldAndQualifier(fieldName, fieldQualifier));
         
         if (evaluation != null && evaluation.hasNotNullValue()) {
             
@@ -58,8 +59,8 @@ public abstract class AbstractStandardTestFieldEvaluator implements IStandardTes
                 // Value returned is not of the correct class
                 throw new TestEngineExecutionException(
                         "A value of class \"" + value.getClass().getName() + "\" resulted from evaluation " +
-                        "of field \"" + fieldName + "\" in document " +
-                        "\"" + data.getDocumentName() + "\", but value was expected to be of class " +
+                        "of field \"" + fieldName + "\" in " +
+                        "\"" + data.getTestResource().getName() + "\", but value was expected to be of class " +
                         "\"" + valueClass.getName() + "\"");
             }
             
@@ -70,7 +71,7 @@ public abstract class AbstractStandardTestFieldEvaluator implements IStandardTes
     }
 
     
-    protected abstract StandardTestEvaluatedField getValue(final String executionId, final String documentName, final String fieldName, final String fieldQualifier, final String fieldValue);
+    protected abstract StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, final String fieldName, final String fieldQualifier, final String fieldValue);
 
     
 }

@@ -37,10 +37,10 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class TestMessageResolver extends AbstractMessageResolver {
+public class TestEngineMessageResolver extends AbstractMessageResolver {
     
                    
-    public TestMessageResolver() {
+    public TestEngineMessageResolver() {
         super();
     }
 

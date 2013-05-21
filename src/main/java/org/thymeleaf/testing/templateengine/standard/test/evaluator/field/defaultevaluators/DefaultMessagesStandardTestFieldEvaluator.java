@@ -27,6 +27,7 @@ import java.util.Properties;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessagesForLocale;
 import org.thymeleaf.testing.templateengine.messages.TestMessagesForLocale;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
@@ -45,7 +46,7 @@ public class DefaultMessagesStandardTestFieldEvaluator extends AbstractStandardT
 
 
     @Override
-    protected StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+    protected StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {

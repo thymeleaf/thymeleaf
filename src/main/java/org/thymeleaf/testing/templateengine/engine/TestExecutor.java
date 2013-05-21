@@ -38,8 +38,8 @@ import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.context.web.WebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.cache.TestCacheManager;
-import org.thymeleaf.testing.templateengine.engine.resolver.TestMessageResolver;
-import org.thymeleaf.testing.templateengine.engine.resolver.TestTemplateResolver;
+import org.thymeleaf.testing.templateengine.engine.resolver.TestEngineMessageResolver;
+import org.thymeleaf.testing.templateengine.engine.resolver.TestEngineTemplateResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.report.ConsoleTestReporter;
 import org.thymeleaf.testing.templateengine.report.ITestReporter;
@@ -181,7 +181,7 @@ public final class TestExecutor {
             
             final ITestable testable = this.testableResolver.resolve(executionId, testableName);
             if (testable == null) {
-                throw new TestEngineExecutionException("Main testable element resolved as null");
+                throw new TestEngineExecutionException("Resource \"" + testableName + "\" could not be resolved.");
             }
             
             execute(testable, context);
@@ -201,8 +201,8 @@ public final class TestExecutor {
         Validate.notNull(testable, "Testable cannot be null");
         Validate.notNull(context, "Test execution context cannot be null");
         
-        final TestTemplateResolver templateResolver = new TestTemplateResolver();
-        final TestMessageResolver messageResolver = new TestMessageResolver();
+        final TestEngineTemplateResolver templateResolver = new TestEngineTemplateResolver();
+        final TestEngineMessageResolver messageResolver = new TestEngineMessageResolver();
         final TestCacheManager cacheManager = new TestCacheManager();
         
         final TemplateEngine templateEngine = new TemplateEngine();

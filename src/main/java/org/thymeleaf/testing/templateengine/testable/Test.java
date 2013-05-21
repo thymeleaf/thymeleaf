@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceItem;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils;
 import org.thymeleaf.testing.templateengine.util.ResultCompareUtils.ResultComparison;
 import org.thymeleaf.util.Validate;
@@ -164,8 +165,13 @@ public class Test extends AbstractTest {
                     "Test \"" + testName + "\" does not specify an output, but success-expected " +
                     "tests should always specify one");
         }
+        if (!(outputEval instanceof ITestResourceItem)) {
+            throw new TestEngineExecutionException(
+                    "Test \"" + testName + "\" specifies an output which is a container, not an item " +
+                    "(maybe a folder?)");
+        }
         
-        final String outputStr = outputEval.readAsText();
+        final String outputStr = ((ITestResourceItem)outputEval).readAsText();
         
         if (outputStr == null) {
             throw new TestEngineExecutionException(

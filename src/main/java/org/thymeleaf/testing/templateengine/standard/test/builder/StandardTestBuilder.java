@@ -29,8 +29,8 @@ import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionExcepti
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.messages.ITestMessagesForLocale;
 import org.thymeleaf.testing.templateengine.messages.TestMessages;
-import org.thymeleaf.testing.templateengine.resolver.ITestableResolver;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardTestableResolver;
 import org.thymeleaf.testing.templateengine.standard.test.StandardTest;
 import org.thymeleaf.testing.templateengine.standard.test.StandardTestValueType;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
@@ -49,42 +49,23 @@ import org.thymeleaf.util.Validate;
 public class StandardTestBuilder implements IStandardTestBuilder {
 
     
-    private ITestableResolver testableResolver = null;
-    
     
 
     public StandardTestBuilder() {
         super();
     }
 
-    
-    public StandardTestBuilder(final ITestableResolver testableResolver) {
-        super();
-        setTestableResolver(testableResolver);
-    }
-    
-    
-
-    
-    
-    public ITestableResolver getTestableResolver() {
-        return this.testableResolver;
-    }
-
-    public void setTestableResolver(final ITestableResolver testableResolver) {
-        this.testableResolver = testableResolver;
-    }
-
-
 
 
 
 
     @SuppressWarnings("unchecked")
-    public final ITest buildTest(final String executionId, final StandardTestEvaluatedData data) {
+    public final ITest buildTest(
+            final String executionId, final StandardTestEvaluatedData data, final StandardTestableResolver resolver) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(data, "Data cannot be null");
+        Validate.notNull(resolver, "Resolver cannot be null");
         
 
         /*
@@ -122,15 +103,10 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         ITest parentTest = null;
         if (extendsTest != null && extendsTest.hasNotNullValue()) {
             
-            if (this.testableResolver == null) {
-                throw new TestEngineExecutionException( 
-                        "Cannot resolve \"" + StandardTestFieldNaming.FIELD_NAME_EXTENDS + "\" " +
-                		"field: no " + ITestableResolver.class.getSimpleName() + " has been specified at the test builder.");
-            }
-            
             final String extendsValue = (String) extendsTest.getValue();
             
-            final ITestable parentTestable = this.testableResolver.resolve(executionId, extendsValue);
+            final ITestable parentTestable =
+                    resolver.resolveRelative(executionId, extendsValue, data.getTestResource());
             if (parentTestable == null) {
                 throw new TestEngineExecutionException( 
                         "Cannot resolve \"" + StandardTestFieldNaming.FIELD_NAME_EXTENDS + "\" " +

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.util.Validate;
 
 
@@ -31,20 +32,20 @@ import org.thymeleaf.util.Validate;
 
 public class StandardTestRawData {
 
-    private final String documentName;
+    private final ITestResource resource;
     private final Map<String,Map<String,String>> valuesByFieldAndQualifier;
     
     
-    public StandardTestRawData(final String documentName) {
+    public StandardTestRawData(final ITestResource resource) {
         super();
-        Validate.notNull(documentName, "Document name cannot be null");
-        this.documentName = documentName;
+        Validate.notNull(resource, "Resource cannot be null");
+        this.resource = resource;
         this.valuesByFieldAndQualifier = new HashMap<String, Map<String,String>>();
     }
 
     
-    public String getDocumentName() {
-        return this.documentName;
+    public ITestResource getTestResource() {
+        return this.resource;
     }
     
     

@@ -31,27 +31,27 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class FolderTestResource 
-        extends AbstractTestResource implements ITestResourceContainer {
+public class LocalFolderTestResource 
+        extends AbstractTestResource implements ITestResourceContainer, ILocalTestResource {
     
-    
+
     private final File resourceFile;
     private final String characterEncoding;
 
 
     
-    public FolderTestResource(final File file, final String characterEncoding) {
+    public LocalFolderTestResource(final File file, final String characterEncoding) {
         
         super(validateFile(file));
         
         Validate.notNull(characterEncoding, "Character encoding cannot be null");
         
-        this.resourceFile = file;
+        this.resourceFile = file.getAbsoluteFile();
         this.characterEncoding = characterEncoding;
         
         if (!this.resourceFile.isDirectory()) {
             throw new TestEngineExecutionException(
-                    "Error while reading folder resource container \"" + this.resourceFile.getName() + "\". " +
+                    "Error while reading folder resource container \"" + this.resourceFile.getAbsolutePath() + "\". " +
             		"Resource is NOT a folder.");
         }
         
@@ -61,7 +61,7 @@ public class FolderTestResource
     
     private static String validateFile(final File file) {
         Validate.notNull(file, "Resource file cannot be null");
-        return file.getName();
+        return file.getAbsolutePath();
     }
 
 
@@ -86,8 +86,8 @@ public class FolderTestResource
         for (final File containedFile : fileList) {
             final ITestResource containedResource =
                     (containedFile.isDirectory()?
-                            new FolderTestResource(containedFile, this.characterEncoding) :
-                            new FileTestResource(containedFile, this.characterEncoding)); 
+                            new LocalFolderTestResource(containedFile, this.characterEncoding) :
+                            new LocalFileTestResource(containedFile, this.characterEncoding)); 
             containedResources.add(containedResource);
         }
         return Collections.unmodifiableList(containedResources);

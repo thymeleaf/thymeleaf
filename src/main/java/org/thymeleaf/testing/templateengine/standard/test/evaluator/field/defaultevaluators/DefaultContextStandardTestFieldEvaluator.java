@@ -29,6 +29,7 @@ import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
 import org.thymeleaf.testing.templateengine.context.OgnlTestContextExpression;
 import org.thymeleaf.testing.templateengine.context.TestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.util.MultiValueProperties;
 
@@ -56,13 +57,15 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
 
 
     @Override
-    protected StandardTestEvaluatedField getValue(final String executionId, final String documentName, 
+    protected StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {
             return StandardTestEvaluatedField.forDefaultValue(new TestContext());
         }
 
+        final String resourceName = (resource != null? resource.getName() : null);
+        
         final MultiValueProperties properties = new MultiValueProperties();
 
         try {
@@ -90,7 +93,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             final List<String> varValue = entry.getValue();
 
             if (varName.equalsIgnoreCase(LOCALE_PROPERTY_NAME)) {
-                checkForbiddenMultiValue(documentName, varName, varValue);
+                checkForbiddenMultiValue(resourceName, varName, varValue);
                 testContext.setLocale(new Locale(varValue.get(0)));
                 continue;
             }
@@ -106,24 +109,24 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_REQUEST)) {
-                checkForbiddenMultiValue(documentName, varName, varValue);
+                checkForbiddenMultiValue(resourceName, varName, varValue);
                 testContext.getRequestAttributes().put(varName.substring(VAR_NAME_PREFIX_REQUEST.length()), new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_SESSION)) {
-                checkForbiddenMultiValue(documentName, varName, varValue);
+                checkForbiddenMultiValue(resourceName, varName, varValue);
                 testContext.getSessionAttributes().put(varName.substring(VAR_NAME_PREFIX_SESSION.length()), new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
             
             if (varName.startsWith(VAR_NAME_PREFIX_APPLICATION)) {
-                checkForbiddenMultiValue(documentName, varName, varValue);
+                checkForbiddenMultiValue(resourceName, varName, varValue);
                 testContext.getServletContextAttributes().put(varName.substring(VAR_NAME_PREFIX_APPLICATION.length()), new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
 
-            checkForbiddenMultiValue(documentName, varName, varValue);
+            checkForbiddenMultiValue(resourceName, varName, varValue);
             testContext.getVariables().put(varName, new OgnlTestContextExpression(varValue.get(0)));
             
         }
@@ -135,10 +138,10 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
     
     
     
-    private static void checkForbiddenMultiValue(final String documentName, final String varName, final List<String> varValue) {
+    private static void checkForbiddenMultiValue(final String resourceName, final String varName, final List<String> varValue) {
         if (varValue.size() > 1) {
             throw new TestEngineExecutionException(
-                    "Variable \"" + varName + "\" in context for test \"" + documentName + "\" " +
+                    "Variable \"" + varName + "\" in context for test \"" + resourceName + "\" " +
             		"cannot be multi-valued");
         }
     }

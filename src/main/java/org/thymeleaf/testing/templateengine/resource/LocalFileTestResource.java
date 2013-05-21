@@ -31,25 +31,24 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class FileTestResource 
-        extends AbstractTestResource implements ITestResourceItem {
-    
-    
+public class LocalFileTestResource 
+        extends AbstractTestResource implements ITestResourceItem, ILocalTestResource {
+
     private final File resourceFile;
     private final String characterEncoding;
 
     
-    public FileTestResource(final File file, final String characterEncoding) {
+    public LocalFileTestResource(final File file, final String characterEncoding) {
         super(validateFile(file));
         Validate.notNull(characterEncoding, "Character encoding cannot be null");
-        this.resourceFile = file;
+        this.resourceFile = file.getAbsoluteFile();
         this.characterEncoding = characterEncoding;
     }
     
     
     private static String validateFile(final File file) {
         Validate.notNull(file, "Resource file cannot be null");
-        return file.getName();
+        return file.getAbsolutePath();
     }
 
     
@@ -71,9 +70,11 @@ public class FileTestResource
         try {
             final InputStream is = new FileInputStream(this.resourceFile);
             return ResourceUtils.read(is, this.characterEncoding);
+        } catch (final TestEngineExecutionException e) {
+            throw e;
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
-                    "Error reading file resource: \"" + getName() + "\"");
+                    "Error reading file resource: \"" + getName() + "\"", e);
         }
     }
 

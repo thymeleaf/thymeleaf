@@ -40,6 +40,8 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
     public static final StandardTestResourceResolver UTF8_RESOLVER = new StandardTestResourceResolver("UTF-8");
     public static final StandardTestResourceResolver ISO8859_1_RESOLVER = new StandardTestResourceResolver("ISO-8859-1");
     
+    private static final String CLASSPATH_RESOURCE_PREFIX = "classpath:";
+    
     private final String characterEncoding;
     
     
@@ -65,37 +67,130 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
         if (resourceName == null) {
             return null;
         }
-        
-        final ClassLoader cl = 
-                ClassLoaderUtils.getClassLoader(ClassPathFileTestResource.class);
-        final URL resourceURL = cl.getResource(resourceName);
 
-        if (this.resourceURL == null) {
-            throw new TestEngineExecutionException(
-                    "Error while reading classpath resource \"" + classPathResourceName + "\". " +
-                    "Could not obtain resource as URL.");
+        if (resourceName.startsWith(CLASSPATH_RESOURCE_PREFIX)) {
+            return resolveClassPathTestResource(resourceName.substring(CLASSPATH_RESOURCE_PREFIX.length()));
         }
+
+        return resolveLocalTestResource(resourceName);
         
-        return new ClassPathFileTestResource(resourceName, this);
-
     }
+
+    
+    
     
     
 
-    public ITestResource resolveRelative(
-            final String resourceName, final ITestResource relative) {
+    
+    protected ITestResource resolveClassPathTestResource(final String resourceName) {
         
         if (resourceName == null) {
             return null;
         }
         
-        final String original = relative.getName();
+        final ClassLoader cl = 
+                ClassLoaderUtils.getClassLoader(StandardTestResourceResolver.class);
+        
+        final URL resourceURL = cl.getResource(resourceName);
+        if (resourceURL == null) {
+            throw new TestEngineExecutionException(
+                    "Error while reading classpath resource \"" + resourceName + "\". " +
+                    "Could not obtain resource as URL.");
+        }
+
+        try {
+            final File resourceFile = new File(resourceURL.toURI());
+            if (resourceFile.isDirectory()) {
+                return new LocalFolderTestResource(resourceFile, this.characterEncoding);
+            }
+            return new LocalFileTestResource(resourceFile, this.characterEncoding);
+        } catch (final TestEngineExecutionException e) {
+            throw e;
+        } catch (final Exception e) {
+            return new ClassPathFileTestResource(resourceName, this.characterEncoding);
+        }
+        
+    }
+
+    
+    
+    
+    
+    protected ITestResource resolveLocalTestResource(final String resourceName) {
+        
+        if (resourceName == null) {
+            return null;
+        }
+        
+        try {
+            final File resourceFile = new File(resourceName);
+            if (resourceFile.isDirectory()) {
+                return new LocalFolderTestResource(resourceFile, this.characterEncoding);
+            }
+            return new LocalFileTestResource(resourceFile, this.characterEncoding);
+        } catch (final TestEngineExecutionException e) {
+            throw e;
+        } catch (final Exception e) {
+            throw new TestEngineExecutionException(
+                    "Error while reading file resource \"" + resourceName + "\".", e);
+        }
+        
+    }
+    
+    
+
+    
+
+    
+
+    public ITestResource resolveRelative(
+            final String relativeResourceName, final ITestResource relativeTo) {
+        
+        if (relativeResourceName == null) {
+            return null;
+        }
+        
+        if (relativeTo == null) {
+            // We consider the name to be non-relative
+            return resolve(relativeResourceName);
+        }
+        
+        if (relativeResourceName.startsWith(CLASSPATH_RESOURCE_PREFIX)) {
+            // We consider the name to be non-relative
+            return resolveClassPathTestResource(relativeResourceName.substring(CLASSPATH_RESOURCE_PREFIX.length()));
+        }
+        
+        if (relativeTo instanceof IClassPathTestResource) {
+            final IClassPathTestResource classPathFileTestResource = (IClassPathTestResource) relativeTo;
+            return resolveRelativeClassPathTestResource(relativeResourceName, classPathFileTestResource);
+        }
+        
+        if (relativeTo instanceof ILocalTestResource) {
+            final ILocalTestResource localFileTestResource = (ILocalTestResource) relativeTo;
+            return resolveRelativeLocalTestResource(relativeResourceName, localFileTestResource);
+        }
+        
+        throw new TestEngineExecutionException(
+                "Error while resolving relative resource \"" + relativeResourceName + "\". The resource it " +
+                "should be relative to is of an unknown class: " + relativeTo.getClass().getName());
+        
+    }
+    
+    
+    
+    
+    
+    
+    protected ITestResource resolveRelativeClassPathTestResource(
+            final String resourceName, final IClassPathTestResource relativeTo) {
+        
+        final String nameRelativeTo = relativeTo.getName();
         final List<String> originalTokens = 
                 new ArrayList<String>(Arrays.asList(
-                        StringUtils.split(original,"/")));
+                        StringUtils.split(nameRelativeTo,"/")));
         final String[] newTokens = StringUtils.split(resourceName,"/");
         
-        if (!(original.endsWith("/"))) {
+        if (!(nameRelativeTo.endsWith("/"))) {
             originalTokens.remove(originalTokens.size() - 1);
         }
         
@@ -110,19 +205,25 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
             originalTokens.add(newToken);
         }
         
-        return new ClassPathFileTestResource(StringUtils.join(originalTokens,"/"), this.characterEncoding);
+        return resolveClassPathTestResource(StringUtils.join(originalTokens,"/"));
         
     }
+
     
     
-    public FileTestResource resolveRelative(final String resourceName) {
+    
+    
+    protected ITestResource resolveRelativeLocalTestResource(
+            final String resourceName, final ILocalTestResource relativeTo) {
         
-        if (resourceName == null) {
-            return null;
+        final File fileRelativeTo = relativeTo.getResourceFile();
+        final String[] newTokens = StringUtils.split(resourceName,"/");
+        
+        File file = fileRelativeTo.getAbsoluteFile();
+        
+        if (!file.isDirectory()) {
+            file = file.getParentFile();
         }
-        
-        File file = (this.resourceFile.isDirectory()? this.resourceFile : this.resourceFile.getParentFile());  
-        final String[] newTokens = StringUtils.split(resourceName, File.pathSeparator);
         
         for (final String newToken : newTokens) {
             if (newToken == null || newToken.trim().equals("")) {
@@ -132,13 +233,28 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
                 file = file.getParentFile();
                 continue;
             }
-            
-            originalTokens.add(newToken);
+            boolean resolved = false;
+            for (final File containedFile : file.listFiles()) {
+                if (newToken.equals(containedFile.getName())) {
+                    file = containedFile;
+                    resolved = true;
+                    break;
+                }
+            }
+            if (!resolved) {
+                throw new TestEngineExecutionException(
+                        "Error while resolving relative resource \"" + resourceName + "\" relative to " +
+                		"\"" + relativeTo.getName() + "\". File does not exist.");
+            }
         }
         
-        return new FileTestResource(StringUtils.join(originalTokens,"/"), this.characterEncoding);
+        if (file.isDirectory()) {
+            return new LocalFolderTestResource(file, this.characterEncoding);
+        }
+        return new LocalFileTestResource(file, this.characterEncoding);
         
     }
-
+    
+    
     
 }

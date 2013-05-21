@@ -29,6 +29,7 @@ import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceItem;
 import org.thymeleaf.util.Validate;
 
 
@@ -36,7 +37,7 @@ import org.thymeleaf.util.Validate;
 
 
 
-public class TestResourceResolver implements IResourceResolver {
+public class TestEngineResourceResolver implements IResourceResolver {
 
     public static final String NAME = "TEST";
     
@@ -45,7 +46,7 @@ public class TestResourceResolver implements IResourceResolver {
     private final String characterEncoding;
     
 
-    public TestResourceResolver(
+    public TestEngineResourceResolver(
             final Map<String,ITestResource> resources, final String characterEncoding) {
         super();
         Validate.notNull(resources, "Resources map cannot be null");
@@ -84,14 +85,21 @@ public class TestResourceResolver implements IResourceResolver {
             if (resource == null) {
                 return null;
             }
+            if (!(resource instanceof ITestResourceItem)) {
+                throw new TestEngineExecutionException(
+                        "Test specifies an input \"" + resource.getName() + "\" which is a container, not an item " +
+                        "(maybe a folder?)");
+            }
             
-            final String input = resource.readAsText();
+            final String input = ((ITestResourceItem)resource).readAsText();
             if (input == null) {
                 return null;
             }
             
             return new ByteArrayInputStream(input.getBytes(this.characterEncoding));
             
+        } catch (final TestEngineExecutionException e) {
+            throw e;
         } catch (final Exception e) {
             throw new TestEngineExecutionException(
                     "Exception resolving test resource \"" + resourceName + "\"");

@@ -20,6 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
@@ -38,26 +39,28 @@ public class DefaultExceptionTestFieldEvaluator extends AbstractStandardTestFiel
 
     @Override
     public StandardTestEvaluatedField getValue(
-            final String executionId, final String documentName, 
+            final String executionId, final ITestResource resource, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {
             return StandardTestEvaluatedField.forNoValue();
         }
 
+        final String resourceName = (resource != null? resource.getName() : null);
+        
         Class<?> specifiedClass = null;
         try {
             specifiedClass = Class.forName(fieldValue.trim());
         } catch (final Throwable t) {
             throw new TestEngineExecutionException(
                     "Exception initializing field \"" + fieldName + "\" in document " +
-            		"\"" + documentName + "\"", t);
+            		"\"" + resourceName + "\"", t);
         }
         
         if (!Throwable.class.isAssignableFrom(specifiedClass)) {
             throw new TestEngineExecutionException(
                     "Exception initializing field \"" + fieldName + "\" in document " +
-                    "\"" + documentName + "\": Class \"" + specifiedClass.getClass().getName() + "\" does not " +
+                    "\"" + resourceName + "\": Class \"" + specifiedClass.getClass().getName() + "\" does not " +
                     "extend " + Throwable.class.getName());
         }
         
