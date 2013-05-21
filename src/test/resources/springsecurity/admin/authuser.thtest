@@ -1,4 +1,4 @@
-%EXTENDS springsecurity/admin/index.common.thtest
+%EXTENDS index.common.thtest
 # ------------------------------------------------------------
 %CONTEXT
 j_username = 'bob'

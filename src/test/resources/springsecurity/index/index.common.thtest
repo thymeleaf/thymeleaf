@@ -1,4 +1,4 @@
-%EXTENDS springsecurity/springsecurity.common.thtest
+%EXTENDS ../springsecurity.common.thtest
 # ------------------------------------------------------------
 %INPUT
 <!DOCTYPE html>

@@ -1,4 +1,4 @@
-%EXTENDS gtvg/productcomment/productcomment.common.thtest
+%EXTENDS productcomment.common.thtest
 # ------------------------------------------------------------
 %CONTEXT
 prod = prod2

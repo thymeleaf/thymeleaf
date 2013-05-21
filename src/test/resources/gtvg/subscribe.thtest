@@ -1,4 +1,4 @@
-%EXTENDS gtvg/gtvg.common.thtest
+%EXTENDS gtvg.common.thtest
 # ------------------------------------------------------------
 %MESSAGES
 subscribe.submit=Subscribe me!

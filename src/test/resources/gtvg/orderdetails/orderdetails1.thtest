@@ -1,4 +1,4 @@
-%EXTENDS gtvg/orderdetails/orderdetails.common.thtest
+%EXTENDS orderdetails.common.thtest
 # ------------------------------------------------------------
 %CONTEXT
 order = order1

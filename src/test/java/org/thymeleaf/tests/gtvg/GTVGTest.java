@@ -41,7 +41,7 @@ public class GTVGTest {
     public void testExecutor() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.execute("gtvg");
+        executor.execute("classpath:gtvg");
         
         Assert.assertTrue(executor.getReporter().isAllOK());
         

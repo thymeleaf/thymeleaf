@@ -48,7 +48,7 @@ public class STSMTest {
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new STSMWebProcessingContextBuilder());
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
-        executor.execute("stsm");
+        executor.execute("classpath:stsm");
         
         Assert.assertTrue(executor.getReporter().isAllOK());
         

@@ -55,7 +55,7 @@ public class SpringSecurityTest {
         executor.setProcessingContextBuilder(processingContextBuilder);
         executor.setDialects(
                 Arrays.asList(new IDialect[] { new SpringStandardDialect(), new SpringSecurityDialect()}));
-        executor.execute("springsecurity");
+        executor.execute("classpath:springsecurity");
         
         Assert.assertTrue(executor.getReporter().isAllOK());
         

@@ -1,4 +1,4 @@
-%EXTENDS gtvg/gtvg.common.thtest
+%EXTENDS gtvg.common.thtest
 # ------------------------------------------------------------
 %CONTEXT
 today = #calendars.create(2011,11,11)

@@ -1,4 +1,4 @@
-%EXTENDS stsm/stsm.common.thtest
+%EXTENDS stsm.common.thtest
 # ------------------------------------------------------------
 %CONTEXT
 
