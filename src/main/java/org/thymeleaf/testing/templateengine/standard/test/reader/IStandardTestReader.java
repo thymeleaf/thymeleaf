@@ -22,6 +22,7 @@ package org.thymeleaf.testing.templateengine.standard.test.reader;
 import java.io.IOException;
 
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardTestableResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
 
@@ -30,7 +31,8 @@ public interface IStandardTestReader {
 
     
     public StandardTestRawData readTestResource(
-            final String executionId, final ITestResource resource) 
+            final String executionId, final ITestResource resource, 
+            final StandardTestableResolver resolver) 
             throws IOException;
     
 }

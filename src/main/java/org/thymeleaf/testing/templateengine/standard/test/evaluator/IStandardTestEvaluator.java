@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator;
 
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardTestableResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
@@ -28,6 +29,7 @@ public interface IStandardTestEvaluator {
 
     
     public StandardTestEvaluatedData evaluateTestData(
-            final String executionId, final StandardTestRawData rawData);
+            final String executionId, final StandardTestRawData rawData, 
+            final StandardTestableResolver resolver);
     
 }

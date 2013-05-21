@@ -21,6 +21,7 @@ package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defau
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 import org.thymeleaf.testing.templateengine.standard.test.evaluator.field.IStandardTestFieldEvaluator;
@@ -45,10 +46,11 @@ public abstract class AbstractStandardTestFieldEvaluator implements IStandardTes
     }
 
     public final StandardTestEvaluatedField getValue(final String executionId, final StandardTestRawData data, 
+            final ITestResourceResolver testResourceResolver, 
             final String fieldName, final String fieldQualifier) {
 
         final StandardTestEvaluatedField evaluation =
-                getValue(executionId, data.getTestResource(), fieldName, fieldQualifier, data.getValueForFieldAndQualifier(fieldName, fieldQualifier));
+                getValue(executionId, data.getTestResource(), testResourceResolver, fieldName, fieldQualifier, data.getValueForFieldAndQualifier(fieldName, fieldQualifier));
         
         if (evaluation != null && evaluation.hasNotNullValue()) {
             
@@ -71,7 +73,10 @@ public abstract class AbstractStandardTestFieldEvaluator implements IStandardTes
     }
 
     
-    protected abstract StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, final String fieldName, final String fieldQualifier, final String fieldValue);
+    protected abstract StandardTestEvaluatedField getValue(
+            final String executionId, final ITestResource resource, 
+            final ITestResourceResolver testResourceResolver, 
+            final String fieldName, final String fieldQualifier, final String fieldValue);
 
     
 }

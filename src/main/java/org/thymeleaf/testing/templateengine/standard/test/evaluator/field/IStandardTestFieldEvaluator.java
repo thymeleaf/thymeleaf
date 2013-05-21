@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field;
 
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 
@@ -32,6 +33,7 @@ public interface IStandardTestFieldEvaluator {
     
     public StandardTestEvaluatedField getValue(
             final String executionId, final StandardTestRawData data, 
+            final ITestResourceResolver testResourceResolver,
             final String fieldName, final String fieldQualifier);
     
 }

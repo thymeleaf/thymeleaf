@@ -23,6 +23,7 @@ import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
@@ -40,6 +41,7 @@ public class DefaultFragmentStandardTestFieldEvaluator extends AbstractStandardT
 
     @Override
     protected StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
+            final ITestResourceResolver testResourceResolver, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
 
         if (fieldValue == null || fieldValue.trim().equals("")) {

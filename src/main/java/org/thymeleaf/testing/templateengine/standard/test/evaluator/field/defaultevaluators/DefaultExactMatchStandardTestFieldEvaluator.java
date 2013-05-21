@@ -20,6 +20,7 @@
 package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defaultevaluators;
 
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 
 
@@ -40,6 +41,7 @@ public class DefaultExactMatchStandardTestFieldEvaluator extends AbstractStandar
 
     @Override
     public StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
+            final ITestResourceResolver testResourceResolver, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {

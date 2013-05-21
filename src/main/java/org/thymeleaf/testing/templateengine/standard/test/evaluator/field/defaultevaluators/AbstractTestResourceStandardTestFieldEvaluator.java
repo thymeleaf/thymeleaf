@@ -22,6 +22,7 @@ package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defau
 import java.io.File;
 
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.resource.LocalFileTestResource;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;
@@ -38,6 +39,7 @@ public abstract class AbstractTestResourceStandardTestFieldEvaluator
 
     @Override
     protected final StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
+            final ITestResourceResolver testResourceResolver, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
 
         if (fieldValue == null || fieldValue.trim().equals("")) {
@@ -47,8 +49,10 @@ public abstract class AbstractTestResourceStandardTestFieldEvaluator
         String value = fieldValue.trim();
         
         if (value.startsWith("(") && value.endsWith(")")) {
-            value = value.substring(0, value.length() - 2);
-            
+            value = value.substring(0, value.length() - 1);
+            final ITestResource newResource = 
+                    testResourceResolver.resolveRelative(value, resource);
+            return StandardTestEvaluatedField.forSpecifiedValue(newResource);      
         }
         
         final File tempFile =

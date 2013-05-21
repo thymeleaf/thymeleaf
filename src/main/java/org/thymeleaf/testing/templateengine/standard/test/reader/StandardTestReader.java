@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
 import org.thymeleaf.testing.templateengine.resource.ITestResourceItem;
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardTestableResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestRawData;
 import org.thymeleaf.util.Validate;
 
@@ -61,7 +62,8 @@ public class StandardTestReader implements IStandardTestReader {
     
     
     public StandardTestRawData readTestResource(
-            final String executionId, final ITestResource resource) 
+            final String executionId, final ITestResource resource, 
+            final StandardTestableResolver resolver) 
             throws IOException {
 
         Validate.notNull(executionId, "Execution ID cannot be null");

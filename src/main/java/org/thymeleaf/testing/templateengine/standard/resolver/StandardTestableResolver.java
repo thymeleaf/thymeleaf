@@ -272,12 +272,12 @@ public class StandardTestableResolver implements ITestableResolver {
         
         final StandardTestRawData rawData;
         try {
-            rawData = reader.readTestResource(executionId, resource);
+            rawData = reader.readTestResource(executionId, resource, this);
         } catch (final IOException e) {
             throw new TestEngineExecutionException("Error reading resource \"" + resource.getName() + "\"", e);
         }
         
-        final StandardTestEvaluatedData evaluatedData = evaluator.evaluateTestData(executionId, rawData);
+        final StandardTestEvaluatedData evaluatedData = evaluator.evaluateTestData(executionId, rawData, this);
         
         return builder.buildTest(executionId, evaluatedData, this);
         

@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.standard.resolver.StandardTestableResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedData;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestFieldNaming;
@@ -56,7 +57,8 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
     
     
     public StandardTestEvaluatedData evaluateTestData(
-            final String executionId, final StandardTestRawData rawData) {
+            final String executionId, final StandardTestRawData rawData, 
+            final StandardTestableResolver resolver) {
         
         Validate.notNull(executionId, "Execution ID cannot be null");
         Validate.notNull(rawData, "Data cannot be null");
@@ -88,7 +90,7 @@ public class StandardTestEvaluator implements IStandardTestEvaluator {
                 if (fieldQualifier == null || !EVALUATOR_FIELD_QUALIFIER.equals(fieldQualifier)) {
                     
                     final StandardTestEvaluatedField evaluation = 
-                            evaluator.getValue(executionId, rawData, fieldName, fieldQualifier);
+                            evaluator.getValue(executionId, rawData, resolver.getTestResourceResolver(), fieldName, fieldQualifier);
     
                     if (evaluation != null && evaluation.hasNotNullValue()) {
                         

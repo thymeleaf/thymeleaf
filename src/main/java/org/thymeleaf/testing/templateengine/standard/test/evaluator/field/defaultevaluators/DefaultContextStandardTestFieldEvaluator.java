@@ -30,6 +30,7 @@ import org.thymeleaf.testing.templateengine.context.OgnlTestContextExpression;
 import org.thymeleaf.testing.templateengine.context.TestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.resource.ITestResource;
+import org.thymeleaf.testing.templateengine.resource.ITestResourceResolver;
 import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestEvaluatedField;
 import org.thymeleaf.testing.templateengine.util.MultiValueProperties;
 
@@ -58,6 +59,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
 
     @Override
     protected StandardTestEvaluatedField getValue(final String executionId, final ITestResource resource, 
+            final ITestResourceResolver testResourceResolver, 
             final String fieldName, final String fieldQualifier, final String fieldValue) {
         
         if (fieldValue == null || fieldValue.trim().equals("")) {
