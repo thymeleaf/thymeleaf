@@ -33,6 +33,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Bernard Le Roux
+ * @author Thomas Oster
  * 
  * @since 1.0
  *
