@@ -373,6 +373,22 @@ public final class Strings {
         return result;
     }
     
+    
+    /**
+     * <p>
+     *  repeat a target a number of times.
+     *  If non-String object, toString() will be called.
+     * </p>
+     * @param target      source of the copy.
+     * @param times       number of repetitions.
+     *
+     * @return target repeated number of times.
+     *
+     */
+    public String repeat(final Object target, final int times) {
+        return StringUtils.repeat(target, times);
+    }
+    
 
     /**
      * <p>

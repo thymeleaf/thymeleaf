@@ -44,6 +44,7 @@ import java.util.StringTokenizer;
  * @author Daniel Fern&aacute;ndez
  * @author Le Roux Bernard
  * @author Soraya S&aacute;nchez Labandeira
+ * @author Thomas Oster
  *
  * @since 1.0
  *
@@ -183,6 +184,27 @@ public final class StringUtils {
         // a substring does not free the memory occupied by the original String).
         return new String(target.toString().substring(beginIndex, endIndex));
 
+    }
+    
+
+    /**
+     * <p>
+     *  repeat a target a number of times.
+     *  If non-String object, toString() will be called.
+     * </p>
+     * @param target      source of the copy.
+     * @param times       number of repetitions.
+     *
+     * @return target repeated number of times.
+     *
+     */
+    public static String repeat(final Object target, final int times) {
+
+        Validate.notNull(target, "Cannot apply repeat on null");
+        final String str = target.toString();
+        final int len = str.length();
+        Validate.isTrue(times >= 0, "times must be >= 0");
+        return new String(new char[times]).replace("\0", str);
     }
 
 
