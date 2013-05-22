@@ -11,7 +11,7 @@ This is an auxiliary testing library, not directly a part of the Thymeleaf core 
 
 Current versions: 
 
-  * **Version 2.0.0-beta5** - for Thymeleaf 2.0 (requires 2.0.16+) 
+  * **Version 2.0.0** - for Thymeleaf 2.0 (requires thymeleaf 2.0.16+) 
 
 
 License
@@ -41,12 +41,12 @@ Features
   *   **Tests only the view layer**: template processing and its result.
   *   Includes **benchmarking** facilities: all tests are timed, times are aggregated.
   *   Highly extensible and configurable
-  *   Versatile testing structures: test sequences, iteration, concurrent execution.
-  *   Based on interfaces, out-of-the-box *standard test resolution* allows:
+  *   Versatile testing artifacts: test sequences, iteration, concurrent execution...
+  *   Based on interfaces. Out-of-the-box *standard test resolution* allows:
       * Easy specification of tests as simple text files, sequences as folders.
 	  * Advanced test configuration.
 	  * Test inheritance.
-	  * *Lenient result matching*, ignoring excess unneeded whitespace etc.
+	  * *Lenient* result matching, ignoring excess unneeded whitespace etc.
   * **Spring Framework** and **Spring Security** integration.
 
 ------------------------------------------------------------------------------
@@ -58,10 +58,10 @@ The testing framework can be used with just two lines of code:
 
 ```java
 final TestExecutor executor = new TestExecutor();
-executor.execute("test");
+executor.execute("classpath:test");
 ```
 
-Note how here we are only specifying the name of the *testable* to be resolved: `"test"` (more on testables later). But anyway this is only two lines, and therefore we are accepting some defaults, namely:
+Note how here we are only specifying the name of the *testable* to be resolved: `"classpath:test"`, which is a folder called `test` in classpath. (more on testables later). But anyway this is only two lines, and therefore we are accepting some defaults, namely:
 
    * Dialects. By default only the *Standard Dialect* will be enabled.
    * Resolvers. By default the *standard test resolution* mechanism will be used (more on it later).
@@ -78,16 +78,16 @@ final TestExecutor executor = new TestExecutor();
 executor.setDialects(dialects);
 executor.setTestableResolver(resolver);
 executor.setReporter(reporter);
-executor.execute("test");
+executor.execute("classpath:test");
 ```
 
 The meaning and working of the *dialects* property is pretty obvious and straightforward. As for the *resolvers* and *reporters*, we will see more on them in next sections.
 
 ## API ##
 
-The Thymeleaf testing framework is based on interfaces, and therefore defines an API that specifies the diverse structures involved in the testing process:
+The Thymeleaf testing framework is based on interfaces, and therefore defines an API that specifies the diverse artifacts involved in the testing process:
 
-Test structures at the `org.thymeleaf.testing.templateengine.testable` package:
+Test artifacts at the `org.thymeleaf.testing.templateengine.testable` package:
 
 | Interface                  | Description |Base Impl| Default Impl|
 |----------------------------|-------------|------------------|-------------|
@@ -104,6 +104,14 @@ Interfaces at the `org.thymeleaf.testing.templateengine.resolver` package:
 | Interface                  | Description |
 |----------------------------|-------------|
 |`ITestableResolver`         | Implemented by objects in charge of *resolving testables*, this is, of creating the `ITestable` objects and structures that will be executed. A *standard test resolution* implementation is provided out of the box that builds these testable structures from text files and their containing folders in disk. |
+
+
+Interfaces at the `org.thymeleaf.testing.templateengine.resource` package:
+
+| Interface                  | Description |
+|----------------------------|-------------|
+|`ITestResource`             | Implemented by objects representing test resources like testable artifact locations, test input text, test output text, etc. |
+|`ITestResourceResolver`     | Implemented by objects in charge of resolving test resources, used by *testable resolvers*. For example, a *testable resolver* (`ITestableResolver`) will use an `ITestResourceResolver` implementation for converting the resource name `"classpath:test"` into a valid `ITestResource` object. |
 
 
 Interfaces at the `org.thymeleaf.testing.templateengine.report` package:
@@ -219,10 +227,7 @@ Note that each execution of `executor.execute(...)` will create its own `Templat
 
 ## Testable Resolvers ##
 
-Standard test resolution is provided by means of two implementations of the `org.thymeleaf.testing.templateengine.resolver.ITestableResolver` interface, both living at the `org.thymeleaf.testing.templateengine.resolver` package. They are basically two flavors of the same resolution mechanism:
-
-   * `StandardClassPathTestableResolver` for resolving tests from the classpath.
-   * `StandardFileTestableResolver` for resolving tests from anywhere in the file system.
+Standard test resolution is provided by means of an implementation of the `org.thymeleaf.testing.templateengine.resolver.ITestableResolver` interface called `org.thymeleaf.testing.templateengine.resolver.StandardTestableResolver`.
 
 
 ### The Standard Resolution mechanism ###
@@ -302,10 +307,23 @@ We can see there that tests are configured by means of *directives*, and that th
 
 | Name                       | Description |
 |----------------------------|-------------|
-|`%EXTENDS`                  | Test specification (in a format understandable by the implementation of `ITestableResolver` being used) from which this test must inherit all its directives, overriding only those that are explicitly specified in the current test along with this `%EXTENDS` directive.<br />Example: `%EXTENDS test/bases/base1.test` |
+|`%EXTENDS`                  | Test specification (in a format understandable by the implementations of `ITestableResolver` and `ITestResourceResolver` being used) from which this test must inherit all its directives, overriding only those that are explicitly specified in the current test along with this `%EXTENDS` directive.<br />Examples: `%EXTENDS classpath:test/bases/base1.test` |
 
 Also, any line starting by `#` in a test file will be considered **a comment** and simply ignored.
 
+
+##### More on resource resolution #####
+
+The standard mechanism for resource resolution allows you to:
+
+   * Specify resources in classpath: `classpath:tests/mytest.thtest`
+   * Specify resources in the filesystem: `file:/home/myuser/tests/mytest.thtest` or `file:C\Users\myser\tests\mytest.thtest`.
+
+Also, in some scenarios (like the `%EXTENDS` directive in test files) resource resolution can be relative to the current resource:
+
+```
+%EXTENDS ../../base-tests/base.thtest
+```
 
 
 ##### More on context specification #####
@@ -318,7 +336,7 @@ onevar = 'Goodbye!'
 twovar = 'Hello!'
 ```
 
-And those literals are specified between commas because all context values are in fact OGNL expressions, so we could in fact use previous variables in new ones:
+And those literals are specified between commas because all context values are in fact **OGNL** expressions, so we could in fact use previous variables in new ones:
 
 ```properties
 %CONTEXT
@@ -385,7 +403,7 @@ Imagine we have this folder structure at our classpath:
              |
              +->expression22.thtest
 
-When we ask the standard test resolver to resolve `"tests"`, it will create the following *testable* structure:
+When we ask the standard test resolver to resolve that folder called `tests` (with `"classpath:tests"`), it will create the following *testable artifact* structure:
 
    * A *Test Sequence* called `tests`, containing:
      * A *Test Sequence* called `warmup` containing:
@@ -397,9 +415,9 @@ When we ask the standard test resolver to resolve `"tests"`, it will create the 
 
 So, as can be extracted from the example above:
 
-   * Any folder will create a *test sequence*
-   * A folder with a name ending in `-iter-X` will create a *test iterator* iterating `X` times.
-   * A folder with a name ending in `-parallel-X` will create a *test parallelizer* executing its contents with `X` concurrent threads.
+   * In general, folders will be resolved as *test sequence*
+   * Folders with a name ending in `-iter-X` will be resolved as a *test iterator* iterating `X` times.
+   * Folders with a name ending in `-parallel-X` will be resolved as a *test parallelizer* executing its contents with `X` concurrent threads.
 
 
 #### Test index files ####
@@ -422,13 +440,14 @@ Also, note that when a folder includes a special file named `folder.thindex`, th
 
 ### Extending the standard test resolution mechanism ###
 
-The standard resolution mechanism can be extended in several ways, by means of a series of *setter* methods in the `StandardClassPathTestableResolver` and `StandardFileTestableResolver` classes which allow developers to configure how each step of test resolution is performed:
+The standard resolution mechanism can be extended in several ways, by means of a series of *setter* methods in the `StandardTestableResolver` class which allow developers to configure how each step of test resolution is performed:
 
 | Setter                       | Description |
 |----------------------------|-------------|
 |`setTestReader(IStandardTestReader)`      | Specifies the implementation that will be in charge of reading test files and return its raw data. Default implementation is the `StandardTestReader` class. |
 |`setTestEvaluator(IStandardTestEvaluator)` | Specifies the implementation that will be in charge of evaluating the *raw data* returned by the test reader into the different values that will be used for building the test object. Default implementation is `StandardTestEvaluator`. |
 |`setTestBuilder(IStandardTestBuilder)` | Specifies the implementation that will be in charge of actually building test objects from the values evaluated by the *test evaluator* in the previous step. Default implementation is `StandardTestBuilder`. |
+|`setTestResourceResolver(ITestResourceResolver)` | Specifies the implementation that will be in charge of actually resolving resources (including testable artifacts, `%EXTENDS` directives, `.thindex` entries, etc.). |
 
 
 

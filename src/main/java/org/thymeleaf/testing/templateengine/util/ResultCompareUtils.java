@@ -123,7 +123,6 @@ public class ResultCompareUtils {
     private static List<TraceEvent> normalizeTrace(final List<TraceEvent> trace) {
         
         final List<TraceEvent> newTrace = new ArrayList<TraceEvent>();
-
         final List<TraceEvent> currentAttributeList = new ArrayList<TraceEvent>();
         
         for (final TraceEvent event : trace) {
@@ -152,6 +151,21 @@ public class ResultCompareUtils {
                 // (they represent mere inter-attribute whitespace)
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType)) {
                 currentAttributeList.add(event);
+            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCUMENT_END.equals(eventType)) {
+                /*
+                 * If the last event before document end is just whitespace text and trace is 
+                 * bigger than just two events (document start + one event),
+                 * we will just remove it. Whitespace at the end of a document has no influence at all.
+                 */
+                final TraceEvent lastEvent = 
+                        (newTrace.size() > 2? newTrace.get(newTrace.size() - 1) : null);
+                if (lastEvent != null && TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(lastEvent.getType())) {
+                    final String text = lastEvent.getContent()[0];
+                    if (isAllWhitespace(text)) {
+                        newTrace.remove(newTrace.size() - 1);
+                    }
+                }
+                newTrace.add(event);
             } else {
                 newTrace.add(event);
             }
@@ -191,6 +205,19 @@ public class ResultCompareUtils {
     }
     
     
+    
+    
+    
+    private static boolean isAllWhitespace(final String text) {
+        final int textLen = text.length();
+        for (int i = 0; i < textLen; i++) {
+            final char c = text.charAt(i);
+            if (!Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
     
     
     
@@ -237,9 +264,9 @@ public class ResultCompareUtils {
     
     public static String createExplanation(
             final String actualFragment, final int actualLine, final int actualCol, final String expectedFragment) {
-        return "Actual result does not match expected result. Obtained: [" + actualFragment + "] " +
+        return "Actual result does not match expected result.\nObtained:\n[" + actualFragment + "]\n" +
                "at line " + actualLine + " col " + actualCol + ", but " +
-               "expected [" + expectedFragment + "]";
+               "expected:\n[" + expectedFragment + "]";
     }
     
     

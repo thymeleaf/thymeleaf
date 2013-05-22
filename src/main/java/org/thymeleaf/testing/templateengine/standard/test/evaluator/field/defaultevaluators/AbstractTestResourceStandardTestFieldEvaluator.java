@@ -49,9 +49,9 @@ public abstract class AbstractTestResourceStandardTestFieldEvaluator
         String value = fieldValue.trim();
         
         if (value.startsWith("(") && value.endsWith(")")) {
-            value = value.substring(0, value.length() - 1);
+            value = value.substring(1, value.length() - 1);
             final ITestResource newResource = 
-                    testResourceResolver.resolveRelative(value, resource);
+                    testResourceResolver.resolve(value, resource);
             return StandardTestEvaluatedField.forSpecifiedValue(newResource);      
         }
         

@@ -162,7 +162,7 @@ public class StandardTestableResolver implements ITestableResolver {
         }
 
         final ITestResource resource = 
-                this.testResourceResolver.resolveRelative(testableName, relativeTo);
+                this.testResourceResolver.resolve(testableName, relativeTo);
         if (resource == null) {
             return null;
         }
@@ -443,7 +443,7 @@ public class StandardTestableResolver implements ITestableResolver {
                 final String testSpec = lineComponents[1];
                 
                 final ITestResource testResource =
-                        this.testResourceResolver.resolveRelative(testResourceName, indexResource);
+                        this.testResourceResolver.resolve(testResourceName, indexResource);
 
                 ITestable testable = resolveResource(executionId, testResource);
                 if (testable == null) {

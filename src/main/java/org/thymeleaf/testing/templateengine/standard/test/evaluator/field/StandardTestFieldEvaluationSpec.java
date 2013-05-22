@@ -119,6 +119,7 @@ public class StandardTestFieldEvaluationSpec {
                                     StandardTestFieldEvaluationSpec.CACHE_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.CONTEXT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.MESSAGES_FIELD_SPEC,
+                                    StandardTestFieldEvaluationSpec.FRAGMENT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.INPUT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.OUTPUT_FIELD_SPEC,
                                     StandardTestFieldEvaluationSpec.EXCEPTION_FIELD_SPEC,

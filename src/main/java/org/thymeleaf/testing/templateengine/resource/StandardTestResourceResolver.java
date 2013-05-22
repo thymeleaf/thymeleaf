@@ -41,6 +41,7 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
     public static final StandardTestResourceResolver ISO8859_1_RESOLVER = new StandardTestResourceResolver("ISO-8859-1");
     
     private static final String CLASSPATH_RESOURCE_PREFIX = "classpath:";
+    private static final String FILE_RESOURCE_PREFIX = "file:";
     
     private final String characterEncoding;
     
@@ -59,20 +60,36 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
     
     
     
+    private boolean hasPrefix(final String resourceName) {
+        if (resourceName == null) {
+            return false;
+        }
+        return resourceName.startsWith(CLASSPATH_RESOURCE_PREFIX) ||
+               resourceName.startsWith(FILE_RESOURCE_PREFIX);
+    }
+    
     
     
     
     public ITestResource resolve(final String resourceName) {
         
-        if (resourceName == null) {
-            return null;
+        Validate.notNull(resourceName, "Resource name cannot be null");
+        
+        if (!hasPrefix(resourceName)) {
+            throw new IllegalArgumentException(
+                    "Resource name \"" + resourceName + "\" has no recognized prefix, and it has not been declared as relative.");
         }
 
         if (resourceName.startsWith(CLASSPATH_RESOURCE_PREFIX)) {
             return resolveClassPathTestResource(resourceName.substring(CLASSPATH_RESOURCE_PREFIX.length()));
         }
+        
+        if (resourceName.startsWith(FILE_RESOURCE_PREFIX)) {
+            return resolveLocalTestResource(resourceName.substring(FILE_RESOURCE_PREFIX.length()));
+        }
 
-        return resolveLocalTestResource(resourceName);
+        throw new IllegalArgumentException(
+                "Resource name \"" + resourceName + "\" has no recognized prefix, and it has not been declared as relative.");
         
     }
 
@@ -84,9 +101,7 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
     
     protected ITestResource resolveClassPathTestResource(final String resourceName) {
         
-        if (resourceName == null) {
-            return null;
-        }
+        Validate.notNull(resourceName, "Resource name cannot be null");
         
         final ClassLoader cl = 
                 ClassLoaderUtils.getClassLoader(StandardTestResourceResolver.class);
@@ -118,9 +133,7 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
     
     protected ITestResource resolveLocalTestResource(final String resourceName) {
         
-        if (resourceName == null) {
-            return null;
-        }
+        Validate.notNull(resourceName, "Resource name cannot be null");
         
         try {
             final File resourceFile = new File(resourceName);
@@ -143,35 +156,39 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
 
     
 
-    public ITestResource resolveRelative(
-            final String relativeResourceName, final ITestResource relativeTo) {
+    public ITestResource resolve(
+            final String resourceName, final ITestResource relativeTo) {
         
-        if (relativeResourceName == null) {
-            return null;
+        Validate.notNull(resourceName, "Resource name cannot be null");
+        
+        if (hasPrefix(resourceName)) {
+            // Resource name has prefix, we will not consider it relative
+            return resolve(resourceName);
         }
         
         if (relativeTo == null) {
-            // We consider the name to be non-relative
-            return resolve(relativeResourceName);
+            // It has no prefix, but it no relative reference has been specified
+            throw new IllegalArgumentException(
+                    "Resource name \"" + resourceName + "\" has no recognized prefix, and the resource it should be relative to was specified as null.");
         }
         
-        if (relativeResourceName.startsWith(CLASSPATH_RESOURCE_PREFIX)) {
+        if (resourceName.startsWith(CLASSPATH_RESOURCE_PREFIX)) {
             // We consider the name to be non-relative
-            return resolveClassPathTestResource(relativeResourceName.substring(CLASSPATH_RESOURCE_PREFIX.length()));
+            return resolveClassPathTestResource(resourceName.substring(CLASSPATH_RESOURCE_PREFIX.length()));
         }
         
         if (relativeTo instanceof IClassPathTestResource) {
             final IClassPathTestResource classPathFileTestResource = (IClassPathTestResource) relativeTo;
-            return resolveRelativeClassPathTestResource(relativeResourceName, classPathFileTestResource);
+            return resolveRelativeClassPathTestResource(resourceName, classPathFileTestResource);
         }
         
         if (relativeTo instanceof ILocalTestResource) {
             final ILocalTestResource localFileTestResource = (ILocalTestResource) relativeTo;
-            return resolveRelativeLocalTestResource(relativeResourceName, localFileTestResource);
+            return resolveRelativeLocalTestResource(resourceName, localFileTestResource);
         }
         
         throw new TestEngineExecutionException(
-                "Error while resolving relative resource \"" + relativeResourceName + "\". The resource it " +
+                "Error while resolving relative resource \"" + resourceName + "\". The resource it " +
                 "should be relative to is of an unknown class: " + relativeTo.getClass().getName());
         
     }
