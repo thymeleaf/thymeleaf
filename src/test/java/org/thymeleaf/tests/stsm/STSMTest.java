@@ -50,7 +50,7 @@ public class STSMTest {
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
         executor.execute("classpath:stsm");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
         
     }

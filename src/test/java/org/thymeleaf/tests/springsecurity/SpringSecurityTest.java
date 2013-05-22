@@ -57,7 +57,7 @@ public class SpringSecurityTest {
                 Arrays.asList(new IDialect[] { new SpringStandardDialect(), new SpringSecurityDialect()}));
         executor.execute("classpath:springsecurity");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
         
     }
