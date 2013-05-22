@@ -288,7 +288,7 @@ We can see there that tests are configured by means of *directives*, and that th
 
 | Name                       | Description |
 |----------------------------|-------------|
-|`%INPUT`                    | Test input, in the form of an HTML template or fragment. This parameter is *required*. |
+|`%INPUT`                    | Test input, in the form of an HTML template or fragment. A resource name can also be specified between parenthesis, like `%INPUT (file:/home/user/myproject/src/main/resources/templates/mytemplate.html)`. This parameter is *required*. |
 |`%INPUT[qualif]`              | Additional inputs can be specified by adding a *qualifier* to its name. These additional inputs can be used as external template fragments in `th:include`, `th:substituteby`, etc. |
 |`%FRAGMENT`                 | Fragment specification (in the same format as used in `th:include` attributes) to be applied on the test input before processing. *Optional*. |
 |`%TEMPLATE_MODE`            | Template mode to be used: `HTML5`, `XHTML`, etc. |
@@ -298,7 +298,7 @@ We can see there that tests are configured by means of *directives*, and that th
 
 | Name                       | Description |
 |----------------------------|-------------|
-|`%OUTPUT`                   | Test output to be expected, if we expect template execution to finish successfully. Either this or the `%EXCEPTION` directive must be specified. |
+|`%OUTPUT`                   | Test output to be expected, if we expect template execution to finish successfully. Either this or the `%EXCEPTION` directive must be specified. A resource name can also be specified between parenthesis, like `%OUTPUT (file:/home/user/myproject/src/test/resources/template-results/mytemplate-result.html)` |
 |`%EXACT_MATCH`              | Whether *exact matching* should be used. By default, *lenient matching* is used, which means excess whitespace (*ignorable whitespace*) will not be taken into account for matching test results. Setting this flag to `true` will perform exact *character-by-character* matching. |
 |`%EXCEPTION`                | Exception to be expected, if we expect template execution to raise an exception. Either this or the `%OUTPUT` directive must be specified.  |
 |`%EXCEPTION_MESSAGE_PATTERN`| Pattern (in `java.util.regex.Pattern` syntax) expected to match the message of the exception raised during template execution. This directive needs the `%EXCEPTION` directive to be specified too. |
@@ -325,6 +325,11 @@ Also, in some scenarios (like the `%EXTENDS` directive in test files) resource r
 %EXTENDS ../../base-tests/base.thtest
 ```
 
+Note that, when using resource resolution in an `%INPUT` or `%OUTPUT` directive, resource names must be specified between parenthesis:
+
+```
+%INPUT (file:/home/user/myproject/src/main/resources/templates/mytemplate.html)
+```
 
 ##### More on context specification #####
 
