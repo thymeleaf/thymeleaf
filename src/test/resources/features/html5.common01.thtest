@@ -11,6 +11,7 @@ salute_bold = '<b>Hello!</b>'
 # ------------------------------------------------------------
 %MESSAGES
 salute = <b>Hello</b>, {0} ''The Great''!
+name_is = The name is {0}
 # ------------------------------------------------------------
 %INPUT
 <div th:fragment="copy">
