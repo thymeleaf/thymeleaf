@@ -274,6 +274,10 @@ public class ResultCompareUtils {
     
     private static int computeErrorMessageLength(final TraceEvent eventItem) {
         
+        if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventItem)) {
+            return 80;
+        }
+        
         final Object[] contentArray = eventItem.getContent();
         if (contentArray == null || contentArray.length == 0) {
             return 80;
