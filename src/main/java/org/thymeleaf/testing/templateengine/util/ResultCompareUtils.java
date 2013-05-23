@@ -77,7 +77,7 @@ public class ResultCompareUtils {
                 
                 final String actualFragment =
                         getFragmentSurrounding(
-                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, 80);
+                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, computeErrorMessageLength(actualTraceItem));
                 final String expectedFragment =
                         getFragmentSurrounding(
                                 expected, Integer.MAX_VALUE, Integer.MAX_VALUE, 20, 0);
@@ -97,10 +97,10 @@ public class ResultCompareUtils {
                 
                 final String actualFragment =
                         getFragmentSurrounding(
-                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, 80);
+                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, computeErrorMessageLength(actualTraceItem));
                 final String expectedFragment =
                         getFragmentSurrounding(
-                                expected, expectedTraceItem.getLine(), expectedTraceItem.getCol(), 20, 80);
+                                expected, expectedTraceItem.getLine(), expectedTraceItem.getCol(), 20, computeErrorMessageLength(expectedTraceItem));
                
                 final String explanation =
                         createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
@@ -272,6 +272,27 @@ public class ResultCompareUtils {
     
     
     
+    private static int computeErrorMessageLength(final TraceEvent eventItem) {
+        
+        final Object[] contentArray = eventItem.getContent();
+        if (contentArray == null || contentArray.length == 0) {
+            return 80;
+        }
+        
+        final Object contentObj = eventItem.getContent()[0];
+        if (contentObj == null || !(contentObj instanceof String)) {
+            return 80;
+        }
+        
+        final String content = (String) contentObj;
+        return content.length() + 20;
+        
+    }
+    
+    
+    
+    
+    
     
     
     private ResultCompareUtils() {
@@ -339,24 +360,6 @@ public class ResultCompareUtils {
         
     }
     
-    
-    
-    
-    public static void main(final String[] args) {
-        
-        final String m1 =
-                "<!DOCTYPE html>\n" +
-                "<html>\n" +
-                "  <head class=\"a\" th:include=\"header\">\n" +
-                "  </head>\n" +
-                "  <body>\n" +
-                "      <h1 th:utext=\"${onevar}\">Hello!</h1>\n" +
-                "  </body>\n" +
-                "</html>";
-        
-        System.out.println("[" + getFragmentSurrounding(m1, 3, 10, 50, 60) + "]");
-        
-    }
     
     
 }

@@ -31,6 +31,8 @@ import org.thymeleaf.util.Validate;
 
 public class TestMessages implements ITestMessages {
 
+    private static final Object[] EMPTY_MESSAGE_PARAMETERS = new Object[0];
+    
     private final Map<Locale,ITestMessagesForLocale> messagesByLocale = new HashMap<Locale,ITestMessagesForLocale>();
     
     
@@ -106,12 +108,8 @@ public class TestMessages implements ITestMessages {
             return null;
         }
         
-        if (messageParameters == null || messageParameters.length == 0) {
-            return messageValue;
-        }
-
         final MessageFormat messageFormat = new MessageFormat(messageValue, locale);
-        return messageFormat.format(messageParameters);
+        return messageFormat.format((messageParameters != null? messageParameters : EMPTY_MESSAGE_PARAMETERS));
         
     }
     
