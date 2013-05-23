@@ -1,0 +1,21 @@
+%EXTENDS ../html5.common01.thtest
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${salute_bold}">
+  Some text
+</p>
+<p th:text="*{salute_bold}">
+  Some text
+</p>
+<p th:utext="${salute_bold}">
+  Some text
+</p>
+<p th:utext="*{salute_bold}">
+  Some text
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>&lt;b&gt;Hello!&lt;/b&gt;</p>
+<p>&lt;b&gt;Hello!&lt;/b&gt;</p>
+<p><b>Hello!</b></p>
+<p><b>Hello!</b></p>

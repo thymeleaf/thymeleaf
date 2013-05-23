@@ -1,0 +1,17 @@
+%EXTENDS ../html5.common01.thtest
+# ------------------------------------------------------------
+%INPUT
+<div th:object="${user}">
+  <p th:text="*{name + ' - ' + nationality}">
+    Some text
+  </p>
+  <p th:utext="*{name + ' - ' + nationality}">
+    Some text
+  </p>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>John Apricot - Antarctica</p>
+  <p>John Apricot - Antarctica</p>
+</div>

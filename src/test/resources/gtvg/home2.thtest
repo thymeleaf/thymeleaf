@@ -1,0 +1,43 @@
+%EXTENDS gtvg.common.thtest
+# ------------------------------------------------------------
+%CONTEXT
+today = #calendars.create(2011,11,11)
+# ------------------------------------------------------------
+%MESSAGES
+home.welcome=Welcome to our grocery store, {0} (from default messages)!
+logo=Good Thymes Virtual Grocery logo
+date.format=MMMM dd',' yyyy
+# ------------------------------------------------------------
+%INPUT 
+(../../../../thymeleafexamples-gtvg/src/main/webapp/WEB-INF/templates/home.html)
+# ------------------------------------------------------------
+%FRAGMENT //body
+# ------------------------------------------------------------
+%OUTPUT 
+  <body>
+
+    <div>
+      <img src="/testing/images/gtvglogo.png" alt="Good Thymes Virtual Grocery logo" title="Good Thymes Virtual Grocery logo" />
+    </div>
+  
+    <p>Welcome to our grocery store, John Apricot (from default messages)!</p>
+  
+    <p>
+      Today is: <span>November 11, 2011</span>
+    </p>
+    
+    <p>Please select an option</p>
+    <ol>
+      <li><a href="/testing/product/list" shape="rect">Product List</a></li>
+      <li><a href="/testing/order/list" shape="rect">Order List</a></li>
+      <li><a href="/testing/subscribe" shape="rect">Subscribe to our Newsletter</a></li>
+      <li><a href="/testing/userprofile" shape="rect">See User Profile</a></li>
+    </ol>
+      
+    <p>Now you are looking at a <span>working web application</span>.</p>
+  
+    <div>
+      &copy; 2011 The Good Thymes Virtual Grocery
+    </div>
+  
+  </body>

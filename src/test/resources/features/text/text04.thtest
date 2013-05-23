@@ -1,0 +1,13 @@
+%EXTENDS ../html5.common01.thtest
+# ------------------------------------------------------------
+%INPUT
+<div th:text="'Application name: ' + ${applicationName}">
+  Some text
+</div>
+<div th:utext="'Application name: ' + ${applicationName}">
+  Some text
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Application name: Testing App</div>
+<div>Application name: Testing App</div>
