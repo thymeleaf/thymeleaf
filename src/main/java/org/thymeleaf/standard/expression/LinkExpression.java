@@ -200,11 +200,16 @@ public final class LinkExpression extends SimpleExpression {
 
     
     private static Expression computeBase(final String baseStr) {
+    	//if baseStr starts with #, consider it as a message resource.
+    	//cannot remove # pattern in org.thymeleaf.standard.expression.Token,
+    	//token stating with # in org.thymeleaf.standard.expression.Token is used to represents Strings,Objects.. utils 
+    	if(!baseStr.startsWith("#")){
         // Base will be tried to be computed first as token, then as expression
         final Token token = Token.parse(baseStr);
         if (token != null) {
             return TextLiteralExpression.parseTextLiteral(token.getValue());
         }
+    	}
         return Expression.parse(baseStr);
     }
     
