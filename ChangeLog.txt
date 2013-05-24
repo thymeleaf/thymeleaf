@@ -1,6 +1,7 @@
 2.0.17
 ======
 - Fixed resource bundle messages not being processed as such when message parameters were empty.
+- Fixed link expressions not correctly handling #{...} expressions as base URL.
 
 
 2.0.16
