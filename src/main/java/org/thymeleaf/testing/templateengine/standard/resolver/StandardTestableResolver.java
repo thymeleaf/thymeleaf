@@ -186,13 +186,10 @@ public class StandardTestableResolver implements ITestableResolver {
         
         if (resource instanceof ITestResourceItem) {
         
-            if (resourceName.toUpperCase().endsWith(TEST_FILE_SUFFIX)) {
-                return TestableType.TEST;
-            }
             if (resourceName.toUpperCase().endsWith(INDEX_FILE_SUFFIX)) {
                 return TestableType.SEQUENCE;
             }
-            return TestableType.NONE;
+            return TestableType.TEST;
             
         }
         
@@ -325,13 +322,32 @@ public class StandardTestableResolver implements ITestableResolver {
             }
             
             if (index == null) {
+                
                 for (final ITestResource resourceInFolder : containerResource.getContainedResources()) {
+                    
+                    if (resourceInFolder == null) {
+                        continue;
+                    }
+                    
+                    if (!(resourceInFolder instanceof ITestResourceContainer)) {
+                        final String resourceName = resourceInFolder.getName();
+                        if (resourceName == null) {
+                            continue;
+                        }
+                        if (!resourceName.toUpperCase().endsWith(TEST_FILE_SUFFIX)) {
+                            continue;
+                        }
+                    }
+                    
                     final ITestable testable = resolveResource(executionId, resourceInFolder);
                     if (testable != null) {
                         testSequence.addElement(testable);
                     }
+                    
                 }
+                
                 return testSequence;
+                
             }
             
         }
