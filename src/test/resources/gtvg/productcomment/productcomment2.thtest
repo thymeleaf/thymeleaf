@@ -1,4 +1,4 @@
-%EXTENDS productcomment.common.thtest
+%EXTENDS productcomment.common
 # ------------------------------------------------------------
 %CONTEXT
 prod = prod2

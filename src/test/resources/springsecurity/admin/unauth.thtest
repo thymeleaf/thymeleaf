@@ -1,4 +1,4 @@
-%EXTENDS index.common.thtest
+%EXTENDS admin.common
 # ------------------------------------------------------------
 %OUTPUT
 <!DOCTYPE html>

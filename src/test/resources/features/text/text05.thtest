@@ -1,4 +1,4 @@
-%EXTENDS ../html5.common01.thtest
+%EXTENDS ../html5.01.common
 # ------------------------------------------------------------
 %INPUT
 <p th:text="${user.name}">

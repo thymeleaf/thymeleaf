@@ -1,4 +1,4 @@
-%EXTENDS ../html5.common01.thtest
+%EXTENDS link.common
 # ------------------------------------------------------------
 %INPUT
 <a th:href="@{/url0/url1}">go</a>
