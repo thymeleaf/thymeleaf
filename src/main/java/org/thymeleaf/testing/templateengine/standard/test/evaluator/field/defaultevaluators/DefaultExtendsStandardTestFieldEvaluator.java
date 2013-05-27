@@ -48,7 +48,7 @@ public class DefaultExtendsStandardTestFieldEvaluator extends AbstractStandardTe
             return StandardTestEvaluatedField.forNoValue();
         }
 
-        return StandardTestEvaluatedField.forSpecifiedValue(fieldValue);
+        return StandardTestEvaluatedField.forSpecifiedValue(fieldValue.trim());
         
     }
 

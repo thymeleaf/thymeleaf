@@ -326,37 +326,41 @@ public class ResultCompareUtils {
             // We will try to output all text from the start of the container tag to the last
             // attribute in the same tag.
             
-            final int currentAttributeLine = eventItem.getLine();
-            final int currentAttributeCol = eventItem.getCol();
-            
-            int i = position + 1;
-            do {
-              eventItem = trace.get(i);
-              i++;
-            } while (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType()) &&
-                     i < trace.size());
-            
-            eventItem = trace.get(i - 2);
-            
-            final int lastAttributeLine = eventItem.getLine();
-            final int lastAttributeCol = eventItem.getCol();
-            final int lastAttributeLen = 
-                    eventItem.getContent()[0].length() + 
-                    eventItem.getContent()[1].length() + 
-                    eventItem.getContent()[2].length(); 
-            
-            i = position - 1;
-            do {
-              eventItem = trace.get(i);
-              i--;
-            } while (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) &&
-                     !TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType()) &&
-                     i >= 0);
+            final int attributeLine = eventItem.getLine();
+            final int attributeCol = eventItem.getCol();
 
-            return new int[] {
-                    (computeLengthFromTo(result, eventItem.getLine(), eventItem.getCol(), currentAttributeLine, currentAttributeCol) + 20),
-                    (computeLengthFromTo(result, currentAttributeLine, currentAttributeCol, lastAttributeLine, lastAttributeCol) + lastAttributeLen + 20)
-                    };
+            int i = position - 1;
+            eventItem = trace.get(i);
+            while (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) &&
+                    !TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType()) &&
+                    i > 0) {
+                eventItem = trace.get(--i);
+            }
+            
+            final int elementLine = eventItem.getLine();
+            final int elementCol = eventItem.getCol();
+            final int beforeDistance = 
+                    computeDistance(result, elementLine, elementCol, attributeLine, attributeCol);
+            
+            int afterDistance = 0;
+            int lastAttributeLen = 0;
+            eventItem = trace.get(++i);
+            
+            while (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType()) && i < trace.size()) {
+                final int distance = 
+                        computeDistance(result, attributeLine, attributeCol, eventItem.getLine(), eventItem.getCol());
+                if (distance > afterDistance) {
+                    afterDistance = distance;
+                    lastAttributeLen =
+                            eventItem.getContent()[0].length() + 
+                            (eventItem.getContent()[1] != null? eventItem.getContent()[1].length() : 0) + 
+                            (eventItem.getContent()[2] != null? eventItem.getContent()[2].length() : 0); 
+                }
+                eventItem = trace.get(++i);
+            }
+            
+
+            return new int[] { (beforeDistance + 20), (afterDistance + lastAttributeLen + 20) };
             
         }
         
@@ -385,7 +389,7 @@ public class ResultCompareUtils {
     
     
     
-    private static int computeLengthFromTo(
+    private static int computeDistance(
             final String text, 
             final int lineFrom, final int colFrom,
             final int lineTo, final int colTo) {
