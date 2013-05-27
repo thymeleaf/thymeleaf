@@ -2,6 +2,12 @@
 ======
 - Fixed resource bundle messages not being processed as such when message parameters were empty.
 - Fixed link expressions not correctly handling #{...} expressions as base URL.
+- Fixed link expressions with parenthesized base URLs and no parameters ("@{(${base})}") not being 
+  correctly parsed.
+- Added a way to escape "__" string in attributes ("\_\_") without being parsed as a preprocessing mark.
+- Fixed handling of local variables map in Node class so that variables added directly with
+  node.setNodeLocalVariable(...) are immediately available for next processors being executed and chidren
+  nodes. 
 
 
 2.0.16
