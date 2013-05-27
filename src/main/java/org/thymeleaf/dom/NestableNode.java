@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
@@ -484,7 +483,7 @@ public abstract class NestableNode extends Node {
             if (child instanceof NestableNode) {
 
                 final NestableNode nestableChild = (NestableNode) child;
-                final Map<String,Object> nestableChildNodeLocalVariables = 
+                final NodeLocalVariablesMap nestableChildNodeLocalVariables = 
                         nestableChild.unsafeGetNodeLocalVariables();
                
                 for (int i = 0; i < this.childrenLen; i++) {
