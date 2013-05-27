@@ -158,7 +158,12 @@ public final class LinkExpression extends SimpleExpression {
                     if (nestParLevel == 0) {
                         
                         if (i == 0) {
-                            return null;
+                            // It was not a parameter specification, but a base URL surrounded by parentheses! 
+                            final Expression baseExpr = computeBase(trimmedInput); 
+                            if (baseExpr == null) {
+                                return null;
+                            }
+                            return new LinkExpression(baseExpr, null);
                         }
                         
                         final String base = trimmedInput.substring(0, i);
