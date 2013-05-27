@@ -48,8 +48,6 @@ import org.thymeleaf.util.Validate;
 public abstract class Node implements Serializable {
 
     private static final long serialVersionUID = 3082306990735650683L;
-    
-    private static final int DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE = 3;
 
     /**
      * <p>
@@ -105,7 +103,7 @@ public abstract class Node implements Serializable {
     private boolean recomputeProcessorsAfterEachExecution;
     private boolean recomputeProcessorsImmediately;
     
-    private HashMap<String,Object> nodeLocalVariables;
+    private NodeLocalVariablesMap nodeLocalVariables;
 
     private ArrayList<ProcessorAndContext> processors;
 
@@ -656,7 +654,7 @@ public abstract class Node implements Serializable {
      * 
      * @return the map of node local variables
      */
-    public final Map<String,Object> unsafeGetNodeLocalVariables() {
+    final NodeLocalVariablesMap unsafeGetNodeLocalVariables() {
         return this.nodeLocalVariables;
     }
 
@@ -689,7 +687,7 @@ public abstract class Node implements Serializable {
      */
     public final void setNodeLocalVariable(final String name, final Object value) {
         if (this.nodeLocalVariables == null) {
-            this.nodeLocalVariables = new HashMap<String, Object>(DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE);
+            this.nodeLocalVariables = new NodeLocalVariablesMap();
         }
         this.nodeLocalVariables.put(name,  value);
     }
@@ -723,21 +721,17 @@ public abstract class Node implements Serializable {
     public final void setAllNodeLocalVariables(final Map<String,Object> variables) {
         if (variables != null) {
             if (this.nodeLocalVariables == null) {
-                this.nodeLocalVariables = new HashMap<String, Object>(variables);
-            } else {
-                this.nodeLocalVariables.putAll(variables);
+                this.nodeLocalVariables = new NodeLocalVariablesMap();
             }
+            this.nodeLocalVariables.putAll(variables);
         }
     }
 
     
     final void unsafeSetNodeLocalVariables(final Map<String,Object> variables) {
         if (variables != null) {
-            if (variables instanceof HashMap) {
-                this.nodeLocalVariables = (HashMap<String,Object>)variables;
-            } else {
-                this.nodeLocalVariables = new HashMap<String,Object>(variables);
-            }
+            this.nodeLocalVariables = new NodeLocalVariablesMap();
+            this.nodeLocalVariables.putAll(variables);
         } else { 
             this.nodeLocalVariables = null;
         }
@@ -911,8 +905,27 @@ public abstract class Node implements Serializable {
                     
                     Arguments executionArguments = arguments;
 
-                    final ProcessorResult processorResult = 
+                    // Obtain a "hash snapshot" of the node local variables map before
+                    // the processor is executed
+                    final int nodeLocalVariablesHashBefore = 
+                            (node.nodeLocalVariables == null? -1 : node.nodeLocalVariables.contentsHash()); 
+                    
+                    // Execute processor
+                    ProcessorResult processorResult = 
                             processor.getProcessor().process(executionArguments, processor.getContext(), node);
+
+                    // Obtain a "hash snapshot" of the node local variables map after
+                    // the processor has been executed
+                    final int nodeLocalVariablesHashAfter = 
+                            (node.nodeLocalVariables == null? -1 : node.nodeLocalVariables.contentsHash()); 
+
+                    // Check whether the processor just modified the node variables map. This
+                    // is done BEFORE processorResult.computeNewArguments(...) so that variables
+                    // set from the ProcessorResult have higher priority (i.e. can override) variables
+                    // set directly into the nodeLocalVariables map.
+                    if (nodeLocalVariablesHashBefore != nodeLocalVariablesHashAfter) {
+                        executionArguments = executionArguments.addLocalVariables(node.nodeLocalVariables);
+                    }
                     
                     // The execution arguments need to be updated as instructed by the processor
                     // (for example, for adding local variables)
@@ -990,7 +1003,8 @@ public abstract class Node implements Serializable {
         }
         node.parent = newParent;
         if (this.nodeLocalVariables != null) {
-            node.nodeLocalVariables = new HashMap<String,Object>(this.nodeLocalVariables);
+            node.nodeLocalVariables = new NodeLocalVariablesMap();
+            node.nodeLocalVariables.putAll(this.nodeLocalVariables);
         }
         if (this.nodeProperties != null) {
             node.nodeProperties = new HashMap<String,Object>(this.nodeProperties);
@@ -1011,6 +1025,41 @@ public abstract class Node implements Serializable {
      */
     public abstract void visit(final DOMVisitor visitor);
 
+    
+    
+    /**
+     * @since 2.0.17
+     */
+    public static class NodeLocalVariablesMap extends HashMap<String,Object> {
+        
+        private static final long serialVersionUID = 4632571067579619256L;
+        
+        
+        public static final int DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE = 3;
+        
+        public NodeLocalVariablesMap() {
+            super(DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE);
+        }
+
+        /* 
+         * Creates a hash that can be used for comparing the state of the variables
+         * map before and after processor execution and therefore determine if processor
+         * execution changed the map's contents.  
+         */
+        int contentsHash() {
+            final int prime = 31;
+            int result = super.hashCode();
+            result = prime * result + System.identityHashCode(this);
+            for (final Map.Entry<String,Object> entry : this.entrySet()) {
+                final String key = entry.getKey();
+                final Object value = entry.getValue();
+                result = prime * result + ((key == null) ? 0 : System.identityHashCode(key));
+                result = prime * result + ((value == null) ? 0 : System.identityHashCode(value));
+            }
+            return result;
+        }
+        
+    }
     
     
 
