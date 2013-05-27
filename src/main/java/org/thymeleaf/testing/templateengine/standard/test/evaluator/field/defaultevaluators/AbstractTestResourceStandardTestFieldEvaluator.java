@@ -46,7 +46,11 @@ public abstract class AbstractTestResourceStandardTestFieldEvaluator
             return StandardTestEvaluatedField.forNoValue();
         }
 
-        String value = fieldValue.trim();
+        String value = fieldValue;
+        if (isValueInSameLineAsDirective(value)) {
+            value = fieldValue.trim();
+        }
+        
         
         if (value.startsWith("(") && value.endsWith(")")) {
             value = value.substring(1, value.length() - 1);
@@ -66,5 +70,19 @@ public abstract class AbstractTestResourceStandardTestFieldEvaluator
     
     
     protected abstract String getFileSuffix();
+    
+    
+    
+    private static boolean isValueInSameLineAsDirective(final String value) {
+        final int valueLen = value.length();
+        for (int i = 0; i < valueLen; i++) {
+            final char c = value.charAt(i);
+            if (c == '\n' && valueLen > (i + 1)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     
 }

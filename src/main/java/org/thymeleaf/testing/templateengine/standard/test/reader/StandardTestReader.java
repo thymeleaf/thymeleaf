@@ -85,6 +85,7 @@ public class StandardTestReader implements IStandardTestReader {
             String currentFieldName = null;
             String currentFieldQualifier = null;
             StringBuilder strBuilder = null;
+            boolean builderContainsSomething = false;
             
             String line = r.readLine();
             while (line != null) {
@@ -104,10 +105,11 @@ public class StandardTestReader implements IStandardTestReader {
                         continue;
                     }
                     if (strBuilder != null) {
-                        if (strBuilder.length() > 0) {
+                        if (builderContainsSomething) {
                             strBuilder.append('\n');
                         }
                         strBuilder.append(line);
+                        builderContainsSomething = true;
                     }
                     line = r.readLine();
                     continue;
@@ -122,13 +124,16 @@ public class StandardTestReader implements IStandardTestReader {
                 currentFieldQualifier = extractFieldQualifier(newFieldDefinition);
                 
                 strBuilder = new StringBuilder();
+                builderContainsSomething = false;
+                
                 if ((newFieldDefinition.length() + 1) < (lineLen - 1)) {
                     int valueStart = newFieldDefinition.length() + 1;
-                    while (valueStart < lineLen && Character.isWhitespace(line.charAt(valueStart))) { 
-                        valueStart++; 
-                    }
+//                    while (valueStart < lineLen && Character.isWhitespace(line.charAt(valueStart))) { 
+//                        valueStart++; 
+//                    }
                     if (valueStart < (lineLen - 1)) {
                         strBuilder.append(line.substring(valueStart));
+                        builderContainsSomething = true;
                     }
                 }
                 

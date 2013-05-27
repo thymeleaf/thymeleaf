@@ -74,13 +74,16 @@ public class ResultCompareUtils {
                     (expectedTraceSize > i? expectedTrace.get(i) : null);
             
             if (expectedTraceItem == null) {
+
+                final int[] actualFragmentReportSizes = computeErrorMessageLength(actualTrace, i, actual);
+                final int[] expectedFragmentReportSizes = new int[] {20,0};
                 
                 final String actualFragment =
                         getFragmentSurrounding(
-                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, computeErrorMessageLength(actualTraceItem));
+                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), actualFragmentReportSizes[0], actualFragmentReportSizes[1]);
                 final String expectedFragment =
                         getFragmentSurrounding(
-                                expected, Integer.MAX_VALUE, Integer.MAX_VALUE, 20, 0);
+                                expected, Integer.MAX_VALUE, Integer.MAX_VALUE, expectedFragmentReportSizes[0], expectedFragmentReportSizes[1]);
                
                 final String explanation =
                         createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
@@ -94,13 +97,16 @@ public class ResultCompareUtils {
                     (lenient? actualTraceItem.matchesTypeAndContent(expectedTraceItem) : actualTraceItem.equals(expectedTraceItem));
             
             if (!itemMatches) {
+
+                final int[] actualFragmentReportSizes = computeErrorMessageLength(actualTrace, i, actual);
+                final int[] expectedFragmentReportSizes = computeErrorMessageLength(expectedTrace, i, expected);
                 
                 final String actualFragment =
                         getFragmentSurrounding(
-                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), 20, computeErrorMessageLength(actualTraceItem));
+                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), actualFragmentReportSizes[0], actualFragmentReportSizes[1]);
                 final String expectedFragment =
                         getFragmentSurrounding(
-                                expected, expectedTraceItem.getLine(), expectedTraceItem.getCol(), 20, computeErrorMessageLength(expectedTraceItem));
+                                expected, expectedTraceItem.getLine(), expectedTraceItem.getCol(), expectedFragmentReportSizes[0], expectedFragmentReportSizes[1]);
                
                 final String explanation =
                         createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
@@ -135,6 +141,28 @@ public class ResultCompareUtils {
                     Collections.sort(currentAttributeList, ATTRIBUTE_EVENT_COMPARATOR);
                     newTrace.addAll(currentAttributeList);
                     currentAttributeList.clear();
+                }
+            }
+            
+            if (newTrace.size() == 2) {
+                /*
+                 * We will ignore every leading text node before anything not being a DOCTYPE or
+                 * an XML DECLARATION (in which cases, leading text will matter).
+                 * 
+                 * We check newTrace to be of size 2 because we look for: 
+                 * [0] = DOCUMENT_START, [1] = TEXT
+                 */
+                if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCTYPE.equals(eventType) &&
+                    !TracingDetailedHtmlAttoHandler.TRACE_TYPE_XMLDECL.equals(eventType) && 
+                    !TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCUMENT_END.equals(eventType)) {
+                    
+                    final TraceEvent lastTraceEvent = newTrace.get(newTrace.size() - 1);
+                    if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(lastTraceEvent.getType())) {
+                        if (isAllWhitespace(lastTraceEvent.getContent()[0])) {
+                            newTrace.remove(lastTraceEvent);
+                        }
+                    }
+                    
                 }
             }
             
@@ -272,27 +300,140 @@ public class ResultCompareUtils {
     
     
     
-    private static int computeErrorMessageLength(final TraceEvent eventItem) {
+    private static int[] computeErrorMessageLength(final List<TraceEvent> trace, final int position, final String result) {
         
-        if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventItem)) {
-            return 80;
+        TraceEvent eventItem = trace.get(position);
+        
+        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventItem.getType())) {
+            
+            final Object[] contentArray = eventItem.getContent();
+            if (contentArray == null || contentArray.length == 0) {
+                return new int[] {20, 80};
+            }
+            
+            final Object contentObj = eventItem.getContent()[0];
+            if (contentObj == null || !(contentObj instanceof String)) {
+                return new int[] {20, 80};
+            }
+            
+            final String content = (String) contentObj;
+            return new int[] {20, content.length() + 20};
+            
+        }
+
+        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType())) {
+            
+            // We will try to output all text from the start of the container tag to the last
+            // attribute in the same tag.
+            
+            final int currentAttributeLine = eventItem.getLine();
+            final int currentAttributeCol = eventItem.getCol();
+            
+            int i = position + 1;
+            do {
+              eventItem = trace.get(i);
+              i++;
+            } while (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType()) &&
+                     i < trace.size());
+            
+            eventItem = trace.get(i - 2);
+            
+            final int lastAttributeLine = eventItem.getLine();
+            final int lastAttributeCol = eventItem.getCol();
+            final int lastAttributeLen = 
+                    eventItem.getContent()[0].length() + 
+                    eventItem.getContent()[1].length() + 
+                    eventItem.getContent()[2].length(); 
+            
+            i = position - 1;
+            do {
+              eventItem = trace.get(i);
+              i--;
+            } while (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) &&
+                     !TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType()) &&
+                     i >= 0);
+
+            return new int[] {
+                    (computeLengthFromTo(result, eventItem.getLine(), eventItem.getCol(), currentAttributeLine, currentAttributeCol) + 20),
+                    (computeLengthFromTo(result, currentAttributeLine, currentAttributeCol, lastAttributeLine, lastAttributeCol) + lastAttributeLen + 20)
+                    };
+            
         }
         
-        final Object[] contentArray = eventItem.getContent();
-        if (contentArray == null || contentArray.length == 0) {
-            return 80;
+        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) ||
+            TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType())) {
+            
+            final Object[] contentArray = eventItem.getContent();
+            if (contentArray == null || contentArray.length < 2) {
+                return new int[] {20, 80};
+            }
+            
+            final Object contentObj = eventItem.getContent()[1];
+            if (contentObj == null || !(contentObj instanceof String)) {
+                return new int[] {20, 80};
+            }
+            
+            final String content = (String) contentObj;
+            return new int[] {20, content.length() + 20};
+            
         }
         
-        final Object contentObj = eventItem.getContent()[0];
-        if (contentObj == null || !(contentObj instanceof String)) {
-            return 80;
-        }
-        
-        final String content = (String) contentObj;
-        return content.length() + 20;
+        return new int[] {20, 80};
         
     }
     
+    
+    
+    
+    private static int computeLengthFromTo(
+            final String text, 
+            final int lineFrom, final int colFrom,
+            final int lineTo, final int colTo) {
+        
+        final int textLen = text.length();
+        
+        int startPos = 0;
+        int endPos = 0;
+        
+        {
+            int line = 1;
+            int col = 1;
+            for (int i = 0; i < textLen; i++) {
+                if (line == lineFrom && col == colFrom) {
+                    startPos = i;
+                    break;
+                }
+                final char c = text.charAt(i);
+                if (c == '\n') {
+                    line++;
+                    col = 1;
+                    continue;
+                }
+                col++;
+            }
+        }
+
+        {
+            int line = 1;
+            int col = 1;
+            for (int i = 0; i < textLen; i++) {
+                if (line == lineTo && col == colTo) {
+                    endPos = i;
+                    break;
+                }
+                final char c = text.charAt(i);
+                if (c == '\n') {
+                    line++;
+                    col = 1;
+                    continue;
+                }
+                col++;
+            }
+        }
+
+        return (endPos - startPos);
+        
+    }
     
     
     

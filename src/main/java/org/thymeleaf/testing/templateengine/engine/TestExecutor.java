@@ -59,19 +59,10 @@ import org.thymeleaf.util.Validate;
 
 public final class TestExecutor {
 
-    public static final ITestableResolver DEFAULT_TESTABLE_RESOLVER =
-            new StandardTestableResolver();
-    public static final IProcessingContextBuilder DEFAULT_PROCESSING_CONTEXT_BUILDER =
-            new WebProcessingContextBuilder();
-    public static final List<IDialect> DEFAULT_DIALECTS = 
-            Collections.singletonList((IDialect)new StandardDialect());
-    public static final ITestReporter DEFAULT_TEST_REPORTER = new ConsoleTestReporter();
-    
-    
-    private ITestableResolver testableResolver = DEFAULT_TESTABLE_RESOLVER;
-    private IProcessingContextBuilder processingContextBuilder = DEFAULT_PROCESSING_CONTEXT_BUILDER; 
-    private List<IDialect> dialects = DEFAULT_DIALECTS;
-    protected ITestReporter reporter = DEFAULT_TEST_REPORTER;
+    private ITestableResolver testableResolver = new StandardTestableResolver();
+    private IProcessingContextBuilder processingContextBuilder = new WebProcessingContextBuilder(); 
+    private List<IDialect> dialects = Collections.singletonList((IDialect)new StandardDialect());
+    protected ITestReporter reporter = new ConsoleTestReporter();
     
     
     private static ThreadLocal<String> threadExecutionId = new ThreadLocal<String>();
