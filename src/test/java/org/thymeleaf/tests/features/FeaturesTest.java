@@ -60,5 +60,16 @@ public class FeaturesTest {
     }
     
     
+    @Test
+    public void testUtil() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:features/util");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
+    
     
 }
