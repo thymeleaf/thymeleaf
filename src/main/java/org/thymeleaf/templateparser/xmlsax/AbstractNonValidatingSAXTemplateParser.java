@@ -475,6 +475,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 throws SAXException {
             
             if (!this.dtdMode) {
+                flushBuffer();
                 
                 final Comment comment = 
                         new Comment(ArrayUtils.copyOfRange(ch, start, start + length));
