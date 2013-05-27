@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 
- *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2013, The THYMELEAF team (http://www.thymeleaf.org)
  * 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,20 +17,25 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.tests.features;
+package org.thymeleaf.tests.attrprocessors;
+
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.tests.dom.dialect.DOMDialect;
 
 
 
 
 
-public class FeaturesTest {
+public class AttrProcessorsTest {
     
     
-    public FeaturesTest() {
+    public AttrProcessorsTest() {
         super();
     }
     
@@ -38,44 +43,12 @@ public class FeaturesTest {
     
     
     @Test
-    public void testText() throws Exception {
+    public void testRemove() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:features/text");
-        
-        Assert.assertTrue(executor.getReporter().isAllOK());
-        
-    }
-    
-    
-    
-    @Test
-    public void testLink() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:features/link");
-        
-        Assert.assertTrue(executor.getReporter().isAllOK());
-        
-    }
-    
-    
-    @Test
-    public void testUtil() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:features/util");
-        
-        Assert.assertTrue(executor.getReporter().isAllOK());
-        
-    }
-  
-    
-    @Test
-    public void testExpression() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:features/expression");
+        executor.setDialects(
+                Arrays.asList(new IDialect[] { new StandardDialect(), new DOMDialect()}));
+        executor.execute("classpath:attrprocessors/remove");
         
         Assert.assertTrue(executor.getReporter().isAllOK());
         
