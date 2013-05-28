@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML5
+# -----------------------------------------------------------
+%MESSAGES
+date.format = yyyy-MM-dd
+# -----------------------------------------------------------
+%CONTEXT
+formBean01 = new org.thymeleaf.tests.springintegration.model.FormBean01()
+formBean01.name = 'Mark Lettuce'
+formBean01.date = #dates.create(1492,10,12)

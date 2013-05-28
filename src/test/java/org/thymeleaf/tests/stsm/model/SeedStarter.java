@@ -102,7 +102,7 @@ public class SeedStarter {
 
     @Override
     public String toString() {
-        return "SeedStarter [id=" + this.id + ", datePlanted=" + this.datePlanted
+        return "FormBean01 [id=" + this.id + ", datePlanted=" + this.datePlanted
                 + ", covered=" + this.covered + ", type=" + this.type + ", features="
                 + Arrays.toString(this.features) + ", rows=" + this.rows + "]";
     }

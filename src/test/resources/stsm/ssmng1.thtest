@@ -2,9 +2,6 @@
 # ------------------------------------------------------------
 %CONTEXT
 
-seedStarter = new org.thymeleaf.tests.stsm.model.SeedStarter()
-seedStarter.datePlanted = #dates.create(2013,5,3)
-
 seedStarterRow0 = new org.thymeleaf.tests.stsm.model.Row()
 seedStarterRow0.variety = varietyRepository.findById(3)
 seedStarterRow0.seedsPerCell = 20
@@ -14,8 +11,6 @@ seedStarterRow1.variety = varietyRepository.findById(4)
 seedStarterRow1.seedsPerCell = 15
 
 seedStarter.rows = { seedStarterRow0, seedStarterRow1 }
-
-binding = 'seedStarter'
 
 # ------------------------------------------------------------
 %OUTPUT

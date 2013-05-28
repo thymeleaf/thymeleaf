@@ -21,9 +21,6 @@ seedStarter0.rows = { seedStarter0Row0, seedStarter0Row1 }
 allSeedStarters = { seedStarter0 }
 
 
-seedStarter = new org.thymeleaf.tests.stsm.model.SeedStarter()
-seedStarter.datePlanted = #dates.create(2013,5,5)
-
 seedStarterRow0 = new org.thymeleaf.tests.stsm.model.Row()
 seedStarterRow0.variety = varietyRepository.findById(2)
 seedStarterRow0.seedsPerCell = 50
@@ -35,8 +32,6 @@ seedStarterRow1.seedsPerCell = 6
 seedStarter.rows = { seedStarterRow0, seedStarterRow1 }
 
 
-
-binding = 'seedStarter'
 
 # ------------------------------------------------------------
 %OUTPUT
@@ -117,7 +112,7 @@ binding = 'seedStarter'
               <span>Date planted</span>
               (<span>MM/dd/yyyy</span>)
             </label>
-            <input type="text" id="datePlanted" name="datePlanted" value="05/05/2013" />
+            <input type="text" id="datePlanted" name="datePlanted" value="05/03/2013" />
           </div>
           <div>
             <label for="covered1">Covered</label>

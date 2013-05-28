@@ -17,6 +17,11 @@ allVarieties = varietyRepository.findAll()
 seedStarterRepository = new org.thymeleaf.tests.stsm.model.repository.SeedStarterRepository()
 allSeedStarters = seedStarterRepository.findAll()
 
+seedStarter = new org.thymeleaf.tests.stsm.model.SeedStarter()
+seedStarter.datePlanted = #dates.create(2013,5,3)
+
+binding = 'seedStarter'
+
 # ------------------------------------------------------------
 %MESSAGES
 title.application=Spring Thyme Seed-Starter Manager
@@ -51,6 +56,7 @@ seedstarter.rows.head.seedsPerCell=Seeds per cell
 
 typeMismatch.datePlanted=Date has an incorrect format (see pattern)
 typeMismatch.seedsPerCell=Seeds per cell must be an integer number
+
 # ------------------------------------------------------------
 %INPUT
 <!DOCTYPE html>

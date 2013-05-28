@@ -1,13 +1,5 @@
 %EXTENDS stsm.common
 # ------------------------------------------------------------
-%CONTEXT
-
-seedStarter = new org.thymeleaf.tests.stsm.model.SeedStarter()
-seedStarter.datePlanted = #dates.create(2013,5,3)
-
-binding = 'seedStarter'
-
-# ------------------------------------------------------------
 %OUTPUT
 <!DOCTYPE html>
 
