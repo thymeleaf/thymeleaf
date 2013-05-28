@@ -121,13 +121,13 @@ public abstract class AbstractRemovalAttrProcessor
                 final List<Node> newChildren = new ArrayList<Node>();
                 final List<Node> children = element.getChildren();
                 final int childrenLen = children.size();
-                int childElementsFound = 0;
-                for (int i = 0; i < childrenLen && childElementsFound < 2; i++) {
+                boolean childElementFound = false;
+                for (int i = 0; i < childrenLen; i++) {
                     final Node child = children.get(i);
                     if (child instanceof Element) {
-                        childElementsFound++;
-                        if (childElementsFound == 1) {
+                        if (!childElementFound) {
                             newChildren.add(child);
+                            childElementFound = true;
                         }
                     } else {
                         newChildren.add(child);
