@@ -6,8 +6,12 @@
   correctly parsed.
 - Added a way to escape "__" string in attributes ("\_\_") without being parsed as a preprocessing mark.
 - Fixed handling of local variables map in Node class so that variables added directly with
-  node.setNodeLocalVariable(...) are immediately available for next processors being executed and chidren
-  nodes. 
+  node.setNodeLocalVariable(...) are immediately available for next processors being executed and children
+  nodes.
+- Fixed behaviour of th:remove="all-but-first". Non-element nodes were not being copied if more than
+  one child element existed.
+- Fixed ArithmeticException in number literal division if result has a non-terminating decimal expansion.
+- Fixed whitespace around comments dissappearing after template processing. 
 
 
 2.0.16
