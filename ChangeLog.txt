@@ -3,6 +3,7 @@
 - Added a "#themes.code('key')" expression object which looks up and returns the value of
   'key' in the current Spring theme's properties file.  This is the equivalent of Spring's
   <spring:theme code='key'> JSP tag.
+- Fixed <input> tags with no "type" attribute not being treated as type="text" (which they should).
 
 
 2.0.16
