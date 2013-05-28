@@ -42,13 +42,33 @@ public class Fields {
     
     
     
+    public boolean hasAnyErrors() {
+        return FieldUtils.hasAnyErrors(this.configuration, this.processingContext);
+    }
+    
+    public boolean hasErrors() {
+        return FieldUtils.hasAnyErrors(this.configuration, this.processingContext);
+    }
+    
     public boolean hasErrors(final String field) {
         return FieldUtils.hasErrors(this.configuration, this.processingContext, field);
     }
     
+    public boolean hasGlobalErrors() {
+        return FieldUtils.hasGlobalErrors(this.configuration, this.processingContext);
+    }
+    
+    
+    public List<String> errors() {
+        return FieldUtils.errors(this.configuration, this.processingContext);
+    }
     
     public List<String> errors(final String field) {
         return FieldUtils.errors(this.configuration, this.processingContext, field);
+    }
+    
+    public List<String> globalErrors() {
+        return FieldUtils.globalErrors(this.configuration, this.processingContext);
     }
 
     
