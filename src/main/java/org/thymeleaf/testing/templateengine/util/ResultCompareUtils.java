@@ -321,7 +321,9 @@ public class ResultCompareUtils {
             
         }
 
-        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType())) {
+        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType()) ||
+            TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) ||
+            TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType())) {
             
             // We will try to output all text from the start of the container tag to the last
             // attribute in the same tag.
@@ -329,7 +331,7 @@ public class ResultCompareUtils {
             final int attributeLine = eventItem.getLine();
             final int attributeCol = eventItem.getCol();
 
-            int i = position - 1;
+            int i = position;
             eventItem = trace.get(i);
             while (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) &&
                     !TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType()) &&
@@ -360,25 +362,7 @@ public class ResultCompareUtils {
             }
             
 
-            return new int[] { (beforeDistance + 20), (afterDistance + lastAttributeLen + 20) };
-            
-        }
-        
-        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) ||
-            TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType())) {
-            
-            final Object[] contentArray = eventItem.getContent();
-            if (contentArray == null || contentArray.length < 2) {
-                return new int[] {20, 80};
-            }
-            
-            final Object contentObj = eventItem.getContent()[1];
-            if (contentObj == null || !(contentObj instanceof String)) {
-                return new int[] {20, 80};
-            }
-            
-            final String content = (String) contentObj;
-            return new int[] {20, content.length() + 20};
+            return new int[] { (beforeDistance + 20), (afterDistance + lastAttributeLen + 80) };
             
         }
         
