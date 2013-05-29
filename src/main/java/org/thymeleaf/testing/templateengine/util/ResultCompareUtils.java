@@ -128,6 +128,9 @@ public class ResultCompareUtils {
 
     private static List<TraceEvent> normalizeTrace(final List<TraceEvent> trace) {
         
+        String lastClosedElementName = null;
+        boolean lastIsWhiteSpace = false;
+        
         final List<TraceEvent> newTrace = new ArrayList<TraceEvent>();
         final List<TraceEvent> currentAttributeList = new ArrayList<TraceEvent>();
         
@@ -141,6 +144,7 @@ public class ResultCompareUtils {
                     Collections.sort(currentAttributeList, ATTRIBUTE_EVENT_COMPARATOR);
                     newTrace.addAll(currentAttributeList);
                     currentAttributeList.clear();
+                    lastIsWhiteSpace = false;
                 }
             }
             
@@ -156,11 +160,9 @@ public class ResultCompareUtils {
                     !TracingDetailedHtmlAttoHandler.TRACE_TYPE_XMLDECL.equals(eventType) && 
                     !TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCUMENT_END.equals(eventType)) {
                     
-                    final TraceEvent lastTraceEvent = newTrace.get(newTrace.size() - 1);
-                    if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(lastTraceEvent.getType())) {
-                        if (isAllWhitespace(lastTraceEvent.getContent()[0])) {
-                            newTrace.remove(lastTraceEvent);
-                        }
+                    if (lastIsWhiteSpace) {
+                        newTrace.remove(newTrace.size() - 1);
+                        lastIsWhiteSpace = false;
                     }
                     
                 }
@@ -168,18 +170,67 @@ public class ResultCompareUtils {
             
             if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventType)) {
                 // We need to compress all whitespace in order to perform a correct lenient check
+                
                 final String text = event.getContent()[0];
+                
                 newTrace.add(
                         new TraceEvent(
                                 event.getLine(), event.getCol(), 
                                 TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT, 
                                 compressWhitespace(text)));
+                
+                if (isAllWhitespace(text)) {
+                    lastIsWhiteSpace = true;
+                }
+                
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
+                
                 // These events are not relevant for result matching, so we just ignore them 
                 // (they represent mere inter-attribute whitespace)
+                
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType)) {
+                
                 currentAttributeList.add(event);
+                
+            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_CLOSE_ELEMENT_END.equals(eventType) ||
+                       TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_END.equals(eventType)) {
+                
+                /*
+                 * We need to store the name of the last element closed in order to later determine whether
+                 * any white space events between it and the following element should be ignored.
+                 */
+                
+                lastClosedElementName = event.getContent()[0].toLowerCase();
+                newTrace.add(event);
+                lastIsWhiteSpace = false;
+                
+            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventType) ||
+                       TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventType)) {
+
+                /*
+                 * When we are repeating certain elements (like "li", "option" or "div"), white spaces among
+                 * them are not relevant and should be ignored.
+                 */
+                
+                final String elementName = event.getContent()[0].toLowerCase();
+                
+                if (lastClosedElementName != null && lastClosedElementName.equals(elementName) &&
+                    (elementName.equals("li") || elementName.equals("option") ||
+                     elementName.equals("tr") || elementName.equals("td") ||
+                     elementName.equals("th") || elementName.equals("p") ||
+                     elementName.equals("div") || elementName.equals("fieldset"))) {
+                    
+                    if (lastIsWhiteSpace) {
+                        newTrace.remove(newTrace.size() - 1);
+                        lastIsWhiteSpace = false;
+                    }
+
+                }
+                newTrace.add(event);
+                lastIsWhiteSpace = false;
+                
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCUMENT_END.equals(eventType)) {
+                
                 /*
                  * If the last event before document end is just whitespace text and trace is 
                  * bigger than just two events (document start + one event),
@@ -194,8 +245,13 @@ public class ResultCompareUtils {
                     }
                 }
                 newTrace.add(event);
+                lastIsWhiteSpace = false;
+                
             } else {
+                
                 newTrace.add(event);
+                lastIsWhiteSpace = false;
+                
             }
             
         }
@@ -246,7 +302,6 @@ public class ResultCompareUtils {
         }
         return true;
     }
-    
     
     
     
