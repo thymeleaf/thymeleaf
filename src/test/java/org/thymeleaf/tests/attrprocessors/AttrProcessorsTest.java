@@ -19,14 +19,9 @@
  */
 package org.thymeleaf.tests.attrprocessors;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-import org.thymeleaf.tests.dom.dialect.DOMDialect;
 
 
 
@@ -46,9 +41,37 @@ public class AttrProcessorsTest {
     public void testRemove() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.setDialects(
-                Arrays.asList(new IDialect[] { new StandardDialect(), new DOMDialect()}));
         executor.execute("classpath:attrprocessors/remove");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
+    @Test
+    public void testIf() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/if");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
+    @Test
+    public void testUnless() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/unless");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
+    @Test
+    public void testInline() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/inline");
         
         Assert.assertTrue(executor.getReporter().isAllOK());
         

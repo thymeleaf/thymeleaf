@@ -44,7 +44,7 @@ public class SpringSecurityTest {
     
     
     @Test
-    public void testExecutor() throws Exception {
+    public void testSpringSecurity() throws Exception {
 
         final SpringSecurityWebProcessingContextBuilder processingContextBuilder =
                 new SpringSecurityWebProcessingContextBuilder();

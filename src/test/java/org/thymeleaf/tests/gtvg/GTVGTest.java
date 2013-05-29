@@ -38,7 +38,7 @@ public class GTVGTest {
     
     
     @Test
-    public void testExecutor() throws Exception {
+    public void testGTVG() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:gtvg");

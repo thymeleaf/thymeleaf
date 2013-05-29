@@ -43,7 +43,7 @@ public class STSMTest {
     
     
     @Test
-    public void testExecutor() throws Exception {
+    public void testSTSM() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new STSMWebProcessingContextBuilder());

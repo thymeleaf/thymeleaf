@@ -130,10 +130,12 @@ seedStarter.rows = { seedStarterRow0, seedStarterRow1 }
               <li>
                 <input type="checkbox" value="SEEDSTARTER_SPECIFIC_SUBSTRATE" id="features1" name="features" /><input type="hidden" name="_features" value="on" />
                 <label for="features1">Seed starter-specific substrate</label>
-              </li><li>
+              </li>
+              <li>
                 <input type="checkbox" value="FERTILIZER" id="features2" name="features" /><input type="hidden" name="_features" value="on" />
                 <label for="features2">Fertilizer used</label>
-              </li><li>
+              </li>
+              <li>
                 <input type="checkbox" value="PH_CORRECTOR" id="features3" name="features" /><input type="hidden" name="_features" value="on" />
                 <label for="features3">PH Corrector used</label>
               </li>

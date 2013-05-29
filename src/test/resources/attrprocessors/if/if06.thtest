@@ -1,0 +1,45 @@
+%EXTENDS booleans.common 
+# ------------------------------------------------------------
+%INPUT
+Text before
+
+<div th:if="${value18}"> 
+    First value
+</div>
+
+<div th:if="${value19}"> 
+    Second value
+</div>
+
+<div th:if="${value20}"> 
+    Third value
+</div>
+
+<div th:if="${value21}"> 
+    Fourth value
+</div>
+
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+<div> 
+    First value
+</div>
+
+# Note 'N' and 'F' do NOT evaluate as false!
+<div> 
+    Second value
+</div>
+
+<div> 
+    Third value
+</div>
+
+# Note 'N' and 'F' do NOT evaluate as false!
+<div> 
+    Fourth value
+</div>
+
+Text after 

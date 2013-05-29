@@ -19,51 +19,31 @@
  */
 package org.thymeleaf.tests.springintegration.model;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
-public class FormBean01 {
+public class FormBean02 {
 
-    private Integer id = null;
-    private String name = null;
-    private Date date = null;
+    private List<Integer> bean01Ids = new ArrayList<Integer>();
     
     
-    public FormBean01() {
+    public FormBean02() {
         super();
     }
 
 
-    public Integer getId() {
-        return this.id;
+    public List<Integer> getBean01Ids() {
+        return this.bean01Ids;
     }
 
-
-    public void setId(final Integer id) {
-        this.id = id;
-    }
-
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Date getDate() {
-        return this.date;
-    }
-
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public void setDate(final Date date) {
-        this.date = date;
+    public void setBean01Ids(final List<Integer> bean01Ids) {
+        this.bean01Ids = bean01Ids;
     }
 
 
     @Override
     public String toString() {
-        return "FormBean01 [name=" + this.name + ", date=" + this.date + "]";
+        return "FormBean02 [bean01s=" + this.bean01Ids + "]";
     }
-    
+
 }

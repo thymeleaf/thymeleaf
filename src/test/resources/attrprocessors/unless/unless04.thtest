@@ -1,0 +1,47 @@
+%EXTENDS booleans.common 
+# ------------------------------------------------------------
+%INPUT
+Text before
+
+<div th:unless="${value07}"> 
+    First value
+</div>
+
+<div th:unless="${value08}"> 
+    Second value
+</div>
+
+<div th:unless="${value09}"> 
+    Third value
+</div>
+
+<div th:unless="${value10}"> 
+    Fourth value
+</div>
+
+<div th:unless="${value11}"> 
+    Fifth value
+</div>
+
+<div th:unless="${value12}"> 
+    Sixth value
+</div>
+
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+<div> 
+    Second value
+</div>
+
+<div> 
+    Fourth value
+</div>
+
+<div> 
+    Sixth value
+</div>
+
+Text after 

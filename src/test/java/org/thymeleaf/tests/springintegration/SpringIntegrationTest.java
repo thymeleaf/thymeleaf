@@ -43,7 +43,7 @@ public class SpringIntegrationTest {
     
     
     @Test
-    public void testExecutor() throws Exception {
+    public void testSpringIntegration() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new SpringIntegrationWebProcessingContextBuilder());
