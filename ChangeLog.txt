@@ -12,6 +12,8 @@
   one child element existed.
 - Fixed ArithmeticException in number literal division if result has a non-terminating decimal expansion.
 - Fixed whitespace around comments dissappearing after template processing. 
+- Fixed JavaScript/Dart inlining not correctly adding a final semicolon if a comment is present after 
+  the ";" sign.
 
 
 2.0.16
