@@ -185,7 +185,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 
                 strBuilder.append(matcher.group(1));
                 
-                strBuilder.append(computeLineEndCharForInline(matcher.group(3)));
+                strBuilder.append(computeLineEndForInline(matcher.group(3)));
                 
                 strBuilder.append('\n');
                 
@@ -205,18 +205,25 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
     
     
-    private static char computeLineEndCharForInline(final String lastPartOfLine) {
-        if (lastPartOfLine != null) {
-            final String trimmedLastPartOfLine = lastPartOfLine.trim();
-            final char lastChar = trimmedLastPartOfLine.charAt(trimmedLastPartOfLine.length() - 1);
-            if (lastChar == ',') {
-                return ',';
-            } else if (lastChar == ';') {
-                return ';';
-            } 
+    private static String computeLineEndForInline(final String lineRemainder) {
+        
+        if (lineRemainder == null) {
+            return "";
         }
-        return ' ';
+        
+        final int len = lineRemainder.length();
+        for (int i = 0; i < len; i++) {
+            final char c = lineRemainder.charAt(i);
+            if (c == ';' || c == ',') {
+                return lineRemainder.substring(i);
+            }
+        }
+
+        return lineRemainder;
+        
     }
+    
+    
     
     
     
