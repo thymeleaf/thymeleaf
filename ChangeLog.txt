@@ -14,6 +14,7 @@
 - Fixed whitespace around comments dissappearing after template processing. 
 - Fixed JavaScript/Dart inlining not correctly adding a final semicolon if a comment is present after 
   the ";" sign.
+- Updated OGNL dependency from version 3.0.5 to 3.0.6.
 
 
 2.0.16

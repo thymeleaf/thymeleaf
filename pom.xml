@@ -218,7 +218,7 @@
     <dependency>
         <groupId>ognl</groupId>
         <artifactId>ognl</artifactId>
-        <version>3.0.5</version>
+        <version>3.0.6</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
