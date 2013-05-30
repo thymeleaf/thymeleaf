@@ -40,6 +40,7 @@ import org.thymeleaf.standard.expression.VariableExpression;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
+ * @author Tobias Gafner
  * 
  * @since 1.0
  *
@@ -48,24 +49,24 @@ public class FieldUtils {
 
     public static final String ALL_FIELDS = "*";
     public static final String GLOBAL_EXPRESSION = "global";
-    public static final String ALL_FIELDS_EXPRESSION_TEXT = "all";
-    public static final String ALL_FIELDS_EXPRESSION = "*";
-    public static final String ALL_FIELDS_FIELD_EXPRESSION = "*{*}";
+    public static final String ALL_EXPRESSION = "all";
     
-
-    
-    
-
     
 
     public static boolean hasErrors(final Arguments arguments, final String field) {
         return hasErrors(arguments.getConfiguration(), arguments, field);
     }
     
+    /**
+     * @since 2.1.0 
+     */
     public static boolean hasAnyErrors(final Arguments arguments) {
         return hasAnyErrors(arguments.getConfiguration(), arguments);
     }
     
+    /**
+     * @since 2.1.0 
+     */
     public static boolean hasGlobalErrors(final Arguments arguments) {
         return hasGlobalErrors(arguments.getConfiguration(), arguments);
     }
@@ -73,6 +74,7 @@ public class FieldUtils {
     public static boolean hasErrors(final Configuration configuration, 
             final IProcessingContext processingContext, final String field) {
 
+	
         return checkErrors(configuration, processingContext, convertToFieldExpression(field), true);
         
     }
@@ -80,7 +82,7 @@ public class FieldUtils {
     public static boolean hasAnyErrors(final Configuration configuration, 
             final IProcessingContext processingContext) {
 
-        return checkErrors(configuration, processingContext, ALL_FIELDS_EXPRESSION_TEXT, true);
+        return checkErrors(configuration, processingContext, ALL_EXPRESSION, true);
         
     }
     
@@ -105,7 +107,7 @@ public class FieldUtils {
     
     public static List<String> errors(final Configuration configuration,
             final IProcessingContext processingContext) {
-        return errors(configuration, processingContext, ALL_FIELDS_EXPRESSION_TEXT, true);
+        return errors(configuration, processingContext, ALL_EXPRESSION, true);
         
     }
     
@@ -173,7 +175,7 @@ public class FieldUtils {
                     
                     return new BindStatus(requestContext, completeExpression, false);
         	
-            } else if(ALL_FIELDS_EXPRESSION.equals(fieldExpression) || ALL_FIELDS_EXPRESSION_TEXT.equals(fieldExpression)  || ALL_FIELDS_FIELD_EXPRESSION.equals(fieldExpression) ) {
+            } else if(ALL_EXPRESSION.equals(fieldExpression)  || ALL_FIELDS.equals(fieldExpression) ) {
                 
                 final String completeExpression = 
                     FieldUtils.validateAndGetValueExpressionForAllFields(processingContext);

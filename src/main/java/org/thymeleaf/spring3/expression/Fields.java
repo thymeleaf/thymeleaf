@@ -31,6 +31,7 @@ import org.thymeleaf.spring3.util.FieldUtils;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
+ * @author Tobias Gafner
  * 
  * @since 1.0
  *
@@ -40,12 +41,16 @@ public class Fields {
     private final Configuration configuration;
     private final IProcessingContext processingContext;
     
-    
-    
+    /**
+     * @since 2.1.0 
+     */
     public boolean hasAnyErrors() {
         return FieldUtils.hasAnyErrors(this.configuration, this.processingContext);
     }
     
+    /**
+     * @since 2.1.0 
+     */
     public boolean hasErrors() {
         return FieldUtils.hasAnyErrors(this.configuration, this.processingContext);
     }
@@ -54,11 +59,16 @@ public class Fields {
         return FieldUtils.hasErrors(this.configuration, this.processingContext, field);
     }
     
+    /**
+     * @since 2.1.0 
+     */
     public boolean hasGlobalErrors() {
         return FieldUtils.hasGlobalErrors(this.configuration, this.processingContext);
     }
     
-    
+    /**
+     * @since 2.1.0 
+     */
     public List<String> errors() {
         return FieldUtils.errors(this.configuration, this.processingContext);
     }
@@ -67,6 +77,9 @@ public class Fields {
         return FieldUtils.errors(this.configuration, this.processingContext, field);
     }
     
+    /**
+     * @since 2.1.0 
+     */
     public List<String> globalErrors() {
         return FieldUtils.globalErrors(this.configuration, this.processingContext);
     }
