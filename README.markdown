@@ -466,7 +466,7 @@ Initialization would look like this:
 final List<IDialect> dialects = new ArrayList<IDialect>();
 dialects.add(new SpringStandardDialect());
 
-final IProcessingContextBuilder springPCBuilder = new SpringWebProcessingContextBuilder();
+final SpringWebProcessingContextBuilder springPCBuilder = new SpringWebProcessingContextBuilder();
 
 final TestExecutor executor = new TestExecutor();
 executor.setProcessingContextBuilder(springPCBuilder);
