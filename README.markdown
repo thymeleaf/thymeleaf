@@ -383,6 +383,15 @@ request.timestamp = #calendars.createNow()
 
 Finally, note that **context variables are inherited** when a test is set as an extension of another one by means of the `%EXTENDS` directive.
 
+##### Selecting locale for execution #####
+
+The locale to be used for execution can be selected by giving value to a context variable called `locale`:
+
+```properties
+%CONTEXT
+locale = 'gl_ES'
+```
+
 
 #### Test folder format ####
 

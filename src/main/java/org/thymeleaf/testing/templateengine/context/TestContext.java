@@ -20,13 +20,12 @@
 package org.thymeleaf.testing.templateengine.context;
 
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 
 public final class TestContext implements ITestContext {
 
-    private Locale locale = null;
+    private ITestContextExpression locale = null;
     private Map<String,ITestContextExpression> variables = new LinkedHashMap<String, ITestContextExpression>();
     private Map<String,ITestContextExpression[]> requestParameters = new LinkedHashMap<String, ITestContextExpression[]>();
     private Map<String,ITestContextExpression> requestAttributes = new LinkedHashMap<String, ITestContextExpression>();
@@ -39,11 +38,11 @@ public final class TestContext implements ITestContext {
     }
    
 
-    public Locale getLocale() {
+    public ITestContextExpression getLocale() {
         return this.locale;
     }
 
-    public void setLocale(final Locale locale) {
+    public void setLocale(final ITestContextExpression locale) {
         this.locale = locale;
     }
     
@@ -87,7 +86,7 @@ public final class TestContext implements ITestContext {
      
         if (context != null) {
             
-            final Locale contextLocale = context.getLocale();
+            final ITestContextExpression contextLocale = context.getLocale();
             if (contextLocale != null) {
                 newContext.setLocale(context.getLocale());
             }

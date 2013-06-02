@@ -19,13 +19,12 @@
  */
 package org.thymeleaf.testing.templateengine.context;
 
-import java.util.Locale;
 import java.util.Map;
 
 
 public interface ITestContext {
 
-    public Locale getLocale();
+    public ITestContextExpression getLocale();
     
     public Map<String,ITestContextExpression> getVariables();
     public Map<String,ITestContextExpression[]> getRequestParameters();

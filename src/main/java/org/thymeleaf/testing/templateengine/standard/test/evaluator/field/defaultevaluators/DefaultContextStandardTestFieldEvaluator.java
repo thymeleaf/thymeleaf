@@ -21,7 +21,6 @@ package org.thymeleaf.testing.templateengine.standard.test.evaluator.field.defau
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.testing.templateengine.context.ITestContext;
@@ -96,7 +95,7 @@ public class DefaultContextStandardTestFieldEvaluator extends AbstractStandardTe
 
             if (varName.equalsIgnoreCase(LOCALE_PROPERTY_NAME)) {
                 checkForbiddenMultiValue(resourceName, varName, varValue);
-                testContext.setLocale(new Locale(varValue.get(0)));
+                testContext.setLocale(new OgnlTestContextExpression(varValue.get(0)));
                 continue;
             }
             

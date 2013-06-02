@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSession;
 
 import ognl.Ognl;
 
+import org.apache.commons.lang3.LocaleUtils;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -70,15 +71,21 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     
+    @SuppressWarnings("unchecked")
     public final IProcessingContext build(final ITestContext testContext, final ITestMessages testMessages) {
         
         if (testContext == null) {
             return null;
         }
         
-        Locale locale = testContext.getLocale();
-        if (locale == null) {
-            locale = DEFAULT_LOCALE;
+        Locale locale = DEFAULT_LOCALE;
+        final ITestContextExpression localeExpression = testContext.getLocale();
+        if (localeExpression != null) {
+            final Object exprResult = 
+                    localeExpression.evaluate(Collections.EMPTY_MAP, DEFAULT_LOCALE);
+            if (exprResult != null) {
+                locale = LocaleUtils.toLocale(exprResult.toString());
+            }
         }
         
         
