@@ -77,5 +77,15 @@ public class AttrProcessorsTest {
         
     }
     
+    @Test
+    public void testInclude() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/include");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
     
 }

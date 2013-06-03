@@ -80,6 +80,17 @@ public class FeaturesTest {
         Assert.assertTrue(executor.getReporter().isAllOK());
         
     }
+  
+    
+    @Test
+    public void testMessages() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:features/messages");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
     
     
 }
