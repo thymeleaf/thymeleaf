@@ -19,12 +19,15 @@
  */
 package org.thymeleaf.testing.templateengine.context.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +40,7 @@ import javax.servlet.http.HttpSession;
 import ognl.Ognl;
 
 import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -49,7 +53,7 @@ import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.ITestContextExpression;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
 public class WebProcessingContextBuilder implements IProcessingContextBuilder {
@@ -72,11 +76,13 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     @SuppressWarnings("unchecked")
-    public final IProcessingContext build(final ITestContext testContext, final ITestMessages testMessages) {
+    public final IProcessingContext build(final ITest test) {
         
-        if (testContext == null) {
+        if (test == null) {
             return null;
         }
+        
+        final ITestContext testContext = test.getContext();
         
         Locale locale = DEFAULT_LOCALE;
         final ITestContextExpression localeExpression = testContext.getLocale();
@@ -91,16 +97,16 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         
         final Map<String,Object> variables = new HashMap<String, Object>();
         
-        final Map<String,Object[]> requestParameters = new HashMap<String, Object[]>();
+        final Map<String,Object[]> requestParameters = new LinkedHashMap<String, Object[]>();
         variables.put(REQUEST_PARAMS_PREFIX, requestParameters);
         
-        final Map<String,Object> requestAttributes = new HashMap<String, Object>();
+        final Map<String,Object> requestAttributes = new LinkedHashMap<String, Object>();
         variables.put(REQUEST_ATTRS_PREFIX, requestAttributes);
         
-        final Map<String,Object> sessionAttributes = new HashMap<String, Object>();
+        final Map<String,Object> sessionAttributes = new LinkedHashMap<String, Object>();
         variables.put(SESSION_ATTRS_PREFIX, sessionAttributes);
         
-        final Map<String,Object> servletContextAttributes = new HashMap<String, Object>();
+        final Map<String,Object> servletContextAttributes = new LinkedHashMap<String, Object>();
         variables.put(SERVLETCONTEXT_ATTRS_PREFIX, servletContextAttributes);
 
         
@@ -137,7 +143,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         
         final ServletContext servletContext = createServletContext(servletContextAttributes);
         final HttpSession session = createHttpSession(servletContext,sessionAttributes);
-        final HttpServletRequest request = createHttpServletRequest(session, requestAttributes, requestParameters, locale);
+        final HttpServletRequest request = createHttpServletRequest(test, session, requestAttributes, requestParameters, locale);
         final HttpServletResponse response = createHttpServletResponse();
         
         variables.remove(REQUEST_PARAMS_PREFIX);
@@ -145,7 +151,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         variables.remove(SESSION_ATTRS_PREFIX);
         variables.remove(SERVLETCONTEXT_ATTRS_PREFIX);
 
-        doAdditionalVariableProcessing(testContext, testMessages, request, response, servletContext, locale, variables);
+        doAdditionalVariableProcessing(test, request, response, servletContext, locale, variables);
         
         final WebContext context = 
                 new WebContext(request, response, servletContext, locale, variables);
@@ -159,7 +165,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     @SuppressWarnings("unused")
     protected void doAdditionalVariableProcessing(
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test, 
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
         // Nothing to be done here, meant to be overriden
@@ -169,11 +175,36 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     
-    private static final HttpServletRequest createHttpServletRequest(final HttpSession session, final Map<String,Object> attributes, final Map<String,Object[]> parameters, final Locale locale) {
+    private static final HttpServletRequest createHttpServletRequest(
+            final ITest test,
+            final HttpSession session, final Map<String,Object> attributes, 
+            final Map<String,Object[]> parameters, final Locale locale) {
+
+        final String mimeType = "text/html";
+        final String method = "GET";
+        final String contextName = "/testing";
+        final String protocol = "HTTP/1.1";
+        final String scheme = "http";
+        final int port = 80;
+        final String serverName = "testing-server";
+        final String servletPath = "/" + testNameToServletPath(test.getName());
+        final String requestURI = contextName + servletPath;
+        final String requestURL = scheme + "://" + serverName + requestURI;
+        final String queryString = buildQueryString(parameters);
         
         final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
-        Mockito.when(request.getContextPath()).thenReturn("/testing");
+        Mockito.when(request.getContentType()).thenReturn(mimeType);
+        Mockito.when(request.getMethod()).thenReturn(method);
+        Mockito.when(request.getProtocol()).thenReturn(protocol);
+        Mockito.when(request.getScheme()).thenReturn(scheme);
+        Mockito.when(request.getServerName()).thenReturn(serverName);
+        Mockito.when(Integer.valueOf(request.getServerPort())).thenReturn(Integer.valueOf(port));
+        Mockito.when(request.getContextPath()).thenReturn(contextName);
+        Mockito.when(request.getServletPath()).thenReturn(servletPath);
+        Mockito.when(request.getRequestURI()).thenReturn(requestURI);
+        Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(requestURL));
+        Mockito.when(request.getQueryString()).thenReturn(queryString);
         Mockito.when(request.getLocale()).thenReturn(locale);
         Mockito.when(request.getLocales()).thenReturn(new ObjectEnumeration<Locale>(Arrays.asList(new Locale[]{locale})));
         
@@ -433,7 +464,76 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         }
         
     }
+
     
+    
+    private static String testNameToServletPath(final String testName) {
+        
+        String normalizedName = StringUtils.stripAccents(testName);
+        if (normalizedName.contains("/")) {
+            normalizedName = normalizedName.substring(normalizedName.lastIndexOf('/'));
+        }
+        if (normalizedName.contains("\\")) {
+            normalizedName = normalizedName.substring(normalizedName.lastIndexOf('\\'));
+        }
+        
+        if (normalizedName.endsWith(".thtest")) {
+            normalizedName = normalizedName.substring(0, normalizedName.length() - 7);
+        }
+        
+        final StringBuilder strBuilder = new StringBuilder();
+        final int nameLen = normalizedName.length();
+        for (int i = 0; i < nameLen; i++) {
+            final char c = normalizedName.charAt(i);
+            if (Character.isLetterOrDigit(c)) {
+                strBuilder.append(c);
+            }
+        }
+        return strBuilder.toString();
+    }
+    
+    
+    private static String buildQueryString(final Map<String,Object[]> parameters) {
+        
+        if (parameters == null || parameters.size() == 0) {
+            return null;
+        }
+        
+        final StringBuilder strBuilder = new StringBuilder();
+        for (final Map.Entry<String,Object[]> parameterEntry : parameters.entrySet()) {
+            
+            final String parameterName = parameterEntry.getKey();
+            final Object[] parameterValues = parameterEntry.getValue();
+
+            if (parameterValues == null || parameterValues.length == 0) {
+                if (strBuilder.length() > 0) {
+                    strBuilder.append('&');
+                }
+                strBuilder.append(parameterName);
+                continue;
+            }
+            
+            for (final Object parameterValue : parameterValues) {
+                if (strBuilder.length() > 0) {
+                    strBuilder.append('&');
+                }
+                strBuilder.append(parameterName);
+                if (parameterValue != null) {
+                    strBuilder.append("=");
+                    try {
+                        strBuilder.append(URLEncoder.encode(parameterValue.toString(), "UTF-8"));
+                    } catch (final UnsupportedEncodingException e) {
+                        // Should never happen, UTF-8 just exists.
+                        throw new RuntimeException(e);
+                    } 
+                }
+            }
+            
+        }
+        
+        return strBuilder.toString();
+        
+    }
     
     
     

@@ -536,10 +536,9 @@ public class STSMWebProcessingContextBuilder
     
     protected void initBinders(
             final String bindingVariableName, final Object bindingObject,
-            final ITestContext testContext, final ITestMessages testMessages,
-            final DataBinder dataBinder, final Locale locale) {
+            final ITest test, final DataBinder dataBinder, final Locale locale) {
         
-        final String dateformat = testMessages.computeMessage(locale, "date.format", null);
+        final String dateformat = test.getMessages().computeMessage(locale, "date.format", null);
         final SimpleDateFormat sdf = new SimpleDateFormat(dateformat);
         sdf.setLenient(false);
         dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));

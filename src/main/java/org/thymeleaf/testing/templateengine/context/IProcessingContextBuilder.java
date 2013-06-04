@@ -20,11 +20,11 @@
 package org.thymeleaf.testing.templateengine.context;
 
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
 public interface IProcessingContextBuilder {
 
-    public IProcessingContext build(final ITestContext testContext, final ITestMessages testMessages);
+    public IProcessingContext build(final ITest test);
     
 }

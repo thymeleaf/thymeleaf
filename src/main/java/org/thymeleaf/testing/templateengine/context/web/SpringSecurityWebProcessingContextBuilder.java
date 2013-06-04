@@ -33,8 +33,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.thymeleaf.testing.templateengine.context.ITestContext;
-import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.util.Validate;
 
 
@@ -74,12 +73,12 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
 
     @Override
     protected final void initSpring(final ApplicationContext applicationContext,
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext, final Locale locale,
             final Map<String, Object> variables) {
         
-        super.initSpring(applicationContext, testContext, testMessages, request,
+        super.initSpring(applicationContext, test, request,
                 response, servletContext, locale, variables);
         
         
@@ -90,7 +89,7 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
                 (AuthenticationManager) applicationContext.getBean(this.authenticationManagerBeanName);
         
         final Authentication authentication = 
-                getAuthentication(applicationContext, testContext, testMessages, 
+                getAuthentication(applicationContext, test, 
                         request, response, servletContext, locale, variables);
 
         
@@ -141,7 +140,7 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
      */
     @SuppressWarnings("unused")
     protected Authentication getAuthentication(final ApplicationContext applicationContext,
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext, final Locale locale,
             final Map<String, Object> variables) {

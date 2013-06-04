@@ -40,9 +40,8 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
 
@@ -78,19 +77,19 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
 
     @Override
     protected final void doAdditionalVariableProcessing(
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
 
         
         final List<String> bindingVariableNames = 
-                getBindingVariableNames(testContext, testMessages, request, response, servletContext, locale, variables);
+                getBindingVariableNames(test, request, response, servletContext, locale, variables);
         for (final String bindingVariableName : bindingVariableNames) {
                 
             final Object bindingObject = variables.get(bindingVariableName);
             final WebDataBinder dataBinder = new WebDataBinder(bindingObject, bindingVariableName);
             
-            initBinders(bindingVariableName, bindingObject, testContext, testMessages, dataBinder, locale);
+            initBinders(bindingVariableName, bindingObject, test, dataBinder, locale);
             
             final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + bindingVariableName;
             variables.put(bindingResultName, dataBinder.getBindingResult());
@@ -99,14 +98,14 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         
         final WebApplicationContext appCtx = 
                 createApplicationContext(
-                        testContext, testMessages, request, response, servletContext, locale, variables);
+                        test, request, response, servletContext, locale, variables);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appCtx);
 
         final RequestContext requestContext = 
                 new RequestContext(request, response, servletContext, variables);
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
 
-        initSpring(appCtx, testContext, testMessages, request, response, servletContext, locale, variables);
+        initSpring(appCtx, test, request, response, servletContext, locale, variables);
         
     }
     
@@ -131,7 +130,7 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
      */
     @SuppressWarnings("unused")
     protected List<String> getBindingVariableNames(
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
         
@@ -158,8 +157,7 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     @SuppressWarnings("unused")
     protected void initBinders(
             final String bindingVariableName, final Object bindingObject,
-            final ITestContext testContext, final ITestMessages testMessages,
-            final DataBinder dataBinder, final Locale locale) {
+            final ITest test, final DataBinder dataBinder, final Locale locale) {
         // Nothing to be done. Meant to be overridden.
     }
     
@@ -168,7 +166,7 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     
     @SuppressWarnings("unused")
     protected WebApplicationContext createApplicationContext(
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
 
@@ -213,7 +211,7 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     @SuppressWarnings("unused")
     protected void initSpring(
             final ApplicationContext applicationContext,
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
         // Nothing to be done. Meant to be overridden.
