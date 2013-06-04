@@ -25,9 +25,10 @@ import java.util.Locale;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.DataBinder;
-import org.thymeleaf.testing.templateengine.context.ITestContext;
 import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
 
@@ -44,10 +45,16 @@ public class SpringIntegrationWebProcessingContextBuilder extends SpringWebProce
     @Override
     protected void initBinders(
             final String bindingVariableName, final Object bindingObject,
-            final ITestContext testContext, final ITestMessages testMessages,
+            final ITest test,
             final DataBinder dataBinder, final Locale locale) {
         
-        final String dateformat = testMessages.computeMessage(locale, "date.format", null);
+        final ITestMessages messages = test.getMessages();
+        if (messages == null) {
+            throw new TestEngineExecutionException(
+                    "Test \"" + test.getName() + "\" returns no messages object.");
+        }
+        
+        final String dateformat = messages.computeMessage(locale, "date.format", null);
         final SimpleDateFormat sdf = new SimpleDateFormat(dateformat);
         sdf.setLenient(false);
         dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(sdf, false));

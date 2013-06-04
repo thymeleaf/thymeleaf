@@ -91,6 +91,17 @@ public class FeaturesTest {
         Assert.assertTrue(executor.getReporter().isAllOK());
         
     }
+  
+    
+    @Test
+    public void testRequest() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:features/request");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
     
     
 }

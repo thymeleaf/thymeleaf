@@ -1,9 +1,0 @@
-%EXTENDS link.common
-# ------------------------------------------------------------
-%INPUT
-<a th:href="${#httpServletRequest.requestURL}">go</a>
-<a th:href="${#httpServletRequest.requestURI}">go</a>
-<a th:href="${#httpServletRequest.contextPath}">go</a>
-# ------------------------------------------------------------
-%OUTPUT
-<a href="/testing/user/list">go</a>
