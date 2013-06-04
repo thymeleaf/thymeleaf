@@ -87,5 +87,15 @@ public class AttrProcessorsTest {
         
     }
     
+    @Test
+    public void testEach() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/each");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
     
 }
