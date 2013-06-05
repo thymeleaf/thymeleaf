@@ -88,6 +88,16 @@ public class AttrProcessorsTest {
     }
     
     @Test
+    public void testSubstituteby() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/substituteby");
+        
+        Assert.assertTrue(executor.getReporter().isAllOK());
+        
+    }
+    
+    @Test
     public void testEach() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
