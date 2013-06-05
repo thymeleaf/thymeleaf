@@ -20,9 +20,12 @@
 package org.thymeleaf.testing.templateengine.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.attoparser.AttoParseException;
 import org.attoparser.markup.MarkupAttoParser;
@@ -38,8 +41,27 @@ import org.thymeleaf.util.Validate;
 
 public class ResultCompareUtils {
 
+    
     private static final AttributeEventComparator ATTRIBUTE_EVENT_COMPARATOR = new AttributeEventComparator();
     private static final MarkupAttoParser PARSER = new MarkupAttoParser();
+
+    
+    private static final Set<String> BLOCK_ELEMENTS =
+            new HashSet<String>(Arrays.asList(
+                    new String[] {
+                            "address", "article", "aside", "audio", "blockquote", "canvas", 
+                            "dd", "div", "dl", "dt", "fieldset", "figcaption", "figure", "footer", 
+                            "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hgroup", "hr", 
+                            "li", "noscript", "ol", "option", "output", "p", "pre", "section", "table", "tbody",
+                            "tfoot", "tr", "td", "th", "ul", "video"
+                    }));
+    private static final Set<String> BLOCK_CONTAINER_ELEMENTS =
+            new HashSet<String>(Arrays.asList(
+                    new String[] {
+                            "address", "article", "aside", "div", "dl", "fieldset", "footer", 
+                            "form", "header", "hgroup",  "noscript", "ol", "section", "table", 
+                            "tbody", "tr", "tfoot", "ul"
+                    }));
     
     
 
@@ -128,6 +150,7 @@ public class ResultCompareUtils {
 
     private static List<TraceEvent> normalizeTrace(final List<TraceEvent> trace) {
         
+        String lastOpenElementName = null;
         String lastClosedElementName = null;
         boolean lastIsWhiteSpace = false;
         
@@ -181,7 +204,11 @@ public class ResultCompareUtils {
                 
                 if (isAllWhitespace(text)) {
                     lastIsWhiteSpace = true;
+                } else {
+                    lastOpenElementName = null;
+                    lastClosedElementName = null;
                 }
+                
                 
             } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
                 
@@ -201,6 +228,7 @@ public class ResultCompareUtils {
                  */
                 
                 lastClosedElementName = event.getContent()[0].toLowerCase();
+                lastOpenElementName = null;
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
@@ -208,24 +236,64 @@ public class ResultCompareUtils {
                        TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventType)) {
 
                 /*
-                 * When we are repeating certain elements (like "li", "option" or "div"), white spaces among
-                 * them are not relevant and should be ignored.
+                 * Whitespace between block elements (e.g. <div>, <p>...) or between block containers
+                 * and block elements (e.g. <div><p>, <ul><li>) should not be considered.
                  */
                 
                 final String elementName = event.getContent()[0].toLowerCase();
                 
-                if (lastClosedElementName != null && lastClosedElementName.equals(elementName) &&
-                    (elementName.equals("li") || elementName.equals("option") ||
-                     elementName.equals("tr") || elementName.equals("td") ||
-                     elementName.equals("th") || elementName.equals("p") ||
-                     elementName.equals("div") || elementName.equals("fieldset"))) {
+                if (lastClosedElementName != null && 
+                    BLOCK_ELEMENTS.contains(lastClosedElementName) &&
+                    BLOCK_ELEMENTS.contains(elementName)) {
                     
                     if (lastIsWhiteSpace) {
                         newTrace.remove(newTrace.size() - 1);
                         lastIsWhiteSpace = false;
                     }
 
+                } else if (lastOpenElementName != null && 
+                           BLOCK_CONTAINER_ELEMENTS.contains(lastOpenElementName) &&
+                           BLOCK_ELEMENTS.contains(elementName)) {
+   
+                    if (lastIsWhiteSpace) {
+                        newTrace.remove(newTrace.size() - 1);
+                        lastIsWhiteSpace = false;
+                    }
+
+                } 
+                
+                if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventType)) {
+                    lastOpenElementName = null;
+                    lastClosedElementName = event.getContent()[0].toLowerCase();
+                } else {
+                    lastOpenElementName = event.getContent()[0].toLowerCase();
+                    lastClosedElementName = null;
                 }
+                newTrace.add(event);
+                lastIsWhiteSpace = false;
+                
+            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_CLOSE_ELEMENT_START.equals(eventType)) {
+
+                /*
+                 * Whitespace between block elements closing tags and block containers closing tags
+                 * (e.g. </p></div>, </li></ul>) should not be considered.
+                 */
+                
+                final String elementName = event.getContent()[0].toLowerCase();
+                
+                if (lastClosedElementName != null && 
+                    BLOCK_ELEMENTS.contains(lastClosedElementName) &&
+                    BLOCK_CONTAINER_ELEMENTS.contains(elementName)) {
+                    
+                    if (lastIsWhiteSpace) {
+                        newTrace.remove(newTrace.size() - 1);
+                        lastIsWhiteSpace = false;
+                    }
+
+                } 
+                
+                lastOpenElementName = null;
+                lastClosedElementName = event.getContent()[0].toLowerCase();
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
@@ -247,8 +315,18 @@ public class ResultCompareUtils {
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
+            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_END.equals(eventType)) {
+                
+                // If we are closing an opening tag, we should not initialize the "lastOpenElementName" field
+                // that we just set at the OPEN_ELEMENT_START
+                lastClosedElementName = null;
+                newTrace.add(event);
+                lastIsWhiteSpace = false;
+                
             } else {
                 
+                lastOpenElementName = null;
+                lastClosedElementName = null;
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
