@@ -87,6 +87,12 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) != 0);
         } else {
+            if (leftValue != null && leftValue instanceof Character) {
+                leftValue = leftValue.toString();
+            }
+            if (rightValue != null && rightValue instanceof Character) {
+                rightValue = rightValue.toString();
+            }
             if (leftValue != null && rightValue != null &&
                     leftValue.getClass().equals(rightValue.getClass()) && 
                     Comparable.class.isAssignableFrom(leftValue.getClass())) {
