@@ -123,7 +123,9 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
         
         doAdditionalProcess(arguments, element, attributeName);
         
-        element.removeAttribute(attributeName);
+        if (shouldRemoveAttribute(arguments, element, attributeName)) {
+            element.removeAttribute(attributeName);
+        }
         
         if (recomputeProcessorsAfterExecution(arguments, element, attributeName)) {
             element.setRecomputeProcessorsImmediately(true);
@@ -158,6 +160,12 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
             final Arguments arguments, final Element element, final String attributeName) {
         // Nothing to be done, meant to be overriden
     }
+
     
+    @SuppressWarnings("unused")
+    protected boolean shouldRemoveAttribute(final Arguments arguments, final Element element, final String attributeName) {
+        return true;
+    }
+
     
 }
