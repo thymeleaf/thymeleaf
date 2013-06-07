@@ -16,6 +16,8 @@
   the ";" sign.
 - Updated OGNL dependency from version 3.0.5 to 3.0.6.
 - Fixed equality comparison between Strings and Characters.
+- Added "shouldRemoveAttribute()" protected method to AbstractAttributeModifierAttrProcessor so that
+  subclasses can avoid this removal if necessary.
 
 
 2.0.16
