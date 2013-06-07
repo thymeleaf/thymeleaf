@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.tests.springintegration.context.ErrorsSpringIntegrationWebProcessingContextBuilder;
 import org.thymeleaf.tests.springintegration.context.SpringIntegrationWebProcessingContextBuilder;
 
 
@@ -43,15 +44,28 @@ public class SpringIntegrationTest {
     
     
     @Test
-    public void testSpringIntegration() throws Exception {
+    public void testForm() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new SpringIntegrationWebProcessingContextBuilder());
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
-        executor.execute("classpath:springintegration");
+        executor.execute("classpath:springintegration/form");
         
         Assert.assertTrue(executor.isAllOK());
         
+    }
+
+    
+    
+    @Test
+    public void testErrors() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(new ErrorsSpringIntegrationWebProcessingContextBuilder());
+        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.execute("classpath:springintegration/errors");
+        
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
