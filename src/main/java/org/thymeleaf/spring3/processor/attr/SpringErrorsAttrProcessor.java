@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring3.processor.attr;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +30,13 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.util.DOMUtils;
 
 
 
@@ -89,8 +92,14 @@ public final class SpringErrorsAttrProcessor
                 if (i > 0) {
                     strBuilder.append(ERROR_DELIMITER);
                 }
-                strBuilder.append(
-                        ValueFormatterWrapper.getDisplayString(errorMsgs[i], false));
+                final String displayString = 
+                        ValueFormatterWrapper.getDisplayString(errorMsgs[i], false);
+                try {
+                    strBuilder.append(DOMUtils.escapeXml(displayString, true));
+                } catch (final IOException e) {
+                    throw new TemplateProcessingException(
+                            "Exception while trying to escape Spring error message", e);
+                }
             }
             
             // Remove previous element children
