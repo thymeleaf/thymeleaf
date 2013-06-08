@@ -4,6 +4,8 @@
   'key' in the current Spring theme's properties file.  This is the equivalent of Spring's
   <spring:theme code='key'> JSP tag.
 - Fixed <input> tags with no "type" attribute not being treated as type="text" (which they should).
+- Fixed form error messages output with th:errors not being escaped and provoking a parsing error
+  if they contained <, >, &, etc.
 
 
 2.0.16
