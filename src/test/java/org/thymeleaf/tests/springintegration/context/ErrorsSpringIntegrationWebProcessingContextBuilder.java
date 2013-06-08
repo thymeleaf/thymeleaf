@@ -23,11 +23,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
@@ -51,60 +46,49 @@ public class ErrorsSpringIntegrationWebProcessingContextBuilder
     
     
     @Override
-    protected void initSpring(final ApplicationContext applicationContext,
-            final ITest test, final HttpServletRequest request,
-            final HttpServletResponse response, final ServletContext servletContext,
-            final Locale locale, final Map<String, Object> variables) {
+    protected void initBindingResult(final String bindingVariableName,
+            final Object bindingObject, final ITest test, final BindingResult bindingResult,
+            final Locale locale, final Map<String,Object> variables) {
 
-        super.initSpring(applicationContext, test, request, response, servletContext,
-                locale, variables);
+        super.initBindingResult(bindingVariableName, bindingObject, test,
+                bindingResult, locale, variables);
+        
+        @SuppressWarnings("unchecked")
+        final List<Map<String,Object>> bindingErrorsList = 
+                (List<Map<String,Object>>) variables.get(BINDING_ERRORS_CONTEXT_VARIABLE_NAME);
 
-        final List<String> bindingVariableNames = 
-                getBindingVariableNames(test, request, response, servletContext, locale, variables);
-        for (final String bindingVariableName : bindingVariableNames) {
+        if (bindingErrorsList != null) {
+            
+            for (final Map<String,Object> bindingErrors : bindingErrorsList) {
                 
-            final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + bindingVariableName;
-            final BindingResult result = (BindingResult) variables.get(bindingResultName);
+                final Object bindingObj = bindingErrors.get(BINDING_ERRORS_OBJECT_BINDING_NAME);
+                if (bindingObj != null) {
+                    if (bindingObj.toString().equals(bindingVariableName)) {
+                        // This error map applies to this binding variable
 
-            @SuppressWarnings("unchecked")
-            final List<Map<String,Object>> bindingErrorsList = 
-                    (List<Map<String,Object>>) variables.get(BINDING_ERRORS_CONTEXT_VARIABLE_NAME);
-
-            if (bindingErrorsList != null) {
-                
-                for (final Map<String,Object> bindingErrors : bindingErrorsList) {
-                    
-                    final Object bindingObj = bindingErrors.get(BINDING_ERRORS_OBJECT_BINDING_NAME);
-                    if (bindingObj != null) {
-                        if (bindingObj.toString().equals(bindingVariableName)) {
-                            // This error map applies to this binding variable
-
-                            final Object fieldObj = bindingErrors.get(BINDING_ERRORS_OBJECT_BINDING_FIELD_NAME); 
-                            if (fieldObj == null) {
-                                throw new TestEngineExecutionException(
-                                        "Error specification does not include property 'field', which is mandatory");
-                            }
-                            
-                            final Object messageObj = bindingErrors.get(BINDING_ERRORS_OBJECT_BINDING_MESSAGE_NAME); 
-                            if (messageObj == null) {
-                                throw new TestEngineExecutionException(
-                                        "Error specification does not include property 'message', which is mandatory");
-                            }
-                            
-                            result.rejectValue(fieldObj.toString(), "no_code", messageObj.toString());
-                            
+                        final Object fieldObj = bindingErrors.get(BINDING_ERRORS_OBJECT_BINDING_FIELD_NAME); 
+                        if (fieldObj == null) {
+                            throw new TestEngineExecutionException(
+                                    "Error specification does not include property 'field', which is mandatory");
                         }
+                        
+                        final Object messageObj = bindingErrors.get(BINDING_ERRORS_OBJECT_BINDING_MESSAGE_NAME); 
+                        if (messageObj == null) {
+                            throw new TestEngineExecutionException(
+                                    "Error specification does not include property 'message', which is mandatory");
+                        }
+                        
+                        bindingResult.rejectValue(fieldObj.toString(), "no_code", messageObj.toString());
+                        
                     }
                     
                 }
-
+                
             }
             
         }
         
     }
 
-    
-    
     
 }

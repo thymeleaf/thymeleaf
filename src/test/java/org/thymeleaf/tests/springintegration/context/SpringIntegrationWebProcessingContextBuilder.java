@@ -22,6 +22,7 @@ package org.thymeleaf.tests.springintegration.context;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.DataBinder;
@@ -43,10 +44,10 @@ public class SpringIntegrationWebProcessingContextBuilder extends SpringWebProce
 
     
     @Override
-    protected void initBinders(
+    protected void initBinder(
             final String bindingVariableName, final Object bindingObject,
-            final ITest test,
-            final DataBinder dataBinder, final Locale locale) {
+            final ITest test, final DataBinder dataBinder, final Locale locale, 
+            final Map<String,Object> variables) {
         
         final ITestMessages messages = test.getMessages();
         if (messages == null) {

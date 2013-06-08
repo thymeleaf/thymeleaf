@@ -23,6 +23,7 @@ import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.DataBinder;
@@ -46,9 +47,10 @@ public class STSMWebProcessingContextBuilder extends SpringWebProcessingContextB
 
     
     @Override
-    protected void initBinders(
+    protected void initBinder(
             final String bindingVariableName, final Object bindingObject,
-            final ITest test, final DataBinder dataBinder, final Locale locale) {
+            final ITest test, final DataBinder dataBinder, final Locale locale, 
+            final Map<String,Object> variables) {
         
         final ITestMessages messages = test.getMessages();
         if (messages == null) {
