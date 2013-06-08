@@ -534,9 +534,10 @@ public class STSMWebProcessingContextBuilder
         super();
     }
     
-    protected void initBinders(
+    protected void initBinder(
             final String bindingVariableName, final Object bindingObject,
-            final ITest test, final DataBinder dataBinder, final Locale locale) {
+            final ITest test, final DataBinder dataBinder, final Locale locale, 
+            final Map<String,Object> variables) {
         
         final String dateformat = test.getMessages().computeMessage(locale, "date.format", null);
         final SimpleDateFormat sdf = new SimpleDateFormat(dateformat);

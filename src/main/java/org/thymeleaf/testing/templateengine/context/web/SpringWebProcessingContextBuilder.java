@@ -89,7 +89,8 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
             final Object bindingObject = variables.get(bindingVariableName);
             final WebDataBinder dataBinder = new WebDataBinder(bindingObject, bindingVariableName);
             
-            initBinders(bindingVariableName, bindingObject, test, dataBinder, locale);
+            initBinder(bindingVariableName, bindingObject, test, dataBinder, locale, variables);
+            initBindingResult(bindingVariableName, bindingObject, test, dataBinder.getBindingResult(), locale, variables);
             
             final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + bindingVariableName;
             variables.put(bindingResultName, dataBinder.getBindingResult());
@@ -155,13 +156,22 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     
     
     @SuppressWarnings("unused")
-    protected void initBinders(
+    protected void initBinder(
             final String bindingVariableName, final Object bindingObject,
-            final ITest test, final DataBinder dataBinder, final Locale locale) {
+            final ITest test, final DataBinder dataBinder, final Locale locale, 
+            final Map<String,Object> variables) {
         // Nothing to be done. Meant to be overridden.
     }
     
     
+    
+    @SuppressWarnings("unused")
+    protected void initBindingResult(
+            final String bindingVariableName, final Object bindingObject,
+            final ITest test, final BindingResult bindingResult, final Locale locale, 
+            final Map<String,Object> variables) {
+        // Nothing to be done. Meant to be overridden.
+    }
     
     
     @SuppressWarnings("unused")
