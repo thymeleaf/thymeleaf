@@ -7,9 +7,11 @@ binding = 'formBean01_01'
 bindingError01 = #{ 'binding' : 'formBean01_01',\
                     'field' : 'name',\
                     'message' : 'What!!?? An error???!!!'}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Oh, yes, an error...'}
                     
-bindingErrors = { bindingError01 }
-
+bindingErrors = { bindingError01, bindingError02 }
 # ------------------------------------------------------------
 %INPUT
 <form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
@@ -35,6 +37,7 @@ bindingErrors = { bindingError01 }
       
     <ul class="errorlist">
       <li>What!!?? An error???!!!</li>
+      <li>Oh, yes, an error...</li>
     </ul>
     
     <div>

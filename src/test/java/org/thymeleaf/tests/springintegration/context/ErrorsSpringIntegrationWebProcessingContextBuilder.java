@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 
@@ -92,10 +91,7 @@ public class ErrorsSpringIntegrationWebProcessingContextBuilder
                                         "Error specification does not include property 'message', which is mandatory");
                             }
                             
-                            final FieldError fieldError =
-                                    new FieldError(bindingVariableName, fieldObj.toString(), messageObj.toString());
-                            
-                            result.addError(fieldError);
+                            result.rejectValue(fieldObj.toString(), "no_code", messageObj.toString());
                             
                         }
                     }
