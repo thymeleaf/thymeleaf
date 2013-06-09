@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>thvsjsp</artifactId>
   <packaging>war</packaging>
-  <version>20130224</version>
+  <version>20130609</version>
   <name>Thymeleaf Examples - Thymeleaf vs JSP</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -82,7 +82,7 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.0.16</thymeleaf.version>
+    <thymeleaf.version>2.0.17</thymeleaf.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>
   </properties>
   
