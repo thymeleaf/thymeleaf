@@ -1,3 +1,9 @@
+2.0.18
+======
+- Fixed EnumMap's (and maybe other implementations of Map) not iterating correctly (always repeating the
+  same element) because of their internal iterators reusing the same Map.Entry object.
+
+
 2.0.17
 ======
 - Fixed resource bundle messages not being processed as such when message parameters were empty.

@@ -127,6 +127,7 @@ public final class ObjectUtils {
     
     
     
+    @SuppressWarnings("unchecked")
     public static List<Object> convertToList(final Object value) {
         
         final List<Object> result = new ArrayList<Object>();
@@ -139,8 +140,11 @@ public final class ObjectUtils {
                 result.add(obj);
             }
         } else if (value instanceof Map<?,?>) {
-            for (final Object obj : ((Map<?,?>) value).entrySet()) {
-                result.add(obj);
+            for (final Map.Entry<Object,Object> obj : ((Map<Object,Object>) value).entrySet()) {
+                // We should not directly use the Map.Entry<Object,Object> object used as an iteration
+                // variable because some Map implementations like EnumMap reuse the same Map.Entry in their
+                // iterator()'s, so we would be adding the same object to the list several times.
+                result.add(new MapEntry<Object,Object>(obj.getKey(), obj.getValue()));
             }
         } else if (value.getClass().isArray()){
             if (value instanceof byte[]) {
@@ -222,6 +226,36 @@ public final class ObjectUtils {
         super();
     }
     
+    
+    
+    static final class MapEntry<K,V> implements Map.Entry<K,V> {
+
+        private K key;
+        private V value;
+        
+        MapEntry(final K key, final V value) {
+            super();
+            this.key = key;
+            this.value = value;
+        }
+        
+        public K getKey() {
+            return this.key;
+        }
+
+        public V getValue() {
+            return this.value;
+        }
+
+        public V setValue(final V value) {
+            throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        public String toString() {
+            return this.key + "=" + this.value;
+        }
+    }
     
     
 }
