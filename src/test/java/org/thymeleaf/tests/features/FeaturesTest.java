@@ -43,7 +43,7 @@ public class FeaturesTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:features/text");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -55,7 +55,7 @@ public class FeaturesTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:features/link");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -66,7 +66,7 @@ public class FeaturesTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:features/util");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
   
@@ -77,7 +77,7 @@ public class FeaturesTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:features/expression");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
   
@@ -88,7 +88,7 @@ public class FeaturesTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:features/messages");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
   
@@ -99,7 +99,7 @@ public class FeaturesTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:features/request");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     

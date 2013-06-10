@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+prices = #{ 'euros': 9.00,\
+            'dollars': 12.00 }
+product = #{ 'name': 'Lettuce',\
+             'prices': prices }
+# ------------------------------------------------------------
+%INPUT
+<p th:object="${x}" th:with="x=${product}" th:text="*{euros}">...</p>
+# ------------------------------------------------------------
+%EXCEPTION
+ognl.OgnlException
+%EXCEPTION_MESSAGE_PATTERN
+source is null for getProperty\(null, \"euros\"\)

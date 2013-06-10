@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+map = new java.util.EnumMap(@java.util.concurrent.TimeUnit@class)
+map[@java.util.concurrent.TimeUnit@DAYS] = 1
+map[@java.util.concurrent.TimeUnit@HOURS] = 2
+# ------------------------------------------------------------
+%INPUT
+<div th:each="entry :${map}" th:text="${entry}"></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>HOURS=2</div><div>DAYS=1</div>

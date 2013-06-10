@@ -1,0 +1,35 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+prices = #{ 'euros': 9.00,\
+            'dollars': 12.00 }
+product = #{ 'name': 'Lettuce',\
+             'prices': prices }
+# ------------------------------------------------------------
+%INPUT
+<p th:object="${product}" th:with="x=*{prices}" th:text="${x.euros}">...</p>
+<p th:object="${product}" th:with="x=*{prices}">
+  <span th:text="${x.euros}">...</span>
+</p>
+<p th:object="${product}">
+  <span th:with="x=*{prices}" th:text="${x.euros}">...</span>
+</p>
+<p th:object="${product}">
+  <span th:with="x=*{prices}">
+    <span th:text="${x.euros}">...</span>
+  </span>
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>9.0</p>
+<p>
+  <span>9.0</span>
+</p>
+<p>
+  <span>9.0</span>
+</p>
+<p>
+  <span>
+    <span>9.0</span>
+  </span>
+</p>

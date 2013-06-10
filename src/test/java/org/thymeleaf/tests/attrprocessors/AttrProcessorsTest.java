@@ -43,7 +43,7 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/remove");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -53,7 +53,7 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/if");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -63,7 +63,7 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/unless");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -73,7 +73,7 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/inline");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -83,7 +83,7 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/include");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -93,7 +93,7 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/substituteby");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
@@ -103,7 +103,17 @@ public class AttrProcessorsTest {
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:attrprocessors/each");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
+        
+    }
+    
+    @Test
+    public void testObject() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/object");
+        
+        Assert.assertTrue(executor.isAllOK());
         
     }
     

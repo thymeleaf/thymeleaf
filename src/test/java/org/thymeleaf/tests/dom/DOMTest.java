@@ -50,7 +50,7 @@ public class DOMTest {
                 Arrays.asList(new IDialect[] { new StandardDialect(), new DOMDialect()}));
         executor.execute("classpath:dom");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     

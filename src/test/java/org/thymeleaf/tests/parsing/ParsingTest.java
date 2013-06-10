@@ -50,7 +50,7 @@ public class ParsingTest {
                 Arrays.asList(new IDialect[] { new StandardDialect(), new DOMDialect()}));
         executor.execute("classpath:parsing");
         
-        Assert.assertTrue(executor.getReporter().isAllOK());
+        Assert.assertTrue(executor.isAllOK());
         
     }
     
