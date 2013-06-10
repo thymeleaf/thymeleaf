@@ -117,5 +117,15 @@ public class AttrProcessorsTest {
         
     }
     
+    @Test
+    public void testAttr() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/attr");
+        
+        Assert.assertTrue(executor.isAllOK());
+        
+    }
+    
     
 }

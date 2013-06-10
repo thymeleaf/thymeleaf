@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<span th:attr="class='separate'">..</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span class="separate">..</span>

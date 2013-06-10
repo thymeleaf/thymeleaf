@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+sel = true 
+# ------------------------------------------------------------
+%INPUT
+<option th:attr="selected=${sel}">..</option>
+<option th:attr="multiple=${sel}">..</option>
+<option th:attr="selected=!${sel}">..</option>
+<option th:attr="multiple=!${sel}">..</option>
+# ------------------------------------------------------------
+%OUTPUT
+<option selected="selected">..</option>
+<option selected="multiple">..</option>
+<option>..</option>
+<option>..</option>
