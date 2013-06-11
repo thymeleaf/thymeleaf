@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:accept-charset="${one}">..</div>
+<div th:accept-charset="'hello'">..</div>
+<div th:accept-charset="${null}">..</div>
+<div th:accept-charset="''">..</div>
+
+<div accept-charset="old" th:accept-charset="${one}">..</div>
+<div accept-charset="old" th:accept-charset="'hello'">..</div>
+<div accept-charset="old" th:accept-charset="${null}">..</div>
+<div accept-charset="old" th:accept-charset="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div accept-charset="one!">..</div>
+<div accept-charset="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div accept-charset="one!">..</div>
+<div accept-charset="hello">..</div>
+<div>..</div>
+<div>..</div>

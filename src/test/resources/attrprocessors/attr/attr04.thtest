@@ -8,9 +8,21 @@ sel = true
 <option th:attr="multiple=${sel}">..</option>
 <option th:attr="selected=!${sel}">..</option>
 <option th:attr="multiple=!${sel}">..</option>
+<option th:attr="selected='a'">..</option>
+<option th:attr="multiple='a'">..</option>
+<option th:attr="selected=''">..</option>
+<option th:attr="multiple=''">..</option>
+<option th:attr="selected=${null}">..</option>
+<option th:attr="multiple=${null}">..</option>
 # ------------------------------------------------------------
 %OUTPUT
 <option selected="selected">..</option>
-<option selected="multiple">..</option>
+<option multiple="multiple">..</option>
+<option>..</option>
+<option>..</option>
+<option selected="selected">..</option>
+<option multiple="multiple">..</option>
+<option selected="selected">..</option>
+<option multiple="multiple">..</option>
 <option>..</option>
 <option>..</option>

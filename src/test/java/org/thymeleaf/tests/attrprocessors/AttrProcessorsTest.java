@@ -127,5 +127,15 @@ public class AttrProcessorsTest {
         
     }
     
+    @Test
+    public void testSimpleValue() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/simplevalue");
+        
+        Assert.assertTrue(executor.isAllOK());
+        
+    }
+    
     
 }

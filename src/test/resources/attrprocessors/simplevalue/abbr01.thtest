@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:abbr="${one}">..</div>
+<div th:abbr="'hello'">..</div>
+<div th:abbr="${null}">..</div>
+<div th:abbr="''">..</div>
+
+<div abbr="old" th:abbr="${one}">..</div>
+<div abbr="old" th:abbr="'hello'">..</div>
+<div abbr="old" th:abbr="${null}">..</div>
+<div abbr="old" th:abbr="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div abbr="one!">..</div>
+<div abbr="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div abbr="one!">..</div>
+<div abbr="hello">..</div>
+<div>..</div>
+<div>..</div>
