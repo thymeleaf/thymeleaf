@@ -2,6 +2,7 @@
 ======
 - Fixed EnumMap's (and maybe other implementations of Map) not iterating correctly (always repeating the
   same element) because of their internal iterators reusing the same Map.Entry object.
+- Fixed th:attr not correctly rendering fixed-value conditional attributes like "multiple", "selected",etc.
 
 
 2.0.17
