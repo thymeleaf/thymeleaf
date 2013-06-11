@@ -35,6 +35,7 @@ import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.ObjectUtils;
+import org.thymeleaf.util.TemplateModeUtils;
 
 /**
  * 
@@ -81,7 +82,8 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             
             final Object result = StandardExpressionProcessor.executeExpression(arguments, expression);
             
-            if (ArrayUtils.contains(Standards.HTML_CONDITIONAL_FIXED_VALUE_ATTR_NAMES, newAttributeName)) {
+            if (TemplateModeUtils.isHtml(arguments.getTemplateResolution().getTemplateMode()) &&
+                    ArrayUtils.contains(Standards.HTML_CONDITIONAL_FIXED_VALUE_ATTR_NAMES, newAttributeName)) {
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
                 
@@ -104,15 +106,13 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         
     }
 
-
+    
 
     @Override
     protected boolean recomputeProcessorsAfterExecution(final Arguments arguments,
             final Element element, final String attributeName) {
         return false;
     }
-
-    
 
     
 }
