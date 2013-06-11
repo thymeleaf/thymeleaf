@@ -230,8 +230,8 @@ public final class ObjectUtils {
     
     static final class MapEntry<K,V> implements Map.Entry<K,V> {
 
-        private K key;
-        private V value;
+        private final K key;
+        private final V value;
         
         MapEntry(final K key, final V value) {
             super();
