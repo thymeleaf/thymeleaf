@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Standards;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
@@ -32,6 +33,8 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.util.ArrayUtils;
+import org.thymeleaf.util.ObjectUtils;
 
 /**
  * 
@@ -78,7 +81,22 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             
             final Object result = StandardExpressionProcessor.executeExpression(arguments, expression);
             
-            newAttributeValues.put(newAttributeName, (result == null? "" : result.toString()));
+            if (ArrayUtils.contains(Standards.HTML_CONDITIONAL_FIXED_VALUE_ATTR_NAMES, newAttributeName)) {
+                // Attribute is a fixed-value conditional one, like "selected", which can only
+                // appear as selected="selected" or not appear at all.
+                
+                if (ObjectUtils.evaluateAsBoolean(result)) {
+                    newAttributeValues.put(newAttributeName, newAttributeName);
+                } else {
+                    newAttributeValues.put(newAttributeName, null);
+                }
+                
+            } else {
+                // Attribute is a "normal" attribute, not a fixed-value conditional one
+                
+                newAttributeValues.put(newAttributeName, (result == null? "" : result.toString()));
+                
+            }
 
         }
         
