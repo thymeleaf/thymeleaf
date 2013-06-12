@@ -138,4 +138,26 @@ public class AttrProcessorsTest {
     }
     
     
+    @Test
+    public void testDoubleValue() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/doublevalue");
+        
+        Assert.assertTrue(executor.isAllOK());
+        
+    }
+
+    
+    @Test
+    public void testAppend() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/append");
+        
+        Assert.assertTrue(executor.isAllOK());
+        
+    }
+    
+    
 }
