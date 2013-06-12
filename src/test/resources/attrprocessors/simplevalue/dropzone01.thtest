@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:dropzone="${one}">..</div>
+<div th:dropzone="'hello'">..</div>
+<div th:dropzone="${null}">..</div>
+<div th:dropzone="''">..</div>
+
+<div dropzone="old" th:dropzone="${one}">..</div>
+<div dropzone="old" th:dropzone="'hello'">..</div>
+<div dropzone="old" th:dropzone="${null}">..</div>
+<div dropzone="old" th:dropzone="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div dropzone="one!">..</div>
+<div dropzone="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div dropzone="one!">..</div>
+<div dropzone="hello">..</div>
+<div>..</div>
+<div>..</div>

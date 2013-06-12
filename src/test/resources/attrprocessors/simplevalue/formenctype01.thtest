@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:formenctype="${one}">..</div>
+<div th:formenctype="'hello'">..</div>
+<div th:formenctype="${null}">..</div>
+<div th:formenctype="''">..</div>
+
+<div formenctype="old" th:formenctype="${one}">..</div>
+<div formenctype="old" th:formenctype="'hello'">..</div>
+<div formenctype="old" th:formenctype="${null}">..</div>
+<div formenctype="old" th:formenctype="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div formenctype="one!">..</div>
+<div formenctype="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div formenctype="one!">..</div>
+<div formenctype="hello">..</div>
+<div>..</div>
+<div>..</div>

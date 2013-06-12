@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:usemap="${one}">..</div>
+<div th:usemap="'hello'">..</div>
+<div th:usemap="${null}">..</div>
+<div th:usemap="''">..</div>
+
+<div usemap="old" th:usemap="${one}">..</div>
+<div usemap="old" th:usemap="'hello'">..</div>
+<div usemap="old" th:usemap="${null}">..</div>
+<div usemap="old" th:usemap="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div usemap="one!">..</div>
+<div usemap="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div usemap="one!">..</div>
+<div usemap="hello">..</div>
+<div>..</div>
+<div>..</div>

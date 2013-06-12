@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:preload="${one}">..</div>
+<div th:preload="'hello'">..</div>
+<div th:preload="${null}">..</div>
+<div th:preload="''">..</div>
+
+<div preload="old" th:preload="${one}">..</div>
+<div preload="old" th:preload="'hello'">..</div>
+<div preload="old" th:preload="${null}">..</div>
+<div preload="old" th:preload="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div preload="one!">..</div>
+<div preload="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div preload="one!">..</div>
+<div preload="hello">..</div>
+<div>..</div>
+<div>..</div>

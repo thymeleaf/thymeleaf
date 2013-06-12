@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:hreflang="${one}">..</div>
+<div th:hreflang="'hello'">..</div>
+<div th:hreflang="${null}">..</div>
+<div th:hreflang="''">..</div>
+
+<div hreflang="old" th:hreflang="${one}">..</div>
+<div hreflang="old" th:hreflang="'hello'">..</div>
+<div hreflang="old" th:hreflang="${null}">..</div>
+<div hreflang="old" th:hreflang="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div hreflang="one!">..</div>
+<div hreflang="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div hreflang="one!">..</div>
+<div hreflang="hello">..</div>
+<div>..</div>
+<div>..</div>

@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:sandbox="${one}">..</div>
+<div th:sandbox="'hello'">..</div>
+<div th:sandbox="${null}">..</div>
+<div th:sandbox="''">..</div>
+
+<div sandbox="old" th:sandbox="${one}">..</div>
+<div sandbox="old" th:sandbox="'hello'">..</div>
+<div sandbox="old" th:sandbox="${null}">..</div>
+<div sandbox="old" th:sandbox="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div sandbox="one!">..</div>
+<div sandbox="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div sandbox="one!">..</div>
+<div sandbox="hello">..</div>
+<div>..</div>
+<div>..</div>

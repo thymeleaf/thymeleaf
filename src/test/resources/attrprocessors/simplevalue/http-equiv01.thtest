@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:http-equiv="${one}">..</div>
+<div th:http-equiv="'hello'">..</div>
+<div th:http-equiv="${null}">..</div>
+<div th:http-equiv="''">..</div>
+
+<div http-equiv="old" th:http-equiv="${one}">..</div>
+<div http-equiv="old" th:http-equiv="'hello'">..</div>
+<div http-equiv="old" th:http-equiv="${null}">..</div>
+<div http-equiv="old" th:http-equiv="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div http-equiv="one!">..</div>
+<div http-equiv="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div http-equiv="one!">..</div>
+<div http-equiv="hello">..</div>
+<div>..</div>
+<div>..</div>

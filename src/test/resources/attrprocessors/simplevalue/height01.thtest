@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:height="${one}">..</div>
+<div th:height="'hello'">..</div>
+<div th:height="${null}">..</div>
+<div th:height="''">..</div>
+
+<div height="old" th:height="${one}">..</div>
+<div height="old" th:height="'hello'">..</div>
+<div height="old" th:height="${null}">..</div>
+<div height="old" th:height="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div height="one!">..</div>
+<div height="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div height="one!">..</div>
+<div height="hello">..</div>
+<div>..</div>
+<div>..</div>

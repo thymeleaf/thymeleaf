@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:formtarget="${one}">..</div>
+<div th:formtarget="'hello'">..</div>
+<div th:formtarget="${null}">..</div>
+<div th:formtarget="''">..</div>
+
+<div formtarget="old" th:formtarget="${one}">..</div>
+<div formtarget="old" th:formtarget="'hello'">..</div>
+<div formtarget="old" th:formtarget="${null}">..</div>
+<div formtarget="old" th:formtarget="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div formtarget="one!">..</div>
+<div formtarget="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div formtarget="one!">..</div>
+<div formtarget="hello">..</div>
+<div>..</div>
+<div>..</div>

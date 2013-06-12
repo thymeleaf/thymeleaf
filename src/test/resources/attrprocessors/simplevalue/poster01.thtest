@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:poster="${one}">..</div>
+<div th:poster="'hello'">..</div>
+<div th:poster="${null}">..</div>
+<div th:poster="''">..</div>
+
+<div poster="old" th:poster="${one}">..</div>
+<div poster="old" th:poster="'hello'">..</div>
+<div poster="old" th:poster="${null}">..</div>
+<div poster="old" th:poster="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div poster="one!">..</div>
+<div poster="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div poster="one!">..</div>
+<div poster="hello">..</div>
+<div>..</div>
+<div>..</div>

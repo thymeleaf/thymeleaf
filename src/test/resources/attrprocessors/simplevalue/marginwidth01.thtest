@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:marginwidth="${one}">..</div>
+<div th:marginwidth="'hello'">..</div>
+<div th:marginwidth="${null}">..</div>
+<div th:marginwidth="''">..</div>
+
+<div marginwidth="old" th:marginwidth="${one}">..</div>
+<div marginwidth="old" th:marginwidth="'hello'">..</div>
+<div marginwidth="old" th:marginwidth="${null}">..</div>
+<div marginwidth="old" th:marginwidth="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div marginwidth="one!">..</div>
+<div marginwidth="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div marginwidth="one!">..</div>
+<div marginwidth="hello">..</div>
+<div>..</div>
+<div>..</div>
