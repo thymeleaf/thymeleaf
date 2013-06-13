@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:autoplay="${t}">..</div>
+<div th:autoplay="${f}">..</div>
+<div th:autoplay="${one}">..</div>
+<div th:autoplay="'hello'">..</div>
+<div th:autoplay="${null}">..</div>
+<div th:autoplay="''">..</div>
+
+<div autoplay="old" th:autoplay="${t}">..</div>
+<div autoplay="old" th:autoplay="${f}">..</div>
+<div autoplay="old" th:autoplay="${one}">..</div>
+<div autoplay="old" th:autoplay="'hello'">..</div>
+<div autoplay="old" th:autoplay="${null}">..</div>
+<div autoplay="old" th:autoplay="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div autoplay="autoplay">..</div>
+<div>..</div>
+<div autoplay="autoplay">..</div>
+<div autoplay="autoplay">..</div>
+<div>..</div>
+<div autoplay="autoplay">..</div>
+
+<div autoplay="autoplay">..</div>
+<div>..</div>
+<div autoplay="autoplay">..</div>
+<div autoplay="autoplay">..</div>
+<div>..</div>
+<div autoplay="autoplay">..</div>

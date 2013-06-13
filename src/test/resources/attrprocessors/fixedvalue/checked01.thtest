@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:checked="${t}">..</div>
+<div th:checked="${f}">..</div>
+<div th:checked="${one}">..</div>
+<div th:checked="'hello'">..</div>
+<div th:checked="${null}">..</div>
+<div th:checked="''">..</div>
+
+<div checked="old" th:checked="${t}">..</div>
+<div checked="old" th:checked="${f}">..</div>
+<div checked="old" th:checked="${one}">..</div>
+<div checked="old" th:checked="'hello'">..</div>
+<div checked="old" th:checked="${null}">..</div>
+<div checked="old" th:checked="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div checked="checked">..</div>
+<div>..</div>
+<div checked="checked">..</div>
+<div checked="checked">..</div>
+<div>..</div>
+<div checked="checked">..</div>
+
+<div checked="checked">..</div>
+<div>..</div>
+<div checked="checked">..</div>
+<div checked="checked">..</div>
+<div>..</div>
+<div checked="checked">..</div>

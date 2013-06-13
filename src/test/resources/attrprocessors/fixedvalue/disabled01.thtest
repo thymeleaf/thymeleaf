@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:disabled="${t}">..</div>
+<div th:disabled="${f}">..</div>
+<div th:disabled="${one}">..</div>
+<div th:disabled="'hello'">..</div>
+<div th:disabled="${null}">..</div>
+<div th:disabled="''">..</div>
+
+<div disabled="old" th:disabled="${t}">..</div>
+<div disabled="old" th:disabled="${f}">..</div>
+<div disabled="old" th:disabled="${one}">..</div>
+<div disabled="old" th:disabled="'hello'">..</div>
+<div disabled="old" th:disabled="${null}">..</div>
+<div disabled="old" th:disabled="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>
+<div disabled="disabled">..</div>
+<div>..</div>
+<div disabled="disabled">..</div>

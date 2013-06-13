@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:required="${t}">..</div>
+<div th:required="${f}">..</div>
+<div th:required="${one}">..</div>
+<div th:required="'hello'">..</div>
+<div th:required="${null}">..</div>
+<div th:required="''">..</div>
+
+<div required="old" th:required="${t}">..</div>
+<div required="old" th:required="${f}">..</div>
+<div required="old" th:required="${one}">..</div>
+<div required="old" th:required="'hello'">..</div>
+<div required="old" th:required="${null}">..</div>
+<div required="old" th:required="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>

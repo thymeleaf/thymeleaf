@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:ismap="${t}">..</div>
+<div th:ismap="${f}">..</div>
+<div th:ismap="${one}">..</div>
+<div th:ismap="'hello'">..</div>
+<div th:ismap="${null}">..</div>
+<div th:ismap="''">..</div>
+
+<div ismap="old" th:ismap="${t}">..</div>
+<div ismap="old" th:ismap="${f}">..</div>
+<div ismap="old" th:ismap="${one}">..</div>
+<div ismap="old" th:ismap="'hello'">..</div>
+<div ismap="old" th:ismap="${null}">..</div>
+<div ismap="old" th:ismap="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div ismap="ismap">..</div>
+<div>..</div>
+<div ismap="ismap">..</div>
+<div ismap="ismap">..</div>
+<div>..</div>
+<div ismap="ismap">..</div>
+
+<div ismap="ismap">..</div>
+<div>..</div>
+<div ismap="ismap">..</div>
+<div ismap="ismap">..</div>
+<div>..</div>
+<div ismap="ismap">..</div>

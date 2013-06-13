@@ -158,6 +158,17 @@ public class AttrProcessorsTest {
         Assert.assertTrue(executor.isAllOK());
         
     }
+
+    
+    @Test
+    public void testFixedValue() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:attrprocessors/fixedvalue");
+        
+        Assert.assertTrue(executor.isAllOK());
+        
+    }
     
     
 }

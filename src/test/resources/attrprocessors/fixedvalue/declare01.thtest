@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div th:declare="${t}">..</div>
+<div th:declare="${f}">..</div>
+<div th:declare="${one}">..</div>
+<div th:declare="'hello'">..</div>
+<div th:declare="${null}">..</div>
+<div th:declare="''">..</div>
+
+<div declare="old" th:declare="${t}">..</div>
+<div declare="old" th:declare="${f}">..</div>
+<div declare="old" th:declare="${one}">..</div>
+<div declare="old" th:declare="'hello'">..</div>
+<div declare="old" th:declare="${null}">..</div>
+<div declare="old" th:declare="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div declare="declare">..</div>
+<div>..</div>
+<div declare="declare">..</div>
+<div declare="declare">..</div>
+<div>..</div>
+<div declare="declare">..</div>
+
+<div declare="declare">..</div>
+<div>..</div>
+<div declare="declare">..</div>
+<div declare="declare">..</div>
+<div>..</div>
+<div declare="declare">..</div>
