@@ -3,6 +3,8 @@
 - Fixed EnumMap's (and maybe other implementations of Map) not iterating correctly (always repeating the
   same element) because of their internal iterators reusing the same Map.Entry object.
 - Fixed th:attr not correctly rendering fixed-value conditional attributes like "multiple", "selected",etc.
+- Fixed th:attrappend, th:attrprepend and th:classappend not correctly render results when the 
+  appended attribute already exists and is empty before processing the template.
 
 
 2.0.17

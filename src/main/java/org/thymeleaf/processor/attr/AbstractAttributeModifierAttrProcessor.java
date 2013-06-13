@@ -67,43 +67,43 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
         
         for (final Map.Entry<String,String> modifiedAttributeEntry : modifiedAttributeValues.entrySet()) {
 
+            
             final String modifiedAttributeName = modifiedAttributeEntry.getKey();
-            String modifiedAttributeValue = modifiedAttributeEntry.getValue();
-            String currentAttributeValue = element.getAttributeValue(modifiedAttributeName);
+            final String oldAttributeValue = element.getAttributeValue(modifiedAttributeName);
+            String newAttributeValue = modifiedAttributeEntry.getValue();
             
             final ModificationType modificationType =
                     getModificationType(arguments, element, attributeName, modifiedAttributeName);
-            
-            if (currentAttributeValue == null) {
-                currentAttributeValue = "";
-            }
 
-            if (modifiedAttributeValue == null) {
-                modifiedAttributeValue = "";
-            }
-            
+            newAttributeValue = defaultToNull(newAttributeValue);
             
             switch (modificationType) {
                 case SUBSTITUTION :
                     break;
-                case APPEND :
-                    modifiedAttributeValue = currentAttributeValue + modifiedAttributeValue;
-                    break;
                 case APPEND_WITH_SPACE :
-                    if (!currentAttributeValue.equals("")) {
-                        modifiedAttributeValue = currentAttributeValue + " " + modifiedAttributeValue;
+                    if (newAttributeValue != null && 
+                        (oldAttributeValue != null && !oldAttributeValue.equals(""))) {
+                        newAttributeValue = " " + newAttributeValue;
+                    }
+                    //$FALL-THROUGH$
+                case APPEND :
+                    if (newAttributeValue == null) {
+                        newAttributeValue = oldAttributeValue;
                     } else {
-                        modifiedAttributeValue = currentAttributeValue + modifiedAttributeValue;
+                        newAttributeValue = defaultToEmpty(oldAttributeValue) + newAttributeValue;
                     }
                     break;
-                case PREPEND :
-                    modifiedAttributeValue = modifiedAttributeValue + currentAttributeValue;
-                    break;
                 case PREPEND_WITH_SPACE :
-                    if (!currentAttributeValue.equals("")) {
-                        modifiedAttributeValue = modifiedAttributeValue + " " + currentAttributeValue;
+                    if (newAttributeValue != null && 
+                        (oldAttributeValue != null && !oldAttributeValue.equals(""))) {
+                        newAttributeValue = newAttributeValue + " ";
+                    }
+                    //$FALL-THROUGH$
+                case PREPEND :
+                    if (newAttributeValue == null) {
+                        newAttributeValue = oldAttributeValue;
                     } else {
-                        modifiedAttributeValue = modifiedAttributeValue + currentAttributeValue;
+                        newAttributeValue = newAttributeValue + defaultToEmpty(oldAttributeValue);
                     }
                     break;
             }
@@ -113,10 +113,10 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
                 removeAttributeIfEmpty(arguments, element, attributeName, modifiedAttributeName);
             
             // Do NOT use trim() here! Non-thymeleaf attributes set to ' ' could have meaning!
-            if (modifiedAttributeValue.equals("") && removeAttributeIfEmpty) {
+            if (removeAttributeIfEmpty && newAttributeValue == null) {
                 element.removeAttribute(modifiedAttributeName);
             } else {
-                element.setAttribute(modifiedAttributeName, modifiedAttributeValue);
+                element.setAttribute(modifiedAttributeName, defaultToEmpty(newAttributeValue));
             }
             
         }
@@ -135,6 +135,16 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
         
     }
 
+    
+    
+    private static String defaultToEmpty(final String str) {
+        return (str == null? "" : str);
+    }
+    
+    private static String defaultToNull(final String str) {
+        return ((str != null && str.equals(""))? null : str);
+    }
+    
     
     
     protected abstract Map<String,String> getModifiedAttributeValues(final Arguments arguments, 
