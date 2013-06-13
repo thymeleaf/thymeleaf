@@ -150,10 +150,10 @@ public class AttrProcessorsTest {
 
     
     @Test
-    public void testAppend() throws Exception {
+    public void testAppendPrepend() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:attrprocessors/append");
+        executor.execute("classpath:attrprocessors/appendprepend");
         
         Assert.assertTrue(executor.isAllOK());
         
