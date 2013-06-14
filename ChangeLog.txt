@@ -9,6 +9,8 @@
   it this target attribute already existed before processing.
 - Fixed multiple execution of "th:case" inside "th:switch" possible when th:case="*" appeared before
   non-default case blocks.
+- Fixed bad removal of prototyping JS code in lines not ended with ";" or "," (like the last lines of
+  an array or object definition).
 
 
 2.0.17
