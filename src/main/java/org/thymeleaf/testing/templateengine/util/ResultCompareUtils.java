@@ -114,9 +114,12 @@ public class ResultCompareUtils {
                 
             }
             
+
+            final TraceEvent comparableActualTraceItem = compressWhitespaceIfText(actualTraceItem);
+            final TraceEvent comparableExpectedTraceItem = compressWhitespaceIfText(expectedTraceItem);
             
             final boolean itemMatches = 
-                    (lenient? actualTraceItem.matchesTypeAndContent(expectedTraceItem) : actualTraceItem.equals(expectedTraceItem));
+                    (lenient? comparableActualTraceItem.matchesTypeAndContent(comparableExpectedTraceItem) : actualTraceItem.equals(expectedTraceItem));
             
             if (!itemMatches) {
 
@@ -195,12 +198,11 @@ public class ResultCompareUtils {
                 // We need to compress all whitespace in order to perform a correct lenient check
                 
                 final String text = event.getContent()[0];
-                
-                newTrace.add(
-                        new TraceEvent(
-                                event.getLine(), event.getCol(), 
-                                TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT, 
-                                compressWhitespace(text)));
+
+                // We will not perform the whitespace compression here. Instead, we will
+                // do that only in the very moment the text event items are compared, so that
+                // every computation regarding error messages is done on the original text.
+                newTrace.add(event);
                 
                 if (isAllWhitespace(text)) {
                     lastIsWhiteSpace = true;
@@ -342,8 +344,15 @@ public class ResultCompareUtils {
     
     
     
-    private static String compressWhitespace(final String text) {
+    private static TraceEvent compressWhitespaceIfText(final TraceEvent event) {
         
+        final String eventType = event.getType();
+        if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventType)) {
+            return event;
+        }
+        
+        final String text = event.getContent()[0]; 
+                
         final StringBuilder strBuilder = new StringBuilder();
         
         boolean whitespace = false;
@@ -362,7 +371,7 @@ public class ResultCompareUtils {
             }
         }
         
-        return strBuilder.toString();
+        return new TraceEvent(event.getLine(), event.getCol(), event.getType(), strBuilder.toString());
         
     }
     
@@ -444,6 +453,9 @@ public class ResultCompareUtils {
                 return new int[] {20, 80};
             }
             
+            // We first at content item number 1, because during trace normalization
+            // we might have added there the un-whitespace-stripped original text, which is
+            // the correct one to be used for computing this message length.
             final Object contentObj = eventItem.getContent()[0];
             if (contentObj == null || !(contentObj instanceof String)) {
                 return new int[] {20, 80};
