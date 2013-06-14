@@ -86,6 +86,7 @@ public abstract class AbstractStandardCaseAttrProcessor
                         new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeValue, attributeName, attributeValue, Boolean.TRUE});
             }
             
+            switchStructure.setExecuted(true);
             return true;
             
         }
