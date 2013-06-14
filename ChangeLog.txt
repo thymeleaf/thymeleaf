@@ -5,6 +5,8 @@
 - Fixed th:attr not correctly rendering fixed-value conditional attributes like "multiple", "selected",etc.
 - Fixed th:attrappend, th:attrprepend and th:classappend not correctly render results when the 
   appended attribute already exists and is empty before processing the template.
+- Fixed fixed-value conditional attributes not removing the target attribute on false evaluation if 
+  it this target attribute already existed before processing.
 
 
 2.0.17
