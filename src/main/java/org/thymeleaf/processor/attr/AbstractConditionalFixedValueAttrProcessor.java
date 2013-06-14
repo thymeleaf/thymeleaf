@@ -59,6 +59,7 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
         final String targetAttributeName = getTargetAttributeName(arguments, element, attributeName);
 
         if (!visible) {
+            element.removeAttribute(targetAttributeName);
             element.removeAttribute(attributeName);
             return ProcessorResult.OK;
         }
