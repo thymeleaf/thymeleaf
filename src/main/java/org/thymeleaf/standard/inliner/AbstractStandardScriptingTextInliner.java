@@ -217,9 +217,15 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
             if (c == ';' || c == ',') {
                 return lineRemainder.substring(i);
             }
+            if (c == '/' && ((i+1) < len)) {
+                final char c1 = lineRemainder.charAt(i+1);
+                if (c1 == '/' || c1 == '*') {
+                    return lineRemainder.substring(i);
+                }
+            }
         }
 
-        return lineRemainder;
+        return "";
         
     }
     
