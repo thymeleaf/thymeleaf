@@ -25,6 +25,10 @@ products = { product1, product2, product3, product4 }
     <td th:text="${ps.size}">size</td>
     <td th:text="${ps.current.name}">name</td>
     <td th:text="${ps.current.price}">price</td>
+    <td th:text="${ps.even} ? 'T' : 'F'">even</td>
+    <td th:text="${ps.odd} ? 'T' : 'F'">odd</td>
+    <td th:text="${ps.first} ? 'T' : 'F'">first</td>
+    <td th:text="${ps.last} ? 'T' : 'F'">last</td>
     <td th:text="*{name}">name</td>
     <td th:text="*{price}">price</td>
   </tr>
@@ -38,6 +42,10 @@ products = { product1, product2, product3, product4 }
     <td>4</td>
     <td>Lettuce</td>
     <td>12.0</td>
+    <td>T</td>
+    <td>F</td>
+    <td>T</td>
+    <td>F</td>
     <td>Lettuce</td>
     <td>12.0</td>
   </tr>
@@ -47,6 +55,10 @@ products = { product1, product2, product3, product4 }
     <td>4</td>
     <td>Apricot</td>
     <td>8.0</td>
+    <td>F</td>
+    <td>T</td>
+    <td>F</td>
+    <td>F</td>
     <td>Apricot</td>
     <td>8.0</td>
   </tr>
@@ -56,6 +68,10 @@ products = { product1, product2, product3, product4 }
     <td>4</td>
     <td>Thyme</td>
     <td>1.23</td>
+    <td>T</td>
+    <td>F</td>
+    <td>F</td>
+    <td>F</td>
     <td>Thyme</td>
     <td>1.23</td>
   </tr>
@@ -65,6 +81,10 @@ products = { product1, product2, product3, product4 }
     <td>4</td>
     <td>Carrot</td>
     <td>2.0</td>
+    <td>F</td>
+    <td>T</td>
+    <td>F</td>
+    <td>T</td>
     <td>Carrot</td>
     <td>2.0</td>
   </tr>
