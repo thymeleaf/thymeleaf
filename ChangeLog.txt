@@ -7,6 +7,8 @@
   appended attribute already exists and is empty before processing the template.
 - Fixed fixed-value conditional attributes not removing the target attribute on false evaluation if 
   it this target attribute already existed before processing.
+- Fixed multiple execution of "th:case" inside "th:switch" possible when th:case="*" appeared before
+  non-default case blocks.
 
 
 2.0.17
