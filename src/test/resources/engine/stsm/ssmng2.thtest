@@ -2,17 +2,17 @@
 # ------------------------------------------------------------
 %CONTEXT
 
-seedStarter0 = new org.thymeleaf.tests.engine.stsm.model.SeedStarter()
+seedStarter0 = new org.thymeleaf.engine.stsm.model.SeedStarter()
 seedStarter0.datePlanted = #dates.create(2013,5,3)
 seedStarter0.covered = true
 seedStarter0.type = typeWood
-seedStarter0.features = new org.thymeleaf.tests.engine.stsm.model.Feature[] { featureFertilizer, featurePhCorrector }
+seedStarter0.features = new org.thymeleaf.engine.stsm.model.Feature[] { featureFertilizer, featurePhCorrector }
 
-seedStarter0Row0 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter0Row0 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter0Row0.variety = varietyRepository.findById(3)
 seedStarter0Row0.seedsPerCell = 20
 
-seedStarter0Row1 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter0Row1 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter0Row1.variety = varietyRepository.findById(4)
 seedStarter0Row1.seedsPerCell = 15
 
@@ -21,11 +21,11 @@ seedStarter0.rows = { seedStarter0Row0, seedStarter0Row1 }
 allSeedStarters = { seedStarter0 }
 
 
-seedStarterRow0 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarterRow0 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarterRow0.variety = varietyRepository.findById(2)
 seedStarterRow0.seedsPerCell = 50
 
-seedStarterRow1 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarterRow1 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarterRow1.variety = varietyRepository.findById(1)
 seedStarterRow1.seedsPerCell = 6
 

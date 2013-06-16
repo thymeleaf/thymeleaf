@@ -2,45 +2,45 @@
 # ------------------------------------------------------------
 %CONTEXT
 
-seedStarter0 = new org.thymeleaf.tests.engine.stsm.model.SeedStarter()
+seedStarter0 = new org.thymeleaf.engine.stsm.model.SeedStarter()
 seedStarter0.datePlanted = #dates.create(2013,5,3)
 seedStarter0.covered = true
 seedStarter0.type = typeWood
-seedStarter0.features = new org.thymeleaf.tests.engine.stsm.model.Feature[] { featureFertilizer, featurePhCorrector }
+seedStarter0.features = new org.thymeleaf.engine.stsm.model.Feature[] { featureFertilizer, featurePhCorrector }
 
-seedStarter0Row0 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter0Row0 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter0Row0.variety = varietyRepository.findById(3)
 seedStarter0Row0.seedsPerCell = 20
 
-seedStarter0Row1 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter0Row1 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter0Row1.variety = varietyRepository.findById(4)
 seedStarter0Row1.seedsPerCell = 15
 
 seedStarter0.rows = { seedStarter0Row0, seedStarter0Row1 }
 
-seedStarter1 = new org.thymeleaf.tests.engine.stsm.model.SeedStarter()
+seedStarter1 = new org.thymeleaf.engine.stsm.model.SeedStarter()
 seedStarter1.datePlanted = #dates.create(2013,5,5)
 seedStarter1.covered = false
 seedStarter1.type = typePlastic
-seedStarter1.features = new org.thymeleaf.tests.engine.stsm.model.Feature[] { }
+seedStarter1.features = new org.thymeleaf.engine.stsm.model.Feature[] { }
 
-seedStarter1Row0 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter1Row0 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter1Row0.variety = varietyRepository.findById(2)
 seedStarter1Row0.seedsPerCell = 50
 
-seedStarter1Row1 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter1Row1 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter1Row1.variety = varietyRepository.findById(1)
 seedStarter1Row1.seedsPerCell = 6
 
 seedStarter1.rows = { seedStarter1Row0, seedStarter1Row1 }
 
-seedStarter2 = new org.thymeleaf.tests.engine.stsm.model.SeedStarter()
+seedStarter2 = new org.thymeleaf.engine.stsm.model.SeedStarter()
 seedStarter2.datePlanted = #dates.create(2013,5,6)
 seedStarter2.covered = true
 seedStarter2.type = typeWood
-seedStarter2.features = new org.thymeleaf.tests.engine.stsm.model.Feature[] { }
+seedStarter2.features = new org.thymeleaf.engine.stsm.model.Feature[] { }
 
-seedStarter2Row0 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarter2Row0 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarter2Row0.variety = varietyRepository.findById(1)
 seedStarter2Row0.seedsPerCell = 1
 

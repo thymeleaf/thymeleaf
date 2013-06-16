@@ -2,11 +2,11 @@
 # ------------------------------------------------------------
 %CONTEXT
 
-seedStarterRow0 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarterRow0 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarterRow0.variety = varietyRepository.findById(3)
 seedStarterRow0.seedsPerCell = 20
 
-seedStarterRow1 = new org.thymeleaf.tests.engine.stsm.model.Row()
+seedStarterRow1 = new org.thymeleaf.engine.stsm.model.Row()
 seedStarterRow1.variety = varietyRepository.findById(4)
 seedStarterRow1.seedsPerCell = 15
 
