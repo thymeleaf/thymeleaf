@@ -36,6 +36,7 @@ import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IContextVariableRestriction;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
@@ -160,11 +161,13 @@ public class SpelVariableExpressionEvaluator
         final Fields fields = new Fields(configuration, processingContext);
         expressionObjects.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
         
-        final VariablesMap<String,Object> variables = processingContext.getContext().getVariables();
-        if (!variables.containsKey(THEMES_EVALUATION_VARIABLE_NAME)) {
-            variables.put(THEMES_EVALUATION_VARIABLE_NAME, new Themes(processingContext));
+        if (processingContext.getContext() instanceof IWebContext) {
+            final VariablesMap<String,Object> variables = processingContext.getContext().getVariables();
+            if (!variables.containsKey(THEMES_EVALUATION_VARIABLE_NAME)) {
+                variables.put(THEMES_EVALUATION_VARIABLE_NAME, new Themes(processingContext));
+            }
+            expressionObjects.put(THEMES_EVALUATION_VARIABLE_NAME, variables.get(THEMES_EVALUATION_VARIABLE_NAME));
         }
-        expressionObjects.put(THEMES_EVALUATION_VARIABLE_NAME, variables.get(THEMES_EVALUATION_VARIABLE_NAME));
         
         final Map<String,Object> additionalExpressionObjects = computeAdditionalExpressionObjects(processingContext);
         if (additionalExpressionObjects != null && !additionalExpressionObjects.isEmpty()) {
