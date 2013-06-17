@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
@@ -88,27 +90,43 @@ public final class ResourceUtils {
     
     public static String read(final InputStream is, final String characterEncoding) 
             throws UnsupportedEncodingException, IOException {
+        return read(is, characterEncoding, false);
+    }
 
-        BufferedReader reader = null;
+    
+    
+    public static String read(final InputStream is, final String characterEncoding, final boolean normalize) 
+            throws UnsupportedEncodingException, IOException {
+        return read(new InputStreamReader(is, characterEncoding), normalize);
+    }
+
+    
+    
+    public static String read(final Reader reader, final boolean normalize) throws IOException {
+
+        BufferedReader bufferedReader = null;
         try {
             
-            reader = new BufferedReader(new InputStreamReader(is, characterEncoding));
+            bufferedReader = new BufferedReader(reader);
             final StringBuilder strBuilder = new StringBuilder();
-            String line = reader.readLine();
+            String line = bufferedReader.readLine();
             if (line != null) {
-                strBuilder.append(line);
-                while ((line = reader.readLine()) != null) {
+                strBuilder.append(normalize? normalizeLine(line) : line);
+                while ((line = bufferedReader.readLine()) != null) {
                     strBuilder.append('\n');
-                    strBuilder.append(line);
+                    strBuilder.append(normalize? normalizeLine(line) : line);
                 }
             }
 
+            if (normalize) {
+                normalizeFileEnd(strBuilder);
+            }
             return strBuilder.toString();
             
         } finally {
             try {
-                if (reader != null) {
-                    reader.close();
+                if (bufferedReader != null) {
+                    bufferedReader.close();
                 }
             } catch (final Throwable ignored) {
                 // ignored
@@ -117,7 +135,54 @@ public final class ResourceUtils {
 
     }
     
+
     
+    
+    public static String normalize(final String text) {
+        try {
+            return read(new StringReader(text), true);
+        } catch (final IOException e) {
+            // Should never happen
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    private static String normalizeLine(final String text) {
+        
+        final StringBuilder strBuilder = new StringBuilder();
+        final int textLen = text.length();
+        
+        for (int i = 0; i < textLen; i++) {
+            final char c = text.charAt(i);
+            if (c != 13) {
+                strBuilder.append(c);
+            }
+        }
+        
+        return strBuilder.toString();
+        
+    }
+    
+
+    
+    private static void normalizeFileEnd(final StringBuilder strBuilder) {
+        
+        if (strBuilder.length() == 0) {
+            return;
+        }
+        
+        int i = strBuilder.length() - 1;
+        char c = strBuilder.charAt(i);
+        while (Character.isWhitespace(c)) {
+            strBuilder.deleteCharAt(i);
+            if (i == 0) {
+                break;
+            }
+            c = strBuilder.charAt(--i);
+        }
+        
+    }
     
     
     
