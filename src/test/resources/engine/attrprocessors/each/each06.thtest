@@ -2,11 +2,11 @@
 # ------------------------------------------------------------
 %CONTEXT
 map = new java.util.EnumMap(@java.util.concurrent.TimeUnit@class)
-map[@java.util.concurrent.TimeUnit@DAYS] = 1
-map[@java.util.concurrent.TimeUnit@HOURS] = 2
+map[@java.util.concurrent.TimeUnit@SECONDS] = 1
+map[@java.util.concurrent.TimeUnit@MILLISECONDS] = 2
 # ------------------------------------------------------------
 %INPUT
 <div th:each="entry :${map}" th:text="${entry}"></div>
 # ------------------------------------------------------------
 %OUTPUT
-<div>HOURS=2</div><div>DAYS=1</div>
+<div>MILLISECONDS=2</div><div>SECONDS=1</div>
