@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.offline;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring3.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 import org.thymeleaf.util.ClassLoaderUtils;
 
 
@@ -52,9 +52,12 @@ public class OfflineTest {
         final String result = templateEngine.process("offline/offline01.html", ctx);
 
         final String expected = 
-                IOUtils.toString(ClassLoaderUtils.getClassLoader(OfflineTest.class).getResourceAsStream("offline/offline01-result.html"));
+                ResourceUtils.read(
+                        ClassLoaderUtils.getClassLoader(OfflineTest.class).getResourceAsStream("offline/offlinespring01-result.html"),
+                        "UTF-8",
+                        true);
         
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, ResourceUtils.normalize(result));
         
     }
     
@@ -71,9 +74,12 @@ public class OfflineTest {
         final String result = templateEngine.process("offline/offlinespring01.html", ctx);
 
         final String expected = 
-                IOUtils.toString(ClassLoaderUtils.getClassLoader(OfflineTest.class).getResourceAsStream("offline/offlinespring01-result.html"));
+                ResourceUtils.read(
+                        ClassLoaderUtils.getClassLoader(OfflineTest.class).getResourceAsStream("offline/offlinespring01-result.html"),
+                        "UTF-8",
+                        true);
         
-        Assert.assertEquals(expected, result);
+        Assert.assertEquals(expected, ResourceUtils.normalize(result));
         
     }
 

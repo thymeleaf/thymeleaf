@@ -29,10 +29,9 @@ import java.util.Random;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.thymeleaf.templateparser.TemplatePreprocessingReader;
-import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 
 /**
  * 
@@ -149,12 +148,11 @@ public class TemplatePreprocessingReaderTest extends TestCase {
         String expectedResult = expectedResults.get(name);
         if (expectedResult == null) {
             final InputStream isResult = getFile(name + "-result.html");
-            final List<String> lines = IOUtils.readLines(new InputStreamReader(isResult,"UTF-8"));
-            expectedResult = StringUtils.join(lines, "\n");
+            expectedResult = ResourceUtils.read(isResult, "UTF-8", true);
             expectedResults.put(name, expectedResult);
         }
         
-        Assert.assertEquals(expectedResult, result);
+        Assert.assertEquals(expectedResult, ResourceUtils.normalize(result));
         
     }
     
