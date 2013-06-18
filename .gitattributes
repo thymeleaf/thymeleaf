@@ -1,0 +1,49 @@
+# Auto detect text files and perform LF normalization
+*            text=auto
+
+*.java       text diff=java
+*.properties text
+*.js         text
+*.css        text
+*.less       text
+*.html       text diff=html
+*.jsp        text diff=html
+*.jspx       text diff=html
+*.tag        text diff=html
+*.tagx       text diff=html
+*.tld        text
+*.xml        text
+*.gradle     text
+
+*.sql        text
+
+*.xsd        text
+*.dtd        text
+*.mod        text
+*.ent        text
+
+*.txt        text
+*.md         text
+*.markdown   text
+
+*.thtest     text
+*.thindex    text
+*.common     text
+
+*.odt        binary
+*.pdf        binary
+
+*.sh         text eol=lf
+*.bat        text eol=crlf
+
+*.ico        binary
+*.png        binary
+*.svg        binary
+*.woff       binary
+
+*.rar        binary
+*.zargo      binary
+*.zip        binary
+
+CNAME        text
+*.MF         text
