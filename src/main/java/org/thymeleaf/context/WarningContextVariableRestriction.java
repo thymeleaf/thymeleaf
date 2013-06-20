@@ -66,9 +66,7 @@ public class WarningContextVariableRestriction implements IContextVariableRestri
                     this.message : 
                     "Variable \"" + variableName + "\" has been accessed, which raises a warning in this context");
         log.warn(warningMessage);
-        
-        return;
-        
+
     }
 
     

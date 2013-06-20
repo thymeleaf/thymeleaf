@@ -52,7 +52,7 @@ class WebRequestParamsVariablesMap extends VariablesMap<String,String[]> {
     
 
     @SuppressWarnings("unchecked")
-    public WebRequestParamsVariablesMap(final HttpServletRequest request) {
+    WebRequestParamsVariablesMap(final HttpServletRequest request) {
         super(1, 1.0f);
         Validate.notNull(request, "Request cannot be null");
         this.parameterMap = request.getParameterMap();

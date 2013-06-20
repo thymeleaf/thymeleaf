@@ -38,7 +38,7 @@ import org.thymeleaf.context.IContextVariableRestriction;
  * @since 2.0.16
  *
  */
-public class StandardVariableRestrictions {
+public final class StandardVariableRestrictions {
 
     
     public static final List<IContextVariableRestriction> REQUEST_PARAMETERS_FORBIDDEN =

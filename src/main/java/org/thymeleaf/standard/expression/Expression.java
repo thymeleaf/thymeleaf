@@ -26,9 +26,7 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-
-
-
+import org.thymeleaf.util.StringUtils;
 
 
 
@@ -68,7 +66,7 @@ public abstract class Expression implements Serializable {
     
     static Expression parse(final String input) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
@@ -229,10 +227,11 @@ public abstract class Expression implements Serializable {
         
         if (expression instanceof SimpleExpression) {
             return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof ComplexExpression) {
+        }
+        if (expression instanceof ComplexExpression) {
             return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expressionEvaluator, expContext);
         }
-        
+
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
         
     }

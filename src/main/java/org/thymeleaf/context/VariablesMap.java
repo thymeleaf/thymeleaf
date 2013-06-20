@@ -82,7 +82,7 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
         return this.restrictions;
     }
 
-    public void setRestrictions(List<IContextVariableRestriction> restrictions) {
+    public void setRestrictions(final List<IContextVariableRestriction> restrictions) {
         this.restrictions = restrictions;
     }
     

@@ -24,7 +24,7 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-
+import org.thymeleaf.util.StringUtils;
 
 
 
@@ -179,7 +179,7 @@ public abstract class ComplexExpression extends Expression {
         
         final String input = inputParsingNode.getInput();
             
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
     
@@ -215,40 +215,56 @@ public abstract class ComplexExpression extends Expression {
         
         if (expression instanceof AdditionExpression) {
             return AdditionExpression.executeAddition(configuration, processingContext, (AdditionExpression)expression, expressionEvaluator, expContext);
-        } else if (expression instanceof SubtractionExpression) {
+        }
+        if (expression instanceof SubtractionExpression) {
             return SubtractionExpression.executeSubtraction(configuration, processingContext, (SubtractionExpression)expression, expressionEvaluator, expContext);
-        } else if (expression instanceof MultiplicationExpression) {
+        }
+        if (expression instanceof MultiplicationExpression) {
             return MultiplicationExpression.executeMultiplication(configuration, processingContext, (MultiplicationExpression)expression, expressionEvaluator, expContext);
-        } else if (expression instanceof DivisionExpression) {
+        }
+        if (expression instanceof DivisionExpression) {
             return DivisionExpression.executeDivision(configuration, processingContext, (DivisionExpression)expression, expressionEvaluator, expContext);
-        } else if (expression instanceof RemainderExpression) {
+        }
+        if (expression instanceof RemainderExpression) {
             return RemainderExpression.executeRemainder(configuration, processingContext, (RemainderExpression)expression, expressionEvaluator, expContext);
-        } else if (expression instanceof ConditionalExpression) {
+        }
+        if (expression instanceof ConditionalExpression) {
             return ConditionalExpression.executeConditional(configuration, processingContext, (ConditionalExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof DefaultExpression) {
+        }
+        if (expression instanceof DefaultExpression) {
             return DefaultExpression.executeDefault(configuration, processingContext, (DefaultExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof MinusExpression) {
+        }
+        if (expression instanceof MinusExpression) {
             return MinusExpression.executeMinus(configuration, processingContext, (MinusExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof NegationExpression) {
+        }
+        if (expression instanceof NegationExpression) {
             return NegationExpression.executeNegation(configuration, processingContext, (NegationExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof AndExpression) {
+        }
+        if (expression instanceof AndExpression) {
             return AndExpression.executeAnd(configuration, processingContext, (AndExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof OrExpression) {
+        }
+        if (expression instanceof OrExpression) {
             return OrExpression.executeOr(configuration, processingContext, (OrExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof EqualsExpression) {
+        }
+        if (expression instanceof EqualsExpression) {
             return EqualsExpression.executeEquals(configuration, processingContext, (EqualsExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof NotEqualsExpression) {
+        }
+        if (expression instanceof NotEqualsExpression) {
             return NotEqualsExpression.executeNotEquals(configuration, processingContext, (NotEqualsExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof GreaterThanExpression) {
+        }
+        if (expression instanceof GreaterThanExpression) {
             return GreaterThanExpression.executeGreaterThan(configuration, processingContext, (GreaterThanExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof GreaterOrEqualToExpression) {
+        }
+        if (expression instanceof GreaterOrEqualToExpression) {
             return GreaterOrEqualToExpression.executeGreaterOrEqualTo(configuration, processingContext, (GreaterOrEqualToExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof LessThanExpression) {
+        }
+        if (expression instanceof LessThanExpression) {
             return LessThanExpression.executeLessThan(configuration, processingContext, (LessThanExpression)expression, expressionEvaluator, expContext);
-        } else  if (expression instanceof LessOrEqualToExpression) {
+        }
+        if (expression instanceof LessOrEqualToExpression) {
             return LessOrEqualToExpression.executeLessOrEqualTo(configuration, processingContext, (LessOrEqualToExpression)expression, expressionEvaluator, expContext);
         }
-        
+
         throw new TemplateProcessingException("Unrecognized complex expression: " + expression.getClass().getName());
         
     }

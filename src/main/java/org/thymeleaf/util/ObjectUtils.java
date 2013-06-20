@@ -55,9 +55,9 @@ public final class ObjectUtils {
                 result = ((Boolean)condition).booleanValue();
             } else if (condition instanceof Number) {
                 if (condition instanceof BigDecimal) {
-                    result = !((BigDecimal)condition).equals(BigDecimal.ZERO);
+                    result = (((BigDecimal) condition).compareTo(BigDecimal.ZERO) != 0);
                 } else if (condition instanceof BigInteger) {
-                    result = !((BigInteger)condition).equals(BigInteger.ZERO);
+                    result = !condition.equals(BigInteger.ZERO);
                 } else {
                     result = ((Number)condition).doubleValue() != 0.0;
                 }
@@ -65,10 +65,10 @@ public final class ObjectUtils {
                 result = ((Character) condition).charValue() != 0;
             } else if (condition instanceof String) {
                 final String condStr = ((String)condition).trim().toLowerCase();
-                result = !(condStr.equals("false") || condStr.equals("off") || condStr.equals("no"));
+                result = !("false".equals(condStr) || "off".equals(condStr) || "no".equals(condStr));
             } else if (condition instanceof LiteralValue) {
                 final String condStr = ((LiteralValue)condition).getValue().trim().toLowerCase();
-                result = !(condStr.equals("false") || condStr.equals("off") || condStr.equals("no"));
+                result = !("false".equals(condStr) || "off".equals(condStr) || "no".equals(condStr));
             } else {
                 result = true;
             }
@@ -98,14 +98,16 @@ public final class ObjectUtils {
             } else if (object instanceof Long) {
                 return new BigDecimal(((Long)object).longValue());
             } else if (object instanceof Float) {
+                //noinspection UnpredictableBigDecimalConstructorCall
                 return new BigDecimal(((Float)object).doubleValue());
             } else if (object instanceof Double) {
+                //noinspection UnpredictableBigDecimalConstructorCall
                 return new BigDecimal(((Double)object).doubleValue());
             }
         } else if (object instanceof String) {
             try {
                 return new BigDecimal(((String)object).trim());
-            } catch (final NumberFormatException e) {
+            } catch (final NumberFormatException ignored) {
                 return null;
             }
         }
@@ -180,9 +182,8 @@ public final class ObjectUtils {
                     result.add(Character.valueOf(obj));
                 }
             } else {
-                for (final Object obj : (Object[]) value) {
-                    result.add(obj);
-                }
+                final Object[] objValue = (Object[]) value;
+                Collections.addAll(result, objValue);
             }
         } else{
             result.add(value);
@@ -230,21 +231,21 @@ public final class ObjectUtils {
     
     static final class MapEntry<K,V> implements Map.Entry<K,V> {
 
-        private final K key;
-        private final V value;
+        private final K entryKey;
+        private final V entryValue;
         
         MapEntry(final K key, final V value) {
             super();
-            this.key = key;
-            this.value = value;
+            this.entryKey = key;
+            this.entryValue = value;
         }
         
         public K getKey() {
-            return this.key;
+            return this.entryKey;
         }
 
         public V getValue() {
-            return this.value;
+            return this.entryValue;
         }
 
         public V setValue(final V value) {
@@ -253,7 +254,7 @@ public final class ObjectUtils {
         
         @Override
         public String toString() {
-            return this.key + "=" + this.value;
+            return this.entryKey + "=" + this.entryValue;
         }
     }
     

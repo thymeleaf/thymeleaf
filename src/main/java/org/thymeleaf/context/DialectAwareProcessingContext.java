@@ -69,7 +69,7 @@ public class DialectAwareProcessingContext extends AbstractDialectAwareProcessin
         super((processingContext == null? null : processingContext.getContext()),
                 (processingContext == null? null : processingContext.getLocalVariables()),
                 (processingContext == null? null : processingContext.getSelectionTarget()),
-                (processingContext == null? false : processingContext.hasSelectionTarget()), 
+                (processingContext != null && processingContext.hasSelectionTarget()),
                 (processingContext == null? null : processingContext.getExpressionEnhancingDialects()));
         
         Validate.notNull(processingContext, "Processing context cannot be null");
@@ -84,7 +84,7 @@ public class DialectAwareProcessingContext extends AbstractDialectAwareProcessin
         super((processingContext == null? null : processingContext.getContext()),
                 (processingContext == null? null : processingContext.getLocalVariables()),
                 (processingContext == null? null : processingContext.getSelectionTarget()),
-                (processingContext == null? false : processingContext.hasSelectionTarget()), 
+                (processingContext != null && processingContext.hasSelectionTarget()),
                 dialects);
         
         Validate.notNull(processingContext, "Processing context cannot be null");

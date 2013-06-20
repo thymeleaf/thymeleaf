@@ -277,21 +277,21 @@ public final class DialectConfiguration {
     
 
     
-    final Set<IProcessor> getProcessors() {
+    Set<IProcessor> getProcessors() {
         return this.processors;
     }
 
 
     
-    final Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByAttributeName() {
+    Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByAttributeName() {
         return this.specificProcessorsByAttributeName;
     }
     
-    final Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByElementName() {
+    Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByElementName() {
         return this.specificProcessorsByElementName;
     }
     
-    final Map<Class<? extends Node>, Set<ProcessorAndContext>> unsafeGetNonSpecificProcessorsByNodeClass() {
+    Map<Class<? extends Node>, Set<ProcessorAndContext>> unsafeGetNonSpecificProcessorsByNodeClass() {
         return this.nonSpecificProcessorsByNodeClass;
     }
     
@@ -301,7 +301,7 @@ public final class DialectConfiguration {
     
 
     
-    final Map<String,Object> getExecutionAttributes() {
+    Map<String,Object> getExecutionAttributes() {
         return this.executionAttributes;
     }
     

@@ -58,17 +58,17 @@ public final class StandardTemplateModeHandlers {
     // We have to set a maximum pool size. Some environments might set too high
     // numbers for Runtime.availableProcessors (for example, Google App Engine sets
     // this to 1337).
-    private final static int MAX_PARSERS_POOL_SIZE = 24;
+    private static final int MAX_PARSERS_POOL_SIZE = 24;
 
-    public final static ITemplateModeHandler XML;
-    public final static ITemplateModeHandler VALIDXML;
-    public final static ITemplateModeHandler XHTML;
-    public final static ITemplateModeHandler VALIDXHTML;
-    public final static ITemplateModeHandler HTML5;
-    public final static ITemplateModeHandler LEGACYHTML5;
+    public static final ITemplateModeHandler XML;
+    public static final ITemplateModeHandler VALIDXML;
+    public static final ITemplateModeHandler XHTML;
+    public static final ITemplateModeHandler VALIDXHTML;
+    public static final ITemplateModeHandler HTML5;
+    public static final ITemplateModeHandler LEGACYHTML5;
     
     
-    public final static Set<ITemplateModeHandler> ALL_TEMPLATE_MODE_HANDLERS;
+    public static final Set<ITemplateModeHandler> ALL_TEMPLATE_MODE_HANDLERS;
     
     
     

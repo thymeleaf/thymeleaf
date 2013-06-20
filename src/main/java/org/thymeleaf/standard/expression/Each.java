@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -66,7 +67,7 @@ public final class Each implements Serializable {
     }
     
     public boolean hasStatusVar() {
-        return this.statusVar != null && !this.statusVar.getValue().trim().equals("");
+        return this.statusVar != null && !StringUtils.isEmptyOrWhitespace(this.statusVar.getValue());
     }
 
     public Token getStatusVar() {
@@ -102,7 +103,7 @@ public final class Each implements Serializable {
     
     static Each parse(final String input) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
         
@@ -117,10 +118,10 @@ public final class Each implements Serializable {
         final String statusVar = matcher.group(2);
         final String iterable = matcher.group(3);
         
-        if (iterVar == null || iterVar.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(iterVar)) {
             return null;
         }
-        if (iterable == null || iterable.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(iterable)) {
             return null;
         }
         final Expression iterableExpression = Expression.parse(iterable);
@@ -134,7 +135,7 @@ public final class Each implements Serializable {
         }
         
         Each each = null;
-        if (statusVar != null && !statusVar.trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(statusVar)) {
             final Token statusVarToken = Token.parse(statusVar);
             if (statusVarToken == null) {
                 return null;

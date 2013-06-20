@@ -52,7 +52,7 @@ public final class CommentNodeProcessorMatcher implements ICommentNodeProcessorM
 
 
     
-    public final Class<? extends Comment> appliesTo() {
+    public Class<? extends Comment> appliesTo() {
         return Comment.class;
     }
     

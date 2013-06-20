@@ -21,6 +21,7 @@ package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
 
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -114,7 +115,7 @@ public final class FragmentSelection implements Serializable {
     
     static FragmentSelection parse(final String input) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
         
@@ -133,7 +134,7 @@ public final class FragmentSelection implements Serializable {
         final String templateName = trimmedInput.substring(0,separatorPos).trim();
         String fragmentSelector = trimmedInput.substring(separatorPos + 2).trim();
         
-        if (fragmentSelector.equals("") || templateName.equals("")) {
+        if (fragmentSelector.length() == 0 || templateName.length() == 0) {
             return null;
         }
         

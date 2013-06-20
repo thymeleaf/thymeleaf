@@ -96,7 +96,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     
 
     
-    public WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext) {
+    WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext) {
         
         super(4, 1.0f);
         
@@ -115,7 +115,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    public WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext, 
+    WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext,
             final Map<? extends String, ? extends Object> m) {
         
         this(request, servletContext);

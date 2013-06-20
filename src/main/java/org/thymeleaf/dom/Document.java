@@ -76,19 +76,19 @@ public final class Document extends NestableNode {
 
 
     @Override
-    final void doAdditionalPrecomputeNestableNode(final Configuration configuration) {
+    void doAdditionalPrecomputeNestableNode(final Configuration configuration) {
         if (this.docType != null) {
             this.docType.process(configuration);
         }
     }
 
     
-    public final void precompute(final Configuration configuration) {
+    public void precompute(final Configuration configuration) {
         Validate.notNull(configuration, "Configuration cannot be null");
         precomputeNode(configuration);
     }
     
-    public final void process(final Arguments arguments) {
+    public void process(final Arguments arguments) {
         Validate.notNull(arguments, "Arguments cannot be null");
         processNode(arguments, arguments.getProcessTextNodes(), arguments.getProcessCommentNodes());
     }

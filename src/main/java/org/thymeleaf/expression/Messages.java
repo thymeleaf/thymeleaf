@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  */
 public class Messages {
 
-    private static String[] NO_PARAMETERS = new String[0];
+    private static final String[] NO_PARAMETERS = new String[0];
     
     
     private Arguments arguments;

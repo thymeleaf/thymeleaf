@@ -41,7 +41,10 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     private static final Logger readerLogger = LoggerFactory.getLogger(TemplatePreprocessingReader.class);
-    
+
+    private static final int BUFFER_BLOCK_SIZE = 1024;
+    private static final int OVERFLOW_BLOCK_SIZE = 1024;
+
     public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
 
     
@@ -64,7 +67,7 @@ public final class TemplatePreprocessingReader extends Reader {
     
     private static final int[] COMMENT_START = convertToIndexes("<!--".toCharArray()); 
     private static final int[] COMMENT_END = convertToIndexes("-->".toCharArray());
-    private static final int[] ENTITY = convertToIndexes(("&" + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ";").toCharArray());
+    private static final int[] ENTITY = convertToIndexes(('&' + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ';').toCharArray());
     private static final int[] DOCTYPE =
             convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
     private static final int[] XML_PROLOG =
@@ -159,8 +162,8 @@ public final class TemplatePreprocessingReader extends Reader {
         super();
         this.innerReader = in;
         this.bufferedReader = new BufferedReader(this.innerReader, bufferSize);
-        this.buffer = new char[bufferSize + 1024]; 
-        this.overflow = new char[bufferSize + 2048];
+        this.buffer = new char[bufferSize + BUFFER_BLOCK_SIZE];
+        this.overflow = new char[bufferSize + OVERFLOW_BLOCK_SIZE];
         this.overflowIndex = 0;
         this.addSyntheticRootElement = addSyntheticRootElement;
     }
@@ -179,8 +182,8 @@ public final class TemplatePreprocessingReader extends Reader {
         if ((len * 2) > this.overflow.length) {
             // Resize buffer and overflow
             
-            this.buffer = new char[len + 1024];
-            final char[] newOverflow = new char[len + 2048];
+            this.buffer = new char[len + BUFFER_BLOCK_SIZE];
+            final char[] newOverflow = new char[len + OVERFLOW_BLOCK_SIZE];
             System.arraycopy(this.overflow, 0, newOverflow, 0, this.overflowIndex);
             this.overflow = newOverflow;
         }
@@ -583,7 +586,7 @@ public final class TemplatePreprocessingReader extends Reader {
                     new Object[] {TemplateEngine.threadIndex()});
         }
         
-        final char[] cbuf = new char[1024];
+        final char[] cbuf = new char[BUFFER_BLOCK_SIZE];
         int totalRead = -1;
         int read;
         while ((read = read(cbuf, 0, cbuf.length)) != -1) {
@@ -887,7 +890,7 @@ public final class TemplatePreprocessingReader extends Reader {
             return result;
 
         } catch (final Exception e) {
-            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + (new String(buffer, offset, len)) + "\"");
+            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + (new String(buffer, offset, len)) + "\"", e);
         }
         
     }
@@ -901,7 +904,7 @@ public final class TemplatePreprocessingReader extends Reader {
     
     
     
-    public static final String removeEntitySubstitutions(final String text) {
+    public static String removeEntitySubstitutions(final String text) {
 
         if (text == null) {
             return null;
@@ -925,7 +928,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     
-    public static final void removeEntitySubstitutions(final char[] text, final int off, final int len) {
+    public static void removeEntitySubstitutions(final char[] text, final int off, final int len) {
 
         if (text == null) {
             return;

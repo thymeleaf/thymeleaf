@@ -235,7 +235,7 @@ public final class DocType implements Serializable {
                 
             return result;
         
-        } catch (final Exception e) {
+        } catch (final Exception ignored) {
             throw new TemplateInputException("DOCTYPE clause has bad format: \"" + docTypeClause + "\"");
         }
         
@@ -295,7 +295,7 @@ public final class DocType implements Serializable {
      *             should be used instead. Will be removed in 2.1.0
      */
     @Deprecated
-    public static final DocType translateDOMDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
+    public static DocType translateDOMDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
         
         if (domDocumentType == null) {
             return null;

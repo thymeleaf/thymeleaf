@@ -51,7 +51,7 @@ public final class DocumentNodeProcessorMatcher implements IDocumentNodeProcesso
 
 
     
-    public final Class<? extends Document> appliesTo() {
+    public Class<? extends Document> appliesTo() {
         return Document.class;
     }
     

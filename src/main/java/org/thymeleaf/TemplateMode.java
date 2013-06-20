@@ -42,6 +42,6 @@ public enum TemplateMode {
     XHTML,
     VALIDXHTML,
     LEGACYHTML5,
-    HTML5;
-    
+    HTML5
+
 }

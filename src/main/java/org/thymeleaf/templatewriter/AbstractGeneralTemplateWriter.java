@@ -59,7 +59,12 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     private static final char[] XML_DECLARATION_PREFIX = "<?xml version=\"1.0\"".toCharArray();
     private static final char[] XML_DECLARATION_SUFFIX = "?>\n".toCharArray();
 
-    
+
+
+    protected AbstractGeneralTemplateWriter() {
+        super();
+    }
+
     
     public void write(final Arguments arguments, final Writer writer, final Document document) 
                 throws IOException {

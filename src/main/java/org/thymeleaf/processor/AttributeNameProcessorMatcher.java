@@ -159,7 +159,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
 
     
-    public final Class<? extends NestableAttributeHolderNode> appliesTo() {
+    public Class<? extends NestableAttributeHolderNode> appliesTo() {
         return NestableAttributeHolderNode.class;
     }
     

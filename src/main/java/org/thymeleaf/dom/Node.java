@@ -31,6 +31,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.IdentityCounter;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -145,10 +146,10 @@ public abstract class Node implements Serializable {
         if (name == null) {
             return null;
         }
-        if (dialectPrefix == null || dialectPrefix.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(dialectPrefix)) {
             return name;
         }
-        return dialectPrefix + ":" + name;
+        return dialectPrefix + ':' + name;
     }
     
     
@@ -895,7 +896,7 @@ public abstract class Node implements Serializable {
     
     
     
-    private static final Arguments applyNextProcessor(final Arguments arguments, final Node node, final IdentityCounter<ProcessorAndContext> alreadyExecuted) {
+    private static Arguments applyNextProcessor(final Arguments arguments, final Node node, final IdentityCounter<ProcessorAndContext> alreadyExecuted) {
 
         if (!node.isDetached() && node.processors != null && node.processors.size() > 0) {
 
@@ -1047,6 +1048,7 @@ public abstract class Node implements Serializable {
          * execution changed the map's contents.  
          */
         int contentsHash() {
+            //noinspection MagicNumber
             final int prime = 31;
             int result = super.hashCode();
             result = prime * result + System.identityHashCode(this);

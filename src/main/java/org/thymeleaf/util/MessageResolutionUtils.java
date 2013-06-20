@@ -287,8 +287,8 @@ public final class MessageResolutionUtils {
         } finally {
             try {
                 propertiesIS.close();
-            } catch (Exception e) {
-                throw new TemplateInputException("Exception loading messages file", e);
+            } catch (final Exception e) {
+                // ignored
             }
         }
         return properties;
@@ -304,27 +304,27 @@ public final class MessageResolutionUtils {
 
         final List<String> propertiesFileNames = new ArrayList<String>();
         
-        if (locale.getLanguage() == null || locale.getLanguage().trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(locale.getLanguage())) {
             throw new TemplateProcessingException(
                     "Locale \"" + locale.toString() + "\" " +
                     "cannot be used as it does not specify a language.");
         }
         
-        if (locale.getVariant() != null && !locale.getVariant().trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(locale.getVariant())) {
             final String propertiesFileName = 
                 getMessagesFileNameWithSuffix(
                         messagesFileNameBase, getSuffixForLanguageCountryVariant(locale));
             propertiesFileNames.add(propertiesFileName);
         }
         
-        if (locale.getCountry() != null && !locale.getCountry().trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(locale.getCountry())) {
             final String propertiesFileName = 
                 getMessagesFileNameWithSuffix(
                         messagesFileNameBase, getSuffixForLanguageCountry(locale));
             propertiesFileNames.add(propertiesFileName);
         }
         
-        if (locale.getLanguage() != null && !locale.getLanguage().trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(locale.getLanguage())) {
             final String propertiesFileName = 
                 getMessagesFileNameWithSuffix(
                         messagesFileNameBase, getSuffixForLanguage(locale));
@@ -350,7 +350,7 @@ public final class MessageResolutionUtils {
     
     private static String getMessagesFileNameWithSuffix(
             final String baseFileName, final String suffix) {
-        if (suffix == null || suffix.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(suffix)) {
             return baseFileName + PROPERTIES_SUFFIX;
         }
         return baseFileName + "_" + suffix + PROPERTIES_SUFFIX;

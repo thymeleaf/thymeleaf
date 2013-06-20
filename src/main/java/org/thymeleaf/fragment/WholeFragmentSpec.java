@@ -69,7 +69,7 @@ public final class WholeFragmentSpec implements IFragmentSpec {
 
     
     
-    public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
+    public List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
         return nodes;
     }
 

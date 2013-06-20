@@ -80,17 +80,17 @@ public final class Element extends NestableAttributeHolderNode {
     
     
     public Element(final String name) {
-        this(name, null, null, (RepresentationInTemplate)null);
+        this(name, null, null, null);
     }
 
 
     public Element(final String name, final String documentName) {
-        this(name, documentName, null, (RepresentationInTemplate)null);
+        this(name, documentName, null, null);
     }
     
 
     public Element(final String name, final String documentName, final Integer lineNumber) {
-        this(name, documentName, lineNumber, (RepresentationInTemplate)null);
+        this(name, documentName, lineNumber, null);
     }
 
     
@@ -326,7 +326,7 @@ public final class Element extends NestableAttributeHolderNode {
      * @param cloneProcessors whether the precomputed list of processors should be cloned too or not.
      * @return the cloned element.
      */
-    public final Element cloneElementNodeWithNewName(final NestableNode newParent, final String newElementName, final boolean cloneProcessors) {
+    public Element cloneElementNodeWithNewName(final NestableNode newParent, final String newElementName, final boolean cloneProcessors) {
         final Element clonedElement = new Element(newElementName);
         cloneNodeInternals(clonedElement, newParent, cloneProcessors);
         return clonedElement;

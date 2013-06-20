@@ -90,7 +90,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         }
         
         return new LiteralValue(
-                LiteralValue.unwrap(leftValue).toString().concat(LiteralValue.unwrap(rightValue).toString()));
+                LiteralValue.unwrap(leftValue).toString() + (LiteralValue.unwrap(rightValue).toString()));
         
     }
 

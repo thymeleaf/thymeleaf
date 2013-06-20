@@ -50,7 +50,7 @@ public final class StandardFragmentProcessor {
      *             instead. Will be removed in 2.1.x
      */
     @Deprecated
-    public static final FragmentAndTarget computeStandardFragmentSpec(
+    public static FragmentAndTarget computeStandardFragmentSpec(
             final Arguments arguments, final String standardFragmentSpec,  
             final String targetElementName, final String targetAttributeName) {
         return computeStandardFragmentSpec(
@@ -67,7 +67,7 @@ public final class StandardFragmentProcessor {
      *             instead. Will be removed in 2.1.x
      */
     @Deprecated
-    public static final FragmentAndTarget computeStandardFragmentSpec(
+    public static FragmentAndTarget computeStandardFragmentSpec(
             final Configuration configuration, final IProcessingContext processingContext, 
             final String standardFragmentSpec, final String targetElementName, final String targetAttributeName) {
         return computeStandardFragmentSpec(configuration, processingContext, standardFragmentSpec, targetElementName, targetAttributeName, false);
@@ -79,7 +79,7 @@ public final class StandardFragmentProcessor {
     /**
      * @since 2.0.12
      */
-    public static final FragmentAndTarget computeStandardFragmentSpec(
+    public static FragmentAndTarget computeStandardFragmentSpec(
             final Configuration configuration, final IProcessingContext processingContext, 
             final String standardFragmentSpec, final String targetElementName, final String targetAttributeName,
             final boolean returnOnlyChildrenIfContainingElement) {

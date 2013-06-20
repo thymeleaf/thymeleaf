@@ -247,9 +247,8 @@ public final class DOMUtils {
         if (ch == null) {
             return null;
         }
-        
-        for (int i = 0; i < ch.length; i++) {
-            final char c = ch[i];
+
+        for (final char c : ch) {
             if (c == '&' || c == '<' || c == '>' || (escapeQuotes && (c == '\'' || c == '\"'))) {
                 final CharArrayWriter writer = new CharArrayWriter();
                 writeXmlEscaped(ch, writer, escapeQuotes);
@@ -363,7 +362,8 @@ public final class DOMUtils {
             final char c = buffer[i];
             if (!( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ';') )) {
                 return false;
-            } else if (c == ';') {
+            }
+            if (c == ';') {
                 return true;
             }
             i++;
@@ -453,15 +453,20 @@ public final class DOMUtils {
         final char c2 = str.charAt(off + 2);
         if (len == 4 && c1 == 'l' && c2 == 't') {
             return "<";
-        } else if (len == 4 && c1 == 'g' && c2 == 't') {
+        }
+        if (len == 4 && c1 == 'g' && c2 == 't') {
             return ">";
-        } else if (len == 5 && c1 == 'a' && c2 == 'm' && str.charAt(off + 3) == 'p') {
+        }
+        if (len == 5 && c1 == 'a' && c2 == 'm' && str.charAt(off + 3) == 'p') {
             return "&";
-        } else if (len == 6 && unescapeQuotes && c1 == 'q' && c2 == 'u' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 't') {
+        }
+        if (len == 6 && unescapeQuotes && c1 == 'q' && c2 == 'u' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 't') {
             return "\"";
-        } else if (len == 6 && unescapeQuotes && c1 == 'a' && c2 == 'p' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 's') {
+        }
+        if (len == 6 && unescapeQuotes && c1 == 'a' && c2 == 'p' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 's') {
             return "\'";
-        } else if (len == 5 && c1 == '#') {
+        }
+        if (len == 5 && c1 == '#') {
             final char c3 = str.charAt(off + 3);
             if (c2 == '6' && c3 == '0') {
                 return "<";

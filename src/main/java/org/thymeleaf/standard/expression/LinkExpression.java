@@ -40,6 +40,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -122,7 +123,7 @@ public final class LinkExpression extends SimpleExpression {
 
         final String content = matcher.group(1);
 
-        if (content == null || content.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(content)) {
             return null;
         }
         
@@ -240,7 +241,7 @@ public final class LinkExpression extends SimpleExpression {
         Object base = 
             Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator, expContext);
         base = LiteralValue.unwrap(base);
-        if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
+        if (base == null || !(base instanceof String) || StringUtils.isEmptyOrWhitespace((String) base)) {
             throw new TemplateProcessingException(
                     "Base for link URL creation must be a non-null and non-empty String " +
                     "(currently: " + (base == null? null : base.getClass().getName()) + ")");
@@ -278,9 +279,9 @@ public final class LinkExpression extends SimpleExpression {
         /*
          * Check for the existence of a question mark symbol in the link base itself
          */
-        final int questionMarkPosition = linkBase.indexOf("?"); 
+        final int questionMarkPosition = linkBase.indexOf('?');
         
-        final StringBuffer parametersBuffer = new StringBuffer();
+        final StringBuilder parametersBuilder = new StringBuilder();
         
         for (final Map.Entry<String,List<Object>> parameterEntry : parameters.entrySet()) {
             
@@ -290,14 +291,14 @@ public final class LinkExpression extends SimpleExpression {
             for (final Object parameterObjectValue : parameterValues) {
 
                 // Insert a separator with the previous parameter, if needed
-                if (parametersBuffer.length() == 0) {
+                if (parametersBuilder.length() == 0) {
                     if (questionMarkPosition == -1) {
-                        parametersBuffer.append("?");
+                        parametersBuilder.append("?");
                     } else {
-                        parametersBuffer.append("&");
+                        parametersBuilder.append("&");
                     }
                 } else {
-                    parametersBuffer.append("&");
+                    parametersBuilder.append("&");
                 }
 
                 final String parameterValue =
@@ -306,12 +307,12 @@ public final class LinkExpression extends SimpleExpression {
                 if (URL_PARAM_NO_VALUE.equals(parameterValue)) {
                     
                     // This is a parameter without a value and even without an "=" symbol
-                    parametersBuffer.append(parameterName);
+                    parametersBuilder.append(parameterName);
                     
                 } else {
                 
                     try {
-                        parametersBuffer.append(parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8"));
+                        parametersBuilder.append(parameterName).append("=").append(URLEncoder.encode(parameterValue, "UTF-8"));
                     } catch (UnsupportedEncodingException e) {
                         throw new TemplateProcessingException("Exception while processing link parameters", e);
                     }
@@ -329,10 +330,10 @@ public final class LinkExpression extends SimpleExpression {
         if (!isWebContext(processingContext.getContext())) {
             
             if (isLinkBaseAbsolute(linkBase)) {
-                return linkBase + parametersBuffer.toString() + urlFragment;
+                return linkBase + parametersBuilder + urlFragment;
             }
             // isLinkBaseServerRelative(linkBase) == true
-            return linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+            return linkBase.substring(1) + parametersBuilder + urlFragment;
             
         }
         
@@ -350,21 +351,21 @@ public final class LinkExpression extends SimpleExpression {
         
         if (isLinkBaseContextRelative(linkBase)) {
             
-            url = request.getContextPath() + linkBase + parametersBuffer.toString() + urlFragment;
+            url = request.getContextPath() + linkBase + parametersBuilder + urlFragment;
             
         } else if (isLinkBaseServerRelative(linkBase)) {
             
             // remove the "~" from the link base
-            url = linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+            url = linkBase.substring(1) + parametersBuilder + urlFragment;
             
         } else if (isLinkBaseAbsolute(linkBase)) {
             
-            url = linkBase + parametersBuffer.toString() + urlFragment;
+            url = linkBase + parametersBuilder + urlFragment;
             
         } else {
             // Link base is current-URL-relative
             
-            url = linkBase + parametersBuffer.toString() + urlFragment;
+            url = linkBase + parametersBuilder + urlFragment;
             
         }
 
@@ -478,9 +479,8 @@ public final class LinkExpression extends SimpleExpression {
                     result.add(Character.valueOf(obj));
                 }
             } else {
-                for (final Object obj : (Object[]) parameterValue) {
-                    result.add(obj);
-                }
+                final Object[] objParameterValue = (Object[]) parameterValue;
+                Collections.addAll(result, objParameterValue);
             }
             return result;
         } else{

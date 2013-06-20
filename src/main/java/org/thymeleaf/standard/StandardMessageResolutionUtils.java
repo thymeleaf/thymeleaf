@@ -72,7 +72,7 @@ public final class StandardMessageResolutionUtils {
         final Locale locale = arguments.getContext().getLocale();
 
         final String templateName = arguments.getTemplateResolution().getTemplateName();
-        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + "_" + locale.toString();
+        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + '_' + locale.toString();
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;

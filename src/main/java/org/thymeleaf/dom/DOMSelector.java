@@ -160,7 +160,7 @@ public final class DOMSelector implements Serializable {
         }
         
         this.selectorName = Node.normalizeName(selectorNameGroup);
-        this.text = this.selectorName.equals("text()");
+        this.text = "text()".equals(this.selectorName);
         
         if (index1Group != null) {
             
@@ -226,7 +226,7 @@ public final class DOMSelector implements Serializable {
         }
         try {
             return Integer.valueOf(indexGroup);
-        } catch (final Exception e) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
@@ -260,7 +260,7 @@ public final class DOMSelector implements Serializable {
     
     private static void parseAttribute(final String selectorSpec, final HashMap<String,String> attributes, final String attributeSpec) {
         
-        final int eqPos = attributeSpec.indexOf("="); 
+        final int eqPos = attributeSpec.indexOf('=');
         if (eqPos != -1) {
             final String attName = attributeSpec.substring(0, eqPos).trim();
             final String attValue = attributeSpec.substring(eqPos + 1).trim();
@@ -320,7 +320,7 @@ public final class DOMSelector implements Serializable {
     
     
     
-    private final boolean checkChildrenSelection(final List<Node> selectedNodes, final Node node) {
+    private boolean checkChildrenSelection(final List<Node> selectedNodes, final Node node) {
         // will return true if any nodes are added to selectedNodes
 
             if (node instanceof NestableNode) {
@@ -369,7 +369,7 @@ public final class DOMSelector implements Serializable {
     
     
     
-    private final boolean doCheckNodeSelection(final List<Node> selectedNodes, final Node node) {
+    private boolean doCheckNodeSelection(final List<Node> selectedNodes, final Node node) {
         
         if (!doCheckSpecificNodeSelection(node)) {
             
@@ -409,7 +409,7 @@ public final class DOMSelector implements Serializable {
         
     }
     
-    private final boolean doCheckSpecificNodeSelection(final Node node) {
+    private boolean doCheckSpecificNodeSelection(final Node node) {
         
         // This method checks all aspects except index (index can only
         // be applied from the superior level)
@@ -451,7 +451,7 @@ public final class DOMSelector implements Serializable {
     
     
     @Override
-    public final String toString() {
+    public String toString() {
         return this.selectorExpression;
     }
 
