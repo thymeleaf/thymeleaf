@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -93,7 +94,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     
     static AssignationSequence parse(final String input, final boolean allowParametersWithoutValue) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 

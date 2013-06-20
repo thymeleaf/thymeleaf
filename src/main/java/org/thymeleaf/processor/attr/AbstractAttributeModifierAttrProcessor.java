@@ -76,16 +76,16 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
                     getModificationType(arguments, element, attributeName, modifiedAttributeName);
 
             newAttributeValue = defaultToNull(newAttributeValue);
-            
+
             switch (modificationType) {
                 case SUBSTITUTION :
                     break;
                 case APPEND_WITH_SPACE :
                     if (newAttributeValue != null && 
-                        (oldAttributeValue != null && !oldAttributeValue.equals(""))) {
-                        newAttributeValue = " " + newAttributeValue;
+                        (oldAttributeValue != null && oldAttributeValue.length() != 0)) {
+                        newAttributeValue = ' ' + newAttributeValue;
                     }
-                    //$FALL-THROUGH$
+                    //$FALL-THROUGH$ falls through
                 case APPEND :
                     if (newAttributeValue == null) {
                         newAttributeValue = oldAttributeValue;
@@ -95,10 +95,10 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
                     break;
                 case PREPEND_WITH_SPACE :
                     if (newAttributeValue != null && 
-                        (oldAttributeValue != null && !oldAttributeValue.equals(""))) {
-                        newAttributeValue = newAttributeValue + " ";
+                        (oldAttributeValue != null && oldAttributeValue.length() != 0)) {
+                        newAttributeValue = newAttributeValue + ' ';
                     }
-                    //$FALL-THROUGH$
+                    //$FALL-THROUGH$ falls through
                 case PREPEND :
                     if (newAttributeValue == null) {
                         newAttributeValue = oldAttributeValue;
@@ -142,7 +142,7 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
     }
     
     private static String defaultToNull(final String str) {
-        return ((str != null && str.equals(""))? null : str);
+        return ((str != null && str.length() == 0)? null : str);
     }
     
     

@@ -224,15 +224,16 @@ public class TemplateEngine {
      * </p>
      */
     public static final String TIMER_LOGGER_NAME = TemplateEngine.class.getName() + ".TIMER";
-    
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
     
-    private static ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
-    private static ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
-    private static ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
-    
+    private static final ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
+    private static final ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
+    private static final ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
+
+    private static final int NANOS_IN_SECOND = 1000000;
+
     
     private final Configuration configuration;
     private TemplateRepository templateRepository;
@@ -1129,7 +1130,7 @@ public class TemplateEngine {
             
             final IContext context = processingContext.getContext();
             
-            final long startMs = System.nanoTime();
+            final long startNanos = System.nanoTime();
 
             setThreadTemplateName(templateName);
             setThreadLocale(context.getLocale());
@@ -1147,15 +1148,15 @@ public class TemplateEngine {
             
             process(templateProcessingParameters, fragmentSpec, writer);
             
-            final long endMs = System.nanoTime();
+            final long endNanos = System.nanoTime();
             
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
             }
             
             if (timerLogger.isDebugEnabled()) {
-                final BigDecimal elapsed = BigDecimal.valueOf(endMs - startMs);
-                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
+                final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
+                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 timerLogger.debug(
                         "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)", 
                         new Object[] {TemplateEngine.threadIndex(), 
@@ -1184,7 +1185,7 @@ public class TemplateEngine {
     
     
 
-    private final void process(final TemplateProcessingParameters templateProcessingParameters, 
+    private void process(final TemplateProcessingParameters templateProcessingParameters,
             final IFragmentSpec fragmentSpec, final Writer writer) {
         
         final String templateName = templateProcessingParameters.getTemplateName();

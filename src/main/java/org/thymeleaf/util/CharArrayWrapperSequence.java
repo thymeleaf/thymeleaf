@@ -127,7 +127,7 @@ public final class CharArrayWrapperSequence implements CharSequence {
         int result = 0;
         final int maxi = this.offset + this.len;
         for (int i = this.offset; i < maxi; i++) {
-            result = prime * result + this.buffer[i];
+            result = prime * result + (int) this.buffer[i];
         }
         return result;
     }

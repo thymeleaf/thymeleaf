@@ -53,7 +53,7 @@ public final class TextNodeProcessorMatcher implements ITextNodeProcessorMatcher
 
 
     
-    public final Class<? extends AbstractTextNode> appliesTo() {
+    public Class<? extends AbstractTextNode> appliesTo() {
         return AbstractTextNode.class;
     }
     

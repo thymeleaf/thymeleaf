@@ -277,9 +277,7 @@ public abstract class NestableNode extends Node {
                     this.children = newChildren;
                 }
 
-                for (int i = this.childrenLen; i > index; i--) {
-                    this.children[i] = this.children[i - 1];
-                }
+                System.arraycopy(this.children, index, this.children, index + 1, (this.childrenLen - index));
                 this.children[index] = newChild;
                 this.childrenLen++;
                 
@@ -407,9 +405,7 @@ public abstract class NestableNode extends Node {
     
     final void unsafeRemoveChild(final int index) {
         this.children[index].parent = null;
-        for (int i = index + 1; i < this.childrenLen; i++) {
-            this.children[i - 1] = this.children[i];
-        }
+        System.arraycopy(this.children, index + 1, this.children, index, (this.childrenLen - (index + 1)));
         this.childrenLen--;
     }
     
@@ -624,7 +620,7 @@ public abstract class NestableNode extends Node {
 
     
     
-    private static final boolean computeNextChild(
+    private static boolean computeNextChild(
             final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed, 
             final boolean processTextNodes, final boolean processCommentNodes) {
         

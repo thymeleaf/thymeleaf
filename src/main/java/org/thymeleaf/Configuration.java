@@ -19,6 +19,7 @@
  */
 package org.thymeleaf;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,7 +69,9 @@ public final class Configuration {
 
     public static final IDialect STANDARD_THYMELEAF_DIALECT = new StandardDialect();
 
-    
+    private static final TemplateResolverComparator TEMPLATE_RESOLVER_COMPARATOR = new TemplateResolverComparator();
+    private static final MessageResolverComparator MESSAGE_RESOLVER_COMPARATOR = new MessageResolverComparator();
+
     private Set<DialectConfiguration> dialectConfigurations = null;
     private Map<String,IDialect> dialectsByPrefix = null;
     private Set<IDialect> dialectSet = null;
@@ -199,18 +202,7 @@ public final class Configuration {
             for (final ITemplateResolver templateResolver : templateResolversList) {
                 templateResolver.initialize();
             }
-            Collections.sort(templateResolversList, 
-                    new Comparator<ITemplateResolver>() {
-                        public int compare(final ITemplateResolver o1, final ITemplateResolver o2) {
-                            if (o1.getOrder() == null) {
-                                return -1;
-                            }
-                            if (o2.getOrder() == null) {
-                                return 1;
-                            }
-                            return o1.getOrder().compareTo(o2.getOrder());
-                        }
-            });
+            Collections.sort(templateResolversList, TEMPLATE_RESOLVER_COMPARATOR);
             this.templateResolvers = new LinkedHashSet<ITemplateResolver>(templateResolversList);
 
             
@@ -237,19 +229,8 @@ public final class Configuration {
             final List<IMessageResolver> messageResolversList = 
                 new ArrayList<IMessageResolver>(this.messageResolvers);
             
-            Collections.sort(messageResolversList, 
-                    new Comparator<IMessageResolver>() {
-                        public int compare(final IMessageResolver o1, final IMessageResolver o2) {
-                            if (o1.getOrder() == null) {
-                                return -1;
-                            }
-                            if (o2.getOrder() == null) {
-                                return 1;
-                            }
-                            return o1.getOrder().compareTo(o2.getOrder());
-                        }
-            });
-            
+            Collections.sort(messageResolversList, MESSAGE_RESOLVER_COMPARATOR);
+
             this.messageResolvers = new LinkedHashSet<IMessageResolver>(messageResolversList);
 
             
@@ -476,13 +457,13 @@ public final class Configuration {
     
     
     
-    public final Set<IDocTypeTranslation> getDocTypeTranslations() {
+    public Set<IDocTypeTranslation> getDocTypeTranslations() {
         checkInitialized();
         return this.mergedDocTypeTranslations;
     }
 
     
-    public final IDocTypeTranslation getDocTypeTranslationBySource(final String publicID, final String systemID) {
+    public IDocTypeTranslation getDocTypeTranslationBySource(final String publicID, final String systemID) {
         checkInitialized();
         for (final IDocTypeTranslation translation : this.mergedDocTypeTranslations) {
             if (translation.getSourcePublicID().matches(publicID) && translation.getSourceSystemID().matches(systemID)) {
@@ -493,7 +474,7 @@ public final class Configuration {
     }
     
     
-    public final Set<IDocTypeResolutionEntry> getDocTypeResolutionEntries() {
+    public Set<IDocTypeResolutionEntry> getDocTypeResolutionEntries() {
         checkInitialized();
         return this.mergedDocTypeResolutionEntries;
     }
@@ -896,10 +877,10 @@ public final class Configuration {
         private final Set<IDocTypeTranslation> docTypeTranslations;
         
         
-        public MergedDialectArtifacts(
+        private MergedDialectArtifacts(
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName,
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName,
-                final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass,
+                final Map<Class<? extends Node>,Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass,
                 final Map<String,Object> executionAttributes,
                 final Map<String,Boolean> leniencyByPrefix,
                 final Set<IDocTypeResolutionEntry> docTypeResolutionEntries,
@@ -944,7 +925,43 @@ public final class Configuration {
         
     }
     
-    
 
-    
+
+    private static class TemplateResolverComparator implements Comparator<ITemplateResolver>, Serializable {
+
+        TemplateResolverComparator() {
+            super();
+        }
+
+        public int compare(final ITemplateResolver o1, final ITemplateResolver o2) {
+            if (o1.getOrder() == null) {
+                return -1;
+            }
+            if (o2.getOrder() == null) {
+                return 1;
+            }
+            return o1.getOrder().compareTo(o2.getOrder());
+        }
+
+    }
+
+
+    private static class MessageResolverComparator implements Comparator<IMessageResolver>, Serializable {
+
+        MessageResolverComparator() {
+            super();
+        }
+
+        public int compare(final IMessageResolver o1, final IMessageResolver o2) {
+            if (o1.getOrder() == null) {
+                return -1;
+            }
+            if (o2.getOrder() == null) {
+                return 1;
+            }
+            return o1.getOrder().compareTo(o2.getOrder());
+        }
+
+    }
+
 }

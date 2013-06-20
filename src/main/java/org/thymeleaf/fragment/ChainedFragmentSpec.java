@@ -95,7 +95,7 @@ public final class ChainedFragmentSpec implements IFragmentSpec {
 
 
 
-    public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
+    public List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
         final List<Node> firstResult = this.fragmentSpec1.extractFragment(configuration, nodes);
         return this.fragmentSpec2.extractFragment(configuration, firstResult);
     }

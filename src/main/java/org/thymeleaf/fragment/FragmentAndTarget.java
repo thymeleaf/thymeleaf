@@ -116,7 +116,7 @@ public final class FragmentAndTarget {
      * @param templateRepository the template repository to be asked for the template.
      * @return the result of parsing + applying the fragment spec.
      */
-    public final List<Node> extractFragment(
+    public List<Node> extractFragment(
             final Configuration configuration, final IContext context, final TemplateRepository templateRepository) {
         return extractFragment(
                 configuration, 
@@ -138,7 +138,7 @@ public final class FragmentAndTarget {
      * @param templateRepository the template repository to be asked for the template.
      * @return the result of parsing + applying the fragment spec.
      */
-    public final List<Node> extractFragment(
+    public List<Node> extractFragment(
             final Configuration configuration, final IProcessingContext context, final TemplateRepository templateRepository) {
 
         final TemplateProcessingParameters fragmentTemplateProcessingParameters = 

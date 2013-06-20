@@ -56,13 +56,13 @@ public final class XmlValidatingSAXTemplateParser extends AbstractValidatingSAXT
 
 
     @Override
-    protected final String wrapFragment(final String fragment) {
+    protected String wrapFragment(final String fragment) {
         return FRAGMENT_WRAP_START + fragment + FRAGMENT_WRAP_END;
     }
 
     
     @Override
-    protected final List<Node> unwrapFragment(final Document document) {
+    protected List<Node> unwrapFragment(final Document document) {
         return document.getFirstElementChild().getChildren();
     }
     

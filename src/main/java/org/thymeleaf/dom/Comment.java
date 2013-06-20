@@ -144,26 +144,26 @@ public final class Comment extends Node {
 
     
     @Override
-    final void doAdditionalSkippableComputing(final boolean skippable) {
+    void doAdditionalSkippableComputing(final boolean skippable) {
         // Nothing to be done here!
     }
 
 
     @Override
-    final void doAdditionalProcessableComputing(final boolean processable) {
+    void doAdditionalProcessableComputing(final boolean processable) {
         // Nothing to be done here!
     }
 
     
     
     @Override
-    final void doAdditionalPrecomputeNode(final Configuration configuration) {
+    void doAdditionalPrecomputeNode(final Configuration configuration) {
         // Nothing to be done here!
     }
 
 
     @Override
-    final void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
+    void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
         // Nothing to be done here
     }
 
@@ -171,7 +171,7 @@ public final class Comment extends Node {
 
 
     @Override
-    public final void visit(final DOMVisitor visitor) {
+    public void visit(final DOMVisitor visitor) {
         visitor.visit(this);
     }
     

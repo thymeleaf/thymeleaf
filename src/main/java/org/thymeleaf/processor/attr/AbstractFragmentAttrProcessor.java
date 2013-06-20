@@ -101,7 +101,7 @@ public abstract class AbstractFragmentAttrProcessor
     
     
     
-    private final List<Node> getNewNodes(
+    private List<Node> getNewNodes(
             final Arguments arguments, final Element element, 
             final String attributeName, final String attributeValue,
             final boolean substituteInclusionNode) {
@@ -254,7 +254,7 @@ public abstract class AbstractFragmentAttrProcessor
      * @since 1.0
      *
      */
-    protected static abstract class AbstractFragmentSpec {
+    protected abstract static class AbstractFragmentSpec {
         
         private final String fragmentTemplateName;
         

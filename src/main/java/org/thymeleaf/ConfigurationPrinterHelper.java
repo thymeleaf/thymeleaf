@@ -270,23 +270,23 @@ final class ConfigurationPrinterHelper {
         }
         
         protected void line(final String line) {
-            this.strBuilder.append(line + "\n");
+            this.strBuilder.append(line).append("\n");
         }
         
         protected void line(final String line, final Object p1) {
-            this.strBuilder.append(replace(line, p1) + "\n");
+            this.strBuilder.append(replace(line, p1)).append("\n");
         }
         
         protected void line(final String line, final Object p1, final Object p2) {
-            this.strBuilder.append(replace(replace(line, p1), p2) + "\n");
+            this.strBuilder.append(replace(replace(line, p1), p2)).append("\n");
         }
         
         protected void line(final String line, final Object[] pArr) {
             String newLine = line;
-            for (int i = 0; i < pArr.length; i++) {
-                newLine = replace(newLine, pArr[i]);
+            for (final Object aPArr : pArr) {
+                newLine = replace(newLine, aPArr);
             }
-            this.strBuilder.append(newLine + "\n");
+            this.strBuilder.append(newLine).append("\n");
         }
         
         @Override

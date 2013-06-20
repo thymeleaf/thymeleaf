@@ -393,7 +393,8 @@ public final class StandardExpressionParser {
             if (c == '\\' && (state == 0 || state == 2)) {
                 state++;
                 continue;
-            } else if (c == '_' && state == 1) {
+            }
+            if (c == '_' && state == 1) {
                 state++;
                 continue;
             } else if (c == '_' && state == 3) {
@@ -416,11 +417,9 @@ public final class StandardExpressionParser {
             if (c == '\\' && (state == 0 || state == 2)) {
                 state++;
                 strBuilder.append(c);
-                continue;
             } else if (c == '_' && state == 1) {
                 state++;
                 strBuilder.append(c);
-                continue;
             } else if (c == '_' && state == 3) {
                 state = 0;
                 final int builderLen = strBuilder.length(); 

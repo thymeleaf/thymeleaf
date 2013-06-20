@@ -32,32 +32,30 @@ import java.util.StringTokenizer;
 
 /**
  * <p>
- *   Utility methods for String objects.
+ * Utility methods for String objects.
  * </p>
  * <p>
- *   This class is used as a basis for the methods offered by
- *   {@link org.thymeleaf.expression.Strings}, which in turn are the
- *   methods offered by the <tt>#strings</tt> utility object in variable
- *   expressions.
+ * This class is used as a basis for the methods offered by
+ * {@link org.thymeleaf.expression.Strings}, which in turn are the
+ * methods offered by the <tt>#strings</tt> utility object in variable
+ * expressions.
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
  * @author Le Roux Bernard
  * @author Soraya S&aacute;nchez Labandeira
- *
  * @since 1.0
- *
  */
 public final class StringUtils {
 
     private static final String ALPHA_NUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static Random RANDOM = new Random();
+    private static final Random RANDOM = new Random();
 
 
 
     /**
      * <p>
-     *   Performs a null-safe <tt>toString()</tt> operation.
+     * Performs a null-safe <tt>toString()</tt> operation.
      * </p>
      *
      * @param target the object on which toString will be executed
@@ -71,7 +69,6 @@ public final class StringUtils {
         }
         return target.toString();
     }
-
 
 
 
@@ -95,7 +92,6 @@ public final class StringUtils {
 
 
     /**
-     *
      * @since 2.0.16
      */
     public static Boolean equals(final Object first, Object second) {
@@ -111,7 +107,6 @@ public final class StringUtils {
     }
 
     /**
-     *
      * @since 2.0.16
      */
     public static Boolean equalsIgnoreCase(final Object first, Object second) {
@@ -135,7 +130,6 @@ public final class StringUtils {
 
 
 
-
     public static Boolean containsIgnoreCase(final Object target, final String fragment, final Locale locale) {
 
         Validate.notNull(target, "Cannot apply containsIgnoreCase on null");
@@ -145,7 +139,6 @@ public final class StringUtils {
         return Boolean.valueOf(target.toString().toUpperCase(locale).contains(fragment.toUpperCase(locale)));
 
     }
-
 
 
 
@@ -160,7 +153,6 @@ public final class StringUtils {
 
 
 
-
     public static Boolean endsWith(final Object target, final String suffix) {
 
         Validate.notNull(target, "Cannot apply endsWith on null");
@@ -169,7 +161,6 @@ public final class StringUtils {
         return Boolean.valueOf(target.toString().endsWith(suffix));
 
     }
-
 
 
 
@@ -188,30 +179,27 @@ public final class StringUtils {
 
     /**
      * <p>
-     *  copy a part of target start beginIndex to the end of target.
-     *  If non-String object, toString() will be called.
+     * copy a part of target start beginIndex to the end of target.
+     * If non-String object, toString() will be called.
      * </p>
-     * @param target      source of the copy.
-     * @param beginIndex  index where the copy start.
      *
+     * @param target source of the copy.
+     * @param beginIndex index where the copy start.
      * @return part of target.
-     *
      * @since 1.1.2
-     *
      */
     public static String substring(final Object target, final int beginIndex) {
 
         Validate.notNull(target, "Cannot apply substring on null");
         final String str = target.toString();
         final int len = str.length();
-        Validate.isTrue(beginIndex >= 0 && beginIndex < len, "beginIndex must be >= 0 and < "+len);
+        Validate.isTrue(beginIndex >= 0 && beginIndex < len, "beginIndex must be >= 0 and < " + len);
 
         // The String constructor is called on purpose to avoid problems from
         // creating substrings out of large amounts of long Strings (creating
         // a substring does not free the memory occupied by the original String).
         return new String(str.substring(beginIndex));
     }
-
 
 
 
@@ -235,7 +223,6 @@ public final class StringUtils {
 
 
 
-
     public static String substringBefore(final Object target, final String substr) {
 
         Validate.notNull(target, "Cannot apply substringBefore on null");
@@ -256,13 +243,11 @@ public final class StringUtils {
 
 
 
-
     public static String prepend(final Object target, final String prefix) {
         Validate.notNull(target, "Cannot apply prepend on null");
         Validate.notNull(prefix, "Prefix cannot be null");
         return prefix + target;
     }
-
 
 
 
@@ -273,17 +258,16 @@ public final class StringUtils {
     }
 
     /**
-     *
      * @since 2.0.16
      */
-    public static String concat(final Object ... values) {
+    public static String concat(final Object... values) {
         return concatReplaceNulls("", values);
     }
+
     /**
-     *
      * @since 2.0.16
      */
-    public static String concatReplaceNulls(final String nullValue, final Object ... values) {
+    public static String concatReplaceNulls(final String nullValue, final Object... values) {
 
         if (values == null) {
             return "";
@@ -312,8 +296,28 @@ public final class StringUtils {
     }
 
 
-    public static Boolean isEmpty(final Object target) {
-        return Boolean.valueOf((target == null || target.toString().trim().equals("")));
+
+    public static boolean isEmpty(final String target) {
+        return (target == null || target.length() == 0);
+    }
+
+
+
+    public static boolean isEmptyOrWhitespace(final String target) {
+        if (target == null) {
+            return true;
+        }
+        final int targetLen = target.length();
+        if (targetLen == 0) {
+            return true;
+        }
+        for (int i = 0; i < targetLen; i++) {
+            final char c = target.charAt(i);
+            if (c != ' ' && !Character.isWhitespace(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 
@@ -333,7 +337,6 @@ public final class StringUtils {
         }
         return sb.toString();
     }
-
 
 
 
@@ -357,7 +360,6 @@ public final class StringUtils {
 
 
 
-
     public static String[] split(final Object target, final String separator) {
 
         Validate.notNull(target, "Cannot apply split on null");
@@ -371,7 +373,6 @@ public final class StringUtils {
         }
         return array;
     }
-
 
 
 
@@ -391,10 +392,9 @@ public final class StringUtils {
         Validate.notNull(before, "Parameter \"before\" cannot be null");
         Validate.notNull(after, "Parameter \"after\" cannot be null");
 
-        return target.toString().replace(before,after);
+        return target.toString().replace(before, after);
 
     }
-
 
 
 
@@ -411,7 +411,6 @@ public final class StringUtils {
 
 
 
-
     public static String toLowerCase(final Object target, final Locale locale) {
 
         Validate.notNull(locale, "Locale cannot be null");
@@ -425,7 +424,6 @@ public final class StringUtils {
 
 
 
-
     public static String trim(final Object target) {
         if (target == null) {
             return null;
@@ -436,15 +434,13 @@ public final class StringUtils {
 
     /**
      * <p>
-     *   Convert the first letter of target to uppercase (title-case, in fact).
+     * Convert the first letter of target to uppercase (title-case, in fact).
      * </p>
      *
      * @param target the String to be capitalized. If non-String object, toString()
-     *               will be called.
+     * will be called.
      * @return String the result of capitalizing the target.
-     *
      * @since 1.1.2
-     *
      */
     public static String capitalize(final Object target) {
 
@@ -463,16 +459,13 @@ public final class StringUtils {
 
     /**
      * <p>
-     *   Convert the first letter of target to lowercase.
+     * Convert the first letter of target to lowercase.
      * </p>
      *
      * @param target the String to be uncapitalized. If non-String object, toString()
-     *               will be called.
-     *
+     * will be called.
      * @return String the result of uncapitalizing the target.
-     *
      * @since 1.1.2
-     *
      */
     public static String unCapitalize(final Object target) {
 
@@ -490,7 +483,6 @@ public final class StringUtils {
 
 
 
-
     private static int findNextWord(final char[] buffer, int idx, final char[] delimiterChars) {
 
         final int len = buffer.length;
@@ -504,9 +496,9 @@ public final class StringUtils {
         while (i < len) {
             char ch = buffer[i];
             final boolean isDelimiter =
-                (delimiterChars == null?
-                        (Character.isWhitespace(ch)) :
-                        (Arrays.binarySearch(delimiterChars, ch) >= 0));
+                    (delimiterChars == null ?
+                            (Character.isWhitespace(ch)) :
+                            (Arrays.binarySearch(delimiterChars, ch) >= 0));
             if (isDelimiter) {
                 foundDelimiters = true;
             } else {
@@ -523,23 +515,19 @@ public final class StringUtils {
 
 
 
-
     /**
      * <p>
-     *   Convert all the first letter of the words of target
-     *    to uppercase (title-case, in fact).
-     *   The default delimiter characters between the words
-     *   are the whitespace characters
-     *   (see Characters.IsWhiteSpace method in the Java doc).
+     * Convert all the first letter of the words of target
+     * to uppercase (title-case, in fact).
+     * The default delimiter characters between the words
+     * are the whitespace characters
+     * (see Characters.IsWhiteSpace method in the Java doc).
      * </p>
      *
      * @param target the String to be capitalized. If non-String object, toString()
-     *               will be called.
-     *
+     * will be called.
      * @return String the result of capitalizing the target.
-     *
      * @since 1.1.2
-     *
      */
     public static String capitalizeWords(final Object target) {
         return capitalizeWords(target, null);
@@ -549,19 +537,17 @@ public final class StringUtils {
 
     /**
      * <p>
-     *   Convert all the first letter of the words of target to uppercase
-     *   (title-case, in fact), using the specified delimiter chars for determining
-     *   word ends/starts.
+     * Convert all the first letter of the words of target to uppercase
+     * (title-case, in fact), using the specified delimiter chars for determining
+     * word ends/starts.
      * </p>
      *
      * @param target the String to be capitalized. If non-String object, toString()
-     *               will be called.
+     * will be called.
      * @param delimiters delimiters of the words. If non-String object, toString()
-     *                   will be called.
+     * will be called.
      * @return String the result of capitalizing the target.
-     *
      * @since 1.1.2
-     *
      */
     public static String capitalizeWords(final Object target, final Object delimiters) {
 
@@ -571,7 +557,7 @@ public final class StringUtils {
 
         char[] buffer = target.toString().toCharArray();
         char[] delimiterChars =
-            (delimiters == null? null : delimiters.toString().toCharArray());
+                (delimiters == null ? null : delimiters.toString().toCharArray());
         if (delimiterChars != null) {
             // needed in order to use binarySearch
             Arrays.sort(delimiterChars);
@@ -592,17 +578,13 @@ public final class StringUtils {
 
 
 
-
-
-
     /**
      * <p>
-     *   XML-escapes the specified text.
+     * XML-escapes the specified text.
      * </p>
      *
      * @param target the text to be escaped
      * @return the escaped text.
-     *
      * @since 2.0.9
      */
     public static String escapeXml(final Object target) {
@@ -612,21 +594,19 @@ public final class StringUtils {
         try {
             return DOMUtils.escapeXml(target.toString(), false);
         } catch (final IOException e) {
-            throw new RuntimeException("Error while XML-escaping text");
+            throw new RuntimeException("Error while XML-escaping text", e);
         }
     }
 
 
 
-
     /**
      * <p>
-     *   Escapes the specified target text as required for JavaScript code.
+     * Escapes the specified target text as required for JavaScript code.
      * </p>
      *
      * @param target the text to be escaped
      * @return the escaped text.
-     *
      * @since 2.0.11
      */
     public static String escapeJavaScript(final Object target) {
@@ -635,10 +615,10 @@ public final class StringUtils {
         }
         try {
             final StringWriter sw = new StringWriter();
-            escapeJavaAny((String)target, true, sw);
+            escapeJavaAny((String) target, true, sw);
             return sw.toString();
         } catch (final IOException e) {
-            throw new RuntimeException("Error while JavaScript-escaping text");
+            throw new RuntimeException("Error while JavaScript-escaping text", e);
         }
     }
 
@@ -646,12 +626,11 @@ public final class StringUtils {
 
     /**
      * <p>
-     *   Escapes the specified target text as required for Java code.
+     * Escapes the specified target text as required for Java code.
      * </p>
      *
      * @param target the text to be escaped
      * @return the escaped text.
-     *
      * @since 2.0.11
      */
     public static String escapeJava(final Object target) {
@@ -660,10 +639,10 @@ public final class StringUtils {
         }
         try {
             final StringWriter sw = new StringWriter();
-            escapeJavaAny((String)target, false, sw);
+            escapeJavaAny((String) target, false, sw);
             return sw.toString();
         } catch (final IOException e) {
-            throw new RuntimeException("Error while Java-escaping text");
+            throw new RuntimeException("Error while Java-escaping text", e);
         }
     }
 
@@ -671,12 +650,11 @@ public final class StringUtils {
 
     /**
      * <p>
-     *   Un-escapes the specified JavaScript-escaped target text back to normal form.
+     * Un-escapes the specified JavaScript-escaped target text back to normal form.
      * </p>
      *
      * @param target the text to be unescaped
      * @return the unescaped text.
-     *
      * @since 2.0.11
      */
     public static String unescapeJavaScript(final Object target) {
@@ -685,10 +663,10 @@ public final class StringUtils {
         }
         try {
             final StringWriter sw = new StringWriter();
-            unescapeJavaAny((String)target, sw);
+            unescapeJavaAny((String) target, sw);
             return sw.toString();
         } catch (final IOException e) {
-            throw new RuntimeException("Error while JavaScript-unescaping text");
+            throw new RuntimeException("Error while JavaScript-unescaping text", e);
         }
     }
 
@@ -696,12 +674,11 @@ public final class StringUtils {
 
     /**
      * <p>
-     *   Un-escapes the specified Java-escaped target text back to normal form.
+     * Un-escapes the specified Java-escaped target text back to normal form.
      * </p>
      *
      * @param target the text to be unescaped
      * @return the unescaped text.
-     *
      * @since 2.0.11
      */
     public static String unescapeJava(final Object target) {
@@ -710,19 +687,17 @@ public final class StringUtils {
         }
         try {
             final StringWriter sw = new StringWriter();
-            unescapeJavaAny((String)target, sw);
+            unescapeJavaAny((String) target, sw);
             return sw.toString();
         } catch (final IOException e) {
-            throw new RuntimeException("Error while Java-unescaping text");
+            throw new RuntimeException("Error while Java-unescaping text", e);
         }
     }
 
 
 
-
-
     private static void escapeJavaAny(final String text, final boolean javaScript, final Writer writer)
-                throws IOException {
+            throws IOException {
 
         Validate.notNull(writer, "Writer cannot be null");
 
@@ -735,32 +710,33 @@ public final class StringUtils {
 
             char c = text.charAt(i);
 
+            //noinspection MagicNumber
             if (c >= 32 && c <= 0x7f) {
 
                 switch (c) {
-                    case '\\' :
+                    case '\\':
                         writer.write('\\');
                         writer.write('\\');
                         break;
-                    case '"' :
+                    case '"':
                         writer.write('\\');
                         writer.write('"');
                         break;
-                    case '\'' :
+                    case '\'':
                         if (javaScript) {
                             writer.write('\\');
                         }
                         writer.write('\'');
                         break;
-                    case '/' :
+                    case '/':
                         if (javaScript) {
-                            if (i>0 && text.charAt(i-1) == '<') {
+                            if (i > 0 && text.charAt(i - 1) == '<') {
                                 writer.write('\\');
                             }
                         }
                         writer.write('/');
                         break;
-                    case '>' :
+                    case '>':
                         if (javaScript && i > 1) {
                             // Make sure we escape "]]>" just in case we are inside a
                             // CDATA Section.
@@ -770,7 +746,7 @@ public final class StringUtils {
                         }
                         writer.write('>');
                         break;
-                    default :
+                    default:
                         // no need to escape: numbers, letters, ASCII symbols...
                         writer.write(c);
                         break;
@@ -779,27 +755,27 @@ public final class StringUtils {
             } else {
 
                 switch (c) {
-                    case '\b' :
+                    case '\b':
                         writer.write('\\');
                         writer.write('b');
                         break;
-                    case '\f' :
+                    case '\f':
                         writer.write('\\');
                         writer.write('f');
                         break;
-                    case '\n' :
+                    case '\n':
                         writer.write('\\');
                         writer.write('n');
                         break;
-                    case '\r' :
+                    case '\r':
                         writer.write('\\');
                         writer.write('r');
                         break;
-                    case '\t' :
+                    case '\t':
                         writer.write('\\');
                         writer.write('t');
                         break;
-                    default :
+                    default:
                         // Just escape it as unicode
                         writer.write(unicodeEscape(c));
                         break;
@@ -814,8 +790,7 @@ public final class StringUtils {
 
 
 
-
-
+    @SuppressWarnings("MagicNumber")
     private static String unicodeEscape(final char c) {
 
         final String hex =
@@ -836,11 +811,8 @@ public final class StringUtils {
 
 
 
-
-
-
     private static void unescapeJavaAny(final String text, final Writer writer)
-                throws IOException {
+            throws IOException {
 
 
         Validate.notNull(writer, "Writer cannot be null");
@@ -867,6 +839,7 @@ public final class StringUtils {
                     // Unicode spec is complete
 
                     try {
+                        //noinspection MagicNumber
                         writer.write((char) Integer.parseInt(new String(unicodeSpec), 16));
                     } catch (final NumberFormatException e) {
                         throw new RuntimeException(
@@ -910,7 +883,7 @@ public final class StringUtils {
                         // we are in fact reading a unicode char
                         unicodeOff = 0;
                         break;
-                    default :
+                    default:
                         // it is any other kind of escaped char, probably one that didn't
                         // really need to be escaped (e.g. brackets or similar). Just output it.
                         writer.write(c);
@@ -948,9 +921,9 @@ public final class StringUtils {
     public static String randomAlphanumeric(final int count) {
         final StringBuilder strBuilder = new StringBuilder(count);
         final int anLen = ALPHA_NUMERIC.length();
-        synchronized(RANDOM) {
-            for(int i = 0; i < count; i++) {
-                strBuilder.append(ALPHA_NUMERIC.charAt(RANDOM.nextInt(anLen))) ;
+        synchronized (RANDOM) {
+            for (int i = 0; i < count; i++) {
+                strBuilder.append(ALPHA_NUMERIC.charAt(RANDOM.nextInt(anLen)));
             }
         }
         return strBuilder.toString();

@@ -39,7 +39,7 @@ public final class Validate {
     }
     
     public static void notEmpty(final String object, final String message) {
-        if (object == null || object.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(object)) {
             throw new IllegalArgumentException(message);
         }
     }

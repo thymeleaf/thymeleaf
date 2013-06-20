@@ -99,10 +99,10 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                     
                     strBuilder.append(result);
                     
-                } catch (final TemplateProcessingException e) {
+                } catch (final TemplateProcessingException ignored) {
                     
                     // If it is not a standard expression, just output it as original
-                    strBuilder.append(SCRIPT_INLINE_PREFIX + match + SCRIPT_INLINE_SUFFIX);
+                    strBuilder.append(SCRIPT_INLINE_PREFIX).append(match).append(SCRIPT_INLINE_SUFFIX);
                     
                 }
                 

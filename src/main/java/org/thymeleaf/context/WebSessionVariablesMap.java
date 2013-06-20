@@ -52,7 +52,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    public WebSessionVariablesMap(final HttpSession session) {
+    WebSessionVariablesMap(final HttpSession session) {
         super(1, 1.0f);
         this.session = session;
     }

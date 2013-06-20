@@ -302,7 +302,7 @@ public final class DateUtils {
         
         DateFormat dateFormat = dateFormats.get(key);
         if (dateFormat == null) {
-            if (pattern == null || pattern.trim().equals("")) {
+            if (StringUtils.isEmptyOrWhitespace(pattern)) {
                 dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
             } else {
                 dateFormat = new SimpleDateFormat(pattern, locale);
@@ -347,7 +347,7 @@ public final class DateUtils {
         private final String format;
         private final Locale locale;
         
-        public DateFormatKey(final String format, final Locale locale) {
+        private DateFormatKey(final String format, final Locale locale) {
             super();
             Validate.notNull(locale, "Locale cannot be null");
             this.format = format;
@@ -382,10 +382,7 @@ public final class DateUtils {
             } else if (!this.format.equals(other.format)) {
                 return false;
             }
-            if (!this.locale.equals(other.locale)) {
-                return false;
-            }
-            return true;
+            return this.locale.equals(other.locale);
         }
         
     }

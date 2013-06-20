@@ -100,7 +100,7 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
         // minus operators getting in the way of subtraction operations).
         
         final String input = decomposition.get(inputIndex).getInput();
-        if (input.equals("")) {
+        if (input.length() == 0) {
             return null;
         }
 
@@ -174,7 +174,7 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
         final String leftStr = input.substring(0, operatorPos).trim();
         final String rightStr = input.substring(operatorPos + operator.length()).trim();
          
-        if (leftStr.equals("") || rightStr.equals("")) {
+        if (leftStr.length() == 0 || rightStr.length() == 0) {
             return null;
         }
         

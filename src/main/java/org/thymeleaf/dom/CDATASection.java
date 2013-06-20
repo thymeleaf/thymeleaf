@@ -84,7 +84,7 @@ public final class CDATASection extends AbstractTextNode {
 
 
     @Override
-    public final void visit(final DOMVisitor visitor) {
+    public void visit(final DOMVisitor visitor) {
         visitor.visit(this);
     }
 

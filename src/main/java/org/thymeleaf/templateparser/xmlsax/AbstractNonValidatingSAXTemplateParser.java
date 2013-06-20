@@ -77,7 +77,9 @@ import org.xml.sax.ext.Locator2;
  * 
  */
 public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplateParser {
-    
+
+    private static final int BUFFER_SIZE = 8192;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ResourcePool<SAXParser> pool;
     private boolean canResetParsers = true;
@@ -117,7 +119,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
 
     
-    private final Document parseTemplateUsingPool(final Configuration configuration, final String documentName, 
+    private Document parseTemplateUsingPool(final Configuration configuration, final String documentName,
             final Reader reader, final ResourcePool<SAXParser> poolToBeUsed) {
 
         final SAXParser saxParser = poolToBeUsed.allocate();
@@ -138,7 +140,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                      * Reset the parser so that it can be used again.
                      */
                     saxParser.reset();
-                } catch (final UnsupportedOperationException e) {
+                } catch (final UnsupportedOperationException ignored) {
                     if (this.logger.isWarnEnabled()) {
                         this.logger.warn(
                                 "[THYMELEAF] The SAX Parser implementation being used (\"{}\") does not implement " +
@@ -285,9 +287,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         if (reader instanceof TemplatePreprocessingReader) {
             final TemplatePreprocessingReader templatePreprocessingReader = (TemplatePreprocessingReader) reader;
             return new TemplatePreprocessingReader(
-                    templatePreprocessingReader.getInnerReader(), 8192, shouldAddThymeleafRootToParser());
+                    templatePreprocessingReader.getInnerReader(), BUFFER_SIZE, shouldAddThymeleafRootToParser());
         }
-        return new TemplatePreprocessingReader(reader, 8192, shouldAddThymeleafRootToParser());
+        return new TemplatePreprocessingReader(reader, BUFFER_SIZE, shouldAddThymeleafRootToParser());
     }
     
     
@@ -296,6 +298,8 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
     
     
     private static final class XmlSAXHandler extends DefaultHandler2 {
+
+        private static final int BUFFER_SIZE = 512;
 
         private final String documentName;
         private final Stack<NestableNode> elementStack;
@@ -325,9 +329,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         private boolean xmlDeclarationComputed = false;
         
         
-        public XmlSAXHandler(final String documentName,
-                final org.xml.sax.EntityResolver entityResolver, 
-                final org.xml.sax.ErrorHandler errorHandler) {
+        private XmlSAXHandler(final String documentName,
+                              final org.xml.sax.EntityResolver entityResolver,
+                              final org.xml.sax.ErrorHandler errorHandler) {
             
             super();
 
@@ -336,8 +340,8 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             this.elementStack = new Stack<NestableNode>();
             this.rootNodes = new ArrayList<Node>();
             
-            this.textBuffer = new char[512];
-            this.cdataBuffer = new char[512];
+            this.textBuffer = new char[BUFFER_SIZE];
+            this.cdataBuffer = new char[BUFFER_SIZE];
             
             this.entityResolver = entityResolver;
             this.errorHandler = errorHandler;
@@ -430,7 +434,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
         
         @Override
-        public void characters(final char ch[], final int start, final int length) {
+        public void characters(final char[] ch, final int start, final int length) {
             
             TemplatePreprocessingReader.removeEntitySubstitutions(ch, start, length);
             if (this.cdataMode) {
@@ -723,7 +727,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
         private final SAXParserFactory saxParserFactory;
         
-        public SAXTemplateParserFactory(final SAXParserFactory saxParserFactory) {
+        SAXTemplateParserFactory(final SAXParserFactory saxParserFactory) {
             super();
             this.saxParserFactory = saxParserFactory;
         }

@@ -30,6 +30,7 @@ import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -1028,11 +1029,11 @@ public class TemplateResolver
         }
         
         final StringBuilder resourceName = new StringBuilder();
-        if (this.prefix != null && !this.prefix.trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(this.prefix)) {
             resourceName.append(this.prefix);
         }
         resourceName.append(unaliasedName);
-        if (this.suffix != null && !this.suffix.trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(this.suffix)) {
             resourceName.append(this.suffix);
         }
         

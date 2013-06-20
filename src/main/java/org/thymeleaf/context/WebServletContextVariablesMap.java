@@ -53,7 +53,7 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    public WebServletContextVariablesMap(final ServletContext servletContext) {
+    WebServletContextVariablesMap(final ServletContext servletContext) {
         super(1, 1.0f);
         Validate.notNull(servletContext, "Servlet context cannot be null");
         this.servletContext = servletContext;

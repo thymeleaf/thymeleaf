@@ -665,7 +665,7 @@ public final class Strings {
     
     
     public Boolean isEmpty(final Object target) {
-        return StringUtils.isEmpty(target);
+        return Boolean.valueOf(target == null || StringUtils.isEmptyOrWhitespace(target.toString()));
     }
     
     public Boolean[] arrayIsEmpty(final Object[] target) {

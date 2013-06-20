@@ -41,6 +41,7 @@ import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -263,7 +264,7 @@ public final class TemplateRepository {
         
         final String characterEncoding = templateResolution.getCharacterEncoding();
         Reader reader = null;
-        if (characterEncoding != null && !characterEncoding.trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
             try {
                 reader = new InputStreamReader(templateInputStream, characterEncoding);
             } catch (final UnsupportedEncodingException e) {
@@ -349,7 +350,7 @@ public final class TemplateRepository {
     
     
     private static String computeFragmentCacheKey(final String templateMode, final String fragment) {
-        return "{" +  templateMode + "}" + fragment;
+        return '{' +  templateMode + '}' + fragment;
     }
     
     

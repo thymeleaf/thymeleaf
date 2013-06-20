@@ -28,6 +28,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.ObjectUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -126,7 +127,7 @@ public final class ConditionalExpression extends ComplexExpression {
         
         final String input = inputParsingNode.getInput();
             
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 

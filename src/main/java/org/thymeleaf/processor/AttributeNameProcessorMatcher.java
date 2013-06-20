@@ -151,7 +151,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
 
     
-    public final Class<? extends Element> appliesTo() {
+    public Class<? extends Element> appliesTo() {
         return Element.class;
     }
     

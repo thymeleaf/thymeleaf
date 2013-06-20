@@ -40,7 +40,7 @@ class DeprecatedBridgeStandardExpressionEvaluator implements IStandardVariableEx
     private final IStandardExpressionEvaluator evaluator;
     
     
-    public DeprecatedBridgeStandardExpressionEvaluator(final IStandardExpressionEvaluator evaluator) {
+    DeprecatedBridgeStandardExpressionEvaluator(final IStandardExpressionEvaluator evaluator) {
         super();
         this.evaluator = evaluator;
     }

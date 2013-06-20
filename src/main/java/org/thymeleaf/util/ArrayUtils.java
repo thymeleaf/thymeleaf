@@ -176,7 +176,7 @@ public final class ArrayUtils {
     @SuppressWarnings("unchecked")
     public static <T,X> X[] copyOf(final T[] original, final int newLength, final Class<? extends X[]> newType) {
         final X[] newArray = 
-                ((Object)newType == (Object)Object[].class)? 
+                (newType == (Object)Object[].class)?
                         (X[]) new Object[newLength] : 
                         (X[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, 0, newArray, 0, Math.min(original.length, newLength));

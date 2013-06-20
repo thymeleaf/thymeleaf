@@ -65,7 +65,7 @@ public final class OrExpression extends BinaryOperationExpression {
     
     
     
-    protected static List<ExpressionParsingNode> composeOrExpression(
+    static List<ExpressionParsingNode> composeOrExpression(
             final List<ExpressionParsingNode> decomposition, int inputIndex) {
         return composeBinaryOperationExpression(
                 decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);

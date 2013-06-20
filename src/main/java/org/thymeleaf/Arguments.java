@@ -137,7 +137,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getLocalVariables()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getSelectionTarget()),
-              (templateProcessingParameters == null? false : templateProcessingParameters.getProcessingContext().hasSelectionTarget()),
+              (templateProcessingParameters != null && templateProcessingParameters.getProcessingContext().hasSelectionTarget()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getConfiguration().getDialectSet()));
         
         

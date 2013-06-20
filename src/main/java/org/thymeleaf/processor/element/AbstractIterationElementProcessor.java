@@ -44,7 +44,7 @@ public abstract class AbstractIterationElementProcessor
         extends AbstractElementProcessor {
 
     
-    public static String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
+    public static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
     
 
     

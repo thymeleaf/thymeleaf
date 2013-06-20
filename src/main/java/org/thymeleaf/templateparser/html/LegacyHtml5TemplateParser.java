@@ -48,13 +48,13 @@ public final class LegacyHtml5TemplateParser extends AbstractHtmlTemplateParser 
 
 
     @Override
-    protected final String wrapFragment(final String fragment) {
+    protected String wrapFragment(final String fragment) {
         return FRAGMENT_WRAP_START + fragment + FRAGMENT_WRAP_END;
     }
 
     
     @Override
-    protected final List<Node> unwrapFragment(final Document document) {
+    protected List<Node> unwrapFragment(final Document document) {
         return ((NestableNode)document.getFirstElementChild().getChildren().get(1)).getFirstElementChild().getChildren();
     }
 

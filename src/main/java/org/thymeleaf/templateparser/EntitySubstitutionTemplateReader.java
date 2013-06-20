@@ -41,7 +41,9 @@ import org.thymeleaf.exceptions.TemplateInputException;
 @Deprecated
 public final class EntitySubstitutionTemplateReader extends Reader {
 
-    
+    private static final int BUFFER_BLOCK_SIZE = 1024;
+    private static final int OVERFLOW_BLOCK_SIZE = 2048;
+
     private static final Logger readerLogger = LoggerFactory.getLogger(EntitySubstitutionTemplateReader.class);
     
     public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
@@ -55,7 +57,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     private static final char[] ENTITY = "&\u0234;".toCharArray();
     
     private static final char[] ENTITY_START_SUBSTITUTE = new char[] { CHAR_ENTITY_START_SUBSTITUTE };
-    
+
     private final BufferedReader bufferedReader;
     
     private char[] buffer;
@@ -79,8 +81,8 @@ public final class EntitySubstitutionTemplateReader extends Reader {
     public EntitySubstitutionTemplateReader(final Reader in, final int bufferSize) {
         super();
         this.bufferedReader = new BufferedReader(in, bufferSize);
-        this.buffer = new char[bufferSize + 1024]; 
-        this.overflow = new char[bufferSize + 2048];
+        this.buffer = new char[bufferSize + BUFFER_BLOCK_SIZE];
+        this.overflow = new char[bufferSize + OVERFLOW_BLOCK_SIZE];
         this.overflowIndex = 0;
     }
 
@@ -98,8 +100,8 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         if ((len * 2) > this.overflow.length) {
             // Resize buffer and overflow
             
-            this.buffer = new char[len + 1024];
-            final char[] newOverflow = new char[len + 2048];
+            this.buffer = new char[len + BUFFER_BLOCK_SIZE];
+            final char[] newOverflow = new char[len + OVERFLOW_BLOCK_SIZE];
             System.arraycopy(this.overflow, 0, newOverflow, 0, this.overflowIndex);
             this.overflow = newOverflow;
         }
@@ -331,7 +333,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
                     new Object[] {TemplateEngine.threadIndex()});
         }
         
-        final char[] cbuf = new char[1024];
+        final char[] cbuf = new char[BUFFER_BLOCK_SIZE];
         int totalRead = -1;
         int read;
         while ((read = read(cbuf, 0, cbuf.length)) != -1) {
@@ -531,7 +533,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
 
     
     
-    public static final String removeEntitySubstitutions(final String text) {
+    public static String removeEntitySubstitutions(final String text) {
 
         if (text == null) {
             return null;
@@ -555,7 +557,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
 
     
     
-    public static final void removeEntitySubstitutions(final char[] text, final int off, final int len) {
+    public static void removeEntitySubstitutions(final char[] text, final int off, final int len) {
 
         if (text == null) {
             return;

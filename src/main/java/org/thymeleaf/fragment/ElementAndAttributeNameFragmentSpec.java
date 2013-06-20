@@ -104,12 +104,12 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
         
         // Either fragment or element name CAN be null (but not both). If element name is
         // null, no check will be done on the containing element.
-        Validate.isTrue(!(StringUtils.isEmpty(elementName).booleanValue() && 
-                          StringUtils.isEmpty(attributeName).booleanValue()), 
+        Validate.isTrue(!(StringUtils.isEmptyOrWhitespace(elementName) &&
+                          StringUtils.isEmptyOrWhitespace(attributeName)),
                 "Either element name of attribute name must not be null or empty");
         
         // If attribute name has been specified, a value must have been specified too.
-        if (!StringUtils.isEmpty(attributeName).booleanValue()) {
+        if (!StringUtils.isEmptyOrWhitespace(attributeName)) {
             Validate.notEmpty(attributeValue, "Fragment attribute value cannot be null or empty");
         }
         
@@ -207,7 +207,7 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
     
     
     
-    public final List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
+    public List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
         
         final List<Node> extraction = 
                 DOMUtils.extractFragmentByElementAndAttributeValue(

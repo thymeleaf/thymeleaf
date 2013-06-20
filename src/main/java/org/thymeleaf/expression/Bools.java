@@ -118,8 +118,8 @@ public final class Bools {
     
     public Boolean arrayAnd(final Object[] target) {
         Validate.notNull(target, "Target cannot be null");
-        for (int i = 0; i < target.length; i++) {
-            if (!isTrue(target[i]).booleanValue()) {
+        for (final Object aTarget : target) {
+            if (!isTrue(aTarget).booleanValue()) {
                 return Boolean.FALSE;
             }
         }
@@ -152,8 +152,8 @@ public final class Bools {
     
     public Boolean arrayOr(final Object[] target) {
         Validate.notNull(target, "Target cannot be null");
-        for (int i = 0; i < target.length; i++) {
-            if (isTrue(target[i]).booleanValue()) {
+        for (final Object aTarget : target) {
+            if (isTrue(aTarget).booleanValue()) {
                 return Boolean.TRUE;
             }
         }

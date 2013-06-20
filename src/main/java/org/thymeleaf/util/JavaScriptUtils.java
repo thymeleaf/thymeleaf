@@ -336,7 +336,7 @@ public final class JavaScriptUtils {
                 final Method readMethod =  descriptor.getReadMethod();
                 if (readMethod != null) {
                     final String name = descriptor.getName();
-                    if (!name.toLowerCase().equals("class")) {
+                    if (!"class".equals(name.toLowerCase())) {
                         final Object value = readMethod.invoke(object);
                         properties.put(name, value);
                     }

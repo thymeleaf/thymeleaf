@@ -30,6 +30,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -111,7 +112,7 @@ public final class MessageExpression extends SimpleExpression {
 
         final String content = matcher.group(1);
 
-        if (content == null || content.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(content)) {
             return null;
         }
         
@@ -227,7 +228,7 @@ public final class MessageExpression extends SimpleExpression {
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
         }
-        if (messageKey == null || ((String)messageKey).trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace((String)messageKey)) {
             throw new TemplateProcessingException(
                     "Message key for message resolution must be a non-null and non-empty String");
         }

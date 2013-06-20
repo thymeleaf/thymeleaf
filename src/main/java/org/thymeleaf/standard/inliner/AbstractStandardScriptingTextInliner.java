@@ -79,7 +79,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     
 
-    private final String processScriptingInline(
+    private String processScriptingInline(
             final String input, final Arguments arguments) {
         
         return
@@ -96,7 +96,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
     
     
-    private final String processScriptingAddInline(final String input) {
+    private String processScriptingAddInline(final String input) {
         
         final Matcher matcher = SCRIPT_ADD_INLINE_EVAL_PATTERN.matcher(input);
 
@@ -133,7 +133,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
 
     
-    private final String processScriptingRemoveInline(final String input) {
+    private String processScriptingRemoveInline(final String input) {
         
         final Matcher matcher = SCRIPT_REMOVE_INLINE_EVAL_PATTERN.matcher(input);
 
@@ -170,7 +170,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     
     
-    private final String processScriptingVariableExpressionInline(final String input) {
+    private String processScriptingVariableExpressionInline(final String input) {
         
         final Matcher matcher = SCRIPT_VARIABLE_EXPRESSION_INLINE_EVAL_PATTERN.matcher(input);
         
@@ -233,7 +233,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     
     
-    private final String processScriptingVariableInline(final String input, final Arguments arguments) {
+    private String processScriptingVariableInline(final String input, final Arguments arguments) {
         
         final Matcher matcher = SCRIPT_INLINE_EVAL_PATTERN.matcher(input);
         
@@ -260,10 +260,10 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                     
                     strBuilder.append(formatEvaluationResult(result));
                     
-                } catch (final TemplateProcessingException e) {
+                } catch (final TemplateProcessingException ignored) {
                     
                     // If it is not a standard expression, just output it as original
-                    strBuilder.append(SCRIPT_INLINE_PREFIX + match + SCRIPT_INLINE_SUFFIX);
+                    strBuilder.append(SCRIPT_INLINE_PREFIX).append(match).append(SCRIPT_INLINE_SUFFIX);
                     
                 }
                 

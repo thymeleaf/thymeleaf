@@ -65,7 +65,7 @@ public final class AndExpression extends BinaryOperationExpression {
     
     
     
-    protected static List<ExpressionParsingNode> composeAndExpression(
+    static List<ExpressionParsingNode> composeAndExpression(
             final List<ExpressionParsingNode> decomposition, int inputIndex) {
         return composeBinaryOperationExpression(
                 decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);
