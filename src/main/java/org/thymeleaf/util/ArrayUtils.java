@@ -138,7 +138,8 @@ public final class ArrayUtils {
         if (target instanceof Iterable<?>) {
             
             Class<?> computedComponentClass = null;
-            final List<Object> elements = new ArrayList<Object>();
+            final Iterable<?> iterableTarget = (Iterable<?>)target;
+            final List<Object> elements = new ArrayList<Object>(5); // init capacity guessed - not know from iterable.
             
             for (final Object element : (Iterable<?>)target) {
                 if (componentClass == null) {

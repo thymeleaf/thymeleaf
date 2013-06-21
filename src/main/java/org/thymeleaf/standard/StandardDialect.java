@@ -371,7 +371,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     static {
         
-        final Set<IDocTypeResolutionEntry> newDocTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> newDocTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>(15, 1.0f);
         newDocTypeResolutionEntries.add(XHTML1_STRICT_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY);
@@ -415,7 +415,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     @Override
     public Set<IDocTypeTranslation> getDocTypeTranslations() {
-        final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>();
+        final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>(8, 1.0f);
         docTypeTranslations.addAll(DOC_TYPE_TRANSLATIONS);
         final Set<IDocTypeTranslation> additionalDocTypeTranslations = getAdditionalDocTypeTranslations();
         if (additionalDocTypeTranslations != null) {
@@ -432,7 +432,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     @Override
     public Set<IDocTypeResolutionEntry> getSpecificDocTypeResolutionEntries() {
-        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>(8, 1.0f);
         docTypeResolutionEntries.addAll(DOC_TYPE_RESOLUTION_ENTRIES);
         final Set<IDocTypeResolutionEntry> additionalDocTypeResolutionEntries = getAdditionalDocTypeResolutionEntries();
         if (additionalDocTypeResolutionEntries != null) {
@@ -450,7 +450,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     @Override
     public Set<IProcessor> getProcessors() {
         
-        final List<IProcessor> processors = new ArrayList<IProcessor>();
+        final List<IProcessor> processors = new ArrayList<IProcessor>(20);
         
         final Set<IProcessor> dialectAdditionalProcessors = getAdditionalProcessors();
         final Set<Class<? extends IProcessor>> dialectRemovedProcessors = getRemovedProcessors();
@@ -544,7 +544,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         final StandardExpressionParser parser = 
                 StandardExpressionProcessor.createStandardExpressionParser(executor);
         
-        final Map<String,Object> executionAttributes = new HashMap<String, Object>();
+        final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);
         executionAttributes.put(
                 EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
@@ -576,7 +576,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
          * not be returning the exact same instances for their processors in order
          * to allow specific instances to be directly linked with their owner dialect.
          */
-        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(35, 1.0f);
         processors.add(new StandardAltTitleAttrProcessor());
         processors.add(new StandardAttrAttrProcessor());
         processors.add(new StandardAttrappendAttrProcessor());

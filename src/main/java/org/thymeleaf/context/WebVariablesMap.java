@@ -119,7 +119,9 @@ class WebVariablesMap extends VariablesMap<String,Object> {
             final Map<? extends String, ? extends Object> m) {
         
         this(request, servletContext);
-        putAll(m);
+        if (m != null) {
+            putAll(m);
+        }
 
     }
     

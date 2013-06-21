@@ -107,7 +107,7 @@ public final class Assignation implements Serializable {
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(5);
         
         int tokenIndex = inputExprs.size();
         

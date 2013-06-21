@@ -183,9 +183,9 @@ public final class StandardDOMTranslator {
             return Collections.singletonList((Node)translateElement(domNode, parentNode, documentName));
         }
 
-        final List<Node> result = new ArrayList<Node>();
         final org.w3c.dom.NodeList children = domNode.getChildNodes();
         final int childrenLen = children.getLength();
+        final List<Node> result = new ArrayList<Node>(childrenLen + 2);
         for (int i = 0; i < childrenLen; i++) {
             final org.w3c.dom.Node child = children.item(i);
             result.add(translateNode(child, parentNode, documentName));

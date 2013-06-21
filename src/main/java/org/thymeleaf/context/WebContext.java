@@ -140,7 +140,7 @@ public class WebContext
     @Deprecated
     public WebContext(final HttpServletRequest request, final ServletContext servletContext, 
             final Locale locale) {
-        this(request, servletContext, locale, new HashMap<String, Object>());
+        this(request, servletContext, locale, null);
     }
 
     
@@ -157,7 +157,7 @@ public class WebContext
      */
     public WebContext(final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext, final Locale locale) {
-        this(request, response, servletContext, locale, new HashMap<String, Object>());
+        this(request, response, servletContext, locale, null);
     }
 
 
@@ -194,7 +194,7 @@ public class WebContext
      * @param response   the {@link HttpServletResponse} that this context will be related to.
      * @param servletContext the servlet context object
      * @param locale    the locale to be used.
-     * @param variables the initial set of context variables.
+     * @param variables the initial set of context variables. Can be null if no variables are to added.
      */
     public WebContext(final HttpServletRequest request,
                       final HttpServletResponse response,

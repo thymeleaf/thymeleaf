@@ -76,7 +76,7 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
         
         final IStandardTextInliner textInliner = getTextInliner(element, attributeName);
 
-        final Map<String,Object> localVariables = new HashMap<String,Object>();
+        final Map<String,Object> localVariables = new HashMap<String,Object>(2, 1.0f);
         localVariables.put(StandardDialect.INLINER_LOCAL_VARIABLE, textInliner);
 
         // This is probably unnecessary...

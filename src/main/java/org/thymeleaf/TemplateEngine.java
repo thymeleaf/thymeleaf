@@ -435,7 +435,7 @@ public class TemplateEngine {
      */
     public void setDialects(final Set<IDialect> dialects) {
         Validate.notNull(dialects, "Dialect set cannot be null");
-        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>();
+        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>(dialects.size() + 2, 1.0f);
         for (final IDialect dialect : dialects)  {
             dialectMap.put(dialect.getPrefix(), dialect);
         }
@@ -462,7 +462,7 @@ public class TemplateEngine {
      */
     public void setAdditionalDialects(final Set<IDialect> additionalDialects) {
         Validate.notNull(additionalDialects, "Additional dialect set cannot be null");
-        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>();
+        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>(5, 1.0f);
         dialectMap.putAll(this.configuration.getDialects());
         for (final IDialect dialect : additionalDialects)  {
             dialectMap.put(dialect.getPrefix(), dialect);

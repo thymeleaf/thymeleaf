@@ -220,7 +220,7 @@ public abstract class Node implements Serializable {
     public final void setNodeProperty(final String name, final Object value) {
         Validate.notNull(name, "Property name cannot be null");
         if (this.nodeProperties == null) {
-            this.nodeProperties = new HashMap<String,Object>();
+            this.nodeProperties = new HashMap<String,Object>(3,1.0f);
         }
         this.nodeProperties.put(name, value);
     }

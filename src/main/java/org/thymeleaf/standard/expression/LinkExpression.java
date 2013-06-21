@@ -409,7 +409,7 @@ public final class LinkExpression extends SimpleExpression {
 
             List<Object> currentParameterValues = parameters.get(parameterName);
             if (currentParameterValues == null) {
-                currentParameterValues = new ArrayList<Object>();
+                currentParameterValues = new ArrayList<Object>(4);
                 parameters.put(parameterName, currentParameterValues);
             }
             
@@ -439,13 +439,13 @@ public final class LinkExpression extends SimpleExpression {
     private static List<Object> convertParameterValueToList(final Object parameterValue) {
         
         if (parameterValue instanceof Iterable<?>) {
-            final List<Object> result = new ArrayList<Object>();
+            final List<Object> result = new ArrayList<Object>(4);
             for (final Object obj : (Iterable<?>) parameterValue) {
                 result.add(obj);
             }
             return result;
         } else if (parameterValue.getClass().isArray()){
-            final List<Object> result = new ArrayList<Object>();
+            final List<Object> result = new ArrayList<Object>(4);
             if (parameterValue instanceof byte[]) {
                 for (final byte obj : (byte[]) parameterValue) {
                     result.add(Byte.valueOf(obj));

@@ -124,7 +124,7 @@ public abstract class NestableNode extends Node {
         if (this.childrenLen == 0) {
             return Collections.emptyList();
         }
-        final List<Element> elementChildren = new ArrayList<Element>();
+        final List<Element> elementChildren = new ArrayList<Element>(this.childrenLen + 2);
         for (int i = 0; i < this.childrenLen; i++) {
             if (this.children[i] instanceof Element) {
                 elementChildren.add((Element)this.children[i]);

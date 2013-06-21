@@ -120,9 +120,9 @@ public abstract class Expression implements Serializable {
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(6);
         int currentIndex = inputExprs.size();
-        final List<Integer> nestedInputs = new ArrayList<Integer>();
+        final List<Integer> nestedInputs = new ArrayList<Integer>(6);
         
         int parLevel = 0;
         

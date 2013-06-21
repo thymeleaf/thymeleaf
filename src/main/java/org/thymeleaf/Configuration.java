@@ -76,9 +76,9 @@ public final class Configuration {
     private Map<String,IDialect> dialectsByPrefix = null;
     private Set<IDialect> dialectSet = null;
     
-    private Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>();
-    private Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>();
-    private Set<ITemplateModeHandler> templateModeHandlers = new LinkedHashSet<ITemplateModeHandler>();
+    private Set<ITemplateResolver> templateResolvers = new LinkedHashSet<ITemplateResolver>(3);
+    private Set<IMessageResolver> messageResolvers = new LinkedHashSet<IMessageResolver>(3);
+    private Set<ITemplateModeHandler> templateModeHandlers = new LinkedHashSet<ITemplateModeHandler>(8);
     
     private ICacheManager cacheManager = null;
     
@@ -91,7 +91,7 @@ public final class Configuration {
     private Set<IDocTypeResolutionEntry> mergedDocTypeResolutionEntries = null;
     private Set<IDocTypeTranslation> mergedDocTypeTranslations = null;
 
-    private Map<String,ITemplateModeHandler> templateModeHandlersByName = new HashMap<String,ITemplateModeHandler>();
+    private Map<String,ITemplateModeHandler> templateModeHandlersByName = new HashMap<String,ITemplateModeHandler>(8,1.0f);
     
     private Set<IMessageResolver> defaultMessageResolvers = null;
     private Set<ITemplateModeHandler> defaultTemplateModeHandlers = null;
@@ -105,7 +105,7 @@ public final class Configuration {
         
         super();
         
-        this.dialectConfigurations = new LinkedHashSet<DialectConfiguration>();
+        this.dialectConfigurations = new LinkedHashSet<DialectConfiguration>(4);
         this.dialectConfigurations.add(
                 new DialectConfiguration(STANDARD_THYMELEAF_DIALECT.getPrefix(), STANDARD_THYMELEAF_DIALECT));
         this.initialized = false;
@@ -163,7 +163,7 @@ public final class Configuration {
             /*
              * Initialize "dialects by prefix" map and the "dialect set"
              */
-            this.dialectsByPrefix = new LinkedHashMap<String, IDialect>();
+            this.dialectsByPrefix = new LinkedHashMap<String, IDialect>(4,1.0f);
             for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
                 this.dialectsByPrefix.put(dialectConfiguration.getPrefix(), dialectConfiguration.getDialect());
             }
@@ -313,7 +313,7 @@ public final class Configuration {
     public Map<String,IDialect> getDialects() {
         if (!isInitialized()) {
             // If we haven't initialized yet, compute
-            final Map<String,IDialect> dialects = new LinkedHashMap<String, IDialect>();
+            final Map<String,IDialect> dialects = new LinkedHashMap<String, IDialect>(4, 1.0f);
             for (final DialectConfiguration dialectConfiguration : this.dialectConfigurations) {
                 dialects.put(dialectConfiguration.getPrefix(), dialectConfiguration.getDialect());
             }
@@ -499,7 +499,7 @@ public final class Configuration {
         
         if (node instanceof Element) {
 
-            final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
+            final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>(2);
             
             final Element element = (Element) node;
 
@@ -555,7 +555,7 @@ public final class Configuration {
         
         if (applicableNonSpecificProcessors != null) {
         
-            final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>();
+            final ArrayList<ProcessorAndContext> processors = new ArrayList<ProcessorAndContext>(2);
         
             for (final ProcessorAndContext processorAndContext : applicableNonSpecificProcessors) {
                 if (processorAndContext.matches(node)) {
@@ -617,7 +617,7 @@ public final class Configuration {
             final Class<? extends Node> entryNodeClass = entry.getKey();
             if (entryNodeClass.isAssignableFrom(nodeClass)) {
                 if (result == null) {
-                    result = new HashSet<ProcessorAndContext>();
+                    result = new HashSet<ProcessorAndContext>(2);
                 }
                 result.addAll(entry.getValue());
             }
@@ -633,13 +633,13 @@ public final class Configuration {
             throw new ConfigurationException("No dialect has been specified");
         }
         
-        final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName = new HashMap<String, Set<ProcessorAndContext>>();
-        final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = new HashMap<String, Set<ProcessorAndContext>>();
-        final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
-        final Map<String,Object> executionAttributes = new HashMap<String, Object>();
-        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new HashSet<IDocTypeResolutionEntry>();
-        final Set<IDocTypeTranslation> docTypeTranslations = new HashSet<IDocTypeTranslation>();
-        final Map<String,Boolean> leniencyByPrefix = new HashMap<String, Boolean>();
+        final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName = new HashMap<String, Set<ProcessorAndContext>>(20);
+        final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName = new HashMap<String, Set<ProcessorAndContext>>(20);
+        final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>(20);
+        final Map<String,Object> executionAttributes = new HashMap<String, Object>(20);
+        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new HashSet<IDocTypeResolutionEntry>(20);
+        final Set<IDocTypeTranslation> docTypeTranslations = new HashSet<IDocTypeTranslation>(20);
+        final Map<String,Boolean> leniencyByPrefix = new HashMap<String, Boolean>(20);
         
         if (dialectConfigurations.size() == 1) {
             // No conflicts possible!
@@ -666,7 +666,7 @@ public final class Configuration {
         /*
          * THERE ARE MORE THAN ONE DIALECT: MERGE THEM
          */
-        final Set<Class<? extends IDialect>> mergedDialectClasses = new HashSet<Class<? extends IDialect>>();
+        final Set<Class<? extends IDialect>> mergedDialectClasses = new HashSet<Class<? extends IDialect>>(5,1.0f);
         
         for (final DialectConfiguration dialectConfiguration : dialectConfigurations) {
 
