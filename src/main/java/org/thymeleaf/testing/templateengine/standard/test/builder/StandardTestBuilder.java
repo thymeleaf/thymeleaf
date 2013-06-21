@@ -146,7 +146,7 @@ public class StandardTestBuilder implements IStandardTestBuilder {
         if (messages != null) {
             final TestMessages testMessages = new TestMessages();
             for (Map.Entry<String,StandardTestEvaluatedField> entry : messages.entrySet()) {
-                final Locale locale = (StringUtils.isEmptyOrWhitespace(entry.getKey())? null : new Locale(entry.getKey()));
+                final Locale locale = (StringUtils.isEmpty(entry.getKey()).booleanValue()? null : new Locale(entry.getKey()));
                 final StandardTestEvaluatedField field = entry.getValue();
                 if (field != null && field.hasNotNullValue()) {
                     testMessages.setMessagesForLocale(locale, ((ITestMessagesForLocale)field.getValue()));
