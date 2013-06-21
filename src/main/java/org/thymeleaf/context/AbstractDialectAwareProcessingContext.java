@@ -108,8 +108,7 @@ public abstract class AbstractDialectAwareProcessingContext extends AbstractProc
             return super.computeExpressionObjects();
         }
         
-        final Map<String,Object> variables = 
-                new HashMap<String, Object>(super.computeExpressionObjects());
+        final Map<String,Object> variables = super.computeExpressionObjects();
         
         for (final IExpressionEnhancingDialect dialect : this.dialects) {
             final Map<String,Object> dialectVariables = dialect.getAdditionalExpressionObjects(this);

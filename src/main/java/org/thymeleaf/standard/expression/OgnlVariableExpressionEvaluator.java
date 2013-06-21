@@ -107,7 +107,7 @@ public class OgnlVariableExpressionEvaluator
             }
             
             final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
-            if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
+            if (additionalContextVariables != null) {
                 contextVariables.putAll(additionalContextVariables);
             }
             

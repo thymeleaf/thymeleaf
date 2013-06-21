@@ -86,9 +86,12 @@ public abstract class AbstractContext implements IContext {
         super();
         Validate.notNull(locale, "Locale cannot be null");
         this.locale = locale;
-        final VariablesMap<String,Object> newVariablesMap = new VariablesMap<String,Object>();
+        final VariablesMap<String,Object> newVariablesMap;
         if (variables != null) {
+            newVariablesMap = new VariablesMap<String,Object>((variables.size()*3)/2, 1.0f);
             newVariablesMap.putAll(variables);
+        } else {
+            newVariablesMap = new VariablesMap<String,Object>(5);
         }
         this.variables = newVariablesMap;
     }

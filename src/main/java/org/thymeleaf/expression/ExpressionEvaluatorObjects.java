@@ -120,9 +120,8 @@ public final class ExpressionEvaluatorObjects {
     public static Map<String,Object> computeEvaluationObjects(
             final IProcessingContext processingContext) {
 
-        final Map<String,Object> variables = new HashMap<String,Object>();
-        
-        variables.putAll(computeEvaluationObjectsForProcessingContext(processingContext));
+        final Map<String,Object> variables =
+                computeEvaluationObjectsForProcessingContext(processingContext);
 
         if (processingContext instanceof Arguments) {
             
@@ -144,9 +143,8 @@ public final class ExpressionEvaluatorObjects {
     private static Map<String,Object> computeEvaluationObjectsForProcessingContext(
             final IProcessingContext processingContext) {
 
-        final Map<String,Object> variables = new HashMap<String,Object>();
-        
-        variables.putAll(computeEvaluationObjectsForContext(processingContext.getContext()));
+        final Map<String,Object> variables =
+                computeEvaluationObjectsForContext(processingContext.getContext());
         
         final Object evaluationRoot = processingContext.getExpressionEvaluationRoot();
         
@@ -172,10 +170,9 @@ public final class ExpressionEvaluatorObjects {
     
     private static Map<String,Object> computeEvaluationObjectsForContext(final IContext context) {
 
-        final Map<String,Object> variables = new HashMap<String,Object>();
+        final Map<String,Object> variables =
+                getExpressionEvaluationUtilityObjectsForLocale(context.getLocale());
 
-        variables.putAll(getExpressionEvaluationUtilityObjectsForLocale(context.getLocale()));
-        
         variables.put(CONTEXT_VARIABLE_NAME, context);
         variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());
         
@@ -203,9 +200,9 @@ public final class ExpressionEvaluatorObjects {
         
         Map<String,Object> objects = EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.get(locale);
         if (objects == null) {
-        
-            objects = new HashMap<String, Object>();
-        
+
+            objects = new HashMap<String, Object>(30);
+
             if (locale != null) {
                 objects.put(CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(locale));
                 objects.put(DATES_EVALUATION_VARIABLE_NAME, new Dates(locale));
@@ -221,10 +218,10 @@ public final class ExpressionEvaluatorObjects {
             objects.put(AGGREGATES_EVALUATION_VARIABLE_NAME, new Aggregates());
 
             EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.put(locale, objects);
-            
+
         }
-        
-        return objects;
+
+        return new HashMap<String, Object>(objects);
         
     }
     
