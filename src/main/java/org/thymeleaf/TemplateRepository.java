@@ -91,7 +91,7 @@ public final class TemplateRepository {
             this.fragmentCache = cacheManager.getFragmentCache();
         }
             
-        this.parsersByTemplateMode = new HashMap<String,ITemplateParser>();
+        this.parsersByTemplateMode = new HashMap<String,ITemplateParser>(10, 1.0f);
         for (final ITemplateModeHandler handler : configuration.getTemplateModeHandlers()) {
             this.parsersByTemplateMode.put(handler.getTemplateModeName(), handler.getTemplateParser());
         }
@@ -358,7 +358,7 @@ public final class TemplateRepository {
         if (fragmentNodes == null) {
             return null;
         }
-        final List<Node> clonedNodes = new ArrayList<Node>();
+        final List<Node> clonedNodes = new ArrayList<Node>(fragmentNodes.size() + 2);
         for (final Node fragmentNode : fragmentNodes) {
             clonedNodes.add(fragmentNode.cloneNode(null, false));
         }

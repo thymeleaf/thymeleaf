@@ -156,7 +156,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
-        this.idCounts = new HashMap<String,Integer>();
+        this.idCounts = new HashMap<String,Integer>(1,1.0f);
         
         this.processTextNodes = false;
         this.processCommentNodes = false;

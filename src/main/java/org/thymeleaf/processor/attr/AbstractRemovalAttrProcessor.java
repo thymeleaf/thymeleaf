@@ -118,8 +118,8 @@ public abstract class AbstractRemovalAttrProcessor
                 return ProcessorResult.OK;
             }
             if (this.removeAllButFirst.equals(value)) {
-                final List<Node> newChildren = new ArrayList<Node>();
                 final List<Node> children = element.getChildren();
+                final List<Node> newChildren = new ArrayList<Node>(children.size());
                 final int childrenLen = children.size();
                 boolean childElementFound = false;
                 for (final Node child : children) {

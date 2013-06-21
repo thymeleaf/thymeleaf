@@ -73,7 +73,7 @@ public abstract class SimpleExpression extends Expression {
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(10);
         int currentIndex = 1;
         
         int expLevel = 0;
@@ -248,7 +248,7 @@ public abstract class SimpleExpression extends Expression {
         
         inputWithPlaceholders.append(fragment);
         
-        final List<ExpressionParsingNode> result = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> result = new ArrayList<ExpressionParsingNode>(fragments.size() + 4);
         result.add(new ExpressionParsingNode(inputWithPlaceholders.toString()));
         result.addAll(fragments);
 
@@ -277,7 +277,7 @@ public abstract class SimpleExpression extends Expression {
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(10);
         int currentIndex = inputExprs.size();
         
         boolean inNumber = false;

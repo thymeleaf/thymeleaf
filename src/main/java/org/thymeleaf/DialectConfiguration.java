@@ -131,9 +131,9 @@ public final class DialectConfiguration {
             final ProcessorMatchingContext context = 
                     new ProcessorMatchingContext(this.dialect, this.prefix);
             
-            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByElementName = new HashMap<String,Set<ProcessorAndContext>>();
-            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByAttributeName = new HashMap<String,Set<ProcessorAndContext>>();
-            final Map<Class<? extends Node>, Set<ProcessorAndContext>> newNonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
+            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByElementName = new HashMap<String,Set<ProcessorAndContext>>(20);
+            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByAttributeName = new HashMap<String,Set<ProcessorAndContext>>(20);
+            final Map<Class<? extends Node>, Set<ProcessorAndContext>> newNonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>(20);
             
             for (final IProcessor processor : this.processors) {
 
@@ -157,7 +157,7 @@ public final class DialectConfiguration {
                     
                     Set<ProcessorAndContext> elementProcessorsForElementName = newSpecificProcessorsByElementName.get(normalizedElementName);
                     if (elementProcessorsForElementName == null) {
-                        elementProcessorsForElementName = new HashSet<ProcessorAndContext>();
+                        elementProcessorsForElementName = new HashSet<ProcessorAndContext>(20);
                         newSpecificProcessorsByElementName.put(normalizedElementName, elementProcessorsForElementName);
                     }
                     
@@ -179,7 +179,7 @@ public final class DialectConfiguration {
                     
                     Set<ProcessorAndContext> elementProcessorsForAttributeName = newSpecificProcessorsByAttributeName.get(normalizedAttributeName);
                     if (elementProcessorsForAttributeName == null) {
-                        elementProcessorsForAttributeName = new HashSet<ProcessorAndContext>();
+                        elementProcessorsForAttributeName = new HashSet<ProcessorAndContext>(20);
                         newSpecificProcessorsByAttributeName.put(normalizedAttributeName, elementProcessorsForAttributeName);
                     }
                     
@@ -193,7 +193,7 @@ public final class DialectConfiguration {
                         
                     Set<ProcessorAndContext> elementProcessorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesTo);
                     if (elementProcessorsForNodeClass == null) {
-                        elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>();
+                        elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>(20);
                         newNonSpecificProcessorsByNodeClass.put(appliesTo, elementProcessorsForNodeClass);
                     }
                     
@@ -213,7 +213,7 @@ public final class DialectConfiguration {
             /*
              * Initializing execution arguments
              */
-            this.executionAttributes = new HashMap<String, Object>();
+            this.executionAttributes = new HashMap<String, Object>(5,1.0f);
             this.executionAttributes.putAll(this.dialect.getExecutionAttributes());
 
             
@@ -348,7 +348,7 @@ public final class DialectConfiguration {
     
     private void validateDocTypeResolutionEntries() {
         
-        final Set<IDocTypeResolutionEntry> entriesAlreadyValidated = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> entriesAlreadyValidated = new LinkedHashSet<IDocTypeResolutionEntry>(10,1.0f);
         for (final IDocTypeResolutionEntry entry : this.docTypeResolutionEntries) {
             
             for (final IDocTypeResolutionEntry validatedEntry : entriesAlreadyValidated) {

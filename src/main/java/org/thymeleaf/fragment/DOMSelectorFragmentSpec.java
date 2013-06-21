@@ -161,7 +161,7 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
             return extraction;
         }
         
-        final List<Node> extractionChildren = new ArrayList<Node>(); 
+        final List<Node> extractionChildren = new ArrayList<Node>(5);
         for (final Node extractionNode : extraction) {
             
             if (extractionNode == null) {

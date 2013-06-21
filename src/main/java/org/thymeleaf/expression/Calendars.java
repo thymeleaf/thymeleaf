@@ -137,7 +137,7 @@ public final class Calendars {
     
     public List<String> listFormat(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(format(element));
         }
@@ -146,7 +146,7 @@ public final class Calendars {
     
     public Set<String> setFormat(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(format(element));
         }
@@ -176,7 +176,7 @@ public final class Calendars {
     
     public List<String> listFormat(final List<? extends Calendar> target, final String pattern) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(format(element, pattern));
         }
@@ -185,7 +185,7 @@ public final class Calendars {
     
     public Set<String> setFormat(final Set<? extends Calendar> target, final String pattern) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(format(element, pattern));
         }
@@ -211,7 +211,7 @@ public final class Calendars {
     
     public List<Integer> listDay(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(day(element));
         }
@@ -220,7 +220,7 @@ public final class Calendars {
     
     public Set<Integer> setDay(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(day(element));
         }
@@ -246,7 +246,7 @@ public final class Calendars {
     
     public List<Integer> listMonth(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(month(element));
         }
@@ -255,7 +255,7 @@ public final class Calendars {
     
     public Set<Integer> setMonth(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(month(element));
         }
@@ -281,7 +281,7 @@ public final class Calendars {
     
     public List<String> listMonthName(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(monthName(element));
         }
@@ -290,7 +290,7 @@ public final class Calendars {
     
     public Set<String> setMonthName(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(monthName(element));
         }
@@ -315,7 +315,7 @@ public final class Calendars {
     
     public List<String> listMonthNameShort(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(monthNameShort(element));
         }
@@ -324,7 +324,7 @@ public final class Calendars {
     
     public Set<String> setMonthNameShort(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(monthNameShort(element));
         }
@@ -351,7 +351,7 @@ public final class Calendars {
     
     public List<Integer> listYear(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(year(element));
         }
@@ -360,7 +360,7 @@ public final class Calendars {
     
     public Set<Integer> setYear(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(year(element));
         }
@@ -386,7 +386,7 @@ public final class Calendars {
     
     public List<Integer> listDayOfWeek(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(dayOfWeek(element));
         }
@@ -395,7 +395,7 @@ public final class Calendars {
     
     public Set<Integer> setDayOfWeek(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(dayOfWeek(element));
         }
@@ -422,7 +422,7 @@ public final class Calendars {
     
     public List<String> listDayOfWeekName(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(dayOfWeekName(element));
         }
@@ -431,7 +431,7 @@ public final class Calendars {
     
     public Set<String> setDayOfWeekName(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(dayOfWeekName(element));
         }
@@ -458,7 +458,7 @@ public final class Calendars {
     
     public List<String> listDayOfWeekNameShort(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(dayOfWeekNameShort(element));
         }
@@ -467,7 +467,7 @@ public final class Calendars {
     
     public Set<String> setDayOfWeekNameShort(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(dayOfWeekNameShort(element));
         }
@@ -495,7 +495,7 @@ public final class Calendars {
     
     public List<Integer> listHour(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(hour(element));
         }
@@ -504,7 +504,7 @@ public final class Calendars {
     
     public Set<Integer> setHour(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(hour(element));
         }
@@ -532,7 +532,7 @@ public final class Calendars {
     
     public List<Integer> listMinute(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(minute(element));
         }
@@ -541,7 +541,7 @@ public final class Calendars {
     
     public Set<Integer> setMinute(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(minute(element));
         }
@@ -569,7 +569,7 @@ public final class Calendars {
     
     public List<Integer> listSecond(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(second(element));
         }
@@ -578,7 +578,7 @@ public final class Calendars {
     
     public Set<Integer> setSecond(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(second(element));
         }
@@ -606,7 +606,7 @@ public final class Calendars {
     
     public List<Integer> listMillisecond(final List<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(millisecond(element));
         }
@@ -615,7 +615,7 @@ public final class Calendars {
     
     public Set<Integer> setMillisecond(final Set<? extends Calendar> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Calendar element : target) {
             result.add(millisecond(element));
         }

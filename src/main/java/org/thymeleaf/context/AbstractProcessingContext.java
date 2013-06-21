@@ -76,7 +76,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
                 (localVariables != null?
                         new HashMap<String,Object>(localVariables) : 
                         (selectionTargetSet?
-                                new HashMap<String, Object>() : 
+                                new HashMap<String, Object>(2, 1.0f) :
                                 null));
         if (selectionTargetSet) {
             this.localVariables.put(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME, selectionTarget);

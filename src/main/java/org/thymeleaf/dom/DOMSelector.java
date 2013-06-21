@@ -234,7 +234,7 @@ public final class DOMSelector implements Serializable {
 
     
     private static HashMap<String,String> parseAttributes(final String selectorSpec, final String indexGroup) {
-        final HashMap<String,String> attributes = new HashMap<String, String>();
+        final HashMap<String,String> attributes = new HashMap<String, String>(2,1.0f);
         parseAttributes(selectorSpec, attributes, indexGroup);
         return attributes;
     }
@@ -311,7 +311,7 @@ public final class DOMSelector implements Serializable {
      */
     public List<Node> select(final List<Node> nodes) {
         Validate.notEmpty(nodes, "Nodes to be searched cannot be null or empty");
-        final List<Node> selected = new ArrayList<Node>();
+        final List<Node> selected = new ArrayList<Node>(10);
         for (final Node node : nodes) {
             doCheckNodeSelection(selected, node);
         }
@@ -325,12 +325,12 @@ public final class DOMSelector implements Serializable {
 
             if (node instanceof NestableNode) {
                 
-                final List<List<Node>> selectedNodesForChildren = new ArrayList<List<Node>>();
+                final List<List<Node>> selectedNodesForChildren = new ArrayList<List<Node>>(10);
                 
                 final NestableNode nestableNode = (NestableNode) node;
                 if (nestableNode.hasChildren()) {
                     for (final Node child : nestableNode.getChildren()) {
-                        final List<Node> childSelectedNodes = new ArrayList<Node>();
+                        final List<Node> childSelectedNodes = new ArrayList<Node>(10);
                         if (doCheckNodeSelection(childSelectedNodes, child)) {
                             selectedNodesForChildren.add(childSelectedNodes);
                         }

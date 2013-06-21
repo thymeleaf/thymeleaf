@@ -87,7 +87,7 @@ public final class DOMUtils {
         final String normalizedElementName = Node.normalizeName(elementName);
         final String normalizedAttributeName = Node.normalizeName(attributeName);
         
-        final List<Node> fragmentNodes = new ArrayList<Node>();
+        final List<Node> fragmentNodes = new ArrayList<Node>(5);
         for (final Node rootNode : rootNodes) {
             final List<Node> extraction = 
                     extractFragmentFromNode(rootNode, normalizedElementName, normalizedAttributeName, attributeValue);
@@ -145,7 +145,7 @@ public final class DOMUtils {
             /*
              * If element does not match itself, try children
              */
-            final List<Node> extraction = new ArrayList<Node>();
+            final List<Node> extraction = new ArrayList<Node>(5);
             final List<Node> children = nestableNode.getChildren();
             for (final Node child : children) {
                 final List<Node> childResult =

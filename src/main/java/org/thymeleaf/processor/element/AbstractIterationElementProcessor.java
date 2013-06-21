@@ -115,7 +115,7 @@ public abstract class AbstractIterationElementProcessor
             /*
              * Prepare local variables that will be available for each iteration item
              */
-            final Map<String,Object> nodeLocalVariables = new HashMap<String,Object>();
+            final Map<String,Object> nodeLocalVariables = new HashMap<String,Object>(4, 1.0f);
             nodeLocalVariables.put(iterVar, obj);
             final StatusVar status = 
                 new StatusVar(index, index + 1, size, obj);

@@ -61,7 +61,7 @@ public final class Bools {
     
     public List<Boolean> listIsTrue(final List<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isTrue(element));
         }
@@ -70,7 +70,7 @@ public final class Bools {
     
     public Set<Boolean> setIsTrue(final Set<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isTrue(element));
         }
@@ -95,7 +95,7 @@ public final class Bools {
     
     public List<Boolean> listIsFalse(final List<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isFalse(element));
         }
@@ -104,7 +104,7 @@ public final class Bools {
     
     public Set<Boolean> setIsFalse(final Set<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isFalse(element));
         }

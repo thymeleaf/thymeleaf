@@ -149,14 +149,15 @@ final class ConfigurationPrinterHelper {
         final Set<IDocTypeTranslation> docTypeTranslations = dialectConfiguration.getDialect().getDocTypeTranslations();
         
         
-        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByElementName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
+        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByElementName =
+                new LinkedHashMap<String,Set<ProcessorAndContext>>(20);
         final List<String> elementNames = new ArrayList<String>(specificProcessorsByElementName.keySet());
         Collections.sort(elementNames);
         for (final String elementName : elementNames) {
             orderedSpecificProcessorsByElementName.put(elementName, specificProcessorsByElementName.get(elementName));
         }
         
-        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByAttributeName = new LinkedHashMap<String,Set<ProcessorAndContext>>();
+        final Map<String,Set<ProcessorAndContext>> orderedSpecificProcessorsByAttributeName = new LinkedHashMap<String,Set<ProcessorAndContext>>(20);
         final List<String> attributeNames = new ArrayList<String>(specificProcessorsByAttributeName.keySet());
         Collections.sort(attributeNames);
         for (final String attrName : attributeNames) {

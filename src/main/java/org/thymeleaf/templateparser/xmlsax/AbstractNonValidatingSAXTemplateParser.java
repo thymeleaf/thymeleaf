@@ -338,7 +338,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             this.documentName = documentName;
             
             this.elementStack = new Stack<NestableNode>();
-            this.rootNodes = new ArrayList<Node>();
+            this.rootNodes = new ArrayList<Node>(4);
             
             this.textBuffer = new char[BUFFER_SIZE];
             this.cdataBuffer = new char[BUFFER_SIZE];
