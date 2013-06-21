@@ -97,35 +97,35 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
     
     WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext) {
-        
-        super(4, 1.0f);
-        
-        this.request = request;
-        this.servletContext = servletContext;
-        
-        this.requestParamsVariablesMap = new WebRequestParamsVariablesMap(this.request);
-        this.servletContextVariablesMap = new WebServletContextVariablesMap(this.servletContext);
-        
-        initializeSessionContainer();
-        
-        super.put(APPLICATION_VARIABLE_NAME, this.servletContextVariablesMap);
-        super.put(PARAM_VARIABLE_NAME, this.requestParamsVariablesMap);
-        
+        this(request, servletContext, null);
     }
     
     
 
     WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext,
-            final Map<? extends String, ? extends Object> m) {
-        
-        this(request, servletContext);
+                    final Map<? extends String, ? extends Object> m) {
+
+        super((m == null? 4 : m.size() + 4), 1.0f);
+
         if (m != null) {
             putAll(m);
         }
 
+        this.request = request;
+        this.servletContext = servletContext;
+
+        this.requestParamsVariablesMap = new WebRequestParamsVariablesMap(this.request);
+        this.servletContextVariablesMap = new WebServletContextVariablesMap(this.servletContext);
+
+        initializeSessionContainer();
+
+        super.put(APPLICATION_VARIABLE_NAME, this.servletContextVariablesMap);
+        super.put(PARAM_VARIABLE_NAME, this.requestParamsVariablesMap);
+
     }
-    
-    
+
+
+
     
     private void initializeSessionContainer() {
         if (this.sessionVariablesMap != null) {
@@ -291,14 +291,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         return false;
     }
 
-    
-    
-    @Override
-    public Object clone() {
-        return new WebVariablesMap(this.request, this.servletContext);
-    }
 
-    
     
     @Override
     @SuppressWarnings("unchecked")
