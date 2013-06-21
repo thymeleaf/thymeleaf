@@ -70,7 +70,7 @@ public abstract class AbstractContext implements IContext {
      * @param locale the locale to be used.
      */
     protected AbstractContext(final Locale locale) {
-        this(locale, null);
+        this(locale, (Map<String,?>)null);
     }
     
     /**

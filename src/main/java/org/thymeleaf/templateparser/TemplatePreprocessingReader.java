@@ -43,7 +43,7 @@ public final class TemplatePreprocessingReader extends Reader {
     private static final Logger readerLogger = LoggerFactory.getLogger(TemplatePreprocessingReader.class);
 
     private static final int BUFFER_BLOCK_SIZE = 1024;
-    private static final int OVERFLOW_BLOCK_SIZE = 1024;
+    private static final int OVERFLOW_BLOCK_SIZE = 2048;
 
     public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
 
