@@ -40,7 +40,7 @@ public class Messages {
     private static final String[] NO_PARAMETERS = new String[0];
     
     
-    private Arguments arguments;
+    private final Arguments arguments;
     
     
     public String msg(final String messageKey) {
@@ -261,7 +261,7 @@ public class Messages {
     
     
     private List<String> doMsg(final boolean returnStringAlways, final Iterable<String> messageKeys, final Object... messageParameters) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(5);
         for (final String messageKey : messageKeys) {
             result.add(
                     MessageResolutionUtils.resolveMessageForTemplate(

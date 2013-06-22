@@ -291,7 +291,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Set<String> keySet() {
-        final Set<String> keySet = new LinkedHashSet<String>();
+        final Set<String> keySet = new LinkedHashSet<String>(10);
         final Enumeration<String> attributeNames = this.request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             keySet.add(attributeNames.nextElement());
@@ -305,7 +305,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Object> values() {
-        final List<Object> values = new ArrayList<Object>();
+        final List<Object> values = new ArrayList<Object>(10);
         final Enumeration<String> attributeNames = this.request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
@@ -388,7 +388,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @SuppressWarnings("unchecked")
     private static Map<String,Object> getAttributeMap(final HttpServletRequest request) {
         
-        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>();
+        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>(10);
         final Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();

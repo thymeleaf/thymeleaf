@@ -36,14 +36,14 @@ import org.thymeleaf.util.ObjectUtils;
 public abstract class AbstractStandardConditionalVisibilityAttrProcessor 
         extends AbstractConditionalVisibilityAttrProcessor {
 
-    
 
-    
-    public AbstractStandardConditionalVisibilityAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+    protected AbstractStandardConditionalVisibilityAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardConditionalVisibilityAttrProcessor(final String attributeName) {
+    protected AbstractStandardConditionalVisibilityAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

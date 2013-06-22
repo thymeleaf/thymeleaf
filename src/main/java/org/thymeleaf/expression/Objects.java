@@ -61,7 +61,7 @@ public final class Objects {
 
     public <T> List<T> listNullSafe(final List<T> target, final T defaultValue) {
         Validate.notNull(target, "Target cannot be null");
-        final List<T> result = new ArrayList<T>();
+        final List<T> result = new ArrayList<T>(target.size() + 2);
         for (final T element : target) {
             result.add(nullSafe(element, defaultValue));
         }
@@ -70,7 +70,7 @@ public final class Objects {
 
     public <T> Set<T> setNullSafe(final Set<T> target, final T defaultValue) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<T> result = new LinkedHashSet<T>();
+        final Set<T> result = new LinkedHashSet<T>(target.size() + 2);
         for (final T element : target) {
             result.add(nullSafe(element, defaultValue));
         }

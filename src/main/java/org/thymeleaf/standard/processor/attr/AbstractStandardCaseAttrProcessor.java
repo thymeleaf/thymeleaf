@@ -48,11 +48,11 @@ public abstract class AbstractStandardCaseAttrProcessor
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     
-    public AbstractStandardCaseAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractStandardCaseAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardCaseAttrProcessor(final String attributeName) {
+    protected AbstractStandardCaseAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

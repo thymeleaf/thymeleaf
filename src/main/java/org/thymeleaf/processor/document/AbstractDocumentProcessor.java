@@ -57,7 +57,7 @@ public abstract class AbstractDocumentProcessor extends AbstractProcessor {
     private final IDocumentNodeProcessorMatcher matcher; 
     
     
-    public AbstractDocumentProcessor(final IDocumentNodeProcessorMatcher matcher) {
+    protected AbstractDocumentProcessor(final IDocumentNodeProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }

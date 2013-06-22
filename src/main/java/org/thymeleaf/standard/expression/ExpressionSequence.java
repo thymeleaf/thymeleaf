@@ -125,10 +125,10 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
 
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(10);
         int currentIndex = inputExprs.size();
         
-        final List<Integer> expressionIndexes = new ArrayList<Integer>();
+        final List<Integer> expressionIndexes = new ArrayList<Integer>(10);
         
         final int inputLen = input.length();
         for (int i = 0; i < inputLen; i++) {
@@ -170,7 +170,7 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
         result.set(inputIndex, new ExpressionParsingNode(inputWithPlaceholders.toString()));
         result.addAll(fragments);
 
-        final List<Expression> expressions = new ArrayList<Expression>();
+        final List<Expression> expressions = new ArrayList<Expression>(10);
         for (final Integer expressionIndex : expressionIndexes) {
             
             final int expressionIdx = expressionIndex.intValue();

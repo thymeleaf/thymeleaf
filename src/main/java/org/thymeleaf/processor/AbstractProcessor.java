@@ -41,7 +41,7 @@ import org.thymeleaf.util.Validate;
 public abstract class AbstractProcessor implements IProcessor {
 
     
-    public AbstractProcessor() {
+    protected AbstractProcessor() {
         super();
     }
     

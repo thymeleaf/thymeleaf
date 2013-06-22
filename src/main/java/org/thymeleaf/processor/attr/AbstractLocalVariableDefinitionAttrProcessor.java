@@ -41,12 +41,12 @@ public abstract class AbstractLocalVariableDefinitionAttrProcessor
     
     
     
-    public AbstractLocalVariableDefinitionAttrProcessor(final String attributeName) {
+    protected AbstractLocalVariableDefinitionAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractLocalVariableDefinitionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractLocalVariableDefinitionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

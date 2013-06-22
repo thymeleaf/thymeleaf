@@ -37,12 +37,12 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
     
     
     
-    public AbstractConditionalFixedValueAttrProcessor(final String attributeName) {
+    protected AbstractConditionalFixedValueAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractConditionalFixedValueAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractConditionalFixedValueAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

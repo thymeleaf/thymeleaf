@@ -42,12 +42,12 @@ public abstract class AbstractAttributeModifierAttrProcessor extends AbstractAtt
     
 
 
-    public AbstractAttributeModifierAttrProcessor(final String attributeName) {
+    protected AbstractAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

@@ -40,9 +40,9 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     protected static final String EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
     
 
-    private IContext context;
-    private Object evaluationRoot;
-    private Object selectionEvaluationRoot;
+    private final IContext context;
+    private final Object evaluationRoot;
+    private final Object selectionEvaluationRoot;
     private final HashMap<String,Object> localVariables;
     
     private boolean computedBaseContextVariables = false;

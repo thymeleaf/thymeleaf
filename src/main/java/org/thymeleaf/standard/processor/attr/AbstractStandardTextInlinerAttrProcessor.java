@@ -53,16 +53,16 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
     public static final String DART_INLINE = "dart";
     public static final String NONE_INLINE = "none";
 
-    
-    
-    
 
-    
-    public AbstractStandardTextInlinerAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+
+    protected AbstractStandardTextInlinerAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardTextInlinerAttrProcessor(final String attributeName) {
+    protected AbstractStandardTextInlinerAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

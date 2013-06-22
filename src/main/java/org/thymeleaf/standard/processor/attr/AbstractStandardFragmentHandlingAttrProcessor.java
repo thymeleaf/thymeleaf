@@ -41,11 +41,11 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
     
 
     
-    public AbstractStandardFragmentHandlingAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractStandardFragmentHandlingAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardFragmentHandlingAttrProcessor(final String attributeName) {
+    protected AbstractStandardFragmentHandlingAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

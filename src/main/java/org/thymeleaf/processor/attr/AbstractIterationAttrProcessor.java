@@ -47,12 +47,12 @@ public abstract class AbstractIterationAttrProcessor
     
     
     
-    public AbstractIterationAttrProcessor(final String attributeName) {
+    protected AbstractIterationAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractIterationAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractIterationAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

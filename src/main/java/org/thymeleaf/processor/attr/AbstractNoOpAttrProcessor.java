@@ -38,12 +38,12 @@ public abstract class AbstractNoOpAttrProcessor
     
     
     
-    public AbstractNoOpAttrProcessor(final String attributeName) {
+    protected AbstractNoOpAttrProcessor(final String attributeName) {
         super(attributeName);
     }
-    
-    
-    public AbstractNoOpAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+    protected AbstractNoOpAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

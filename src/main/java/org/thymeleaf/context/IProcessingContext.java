@@ -64,6 +64,10 @@ public interface IProcessingContext {
      *   evaluation operation (whenever variable evaluation is available). In OGNL and SpringEL
      *   expressions, these will be available as <tt>#object1</tt>, <tt>#object2</tt>, etc.
      * </p>
+     * <p>
+     *   This method <b>cannot return null</b>, and must return a modifiable Map object (which
+     *   will, in fact, be modified).
+     * </p>
      * 
      * @return the map of objects
      */

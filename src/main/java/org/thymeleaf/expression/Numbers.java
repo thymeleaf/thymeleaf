@@ -79,7 +79,7 @@ public final class Numbers {
 
     public List<String> listFormatInteger(final List<? extends Number> target, final Integer minIntegerDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits));
         }
@@ -88,7 +88,7 @@ public final class Numbers {
 
     public Set<String> setFormatInteger(final Set<? extends Number> target, final Integer minIntegerDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits));
         }
@@ -124,7 +124,7 @@ public final class Numbers {
 
     public List<String> listFormatInteger(final List<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits, thousandsPointType));
         }
@@ -133,7 +133,7 @@ public final class Numbers {
 
     public Set<String> setFormatInteger(final Set<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits, thousandsPointType));
         }
@@ -166,7 +166,7 @@ public final class Numbers {
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits));
         }
@@ -175,7 +175,7 @@ public final class Numbers {
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits));
         }
@@ -214,7 +214,7 @@ public final class Numbers {
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits, decimalPointType));
         }
@@ -223,7 +223,7 @@ public final class Numbers {
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits, decimalPointType));
         }
@@ -268,7 +268,7 @@ public final class Numbers {
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType));
         }
@@ -277,7 +277,7 @@ public final class Numbers {
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType));
         }

@@ -44,7 +44,7 @@ public abstract class AbstractValidatingDOMTemplateParser extends AbstractNonVal
     
     
     
-    private ResourcePool<DocumentBuilder> pool;
+    private final ResourcePool<DocumentBuilder> pool;
 
     
     
