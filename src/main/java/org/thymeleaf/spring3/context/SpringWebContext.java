@@ -19,9 +19,11 @@
  */
 package org.thymeleaf.spring3.context;
 
+import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +56,8 @@ public class SpringWebContext
     
 
     public static final String BEANS_VARIABLE_NAME = "beans";
+    private static ConcurrentHashMap<ApplicationContext, HashMap<String, Object>> variableMapPrototypes =
+            new ConcurrentHashMap<ApplicationContext, HashMap<String, Object>>();
     
     private final ApplicationContext applicationContext;
 
@@ -110,15 +114,24 @@ public class SpringWebContext
 
     private static Map<String,Object> addSpringSpecificVariables(final Map<String, ?> variables, final ApplicationContext appctx) {
 
-        final Map<String,Object> newVariables =
-            (variables == null?
-                    new HashMap<String, Object>() : new HashMap<String, Object>(variables));
-        
-        if (!newVariables.containsKey(BEANS_VARIABLE_NAME)) {
+        HashMap<String,Object> variableMapPrototype = variableMapPrototypes.get(appctx);
+        if (variableMapPrototype == null) {
+            variableMapPrototype = new HashMap<String, Object>();
+            // We will use a singleton-per-appctx Beans instance, and that's alright
             final Beans beans = new Beans(appctx);
-            newVariables.put(BEANS_VARIABLE_NAME, beans);
+            variableMapPrototype.put(BEANS_VARIABLE_NAME, beans);
+            variableMapPrototypes.put(appctx, variableMapPrototype);
         }
-        
+
+        final Map<String,Object> newVariables;
+        synchronized (variableMapPrototype) {
+            newVariables = (Map<String, Object>) variableMapPrototype.clone();
+        }
+
+        if (variables != null) {
+            newVariables.putAll(variables);
+        }
+
         return newVariables;
         
     }

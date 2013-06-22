@@ -54,17 +54,26 @@ import org.springframework.expression.TypedValue;
 public final class SpelEvaluationContext implements EvaluationContext {
     
     private static final List<PropertyAccessor> THYMELEAF_PROPERTY_ACCESSORS;
-    
+
+    private static final List<PropertyAccessor> DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS;
 
     private final EvaluationContext delegate;
     private final Map<String,Object> variables;
     private final List<PropertyAccessor> propertyAccessors;
     
     static {
-        final List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>();
+
+        final List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>(4);
         accessors.add(VariablesMapPropertyAccessor.INSTANCE);
         accessors.add(BeansPropertyAccessor.INSTANCE);
         THYMELEAF_PROPERTY_ACCESSORS = Collections.unmodifiableList(accessors);
+
+        final List<PropertyAccessor> defaultPlusThymeleafPropertyAccessors = new ArrayList<PropertyAccessor>(6);
+        defaultPlusThymeleafPropertyAccessors.addAll(
+                SpelVariableExpressionEvaluator.DEFAULT_EVALUATION_CONTEXT.getPropertyAccessors());
+        defaultPlusThymeleafPropertyAccessors.addAll(THYMELEAF_PROPERTY_ACCESSORS);
+        DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS = defaultPlusThymeleafPropertyAccessors;
+
     }
     
     
@@ -75,13 +84,23 @@ public final class SpelEvaluationContext implements EvaluationContext {
         
         this.delegate = delegate;
         this.variables = variables;
-        
-        final List<PropertyAccessor> delegatePropertyAccessors = delegate.getPropertyAccessors();
-        if (delegatePropertyAccessors == null || delegatePropertyAccessors.size() == 0) {
-            this.propertyAccessors = THYMELEAF_PROPERTY_ACCESSORS;
+
+        if (delegate == SpelVariableExpressionEvaluator.DEFAULT_EVALUATION_CONTEXT) {
+
+            // If we are using the default as delegate (which will happen 99,99% times, just
+            // use the precomputed proeprty accessor list
+            this.propertyAccessors = DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS;
+
         } else {
-            this.propertyAccessors = new ArrayList<PropertyAccessor>(delegatePropertyAccessors);
-            this.propertyAccessors.addAll(THYMELEAF_PROPERTY_ACCESSORS);
+        
+            final List<PropertyAccessor> delegatePropertyAccessors = delegate.getPropertyAccessors();
+            if (delegatePropertyAccessors == null || delegatePropertyAccessors.size() == 0) {
+                this.propertyAccessors = THYMELEAF_PROPERTY_ACCESSORS;
+            } else {
+                this.propertyAccessors = new ArrayList<PropertyAccessor>(delegatePropertyAccessors);
+                this.propertyAccessors.addAll(THYMELEAF_PROPERTY_ACCESSORS);
+            }
+
         }
         
     }

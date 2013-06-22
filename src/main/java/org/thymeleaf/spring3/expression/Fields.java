@@ -35,7 +35,7 @@ import org.thymeleaf.spring3.util.FieldUtils;
  * @since 1.0
  *
  */
-public class Fields {
+public final class Fields {
 
     private final Configuration configuration;
     private final IProcessingContext processingContext;
