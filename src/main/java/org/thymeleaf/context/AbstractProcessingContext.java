@@ -91,11 +91,9 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     private Object createEvaluationRoot() {
 
-        final VariablesMap<String,Object> variablesMap = this.context.getVariables();
-        final int evalRootSize = variablesMap.size() + (this.localVariables != null? this.localVariables.size() : 0);
-
-        final Map<String,Object> newEvaluationRoot = new VariablesMap<String,Object>(evalRootSize + 1, 1.0f);
-        newEvaluationRoot.putAll(variablesMap);
+        // If variables map is a WebVariablesMap, we will be directly working (put, get) against the request object.
+        final VariablesMap<String,Object> newEvaluationRoot =
+                (VariablesMap<String, Object>) this.context.getVariables().clone();
         if (this.localVariables != null) {
             newEvaluationRoot.putAll(this.localVariables);
         }

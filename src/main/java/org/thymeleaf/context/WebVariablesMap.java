@@ -95,12 +95,6 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    
-    WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext) {
-        this(request, servletContext, null);
-    }
-    
-    
 
     WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext,
                     final Map<? extends String, ? extends Object> m) {
