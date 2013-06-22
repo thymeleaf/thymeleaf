@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.spring3.processor.attr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,8 +97,8 @@ public abstract class AbstractSpringFieldAttrProcessor
         final BindStatus bindStatus = 
             FieldUtils.getBindStatus(arguments, attributeValue, false);
         
-        final Map<String,Object> localVariables = new HashMap<String,Object>();
-        localVariables.put(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
+        final Map<String,Object> localVariables =
+                Collections.singletonMap(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, (Object)bindStatus);
         
         return doProcess(arguments, element, attributeName, attributeValue, bindStatus, localVariables);
         
@@ -119,7 +120,7 @@ public abstract class AbstractSpringFieldAttrProcessor
             final Arguments arguments, final Element element, final String name, final boolean sequence) {
         
         String id = element.getAttributeValue("id");
-        if (id != null && !id.trim().equals("")) {
+        if (!org.thymeleaf.util.StringUtils.isEmptyOrWhitespace(id)) {
             String idString = id.toString();
             return (StringUtils.hasText(idString) ? idString : null);
         }

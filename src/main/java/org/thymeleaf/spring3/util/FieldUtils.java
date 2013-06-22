@@ -44,7 +44,7 @@ import org.thymeleaf.standard.expression.VariableExpression;
  * @since 1.0
  *
  */
-public class FieldUtils {
+public final class FieldUtils {
 
     public static final String ALL_FIELDS = "*";
     public static final String ALL_FIELDS_FIELD_EXPRESSION = "*{*}";
@@ -94,10 +94,15 @@ public class FieldUtils {
     
     
     private static String convertToFieldExpression(final String field) {
-        return "*{" + field + "}";
+        final StringBuilder strBuilder = new StringBuilder(20);
+        strBuilder.append('*');
+        strBuilder.append('{');
+        strBuilder.append(field);
+        strBuilder.append('}');
+        return strBuilder.toString();
     }
-    
-    
+
+
 
     
     
@@ -157,7 +162,7 @@ public class FieldUtils {
             }
             
             final String formCommandExpression = formCommandValue.getExpression();
-            return formCommandExpression + "." + ((SelectionVariableExpression)expression).getExpression();
+            return formCommandExpression + '.' + ((SelectionVariableExpression)expression).getExpression();
             
         }
         
@@ -180,7 +185,7 @@ public class FieldUtils {
                     "been established in the \"form\" tag");
         }
         final String formCommandExpression = formCommandValue.getExpression();
-        return formCommandExpression + "." + ALL_FIELDS;
+        return formCommandExpression + '.' + ALL_FIELDS;
         
     }
     

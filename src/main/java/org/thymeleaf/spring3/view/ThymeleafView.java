@@ -65,7 +65,7 @@ public class ThymeleafView
      * to automatically add @PathVariable's to models. This will be computed at class
      * initialization time.
      */
-    private static String pathVariablesSelector;
+    private static final String pathVariablesSelector;
     
     private IFragmentSpec fragmentSpec = null;
 
@@ -78,17 +78,17 @@ public class ThymeleafView
          * automatically to the model (Spring 3.1+) 
          */
         
-        final Class<View> viewClass = View.class;
+        String pathVariablesSelectorValue = null;
         try {
             // We are looking for the value of the View.PATH_VARIABLES constant, which is a String
-            final Field pathVariablesField = viewClass.getDeclaredField("PATH_VARIABLES");
-            pathVariablesSelector = (String) pathVariablesField.get(null);
-        } catch (final NoSuchFieldException e) {
-            pathVariablesSelector = null;
-        } catch (final IllegalAccessException e) {
-            pathVariablesSelector = null;
+            final Field pathVariablesField =  View.class.getDeclaredField("PATH_VARIABLES");
+            pathVariablesSelectorValue = (String) pathVariablesField.get(null);
+        } catch (final NoSuchFieldException ignored) {
+            pathVariablesSelectorValue = null;
+        } catch (final IllegalAccessException ignored) {
+            pathVariablesSelectorValue = null;
         }
-        
+        pathVariablesSelector = pathVariablesSelectorValue;
     }
     
     
@@ -185,7 +185,7 @@ public class ThymeleafView
             final HttpServletResponse response) 
             throws Exception {
 
-        ServletContext servletContext = getServletContext() ;
+        final ServletContext servletContext = getServletContext() ;
 
         if (getTemplateName() == null) {
             throw new IllegalArgumentException("Property 'templateName' is required");
@@ -197,7 +197,7 @@ public class ThymeleafView
             throw new IllegalArgumentException("Property 'templateEngine' is required");
         }
         
-        final Map<String, Object> mergedModel = new HashMap<String, Object>();
+        final Map<String, Object> mergedModel = new HashMap<String, Object>(30);
         final Map<String, Object> templateStaticVariables = getStaticVariables();
         if (templateStaticVariables != null) {
             mergedModel.putAll(templateStaticVariables);
@@ -224,7 +224,7 @@ public class ThymeleafView
 
         
         final IWebContext context = 
-                new SpringWebContext(request, response, servletContext , getLocale(), mergedModel, getApplicationContext());
+                new SpringWebContext(request, response, servletContext, getLocale(), mergedModel, getApplicationContext());
         
         final TemplateEngine viewTemplateEngine = getTemplateEngine();
         

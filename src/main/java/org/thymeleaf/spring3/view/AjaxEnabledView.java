@@ -65,7 +65,7 @@ public interface AjaxEnabledView extends View {
      * <p>
      *   Views implementing this interface should be used with an instance of
      *   {@link AjaxThymeleafViewResolver} or any of its subclasses,
-     *   so that {@link #setAjaxHandler(AjaxHandler)} can be called by
+     *   so that this method can be called by
      *   the resolver when resolving the view, setting the default
      *   AJAX handler being used.
      * </p>

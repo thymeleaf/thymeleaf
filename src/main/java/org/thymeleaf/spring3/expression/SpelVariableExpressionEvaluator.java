@@ -66,7 +66,7 @@ public class SpelVariableExpressionEvaluator
     private static final Logger logger = LoggerFactory.getLogger(SpelVariableExpressionEvaluator.class);
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
-    private static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT = new StandardEvaluationContext();
+    static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT = new StandardEvaluationContext();
     
     
     
@@ -150,14 +150,10 @@ public class SpelVariableExpressionEvaluator
     
     public Map<String,Object> computeExpressionObjects(
             final Configuration configuration, final IProcessingContext processingContext) {
-        
-        final Map<String,Object> expressionObjects = new HashMap<String, Object>();
-        
-        final Map<String,Object> processingContextExpressionObjects = processingContext.getExpressionObjects();
-        if (processingContextExpressionObjects != null) {
-            expressionObjects.putAll(processingContextExpressionObjects);
-        }
-        
+
+        // IProcessingContext.getExpressionObjects() cannot return null, and cannot return an unmodifiable object
+        final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
+
         final Fields fields = new Fields(configuration, processingContext);
         expressionObjects.put(FIELDS_EVALUATION_VARIABLE_NAME, fields);
         
@@ -170,7 +166,7 @@ public class SpelVariableExpressionEvaluator
         }
         
         final Map<String,Object> additionalExpressionObjects = computeAdditionalExpressionObjects(processingContext);
-        if (additionalExpressionObjects != null && !additionalExpressionObjects.isEmpty()) {
+        if (additionalExpressionObjects != null) {
             expressionObjects.putAll(additionalExpressionObjects);
         }
         
@@ -185,7 +181,7 @@ public class SpelVariableExpressionEvaluator
      */
     protected Map<String,Object> computeAdditionalExpressionObjects(
             @SuppressWarnings("unused") final IProcessingContext processingContext) {
-        return Collections.emptyMap();
+        return null;
     }
 
     
