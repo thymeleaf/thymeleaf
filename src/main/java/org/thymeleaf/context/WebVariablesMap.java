@@ -107,10 +107,6 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
         super((m == null? 4 : m.size() + 4), 1.0f);
 
-        if (m != null) {
-            putAll(m);
-        }
-
         this.request = request;
         this.servletContext = servletContext;
 
@@ -121,6 +117,11 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
         super.put(APPLICATION_VARIABLE_NAME, this.servletContextVariablesMap);
         super.put(PARAM_VARIABLE_NAME, this.requestParamsVariablesMap);
+
+        if (m != null) {
+            // This must be done at the end because it relies on the request having been already set.
+            putAll(m);
+        }
 
     }
 
