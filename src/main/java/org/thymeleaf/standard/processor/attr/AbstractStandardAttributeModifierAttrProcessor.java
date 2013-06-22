@@ -53,7 +53,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         super(matcher);
     }
 
-    public AbstractStandardAttributeModifierAttrProcessor(final String attributeName) {
+    protected AbstractStandardAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

@@ -93,7 +93,7 @@ public class TemplateResolver
     private Long cacheTTLMs = null;
     private IResourceResolver resourceResolver = null;
     
-    private final HashMap<String,String> templateAliases = new HashMap<String, String>();
+    private final HashMap<String,String> templateAliases = new HashMap<String, String>(8);
     
     private final PatternSpec xmlTemplateModePatternSpec = new PatternSpec();
     private final PatternSpec validXmlTemplateModePatternSpec = new PatternSpec();

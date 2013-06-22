@@ -99,13 +99,8 @@ public class OgnlVariableExpressionEvaluator
             }
 
             
-            final Map<String,Object> contextVariables = new HashMap<String, Object>();
-            
-            final Map<String,Object> expressionObjects = processingContext.getExpressionObjects();
-            if (expressionObjects != null) {
-                contextVariables.putAll(expressionObjects);
-            }
-            
+            final Map<String,Object> contextVariables = processingContext.getExpressionObjects();
+
             final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
             if (additionalContextVariables != null) {
                 contextVariables.putAll(additionalContextVariables);

@@ -194,7 +194,7 @@ public final class MessageResolutionUtils {
         Validate.notNull(targetClass, "Target class cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
         
-        final List<Properties> properties = new ArrayList<Properties>();
+        final List<Properties> properties = new ArrayList<Properties>(5);
         Class<?> currentClass = targetClass;
         
         String base = getClassNameBase(currentClass);
@@ -231,7 +231,7 @@ public final class MessageResolutionUtils {
         final IResourceResolver usedResourceResolver = 
             (resourceResolver != null? resourceResolver : new ClassLoaderResourceResolver());
         
-        final List<Properties> messages = new ArrayList<Properties>();
+        final List<Properties> messages = new ArrayList<Properties>(10);
         for (final String messageResourceName : messageResourceNames) {
             final InputStream messageFileInputStream =
                 usedResourceResolver.getResourceAsStream((arguments == null? null : arguments.getTemplateProcessingParameters()), messageResourceName);
@@ -302,7 +302,7 @@ public final class MessageResolutionUtils {
     private static List<String> getMessageFileNamesFromBase(
             final String messagesFileNameBase, final Locale locale) {
 
-        final List<String> propertiesFileNames = new ArrayList<String>();
+        final List<String> propertiesFileNames = new ArrayList<String>(5);
         
         if (StringUtils.isEmptyOrWhitespace(locale.getLanguage())) {
             throw new TemplateProcessingException(

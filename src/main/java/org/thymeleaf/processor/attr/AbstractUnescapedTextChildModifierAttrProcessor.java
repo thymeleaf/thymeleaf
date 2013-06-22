@@ -42,12 +42,12 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
     
     
     
-    public AbstractUnescapedTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractUnescapedTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
 
-    public AbstractUnescapedTextChildModifierAttrProcessor(final String attributeName) {
+    protected AbstractUnescapedTextChildModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

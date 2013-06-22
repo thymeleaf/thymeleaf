@@ -42,7 +42,7 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 public abstract class AbstractXHTMLEnabledDialect extends AbstractDialect {
 
     
-    public AbstractXHTMLEnabledDialect() {
+    protected AbstractXHTMLEnabledDialect() {
         super();
     }
     

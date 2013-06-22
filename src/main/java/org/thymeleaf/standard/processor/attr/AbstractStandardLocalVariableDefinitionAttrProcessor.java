@@ -41,16 +41,16 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  */
 public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor 
         extends AbstractLocalVariableDefinitionAttrProcessor {
-    
-    
-    
 
-    
-    public AbstractStandardLocalVariableDefinitionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+
+    protected AbstractStandardLocalVariableDefinitionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardLocalVariableDefinitionAttrProcessor(final String attributeName) {
+    protected AbstractStandardLocalVariableDefinitionAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

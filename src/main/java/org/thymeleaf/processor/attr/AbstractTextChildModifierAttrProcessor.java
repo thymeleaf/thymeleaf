@@ -37,15 +37,15 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
  */
 public abstract class AbstractTextChildModifierAttrProcessor 
         extends AbstractChildrenModifierAttrProcessor {
-    
-    
-    
-    public AbstractTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+    protected AbstractTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
 
-    public AbstractTextChildModifierAttrProcessor(final String attributeName) {
+    protected AbstractTextChildModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

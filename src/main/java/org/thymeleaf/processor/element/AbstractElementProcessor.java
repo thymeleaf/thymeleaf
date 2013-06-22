@@ -48,11 +48,11 @@ public abstract class AbstractElementProcessor extends AbstractProcessor {
     private final IElementNameProcessorMatcher matcher; 
     
     
-    public AbstractElementProcessor(final String elementName) {
+    protected AbstractElementProcessor(final String elementName) {
         this(new ElementNameProcessorMatcher(elementName));
     }
     
-    public AbstractElementProcessor(final IElementNameProcessorMatcher matcher) {
+    protected AbstractElementProcessor(final IElementNameProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }

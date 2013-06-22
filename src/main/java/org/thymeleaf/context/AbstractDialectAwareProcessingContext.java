@@ -47,23 +47,23 @@ public abstract class AbstractDialectAwareProcessingContext extends AbstractProc
     private final Set<IExpressionEnhancingDialect> dialects;
     
 
-    public AbstractDialectAwareProcessingContext(final IContext context, 
-            final Collection<? extends IDialect> dialects) {
+    protected AbstractDialectAwareProcessingContext(final IContext context,
+                                                    final Collection<? extends IDialect> dialects) {
         super(context);
         this.dialects = selectEnhancingDialects(dialects);
     }
 
     
-    public AbstractDialectAwareProcessingContext(final IContext context,
-            final Map<String, Object> localVariables, final Collection<? extends IDialect> dialects) {
+    protected AbstractDialectAwareProcessingContext(final IContext context,
+                                                    final Map<String, Object> localVariables, final Collection<? extends IDialect> dialects) {
         super(context, localVariables);
         this.dialects = selectEnhancingDialects(dialects);
     }
 
     
-    public AbstractDialectAwareProcessingContext(final IContext context,
-            final Map<String, Object> localVariables, final Object selectionTarget,
-            final boolean selectionTargetSet, final Collection<? extends IDialect> dialects) {
+    protected AbstractDialectAwareProcessingContext(final IContext context,
+                                                    final Map<String, Object> localVariables, final Object selectionTarget,
+                                                    final boolean selectionTargetSet, final Collection<? extends IDialect> dialects) {
         super(context, localVariables, selectionTarget, selectionTargetSet);
         this.dialects = selectEnhancingDialects(dialects);
     }

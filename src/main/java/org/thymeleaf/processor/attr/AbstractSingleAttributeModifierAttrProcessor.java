@@ -38,13 +38,13 @@ public abstract class AbstractSingleAttributeModifierAttrProcessor
 
     
     
-    public AbstractSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
 
 
-    public AbstractSingleAttributeModifierAttrProcessor(final String attributeName) {
+    protected AbstractSingleAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

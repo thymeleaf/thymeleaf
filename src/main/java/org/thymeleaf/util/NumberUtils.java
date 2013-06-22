@@ -142,7 +142,7 @@ public final class NumberUtils {
             return new Integer[] {Integer.valueOf(iFrom)};
         }
         
-        final List<Integer> values = new ArrayList<Integer>();
+        final List<Integer> values = new ArrayList<Integer>(10);
         if (iFrom < iTo) {
             int i = iFrom;
             while (i <= iTo) {

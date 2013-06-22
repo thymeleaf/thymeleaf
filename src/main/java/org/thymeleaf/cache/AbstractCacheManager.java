@@ -61,7 +61,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private volatile boolean messageCacheInitialized = false;
 
     
-    public AbstractCacheManager() {
+    protected AbstractCacheManager() {
         super();
     }
     

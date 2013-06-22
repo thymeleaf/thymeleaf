@@ -35,15 +35,15 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  */
 public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor 
         extends AbstractUnescapedTextChildModifierAttrProcessor {
-    
-    
 
-    
-    public AbstractStandardUnescapedTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+    protected AbstractStandardUnescapedTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardUnescapedTextChildModifierAttrProcessor(final String attributeName) {
+    protected AbstractStandardUnescapedTextChildModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

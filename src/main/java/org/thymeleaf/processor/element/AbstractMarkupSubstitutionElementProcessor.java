@@ -41,11 +41,11 @@ public abstract class AbstractMarkupSubstitutionElementProcessor
     
     
 
-    public AbstractMarkupSubstitutionElementProcessor(final String elementName) {
+    protected AbstractMarkupSubstitutionElementProcessor(final String elementName) {
         super(elementName);
     }
     
-    public AbstractMarkupSubstitutionElementProcessor(final IElementNameProcessorMatcher matcher) {
+    protected AbstractMarkupSubstitutionElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

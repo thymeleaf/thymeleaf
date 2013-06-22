@@ -41,11 +41,11 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
     
 
     
-    public AbstractStandardConditionalFixedValueAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractStandardConditionalFixedValueAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardConditionalFixedValueAttrProcessor(final String attributeName) {
+    protected AbstractStandardConditionalFixedValueAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

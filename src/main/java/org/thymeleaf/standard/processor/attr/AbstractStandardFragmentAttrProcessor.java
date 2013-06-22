@@ -45,11 +45,11 @@ public abstract class AbstractStandardFragmentAttrProcessor
     
 
     
-    public AbstractStandardFragmentAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractStandardFragmentAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardFragmentAttrProcessor(final String attributeName) {
+    protected AbstractStandardFragmentAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

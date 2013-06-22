@@ -39,12 +39,12 @@ public abstract class AbstractConditionalVisibilityAttrProcessor
     
     
     
-    public AbstractConditionalVisibilityAttrProcessor(final String attributeName) {
+    protected AbstractConditionalVisibilityAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractConditionalVisibilityAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractConditionalVisibilityAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

@@ -71,7 +71,7 @@ public abstract class AbstractRemovalAttrProcessor
 
 
 
-    public AbstractRemovalAttrProcessor(final String attributeName) {
+    protected AbstractRemovalAttrProcessor(final String attributeName) {
         
         super(attributeName);
         

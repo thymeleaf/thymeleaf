@@ -58,7 +58,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
     private final NekoBasedHtmlParser parser;
 
 
-    public AbstractHtmlTemplateParser(final String templateModeName, int poolSize) {
+    protected AbstractHtmlTemplateParser(final String templateModeName, int poolSize) {
         
         super();
 
@@ -129,7 +129,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         // The org.apache.xerces.parsers.DOMParser is not used here as a type
         // parameter to avoid the class loader to try to load this xerces class
         // (and fail) before we control the error at the constructor.
-        private ResourcePool<Object> pool;
+        private final ResourcePool<Object> pool;
         private boolean canResetParsers = true;
 
         

@@ -35,7 +35,8 @@ import org.thymeleaf.Arguments;
  */
 public final class ProcessorResult {
 
-    private static final Map<String,Object> EMPTY_VARIABLES = Collections.unmodifiableMap(new HashMap<String, Object>());
+    private static final Map<String,Object> EMPTY_VARIABLES =
+            Collections.unmodifiableMap(new HashMap<String, Object>(1, 1.0f));
 
     
     public static final ProcessorResult OK = new ProcessorResult(null, false, false, false, false, null, false);

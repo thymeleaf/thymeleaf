@@ -49,7 +49,7 @@ public final class ListUtils {
         }
         
         if (target instanceof Iterable<?>) {
-            final List<Object> elements = new ArrayList<Object>();
+            final List<Object> elements = new ArrayList<Object>(10);
             for (final Object element : (Iterable<?>)target) {
                 elements.add(element);
             }

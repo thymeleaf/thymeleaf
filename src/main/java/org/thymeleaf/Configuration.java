@@ -92,7 +92,7 @@ public final class Configuration {
     private Set<IDocTypeResolutionEntry> mergedDocTypeResolutionEntries = null;
     private Set<IDocTypeTranslation> mergedDocTypeTranslations = null;
 
-    private Map<String,ITemplateModeHandler> templateModeHandlersByName = new HashMap<String,ITemplateModeHandler>(8,1.0f);
+    private final Map<String,ITemplateModeHandler> templateModeHandlersByName = new HashMap<String,ITemplateModeHandler>(8,1.0f);
     
     private Set<IMessageResolver> defaultMessageResolvers = null;
     private Set<ITemplateModeHandler> defaultTemplateModeHandlers = null;

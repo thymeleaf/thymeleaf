@@ -43,7 +43,7 @@ public abstract  class AbstractValidatingSAXTemplateParser extends AbstractNonVa
     
     
     
-    private ResourcePool<SAXParser> pool;
+    private final ResourcePool<SAXParser> pool;
 
     
     
