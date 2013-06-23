@@ -59,13 +59,7 @@ class WebRequestParamsVariablesMap extends VariablesMap<String,String[]> {
     }
 
     
-    private WebRequestParamsVariablesMap(final Map<String,String[]> parameterMap) {
-        super(1, 1.0f);
-        this.parameterMap = parameterMap;
-    }
 
-    
-    
     @Override
     public int size() {
         return this.parameterMap.size();
@@ -113,7 +107,7 @@ class WebRequestParamsVariablesMap extends VariablesMap<String,String[]> {
 
     @Override
     public Object clone() {
-        return new WebRequestParamsVariablesMap(this.parameterMap);
+        return super.clone();
     }
 
     @Override

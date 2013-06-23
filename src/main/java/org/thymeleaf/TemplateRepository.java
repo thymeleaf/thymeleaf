@@ -194,7 +194,7 @@ public final class TemplateRepository {
             final Template cached = 
                 this.templateCache.get(templateName);
             if (cached != null) {
-                return cached.clone();
+                return cached.createDuplicate();
             }
         }
         
@@ -289,7 +289,7 @@ public final class TemplateRepository {
         if (this.templateCache != null) {
             if (templateResolution.getValidity().isCacheable()) {
                 this.templateCache.put(templateName, template);
-                return template.clone();
+                return template.createDuplicate();
             }
         }
         

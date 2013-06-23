@@ -107,7 +107,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(toString(element));
         }
@@ -130,7 +130,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(toString(element));
         }
@@ -160,7 +160,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(abbreviate(element, maxSize));
         }
@@ -171,7 +171,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(abbreviate(element, maxSize));
         }
@@ -213,7 +213,7 @@ public final class Strings {
     
     public List<Boolean> listContains(final List<?> target, final String fragment) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(contains(element, fragment));
         }
@@ -222,7 +222,7 @@ public final class Strings {
     
     public Set<Boolean> setContains(final Set<?> target, final String fragment) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(contains(element, fragment));
         }
@@ -249,7 +249,7 @@ public final class Strings {
     
     public List<Boolean> listContainsIgnoreCase(final List<?> target, final String fragment) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(containsIgnoreCase(element, fragment));
         }
@@ -258,7 +258,7 @@ public final class Strings {
     
     public Set<Boolean> setContainsIgnoreCase(final Set<?> target, final String fragment) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(containsIgnoreCase(element, fragment));
         }
@@ -285,7 +285,7 @@ public final class Strings {
     
     public List<Boolean> listStartsWith(final List<?> target, final String prefix) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(startsWith(element, prefix));
         }
@@ -294,7 +294,7 @@ public final class Strings {
     
     public Set<Boolean> setStartsWith(final Set<?> target, final String prefix) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(startsWith(element, prefix));
         }
@@ -321,7 +321,7 @@ public final class Strings {
     
     public List<Boolean> listEndsWith(final List<?> target, final String suffix) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(endsWith(element, suffix));
         }
@@ -330,7 +330,7 @@ public final class Strings {
     
     public Set<Boolean> setEndsWith(final Set<?> target, final String suffix) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(endsWith(element, suffix));
         }
@@ -357,7 +357,7 @@ public final class Strings {
     
     public List<String> listSubstring(final List<?> target, final int start, final int end) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start, end));
         }
@@ -366,7 +366,7 @@ public final class Strings {
     
     public Set<String> setSubstring(final Set<?> target, final int start, final int end) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start, end));
         }
@@ -430,7 +430,7 @@ public final class Strings {
      */    
     public List<String> listSubstring(final List<?> target, final int start) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start));
         }
@@ -453,7 +453,7 @@ public final class Strings {
      */    
     public Set<String> setSubstring(final Set<?> target, final int start) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substring(element, start));
         }
@@ -480,7 +480,7 @@ public final class Strings {
     
     public List<String> listSubstringAfter(final List<?> target, final String substr) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringAfter(element, substr));
         }
@@ -489,7 +489,7 @@ public final class Strings {
     
     public Set<String> setSubstringAfter(final Set<?> target, final String substr) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringAfter(element, substr));
         }
@@ -516,7 +516,7 @@ public final class Strings {
     
     public List<String> listSubstringBefore(final List<?> target, final String substr) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringBefore(element, substr));
         }
@@ -525,7 +525,7 @@ public final class Strings {
     
     public Set<String> setSubstringBefore(final Set<?> target, final String substr) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(substringBefore(element, substr));
         }
@@ -552,7 +552,7 @@ public final class Strings {
     
     public List<String> listPrepend(final List<?> target, final String prefix) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(prepend(element, prefix));
         }
@@ -561,7 +561,7 @@ public final class Strings {
     
     public Set<String> setPrepend(final Set<?> target, final String prefix) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(prepend(element, prefix));
         }
@@ -606,7 +606,7 @@ public final class Strings {
     
     public List<String> listAppend(final List<?> target, final String suffix) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(append(element, suffix));
         }
@@ -615,7 +615,7 @@ public final class Strings {
     
     public Set<String> setAppend(final Set<?> target, final String suffix) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(append(element, suffix));
         }
@@ -642,7 +642,7 @@ public final class Strings {
     
     public List<Integer> listIndexOf(final List<?> target, final String fragment) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(indexOf(element, fragment));
         }
@@ -651,7 +651,7 @@ public final class Strings {
     
     public Set<Integer> setIndexOf(final Set<?> target, final String fragment) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(indexOf(element, fragment));
         }
@@ -679,7 +679,7 @@ public final class Strings {
     
     public List<Boolean> listIsEmpty(final List<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Boolean> result = new ArrayList<Boolean>();
+        final List<Boolean> result = new ArrayList<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isEmpty(element));
         }
@@ -688,7 +688,7 @@ public final class Strings {
     
     public Set<Boolean> setIsEmpty(final Set<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Boolean> result = new LinkedHashSet<Boolean>();
+        final Set<Boolean> result = new LinkedHashSet<Boolean>(target.size() + 2);
         for (final Object element : target) {
             result.add(isEmpty(element));
         }
@@ -748,7 +748,7 @@ public final class Strings {
     
     public List<Integer> listLength(final List<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(length(element));
         }
@@ -757,7 +757,7 @@ public final class Strings {
     
     public Set<Integer> setLength(final Set<?> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Object element : target) {
             result.add(length(element));
         }
@@ -785,7 +785,7 @@ public final class Strings {
     
     public List<String> listReplace(final List<?> target, final String before, final String after) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(replace(element, before, after));
         }
@@ -794,7 +794,7 @@ public final class Strings {
     
     public Set<String> setReplace(final Set<?> target, final String before, final String after) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(replace(element, before, after));
         }
@@ -836,7 +836,7 @@ public final class Strings {
     public List<String> listMultipleReplace(final List<?> target, 
             final String[] before, final String[] after) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(multipleReplace(element, before, after));
         }
@@ -846,7 +846,7 @@ public final class Strings {
     public Set<String> setMultipleReplace(final Set<?> target, final String[] before,
             final String[] after) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(multipleReplace(element, before, after));
         }
@@ -877,7 +877,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(toUpperCase(element));
         }
@@ -888,7 +888,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(toUpperCase(element));
         }
@@ -919,7 +919,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(toLowerCase(element));
         }
@@ -930,7 +930,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(toLowerCase(element));
         }
@@ -960,7 +960,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(trim(element));
         }
@@ -971,7 +971,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(trim(element));
         }
@@ -1040,7 +1040,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(capitalize(element));
         }
@@ -1065,7 +1065,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(capitalize(element));
         }
@@ -1136,7 +1136,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(unCapitalize(element));
         }
@@ -1163,7 +1163,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(unCapitalize(element));
         }
@@ -1247,7 +1247,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(capitalizeWords(element));
         }
@@ -1277,7 +1277,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(capitalizeWords(element));
         }
@@ -1369,7 +1369,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(capitalizeWords(element, delimiters));
         }
@@ -1402,7 +1402,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(capitalizeWords(element, delimiters));
         }
@@ -1471,7 +1471,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(escapeXml(element));
         }
@@ -1497,7 +1497,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(escapeXml(element));
         }
@@ -1572,7 +1572,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(escapeJavaScript(element));
         }
@@ -1598,7 +1598,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(escapeJavaScript(element));
         }
@@ -1672,7 +1672,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(unescapeJavaScript(element));
         }
@@ -1698,7 +1698,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(unescapeJavaScript(element));
         }
@@ -1772,7 +1772,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(escapeJava(element));
         }
@@ -1798,7 +1798,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(escapeJava(element));
         }
@@ -1875,7 +1875,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(unescapeJava(element));
         }
@@ -1901,7 +1901,7 @@ public final class Strings {
         if (target == null) {
             return null;
         }
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Object element : target) {
             result.add(unescapeJava(element));
         }

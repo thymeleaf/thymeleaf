@@ -36,7 +36,7 @@ import org.thymeleaf.templateresolver.TemplateResolution;
  * @since 2.0.0
  *
  */
-public final class Template implements Cloneable {
+public final class Template {
 
     private final String templateName;
     private final TemplateResolution templateResolution;
@@ -63,11 +63,12 @@ public final class Template implements Cloneable {
     public Document getDocument() {
         return this.document;
     }
-    
-    
-    @Override
-    public Template clone() {
+
+
+    public Template createDuplicate() {
+        // clone() would not be comfortable to use here because the "document" property would need to be assigned
+        // after calling super.clone(), and it is final (so no assignation would be possible).
         return new Template(this.templateName, this.templateResolution, this.document.clone(true));
     }
-    
+
 }
