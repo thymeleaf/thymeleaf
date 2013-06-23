@@ -92,7 +92,7 @@ public class OgnlExpressionEvaluator
             }
             
             
-            final Map<String,Object> contextVariables = new HashMap<String, Object>();
+            final Map<String,Object> contextVariables = new HashMap<String, Object>(30);
             
             final Map<String,Object> expressionObjects = arguments.getExpressionObjects();
             if (expressionObjects != null) {

@@ -107,8 +107,8 @@ public final class CharArrayWrapperSequence implements CharSequence {
     
     
     @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return new CharArrayWrapperSequence(this.buffer, this.offset, this.len);
+    protected CharArrayWrapperSequence clone() throws CloneNotSupportedException {
+        return (CharArrayWrapperSequence) super.clone();
     }
 
     
