@@ -434,6 +434,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
             
             System.arraycopy(fragment, fragmentOff, cbuf, cbufi, fragmentLen);
 
+            //noinspection ArrayEquality
             if (fragment == this.overflow) {
                 // Overflow has been cleaned
                 this.overflowIndex = 0;
@@ -451,6 +452,7 @@ public final class EntitySubstitutionTemplateReader extends Reader {
         if (toBeCopied > 0) {
             System.arraycopy(fragment, fragmentOff, cbuf, cbufi, toBeCopied);
         }
+        //noinspection ArrayEquality
         if (fragment != this.overflow) {
             System.arraycopy(fragment, (fragmentOff + toBeCopied), this.overflow, this.overflowIndex, toBeOverflowed);
             this.overflowIndex += toBeOverflowed;

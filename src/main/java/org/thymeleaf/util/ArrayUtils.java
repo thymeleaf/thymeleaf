@@ -141,11 +141,11 @@ public final class ArrayUtils {
             final Iterable<?> iterableTarget = (Iterable<?>)target;
             final List<Object> elements = new ArrayList<Object>(5); // init capacity guessed - not know from iterable.
             
-            for (final Object element : (Iterable<?>)target) {
-                if (componentClass == null) {
-                    if (element != null && computedComponentClass == null) {
+            for (final Object element : iterableTarget) {
+                if (componentClass == null && element != null) {
+                    if (computedComponentClass == null) {
                         computedComponentClass = element.getClass();
-                    } else if (element != null && computedComponentClass != null && !computedComponentClass.equals(Object.class)) {
+                    } else if (!computedComponentClass.equals(Object.class)) {
                         if (!computedComponentClass.equals(element.getClass())) {
                             computedComponentClass = Object.class;
                         }
