@@ -20,6 +20,10 @@ anull = null
 <p>oneone</p>
 <p>oneoneone</p>
 <p>twoTWO</p>
-<p>**one**</p>
-<p>one**one</p>
+# If it weren't for the mentioned OGNL bug, results should be the following:
+#<p>**one**</p>
+#<p>one**two</p>
+# But while this OGNL bug exists results will be:
+<p>one</p>
+<p>onetwo</p>
 
