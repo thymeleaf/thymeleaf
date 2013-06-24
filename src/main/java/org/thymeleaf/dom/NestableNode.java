@@ -43,6 +43,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
+@SuppressWarnings("ObjectEquality")
 public abstract class NestableNode extends Node {
     
     private static final long serialVersionUID = -5601217853971985055L;

@@ -263,6 +263,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @SuppressWarnings("unchecked")
     public boolean containsValue(final Object value) {
         if (value instanceof VariablesMap<?,?>) {
+            //noinspection ObjectEquality
             if (value == this.requestParamsVariablesMap ||
                 value == this.sessionVariablesMap ||
                 value == this.servletContextVariablesMap) {

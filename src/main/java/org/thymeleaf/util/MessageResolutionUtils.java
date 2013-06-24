@@ -200,7 +200,7 @@ public final class MessageResolutionUtils {
         String base = getClassNameBase(currentClass);
         properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
         
-        while (currentClass.getSuperclass() != Object.class) {
+        while (!currentClass.getSuperclass().equals(Object.class)) {
             currentClass = currentClass.getSuperclass();
             base = getClassNameBase(currentClass);
             properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
