@@ -42,7 +42,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     
-    public static final String SCRIPT_ADD_INLINE_EVAL = "\\/\\*\\[\\+(.*?)\\+\\]\\*\\/";
+    public static final String SCRIPT_ADD_INLINE_EVAL = "/\\*\\[\\+(.*?)\\+\\]\\*\\/";
     public static final Pattern SCRIPT_ADD_INLINE_EVAL_PATTERN = Pattern.compile(SCRIPT_ADD_INLINE_EVAL, Pattern.DOTALL);
 
     public static final String SCRIPT_REMOVE_INLINE_EVAL = "\\/\\*\\[\\-(.*?)\\-\\]\\*\\/";
@@ -210,17 +210,25 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
         if (lineRemainder == null) {
             return "";
         }
-        
+
+        boolean inLiteral = false;
         final int len = lineRemainder.length();
         for (int i = 0; i < len; i++) {
             final char c = lineRemainder.charAt(i);
-            if (c == ';' || c == ',') {
-                return lineRemainder.substring(i);
+            if (c == '\'') {
+                if (!inLiteral || i == 0 || lineRemainder.charAt(i - 1) != '\\') {
+                    inLiteral = !inLiteral;
+                }
             }
-            if (c == '/' && ((i+1) < len)) {
-                final char c1 = lineRemainder.charAt(i+1);
-                if (c1 == '/' || c1 == '*') {
+            if (!inLiteral) {
+                if (c == ';' || c == ',') {
                     return lineRemainder.substring(i);
+                }
+                if (c == '/' && ((i+1) < len)) {
+                    final char c1 = lineRemainder.charAt(i+1);
+                    if (c1 == '/' || c1 == '*') {
+                        return lineRemainder.substring(i);
+                    }
                 }
             }
         }
