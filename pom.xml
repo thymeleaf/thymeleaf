@@ -48,14 +48,31 @@
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf-spring3.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-spring3.git</developerConnection>
   </scm>
-  
+
   <developers>
     <developer>
-      <id>dfernandez</id>
+      <id>danielfernandez</id>
       <name>Daniel Fernandez</name>
       <email>daniel.fernandez AT 11thlabs DOT org</email>
       <roles>
-        <role>Project admin</role>
+        <role>Project Admin</role>
+        <role>Lead Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jmiguelsamper</id>
+      <name>Jose Miguel Samper</name>
+      <email>jmiguelsamper AT users DOT sourceforge DOT net</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ultraq</id>
+      <name>Emanuel Rabina</name>
+      <email>emanuel AT ultraq DOT net DOT nz</email>
+      <roles>
+        <role>Developer</role>
       </roles>
     </developer>
   </developers>
