@@ -88,7 +88,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     
-    
+    @SuppressWarnings("unchecked")
     private Object createEvaluationRoot() {
 
         // If variables map is a WebVariablesMap, we will be directly working (put, get) against the request object.

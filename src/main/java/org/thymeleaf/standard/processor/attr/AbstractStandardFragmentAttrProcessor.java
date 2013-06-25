@@ -37,6 +37,7 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  *
  */
 @Deprecated
+@SuppressWarnings("deprecation")
 public abstract class AbstractStandardFragmentAttrProcessor 
         extends AbstractFragmentAttrProcessor {
 
