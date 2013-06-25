@@ -48,14 +48,31 @@
     <connection>scm:git:git@github.com:thymeleaf/thymeleaf-tests.git</connection>
     <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-tests.git</developerConnection>
   </scm>
-  
+
   <developers>
     <developer>
-      <id>dfernandez</id>
+      <id>danielfernandez</id>
       <name>Daniel Fernandez</name>
       <email>daniel.fernandez AT 11thlabs DOT org</email>
       <roles>
-        <role>Project admin</role>
+        <role>Project Admin</role>
+        <role>Lead Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>jmiguelsamper</id>
+      <name>Jose Miguel Samper</name>
+      <email>jmiguelsamper AT users DOT sourceforge DOT net</email>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ultraq</id>
+      <name>Emanuel Rabina</name>
+      <email>emanuel AT ultraq DOT net DOT nz</email>
+      <roles>
+        <role>Developer</role>
       </roles>
     </developer>
   </developers>
@@ -84,14 +101,35 @@
     </repository>
   </repositories>
 
-  
+
+  <profiles>
+
+    <profile>
+        <id>2.0</id>
+        <properties>
+          <thymeleaf.version>2.0.18-SNAPSHOT</thymeleaf.version>
+          <thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
+          <springframework.version>3.0.7.RELEASE</springframework.version>
+          <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+        </properties>
+    </profile>
+
+      <profile>
+          <id>2.1</id>
+          <properties>
+              <thymeleaf.version>2.1.0-SNAPSHOT</thymeleaf.version>
+              <thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
+              <springframework.version>3.0.7.RELEASE</springframework.version>
+              <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+          </properties>
+      </profile>
+
+  </profiles>
+
+
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.0.18-SNAPSHOT</thymeleaf.version>
     <thymeleaf-testing.version>2.0.4-SNAPSHOT</thymeleaf-testing.version>
-    <thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
-    <springframework.version>3.0.7.RELEASE</springframework.version>
-    <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
   </properties>
 
   
@@ -121,10 +159,12 @@
       </resource>
       
     </resources>
-    
+
+    <testSourceDirectory>src/test-common/java</testSourceDirectory>
+
     <testResources>
       <testResource>
-        <directory>src/test/resources</directory>
+        <directory>src/test-common/resources</directory>
       </testResource>
     </testResources>
     
