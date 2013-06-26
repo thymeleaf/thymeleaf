@@ -398,19 +398,9 @@ public class SpringStandardDialect extends StandardDialect {
     @Override
     public Set<IProcessor> getProcessors() {
         
-        final List<IProcessor> processors = new ArrayList<IProcessor>();
-        
-        @SuppressWarnings("deprecation")
+        final Set<IProcessor> processors = createSpringStandardProcessorsSet();
         final Set<IProcessor> dialectAdditionalProcessors = getAdditionalProcessors();
-        @SuppressWarnings("deprecation")
-        final Set<Class<? extends IProcessor>> dialectRemovedProcessors = getRemovedProcessors();
-        
-        for (final IProcessor processor : createSpringStandardProcessorsSet()) {
-            if (dialectRemovedProcessors == null || !dialectRemovedProcessors.contains(processor.getClass())) {
-                processors.add(processor);
-            }
-        }
-        
+
         if (dialectAdditionalProcessors != null) {
             processors.addAll(dialectAdditionalProcessors);
         }

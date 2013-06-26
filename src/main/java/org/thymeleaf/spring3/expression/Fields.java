@@ -58,16 +58,6 @@ public final class Fields {
     
 
     
-    /**
-     * @deprecated Use {@link #Fields(Configuration, IProcessingContext)} instead.
-     *             Will be removed in 2.1.x
-     */
-    @Deprecated
-	public Fields(final Arguments arguments) {
-	    this(arguments.getConfiguration(), arguments);
-	}
-    
-    
     public Fields(final Configuration configuration, final IProcessingContext processingContext) {
         super();
         this.configuration = configuration;

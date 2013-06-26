@@ -138,16 +138,6 @@ public class SpelVariableExpressionEvaluator
     }
 
     
-    /**
-     * @deprecated Renamed as "computeExpressionObjects" in 2.0.17. This method will be removed in 2.1.0.
-     */
-    @Deprecated
-    public Map<String,Object> computeContextVariables(
-            final Configuration configuration, final IProcessingContext processingContext) {
-        return computeExpressionObjects(configuration, processingContext);
-    }
-    
-    
     public Map<String,Object> computeExpressionObjects(
             final Configuration configuration, final IProcessingContext processingContext) {
 

@@ -56,36 +56,12 @@ public class SpringWebContext
     
 
     public static final String BEANS_VARIABLE_NAME = "beans";
-    private static ConcurrentHashMap<ApplicationContext, HashMap<String, Object>> variableMapPrototypes =
+    private static final ConcurrentHashMap<ApplicationContext, HashMap<String, Object>> variableMapPrototypes =
             new ConcurrentHashMap<ApplicationContext, HashMap<String, Object>>();
     
     private final ApplicationContext applicationContext;
 
 
-
-    /**
-     * <p>
-     *   Creates a new instance of a SpringWebContext.
-     * </p>
-     * 
-     * @param request the request object
-     * @param servletContext the servlet context
-     * @param locale the locale
-     * @param variables the variables to be included into the context
-     * @param appctx the Spring application context
-     * @deprecated use the constructor with an additional 'response' argument instead. Will
-     *             be removed in 2.1.x.
-     */
-    @Deprecated
-    public SpringWebContext(final HttpServletRequest request,
-                            final ServletContext servletContext ,
-                            final Locale locale, 
-                            final Map<String, ?> variables, 
-                            final ApplicationContext appctx) {
-        this(request, null, servletContext, locale, variables, appctx);
-    }
-
-    
 
     /**
      * <p>
@@ -112,11 +88,12 @@ public class SpringWebContext
     
     
 
+    @SuppressWarnings("unchecked")
     private static Map<String,Object> addSpringSpecificVariables(final Map<String, ?> variables, final ApplicationContext appctx) {
 
         HashMap<String,Object> variableMapPrototype = variableMapPrototypes.get(appctx);
         if (variableMapPrototype == null) {
-            variableMapPrototype = new HashMap<String, Object>();
+            variableMapPrototype = new HashMap<String, Object>(20, 1.0f);
             // We will use a singleton-per-appctx Beans instance, and that's alright
             final Beans beans = new Beans(appctx);
             variableMapPrototype.put(BEANS_VARIABLE_NAME, beans);
@@ -124,7 +101,7 @@ public class SpringWebContext
         }
 
         final Map<String,Object> newVariables;
-        synchronized (variableMapPrototype) {
+        synchronized (variableMapPrototypes) {
             newVariables = (Map<String, Object>) variableMapPrototype.clone();
         }
 
