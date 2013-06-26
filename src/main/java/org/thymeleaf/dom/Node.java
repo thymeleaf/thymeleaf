@@ -19,13 +19,6 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.processor.ProcessorAndContext;
@@ -33,6 +26,9 @@ import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.IdentityCounter;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 
@@ -465,28 +461,7 @@ public abstract class Node implements Serializable {
     }
     
 
-    /**
-     * <p>
-     *   Sets the value of a flag indicating whether there is any reason to process
-     *   this node (and its children).
-     * </p>
-     * <p>
-     *   This flag can be set by the engine -not by processors- in order to avoid the
-     *   execution of certain parts of the DOM tree because it is known that there is
-     *   nothing to execute (and therefore it would be a waste of time trying to process it).
-     * </p>
-     * 
-     * @param skippable the new value for the flag
-     * @deprecated Will be made protected in 2.1.x. For most uses from outside the
-     *             Thymeleaf engine (e.g. from processors), you should be using 
-     *             setProcessable() instead.
-     */
-    @Deprecated
-    public final void setSkippable(final boolean skippable) {
-        unsafeSetSkippable(skippable);
-    }
-
-    protected final void unsafeSetSkippable(final boolean isSkippable) {
+    protected final void setSkippable(final boolean isSkippable) {
         this.skippable = isSkippable;
         if (!isSkippable && hasParent()) {
             // If this node is marked as non-skippable, set its parent as
@@ -770,7 +745,7 @@ public abstract class Node implements Serializable {
             } else {
                 // This time we execute "setSkippable" so that all parents at all
                 // levels are also set to "false"
-                unsafeSetSkippable(false);
+                setSkippable(false);
             }
 
             
@@ -1060,7 +1035,10 @@ public abstract class Node implements Serializable {
             }
             return result;
         }
-        
+
+        public NodeLocalVariablesMap clone() {
+            return (NodeLocalVariablesMap) super.clone();
+        }
     }
     
     

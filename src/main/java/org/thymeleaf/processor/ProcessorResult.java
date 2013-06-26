@@ -61,26 +61,6 @@ public final class ProcessorResult {
     
 
     /**
-     * @deprecated Will be removed in 2.1.x. Use the new variants {@link #setProcessTextNodes(boolean)}, 
-     *             {@link #setProcessCommentNodes(boolean)} or {@link #setProcessTextAndCommentNodes(boolean, boolean)}
-     */
-    @Deprecated
-    public static ProcessorResult setProcessOnlyElementNodes(final boolean processOnlyElementNodes) {
-        return new ProcessorResult(null, processOnlyElementNodes, true, processOnlyElementNodes, true, null, false);
-    }
-    
-    /**
-     * @deprecated Will be removed in 2.1.x. Use the new variants {@link #setLocalVariablesAndProcessTextNodes(Map, boolean)}, 
-     *             {@link #setLocalVariablesAndProcessCommentNodes(Map, boolean)} or
-     *             {@link #setLocalVariablesAndProcessTextAndCommentNodes(Map, boolean, boolean)}
-     */
-    @Deprecated
-    public static ProcessorResult setLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> localVariables, final boolean processOnlyElementNodes) {
-        return new ProcessorResult(localVariables, processOnlyElementNodes, true, processOnlyElementNodes, true, null, false);
-    }
-
-    
-    /**
      * @since 2.0.15
      */
     public static ProcessorResult setProcessTextAndCommentNodes(final boolean processTextNodes, final boolean processCommentNodes) {
@@ -172,27 +152,6 @@ public final class ProcessorResult {
 
     public Map<String, Object> getLocalVariables() {
         return this.localVariables;
-    }
-
-    
-    /**
-     * @deprecated Will be removed in 2.1.x. Use the equivalent getters for
-     *             the new flags {@link #getProcessTextNodes()} and
-     *             {@link #getProcessCommentNodes()}
-     */
-    @Deprecated
-    public boolean getProcessOnlyElementNodes() {
-        return !this.processTextNodes && !this.processCommentNodes;
-    }
-    
-    /**
-     * @deprecated Will be removed in 2.1.x. Use the equivalent getters for
-     *             the new flags {@link #isProcessTextNodesSet()} and
-     *             {@link #isProcessCommentNodesSet()}
-     */
-    @Deprecated
-    public boolean isProcessOnlyElementNodesSet() {
-        return this.processTextNodesSet || this.processCommentNodesSet;
     }
 
     

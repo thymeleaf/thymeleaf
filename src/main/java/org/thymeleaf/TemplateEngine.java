@@ -27,7 +27,6 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -227,10 +226,6 @@ public class TemplateEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
-    
-    private static final ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
-    private static final ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
-    private static final ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
 
     private static final int NANOS_IN_SECOND = 1000000;
 
@@ -883,86 +878,6 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Internal method that retrieves the thread-local locale for the
-     *   current template execution. 
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * 
-     * @return the locale of the current template execution.
-     * @deprecated Will be removed in 2.1.x due to possible creation of classloader
-     *             leaks (see http://wiki.apache.org/tomcat/MemoryLeakProtection#webappClassInstanceAsThreadLocalValue)
-     *             If Arguments is available, you can use {@link Arguments#getTemplateName()}
-     */
-    @Deprecated
-    public static Locale threadLocale() {
-        return currentProcessLocale.get();
-    }
-
-    private static void setThreadLocale(final Locale locale) {
-        currentProcessLocale.set(locale);
-    }
-
-    
-    
-    /**
-     * <p>
-     *   Internal method that retrieves the thread-local template name for the
-     *   current template execution. 
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * 
-     * @return the template name for the current engine execution.
-     * @deprecated Will be removed in 2.1.x due to possible creation of classloader
-     *             leaks (see http://wiki.apache.org/tomcat/MemoryLeakProtection#webappClassInstanceAsThreadLocalValue)
-     *             if a stack container is used for avoiding the wrong template engine being
-     *             processed when template engine executions are being nested.
-     *             If Arguments is available, you can use {@link Arguments#getTemplateName()}
-     */
-    @Deprecated
-    public static String threadTemplateName() {
-        return currentProcessTemplateName.get();
-    }
-
-    private static void setThreadTemplateName(final String templateName) {
-        currentProcessTemplateName.set(templateName);
-    }
-
-    
-    
-    /**
-     * <p>
-     *   Internal method that retrieves the thread-local template engine for the
-     *   current template execution. 
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * 
-     * @return the template engine for the current engine execution.
-     * @deprecated Will be removed in 2.1.x due to possible creation of classloader
-     *             leaks (see http://wiki.apache.org/tomcat/MemoryLeakProtection#webappClassInstanceAsThreadLocalValue).
-     *             If Arguments is available, you can use {@link Arguments#getTemplateEngine()}
-     * 
-     * @since 2.0.9
-     */
-    @Deprecated
-    public static TemplateEngine threadTemplateEngine() {
-        return currentProcessTemplateEngine.get();
-    }
-    
-    private static void setThreadTemplateEngine(final TemplateEngine templateEngine) {
-        currentProcessTemplateEngine.set(templateEngine);
-    }
-
-
-    
-
-    /**
-     * <p>
      *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
      * </p>
      * <p>
@@ -1131,10 +1046,6 @@ public class TemplateEngine {
             final IContext context = processingContext.getContext();
             
             final long startNanos = System.nanoTime();
-
-            setThreadTemplateName(templateName);
-            setThreadLocale(context.getLocale());
-            setThreadTemplateEngine(this);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});

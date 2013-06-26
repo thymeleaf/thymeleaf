@@ -298,13 +298,11 @@ public final class StringUtils {
 
 
     /**
-     * @deprecated Will be removed with the current signature in 2.1.x.
-     *             This method's signature will be modified to
-     *             "boolean isEmpty(final String target)".
+     *
+     * @since 2.1.0
      */
-    @Deprecated
-    public static Boolean isEmpty(final Object target) {
-        return Boolean.valueOf(target == null || target.toString().length() == 0);
+    public static boolean isEmpty(final String target) {
+        return target == null || target.length() == 0;
     }
 
 

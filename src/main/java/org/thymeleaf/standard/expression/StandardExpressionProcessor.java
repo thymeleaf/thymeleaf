@@ -239,17 +239,6 @@ public final class StandardExpressionProcessor {
 
     
     
-    /**
-     * @deprecated Use {@link #createStandardExpressionExecutor(IStandardVariableExpressionEvaluator)}
-     *             instead. Will be removed in 2.1.x
-     */
-    @Deprecated
-    public static StandardExpressionExecutor createStandardExpressionExecutor(
-            final IStandardExpressionEvaluator expressionEvaluator) {
-        return new StandardExpressionExecutor(
-                new DeprecatedBridgeStandardExpressionEvaluator(expressionEvaluator));
-    }
-    
     public static StandardExpressionExecutor createStandardExpressionExecutor(
             final IStandardVariableExpressionEvaluator expressionEvaluator) {
         return new StandardExpressionExecutor(expressionEvaluator);

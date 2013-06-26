@@ -119,15 +119,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
 
 
-    /**
-     * @deprecated Use {@link #getExpressionObjects()} instead. Will be removed in 2.1.x 
-     */
-    @Deprecated
-    public Map<String,Object> getBaseContextVariables() {
-        return getExpressionObjects();
-    }
-    
-
     public Map<String,Object> getExpressionObjects() {
         if (!this.computedBaseContextVariables) {
             // Base context variables are computed lazily so that subclasses have
@@ -203,23 +194,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     }
     
     
-    /**
-     * <p>
-     *   Returns the real inner map of local variables. This
-     *   method should not be called directly.
-     * </p>
-     * 
-     * @return the local variables map, which could be null if no variables are defined
-     * @deprecated Use {@link #getLocalVariables()} instead. Will be removed in 2.1.x.
-     */
-    @Deprecated
-    public HashMap<String,Object> unsafeGetLocalVariables() {
-        return this.localVariables;
-    }
-    
-    
-    
-        
     protected Map<String,Object> mergeNewLocalVariables(final Map<String,Object> newVariables) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this.localVariables;

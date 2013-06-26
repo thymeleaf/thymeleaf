@@ -204,8 +204,8 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public Object clone() {
-        return super.clone();
+    public WebSessionVariablesMap clone() {
+        return (WebSessionVariablesMap) super.clone();
     }
 
     

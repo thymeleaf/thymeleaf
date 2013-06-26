@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.PatternSpec;
-import org.thymeleaf.TemplateMode;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -342,30 +341,9 @@ public class TemplateResolver
         Validate.notNull(templateMode, "Cannot set a null template mode value");
         this.templateMode = templateMode;
     }
-    
 
-    
-    /**
-     * <p>
-     *   Sets the template mode to be applied to templates resolved by this resolver.
-     * </p>
-     * <p>
-     *   If <i>template mode patterns</i> (see {@link #setXhtmlTemplateModePatterns(Set)}, 
-     *   {@link #setHtml5TemplateModePatterns(Set)}, etc.) are also set, they have higher
-     *   priority than the template mode set here (this would act as a <i>default</i>).
-     * </p>
-     * 
-     * @param templateMode
-     * @deprecated This method has been deprecated as of 2.0.0. Use {@link #setTemplateMode(String)}
-     *             instead.
-     */
-    @Deprecated
-    public void setTemplateMode(final TemplateMode templateMode) {
-        checkNotInitialized();
-        Validate.notNull(templateMode, "Cannot set a null template mode value");
-        this.templateMode = templateMode.toString();
-    }
-    
+
+
     /**
      * <p>
      *   Returns whether templates resolved by this resolver have to be considered

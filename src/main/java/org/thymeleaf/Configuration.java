@@ -936,6 +936,8 @@ public final class Configuration {
 
     private static class TemplateResolverComparator implements Comparator<ITemplateResolver>, Serializable {
 
+        private static final long serialVersionUID = -4959505530260386645L;
+
         TemplateResolverComparator() {
             super();
         }
@@ -954,6 +956,8 @@ public final class Configuration {
 
 
     private static class MessageResolverComparator implements Comparator<IMessageResolver>, Serializable {
+
+        private static final long serialVersionUID = 4700426328261944024L;
 
         MessageResolverComparator() {
             super();

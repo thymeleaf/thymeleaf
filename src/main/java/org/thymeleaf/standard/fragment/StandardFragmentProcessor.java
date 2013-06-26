@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.fragment;
 
-import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -43,37 +42,6 @@ import org.thymeleaf.util.Validate;
 public final class StandardFragmentProcessor {
 
     
-    
-
-    /**
-     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, IProcessingContext, String, String, String, boolean)}
-     *             instead. Will be removed in 2.1.x
-     */
-    @Deprecated
-    public static FragmentAndTarget computeStandardFragmentSpec(
-            final Arguments arguments, final String standardFragmentSpec,  
-            final String targetElementName, final String targetAttributeName) {
-        return computeStandardFragmentSpec(
-                arguments.getConfiguration(), arguments, standardFragmentSpec, 
-                targetElementName, targetAttributeName);
-    }
-    
-
-    
-
-    /**
-     * 
-     * @deprecated Use {@link #computeStandardFragmentSpec(Configuration, IProcessingContext, String, String, String, boolean)}
-     *             instead. Will be removed in 2.1.x
-     */
-    @Deprecated
-    public static FragmentAndTarget computeStandardFragmentSpec(
-            final Configuration configuration, final IProcessingContext processingContext, 
-            final String standardFragmentSpec, final String targetElementName, final String targetAttributeName) {
-        return computeStandardFragmentSpec(configuration, processingContext, standardFragmentSpec, targetElementName, targetAttributeName, false);
-    }
-    
-
     
 
     /**

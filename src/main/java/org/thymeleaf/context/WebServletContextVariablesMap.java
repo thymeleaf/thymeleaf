@@ -176,8 +176,8 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public Object clone() {
-        return super.clone();
+    public WebServletContextVariablesMap clone() {
+        return (WebServletContextVariablesMap) super.clone();
     }
 
     

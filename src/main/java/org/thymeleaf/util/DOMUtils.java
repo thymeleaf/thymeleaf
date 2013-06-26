@@ -164,81 +164,7 @@ public final class DOMUtils {
     }
 
     
-    
-    /**
-     * @deprecated Use {@link #extractFragmentByElementAndAttributeValue(List, String, String, String)}
-     *             instead. Will be removed in 2.1.x
-     */
-    @Deprecated
-    public static NestableNode extractFragmentByAttributeValue(
-            final Node root, final String elementName, final String attributeName, final String attributeValue) {
 
-        Validate.notNull(root, "Root cannot be null");
-        // Element name, attribute name and attribute value CAN be null 
-        // (in that case, all elements will be searched)
-        
-        return exploreNodeForExtractingFragment(root, Node.normalizeName(elementName), Node.normalizeName(attributeName), attributeValue);
-        
-    }
-    
-    
-    @Deprecated
-    private static NestableNode exploreNodeForExtractingFragment(
-            final Node node, final String normalizedElementName, final String normalizedAttributeName, final String attributeValue) {
-        
-        if (node instanceof NestableNode) {
-            
-            final NestableNode nestableNode = (NestableNode) node;
-            
-            if (nestableNode instanceof Element) {
-                final Element element = (Element) nestableNode;
-                if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
-                    if (normalizedAttributeName != null) {
-                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
-                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
-                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                                return nestableNode;
-                            }
-                        }
-                    } else {
-                        return nestableNode;
-                    }
-                }
-            } else if (nestableNode instanceof NestableAttributeHolderNode) {
-                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
-                // If not null, an element without name can never be selectable
-                if (normalizedElementName == null) {
-                    if (normalizedAttributeName != null) {
-                        if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
-                            final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
-                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                                return nestableNode;
-                            }
-                        } else { 
-                            return nestableNode;
-                        }
-                        
-                    }
-                    
-                }
-            }
-            
-            final List<Node> children = nestableNode.getChildren();
-            for (final Node child : children) {
-                final NestableNode childResult =
-                        exploreNodeForExtractingFragment(
-                                child, normalizedElementName, normalizedAttributeName, attributeValue);
-                if (childResult != null) {
-                    return childResult;
-                }
-            }
-            
-        }
-        
-        return null;
-        
-    }
-    
     
     
     
@@ -489,18 +415,6 @@ public final class DOMUtils {
     
     public static String getXmlFor(final Node node) {
         return getOutputFor(node, new XmlTemplateWriter(), "XML");
-    }
-    
-    
-    /**
-     * @deprecated To be removed in 2.1.0. Use {@link #getHtml5For(Node)},
-     *             {@link #getXhtmlFor(Node)} or 
-     *             {@link #getOutputFor(Node, AbstractGeneralTemplateWriter, String)}
-     *             instead. 
-     */
-    @Deprecated
-    public static String getXhtmlHtml5For(final Node node) {
-        return getOutputFor(node, new XhtmlHtml5TemplateWriter(), "XHTML");
     }
     
     

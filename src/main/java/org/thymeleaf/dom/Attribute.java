@@ -72,7 +72,7 @@ public final class Attribute implements Serializable {
         this.unprefixedNormalizedName = PrefixUtils.getUnprefixed(this.normalizedName);
         this.hasPrefix = this.normalizedPrefix != null;
 
-        this.xmlnsAttribute = (this.normalizedPrefix != null && this.normalizedPrefix.equals(XMLNS_PREFIX));
+        this.xmlnsAttribute = XMLNS_PREFIX.equals(this.normalizedPrefix);
         this.xmlnsPrefix = (this.xmlnsAttribute? this.unprefixedNormalizedName : null);
 
         // The "onlyName" flag determines whether the attribute was specified

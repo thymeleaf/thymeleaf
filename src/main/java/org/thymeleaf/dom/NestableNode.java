@@ -546,7 +546,7 @@ public abstract class NestableNode extends Node {
             // If this node is marked as skippable, all of its
             // children should be marked skippable too.
             for (int i = 0; i < this.childrenLen; i++) {
-                this.children[i].unsafeSetSkippable(true);
+                this.children[i].setSkippable(true);
             }
         }
     }

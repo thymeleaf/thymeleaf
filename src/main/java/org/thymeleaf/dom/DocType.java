@@ -289,21 +289,4 @@ public final class DocType implements Serializable {
     
     
     
-    /**
-     * 
-     * @deprecated Redundant. {@link org.thymeleaf.util.StandardDOMTranslator#translateDocumentType(org.w3c.dom.DocumentType)}
-     *             should be used instead. Will be removed in 2.1.0
-     */
-    @Deprecated
-    public static DocType translateDOMDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
-        
-        if (domDocumentType == null) {
-            return null;
-        }
-        final String rootElementName = domDocumentType.getName();
-        return new DocType(rootElementName, domDocumentType.getPublicId(), domDocumentType.getSystemId());
-        
-    }
-    
-    
 }

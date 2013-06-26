@@ -420,6 +420,9 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     private static boolean isReservedVariableName(final String name) {
         return isParamVariableName(name) || isSessionVariableName(name) || isApplicationVariableName(name);
     }
-    
-    
+
+
+    public WebVariablesMap clone() {
+        return (WebVariablesMap) super.clone();
+    }
 }

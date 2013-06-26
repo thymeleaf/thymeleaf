@@ -42,7 +42,7 @@ package org.thymeleaf.util;
  * @since 2.0.15
  *
  */
-public final class CharArrayWrapperSequence implements CharSequence {
+public final class CharArrayWrapperSequence implements CharSequence, Cloneable {
 
     private final char[] buffer;
     private final int offset;

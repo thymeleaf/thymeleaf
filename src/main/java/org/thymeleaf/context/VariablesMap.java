@@ -103,9 +103,13 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
 
     }
 
-    
-    
-    
+
+    public VariablesMap clone() {
+        return (VariablesMap) super.clone();
+    }
+
+
+
     /**
      * Extension of {@code MapPropertyAccessor} that handles getting of size
      * property. When there is entry with key "size" it is returned instead of

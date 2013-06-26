@@ -106,8 +106,8 @@ class WebRequestParamsVariablesMap extends VariablesMap<String,String[]> {
     }
 
     @Override
-    public Object clone() {
-        return super.clone();
+    public WebRequestParamsVariablesMap clone() {
+        return (WebRequestParamsVariablesMap) super.clone();
     }
 
     @Override

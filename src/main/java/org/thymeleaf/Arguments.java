@@ -67,12 +67,6 @@ import org.thymeleaf.util.Validate;
  */
 public final class Arguments extends AbstractDialectAwareProcessingContext {
 
-    /**
-     * @deprecated Use {@link org.thymeleaf.processor.ProcessorResult#setSelectionTarget(Object) instead.}. 
-     */
-    @Deprecated
-    public static final String SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
-    
     private final TemplateEngine templateEngine;
     
     private final TemplateProcessingParameters templateProcessingParameters;
@@ -87,31 +81,6 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
     private final boolean processCommentNodes;
     
 
-    /**
-     * <p>
-     *   Deprecated constructor. <b>Should not use</b>.
-     * </p>
-     * 
-     * @param templateProcessingParameters
-     * @param templateResolution
-     * @param templateRepository
-     * @param document
-     * @deprecated Will be removed in 2.1. Use the constructor with a
-     *            {@link TemplateEngine} argument instead.
-     */
-    @Deprecated
-    public Arguments(
-            final TemplateProcessingParameters templateProcessingParameters,
-            final TemplateResolution templateResolution,
-            final TemplateRepository templateRepository,
-            final Document document) {
-        this(TemplateEngine.threadTemplateEngine(), 
-                templateProcessingParameters, templateResolution,
-                templateRepository, document);
-    }
-    
-    
-    
     /**
      * <p>
      *   Create a new Arguments instance.
@@ -290,25 +259,6 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
 
     /**
      * <p>
-     *   Returns whether only element nodes should be processed (as opposed
-     *   to texts, CDATAs, comments, etc.). Default is true.
-     * </p>
-     * 
-     * @return whether only element nodes will be processed
-     * @deprecated To be removed in 2.1.x. This flag has been substituted by two
-     *             flags available at the {@link #getProcessTextNodes()} and
-     *             {@link #getProcessCommentNodes()} getter methods.
-     */
-    @Deprecated
-    public boolean getProcessOnlyElementNodes() {
-        // Only having both flags to false is equivalent to a "true" value for
-        // the old flag.
-        return !this.processTextNodes && !this.processCommentNodes;
-    }
-    
-    
-    /**
-     * <p>
      *   Returns whether text nodes (which include {@link org.thymeleaf.dom.Text} and
      *   {@link org.thymeleaf.dom.CDATASection} nodes) will be processed.
      * </p>
@@ -476,30 +426,6 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyElementNodes</tt> flag.
-     * </p>
-     * 
-     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
-     * @deprecated Will be removed in 2.1.x. Use the variants for the new flags instead: 
-     *             {@link #setProcessTextNodes(boolean)}, {@link #setProcessCommentNodes(boolean)} or
-     *             {@link #setProcessTextAndCommentNodes(boolean, boolean)}. 
-     * @return the new Arguments object
-     */
-    @Deprecated
-    public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
-        final Arguments arguments = 
-                new Arguments(this.templateEngine,
-                        this.templateProcessingParameters, this.templateResolution, 
-                        this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, !shouldProcessOnlyElementNodes, !shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
-                        getExpressionEnhancingDialects());
-        return arguments;
-    }
-
-    
-
-    /**
-     * <p>
      *   Creates a new Arguments object by setting a new value for the <tt>processTextNodes</tt> flag.
      * </p>
      * 
@@ -558,31 +484,6 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
                         this.templateRepository, this.document, getLocalVariables(), 
                         this.idCounts, shouldProcessTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
-        return arguments;
-    }
-
-    
-
-    /**
-     * <p>
-     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processOnlyElementNodes</tt> flag.
-     * </p>
-     * 
-     * @param newVariables the new local variables
-     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
-     * @return the new Arguments object
-     * @deprecated Will be removed in 2.1.x. Use the variants for the new flags instead: 
-     *             {@link #setProcessTextNodes(boolean)}, {@link #setProcessCommentNodes(boolean)} or
-     *             {@link #setProcessTextAndCommentNodes(boolean, boolean)}. 
-     */
-    @Deprecated
-    public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
-        final Arguments arguments = 
-            new Arguments(this.templateEngine,
-                    this.templateProcessingParameters, this.templateResolution, 
-                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                    this.idCounts, !shouldProcessOnlyElementNodes, !shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget(),
-                    getExpressionEnhancingDialects());
         return arguments;
     }
 
