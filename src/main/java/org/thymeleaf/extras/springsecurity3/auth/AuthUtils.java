@@ -234,7 +234,7 @@ public final class AuthUtils {
                     ((expressionEvaluator != null && expressionEvaluator instanceof SpelVariableExpressionEvaluator)?
                             (SpelVariableExpressionEvaluator) expressionEvaluator :
                             SpelVariableExpressionEvaluator.INSTANCE);
-            contextVariables = spelExprEval.computeContextVariables(arguments.getConfiguration(), arguments);
+            contextVariables = spelExprEval.computeExpressionObjects(arguments.getConfiguration(), arguments);
             
         }
         

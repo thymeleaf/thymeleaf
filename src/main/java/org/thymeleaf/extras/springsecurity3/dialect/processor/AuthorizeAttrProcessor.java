@@ -75,7 +75,7 @@ public class AuthorizeAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        if (attributeValue == null || StringUtils.isEmpty(attributeValue).booleanValue()) {
+        if (attributeValue == null || StringUtils.isEmptyOrWhitespace(attributeValue)) {
             return false;
         }
         
