@@ -108,6 +108,7 @@
         <id>2.0</id>
         <properties>
           <thymeleaf.version>2.0.18-SNAPSHOT</thymeleaf.version>
+          <thymeleaf-testing.version>2.0.4-SNAPSHOT</thymeleaf-testing.version>
           <thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
           <springframework.version>3.0.7.RELEASE</springframework.version>
           <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
@@ -118,6 +119,7 @@
       <id>2.1</id>
       <properties>
         <thymeleaf.version>2.1.0-SNAPSHOT</thymeleaf.version>
+        <thymeleaf-testing.version>2.1.0-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.0-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
@@ -129,7 +131,6 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf-testing.version>2.0.4-SNAPSHOT</thymeleaf-testing.version>
   </properties>
 
   
