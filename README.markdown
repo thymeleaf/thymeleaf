@@ -9,16 +9,16 @@ Tests under the `org.thymeleaf.engine` package are designed for use with the **t
 All tests and are launched using JUnit. The JUnit test classes are contained at several folders, depending on the thymelaef version they refer to (activated with the corresponding profile):
 
    * `src/test-common/java` contains tests executed for all thymeleaf versions.
-   * `src/test-2.0/java` for thymeleaf 2.0.x
-   * `src/test-2.1/java` for thymeleaf 2.1.x
+   * `src/test-20/java` for thymeleaf 2.0.x
+   * `src/test-21/java` for thymeleaf 2.1.x
 
 Inside these folders, tests are divided into subfolders, one for each group of functionality, and might be accompanied by model or configuration classes.
 
 Test files (among them, `*.thtest` files for the *engine tests*) are contained in similarly organized folders:
 
    * `src/test-common/resources`
-   * `src/test-2.0/resources`
-   * `src/test-2.1/resources`
+   * `src/test-20/resources`
+   * `src/test-21/resources`
 
 
 Launching tests
