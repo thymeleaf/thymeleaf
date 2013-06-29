@@ -19,15 +19,6 @@
  */
 package org.thymeleaf.standard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.thymeleaf.Standards;
 import org.thymeleaf.dialect.AbstractXHTMLEnabledDialect;
 import org.thymeleaf.doctype.DocTypeIdentifier;
@@ -36,40 +27,12 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAttrAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAttrappendAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAttrprependAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardCaseAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardClassappendAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardConditionalFixedValueAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardDOMEventAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardEachAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardIfAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardIncludeFragmentAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardInlineAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardLangXmlLangAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardRemoveAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSingleNonRemovableAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSubstituteByFragmentAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSwitchAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardTextAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardUnlessAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardUtextAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardWithAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor;
+import org.thymeleaf.standard.expression.*;
+import org.thymeleaf.standard.processor.attr.*;
 import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
 import org.thymeleaf.util.Validate;
+
+import java.util.*;
 
 /**
  * <p>
@@ -97,6 +60,7 @@ import org.thymeleaf.util.Validate;
  *           <li>{@link StandardIncludeFragmentAttrProcessor}</li>
  *           <li>{@link StandardLangXmlLangAttrProcessor}</li>
  *           <li>{@link StandardRemoveAttrProcessor}</li>
+ *           <li>{@link StandardReplaceFragmentAttrProcessor}</li>
  *           <li>{@link StandardSingleNonRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSingleRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSubstituteByFragmentAttrProcessor}</li>
@@ -594,6 +558,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.add(new StandardIncludeFragmentAttrProcessor());
         processors.add(new StandardLangXmlLangAttrProcessor());
         processors.add(new StandardRemoveAttrProcessor());
+        processors.add(new StandardReplaceFragmentAttrProcessor());
         processors.addAll(Arrays.asList(StandardSingleNonRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.addAll(Arrays.asList(StandardSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.add(new StandardSubstituteByFragmentAttrProcessor());
