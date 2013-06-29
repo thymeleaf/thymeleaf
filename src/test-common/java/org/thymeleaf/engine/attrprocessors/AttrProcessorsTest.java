@@ -170,16 +170,27 @@ public class AttrProcessorsTest {
         
     }
 
-    
+
     @Test
     public void testSwitch() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:engine/attrprocessors/switch");
-        
+
         Assert.assertTrue(executor.isAllOK());
-        
+
     }
-    
+
+
+    @Test
+    public void testWith() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine/attrprocessors/with");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
     
 }

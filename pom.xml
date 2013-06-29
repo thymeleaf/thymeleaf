@@ -259,7 +259,11 @@
                 <configuration>
                   <resources>
                     <resource>
-                      <directory>src/test-20/resources</directory>
+                      <directory>${project.basedir}/src/test-20/resources/</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
                     </resource>
                   </resources>
                 </configuration>
@@ -307,7 +311,11 @@
                 <configuration>
                   <resources>
                     <resource>
-                      <directory>src/test-21/resources</directory>
+                      <directory>${project.basedir}\src\test-21\resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
                     </resource>
                   </resources>
                 </configuration>

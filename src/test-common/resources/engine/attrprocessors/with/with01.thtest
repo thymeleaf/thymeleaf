@@ -6,7 +6,8 @@ user = #{ 'name': 'Jack Melon',\
            'role': 'finance' }
 # ------------------------------------------------------------
 %INPUT
-<div th:with="a=${user},b=${a.name}" th:text="${b}">...</div>
+<div th:with="a=${user}">...</div>
+<div th:text="${a.name}">...</div>
 # ------------------------------------------------------------
 %EXCEPTION ognl.OgnlException
 
