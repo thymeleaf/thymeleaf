@@ -82,6 +82,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             final Expression expression = assignation.getRight();
             final Object varValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, expression);
 
+            // Creating a new Arguments object allows the reuse of variables in, for example, th:with expressions.
             assignationExecutionArguments =
                     assignationExecutionArguments.addLocalVariables(Collections.singletonMap(varName, varValue));
 
