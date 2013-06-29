@@ -60,6 +60,7 @@ import java.util.*;
  *           <li>{@link StandardIncludeFragmentAttrProcessor}</li>
  *           <li>{@link StandardLangXmlLangAttrProcessor}</li>
  *           <li>{@link StandardRemoveAttrProcessor}</li>
+ *           <li>{@link StandardReplaceFragmentAttrProcessor}</li>
  *           <li>{@link StandardSingleNonRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSingleRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSubstituteByFragmentAttrProcessor}</li>
