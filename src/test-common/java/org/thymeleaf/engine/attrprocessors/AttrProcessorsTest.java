@@ -86,17 +86,27 @@ public class AttrProcessorsTest {
         Assert.assertTrue(executor.isAllOK());
         
     }
-    
+
     @Test
     public void testSubstituteby() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:engine/attrprocessors/substituteby");
-        
+
         Assert.assertTrue(executor.isAllOK());
-        
+
     }
-    
+
+    @Test
+    public void testReplace() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine/attrprocessors/replace");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
     @Test
     public void testEach() throws Exception {
 
