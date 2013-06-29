@@ -27,7 +27,7 @@ import org.thymeleaf.util.PrefixUtils;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.9
+ * @since 2.1.0
  *
  */
 public class StandardReplaceFragmentAttrProcessor
