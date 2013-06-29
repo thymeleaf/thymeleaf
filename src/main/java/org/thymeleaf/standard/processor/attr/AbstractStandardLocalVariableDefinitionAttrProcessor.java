@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,14 +72,19 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
-        
+
+        Arguments assignationExecutionArguments = arguments;
+
         final Map<String,Object> newLocalVariables = new HashMap<String,Object>(assignations.size() + 1, 1.0f);
         for (final Assignation assignation : assignations) {
             
             final String varName = assignation.getLeft().getValue();
             final Expression expression = assignation.getRight();
-            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, expression);
-            
+            final Object varValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, expression);
+
+            assignationExecutionArguments =
+                    assignationExecutionArguments.addLocalVariables(Collections.singletonMap(varName, varValue));
+
             newLocalVariables.put(varName, varValue);
             
         }
