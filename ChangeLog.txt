@@ -11,6 +11,7 @@
   non-default case blocks.
 - Fixed bad removal of prototyping JS code in lines not ended with ";" or "," (like the last lines of
   an array or object definition).
+- Added th:replace as a synonym for th:substituteby.
 
 
 2.0.17
