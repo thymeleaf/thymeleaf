@@ -1,0 +1,23 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+applicationName = 'Testing App'
+user = #{ 'name':'John Apricot',\
+          'firstName':'John',\
+          'lastName':'Apricot',\
+          'nationality':'Antarctica',\
+          'age':'(no age specified)'}
+salute_bold = '<b>Hello!</b>'
+# ------------------------------------------------------------
+%MESSAGES
+salute = <b>Hello</b>, {0} ''The Great''!
+name_is = The name is {0}
+# ------------------------------------------------------------
+%INPUT
+<div th:fragment="copy">
+      &copy; 2011 The Good Thymes Virtual Grocery
+    </div>
+  
+  </body>
+  
+</html>
