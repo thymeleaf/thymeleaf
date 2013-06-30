@@ -128,12 +128,24 @@ public abstract class SimpleExpression extends Expression {
                     fragments.add(new ExpressionParsingNode(booleanLiteralExpr));
                     fragment = new StringBuilder();
 
+                } else {
+
+                    final NullLiteralExpression nullLiteralExpr =
+                            NullLiteralExpression.parseNullLiteral(fragment.toString());
+                    if (nullLiteralExpr != null) {
+
+                        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                        inputWithPlaceholders.append(String.valueOf(currentIndex++));
+                        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                        fragments.add(new ExpressionParsingNode(nullLiteralExpr));
+                        fragment = new StringBuilder();
+
+                    }
+
                 }
 
                 // If token is not of one of the recognized types, just let the process
                 // continue (once we've set the inToken flag to false)
-
-                // TODO Future: add Null Literal Expressions
 
             }
 
@@ -298,12 +310,24 @@ public abstract class SimpleExpression extends Expression {
                 fragments.add(new ExpressionParsingNode(booleanLiteralExpr));
                 fragment = new StringBuilder();
 
+            } else {
+
+                final NullLiteralExpression nullLiteralExpr =
+                        NullLiteralExpression.parseNullLiteral(fragment.toString());
+                if (nullLiteralExpr != null) {
+
+                    inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                    inputWithPlaceholders.append(String.valueOf(currentIndex++));
+                    inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                    fragments.add(new ExpressionParsingNode(nullLiteralExpr));
+                    fragment = new StringBuilder();
+
+                }
+
             }
 
             // If token is not of one of the recognized types, just let the process
             // continue (once we've set the inToken flag to false)
-
-            // TODO Future: add Null Literal Expressions
 
         }
 
@@ -463,6 +487,9 @@ public abstract class SimpleExpression extends Expression {
         }
         if (expression instanceof BooleanLiteralExpression) {
             return BooleanLiteralExpression.executeBooleanLiteral(processingContext, (BooleanLiteralExpression)expression, expContext);
+        }
+        if (expression instanceof NullLiteralExpression) {
+            return NullLiteralExpression.executeNullLiteral(processingContext, (NullLiteralExpression)expression, expContext);
         }
         if (expression instanceof LinkExpression) {
             return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expressionEvaluator, expContext);
