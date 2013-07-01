@@ -49,4 +49,15 @@ public class AttrProcessors21Test {
     }
 
 
+    @Test
+    public void testInclude() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/attrprocessors/include");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
 }
