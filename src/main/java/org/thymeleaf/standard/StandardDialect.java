@@ -44,6 +44,7 @@ import java.util.*;
  *   <li><b>Attribute processors</b>:
  *         <ul>
  *           <li>{@link StandardAltTitleAttrProcessor}</li>
+ *           <li>{@link StandardAssertAttrProcessor}</li>
  *           <li>{@link StandardAttrAttrProcessor}</li>
  *           <li>{@link StandardAttrappendAttrProcessor}</li>
  *           <li>{@link StandardAttrprependAttrProcessor}</li>
@@ -515,6 +516,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
          */
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(35, 1.0f);
         processors.add(new StandardAltTitleAttrProcessor());
+        processors.add(new StandardAssertAttrProcessor());
         processors.add(new StandardAttrAttrProcessor());
         processors.add(new StandardAttrappendAttrProcessor());
         processors.add(new StandardAttrprependAttrProcessor());
