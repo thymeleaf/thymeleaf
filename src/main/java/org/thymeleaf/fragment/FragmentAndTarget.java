@@ -21,6 +21,7 @@ package org.thymeleaf.fragment;
 
 import java.util.List;
 
+import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
@@ -29,6 +30,7 @@ import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -39,6 +41,14 @@ import org.thymeleaf.util.Validate;
  *   Container class for a pair of <i>template name</i> + <i>fragment spec</i>,
  *   capable of executing the fragment spec on the specified template, after
  *   obtaining the template from {@link TemplateRepository}.
+ * </p>
+ * <p>
+ *   Note that the specified template can be null, in which case the fragment will
+ *   be considered to be executed on the current template (obtained from the
+ *   IProcessingContext argument in
+ *   {@link #extractFragment(Configuration, IProcessingContext, TemplateRepository)},
+ *   which will therefore need to be an instance of
+ *   {@link org.thymeleaf.Arguments}).
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -57,12 +67,13 @@ public final class FragmentAndTarget {
      *   Create a new instance of this class.
      * </p>
      * 
-     * @param templateName the name of the template that will be resolved and parsed.
+     * @param templateName the name of the template that will be resolved and parsed, null if
+     *                     fragment is to be executed on the current template.
      * @param fragmentSpec the fragment spec that will be applied to the template, once parsed.
      */
     public FragmentAndTarget(final String templateName, final IFragmentSpec fragmentSpec) {
         super();
-        Validate.notEmpty(templateName, "Template name cannot be null or empty");
+        // templateName can be null if target template is the current one
         Validate.notNull(fragmentSpec, "Fragment spec cannot be null or empty");
         this.templateName = templateName;
         this.fragmentSpec = fragmentSpec;
@@ -115,7 +126,10 @@ public final class FragmentAndTarget {
      *        after being converted to an {@link IProcessingContext} implementation.
      * @param templateRepository the template repository to be asked for the template.
      * @return the result of parsing + applying the fragment spec.
+     * @deprecated Should use {@link #extractFragment(Configuration, IProcessingContext, TemplateRepository)}
+     *             instead. Will be removed in 2.1.5
      */
+    @Deprecated
     public List<Node> extractFragment(
             final Configuration configuration, final IContext context, final TemplateRepository templateRepository) {
         return extractFragment(
@@ -131,7 +145,11 @@ public final class FragmentAndTarget {
      *   Read the specified template from {@link TemplateRepository}, and then apply
      *   the {@link IFragmentSpec} to the result of parsing it (the template).
      * </p>
-     * 
+     * <p>
+     *   In order to execute on the current template (templateName == null), the <tt>context</tt>
+     *   argument will need to be an {@link org.thymeleaf.Arguments} object.
+     * </p>
+     *
      * @param configuration the configuration to be used for resolving the template and
      *        processing the fragment spec.
      * @param context the processing context to be used for resolving and parsing the template.
@@ -141,8 +159,20 @@ public final class FragmentAndTarget {
     public List<Node> extractFragment(
             final Configuration configuration, final IProcessingContext context, final TemplateRepository templateRepository) {
 
+        String targetTemplateName = getTemplateName();
+        if (targetTemplateName == null) {
+            if (context != null && context instanceof Arguments) {
+                targetTemplateName = ((Arguments)context).getTemplateName();
+            } else {
+                throw new TemplateProcessingException(
+                        "In order to extract fragment from current template (templateName == null), processing context " +
+                        "must be a non-null instance of the Arguments class (but is: " +
+                        (context == null? null : context.getClass().getName()) + ")");
+            }
+        }
+
         final TemplateProcessingParameters fragmentTemplateProcessingParameters = 
-                new TemplateProcessingParameters(configuration, getTemplateName(), context);
+                new TemplateProcessingParameters(configuration, targetTemplateName, context);
         
         final Template parsedFragmentTemplate = 
                 templateRepository.getTemplate(fragmentTemplateProcessingParameters);

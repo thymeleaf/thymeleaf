@@ -27,6 +27,7 @@ import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
 import org.thymeleaf.fragment.FragmentAndTarget;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.fragment.WholeFragmentSpec;
+import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.util.Validate;
@@ -58,17 +59,23 @@ public final class StandardFragmentProcessor {
         
         final FragmentSelection fragmentSelection =
             StandardExpressionProcessor.parseFragmentSelection(configuration, processingContext, standardFragmentSpec);
-        
-        final Object templateNameObject = 
-            StandardExpressionProcessor.executeExpression(configuration, processingContext, fragmentSelection.getTemplateName());
-        if (templateNameObject == null) {
-            throw new TemplateProcessingException(
-                    "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " + 
-                    "returned null.");
+
+        final Expression templateNameExpression = fragmentSelection.getTemplateName();
+        final String templateName;
+        if (templateNameExpression != null) {
+            final Object templateNameObject =
+                    StandardExpressionProcessor.executeExpression(configuration, processingContext, templateNameExpression);
+            if (templateNameObject == null) {
+                throw new TemplateProcessingException(
+                        "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " +
+                                "returned null.");
+            }
+            templateName = templateNameObject.toString();
+        } else {
+            // If template name expression is null, we will execute the fragment on the "current" template
+            templateName = null;
         }
-        
-        final String templateName = templateNameObject.toString();
-        
+
         if (fragmentSelection.hasFragmentSelector()) {
 
             final Object fragmentSelectorObject = 
