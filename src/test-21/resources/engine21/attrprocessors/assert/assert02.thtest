@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <div th:assert="${onevar}">...</div>
+</div>
+# ------------------------------------------------------------
+%EXCEPTION org.thymeleaf.exceptions.TemplateAssertionException
+%EXCEPTION_MESSAGE_PATTERN .*?\$\{onevar\}.*?assert02.*?line 2.*?

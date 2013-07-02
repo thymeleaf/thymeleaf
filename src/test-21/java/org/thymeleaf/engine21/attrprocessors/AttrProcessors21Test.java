@@ -39,6 +39,17 @@ public class AttrProcessors21Test {
 
 
     @Test
+    public void testAssert() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/attrprocessors/assert");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
+    @Test
     public void testWith() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
@@ -54,6 +65,28 @@ public class AttrProcessors21Test {
 
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:engine21/attrprocessors/include");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
+    @Test
+    public void testSubstituteby() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/attrprocessors/substituteby");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
+    @Test
+    public void testReplace() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/attrprocessors/replace");
 
         Assert.assertTrue(executor.isAllOK());
 
