@@ -159,6 +159,26 @@ public final class StandardExpressionParser {
         return parseFragmentSelection(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
 
+
+
+    /**
+     * @since 2.1.0
+     */
+    public FragmentSignature parseFragmentSignature(final Arguments arguments, final String input) {
+        Validate.notNull(arguments, "Arguments cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return doParseFragmentSignature(arguments.getConfiguration(), DOMUtils.unescapeXml(input, true));
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public FragmentSignature parseFragmentSignature(final Configuration configuration, final String input) {
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return doParseFragmentSignature(configuration, DOMUtils.unescapeXml(input, true));
+    }
+
     
     
     
@@ -322,7 +342,35 @@ public final class StandardExpressionParser {
         return fragmentSelection;
 
     }
-    
+
+
+
+    FragmentSignature doParseFragmentSignature(final Configuration configuration, final String input) {
+
+        // No need to preprocess, also no need to have a context, because fragment signatures are
+        // token-only based (no expressions allowed).
+
+        if (configuration != null) {
+            final FragmentSignature cachedFragmentSignature = CACHE.getFragmentSignatureFromCache(configuration, input);
+            if (cachedFragmentSignature != null) {
+                return cachedFragmentSignature;
+            }
+        }
+
+        final FragmentSignature fragmentSignature = FragmentSignature.parse(input);
+
+        if (fragmentSignature == null) {
+            throw new TemplateProcessingException("Could not parse as fragment signature: \"" + input + "\"");
+        }
+
+        if (configuration != null) {
+            CACHE.putFragmentSignatureIntoCache(configuration, input, fragmentSignature);
+        }
+
+        return fragmentSignature;
+
+    }
+
     
 
     

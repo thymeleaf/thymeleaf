@@ -37,6 +37,7 @@ final class ExpressionCache {
     private static final String EXPRESSION_SEQUENCE_CACHE_PREFIX = "{expression_sequence}";
     private static final String EACH_CACHE_PREFIX = "{each}";
     private static final String FRAGMENT_SELECTION_CACHE_PREFIX = "{fragment_selection}";
+    private static final String FRAGMENT_SIGNATURE_CACHE_PREFIX = "{fragment_signature}";
 
     
     
@@ -114,6 +115,15 @@ final class ExpressionCache {
     
     void putFragmentSelectionIntoCache(final Configuration configuration, final String input, final FragmentSelection value) {
         putIntoCache(configuration, input, value, FRAGMENT_SELECTION_CACHE_PREFIX);
+    }
+
+
+    FragmentSignature getFragmentSignatureFromCache(final Configuration configuration, final String input) {
+        return (FragmentSignature) getFromCache(configuration, input, FRAGMENT_SIGNATURE_CACHE_PREFIX);
+    }
+
+    void putFragmentSignatureIntoCache(final Configuration configuration, final String input, final FragmentSignature value) {
+        putIntoCache(configuration, input, value, FRAGMENT_SIGNATURE_CACHE_PREFIX);
     }
 
 }
