@@ -43,30 +43,27 @@ public final class FragmentSelection implements Serializable {
     private static final String FRAGMENT_SEPARATOR = "::";
     private static final char FRAGMENT_SELECTOR_XPATH_START = '[';
     private static final char FRAGMENT_SELECTOR_XPATH_END = ']';
+    private static final char FRAGMENT_SELECTOR_PARAMETERS_START = '(';
+    private static final char FRAGMENT_SELECTOR_PARAMETERS_END = ')';
+
+    private static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
 
     
     private final Expression templateName;
     private final Expression fragmentSelector;
+    private final AssignationSequence parameters;
     private final boolean isXPath;
     
     
     
-    private FragmentSelection(final Expression templateName) {
-        super();
-        // templateName can be null if fragment is to be executed on the current template
-        this.templateName = templateName;
-        this.fragmentSelector = null;
-        this.isXPath = false;
-    }
-    
-    
     private FragmentSelection(final Expression templateName, final Expression fragmentSelector,
-            final boolean isXPath) {
+            final AssignationSequence parameters, final boolean isXPath) {
         super();
         // templateName can be null if fragment is to be executed on the current template
         Validate.notNull(fragmentSelector, "Fragment selector cannot be null");
         this.templateName = templateName;
         this.fragmentSelector = fragmentSelector;
+        this.parameters = parameters;
         this.isXPath = isXPath;
     }
 
@@ -83,6 +80,14 @@ public final class FragmentSelection implements Serializable {
     public boolean hasFragmentSelector() {
         return this.fragmentSelector != null;
     }
+
+    public AssignationSequence getParameters() {
+        return this.parameters;
+    }
+
+    public boolean hasParameters() {
+        return this.parameters != null && this.parameters.size() > 0;
+    }
     
     public boolean isXPath() {
         return this.isXPath;
@@ -90,8 +95,10 @@ public final class FragmentSelection implements Serializable {
 
     
     public String getStringRepresentation() {
+
         final String templateNameStringRepresentation =
                 (this.templateName != null? this.templateName.getStringRepresentation() : "");
+
         if (this.fragmentSelector == null) {
             return templateNameStringRepresentation;
         }
@@ -129,7 +136,7 @@ public final class FragmentSelection implements Serializable {
             if (templateNameExpr == null) {
                 return null;
             }
-            final FragmentSelection fragmentSelection = new FragmentSelection(templateNameExpr);
+            final FragmentSelection fragmentSelection = new FragmentSelection(templateNameExpr, null, null, false);
             return fragmentSelection;
         }
         
@@ -165,7 +172,8 @@ public final class FragmentSelection implements Serializable {
             return null;
         }
         
-        final FragmentSelection fragmentSelection = new FragmentSelection(templateNameExpr, fragmentSelectorExpr, xpath);
+        final FragmentSelection fragmentSelection =
+                new FragmentSelection(templateNameExpr, fragmentSelectorExpr, null, xpath);
 
         return fragmentSelection;
         
@@ -182,5 +190,35 @@ public final class FragmentSelection implements Serializable {
         return expr;
     }
     
-    
+
+
+    private static boolean isAssignationNamed(final AssignationSequence assignationSequence) {
+
+        // An assignation sequence will be considered "unnamed" if all variable names
+        // start by "_arg", followed by a number. This will mean they have been automatically
+        // assigned when parsed because no names were assigned.
+
+        for (final Assignation assignation : assignationSequence.getAssignations()) {
+            final Token token = assignation.getLeft();
+            final String variableName = token.getValue();
+            if (variableName == null) {
+                return true;
+            }
+            if (!variableName.startsWith(UNNAMED_PARAMETERS_PREFIX)) {
+                return true;
+            }
+            final int variableNameLen = variableName.length();
+            for (int i = UNNAMED_PARAMETERS_PREFIX.length(); i < variableNameLen; i++) {
+                final char c = variableName.charAt(i);
+                if (!Character.isDigit(c)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+
 }
