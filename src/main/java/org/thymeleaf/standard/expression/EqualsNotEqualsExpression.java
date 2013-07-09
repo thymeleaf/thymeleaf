@@ -39,15 +39,17 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
     protected static final String EQUALS_OPERATOR_2 = "eq";
     protected static final String NOT_EQUALS_OPERATOR = "!=";
     protected static final String NOT_EQUALS_OPERATOR_2 = "neq";
+    protected static final String NOT_EQUALS_OPERATOR_3 = "ne";
 
 
-    private static final String[] OPERATORS = new String[] { EQUALS_OPERATOR, NOT_EQUALS_OPERATOR, EQUALS_OPERATOR_2, NOT_EQUALS_OPERATOR_2 };
-    private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false };
+    private static final String[] OPERATORS = 
+        new String[] { EQUALS_OPERATOR, NOT_EQUALS_OPERATOR, EQUALS_OPERATOR_2, NOT_EQUALS_OPERATOR_2, NOT_EQUALS_OPERATOR_3 };
+    private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false, false };
     
     @SuppressWarnings("unchecked")
     private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES = 
         (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { 
-            EqualsExpression.class, NotEqualsExpression.class, EqualsExpression.class, NotEqualsExpression.class };
+            EqualsExpression.class, NotEqualsExpression.class, EqualsExpression.class, NotEqualsExpression.class, NotEqualsExpression.class };
 
     
     

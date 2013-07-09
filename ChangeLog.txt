@@ -12,6 +12,7 @@
 - Fixed bad removal of prototyping JS code in lines not ended with ";" or "," (like the last lines of
   an array or object definition).
 - Added th:replace as a synonym for th:substituteby.
+- Added "ne" as a valid token for operator "!=" in Standard Expressions (along with existing "neq").
 
 
 2.0.17
