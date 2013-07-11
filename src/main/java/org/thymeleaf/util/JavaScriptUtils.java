@@ -143,6 +143,10 @@ public final class JavaScriptUtils {
             printString(output, (String) object);
             return;
         }
+        if (object instanceof Character) {
+            printString(output, object.toString());
+            return;
+        }
         if (object instanceof Number) {
             printNumber(output, (Number) object);
             return;

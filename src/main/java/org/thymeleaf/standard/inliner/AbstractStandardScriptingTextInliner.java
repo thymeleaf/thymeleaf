@@ -212,6 +212,8 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
         }
 
         boolean inLiteral = false;
+        int arrayLevel = 0;
+        int objectLevel = 0;
         final int len = lineRemainder.length();
         for (int i = 0; i < len; i++) {
             final char c = lineRemainder.charAt(i);
@@ -219,8 +221,16 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 if (!inLiteral || i == 0 || lineRemainder.charAt(i - 1) != '\\') {
                     inLiteral = !inLiteral;
                 }
+            } else if (c == '{' && !inLiteral) {
+                objectLevel++;
+            } else if (c == '}' && !inLiteral) {
+                objectLevel--;
+            } else if (c == '[' && !inLiteral) {
+                arrayLevel++;
+            } else if (c == ']' && !inLiteral) {
+                arrayLevel--;
             }
-            if (!inLiteral) {
+            if (!inLiteral && arrayLevel == 0 && objectLevel == 0) {
                 if (c == ';' || c == ',') {
                     return lineRemainder.substring(i);
                 }
