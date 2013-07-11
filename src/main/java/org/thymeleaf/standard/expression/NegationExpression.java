@@ -48,7 +48,8 @@ public final class NegationExpression extends ComplexExpression {
     private static final Logger logger = LoggerFactory.getLogger(NegationExpression.class);
 
     
-    private static final char OPERATOR = '!';
+    private static final String OPERATOR_1 = "!";
+    private static final String OPERATOR_2 = "not";
 
     
     private final Expression operand;
@@ -69,7 +70,7 @@ public final class NegationExpression extends ComplexExpression {
     @Override
     public String getStringRepresentation() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(OPERATOR);
+        sb.append(OPERATOR_1);
         if (this.operand instanceof ComplexExpression) {
             sb.append(Expression.NESTING_START_CHAR);
             sb.append(this.operand);
@@ -102,16 +103,25 @@ public final class NegationExpression extends ComplexExpression {
         final String trimmedInput = input.trim(); 
         
         // Trying to fail quickly...
-        int operatorPos = trimmedInput.lastIndexOf(OPERATOR);
-        if (operatorPos == -1) { 
-            return result;
+        String operatorFound = null;
+        int operatorPos = trimmedInput.lastIndexOf(OPERATOR_1);
+        if (operatorPos == -1) {
+            operatorPos = trimmedInput.lastIndexOf(OPERATOR_2);
+            if (operatorPos == -1) {
+                return result;
+            } else {
+                operatorFound = OPERATOR_2;
+            }
+        } else {
+            operatorFound = OPERATOR_1;
         }
+
         if (operatorPos != 0) {
-            // The '-' symbol should be the first character, after trimming.
+            // The operator should appear at the first character, after trimming.
             return result;
         }
         
-        final String operandStr = trimmedInput.substring(1);
+        final String operandStr = trimmedInput.substring(operatorFound.length());
         
         int index = Expression.placeHolderToIndex(operandStr);
         if (index == -1) {

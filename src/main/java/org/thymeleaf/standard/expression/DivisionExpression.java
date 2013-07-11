@@ -60,7 +60,7 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
     
     @Override
     public String getStringRepresentation() {
-        return getStringRepresentation(DIVISION_OPERATOR);
+        return getStringRepresentation(DIVISION_OPERATOR_1);
     }
     
     

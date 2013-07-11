@@ -37,18 +37,22 @@ public abstract class MultiplicationDivisionRemainderExpression extends BinaryOp
     
     
     protected static final String MULTIPLICATION_OPERATOR = "*";
-    protected static final String DIVISION_OPERATOR = "/";
-    protected static final String REMAINDER_OPERATOR = "%";
+    protected static final String DIVISION_OPERATOR_1 = "/";
+    protected static final String DIVISION_OPERATOR_2 = "div";
+    protected static final String REMAINDER_OPERATOR_1 = "%";
+    protected static final String REMAINDER_OPERATOR_2 = "mod";
 
 
     private static final String[] OPERATORS = new String[] { 
-        MULTIPLICATION_OPERATOR, DIVISION_OPERATOR, REMAINDER_OPERATOR };
-    private static final boolean[] LENIENCIES = new boolean[] { false, false, false };
+        MULTIPLICATION_OPERATOR, DIVISION_OPERATOR_1, DIVISION_OPERATOR_2, REMAINDER_OPERATOR_1, REMAINDER_OPERATOR_2};
+    private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false, false };
     
     @SuppressWarnings("unchecked")
     private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES = 
         (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { 
-            MultiplicationExpression.class, DivisionExpression.class, RemainderExpression.class };
+            MultiplicationExpression.class,
+            DivisionExpression.class, DivisionExpression.class,
+            RemainderExpression.class, RemainderExpression.class };
 
     
     protected MultiplicationDivisionRemainderExpression(final Expression left, final Expression right) {

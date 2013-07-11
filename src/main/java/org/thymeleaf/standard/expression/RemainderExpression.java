@@ -59,7 +59,7 @@ public final class RemainderExpression extends MultiplicationDivisionRemainderEx
     
     @Override
     public String getStringRepresentation() {
-        return getStringRepresentation(REMAINDER_OPERATOR);
+        return getStringRepresentation(REMAINDER_OPERATOR_1);
     }
     
     
