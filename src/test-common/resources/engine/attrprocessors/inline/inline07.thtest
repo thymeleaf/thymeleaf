@@ -1,14 +1,16 @@
 %TEMPLATE_MODE HTML5
 # ------------------------------------------------------------
 %CONTEXT
-userRoles = {'MANAGER','SALES'}
+obj = #{'a':'12', 'ba':'lala'}
 # ------------------------------------------------------------
 %INPUT
 <script th:inline="javascript"> 
-    var userRoles = /*[[${userRoles}]]*/ ['USER','ADMINISTRATOR'];
-</script> 
+    var obj = /*[[${obj}]]*/ {'lele':'lela', 'aa': '123'};
+    var obj = /*[[${obj}]]*/ {'lele': {'l333': 2123} , 'aa': '123'};
+</script>
 # ------------------------------------------------------------
 %OUTPUT
 <script> 
-    var userRoles = ['MANAGER','SALES'];
-</script> 
+    var obj = {'a':'12','ba':'lala'};
+    var obj = {'a':'12','ba':'lala'};
+</script>

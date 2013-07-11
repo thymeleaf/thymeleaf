@@ -13,7 +13,7 @@ foo = fooo!
         },
         obj2:{
             attr21: /*[[#{foo}]]*/ 'Some text 21',
-            attr22: /*[[#{foo}]]*/ 'Some text 22',
+            attr22: /*[[#{foo}]]*/ 'Some text 22', // some comment here
             attr23: /*[[#{foo}]]*/ 'Some text 23' // some comment here
         }
     }
@@ -29,7 +29,7 @@ foo = fooo!
         },
         obj2:{
             attr21: 'fooo!',
-            attr22: 'fooo!',
+            attr22: 'fooo!', // some comment here
             attr23: 'fooo!'// some comment here
         }
     }
