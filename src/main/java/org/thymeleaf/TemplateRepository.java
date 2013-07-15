@@ -204,8 +204,6 @@ public final class TemplateRepository {
         InputStream templateInputStream = null;
         
         for (final ITemplateResolver templateResolver : templateResolvers) {
-            
-            if (templateInputStream == null) {
                 
                 templateResolution = templateResolver.resolveTemplate(templateProcessingParameters);
                 
@@ -230,6 +228,7 @@ public final class TemplateRepository {
                         if (logger.isDebugEnabled()) {
                             logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
                         }
+                        break;
                     }
                     
                 } else {
@@ -239,8 +238,6 @@ public final class TemplateRepository {
                     }
                     
                 }
-                
-            }
             
         }
         
