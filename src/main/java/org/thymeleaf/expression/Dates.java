@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DateUtils;
 import org.thymeleaf.util.Validate;
@@ -48,7 +47,18 @@ import org.thymeleaf.util.Validate;
  */
 public final class Dates {
 
+    
+    private final Locale locale;
+    
+    
+    
+    public Dates(final Locale locale) {
+        super();
+        this.locale = locale;
+    }
 
+    
+    
     
     
     /**
@@ -112,10 +122,10 @@ public final class Dates {
     
     public String format(final Date target) {
         try {
-            return DateUtils.format(target, getLocale());
+            return DateUtils.format(target, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
-                    "Error formatting date with standard format for locale " + getLocale(), e);
+                    "Error formatting date with standard format for locale " + this.locale, e);
         }
     }
     
@@ -130,7 +140,7 @@ public final class Dates {
     
     public List<String> listFormat(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(format(element));
         }
@@ -139,7 +149,7 @@ public final class Dates {
     
     public Set<String> setFormat(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(format(element));
         }
@@ -151,7 +161,7 @@ public final class Dates {
     
     public String format(final Date target, final String pattern) {
         try {
-            return DateUtils.format(target, pattern, getLocale());
+            return DateUtils.format(target, pattern, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting date with format pattern \"" + pattern + "\"", e);
@@ -169,7 +179,7 @@ public final class Dates {
     
     public List<String> listFormat(final List<? extends Date> target, final String pattern) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(format(element, pattern));
         }
@@ -178,7 +188,7 @@ public final class Dates {
     
     public Set<String> setFormat(final Set<? extends Date> target, final String pattern) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(format(element, pattern));
         }
@@ -204,7 +214,7 @@ public final class Dates {
     
     public List<Integer> listDay(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(day(element));
         }
@@ -213,7 +223,7 @@ public final class Dates {
     
     public Set<Integer> setDay(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(day(element));
         }
@@ -239,7 +249,7 @@ public final class Dates {
     
     public List<Integer> listMonth(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(month(element));
         }
@@ -248,7 +258,7 @@ public final class Dates {
     
     public Set<Integer> setMonth(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(month(element));
         }
@@ -260,7 +270,7 @@ public final class Dates {
     
 
     public String monthName(final Date target) {
-        return DateUtils.monthName(target, getLocale());
+        return DateUtils.monthName(target, this.locale);
     }
     
     public String[] arrayMonthName(final Object[] target) {
@@ -274,7 +284,7 @@ public final class Dates {
     
     public List<String> listMonthName(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(monthName(element));
         }
@@ -283,7 +293,7 @@ public final class Dates {
     
     public Set<String> setMonthName(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(monthName(element));
         }
@@ -294,7 +304,7 @@ public final class Dates {
     
 
     public String monthNameShort(final Date target) {
-        return DateUtils.monthNameShort(target, getLocale());
+        return DateUtils.monthNameShort(target, this.locale);
     }
     
     public String[] arrayMonthNameShort(final Object[] target) {
@@ -308,7 +318,7 @@ public final class Dates {
     
     public List<String> listMonthNameShort(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(monthNameShort(element));
         }
@@ -317,7 +327,7 @@ public final class Dates {
     
     public Set<String> setMonthNameShort(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(monthNameShort(element));
         }
@@ -344,7 +354,7 @@ public final class Dates {
     
     public List<Integer> listYear(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(year(element));
         }
@@ -353,7 +363,7 @@ public final class Dates {
     
     public Set<Integer> setYear(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(year(element));
         }
@@ -379,7 +389,7 @@ public final class Dates {
     
     public List<Integer> listDayOfWeek(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(dayOfWeek(element));
         }
@@ -388,7 +398,7 @@ public final class Dates {
     
     public Set<Integer> setDayOfWeek(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(dayOfWeek(element));
         }
@@ -401,7 +411,7 @@ public final class Dates {
     
 
     public String dayOfWeekName(final Date target) {
-        return DateUtils.dayOfWeekName(target, getLocale());
+        return DateUtils.dayOfWeekName(target, this.locale);
     }
     
     public String[] arrayDayOfWeekName(final Object[] target) {
@@ -415,7 +425,7 @@ public final class Dates {
     
     public List<String> listDayOfWeekName(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(dayOfWeekName(element));
         }
@@ -424,7 +434,7 @@ public final class Dates {
     
     public Set<String> setDayOfWeekName(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(dayOfWeekName(element));
         }
@@ -437,7 +447,7 @@ public final class Dates {
     
 
     public String dayOfWeekNameShort(final Date target) {
-        return DateUtils.dayOfWeekNameShort(target, getLocale());
+        return DateUtils.dayOfWeekNameShort(target, this.locale);
     }
     
     public String[] arrayDayOfWeekNameShort(final Object[] target) {
@@ -451,7 +461,7 @@ public final class Dates {
     
     public List<String> listDayOfWeekNameShort(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(dayOfWeekNameShort(element));
         }
@@ -460,7 +470,7 @@ public final class Dates {
     
     public Set<String> setDayOfWeekNameShort(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Date element : target) {
             result.add(dayOfWeekNameShort(element));
         }
@@ -492,7 +502,7 @@ public final class Dates {
     
     public List<Integer> listHour(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(hour(element));
         }
@@ -501,7 +511,7 @@ public final class Dates {
     
     public Set<Integer> setHour(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(hour(element));
         }
@@ -529,7 +539,7 @@ public final class Dates {
     
     public List<Integer> listMinute(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(minute(element));
         }
@@ -538,7 +548,7 @@ public final class Dates {
     
     public Set<Integer> setMinute(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(minute(element));
         }
@@ -566,7 +576,7 @@ public final class Dates {
     
     public List<Integer> listSecond(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(second(element));
         }
@@ -575,7 +585,7 @@ public final class Dates {
     
     public Set<Integer> setSecond(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(second(element));
         }
@@ -603,7 +613,7 @@ public final class Dates {
     
     public List<Integer> listMillisecond(final List<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final List<Integer> result = new ArrayList<Integer>();
+        final List<Integer> result = new ArrayList<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(millisecond(element));
         }
@@ -612,7 +622,7 @@ public final class Dates {
     
     public Set<Integer> setMillisecond(final Set<? extends Date> target) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<Integer> result = new LinkedHashSet<Integer>();
+        final Set<Integer> result = new LinkedHashSet<Integer>(target.size() + 2);
         for (final Date element : target) {
             result.add(millisecond(element));
         }
@@ -623,20 +633,5 @@ public final class Dates {
     
     
     
-    
-    private static Locale getLocale() {
-        Locale locale = TemplateEngine.threadLocale();
-        if (locale == null) {
-            // If no locale has been set by the template engine, use the system default.
-            locale = Locale.getDefault();
-        }
-        return locale;
-    }
-    
-    
-    
-    public Dates() {
-        super();
-    }
     
 }

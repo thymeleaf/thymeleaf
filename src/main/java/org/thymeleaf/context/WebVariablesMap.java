@@ -95,35 +95,32 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    
-    public WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext) {
-        
-        super(4, 1.0f);
-        
+
+    WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext,
+                    final Map<? extends String, ? extends Object> m) {
+
+        super((m == null? 4 : m.size() + 4), 1.0f);
+
         this.request = request;
         this.servletContext = servletContext;
-        
+
         this.requestParamsVariablesMap = new WebRequestParamsVariablesMap(this.request);
         this.servletContextVariablesMap = new WebServletContextVariablesMap(this.servletContext);
-        
+
         initializeSessionContainer();
-        
+
         super.put(APPLICATION_VARIABLE_NAME, this.servletContextVariablesMap);
         super.put(PARAM_VARIABLE_NAME, this.requestParamsVariablesMap);
-        
-    }
-    
-    
 
-    public WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext, 
-            final Map<? extends String, ? extends Object> m) {
-        
-        this(request, servletContext);
-        putAll(m);
+        if (m != null) {
+            // This must be done at the end because it relies on the request having been already set.
+            putAll(m);
+        }
 
     }
-    
-    
+
+
+
     
     private void initializeSessionContainer() {
         if (this.sessionVariablesMap != null) {
@@ -266,6 +263,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @SuppressWarnings("unchecked")
     public boolean containsValue(final Object value) {
         if (value instanceof VariablesMap<?,?>) {
+            //noinspection ObjectEquality
             if (value == this.requestParamsVariablesMap ||
                 value == this.sessionVariablesMap ||
                 value == this.servletContextVariablesMap) {
@@ -289,19 +287,12 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         return false;
     }
 
-    
-    
-    @Override
-    public Object clone() {
-        return new WebVariablesMap(this.request, this.servletContext);
-    }
 
-    
     
     @Override
     @SuppressWarnings("unchecked")
     public Set<String> keySet() {
-        final Set<String> keySet = new LinkedHashSet<String>();
+        final Set<String> keySet = new LinkedHashSet<String>(10);
         final Enumeration<String> attributeNames = this.request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             keySet.add(attributeNames.nextElement());
@@ -315,7 +306,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Object> values() {
-        final List<Object> values = new ArrayList<Object>();
+        final List<Object> values = new ArrayList<Object>(10);
         final Enumeration<String> attributeNames = this.request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
@@ -398,7 +389,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @SuppressWarnings("unchecked")
     private static Map<String,Object> getAttributeMap(final HttpServletRequest request) {
         
-        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>();
+        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>(10);
         final Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
@@ -429,6 +420,9 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     private static boolean isReservedVariableName(final String name) {
         return isParamVariableName(name) || isSessionVariableName(name) || isApplicationVariableName(name);
     }
-    
-    
+
+
+    public WebVariablesMap clone() {
+        return (WebVariablesMap) super.clone();
+    }
 }

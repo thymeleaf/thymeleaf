@@ -21,11 +21,12 @@ package org.thymeleaf;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-import org.thymeleaf.context.AbstractProcessingContext;
+import org.thymeleaf.context.AbstractDialectAwareProcessingContext;
+import org.thymeleaf.dialect.IExpressionEnhancingDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
@@ -64,14 +65,9 @@ import org.thymeleaf.util.Validate;
  * @since 1.0
  *
  */
-public final class Arguments extends AbstractProcessingContext {
+public final class Arguments extends AbstractDialectAwareProcessingContext {
 
-    /**
-     * @deprecated Use {@link org.thymeleaf.processor.ProcessorResult#setSelectionTarget(Object) instead.}. 
-     */
-    @Deprecated
-    public static final String SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
-    
+    private final TemplateEngine templateEngine;
     
     private final TemplateProcessingParameters templateProcessingParameters;
     private final Configuration configuration;
@@ -81,7 +77,8 @@ public final class Arguments extends AbstractProcessingContext {
     
     private final Map<String,Integer> idCounts;
     
-    private final boolean processOnlyElementNodes;
+    private final boolean processTextNodes;
+    private final boolean processCommentNodes;
     
 
     /**
@@ -100,6 +97,7 @@ public final class Arguments extends AbstractProcessingContext {
      * @param document the parsed document.
      */
     public Arguments(
+            final TemplateEngine templateEngine,
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,
@@ -108,49 +106,64 @@ public final class Arguments extends AbstractProcessingContext {
         super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getLocalVariables()),
               (templateProcessingParameters == null? null : templateProcessingParameters.getProcessingContext().getSelectionTarget()),
-              (templateProcessingParameters == null? false : templateProcessingParameters.getProcessingContext().hasSelectionTarget()));
+              (templateProcessingParameters != null && templateProcessingParameters.getProcessingContext().hasSelectionTarget()),
+              (templateProcessingParameters == null? null : templateProcessingParameters.getConfiguration().getDialectSet()));
         
         
+        Validate.notNull(templateEngine, "Template engine cannot be null");
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
         Validate.notNull(templateResolution, "Template resolution cannot be null");
         Validate.notNull(templateRepository, "Template repository cannot be null");
         // Document CAN be null, if it has been filtered and nothing has been selected as a result.
-        
+
+        this.templateEngine = templateEngine;
         this.templateProcessingParameters = templateProcessingParameters;
-        this.configuration = this.templateProcessingParameters.getConfiguration();
+        this.configuration =
+                (this.templateProcessingParameters == null?
+                        null :
+                        this.templateProcessingParameters.getConfiguration());
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
-        this.idCounts = new HashMap<String,Integer>();
+        this.idCounts = new HashMap<String,Integer>(1,1.0f);
         
-        this.processOnlyElementNodes = true;
+        this.processTextNodes = false;
+        this.processCommentNodes = false;
         
     }
     
 
 
     private Arguments(
+            final TemplateEngine templateEngine,
             final TemplateProcessingParameters templateProcessingParameters,
             final TemplateResolution templateResolution,
             final TemplateRepository templateRepository,
             final Document document,
             final Map<String,Object> localVariables,
             final Map<String,Integer> idCounts,
-            final boolean processOnlyElementNodes,
+            final boolean processTextNodes,
+            final boolean processCommentNodes,
             final Object selectionTarget, 
-            final boolean selectionTargetSet) {
+            final boolean selectionTargetSet,
+            final Set<IExpressionEnhancingDialect> enhancingDialects) {
         
         super((templateProcessingParameters == null? null : templateProcessingParameters.getContext()), 
-                localVariables, selectionTarget, selectionTargetSet);
-        
+                localVariables, selectionTarget, selectionTargetSet, enhancingDialects);
+
+        this.templateEngine = templateEngine;
         this.templateProcessingParameters = templateProcessingParameters;
-        this.configuration = this.templateProcessingParameters.getConfiguration();
+        this.configuration =
+                (this.templateProcessingParameters == null?
+                        null :
+                        this.templateProcessingParameters.getConfiguration());
         this.templateResolution = templateResolution;
         this.templateRepository = templateRepository;
         this.document = document;
         this.idCounts = idCounts;
         
-        this.processOnlyElementNodes = processOnlyElementNodes;
+        this.processTextNodes = processTextNodes;
+        this.processCommentNodes = processCommentNodes;
         
     }
     
@@ -158,12 +171,19 @@ public final class Arguments extends AbstractProcessingContext {
 
     
     
-    @Override
-    protected Map<String,Object> computeBaseContextVariables() {
-        return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
+    /**
+     * <p>
+     *   Returns the Template Engine associated to this Arguments instance.
+     * </p>
+     * 
+     * @return the template processing parameters
+     * @since 2.0.14
+     */
+    public TemplateEngine getTemplateEngine() {
+        return this.templateEngine;
     }
-
     
+
     
     /**
      * <p>
@@ -239,14 +259,38 @@ public final class Arguments extends AbstractProcessingContext {
 
     /**
      * <p>
-     *   Returns whether only element nodes should be processed (as opposed
-     *   to texts, CDATAs, comments, etc.). Default is true.
+     *   Returns whether text nodes (which include {@link org.thymeleaf.dom.Text} and
+     *   {@link org.thymeleaf.dom.CDATASection} nodes) will be processed.
+     * </p>
+     * <p>
+     *   This flag is false by default as these nodes are not processed by default.
+     *   This can be changed during processor execution by using methods available at the 
+     *   {@link org.thymeleaf.processor.ProcessorResult} class. 
      * </p>
      * 
-     * @return whether only element nodes will be processed
+     * @return whether text nodes will be processed.
+     * @since 2.0.15
      */
-    public boolean getProcessOnlyElementNodes() {
-        return this.processOnlyElementNodes;
+    public boolean getProcessTextNodes() {
+        return this.processTextNodes;
+    }
+    
+    
+    /**
+     * <p>
+     *   Returns whether {@link org.thymeleaf.dom.Comment} nodes will be processed.
+     * </p>
+     * <p>
+     *   This flag is false by default as these nodes are not processed by default.
+     *   This can be changed during processor execution by using methods available at the 
+     *   {@link org.thymeleaf.processor.ProcessorResult} class. 
+     * </p>
+     * 
+     * @return whether comment nodes will be processed.
+     * @since 2.0.15
+     */
+    public boolean getProcessCommentNodes() {
+        return this.processCommentNodes;
     }
 
     
@@ -370,9 +414,11 @@ public final class Arguments extends AbstractProcessingContext {
             return this;
         }
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine, 
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
+                        this.idCounts, this.processTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
         return arguments;
     }
 
@@ -380,17 +426,20 @@ public final class Arguments extends AbstractProcessingContext {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting a new value for the <tt>processOnlyElementNodes</tt> flag.
+     *   Creates a new Arguments object by setting a new value for the <tt>processTextNodes</tt> flag.
      * </p>
      * 
-     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
      * @return the new Arguments object
+     * @since 2.0.15
      */
-    public Arguments setProcessOnlyElementNodes(final boolean shouldProcessOnlyElementNodes) {
+    public Arguments setProcessTextNodes(final boolean shouldProcessTextNodes) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
+                        this.idCounts, shouldProcessTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
         return arguments;
     }
 
@@ -398,18 +447,112 @@ public final class Arguments extends AbstractProcessingContext {
 
     /**
      * <p>
-     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processOnlyElementNodes</tt> flag.
+     *   Creates a new Arguments object by setting a new value for the <tt>processCommentNodes</tt> flag.
+     * </p>
+     * 
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments setProcessCommentNodes(final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, this.processTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new values for the <tt>processTextNodes</tt> and
+     *   <tt>processCommentNodes</tt> flags.
+     * </p>
+     * 
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments setProcessTextAndCommentNodes(final boolean shouldProcessTextNodes, final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
+                        this.templateRepository, this.document, getLocalVariables(), 
+                        this.idCounts, shouldProcessTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                        getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processTextNodes</tt> flag.
      * </p>
      * 
      * @param newVariables the new local variables
-     * @param shouldProcessOnlyElementNodes whether only element nodes should be processed from this moment in template execution
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
      * @return the new Arguments object
+     * @since 2.0.15
      */
-    public Arguments addLocalVariablesAndProcessOnlyElementNodes(final Map<String,Object> newVariables, final boolean shouldProcessOnlyElementNodes) {
+    public Arguments addLocalVariablesAndProcessTextNodes(final Map<String,Object> newVariables, final boolean shouldProcessTextNodes) {
         final Arguments arguments = 
-            new Arguments(this.templateProcessingParameters, this.templateResolution, 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
                     this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                    this.idCounts, shouldProcessOnlyElementNodes, getSelectionTarget(), hasSelectionTarget());
+                    this.idCounts, shouldProcessTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new local variables and a new value for the <tt>processCommentNodes</tt> flag.
+     * </p>
+     * 
+     * @param newVariables the new local variables
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments addLocalVariablesAndProcessCommentNodes(final Map<String,Object> newVariables, final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
+                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                    this.idCounts, this.processTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
+        return arguments;
+    }
+
+    
+
+    /**
+     * <p>
+     *   Creates a new Arguments object by setting new local variables and new values for the <tt>processTextNodes</tt> 
+     *   and <tt>processCommentNodes</tt> flags.
+     * </p>
+     * 
+     * @param newVariables the new local variables
+     * @param shouldProcessTextNodes whether text nodes (Text and CDATA) should be processed from this moment in template execution
+     * @param shouldProcessCommentNodes whether comment nodes should be processed from this moment in template execution
+     * @return the new Arguments object
+     * @since 2.0.15
+     */
+    public Arguments addLocalVariablesAndProcessTextAndCommentNodes(final Map<String,Object> newVariables, 
+            final boolean shouldProcessTextNodes, final boolean shouldProcessCommentNodes) {
+        final Arguments arguments = 
+            new Arguments(this.templateEngine,
+                    this.templateProcessingParameters, this.templateResolution, 
+                    this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
+                    this.idCounts, shouldProcessTextNodes, shouldProcessCommentNodes, getSelectionTarget(), hasSelectionTarget(),
+                    getExpressionEnhancingDialects());
         return arguments;
     }
     
@@ -426,9 +569,11 @@ public final class Arguments extends AbstractProcessingContext {
      */
     public Arguments setSelectionTarget(final Object newSelectionTarget) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
-                        this.idCounts, this.processOnlyElementNodes, newSelectionTarget, true);
+                        this.idCounts, this.processTextNodes, this.processCommentNodes, newSelectionTarget, true,
+                        getExpressionEnhancingDialects());
         return arguments;
     }
     
@@ -446,9 +591,11 @@ public final class Arguments extends AbstractProcessingContext {
      */
     public Arguments addLocalVariablesAndSelectionTarget(final Map<String,Object> newVariables, final Object selectionTarget) {
         final Arguments arguments = 
-                new Arguments(this.templateProcessingParameters, this.templateResolution, 
+                new Arguments(this.templateEngine,
+                        this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
-                        this.idCounts, this.processOnlyElementNodes, selectionTarget, true);
+                        this.idCounts, this.processTextNodes, this.processCommentNodes, selectionTarget, true,
+                        getExpressionEnhancingDialects());
         return arguments;
     }
 

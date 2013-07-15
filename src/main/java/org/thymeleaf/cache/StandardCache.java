@@ -101,7 +101,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         this.entryValidityChecker = entryValidityChecker;
         
         this.logger = logger;
-        this.traceExecution = (logger == null? false : logger.isTraceEnabled());
+        this.traceExecution = (logger != null && logger.isTraceEnabled());
         
         this.dataContainer = 
                 new CacheDataContainer<K,V>(this.name, initialCapacity, maxSize, this.traceExecution, this.logger);
@@ -141,8 +141,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         
         if (this.traceExecution) {
             this.logger.trace(
-                    "[THYMELEAF][{}][{}][{}][CACHE_ADD][{}] Adding cache entry in cache \"{}\" for key \"{}\". New size is {}.", 
-                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
+                    "[THYMELEAF][{}][{}][CACHE_ADD][{}] Adding cache entry in cache \"{}\" for key \"{}\". New size is {}.", 
+                    new Object[] {TemplateEngine.threadIndex(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
         }
         
         outputReportIfNeeded();
@@ -167,8 +167,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             incrementReportEntity(this.missCount);
             if (this.traceExecution) {
                 this.logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
+                        "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
+                        new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
             }
             outputReportIfNeeded();
             return null;
@@ -180,11 +180,11 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             final int newSize = this.dataContainer.remove(key);
             if (this.traceExecution) {
                 this.logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Removing cache entry in cache \"{}\" (Entry \"{}\" is not valid anymore). New size is {}.",
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
+                        "[THYMELEAF][{}][{}][CACHE_REMOVE][{}] Removing cache entry in cache \"{}\" (Entry \"{}\" is not valid anymore). New size is {}.",
+                        new Object[] {TemplateEngine.threadIndex(), this.name, Integer.valueOf(newSize), this.name, key, Integer.valueOf(newSize)});
                 this.logger.trace(
-                        "[THYMELEAF][{}][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
-                        new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
+                        "[THYMELEAF][{}][{}][CACHE_MISS] Cache miss in cache \"{}\" for key \"{}\".", 
+                        new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
             }
             incrementReportEntity(this.missCount);
             outputReportIfNeeded();
@@ -193,8 +193,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         
         if (this.traceExecution) {
             this.logger.trace(
-                    "[THYMELEAF][{}][{}][{}][CACHE_HIT] Cache hit in cache \"{}\" for key \"{}\".", 
-                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, this.name, key});
+                    "[THYMELEAF][{}][{}][CACHE_HIT] Cache hit in cache \"{}\" for key \"{}\".", 
+                    new Object[] {TemplateEngine.threadIndex(), this.name, this.name, key});
         }
         
         incrementReportEntity(this.hitCount);
@@ -299,7 +299,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
 
 
-    final static class CacheDataContainer<K,V> {
+    static final class CacheDataContainer<K,V> {
         
         private final String name;
         private final boolean sizeLimit;
@@ -312,7 +312,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         private int fifoPointer;
 
 
-        public CacheDataContainer(final String name, final int initialCapacity, 
+        CacheDataContainer(final String name, final int initialCapacity,
                 final int maxSize, final boolean traceExecution, final Logger logger) {
             
             super();
@@ -320,7 +320,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
             this.name = name;
             this.container = new ConcurrentHashMap<K,CacheEntry<V>>(initialCapacity);
             this.maxSize = maxSize;
-            this.sizeLimit = (maxSize < 0? false : true);
+            this.sizeLimit = (maxSize >= 0);
             if (this.sizeLimit) {
                 this.fifo = new Object[this.maxSize];
                 Arrays.fill(this.fifo, null);
@@ -385,8 +385,8 @@ public final class StandardCache<K, V> implements ICache<K,V> {
                         if (removed != null) {
                             final Integer newSize = Integer.valueOf(this.container.size());
                             this.logger.trace(
-                                    "[THYMELEAF][{}][{}][{}][CACHE_REMOVE][{}] Max size exceeded for cache \"{}\". Removing entry for key \"{}\". New size is {}.", 
-                                    new Object[] {TemplateEngine.threadIndex(), TemplateEngine.threadTemplateName(), this.name, newSize, this.name, removedKey, newSize});
+                                    "[THYMELEAF][{}][{}][CACHE_REMOVE][{}] Max size exceeded for cache \"{}\". Removing entry for key \"{}\". New size is {}.", 
+                                    new Object[] {TemplateEngine.threadIndex(), this.name, newSize, this.name, removedKey, newSize});
                         }
                     }
                     this.fifo[this.fifoPointer] = key;
@@ -438,7 +438,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
 
 
-    final static class CacheEntry<V> {
+    static final class CacheEntry<V> {
 
         private final SoftReference<V> cachedValueReference;
         private final long creationTimeInMillis;
@@ -450,7 +450,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         private final V cachedValueAnchor;
         
 
-        public CacheEntry(final V cachedValue, final boolean useSoftReferences) {
+        CacheEntry(final V cachedValue, final boolean useSoftReferences) {
 
             super();
 

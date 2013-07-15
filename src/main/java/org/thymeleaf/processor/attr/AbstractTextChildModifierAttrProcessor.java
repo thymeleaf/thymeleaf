@@ -37,15 +37,15 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
  */
 public abstract class AbstractTextChildModifierAttrProcessor 
         extends AbstractChildrenModifierAttrProcessor {
-    
-    
-    
-    public AbstractTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+    protected AbstractTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
 
-    public AbstractTextChildModifierAttrProcessor(final String attributeName) {
+    protected AbstractTextChildModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 
@@ -61,7 +61,7 @@ public abstract class AbstractTextChildModifierAttrProcessor
         final Text newNode = new Text(text == null? "" : text);
         // Setting this allows avoiding text inliners processing already generated text,
         // which in turn avoids code injection.
-        newNode.setSkippable(true);
+        newNode.setProcessable(false);
         
         return Collections.singletonList((Node)newNode);
         

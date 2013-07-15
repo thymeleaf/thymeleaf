@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -108,7 +109,7 @@ public final class DefaultExpression extends ComplexExpression {
         
         final String input = inputParsingNode.getInput();
             
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
@@ -121,7 +122,7 @@ public final class DefaultExpression extends ComplexExpression {
         final String queriedStr = input.substring(0, defaultOperatorPos);
         final String defaultStr = input.substring(defaultOperatorPos + 2);
         
-        if (defaultStr.indexOf(DEFAULT_OPERATOR) != -1) {
+        if (defaultStr.contains(DEFAULT_OPERATOR)) {
             // There are two "?:" operators
             return null;
         }
@@ -192,17 +193,18 @@ public final class DefaultExpression extends ComplexExpression {
     
     
     static Object executeDefault(final Configuration configuration, final IProcessingContext processingContext, 
-            final DefaultExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final DefaultExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating default expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         final Object queriedValue = 
-            Expression.execute(configuration, processingContext, expression.getQueriedExpression(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getQueriedExpression(), expressionEvaluator, expContext);
         
         if (queriedValue == null) {
-            return Expression.execute(configuration, processingContext, expression.getDefaultExpression(), expressionEvaluator);
+            return Expression.execute(configuration, processingContext, expression.getDefaultExpression(), expressionEvaluator, expContext);
         }
         return queriedValue;
         

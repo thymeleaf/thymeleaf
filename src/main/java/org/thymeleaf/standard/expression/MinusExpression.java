@@ -29,6 +29,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.ObjectUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -96,7 +97,7 @@ public final class MinusExpression extends ComplexExpression {
         
         final String input = inputParsingNode.getInput();
             
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
@@ -147,14 +148,15 @@ public final class MinusExpression extends ComplexExpression {
     
 
     static Object executeMinus(final Configuration configuration, final IProcessingContext processingContext, 
-            final MinusExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final MinusExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating minus expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object operandValue = 
-            Expression.execute(configuration, processingContext, expression.getOperand(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getOperand(), expressionEvaluator, expContext);
         
         if (operandValue == null) {
             operandValue = "null";

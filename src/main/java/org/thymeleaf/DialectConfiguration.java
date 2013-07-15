@@ -112,16 +112,16 @@ public final class DialectConfiguration {
             /*
              * Initializing processors
              */
-            this.processors =
-                Collections.unmodifiableSet(new LinkedHashSet<IProcessor>(this.dialect.getProcessors()));
+            this.processors = new LinkedHashSet<IProcessor>(this.dialect.getProcessors());
+            this.processors = Collections.unmodifiableSet(this.processors);
             Validate.containsNoNulls(this.processors, "Processor set can contain no nulls (dialect: " + this.dialect.getClass().getName() + ")");
             
             final ProcessorMatchingContext context = 
                     new ProcessorMatchingContext(this.dialect, this.prefix);
             
-            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByElementName = new HashMap<String,Set<ProcessorAndContext>>();
-            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByAttributeName = new HashMap<String,Set<ProcessorAndContext>>();
-            final Map<Class<? extends Node>, Set<ProcessorAndContext>> newNonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>();
+            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByElementName = new HashMap<String,Set<ProcessorAndContext>>(20);
+            final Map<String,Set<ProcessorAndContext>> newSpecificProcessorsByAttributeName = new HashMap<String,Set<ProcessorAndContext>>(20);
+            final Map<Class<? extends Node>, Set<ProcessorAndContext>> newNonSpecificProcessorsByNodeClass = new HashMap<Class<? extends Node>, Set<ProcessorAndContext>>(20);
             
             for (final IProcessor processor : this.processors) {
 
@@ -145,7 +145,7 @@ public final class DialectConfiguration {
                     
                     Set<ProcessorAndContext> elementProcessorsForElementName = newSpecificProcessorsByElementName.get(normalizedElementName);
                     if (elementProcessorsForElementName == null) {
-                        elementProcessorsForElementName = new HashSet<ProcessorAndContext>();
+                        elementProcessorsForElementName = new HashSet<ProcessorAndContext>(20);
                         newSpecificProcessorsByElementName.put(normalizedElementName, elementProcessorsForElementName);
                     }
                     
@@ -167,7 +167,7 @@ public final class DialectConfiguration {
                     
                     Set<ProcessorAndContext> elementProcessorsForAttributeName = newSpecificProcessorsByAttributeName.get(normalizedAttributeName);
                     if (elementProcessorsForAttributeName == null) {
-                        elementProcessorsForAttributeName = new HashSet<ProcessorAndContext>();
+                        elementProcessorsForAttributeName = new HashSet<ProcessorAndContext>(20);
                         newSpecificProcessorsByAttributeName.put(normalizedAttributeName, elementProcessorsForAttributeName);
                     }
                     
@@ -181,7 +181,7 @@ public final class DialectConfiguration {
                         
                     Set<ProcessorAndContext> elementProcessorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesTo);
                     if (elementProcessorsForNodeClass == null) {
-                        elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>();
+                        elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>(20);
                         newNonSpecificProcessorsByNodeClass.put(appliesTo, elementProcessorsForNodeClass);
                     }
                     
@@ -201,7 +201,7 @@ public final class DialectConfiguration {
             /*
              * Initializing execution arguments
              */
-            this.executionAttributes = new HashMap<String, Object>();
+            this.executionAttributes = new HashMap<String, Object>(5,1.0f);
             this.executionAttributes.putAll(this.dialect.getExecutionAttributes());
 
             
@@ -265,21 +265,21 @@ public final class DialectConfiguration {
     
 
     
-    final Set<IProcessor> getProcessors() {
+    Set<IProcessor> getProcessors() {
         return this.processors;
     }
 
 
     
-    final Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByAttributeName() {
+    Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByAttributeName() {
         return this.specificProcessorsByAttributeName;
     }
     
-    final Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByElementName() {
+    Map<String,Set<ProcessorAndContext>> unsafeGetSpecificProcessorsByElementName() {
         return this.specificProcessorsByElementName;
     }
     
-    final Map<Class<? extends Node>, Set<ProcessorAndContext>> unsafeGetNonSpecificProcessorsByNodeClass() {
+    Map<Class<? extends Node>, Set<ProcessorAndContext>> unsafeGetNonSpecificProcessorsByNodeClass() {
         return this.nonSpecificProcessorsByNodeClass;
     }
     
@@ -289,7 +289,7 @@ public final class DialectConfiguration {
     
 
     
-    final Map<String,Object> getExecutionAttributes() {
+    Map<String,Object> getExecutionAttributes() {
         return this.executionAttributes;
     }
     
@@ -336,7 +336,7 @@ public final class DialectConfiguration {
     
     private void validateDocTypeResolutionEntries() {
         
-        final Set<IDocTypeResolutionEntry> entriesAlreadyValidated = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> entriesAlreadyValidated = new LinkedHashSet<IDocTypeResolutionEntry>(10,1.0f);
         for (final IDocTypeResolutionEntry entry : this.docTypeResolutionEntries) {
             
             for (final IDocTypeResolutionEntry validatedEntry : entriesAlreadyValidated) {

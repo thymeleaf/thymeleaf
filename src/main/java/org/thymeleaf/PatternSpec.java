@@ -60,12 +60,12 @@ public final class PatternSpec {
 
     
     
-    protected final boolean isInitialized() {
+    private boolean isInitialized() {
         return this.initialized;
     }
 
     
-    public final synchronized void initialize() {
+    public synchronized void initialize() {
         
         if (!isInitialized()) {
             this.initialized = true;
@@ -74,7 +74,7 @@ public final class PatternSpec {
     }
     
     
-    protected final void checkNotInitialized() {
+    private void checkNotInitialized() {
         if (isInitialized()) {
             throw new AlreadyInitializedException(
                     "Cannot modify template resolver when it has already been initialized");
@@ -84,12 +84,12 @@ public final class PatternSpec {
 
 
     
-    public final Set<String> getPatterns() {
+    public Set<String> getPatterns() {
         return Collections.unmodifiableSet(this.patternStrs);
     }
 
 
-    public final void setPatterns(final Set<String> newPatterns) {
+    public void setPatterns(final Set<String> newPatterns) {
         checkNotInitialized();
         if (newPatterns != null) {
             this.patternStrs.addAll(newPatterns);
@@ -100,7 +100,7 @@ public final class PatternSpec {
     }
     
     
-    public final void addPattern(final String pattern) {
+    public void addPattern(final String pattern) {
         checkNotInitialized();
         Validate.notEmpty(pattern, "Pattern cannot be null or empty");
         this.patternStrs.add(pattern);
@@ -108,7 +108,7 @@ public final class PatternSpec {
     }
 
     
-    public final void clearPatterns() {
+    public void clearPatterns() {
         checkNotInitialized();
         this.patternStrs.clear();
         this.patterns.clear();

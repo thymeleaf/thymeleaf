@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.context.Context;
@@ -86,7 +87,7 @@ public final class DOMUtils {
         final String normalizedElementName = Node.normalizeName(elementName);
         final String normalizedAttributeName = Node.normalizeName(attributeName);
         
-        final List<Node> fragmentNodes = new ArrayList<Node>();
+        final List<Node> fragmentNodes = new ArrayList<Node>(5);
         for (final Node rootNode : rootNodes) {
             final List<Node> extraction = 
                     extractFragmentFromNode(rootNode, normalizedElementName, normalizedAttributeName, attributeValue);
@@ -144,7 +145,7 @@ public final class DOMUtils {
             /*
              * If element does not match itself, try children
              */
-            final List<Node> extraction = new ArrayList<Node>();
+            final List<Node> extraction = new ArrayList<Node>(5);
             final List<Node> children = nestableNode.getChildren();
             for (final Node child : children) {
                 final List<Node> childResult =
@@ -163,79 +164,7 @@ public final class DOMUtils {
     }
 
     
-    
-    /**
-     * @deprecated Use {@link #extractFragmentByElementAndAttributeValue(List, String, String, String)}
-     *             instead. Will be removed in 2.1.x
-     */
-    @Deprecated
-    public static NestableNode extractFragmentByAttributeValue(
-            final Node root, final String elementName, final String attributeName, final String attributeValue) {
 
-        Validate.notNull(root, "Root cannot be null");
-        // Element name, attribute name and attribute value CAN be null 
-        // (in that case, all elements will be searched)
-        
-        return exploreNodeForExtractingFragment(root, Node.normalizeName(elementName), Node.normalizeName(attributeName), attributeValue);
-        
-    }
-    
-    
-    @Deprecated
-    private static NestableNode exploreNodeForExtractingFragment(
-            final Node node, final String normalizedElementName, final String normalizedAttributeName, final String attributeValue) {
-        
-        if (node instanceof NestableNode) {
-            
-            final NestableNode nestableNode = (NestableNode) node;
-            
-            if (nestableNode instanceof Element) {
-                final Element element = (Element) nestableNode;
-                if (normalizedElementName == null || normalizedElementName.equals(element.getNormalizedName())) {
-                    if (normalizedAttributeName != null) {
-                        if (element.hasNormalizedAttribute(normalizedAttributeName)) {
-                            final String elementAttrValue = element.getAttributeValue(normalizedAttributeName);
-                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                                return nestableNode;
-                            }
-                        }
-                    } else {
-                        return nestableNode;
-                    }
-                }
-            } else if (nestableNode instanceof NestableAttributeHolderNode) {
-                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) nestableNode;
-                // If not null, an element without name can never be selectable
-                if (normalizedElementName == null) {
-                    if (normalizedAttributeName != null) {
-                        if (attributeHolderNode.hasNormalizedAttribute(normalizedAttributeName)) {
-                            final String elementAttrValue = attributeHolderNode.getAttributeValue(normalizedAttributeName);
-                            if (elementAttrValue != null && elementAttrValue.trim().equals(attributeValue)) {
-                                return nestableNode;
-                            }
-                        }
-                    } else {
-                        return nestableNode;
-                    }
-                }
-            }
-            
-            final List<Node> children = nestableNode.getChildren();
-            for (final Node child : children) {
-                final NestableNode childResult =
-                        exploreNodeForExtractingFragment(
-                                child, normalizedElementName, normalizedAttributeName, attributeValue);
-                if (childResult != null) {
-                    return childResult;
-                }
-            }
-            
-        }
-        
-        return null;
-        
-    }
-    
     
     
     
@@ -244,9 +173,8 @@ public final class DOMUtils {
         if (ch == null) {
             return null;
         }
-        
-        for (int i = 0; i < ch.length; i++) {
-            final char c = ch[i];
+
+        for (final char c : ch) {
             if (c == '&' || c == '<' || c == '>' || (escapeQuotes && (c == '\'' || c == '\"'))) {
                 final CharArrayWriter writer = new CharArrayWriter();
                 writeXmlEscaped(ch, writer, escapeQuotes);
@@ -360,7 +288,8 @@ public final class DOMUtils {
             final char c = buffer[i];
             if (!( (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || (c == ';') )) {
                 return false;
-            } else if (c == ';') {
+            }
+            if (c == ';') {
                 return true;
             }
             i++;
@@ -368,7 +297,6 @@ public final class DOMUtils {
         return false;
     }
     
-
     
     
     public static String unescapeXml(final String str, final boolean unescapeQuotes) {
@@ -451,15 +379,20 @@ public final class DOMUtils {
         final char c2 = str.charAt(off + 2);
         if (len == 4 && c1 == 'l' && c2 == 't') {
             return "<";
-        } else if (len == 4 && c1 == 'g' && c2 == 't') {
+        }
+        if (len == 4 && c1 == 'g' && c2 == 't') {
             return ">";
-        } else if (len == 5 && c1 == 'a' && c2 == 'm' && str.charAt(off + 3) == 'p') {
+        }
+        if (len == 5 && c1 == 'a' && c2 == 'm' && str.charAt(off + 3) == 'p') {
             return "&";
-        } else if (len == 6 && unescapeQuotes && c1 == 'q' && c2 == 'u' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 't') {
+        }
+        if (len == 6 && unescapeQuotes && c1 == 'q' && c2 == 'u' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 't') {
             return "\"";
-        } else if (len == 6 && unescapeQuotes && c1 == 'a' && c2 == 'p' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 's') {
+        }
+        if (len == 6 && unescapeQuotes && c1 == 'a' && c2 == 'p' && str.charAt(off + 3) == 'o' && str.charAt(off + 4) == 's') {
             return "\'";
-        } else if (len == 5 && c1 == '#') {
+        }
+        if (len == 5 && c1 == '#') {
             final char c3 = str.charAt(off + 3);
             if (c2 == '6' && c3 == '0') {
                 return "<";
@@ -482,18 +415,6 @@ public final class DOMUtils {
     
     public static String getXmlFor(final Node node) {
         return getOutputFor(node, new XmlTemplateWriter(), "XML");
-    }
-    
-    
-    /**
-     * @deprecated To be removed in 2.1.0. Use {@link #getHtml5For(Node)},
-     *             {@link #getXhtmlFor(Node)} or 
-     *             {@link #getOutputFor(Node, AbstractGeneralTemplateWriter, String)}
-     *             instead. 
-     */
-    @Deprecated
-    public static String getXhtmlHtml5For(final Node node) {
-        return getOutputFor(node, new XhtmlHtml5TemplateWriter(), "XHTML");
     }
     
     
@@ -525,28 +446,31 @@ public final class DOMUtils {
         Validate.notNull(node, "Node cannot be null");
         Validate.notNull(templateWriter, "Template writer cannot be null");
 
-        final Configuration configuration = new Configuration();
-        configuration.addTemplateResolver(new ClassLoaderTemplateResolver());
-        configuration.addMessageResolver(new StandardMessageResolver());
-        configuration.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
-        configuration.initialize();
+        final TemplateEngine templateEngine = new TemplateEngine();
+        templateEngine.addTemplateResolver(new ClassLoaderTemplateResolver());
+        templateEngine.addMessageResolver(new StandardMessageResolver());
+        templateEngine.setTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);
         
         final String templateName = "output";
 
         final TemplateProcessingParameters templateProcessingParameters = 
-                new TemplateProcessingParameters(configuration, templateName, new Context());
+                new TemplateProcessingParameters(templateEngine.getConfiguration(), templateName, new Context());
         
         final TemplateResolution templateResolution = 
                 new TemplateResolution(templateName, "resource:"+templateName, 
                         new ClassLoaderResourceResolver(), "UTF-8", templateMode, new AlwaysValidTemplateResolutionValidity());
-        
-        final TemplateRepository templateRepository = new TemplateRepository(configuration);
 
+        templateEngine.initialize();
+        
+        final TemplateRepository templateRepository = templateEngine.getTemplateRepository();
+        
         final Document document = new Document(templateName);
         document.addChild(node);
         
+        
         final Arguments arguments = 
-                new Arguments(templateProcessingParameters, templateResolution, 
+                new Arguments(new TemplateEngine(), 
+                        templateProcessingParameters, templateResolution, 
                         templateRepository, document);
 
         return getOutputFor(arguments, node, templateWriter);

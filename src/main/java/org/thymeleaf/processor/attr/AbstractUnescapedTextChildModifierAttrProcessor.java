@@ -42,12 +42,12 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
     
     
     
-    public AbstractUnescapedTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractUnescapedTextChildModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
 
-    public AbstractUnescapedTextChildModifierAttrProcessor(final String attributeName) {
+    protected AbstractUnescapedTextChildModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
             final List<Node> fragNodes = templateRepository.getFragment(arguments, text);
             
             for (final Node node : fragNodes) {
-                node.setSkippable(true);
+                node.setProcessable(false);
             }
 
             return fragNodes;

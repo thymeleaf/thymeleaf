@@ -47,7 +47,7 @@ public abstract class AbstractTextNodeProcessor extends AbstractProcessor {
     
     
 
-    public AbstractTextNodeProcessor(final ITextNodeProcessorMatcher matcher) {
+    protected AbstractTextNodeProcessor(final ITextNodeProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }

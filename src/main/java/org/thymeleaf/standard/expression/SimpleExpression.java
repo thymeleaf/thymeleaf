@@ -25,9 +25,7 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-
-
-
+import org.thymeleaf.util.StringUtils;
 
 
 
@@ -68,19 +66,20 @@ public abstract class SimpleExpression extends Expression {
     private static List<ExpressionParsingNode> decomposeSimpleExpressions(
             final String input, final boolean decomposeNumberLiterals) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(10);
         int currentIndex = 1;
         
         int expLevel = 0;
         boolean inLiteral = false;
         boolean inNumber = false;
+        boolean inToken = false;
         
         char expSelectorChar = (char)0;
         
@@ -92,7 +91,7 @@ public abstract class SimpleExpression extends Expression {
             /*
              * First of all, we must check if we were dealing with a number until now
              */
-            if (!inLiteral && expLevel == 0 && inNumber && 
+            if (!inToken && !inLiteral && expLevel == 0 && inNumber &&
                     !(Character.isDigit(c) || c == NumberLiteralExpression.DECIMAL_POINT)) {
                 if (decomposeNumberLiterals) {
                     // end number without adding current char to it
@@ -111,9 +110,47 @@ public abstract class SimpleExpression extends Expression {
                     inNumber = false;
                 }
             }
-                
+
             /*
-             * Once numbers are processed, check the current character
+             * Now we check for finishing tokens
+             */
+            if (!inNumber && !inLiteral && expLevel == 0 && inToken && !Character.isLetter(c)) {
+                // end token without adding current char to it
+                inToken = false;
+
+                final BooleanLiteralExpression booleanLiteralExpr =
+                        BooleanLiteralExpression.parseBooleanLiteral(fragment.toString());
+                if (booleanLiteralExpr != null) {
+
+                    inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                    inputWithPlaceholders.append(String.valueOf(currentIndex++));
+                    inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                    fragments.add(new ExpressionParsingNode(booleanLiteralExpr));
+                    fragment = new StringBuilder();
+
+                } else {
+
+                    final NullLiteralExpression nullLiteralExpr =
+                            NullLiteralExpression.parseNullLiteral(fragment.toString());
+                    if (nullLiteralExpr != null) {
+
+                        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                        inputWithPlaceholders.append(String.valueOf(currentIndex++));
+                        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                        fragments.add(new ExpressionParsingNode(nullLiteralExpr));
+                        fragment = new StringBuilder();
+
+                    }
+
+                }
+
+                // If token is not of one of the recognized types, just let the process
+                // continue (once we've set the inToken flag to false)
+
+            }
+
+            /*
+             * Once numbers and tokens are checked, process the current character
              */
             if (expLevel == 0 && c == TextLiteralExpression.DELIMITER) {
                 
@@ -210,7 +247,7 @@ public abstract class SimpleExpression extends Expression {
                     fragment.append(c);
                 }
                 
-            } else if (decomposeNumberLiterals && !inLiteral && expLevel == 0 && Character.isDigit(c)) {
+            } else if (decomposeNumberLiterals && !inLiteral && !inToken && expLevel == 0 && Character.isDigit(c)) {
                 
                 if (!inNumber) {
                     // starting number
@@ -220,9 +257,21 @@ public abstract class SimpleExpression extends Expression {
                 }
                 
                 fragment.append(c);
-                
+
+            } else if (!inLiteral && !inNumber && expLevel == 0 && Character.isLetter(c)) {
+                // We will separate all tokens first, and later decide what they mean (true, false, etc.).
+
+                if (!inToken) {
+                    // starting token
+                    inToken = true;
+                    inputWithPlaceholders.append(fragment);
+                    fragment = new StringBuilder();
+                }
+
+                fragment.append(c);
+
             } else {
-                
+
                 fragment.append(c);
                
             }
@@ -247,10 +296,44 @@ public abstract class SimpleExpression extends Expression {
             fragments.add(new ExpressionParsingNode(literalExpr));
             fragment = new StringBuilder();
         }
-        
+
+        if (inToken) {
+            // las part was a token, add it
+
+            final BooleanLiteralExpression booleanLiteralExpr =
+                    BooleanLiteralExpression.parseBooleanLiteral(fragment.toString());
+            if (booleanLiteralExpr != null) {
+
+                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                inputWithPlaceholders.append(String.valueOf(currentIndex++));
+                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                fragments.add(new ExpressionParsingNode(booleanLiteralExpr));
+                fragment = new StringBuilder();
+
+            } else {
+
+                final NullLiteralExpression nullLiteralExpr =
+                        NullLiteralExpression.parseNullLiteral(fragment.toString());
+                if (nullLiteralExpr != null) {
+
+                    inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                    inputWithPlaceholders.append(String.valueOf(currentIndex++));
+                    inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
+                    fragments.add(new ExpressionParsingNode(nullLiteralExpr));
+                    fragment = new StringBuilder();
+
+                }
+
+            }
+
+            // If token is not of one of the recognized types, just let the process
+            // continue (once we've set the inToken flag to false)
+
+        }
+
         inputWithPlaceholders.append(fragment);
         
-        final List<ExpressionParsingNode> result = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> result = new ArrayList<ExpressionParsingNode>(fragments.size() + 4);
         result.add(new ExpressionParsingNode(inputWithPlaceholders.toString()));
         result.addAll(fragments);
 
@@ -279,7 +362,7 @@ public abstract class SimpleExpression extends Expression {
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(10);
         int currentIndex = inputExprs.size();
         
         boolean inNumber = false;
@@ -387,22 +470,37 @@ public abstract class SimpleExpression extends Expression {
     
     
     static Object executeSimple(final Configuration configuration, final IProcessingContext processingContext, final SimpleExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof VariableExpression) {
-            return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator);
-        } else  if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expressionEvaluator);
-        } else  if (expression instanceof TextLiteralExpression) {
-            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression);
-        } else  if (expression instanceof NumberLiteralExpression) {
-            return NumberLiteralExpression.executeNumberLiteral(processingContext, (NumberLiteralExpression)expression);
-        } else  if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expressionEvaluator);
-        } else  if (expression instanceof SelectionVariableExpression) {
-            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator);
+            return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator, expContext);
         }
-        
+        if (expression instanceof MessageExpression) {
+            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expressionEvaluator, expContext);
+        }
+        if (expression instanceof TextLiteralExpression) {
+            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression, expContext);
+        }
+        if (expression instanceof NumberLiteralExpression) {
+            return NumberLiteralExpression.executeNumberLiteral(processingContext, (NumberLiteralExpression)expression, expContext);
+        }
+        if (expression instanceof BooleanLiteralExpression) {
+            return BooleanLiteralExpression.executeBooleanLiteral(processingContext, (BooleanLiteralExpression)expression, expContext);
+        }
+        if (expression instanceof NullLiteralExpression) {
+            return NullLiteralExpression.executeNullLiteral(processingContext, (NullLiteralExpression)expression, expContext);
+        }
+        if (expression instanceof LinkExpression) {
+            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expressionEvaluator, expContext);
+        }
+        if (expression instanceof SelectionVariableExpression) {
+            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
+        }
+        if (expression instanceof SelectionVariableExpression) {
+            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
+        }
+
         throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());
         
     }

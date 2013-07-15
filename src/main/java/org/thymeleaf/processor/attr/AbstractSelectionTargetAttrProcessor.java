@@ -42,12 +42,12 @@ public abstract class AbstractSelectionTargetAttrProcessor
     
     
     
-    public AbstractSelectionTargetAttrProcessor(final String attributeName) {
+    protected AbstractSelectionTargetAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractSelectionTargetAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractSelectionTargetAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

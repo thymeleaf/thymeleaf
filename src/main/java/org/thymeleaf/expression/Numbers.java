@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.NumberPointType;
 import org.thymeleaf.util.NumberUtils;
@@ -47,11 +46,22 @@ import org.thymeleaf.util.Validate;
  *
  */
 public final class Numbers {
-    
 
+    
+    private final Locale locale;
+    
+    
+    public Numbers(final Locale locale) {
+        super();
+        this.locale = locale;
+    }
+
+
+    
+    
     public String formatInteger(final Number target, final Integer minIntegerDigits) {
         try {
-            return NumberUtils.format(target, minIntegerDigits, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting integer with minimum integer digits = " + minIntegerDigits, e);
@@ -69,7 +79,7 @@ public final class Numbers {
 
     public List<String> listFormatInteger(final List<? extends Number> target, final Integer minIntegerDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits));
         }
@@ -78,7 +88,7 @@ public final class Numbers {
 
     public Set<String> setFormatInteger(final Set<? extends Number> target, final Integer minIntegerDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits));
         }
@@ -95,7 +105,7 @@ public final class Numbers {
                     "Unrecognized point format \"" + thousandsPointType + "\"");
         }
         try {
-            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting integer with minimum integer digits = " + 
@@ -114,7 +124,7 @@ public final class Numbers {
 
     public List<String> listFormatInteger(final List<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits, thousandsPointType));
         }
@@ -123,7 +133,7 @@ public final class Numbers {
 
     public Set<String> setFormatInteger(final Set<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatInteger(element, minIntegerDigits, thousandsPointType));
         }
@@ -137,7 +147,7 @@ public final class Numbers {
     
     public String formatDecimal(final Number target, final Integer minIntegerDigits, final Integer decimalDigits) {
         try {
-            return NumberUtils.format(target, minIntegerDigits, decimalDigits, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, decimalDigits, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting decimal with minimum integer digits = " + minIntegerDigits + 
@@ -156,7 +166,7 @@ public final class Numbers {
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits));
         }
@@ -165,7 +175,7 @@ public final class Numbers {
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits));
         }
@@ -185,7 +195,7 @@ public final class Numbers {
                     "Unrecognized point format \"" + decimalPointType + "\"");
         }
         try {
-            return NumberUtils.format(target, minIntegerDigits, decimalDigits, decimalNumberPointType, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, decimalDigits, decimalNumberPointType, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting decimal with minimum integer digits = " + minIntegerDigits +
@@ -204,7 +214,7 @@ public final class Numbers {
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits, decimalPointType));
         }
@@ -213,7 +223,7 @@ public final class Numbers {
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, decimalDigits, decimalPointType));
         }
@@ -238,7 +248,7 @@ public final class Numbers {
                     "Unrecognized point format \"" + thousandsPointType + "\"");
         }
         try {
-            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, decimalDigits, decimalNumberPointType, getLocale());
+            return NumberUtils.format(target, minIntegerDigits, thousandsNumberPointType, decimalDigits, decimalNumberPointType, this.locale);
         } catch (final Exception e) {
             throw new TemplateProcessingException(
                     "Error formatting decimal with minimum integer digits = " + minIntegerDigits + 
@@ -258,7 +268,7 @@ public final class Numbers {
 
     public List<String> listFormatDecimal(final List<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType));
         }
@@ -267,7 +277,7 @@ public final class Numbers {
 
     public Set<String> setFormatDecimal(final Set<? extends Number> target, final Integer minIntegerDigits, final String thousandsPointType, final Integer decimalDigits, final String decimalPointType) {
         Validate.notNull(target, "Target cannot be null");
-        final Set<String> result = new LinkedHashSet<String>();
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
         for (final Number element : target) {
             result.add(formatDecimal(element, minIntegerDigits, thousandsPointType, decimalDigits, decimalPointType));
         }
@@ -315,22 +325,5 @@ public final class Numbers {
     
     
     
-    private static Locale getLocale() {
-        Locale locale = TemplateEngine.threadLocale();
-        if (locale == null) {
-            // If no locale has been set by the template engine, use the system default.
-            locale = Locale.getDefault();
-        }
-        return locale;
-    }
-    
-    
-    
-    
-    
-    
-    public Numbers() {
-        super();
-    }
     
 }

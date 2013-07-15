@@ -59,6 +59,9 @@ import org.thymeleaf.util.Validate;
  * <p>
  *   For example: <tt>//div[@id="menu"]</tt>.
  * </p>
+ * <p>
+ *   Objects of this class are <b>thread-safe</b>.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -75,7 +78,7 @@ public final class DOMSelector implements Serializable {
     private static final Pattern selectorPattern =
             Pattern.compile(selectorPatternStr);
     
-    private final String selectorSpec;
+    private final String selectorExpression;
     private final boolean descendMoreThanOneLevel;
     private final String selectorName;
     private final boolean text;
@@ -84,15 +87,23 @@ public final class DOMSelector implements Serializable {
     
     private final DOMSelector next;
     
-    
-    public DOMSelector(final String selectorSpec) {
+
+    /**
+     * <p>
+     *   Creates a new DOM selector specified by the argument selector
+     *   expression.
+     * </p>
+     * 
+     * @param selectorExpression the expression specifying the selector to be used.
+     */
+    public DOMSelector(final String selectorExpression) {
         
         super();
 
-        this.selectorSpec = selectorSpec;
+        this.selectorExpression = selectorExpression;
         
         String selectorSpecStr =
-            (selectorSpec.trim().startsWith("/")? selectorSpec.trim() : "/" + selectorSpec.trim());
+            (selectorExpression.trim().startsWith("/")? selectorExpression.trim() : "/" + selectorExpression.trim());
         
         final int selectorSpecStrLen = selectorSpecStr.length();
         int firstNonSlash = 0;
@@ -102,7 +113,7 @@ public final class DOMSelector implements Serializable {
         
         if (firstNonSlash >= selectorSpecStrLen) {
             throw new TemplateProcessingException(
-                    "Invalid syntax in DOM selector \"" + selectorSpec + "\": '/' should be followed by a selector name");
+                    "Invalid syntax in DOM selector \"" + selectorExpression + "\": '/' should be followed by a selector name");
         }
         
         final int selEnd = selectorSpecStr.substring(firstNonSlash).indexOf('/');
@@ -117,7 +128,7 @@ public final class DOMSelector implements Serializable {
         final Matcher matcher = selectorPattern.matcher(selectorSpecStr);
         if (!matcher.matches()) {
             throw new TemplateProcessingException(
-                    "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                    "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
             		"(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
         }
         
@@ -128,7 +139,7 @@ public final class DOMSelector implements Serializable {
         
         if (rootGroup == null) {
             throw new TemplateProcessingException(
-                    "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                    "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
                     "(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
         }
         
@@ -138,27 +149,27 @@ public final class DOMSelector implements Serializable {
             this.descendMoreThanOneLevel = false;
         } else {
             throw new TemplateProcessingException(
-                    "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                    "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
                     "(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
         }
         
         if (selectorNameGroup == null) {
             throw new TemplateProcessingException(
-                    "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                    "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
                     "(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
         }
         
         this.selectorName = Node.normalizeName(selectorNameGroup);
-        this.text = this.selectorName.equals("text()");
+        this.text = "text()".equals(this.selectorName);
         
         if (index1Group != null) {
             
             Integer ind = parseIndex(index1Group);
             if (ind == null) {
-                HashMap<String,String> attribs = parseAttributes(selectorSpec, index1Group);
+                HashMap<String,String> attribs = parseAttributes(selectorExpression, index1Group);
                 if (attribs == null) {
                     throw new TemplateProcessingException(
-                            "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                            "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
                             "(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
                 }
                 this.attributes = attribs;
@@ -170,14 +181,14 @@ public final class DOMSelector implements Serializable {
 
                 if (this.index != null) {
                     throw new TemplateProcessingException(
-                            "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                            "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
                             "(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
                 }
                 
                 ind = parseIndex(index1Group);
                 if (ind == null) {
                     throw new TemplateProcessingException(
-                            "Invalid syntax in DOM selector \"" + selectorSpec + "\": selector does not match selector syntax: " +
+                            "Invalid syntax in DOM selector \"" + selectorExpression + "\": selector does not match selector syntax: " +
                             "(/|//)(selector)([@attrib=\"value\" (and @attrib2=\"value\")?])?([index])?");
                 }
                 this.index = ind;
@@ -186,11 +197,25 @@ public final class DOMSelector implements Serializable {
             
             if (this.descendMoreThanOneLevel && this.index != null) {
                 throw new TemplateProcessingException(
-                        "Invalid syntax in DOM selector \"" + selectorSpec + "\": index cannot be specified on a \"descend any levels\" selector (//).");
+                        "Invalid syntax in DOM selector \"" + selectorExpression + "\": index cannot be specified on a \"descend any levels\" selector (//).");
             }
             
         }
         
+    }
+    
+    
+    
+    /**
+     * <p>
+     *   Returns the expression that specifies this DOM selector.
+     * </p>
+     * 
+     * @return the selector expression.
+     * @since 2.0.12
+     */
+    public String getSelectorExpression() {
+        return this.selectorExpression;
     }
     
     
@@ -201,7 +226,7 @@ public final class DOMSelector implements Serializable {
         }
         try {
             return Integer.valueOf(indexGroup);
-        } catch (final Exception e) {
+        } catch (final Exception ignored) {
             return null;
         }
     }
@@ -209,7 +234,7 @@ public final class DOMSelector implements Serializable {
 
     
     private static HashMap<String,String> parseAttributes(final String selectorSpec, final String indexGroup) {
-        final HashMap<String,String> attributes = new HashMap<String, String>();
+        final HashMap<String,String> attributes = new HashMap<String, String>(2,1.0f);
         parseAttributes(selectorSpec, attributes, indexGroup);
         return attributes;
     }
@@ -235,7 +260,7 @@ public final class DOMSelector implements Serializable {
     
     private static void parseAttribute(final String selectorSpec, final HashMap<String,String> attributes, final String attributeSpec) {
         
-        final int eqPos = attributeSpec.indexOf("="); 
+        final int eqPos = attributeSpec.indexOf('=');
         if (eqPos != -1) {
             final String attName = attributeSpec.substring(0, eqPos).trim();
             final String attValue = attributeSpec.substring(eqPos + 1).trim();
@@ -260,16 +285,33 @@ public final class DOMSelector implements Serializable {
 
     
     
-    
+    /**
+     * <p>
+     *   Executes the DOM selector against the specified node, returning
+     *   the result of applying the selector expression.
+     * </p>
+     * 
+     * @param node the node on which the selector will be executed.
+     * @return the result of executing the selector.
+     */
     public List<Node> select(final Node node) {
         Validate.notNull(node, "Node to be searched cannot be null");
         return select(Collections.singletonList(node));
     }
 
-    
+
+    /**
+     * <p>
+     *   Executes the DOM selector against the specified list of nodes,
+     *   returning the result of applying the selector expression.
+     * </p>
+     * 
+     * @param nodes the nodes on which the selector will be executed.
+     * @return the result of executing the selector.
+     */
     public List<Node> select(final List<Node> nodes) {
         Validate.notEmpty(nodes, "Nodes to be searched cannot be null or empty");
-        final List<Node> selected = new ArrayList<Node>();
+        final List<Node> selected = new ArrayList<Node>(10);
         for (final Node node : nodes) {
             doCheckNodeSelection(selected, node);
         }
@@ -278,17 +320,17 @@ public final class DOMSelector implements Serializable {
     
     
     
-    private final boolean checkChildrenSelection(final List<Node> selectedNodes, final Node node) {
+    private boolean checkChildrenSelection(final List<Node> selectedNodes, final Node node) {
         // will return true if any nodes are added to selectedNodes
 
             if (node instanceof NestableNode) {
                 
-                final List<List<Node>> selectedNodesForChildren = new ArrayList<List<Node>>();
+                final List<List<Node>> selectedNodesForChildren = new ArrayList<List<Node>>(10);
                 
                 final NestableNode nestableNode = (NestableNode) node;
                 if (nestableNode.hasChildren()) {
                     for (final Node child : nestableNode.getChildren()) {
-                        final List<Node> childSelectedNodes = new ArrayList<Node>();
+                        final List<Node> childSelectedNodes = new ArrayList<Node>(10);
                         if (doCheckNodeSelection(childSelectedNodes, child)) {
                             selectedNodesForChildren.add(childSelectedNodes);
                         }
@@ -327,7 +369,7 @@ public final class DOMSelector implements Serializable {
     
     
     
-    private final boolean doCheckNodeSelection(final List<Node> selectedNodes, final Node node) {
+    private boolean doCheckNodeSelection(final List<Node> selectedNodes, final Node node) {
         
         if (!doCheckSpecificNodeSelection(node)) {
             
@@ -367,7 +409,7 @@ public final class DOMSelector implements Serializable {
         
     }
     
-    private final boolean doCheckSpecificNodeSelection(final Node node) {
+    private boolean doCheckSpecificNodeSelection(final Node node) {
         
         // This method checks all aspects except index (index can only
         // be applied from the superior level)
@@ -409,8 +451,8 @@ public final class DOMSelector implements Serializable {
     
     
     @Override
-    public final String toString() {
-        return this.selectorSpec;
+    public String toString() {
+        return this.selectorExpression;
     }
 
    

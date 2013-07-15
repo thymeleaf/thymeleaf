@@ -47,7 +47,7 @@ public final class StandardMessageResolutionUtils {
     
     private static final Logger logger = LoggerFactory.getLogger(StandardMessageResolutionUtils.class);
     
-    
+    private static final Object[] EMPTY_MESSAGE_PARAMETERS = new Object[0];
     
     private static final String THYMELEAF_MARKUP_SUFFIX = ".thtml";
     private static final String XML_SUFFIX = ".xml";
@@ -72,7 +72,7 @@ public final class StandardMessageResolutionUtils {
         final Locale locale = arguments.getContext().getLocale();
 
         final String templateName = arguments.getTemplateResolution().getTemplateName();
-        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + "_" + locale.toString();
+        final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + '_' + locale.toString();
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;
@@ -104,12 +104,9 @@ public final class StandardMessageResolutionUtils {
         if (messageValue == null) {
             return null;
         }
-        if (messageParameters == null || messageParameters.length == 0) {
-            return messageValue;
-        }
 
         final MessageFormat messageFormat = new MessageFormat(messageValue, locale);
-        return messageFormat.format(messageParameters);
+        return messageFormat.format((messageParameters != null? messageParameters : EMPTY_MESSAGE_PARAMETERS));
 
     }
     

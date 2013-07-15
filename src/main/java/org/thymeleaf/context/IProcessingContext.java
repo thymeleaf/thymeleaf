@@ -46,13 +46,18 @@ public interface IProcessingContext {
 
     /**
      * <p>
-     *   Returns the map of base variables that should be made available to every expression
-     *   evaluation operation (whenever variable evaluation is available).
+     *   Returns the map of expression objects that should be made available to every expression
+     *   evaluation operation (whenever variable evaluation is available). In OGNL and SpringEL
+     *   expressions, these will be available as <tt>#object1</tt>, <tt>#object2</tt>, etc.
+     * </p>
+     * <p>
+     *   This method <b>cannot return null</b>, and must return a modifiable Map object (which
+     *   will, in fact, be modified).
      * </p>
      * 
-     * @return the map of variables (a new object, mutable, safe to use as a context variables base)
+     * @return the map of objects
      */
-    public Map<String,Object> getBaseContextVariables();
+    public Map<String,Object> getExpressionObjects();
     
     
     

@@ -53,7 +53,7 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    public WebServletContextVariablesMap(final ServletContext servletContext) {
+    WebServletContextVariablesMap(final ServletContext servletContext) {
         super(1, 1.0f);
         Validate.notNull(servletContext, "Servlet context cannot be null");
         this.servletContext = servletContext;
@@ -140,10 +140,11 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public void clear() {
-        final List<String> attributeNamesList = new ArrayList<String>(); 
+        final List<String> attributeNamesList = new ArrayList<String>(5);
         final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
+        // We first iterate, then remove, in order to protect the Enumeration.
         while (attributeNames.hasMoreElements()) {
-            attributeNamesList.add(attributeNames.nextElement()); 
+            attributeNamesList.add(attributeNames.nextElement());
         }
         for (final String attributeName : attributeNamesList) {
             this.servletContext.removeAttribute(attributeName);
@@ -175,8 +176,8 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public Object clone() {
-        return new WebServletContextVariablesMap(this.servletContext);
+    public WebServletContextVariablesMap clone() {
+        return (WebServletContextVariablesMap) super.clone();
     }
 
     
@@ -184,7 +185,7 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Set<String> keySet() {
-        final Set<String> keySet = new LinkedHashSet<String>();
+        final Set<String> keySet = new LinkedHashSet<String>(5);
         final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             keySet.add(attributeNames.nextElement());
@@ -197,7 +198,7 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Object> values() {
-        final List<Object> values = new ArrayList<Object>();
+        final List<Object> values = new ArrayList<Object>(5);
         final Enumeration<String> attributeNames = this.servletContext.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
@@ -260,7 +261,7 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     @SuppressWarnings("unchecked")
     private static Map<String,Object> getAttributeMap(final ServletContext servletContext) {
         
-        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>();
+        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>(6, 1.0f);
         final Enumeration<String> attributeNames = servletContext.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();

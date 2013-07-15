@@ -502,7 +502,19 @@ public final class Standards {
                 "meta", "param", "source", "wbr"
             };
 
-
+    
+    
+    
+    public static final String[] HTML_CONDITIONAL_FIXED_VALUE_ATTR_NAMES = 
+            new String[] {
+                    "async", "autofocus", "autoplay", "checked", "controls",
+                    "declare", "default", "defer", "disabled", "formnovalidate",
+                    "hidden", "ismap", "loop", "multiple", "novalidate",
+                    "nowrap", "open", "pubdate", "readonly", "required",
+                    "reversed", "selected", "scoped", "seamless"
+            };
+    
+    
     
     
     

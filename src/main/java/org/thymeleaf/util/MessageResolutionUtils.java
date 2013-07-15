@@ -194,13 +194,13 @@ public final class MessageResolutionUtils {
         Validate.notNull(targetClass, "Target class cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
         
-        final List<Properties> properties = new ArrayList<Properties>();
+        final List<Properties> properties = new ArrayList<Properties>(5);
         Class<?> currentClass = targetClass;
         
         String base = getClassNameBase(currentClass);
         properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
         
-        while (currentClass.getSuperclass() != Object.class) {
+        while (!currentClass.getSuperclass().equals(Object.class)) {
             currentClass = currentClass.getSuperclass();
             base = getClassNameBase(currentClass);
             properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
@@ -231,7 +231,7 @@ public final class MessageResolutionUtils {
         final IResourceResolver usedResourceResolver = 
             (resourceResolver != null? resourceResolver : new ClassLoaderResourceResolver());
         
-        final List<Properties> messages = new ArrayList<Properties>();
+        final List<Properties> messages = new ArrayList<Properties>(10);
         for (final String messageResourceName : messageResourceNames) {
             final InputStream messageFileInputStream =
                 usedResourceResolver.getResourceAsStream((arguments == null? null : arguments.getTemplateProcessingParameters()), messageResourceName);
@@ -287,8 +287,8 @@ public final class MessageResolutionUtils {
         } finally {
             try {
                 propertiesIS.close();
-            } catch (Exception e) {
-                throw new TemplateInputException("Exception loading messages file", e);
+            } catch (final Exception e) {
+                // ignored
             }
         }
         return properties;
@@ -302,29 +302,29 @@ public final class MessageResolutionUtils {
     private static List<String> getMessageFileNamesFromBase(
             final String messagesFileNameBase, final Locale locale) {
 
-        final List<String> propertiesFileNames = new ArrayList<String>();
+        final List<String> propertiesFileNames = new ArrayList<String>(5);
         
-        if (locale.getLanguage() == null || locale.getLanguage().trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(locale.getLanguage())) {
             throw new TemplateProcessingException(
                     "Locale \"" + locale.toString() + "\" " +
                     "cannot be used as it does not specify a language.");
         }
         
-        if (locale.getVariant() != null && !locale.getVariant().trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(locale.getVariant())) {
             final String propertiesFileName = 
                 getMessagesFileNameWithSuffix(
                         messagesFileNameBase, getSuffixForLanguageCountryVariant(locale));
             propertiesFileNames.add(propertiesFileName);
         }
         
-        if (locale.getCountry() != null && !locale.getCountry().trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(locale.getCountry())) {
             final String propertiesFileName = 
                 getMessagesFileNameWithSuffix(
                         messagesFileNameBase, getSuffixForLanguageCountry(locale));
             propertiesFileNames.add(propertiesFileName);
         }
         
-        if (locale.getLanguage() != null && !locale.getLanguage().trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(locale.getLanguage())) {
             final String propertiesFileName = 
                 getMessagesFileNameWithSuffix(
                         messagesFileNameBase, getSuffixForLanguage(locale));
@@ -350,7 +350,7 @@ public final class MessageResolutionUtils {
     
     private static String getMessagesFileNameWithSuffix(
             final String baseFileName, final String suffix) {
-        if (suffix == null || suffix.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(suffix)) {
             return baseFileName + PROPERTIES_SUFFIX;
         }
         return baseFileName + "_" + suffix + PROPERTIES_SUFFIX;

@@ -41,6 +41,7 @@ import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -90,7 +91,7 @@ public final class TemplateRepository {
             this.fragmentCache = cacheManager.getFragmentCache();
         }
             
-        this.parsersByTemplateMode = new HashMap<String,ITemplateParser>();
+        this.parsersByTemplateMode = new HashMap<String,ITemplateParser>(10, 1.0f);
         for (final ITemplateModeHandler handler : configuration.getTemplateModeHandlers()) {
             this.parsersByTemplateMode.put(handler.getTemplateModeName(), handler.getTemplateParser());
         }
@@ -193,7 +194,7 @@ public final class TemplateRepository {
             final Template cached = 
                 this.templateCache.get(templateName);
             if (cached != null) {
-                return cached.clone();
+                return cached.createDuplicate();
             }
         }
         
@@ -263,7 +264,7 @@ public final class TemplateRepository {
         
         final String characterEncoding = templateResolution.getCharacterEncoding();
         Reader reader = null;
-        if (characterEncoding != null && !characterEncoding.trim().equals("")) {
+        if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
             try {
                 reader = new InputStreamReader(templateInputStream, characterEncoding);
             } catch (final UnsupportedEncodingException e) {
@@ -288,7 +289,7 @@ public final class TemplateRepository {
         if (this.templateCache != null) {
             if (templateResolution.getValidity().isCacheable()) {
                 this.templateCache.put(templateName, template);
-                return template.clone();
+                return template.createDuplicate();
             }
         }
         
@@ -349,7 +350,7 @@ public final class TemplateRepository {
     
     
     private static String computeFragmentCacheKey(final String templateMode, final String fragment) {
-        return "{" +  templateMode + "}" + fragment;
+        return '{' +  templateMode + '}' + fragment;
     }
     
     
@@ -357,7 +358,7 @@ public final class TemplateRepository {
         if (fragmentNodes == null) {
             return null;
         }
-        final List<Node> clonedNodes = new ArrayList<Node>();
+        final List<Node> clonedNodes = new ArrayList<Node>(fragmentNodes.size() + 2);
         for (final Node fragmentNode : fragmentNodes) {
             clonedNodes.add(fragmentNode.cloneNode(null, false));
         }

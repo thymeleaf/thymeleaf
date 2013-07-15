@@ -38,13 +38,13 @@ public abstract class AbstractSingleAttributeModifierAttrProcessor
 
     
     
-    public AbstractSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractSingleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
 
 
-    public AbstractSingleAttributeModifierAttrProcessor(final String attributeName) {
+    protected AbstractSingleAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 
@@ -58,7 +58,7 @@ public abstract class AbstractSingleAttributeModifierAttrProcessor
         final String name = getTargetAttributeName(arguments, element, attributeName);
         final String value = getTargetAttributeValue(arguments, element, attributeName);
         
-        final Map<String,String> valuesMap = new HashMap<String,String>();
+        final Map<String,String> valuesMap = new HashMap<String,String>(2, 1.0f);
         valuesMap.put(name, value);
         return valuesMap;
         

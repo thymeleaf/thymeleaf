@@ -39,12 +39,12 @@ public abstract class AbstractChildrenModifierAttrProcessor
     
     
     
-    public AbstractChildrenModifierAttrProcessor(final String attributeName) {
+    protected AbstractChildrenModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractChildrenModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractChildrenModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

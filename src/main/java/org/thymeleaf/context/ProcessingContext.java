@@ -25,6 +25,9 @@ import org.thymeleaf.util.Validate;
 
 
 /**
+ * <p>
+ *   Basic implementation of {@link AbstractProcessingContext}.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -62,7 +65,7 @@ public class ProcessingContext extends AbstractProcessingContext {
         super((processingContext == null? null : processingContext.getContext()),
                 (processingContext == null? null : processingContext.getLocalVariables()),
                 (processingContext == null? null : processingContext.getSelectionTarget()),
-                (processingContext == null? false : processingContext.hasSelectionTarget()));
+                (processingContext != null && processingContext.hasSelectionTarget()));
         
         Validate.notNull(processingContext, "Processing context cannot be null");
         

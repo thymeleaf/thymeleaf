@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.FragmentAndTarget;
@@ -59,11 +58,11 @@ public abstract class AbstractFragmentHandlingElementProcessor
         
         final boolean substituteInclusionNode = getSubstituteInclusionNode(arguments, element);
         
-        final FragmentAndTarget fragmentAndTarget = getFragmentAndTarget(arguments, element);
+        final FragmentAndTarget fragmentAndTarget = getFragmentAndTarget(arguments, element, substituteInclusionNode);
         
         final List<Node> fragmentNodes = 
                 fragmentAndTarget.extractFragment(
-                        arguments.getConfiguration(), arguments.getContext(), arguments.getTemplateRepository());
+                        arguments.getConfiguration(), arguments, arguments.getTemplateRepository());
         
         if (fragmentNodes == null) {
             throw new TemplateProcessingException(
@@ -82,16 +81,7 @@ public abstract class AbstractFragmentHandlingElementProcessor
         } else {
             
             for (final Node fragmentNode : fragmentNodes) {
-                if (!(fragmentNode instanceof NestableNode)) {
-                    throw new TemplateProcessingException(
-                            "Cannot correctly process \"" + element.getOriginalName() + "\" element. " +
-                            "Node returned by fragment specification " +
-                            "for inclusion is not a nestable node (" + fragmentNode.getClass().getSimpleName() + ").");
-                }
-                
-                for (final Node newNode : ((NestableNode)fragmentNode).getChildren()) {
-                    element.addChild(newNode);
-                }
+                element.addChild(fragmentNode);
             }
             
         }
@@ -110,7 +100,7 @@ public abstract class AbstractFragmentHandlingElementProcessor
             final Arguments arguments, final Element element);
     
     protected abstract FragmentAndTarget getFragmentAndTarget(
-            final Arguments arguments, final Element element);
+            final Arguments arguments, final Element element, final boolean substituteInclusionNode);
     
     
     

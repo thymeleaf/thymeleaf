@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +40,7 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -122,7 +123,7 @@ public final class LinkExpression extends SimpleExpression {
 
         final String content = matcher.group(1);
 
-        if (content == null || content.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(content)) {
             return null;
         }
         
@@ -158,7 +159,12 @@ public final class LinkExpression extends SimpleExpression {
                     if (nestParLevel == 0) {
                         
                         if (i == 0) {
-                            return null;
+                            // It was not a parameter specification, but a base URL surrounded by parentheses! 
+                            final Expression baseExpr = computeBase(trimmedInput); 
+                            if (baseExpr == null) {
+                                return null;
+                            }
+                            return new LinkExpression(baseExpr, null);
                         }
                         
                         final String base = trimmedInput.substring(0, i);
@@ -200,11 +206,17 @@ public final class LinkExpression extends SimpleExpression {
 
     
     private static Expression computeBase(final String baseStr) {
-        // Base will be tried to be computed first as token, then as expression
-        final Token token = Token.parse(baseStr);
-        if (token != null) {
-            return TextLiteralExpression.parseTextLiteral(token.getValue());
-        }
+    	//if baseStr starts with #{, consider it as a message resource.
+    	//cannot remove # pattern in org.thymeleaf.standard.expression.Token,
+    	//tokens starting with # in org.thymeleaf.standard.expression.Token 
+        //are used to represent Strings,Objects.. utils 
+    	if(!baseStr.startsWith("#{")){
+            // Base will be tried to be computed first as token, then as expression
+            final Token token = Token.parse(baseStr);
+            if (token != null) {
+                return TextLiteralExpression.parseTextLiteral(token.getValue());
+            }
+    	}
         return Expression.parse(baseStr);
     }
     
@@ -218,7 +230,8 @@ public final class LinkExpression extends SimpleExpression {
 
     static Object executeLink(final Configuration configuration,
             final IProcessingContext processingContext, final LinkExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -226,11 +239,11 @@ public final class LinkExpression extends SimpleExpression {
         
         final Expression baseExpression = expression.getBase();
         Object base = 
-            Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator);
+            Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator, expContext);
         base = LiteralValue.unwrap(base);
-        if (base == null || !(base instanceof String) || ((String)base).trim().equals("")) {
+        if (base == null || !(base instanceof String) || StringUtils.isEmptyOrWhitespace((String) base)) {
             throw new TemplateProcessingException(
-                    "Base for message resolution must be a non-null and non-empty String " +
+                    "Base for link URL creation must be a non-null and non-empty String " +
                     "(currently: " + (base == null? null : base.getClass().getName()) + ")");
         }
 
@@ -238,7 +251,7 @@ public final class LinkExpression extends SimpleExpression {
         
         if (!isWebContext(processingContext.getContext()) && !isLinkBaseAbsolute(linkBase) && !isLinkBaseServerRelative(linkBase)) {
             throw new TemplateProcessingException(
-                    "Link base \"" + linkBase + "\" cannot be context relative (/) unless you implement the " + 
+                    "Link base \"" + linkBase + "\" cannot be context relative (/) or page relative unless you implement the " + 
                     IWebContext.class.getName() + " interface (context is of class: " +
                     processingContext.getContext().getClass().getName() + ")");
         }
@@ -246,7 +259,7 @@ public final class LinkExpression extends SimpleExpression {
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression.getParameters(), expressionEvaluator) :
+                    resolveParameters(configuration, processingContext, expression.getParameters(), expressionEvaluator, expContext) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -266,9 +279,9 @@ public final class LinkExpression extends SimpleExpression {
         /*
          * Check for the existence of a question mark symbol in the link base itself
          */
-        final int questionMarkPosition = linkBase.indexOf("?"); 
+        final int questionMarkPosition = linkBase.indexOf('?');
         
-        final StringBuffer parametersBuffer = new StringBuffer();
+        final StringBuilder parametersBuilder = new StringBuilder();
         
         for (final Map.Entry<String,List<Object>> parameterEntry : parameters.entrySet()) {
             
@@ -278,14 +291,14 @@ public final class LinkExpression extends SimpleExpression {
             for (final Object parameterObjectValue : parameterValues) {
 
                 // Insert a separator with the previous parameter, if needed
-                if (parametersBuffer.length() == 0) {
+                if (parametersBuilder.length() == 0) {
                     if (questionMarkPosition == -1) {
-                        parametersBuffer.append("?");
+                        parametersBuilder.append("?");
                     } else {
-                        parametersBuffer.append("&");
+                        parametersBuilder.append("&");
                     }
                 } else {
-                    parametersBuffer.append("&");
+                    parametersBuilder.append("&");
                 }
 
                 final String parameterValue =
@@ -294,12 +307,12 @@ public final class LinkExpression extends SimpleExpression {
                 if (URL_PARAM_NO_VALUE.equals(parameterValue)) {
                     
                     // This is a parameter without a value and even without an "=" symbol
-                    parametersBuffer.append(parameterName);
+                    parametersBuilder.append(parameterName);
                     
                 } else {
                 
                     try {
-                        parametersBuffer.append(parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8"));
+                        parametersBuilder.append(parameterName).append("=").append(URLEncoder.encode(parameterValue, "UTF-8"));
                     } catch (UnsupportedEncodingException e) {
                         throw new TemplateProcessingException("Exception while processing link parameters", e);
                     }
@@ -309,55 +322,54 @@ public final class LinkExpression extends SimpleExpression {
             }
             
         }
+
         
-        if (isLinkBaseAbsolute(linkBase)) {
-            return linkBase + parametersBuffer.toString() + urlFragment;
-        } else if (!isWebContext(processingContext.getContext()) && isLinkBaseServerRelative(linkBase)) {
-            return linkBase.substring(1) + parametersBuffer.toString() + urlFragment;
+        /*
+         * Context is not web: URLs can only be absolute or server-relative
+         */
+        if (!isWebContext(processingContext.getContext())) {
+            
+            if (isLinkBaseAbsolute(linkBase)) {
+                return linkBase + parametersBuilder + urlFragment;
+            }
+            // isLinkBaseServerRelative(linkBase) == true
+            return linkBase.substring(1) + parametersBuilder + urlFragment;
+            
         }
+        
+
+        /*
+         * Context is web 
+         */
         
         final IWebContext webContext = (IWebContext) processingContext.getContext();
         
-        String sessionFragment = "";
-        
         final HttpServletRequest request = webContext.getHttpServletRequest();
-        final HttpSession session = webContext.getHttpSession();
-        if(null != session){
-            final String sessionID  = session.getId();
-            
-            if (!request.isRequestedSessionIdFromCookie()) {
-                sessionFragment = ";jsessionid=" + sessionID;
-            }
-        }
+        final HttpServletResponse response = webContext.getHttpServletResponse();
+
+        String url = null;
         
         if (isLinkBaseContextRelative(linkBase)) {
             
-            final String contextName = request.getContextPath();
-            
-            if (questionMarkPosition == -1) {
-                return contextName + linkBase + sessionFragment + parametersBuffer.toString() + urlFragment;
-            }
-            
-            final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
-            final String linkBasePart2 = linkBase.substring(questionMarkPosition);
-            return contextName + linkBasePart1 + sessionFragment + linkBasePart2 + parametersBuffer.toString() + urlFragment;
+            url = request.getContextPath() + linkBase + parametersBuilder + urlFragment;
             
         } else if (isLinkBaseServerRelative(linkBase)) {
             
-            if (questionMarkPosition == -1) {
-                // remove the "~" from the link base
-                return linkBase.substring(1) + sessionFragment + parametersBuffer.toString() + urlFragment;
-            }
+            // remove the "~" from the link base
+            url = linkBase.substring(1) + parametersBuilder + urlFragment;
             
-            final String linkBasePart1 = linkBase.substring(0,questionMarkPosition);
-            final String linkBasePart2 = linkBase.substring(questionMarkPosition);
-            // remove the "~" from the link base part 1 
-            return linkBasePart1.substring(1) + sessionFragment + linkBasePart2 + parametersBuffer.toString() + urlFragment;
+        } else if (isLinkBaseAbsolute(linkBase)) {
+            
+            url = linkBase + parametersBuilder + urlFragment;
+            
+        } else {
+            // Link base is current-URL-relative
+            
+            url = linkBase + parametersBuilder + urlFragment;
             
         }
 
-        
-        return linkBase + sessionFragment + parametersBuffer.toString() + urlFragment;
+        return (response != null? response.encodeURL(url) : url);
         
     }
     
@@ -386,7 +398,8 @@ public final class LinkExpression extends SimpleExpression {
     
     private static Map<String,List<Object>> resolveParameters(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
         
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
@@ -396,7 +409,7 @@ public final class LinkExpression extends SimpleExpression {
 
             List<Object> currentParameterValues = parameters.get(parameterName);
             if (currentParameterValues == null) {
-                currentParameterValues = new ArrayList<Object>();
+                currentParameterValues = new ArrayList<Object>(4);
                 parameters.put(parameterName, currentParameterValues);
             }
             
@@ -406,7 +419,7 @@ public final class LinkExpression extends SimpleExpression {
                 currentParameterValues.add(URL_PARAM_NO_VALUE);
             } else {
                 final Object value = 
-                        Expression.execute(configuration, processingContext, parameterExpression, expressionEvaluator);
+                        Expression.execute(configuration, processingContext, parameterExpression, expressionEvaluator, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
                     currentParameterValues.add("");
@@ -426,13 +439,13 @@ public final class LinkExpression extends SimpleExpression {
     private static List<Object> convertParameterValueToList(final Object parameterValue) {
         
         if (parameterValue instanceof Iterable<?>) {
-            final List<Object> result = new ArrayList<Object>();
+            final List<Object> result = new ArrayList<Object>(4);
             for (final Object obj : (Iterable<?>) parameterValue) {
                 result.add(obj);
             }
             return result;
         } else if (parameterValue.getClass().isArray()){
-            final List<Object> result = new ArrayList<Object>();
+            final List<Object> result = new ArrayList<Object>(4);
             if (parameterValue instanceof byte[]) {
                 for (final byte obj : (byte[]) parameterValue) {
                     result.add(Byte.valueOf(obj));
@@ -466,9 +479,8 @@ public final class LinkExpression extends SimpleExpression {
                     result.add(Character.valueOf(obj));
                 }
             } else {
-                for (final Object obj : (Object[]) parameterValue) {
-                    result.add(obj);
-                }
+                final Object[] objParameterValue = (Object[]) parameterValue;
+                Collections.addAll(result, objParameterValue);
             }
             return result;
         } else{

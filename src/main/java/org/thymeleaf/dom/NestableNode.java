@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
@@ -44,6 +43,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.0.0
  *
  */
+@SuppressWarnings("ObjectEquality")
 public abstract class NestableNode extends Node {
     
     private static final long serialVersionUID = -5601217853971985055L;
@@ -125,7 +125,7 @@ public abstract class NestableNode extends Node {
         if (this.childrenLen == 0) {
             return Collections.emptyList();
         }
-        final List<Element> elementChildren = new ArrayList<Element>();
+        final List<Element> elementChildren = new ArrayList<Element>(this.childrenLen + 2);
         for (int i = 0; i < this.childrenLen; i++) {
             if (this.children[i] instanceof Element) {
                 elementChildren.add((Element)this.children[i]);
@@ -278,9 +278,7 @@ public abstract class NestableNode extends Node {
                     this.children = newChildren;
                 }
 
-                for (int i = this.childrenLen; i > index; i--) {
-                    this.children[i] = this.children[i - 1];
-                }
+                System.arraycopy(this.children, index, this.children, index + 1, (this.childrenLen - index));
                 this.children[index] = newChild;
                 this.childrenLen++;
                 
@@ -408,9 +406,7 @@ public abstract class NestableNode extends Node {
     
     final void unsafeRemoveChild(final int index) {
         this.children[index].parent = null;
-        for (int i = index + 1; i < this.childrenLen; i++) {
-            this.children[i - 1] = this.children[i];
-        }
+        System.arraycopy(this.children, index + 1, this.children, index, (this.childrenLen - (index + 1)));
         this.childrenLen--;
     }
     
@@ -484,7 +480,7 @@ public abstract class NestableNode extends Node {
             if (child instanceof NestableNode) {
 
                 final NestableNode nestableChild = (NestableNode) child;
-                final Map<String,Object> nestableChildNodeLocalVariables = 
+                final NodeLocalVariablesMap nestableChildNodeLocalVariables = 
                         nestableChild.unsafeGetNodeLocalVariables();
                
                 for (int i = 0; i < this.childrenLen; i++) {
@@ -537,9 +533,9 @@ public abstract class NestableNode extends Node {
     
     
     /*
-     * ------------
-     * SKIPPABILITY
-     * ------------
+     * -------------------------------
+     * SKIPPABILITY AND PROCESSABILITY
+     * -------------------------------
      */
     
     
@@ -551,6 +547,19 @@ public abstract class NestableNode extends Node {
             // children should be marked skippable too.
             for (int i = 0; i < this.childrenLen; i++) {
                 this.children[i].setSkippable(true);
+            }
+        }
+    }
+    
+    
+    
+    @Override
+    final void doAdditionalProcessableComputing(final boolean processable) {
+        if (!processable && this.childrenLen > 0) {
+            // If this node is marked as non-processable, all of its
+            // children should be marked non-processable too.
+            for (int i = 0; i < this.childrenLen; i++) {
+                this.children[i].setProcessable(false);
             }
         }
     }
@@ -602,19 +611,19 @@ public abstract class NestableNode extends Node {
     
     
     @Override
-    final void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes) {
+    final void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
         if (!isDetached() && this.childrenLen > 0) {
             final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(this.childrenLen);
-            while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed, processOnlyElementNodes)) { /* Nothing to be done here */ }
+            while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed, processTextNodes, processCommentNodes)) { /* Nothing to be done here */ }
         }
     }
     
 
     
     
-    private static final boolean computeNextChild(
+    private static boolean computeNextChild(
             final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed, 
-            final boolean processOnlyElementNodes) {
+            final boolean processTextNodes, final boolean processCommentNodes) {
         
         // This method scans the whole array of children each time
         // it tries to execute one so that it executes all sister nodes
@@ -623,7 +632,7 @@ public abstract class NestableNode extends Node {
             for (int i = 0; i < node.childrenLen; i++) {
                 final Node child = node.children[i];
                 if (!alreadyProcessed.isAlreadyCounted(child)) {
-                    child.processNode(arguments, processOnlyElementNodes);
+                    child.processNode(arguments, processTextNodes, processCommentNodes);
                     alreadyProcessed.count(child);
                     return true;
                 }

@@ -42,7 +42,7 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 public abstract class AbstractXHTMLEnabledDialect extends AbstractDialect {
 
     
-    public AbstractXHTMLEnabledDialect() {
+    protected AbstractXHTMLEnabledDialect() {
         super();
     }
     
@@ -50,7 +50,7 @@ public abstract class AbstractXHTMLEnabledDialect extends AbstractDialect {
     
     @Override
     public final Set<IDocTypeResolutionEntry> getDocTypeResolutionEntries() {
-        final Set<IDocTypeResolutionEntry> entries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> entries = new LinkedHashSet<IDocTypeResolutionEntry>(8);
         entries.addAll(Standards.ALL_XHTML_1_STRICT_RESOLUTION_ENTRIES);
         entries.addAll(Standards.ALL_XHTML_1_TRANSITIONAL_RESOLUTION_ENTRIES);
         entries.addAll(Standards.ALL_XHTML_1_FRAMESET_RESOLUTION_ENTRIES);

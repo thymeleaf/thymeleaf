@@ -172,5 +172,36 @@ public interface ICacheManager {
      * @return the required cache
      */
     public <K,V> ICache<K,V> getSpecificCache(final String name);
+
+    
+    /**
+     * <p>
+     *   Returns a list with the names of all the specific caches
+     *   managed by this implementation.
+     * </p>
+     * <p>
+     *   Might return null if no specific caches are managed.
+     * </p>
+     * 
+     * @return a list with all the names of the "specific caches"
+     * @since 2.0.16
+     */
+    public List<String> getAllSpecificCacheNames();
+
+    
+    /**
+     * <p>
+     *   Clears all the caches managed by this cache manager instance.
+     * </p>
+     * <p>
+     *   This method is mainly intended for use from external tools that
+     *   might need to clean all caches completely, without having to worry
+     *   about implementation details.  
+     * </p>
+     * 
+     * @since 2.0.16
+     */
+    public void clearAllCaches();
+    
     
 }

@@ -100,7 +100,8 @@ public final class VariableExpression extends SimpleExpression {
     
     static Object executeVariable(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final VariableExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final VariableExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating variable expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -112,7 +113,7 @@ public final class VariableExpression extends SimpleExpression {
                     "Variable expression is null, which is not allowed");
         }
         
-        return expressionEvaluator.evaluate(configuration, processingContext, exp, false);
+        return expressionEvaluator.evaluate(configuration, processingContext, exp, expContext, false);
         
     }
     

@@ -39,7 +39,7 @@ public final class PatternUtils {
             pattern.replace(".", "\\.").replace("(", "\\(").replace(")", "\\)").
                 replace("[","\\[").replace("]","\\]").replace("?","\\?").replace("$","\\$").replace("+","\\+").
                 replace("*","(?:.*?)");
-        return Pattern.compile("^" + pat + "$");
+        return Pattern.compile('^' + pat + '$');
     }
     
     

@@ -33,6 +33,7 @@ public interface IStandardVariableExpressionEvaluator {
     
     public Object evaluate(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final String expression, final boolean useSelectionAsRoot);
+            final String expression, final StandardExpressionExecutionContext expContext, 
+            final boolean useSelectionAsRoot);
     
 }

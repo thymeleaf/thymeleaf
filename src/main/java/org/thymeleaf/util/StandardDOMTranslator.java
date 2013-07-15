@@ -1,3 +1,22 @@
+/*
+ * =============================================================================
+ * 
+ *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
+ * 
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ * 
+ * =============================================================================
+ */
 package org.thymeleaf.util;
 
 import java.util.ArrayList;
@@ -21,7 +40,7 @@ import org.thymeleaf.templateparser.TemplatePreprocessingReader;
  * 
  * @author Daniel Fern&aacute;ndez
  */
-public class StandardDOMTranslator {
+public final class StandardDOMTranslator {
 
     
     private StandardDOMTranslator() {
@@ -30,7 +49,7 @@ public class StandardDOMTranslator {
 
     
     
-    public static final Node translateNode(final org.w3c.dom.Node domNode, final NestableNode parentNode, final String documentName) {
+    public static Node translateNode(final org.w3c.dom.Node domNode, final NestableNode parentNode, final String documentName) {
         
         if(domNode instanceof org.w3c.dom.Element) {
             return translateElement((org.w3c.dom.Element)domNode, parentNode, documentName);
@@ -53,12 +72,12 @@ public class StandardDOMTranslator {
     
 
     
-    public static final Document translateDocument(final org.w3c.dom.Document domDocument, final String documentName) {
+    public static Document translateDocument(final org.w3c.dom.Document domDocument, final String documentName) {
         return translateDocument(domDocument, documentName, null);
     }
 
         
-    public static final Document translateDocument(final org.w3c.dom.Document domDocument, final String documentName,
+    public static Document translateDocument(final org.w3c.dom.Document domDocument, final String documentName,
             final String originalDocTypeClause) {
         
         final org.w3c.dom.DocumentType domDocumentType = domDocument.getDoctype();
@@ -101,13 +120,13 @@ public class StandardDOMTranslator {
 
 
     
-    public static final DocType translateDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
+    public static DocType translateDocumentType(final org.w3c.dom.DocumentType domDocumentType) {
         return translateDocumentType(domDocumentType, null);
     }
 
     
     
-    public static final DocType translateDocumentType(
+    public static DocType translateDocumentType(
             final org.w3c.dom.DocumentType domDocumentType, final String originalDocTypeClause) {
         
         if (domDocumentType == null) {
@@ -124,7 +143,7 @@ public class StandardDOMTranslator {
 
     
     
-    public static final Element translateElement(final org.w3c.dom.Element domNode, final NestableNode parentNode, final String documentName) {
+    public static Element translateElement(final org.w3c.dom.Element domNode, final NestableNode parentNode, final String documentName) {
 
         final String elementTagName = domNode.getTagName();
         
@@ -155,7 +174,7 @@ public class StandardDOMTranslator {
 
     
     
-    private static final List<Node> translateRootElement(final org.w3c.dom.Element domNode, 
+    private static List<Node> translateRootElement(final org.w3c.dom.Element domNode,
             final NestableNode parentNode, final String documentName) {
 
         final String elementTagName = domNode.getTagName();
@@ -164,9 +183,9 @@ public class StandardDOMTranslator {
             return Collections.singletonList((Node)translateElement(domNode, parentNode, documentName));
         }
 
-        final List<Node> result = new ArrayList<Node>();
         final org.w3c.dom.NodeList children = domNode.getChildNodes();
         final int childrenLen = children.getLength();
+        final List<Node> result = new ArrayList<Node>(childrenLen + 2);
         for (int i = 0; i < childrenLen; i++) {
             final org.w3c.dom.Node child = children.item(i);
             result.add(translateNode(child, parentNode, documentName));
@@ -178,7 +197,7 @@ public class StandardDOMTranslator {
     
     
 
-    public static final Comment translateComment(final org.w3c.dom.Comment domNode, final NestableNode parentNode, final String documentName) {
+    public static Comment translateComment(final org.w3c.dom.Comment domNode, final NestableNode parentNode, final String documentName) {
         
         final Comment comment = new Comment(domNode.getData(), documentName);
         comment.setParent(parentNode);
@@ -188,7 +207,7 @@ public class StandardDOMTranslator {
 
     
     
-    public static final CDATASection translateCDATASection(final org.w3c.dom.CDATASection domNode, final NestableNode parentNode, final String documentName) {
+    public static CDATASection translateCDATASection(final org.w3c.dom.CDATASection domNode, final NestableNode parentNode, final String documentName) {
         final CDATASection cdata = 
                 new CDATASection(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
         cdata.setParent(parentNode);
@@ -197,7 +216,7 @@ public class StandardDOMTranslator {
 
     
     
-    public static final Text translateText(final org.w3c.dom.Text domNode, final NestableNode parentNode, final String documentName) {
+    public static Text translateText(final org.w3c.dom.Text domNode, final NestableNode parentNode, final String documentName) {
         
         final Text text = 
                 new Text(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), false, documentName);

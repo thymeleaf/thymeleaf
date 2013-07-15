@@ -62,13 +62,14 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
     
     @SuppressWarnings({"unchecked","null"})
     static Object executeEquals(final Configuration configuration, final IProcessingContext processingContext, 
-            final EqualsExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final EqualsExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
 
         Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);
@@ -85,7 +86,13 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == 0);
         } else {
-            if (leftValue != null && rightValue != null &&
+            if (leftValue instanceof Character) {
+                leftValue = leftValue.toString();
+            }
+            if (rightValue != null && rightValue instanceof Character) {
+                rightValue = rightValue.toString();
+            }
+            if (rightValue != null &&
                     leftValue.getClass().equals(rightValue.getClass()) && 
                     Comparable.class.isAssignableFrom(leftValue.getClass())) {
                 result = Boolean.valueOf(((Comparable<Object>)leftValue).compareTo(rightValue) == 0);

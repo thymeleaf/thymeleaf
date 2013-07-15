@@ -28,6 +28,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.ObjectUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -126,7 +127,7 @@ public final class ConditionalExpression extends ComplexExpression {
         
         final String input = inputParsingNode.getInput();
             
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
@@ -260,20 +261,21 @@ public final class ConditionalExpression extends ComplexExpression {
 
     
     static Object executeConditional(final Configuration configuration, final IProcessingContext processingContext, 
-            final ConditionalExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final ConditionalExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating conditional expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         final Object condObj = 
-            Expression.execute(configuration, processingContext, expression.getConditionExpression(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getConditionExpression(), expressionEvaluator, expContext);
         final boolean cond = ObjectUtils.evaluateAsBoolean(condObj);
         
         if (cond) {
-            return Expression.execute(configuration, processingContext, expression.getThenExpression(), expressionEvaluator);
+            return Expression.execute(configuration, processingContext, expression.getThenExpression(), expressionEvaluator, expContext);
         }
-        return Expression.execute(configuration, processingContext, expression.getElseExpression(), expressionEvaluator);
+        return Expression.execute(configuration, processingContext, expression.getElseExpression(), expressionEvaluator, expContext);
         
     }
     

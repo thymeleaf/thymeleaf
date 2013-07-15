@@ -65,7 +65,7 @@ public final class AndExpression extends BinaryOperationExpression {
     
     
     
-    protected static List<ExpressionParsingNode> composeAndExpression(
+    static List<ExpressionParsingNode> composeAndExpression(
             final List<ExpressionParsingNode> decomposition, int inputIndex) {
         return composeBinaryOperationExpression(
                 decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);
@@ -76,22 +76,27 @@ public final class AndExpression extends BinaryOperationExpression {
 
     
     static Object executeAnd(final Configuration configuration, final IProcessingContext processingContext, 
-            final AndExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final AndExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating AND expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
-
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
+        final Object leftValue = 
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
         
+        // Short circuit
         final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
-        final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);
+        if (!leftBooleanValue) {
+            return Boolean.FALSE;
+        }
+
+        final Object rightValue = 
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
         
-        return Boolean.valueOf(leftBooleanValue && rightBooleanValue);
+        final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);
+        return Boolean.valueOf(rightBooleanValue);
         
     }
 

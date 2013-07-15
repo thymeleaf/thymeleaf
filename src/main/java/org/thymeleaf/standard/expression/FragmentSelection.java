@@ -21,6 +21,7 @@ package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
 
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -38,7 +39,7 @@ public final class FragmentSelection implements Serializable {
     
     private static final long serialVersionUID = -5310313871594922690L;
     
-    
+    private static final String CURRENT_TEMPLATE_NAME = "this";
     private static final String FRAGMENT_SEPARATOR = "::";
     private static final char FRAGMENT_SELECTOR_XPATH_START = '[';
     private static final char FRAGMENT_SELECTOR_XPATH_END = ']';
@@ -52,7 +53,7 @@ public final class FragmentSelection implements Serializable {
     
     private FragmentSelection(final Expression templateName) {
         super();
-        Validate.notNull(templateName, "Template name cannot be null");
+        // templateName can be null if fragment is to be executed on the current template
         this.templateName = templateName;
         this.fragmentSelector = null;
         this.isXPath = false;
@@ -62,7 +63,7 @@ public final class FragmentSelection implements Serializable {
     private FragmentSelection(final Expression templateName, final Expression fragmentSelector,
             final boolean isXPath) {
         super();
-        Validate.notNull(templateName, "Template name cannot be null");
+        // templateName can be null if fragment is to be executed on the current template
         Validate.notNull(fragmentSelector, "Fragment selector cannot be null");
         this.templateName = templateName;
         this.fragmentSelector = fragmentSelector;
@@ -89,17 +90,19 @@ public final class FragmentSelection implements Serializable {
 
     
     public String getStringRepresentation() {
+        final String templateNameStringRepresentation =
+                (this.templateName != null? this.templateName.getStringRepresentation() : "");
         if (this.fragmentSelector == null) {
-            return this.templateName.getStringRepresentation();
+            return templateNameStringRepresentation;
         }
         if (this.isXPath) {
-            return this.templateName.getStringRepresentation() + " " + 
+            return templateNameStringRepresentation + " " +
                 FRAGMENT_SEPARATOR + " " +
                 String.valueOf(FRAGMENT_SELECTOR_XPATH_START) + 
                 this.fragmentSelector.getStringRepresentation() + 
                 String.valueOf(FRAGMENT_SELECTOR_XPATH_END);
         }
-        return this.templateName.getStringRepresentation() + " " + 
+        return templateNameStringRepresentation + " " +
                 FRAGMENT_SEPARATOR + " " +
                 this.fragmentSelector.getStringRepresentation();
     }
@@ -114,7 +117,7 @@ public final class FragmentSelection implements Serializable {
     
     static FragmentSelection parse(final String input) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
         
@@ -133,7 +136,7 @@ public final class FragmentSelection implements Serializable {
         final String templateName = trimmedInput.substring(0,separatorPos).trim();
         String fragmentSelector = trimmedInput.substring(separatorPos + 2).trim();
         
-        if (fragmentSelector.equals("") || templateName.equals("")) {
+        if (fragmentSelector.length() == 0) {
             return null;
         }
         
@@ -147,10 +150,18 @@ public final class FragmentSelection implements Serializable {
             xpath = true;
             
         }
-        
-        final Expression templateNameExpr = getExpressionDefaultToLiteral(templateName);
+
+        final Expression templateNameExpr;
+        if (!StringUtils.isEmptyOrWhitespace(templateName) && !CURRENT_TEMPLATE_NAME.equalsIgnoreCase(templateName)) {
+            templateNameExpr = getExpressionDefaultToLiteral(templateName);
+            if (templateNameExpr == null) {
+                return null;
+            }
+        } else {
+            templateNameExpr = null;
+        }
         final Expression fragmentSelectorExpr = getExpressionDefaultToLiteral(fragmentSelector);
-        if (templateNameExpr == null || fragmentSelectorExpr == null) {
+        if (fragmentSelectorExpr == null) {
             return null;
         }
         

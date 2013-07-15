@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,17 +67,18 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
     
     
     static Object executeDivision(final Configuration configuration, final IProcessingContext processingContext, 
-            final DivisionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final DivisionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating division expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
 
         Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
         
         if (leftValue == null) {
             leftValue = "null";
@@ -88,8 +90,16 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
         final BigDecimal leftNumberValue = ObjectUtils.evaluateAsNumber(leftValue);
         final BigDecimal rightNumberValue = ObjectUtils.evaluateAsNumber(rightValue);
         if (leftNumberValue != null && rightNumberValue != null) {
-            // Addition will act as a mathematical 'plus'
-            return leftNumberValue.divide(rightNumberValue);
+            try {
+                return leftNumberValue.divide(rightNumberValue);
+            } catch (final ArithmeticException ignored) {
+                // Result has a non-terminating decimal expansion (like 100/3), so
+                // we just use a minimum arbitrary scale (10) and HALF_UP rounding mode
+                return leftNumberValue.divide(
+                        rightNumberValue, 
+                        Math.max(Math.max(leftNumberValue.scale(),rightNumberValue.scale()), 10), 
+                        RoundingMode.HALF_UP);
+            }
         }
         
         throw new TemplateProcessingException(

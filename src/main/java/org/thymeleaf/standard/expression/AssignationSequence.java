@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -93,7 +94,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     
     static AssignationSequence parse(final String input, final boolean allowParametersWithoutValue) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
@@ -129,10 +130,10 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(5);
         int currentIndex = inputExprs.size();
         
-        final List<Integer> assignationIndexes = new ArrayList<Integer>();
+        final List<Integer> assignationIndexes = new ArrayList<Integer>(5);
         
         final int inputLen = input.length();
         for (int i = 0; i < inputLen; i++) {
@@ -174,7 +175,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
         result.set(inputIndex, new ExpressionParsingNode(inputWithPlaceholders.toString()));
         result.addAll(fragments);
 
-        final List<Assignation> assignations = new ArrayList<Assignation>();
+        final List<Assignation> assignations = new ArrayList<Assignation>(5);
         for (final Integer assignationIndex : assignationIndexes) {
             final int assignationIdx = assignationIndex.intValue();
             result = Assignation.composeAssignation(result, assignationIdx, allowParametersWithoutValue);

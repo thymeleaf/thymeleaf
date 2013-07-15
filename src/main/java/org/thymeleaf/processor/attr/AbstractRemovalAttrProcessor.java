@@ -71,7 +71,7 @@ public abstract class AbstractRemovalAttrProcessor
 
 
 
-    public AbstractRemovalAttrProcessor(final String attributeName) {
+    protected AbstractRemovalAttrProcessor(final String attributeName) {
         
         super(attributeName);
         
@@ -118,16 +118,14 @@ public abstract class AbstractRemovalAttrProcessor
                 return ProcessorResult.OK;
             }
             if (this.removeAllButFirst.equals(value)) {
-                final List<Node> newChildren = new ArrayList<Node>();
                 final List<Node> children = element.getChildren();
-                final int childrenLen = children.size();
-                int childElementsFound = 0;
-                for (int i = 0; i < childrenLen && childElementsFound < 2; i++) {
-                    final Node child = children.get(i);
+                final List<Node> newChildren = new ArrayList<Node>(children.size());
+                boolean childElementFound = false;
+                for (final Node child : children) {
                     if (child instanceof Element) {
-                        childElementsFound++;
-                        if (childElementsFound == 1) {
+                        if (!childElementFound) {
                             newChildren.add(child);
+                            childElementFound = true;
                         }
                     } else {
                         newChildren.add(child);

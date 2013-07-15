@@ -26,9 +26,7 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-
-
-
+import org.thymeleaf.util.StringUtils;
 
 
 
@@ -68,7 +66,7 @@ public abstract class Expression implements Serializable {
     
     static Expression parse(final String input) {
         
-        if (input == null || input.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
@@ -122,9 +120,9 @@ public abstract class Expression implements Serializable {
         
         final StringBuilder inputWithPlaceholders = new StringBuilder();
         StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>();
+        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(6);
         int currentIndex = inputExprs.size();
-        final List<Integer> nestedInputs = new ArrayList<Integer>();
+        final List<Integer> nestedInputs = new ArrayList<Integer>(6);
         
         int parLevel = 0;
         
@@ -224,14 +222,16 @@ public abstract class Expression implements Serializable {
     
     
     static Object execute(final Configuration configuration, final IProcessingContext processingContext, 
-            final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof SimpleExpression) {
-            return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator);
-        } else  if (expression instanceof ComplexExpression) {
-            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expressionEvaluator);
+            return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
         }
-        
+        if (expression instanceof ComplexExpression) {
+            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expressionEvaluator, expContext);
+        }
+
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
         
     }

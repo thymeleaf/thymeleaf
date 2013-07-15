@@ -77,7 +77,8 @@ public final class NumberLiteralExpression extends SimpleExpression {
     
     static Object executeNumberLiteral(
             @SuppressWarnings("unused") final IProcessingContext processingContext, 
-            final NumberLiteralExpression expression) {
+            final NumberLiteralExpression expression, 
+            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating number literal: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

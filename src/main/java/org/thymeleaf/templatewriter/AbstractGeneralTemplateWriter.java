@@ -24,13 +24,13 @@ import java.io.Writer;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Element.RepresentationInTemplate;
 import org.thymeleaf.dom.GroupNode;
 import org.thymeleaf.dom.Macro;
 import org.thymeleaf.dom.Node;
@@ -59,7 +59,12 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     private static final char[] XML_DECLARATION_PREFIX = "<?xml version=\"1.0\"".toCharArray();
     private static final char[] XML_DECLARATION_SUFFIX = "?>\n".toCharArray();
 
-    
+
+
+    protected AbstractGeneralTemplateWriter() {
+        super();
+    }
+
     
     public void write(final Arguments arguments, final Writer writer, final Document document) 
                 throws IOException {
@@ -205,22 +210,52 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                         throw new TemplateProcessingException(
                                 "Error processing template: dialect prefix \"" + attribute.getNormalizedPrefix() + "\" " +
                                 "is set as non-lenient but attribute \"" + attribute.getOriginalName() + "\" has not " +
-                                "been removed during process", TemplateEngine.threadTemplateName(), element.getLineNumber());
+                                "been removed during process", arguments.getTemplateName(), element.getLineNumber());
                     }
                 }
                 if (writeAttribute) {
+                    
                     writer.write(' ');
                     writer.write(attribute.getOriginalName());
-                    writer.write('=');
-                    writer.write('\"');
+                    
                     final String attrValue = attribute.getValue();
-                    if (attrValue != null) {
-                        writer.write(DOMUtils.escapeXml(attrValue, true));                        
+                    if (!(attrValue == null && attribute.isOnlyName())) {
+                        writer.write('=');
+                        writer.write('\"');
+                        if (attrValue != null) {
+                            writer.write(DOMUtils.escapeXml(attrValue, true));                        
+                        }
+                        writer.write('\"');
                     }
-                    writer.write('\"');
+                        
                 }
             }
         }
+        
+        /*
+         * How to determine if a tag will be written minimized, have a closing tag, etc.
+         * 
+         * 1. WITH CHILDREN
+         *    1.a. Will have a closing tag if:
+         *         (representationInTemplate != ONLY_OPEN) // This includes "null"
+         *    1.b. Will not have a closing tag if:
+         *         (representationInTemplate == ONLY_OPEN)
+         *         
+         * 2. WITHOUT CHILDREN
+         *    2.a. Will be minimized (standalone) if:
+         *         (representationInTemplate == STANDALONE) OR
+         *         ((representationInTemplate == null OR representationInTemplate == OPEN_AND_CLOSE_NONEMPTY) AND 
+         *             (isWeb == false OR isMinimizable == true))
+         *    2.b. Will have open and close tag if:
+         *         (representationInTemplate == OPEN_AND_CLOSE_EMPTY) OR
+         *         ((representationInTemplate == null OR representationInTemplate == OPEN_AND_CLOSE_NONEMPTY) AND 
+         *             (isWeb == true AND isMinimizable == false))
+         *    2.c. Will have only open tag (no close tag, not XML-well-formed) if:
+         *         (representationInTemplate == ONLY_OPEN)       
+         *  
+         */
+        final RepresentationInTemplate representationInTemplate = element.getRepresentationInTemplate();
+
         if (element.hasChildren()) {
             writer.write('>');
             final Node[] children = element.unsafeGetChildrenNodeArray();
@@ -228,25 +263,43 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
             for (int i = 0; i < childrenLen; i++) {
                 writeNode(arguments, writer, children[i]);
             }
-            writer.write('<');
-            writer.write('/');
-            writer.write(element.getOriginalName());
-            writer.write('>');
+            if (representationInTemplate != RepresentationInTemplate.ONLY_OPEN) {
+                writer.write('<');
+                writer.write('/');
+                writer.write(element.getOriginalName());
+                writer.write('>');
+            }
         } else {
-            if (useXhtmlTagMinimizationRules()) {
-                if (element.isMinimizableIfWeb()) {
-                    writer.write(' ');
-                    writer.write('/');
-                    writer.write('>');
+            if (representationInTemplate == null || representationInTemplate == RepresentationInTemplate.OPEN_AND_CLOSE_NONEMPTY) {
+                if (useXhtmlTagMinimizationRules()) {
+                    if (element.isMinimizableIfWeb()) {
+                        writer.write(' ');
+                        writer.write('/');
+                        writer.write('>');
+                    } else {
+                        writer.write('>');
+                        writer.write('<');
+                        writer.write('/');
+                        writer.write(element.getOriginalName());
+                        writer.write('>');
+                    }
                 } else {
-                    writer.write('>');
-                    writer.write('<');
                     writer.write('/');
-                    writer.write(element.getOriginalName());
                     writer.write('>');
                 }
-            } else {
+            } else if (representationInTemplate == RepresentationInTemplate.OPEN_AND_CLOSE_EMPTY) {
+                writer.write('>');
+                writer.write('<');
                 writer.write('/');
+                writer.write(element.getOriginalName());
+                writer.write('>');
+            } else if (representationInTemplate == RepresentationInTemplate.STANDALONE) {
+                if (useXhtmlTagMinimizationRules()) {
+                    writer.write(' ');
+                }
+                writer.write('/');
+                writer.write('>');
+            } else if (representationInTemplate == RepresentationInTemplate.ONLY_OPEN) {
                 writer.write('>');
             }
         }

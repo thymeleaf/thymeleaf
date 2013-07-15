@@ -39,16 +39,16 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  */
 public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor 
         extends AbstractAttributeModifierAttrProcessor {
-    
-    
-    
 
-    
-    public AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+
+    protected AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor(final String attributeName) {
+    protected AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

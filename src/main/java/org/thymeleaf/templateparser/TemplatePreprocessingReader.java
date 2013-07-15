@@ -41,7 +41,10 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     private static final Logger readerLogger = LoggerFactory.getLogger(TemplatePreprocessingReader.class);
-    
+
+    private static final int BUFFER_BLOCK_SIZE = 1024;
+    private static final int OVERFLOW_BLOCK_SIZE = 2048;
+
     public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
 
     
@@ -52,11 +55,11 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     private static final char[] LOWER_CHARS = 
-            ("[]<>!=-_.,:;+*()&/%$\"'@#~^ \t\n\rabcdefghijklmnopqrstuvwxyz" + 
+            ("[]<>!?=-_.,:;+*()&/%$\"'@#~^ \t\n\rabcdefghijklmnopqrstuvwxyz" + 
             String.valueOf(CHAR_OPTIONAL_WHITESPACE_WILDCARD) + String.valueOf(CHAR_WHITESPACE_WILDCARD) +
             String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + String.valueOf(CHAR_ANY_WILDCARD)).toCharArray();
     private static final char[] UPPER_CHARS = 
-            ("[]<>!=-_.,:;+*()&/%$\"'@#~^ \t\n\rABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
+            ("[]<>!?=-_.,:;+*()&/%$\"'@#~^ \t\n\rABCDEFGHIJKLMNOPQRSTUVWXYZ" + 
             String.valueOf(CHAR_OPTIONAL_WHITESPACE_WILDCARD) + String.valueOf(CHAR_WHITESPACE_WILDCARD) +
             String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + String.valueOf(CHAR_ANY_WILDCARD)).toCharArray();
 
@@ -64,9 +67,11 @@ public final class TemplatePreprocessingReader extends Reader {
     
     private static final int[] COMMENT_START = convertToIndexes("<!--".toCharArray()); 
     private static final int[] COMMENT_END = convertToIndexes("-->".toCharArray());
-    private static final int[] ENTITY = convertToIndexes(("&" + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ";").toCharArray());
+    private static final int[] ENTITY = convertToIndexes(('&' + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ';').toCharArray());
     private static final int[] DOCTYPE =
             convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
+    private static final int[] XML_PROLOG =
+            convertToIndexes(("<?xml" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + "?>").toCharArray());
 
 
     private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
@@ -84,7 +89,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
     private final Reader innerReader;
     private final BufferedReader bufferedReader;
-    private final boolean addRoot;
+    private final boolean addSyntheticRootElement;
     
     private char[] buffer;
     private char[] overflow;
@@ -92,8 +97,10 @@ public final class TemplatePreprocessingReader extends Reader {
     
     private boolean inComment = false;
     private boolean docTypeClauseRead = false;
-    private boolean firstElementProcessed = false;
-    private boolean rootElementClosingSent = false;
+    private boolean xmlPrologRead = false;
+    private int xmlPrologRemaining = -1;
+    private boolean syntheticRootElementOpeningProcessed = false;
+    private boolean syntheticRootElementClosingSent = false;
     private int rootElementClosingOffset = 0;
     
     private boolean noMoreToRead = false;
@@ -151,14 +158,14 @@ public final class TemplatePreprocessingReader extends Reader {
      * 
      * @since 2.0.11
      */
-    public TemplatePreprocessingReader(final Reader in, final int bufferSize, final boolean addRoot) {
+    public TemplatePreprocessingReader(final Reader in, final int bufferSize, final boolean addSyntheticRootElement) {
         super();
         this.innerReader = in;
         this.bufferedReader = new BufferedReader(this.innerReader, bufferSize);
-        this.buffer = new char[bufferSize + 1024]; 
-        this.overflow = new char[bufferSize + 2048];
+        this.buffer = new char[bufferSize + BUFFER_BLOCK_SIZE];
+        this.overflow = new char[bufferSize + OVERFLOW_BLOCK_SIZE];
         this.overflowIndex = 0;
-        this.addRoot = addRoot;
+        this.addSyntheticRootElement = addSyntheticRootElement;
     }
 
     
@@ -175,8 +182,8 @@ public final class TemplatePreprocessingReader extends Reader {
         if ((len * 2) > this.overflow.length) {
             // Resize buffer and overflow
             
-            this.buffer = new char[len + 1024];
-            final char[] newOverflow = new char[len + 2048];
+            this.buffer = new char[len + BUFFER_BLOCK_SIZE];
+            final char[] newOverflow = new char[len + OVERFLOW_BLOCK_SIZE];
             System.arraycopy(this.overflow, 0, newOverflow, 0, this.overflowIndex);
             this.overflow = newOverflow;
         }
@@ -227,7 +234,7 @@ public final class TemplatePreprocessingReader extends Reader {
             final int toBeRead = this.buffer.length - bufferSize;
             int reallyRead = this.bufferedReader.read(this.buffer, bufferSize, toBeRead);
 
-            if (this.addRoot && !this.rootElementClosingSent && (reallyRead < 0)) {
+            if (this.addSyntheticRootElement && !this.syntheticRootElementClosingSent && (reallyRead < 0)) {
                 // If there is no more content to be read from the source reader, close the synthetic
                 // root element and make it look like it was read from source.
 
@@ -243,7 +250,7 @@ public final class TemplatePreprocessingReader extends Reader {
                 this.rootElementClosingOffset += reallyRead;
 
                 if (this.rootElementClosingOffset >= SYNTHETIC_ROOT_ELEMENT_END_CHARS.length) {
-                    this.rootElementClosingSent = true;
+                    this.syntheticRootElementClosingSent = true;
                 }
                 
             }
@@ -299,10 +306,62 @@ public final class TemplatePreprocessingReader extends Reader {
         
         int buffi = 0;
         while (cbufi < last && buffi < bufferSize) {
+            
+            
+            /*
+             * Process XML_PROLOG (if needed)
+             * 
+             * Processing it specifically before any other thing ensures the synthetic
+             * root element will never be inserted before it.
+             */
+            if (!this.docTypeClauseRead && !this.xmlPrologRead) {
+
+                if (this.xmlPrologRemaining >= 0) {
+                    // We have still some bytes remaining from the XML PROLOG, and we 
+                    // don't want the reader to mistake them for text and input the synthetic
+                    // root element right now
+                    
+                    if (readerLogger.isTraceEnabled()) {
+                        readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Writing remaining byte from incompletely output XML PROLOG: {}", 
+                                new Object[] {TemplateEngine.threadIndex(), String.valueOf(this.buffer[buffi])});
+                    }
+                    
+                    cbuf[cbufi++] = this.buffer[buffi++];
+                    totalRead++;
+                    this.xmlPrologRemaining--;
+                    continue;
+        
+                }
+                
+                final int matchedXmlProlog =
+                        match(XML_PROLOG, 0, XML_PROLOG.length, this.buffer, buffi, bufferSize);
+                
+                if (matchedXmlProlog > 0) {
+
+                    this.xmlPrologRemaining = matchedXmlProlog;
+                    
+                    final int copied =
+                        copyToResult(
+                                this.buffer, buffi, matchedXmlProlog, 
+                                cbuf, cbufi, last);
+
+                    this.xmlPrologRemaining -= copied;
+                    if (this.xmlPrologRemaining <= 0) {
+                        this.xmlPrologRead = true;
+                    }
+
+                    cbufi += copied;
+                    totalRead += copied;
+                    buffi += matchedXmlProlog;
+                    continue;
+                    
+                }
+                
+            }
 
             
             /*
-             * Process DOCTYPE first (if needed)
+             * Process DOCTYPE (if needed)
              */
             if (!this.docTypeClauseRead) {
                 
@@ -323,7 +382,7 @@ public final class TemplatePreprocessingReader extends Reader {
                     }
                     
                     int copied = -1;
-                    if (this.addRoot && !this.firstElementProcessed) {
+                    if (this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed) {
                         // If DOCTYPE is processed, we will inject the synthetic root
                         // element just after the DOCTYPE so that we avoid problems with
                         // DOCTYPE clause being bigger than 'len' argument in the first 'read()' call.
@@ -333,15 +392,26 @@ public final class TemplatePreprocessingReader extends Reader {
                         System.arraycopy(normalizedDocType, 0, normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocType.length);
                         System.arraycopy(SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, normalizedDocTypePlusSyntheticRootElement, normalizedDocType.length, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length);
                         
+                        if (readerLogger.isTraceEnabled()) {
+                            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Synthetic root element will be output along with DOCTYPE clause: '{}'", 
+                                    new Object[] {TemplateEngine.threadIndex(), new String(normalizedDocTypePlusSyntheticRootElement)});
+                        }
+                        
                         copied =
                                 copyToResult(
                                         normalizedDocTypePlusSyntheticRootElement, 0, normalizedDocTypePlusSyntheticRootElement.length, 
                                         cbuf, cbufi, last);
                         
-                        this.firstElementProcessed = true;
+                        this.syntheticRootElementOpeningProcessed = true;
                         
                     } else {
                         
+                        
+                        if (readerLogger.isTraceEnabled()) {
+                            readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] DOCTYPE clause will be output, without synthetic root element: '{}'", 
+                                    new Object[] {TemplateEngine.threadIndex(), new String(normalizedDocType)});
+                        }
+
                         copied =
                                 copyToResult(
                                         normalizedDocType, 0, normalizedDocType.length, 
@@ -356,25 +426,6 @@ public final class TemplatePreprocessingReader extends Reader {
                     continue;
                     
                 }
-                
-            }
-            
-            
-            if (this.addRoot && !this.firstElementProcessed) {
-                // This block will be reached if we did not have to process a
-                // DOCTYPE clause (because the DOCTYPE would have
-                // matched the previous block).
-                
-                this.firstElementProcessed = true;
-                    
-                final int copied =
-                    copyToResult(
-                            SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length, 
-                            cbuf, cbufi, last);
-                
-                cbufi += copied;
-                totalRead += copied;
-                continue;
                 
             }
             
@@ -430,6 +481,27 @@ public final class TemplatePreprocessingReader extends Reader {
                 cbufi += copied;
                 totalRead += copied;
                 buffi += 1; // Only one character is substituted (&)
+                continue;
+                
+            }
+            
+            
+            if (!Character.isWhitespace(this.buffer[buffi]) && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment) {
+                // This block will be reached if we did not have to process a
+                // DOCTYPE clause (because the DOCTYPE would have
+                // matched the previous block). And will not be affected by any whitespaces
+                // or comments before DOCTYPE because of the !Character.isWhitespace condition.
+                    
+                final int copied =
+                    copyToResult(
+                            SYNTHETIC_ROOT_ELEMENT_START_CHARS, 0, SYNTHETIC_ROOT_ELEMENT_START_CHARS.length, 
+                            cbuf, cbufi, last);
+                
+                cbufi += copied;
+                totalRead += copied;
+                
+                this.syntheticRootElementOpeningProcessed = true;
+                
                 continue;
                 
             }
@@ -514,7 +586,7 @@ public final class TemplatePreprocessingReader extends Reader {
                     new Object[] {TemplateEngine.threadIndex()});
         }
         
-        final char[] cbuf = new char[1024];
+        final char[] cbuf = new char[BUFFER_BLOCK_SIZE];
         int totalRead = -1;
         int read;
         while ((read = read(cbuf, 0, cbuf.length)) != -1) {
@@ -615,6 +687,7 @@ public final class TemplatePreprocessingReader extends Reader {
             
             System.arraycopy(fragment, fragmentOff, cbuf, cbufi, fragmentLen);
 
+            //noinspection ArrayEquality
             if (fragment == this.overflow) {
                 // Overflow has been cleaned
                 this.overflowIndex = 0;
@@ -632,6 +705,7 @@ public final class TemplatePreprocessingReader extends Reader {
         if (toBeCopied > 0) {
             System.arraycopy(fragment, fragmentOff, cbuf, cbufi, toBeCopied);
         }
+        //noinspection ArrayEquality
         if (fragment != this.overflow) {
             System.arraycopy(fragment, (fragmentOff + toBeCopied), this.overflow, this.overflowIndex, toBeOverflowed);
             this.overflowIndex += toBeOverflowed;
@@ -818,7 +892,7 @@ public final class TemplatePreprocessingReader extends Reader {
             return result;
 
         } catch (final Exception e) {
-            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + (new String(buffer, offset, len)) + "\"");
+            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + (new String(buffer, offset, len)) + "\"", e);
         }
         
     }
@@ -832,7 +906,7 @@ public final class TemplatePreprocessingReader extends Reader {
     
     
     
-    public static final String removeEntitySubstitutions(final String text) {
+    public static String removeEntitySubstitutions(final String text) {
 
         if (text == null) {
             return null;
@@ -856,7 +930,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     
-    public static final void removeEntitySubstitutions(final char[] text, final int off, final int len) {
+    public static void removeEntitySubstitutions(final char[] text, final int off, final int len) {
 
         if (text == null) {
             return;

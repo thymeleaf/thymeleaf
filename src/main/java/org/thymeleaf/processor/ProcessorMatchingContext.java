@@ -55,7 +55,6 @@ public final class ProcessorMatchingContext {
     public ProcessorMatchingContext(final IDialect dialect, final String dialectPrefix) {
         super();
         Validate.notNull(dialect, "Dialect cannot be null");
-        Validate.notNull(dialectPrefix, "Dialect Prefix cannot be null");
         this.dialect = dialect;
         this.dialectPrefix = dialectPrefix;
     }

@@ -25,10 +25,8 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,9 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
+import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -225,17 +223,12 @@ public class TemplateEngine {
      * </p>
      */
     public static final String TIMER_LOGGER_NAME = TemplateEngine.class.getName() + ".TIMER";
-    
 
     private static final Logger logger = LoggerFactory.getLogger(TemplateEngine.class);
     private static final Logger timerLogger = LoggerFactory.getLogger(TIMER_LOGGER_NAME);
-    
-    private static volatile long processIndex = 0L;
-    private static ThreadLocal<Long> currentProcessIndex = new ThreadLocal<Long>();
-    private static ThreadLocal<Locale> currentProcessLocale = new ThreadLocal<Locale>();
-    private static ThreadLocal<String> currentProcessTemplateName = new ThreadLocal<String>();
-    private static ThreadLocal<TemplateEngine> currentProcessTemplateEngine = new ThreadLocal<TemplateEngine>();
-    
+
+    private static final int NANOS_IN_SECOND = 1000000;
+
     
     private final Configuration configuration;
     private TemplateRepository templateRepository;
@@ -336,8 +329,7 @@ public class TemplateEngine {
      * @return the {@link IDialect} instances currently configured.
      */
     public final Set<IDialect> getDialects() {
-        return Collections.unmodifiableSet(
-                new HashSet<IDialect>(this.configuration.getDialects().values()));
+        return this.configuration.getDialectSet();
     }
 
     /**
@@ -438,7 +430,7 @@ public class TemplateEngine {
      */
     public void setDialects(final Set<IDialect> dialects) {
         Validate.notNull(dialects, "Dialect set cannot be null");
-        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>();
+        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>(dialects.size() + 2, 1.0f);
         for (final IDialect dialect : dialects)  {
             dialectMap.put(dialect.getPrefix(), dialect);
         }
@@ -465,7 +457,7 @@ public class TemplateEngine {
      */
     public void setAdditionalDialects(final Set<IDialect> additionalDialects) {
         Validate.notNull(additionalDialects, "Additional dialect set cannot be null");
-        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>();
+        final Map<String,IDialect> dialectMap = new LinkedHashMap<String, IDialect>(5, 1.0f);
         dialectMap.putAll(this.configuration.getDialects());
         for (final IDialect dialect : additionalDialects)  {
             dialectMap.put(dialect.getPrefix(), dialect);
@@ -868,7 +860,7 @@ public class TemplateEngine {
     
     /**
      * <p>
-     *   Internal method that retrieves the thread-local index for the
+     *   Internal method that retrieves the thread name/index for the
      *   current template execution. 
      * </p>
      * <p>
@@ -877,84 +869,13 @@ public class TemplateEngine {
      * 
      * @return the index of the current execution.
      */
-    public static Long threadIndex() {
-        return currentProcessIndex.get();
-    }
-
-    /**
-     * <p>
-     *   Internal method that retrieves the thread-local locale for the
-     *   current template execution. 
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * 
-     * @return the locale of the current template execution.
-     */
-    public static Locale threadLocale() {
-        return currentProcessLocale.get();
-    }
-
-    
-    private static void newThreadIndex() {
-        currentProcessIndex.set(Long.valueOf(processIndex++));
-    }
-    
-
-    private static void setThreadLocale(final Locale locale) {
-        currentProcessLocale.set(locale);
+    public static String threadIndex() {
+        return Thread.currentThread().getName();
     }
 
     
     
-    /**
-     * <p>
-     *   Internal method that retrieves the thread-local template name for the
-     *   current template execution. 
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * 
-     * @return the template name for the current engine execution.
-     */
-    public static String threadTemplateName() {
-        return currentProcessTemplateName.get();
-    }
-
     
-    private static void setThreadTemplateName(final String templateName) {
-        currentProcessTemplateName.set(templateName);
-    }
-
-    
-    
-    /**
-     * <p>
-     *   Internal method that retrieves the thread-local template engine for the
-     *   current template execution. 
-     * </p>
-     * <p>
-     *   THIS METHOD IS INTERNAL AND SHOULD <b>NEVER</b> BE CALLED DIRECTLY.
-     * </p>
-     * 
-     * @return the template engine for the current engine execution.
-     * 
-     * @since 2.0.9
-     */
-    public static TemplateEngine threadTemplateEngine() {
-        return currentProcessTemplateEngine.get();
-    }
-
-    
-    private static void setThreadTemplateEngine(final TemplateEngine templateEngine) {
-        currentProcessTemplateEngine.set(templateEngine);
-    }
-
-
-    
-
     /**
      * <p>
      *   Process a template. This method receives both a <i>template name</i> and a <i>context</i>.
@@ -1087,7 +1008,7 @@ public class TemplateEngine {
      */
     public final void process(final String templateName, final IContext context, 
             final IFragmentSpec fragmentSpec, final Writer writer) {
-        process(templateName, new ProcessingContext(context), fragmentSpec, writer);
+        process(templateName, new DialectAwareProcessingContext(context, getDialects()), fragmentSpec, writer);
     }
     
 
@@ -1124,13 +1045,7 @@ public class TemplateEngine {
             
             final IContext context = processingContext.getContext();
             
-            final long startMs = System.nanoTime();
-
-            setThreadTemplateName(templateName);
-            
-            newThreadIndex();
-            setThreadLocale(context.getLocale());
-            setThreadTemplateEngine(this);
+            final long startNanos = System.nanoTime();
 
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] STARTING PROCESS OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
@@ -1144,15 +1059,15 @@ public class TemplateEngine {
             
             process(templateProcessingParameters, fragmentSpec, writer);
             
-            final long endMs = System.nanoTime();
+            final long endNanos = System.nanoTime();
             
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] FINISHED PROCESS AND OUTPUT OF TEMPLATE \"{}\" WITH LOCALE {}", new Object[] {TemplateEngine.threadIndex(), templateName, context.getLocale()});
             }
             
             if (timerLogger.isDebugEnabled()) {
-                final BigDecimal elapsed = BigDecimal.valueOf(endMs - startMs);
-                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
+                final BigDecimal elapsed = BigDecimal.valueOf(endNanos - startNanos);
+                final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(NANOS_IN_SECOND), RoundingMode.HALF_UP);
                 timerLogger.debug(
                         "[THYMELEAF][{}][{}][{}][{}][{}] TEMPLATE \"{}\" WITH LOCALE {} PROCESSED IN {} nanoseconds (approx. {}ms)", 
                         new Object[] {TemplateEngine.threadIndex(), 
@@ -1161,21 +1076,27 @@ public class TemplateEngine {
             }
             
         } catch (final TemplateOutputException e) {
+            
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw e;
+            
         } catch (final TemplateEngineException e) {
+            
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw e;
+            
         } catch (final RuntimeException e) {
+            
             logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
             throw new TemplateProcessingException("Exception processing template", templateName, e);
+            
         }
         
     }
     
     
 
-    private final void process(final TemplateProcessingParameters templateProcessingParameters, 
+    private void process(final TemplateProcessingParameters templateProcessingParameters,
             final IFragmentSpec fragmentSpec, final Writer writer) {
         
         final String templateName = templateProcessingParameters.getTemplateName();
@@ -1220,7 +1141,8 @@ public class TemplateEngine {
         }
         
         final Arguments arguments = 
-                new Arguments(templateProcessingParameters, templateResolution, 
+                new Arguments(this, 
+                        templateProcessingParameters, templateResolution, 
                         this.templateRepository, document);
        
         
@@ -1258,8 +1180,6 @@ public class TemplateEngine {
     }
 
     
-
-
     
     
 }

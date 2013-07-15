@@ -55,10 +55,7 @@ public final class PrefixUtils {
     public static boolean hasPrefix(final String name) {
         Validate.notNull(name, "Name cannot be null");
         final int colonPos = name.indexOf(':');
-        if (colonPos != -1) {
-            return true;
-        }
-        return false;
+        return colonPos != -1;
     }
 
     

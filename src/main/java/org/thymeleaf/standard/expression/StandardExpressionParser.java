@@ -344,17 +344,23 @@ public final class StandardExpressionParser {
             
             do {
                 
-                strBuilder.append(input.substring(curr,matcher.start(0)));
+                final String previousText = 
+                        checkPreprocessingMarkUnescaping(input.substring(curr,matcher.start(0)));
+                final String expressionText = 
+                        checkPreprocessingMarkUnescaping(matcher.group(1));
+                        
+                strBuilder.append(previousText);
                 
                 final Expression expression = 
                     parseExpression(
-                            configuration, processingContext, matcher.group(1), false);
+                            configuration, processingContext, expressionText, false);
                 if (expression == null) {
                     return null;
                 }
                 
                 final Object result =
-                    this.executor.executeExpression(configuration, processingContext, expression);
+                    this.executor.executeExpression(
+                            configuration, processingContext, expression, StandardExpressionExecutionContext.PREPROCESSING);
                 
                 strBuilder.append(result);
                 
@@ -362,16 +368,75 @@ public final class StandardExpressionParser {
                 
             } while (matcher.find());
             
-            strBuilder.append(input.substring(curr));
+            final String remaining = checkPreprocessingMarkUnescaping(input.substring(curr));
+            
+            strBuilder.append(remaining);
             
             return strBuilder.toString().trim();
             
         }
         
-        return input;
+        return checkPreprocessingMarkUnescaping(input);
         
     }
 
+    
+    
+    private static String checkPreprocessingMarkUnescaping(final String input) {
+        
+        boolean structureFound = false; // for fast failing
+        
+        byte state = 0; // 1 = \, 2 = _, 3 = \, 4 = _
+        final int inputLen = input.length();
+        for (int i = 0; i < inputLen; i++) {
+            final char c = input.charAt(i);
+            if (c == '\\' && (state == 0 || state == 2)) {
+                state++;
+                continue;
+            }
+            if (c == '_' && state == 1) {
+                state++;
+                continue;
+            } else if (c == '_' && state == 3) {
+                structureFound = true;
+                break;
+            }
+            state = 0;
+        }
+
+        if (!structureFound) {
+            // This avoids creating a new String object in the most common case (= nothing to unescape)
+            return input;
+        }
+
+
+        state = 0; // 1 = \, 2 = _, 3 = \, 4 = _
+        final StringBuilder strBuilder = new StringBuilder();
+        for (int i = 0; i < inputLen; i++) {
+            final char c = input.charAt(i);
+            if (c == '\\' && (state == 0 || state == 2)) {
+                state++;
+                strBuilder.append(c);
+            } else if (c == '_' && state == 1) {
+                state++;
+                strBuilder.append(c);
+            } else if (c == '_' && state == 3) {
+                state = 0;
+                final int builderLen = strBuilder.length(); 
+                strBuilder.delete(builderLen - 3, builderLen);
+                strBuilder.append("__");
+            } else {
+                state = 0;
+                strBuilder.append(c);
+            }
+        }
+        
+        return strBuilder.toString();
+        
+    }
+    
+    
+    
     
     @Override
     public String toString() {

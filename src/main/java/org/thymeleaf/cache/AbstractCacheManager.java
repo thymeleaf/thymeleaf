@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.cache;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -60,7 +61,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private volatile boolean messageCacheInitialized = false;
 
     
-    public AbstractCacheManager() {
+    protected AbstractCacheManager() {
         super();
     }
     
@@ -116,9 +117,50 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
     
-    public <K, V> ICache<K, V> getSpecificCache(String name) {
+    public <K, V> ICache<K, V> getSpecificCache(final String name) {
         // No specific caches are used by default
         return null;
+    }
+
+
+    public List<String> getAllSpecificCacheNames() {
+        // No specific caches are used by default
+        return Collections.emptyList();
+    }
+
+
+    public void clearAllCaches() {
+
+        final ICache<String, Template> templateCacheObj = getTemplateCache();
+        if (templateCacheObj != null) {
+            templateCacheObj.clear();
+        }
+        
+        final ICache<String, List<Node>> fragmentCacheObj = getFragmentCache();
+        if (fragmentCacheObj != null) {
+            fragmentCacheObj.clear();
+        }
+        
+        final ICache<String, Properties> messageCacheObj = getMessageCache();
+        if (messageCacheObj != null) {
+            messageCacheObj.clear();
+        }
+        
+        final ICache<String, Object> expressionCacheObj = getExpressionCache();
+        if (expressionCacheObj != null) {
+            expressionCacheObj.clear();
+        }
+        
+        final List<String> allSpecificCacheNamesObj = getAllSpecificCacheNames();
+        if (allSpecificCacheNamesObj != null) {
+            for (final String specificCacheName : allSpecificCacheNamesObj) {
+                final ICache<?,?> specificCache = getSpecificCache(specificCacheName);
+                if (specificCache != null) {
+                    specificCache.clear();
+                }
+            }
+        }
+        
     }
 
 

@@ -42,11 +42,11 @@ public class TemplateProcessingException extends TemplateEngineException {
     
     
     public TemplateProcessingException(final String message) {
-        this(message, (String)null, (Integer)null);
+        this(message, null, (Integer)null);
     }
     
     public TemplateProcessingException(final String message, final Throwable cause) {
-        this(message, (String)null, (Integer)null, cause);
+        this(message, null, null, cause);
     }
     
     public TemplateProcessingException(final String message, final String templateName) {
@@ -54,7 +54,7 @@ public class TemplateProcessingException extends TemplateEngineException {
     }
     
     public TemplateProcessingException(final String message, final String templateName, final Throwable cause) {
-        this(message, templateName, (Integer)null, cause);
+        this(message, templateName, null, cause);
     }
     
     public TemplateProcessingException(
@@ -109,12 +109,13 @@ public class TemplateProcessingException extends TemplateEngineException {
         sb.append(super.getMessage());
         
         if (this.templateName != null) {
-            sb.append(" (");
+            sb.append(' ');
+            sb.append('(');
             sb.append(this.templateName);
             if (this.lineNumber != null) {
-                sb.append(":").append(this.lineNumber);
+                sb.append(':').append(this.lineNumber);
             }
-            sb.append(")");
+            sb.append(')');
         }
         
         return sb.toString();

@@ -55,12 +55,20 @@ public final class StandardExpressionExecutor {
     /**
      */
     public Object executeExpression(final Arguments arguments, final Expression expression) {
+        return executeExpression(arguments, expression, StandardExpressionExecutionContext.NORMAL);
+    }
+
+    
+    /**
+     * @since 2.0.16
+     */
+    public Object executeExpression(final Arguments arguments, final Expression expression, final StandardExpressionExecutionContext expContext) {
 
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
         
         final Object result = 
-            Expression.execute(arguments.getConfiguration(), arguments, expression, this.expressionEvaluator);
+            Expression.execute(arguments.getConfiguration(), arguments, expression, this.expressionEvaluator, expContext);
         return LiteralValue.unwrap(result); 
         
     }
@@ -72,16 +80,24 @@ public final class StandardExpressionExecutor {
      */
     public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext, 
             final Expression expression) {
+        return executeExpression(configuration, processingContext, expression, StandardExpressionExecutionContext.NORMAL);
+    }
+
+    
+    /**
+     * @since 2.0.16
+     */
+    public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext, 
+            final Expression expression, final StandardExpressionExecutionContext expContext) {
 
         Validate.notNull(processingContext, "Expression evaluation context cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
         
         final Object result = 
-            Expression.execute(configuration, processingContext, expression, this.expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression, this.expressionEvaluator, expContext);
         return LiteralValue.unwrap(result); 
         
     }
-
 
 
 

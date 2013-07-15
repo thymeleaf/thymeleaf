@@ -20,7 +20,12 @@
 package org.thymeleaf.context;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import ognl.MapPropertyAccessor;
+import ognl.OgnlException;
+import ognl.OgnlRuntime;
 
 /**
  * <p>
@@ -34,6 +39,7 @@ import java.util.Map;
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
+ * @author Michal Kreuzman
  * 
  * @since 1.0
  *
@@ -41,9 +47,18 @@ import java.util.Map;
 public class VariablesMap<K,V> extends HashMap<K,V> {
 
     private static final long serialVersionUID = 6785956724279950873L;
-    
-    
 
+    private List<IContextVariableRestriction> restrictions = null;
+
+    
+    
+    static {
+        OgnlRuntime.setPropertyAccessor(VariablesMap.class, new VariablesMapPropertyAccessor());
+    }
+
+    
+    
+    
     public VariablesMap() {
         super();
     }
@@ -60,7 +75,83 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
         super(m);
     }
 
+
     
     
+    public List<IContextVariableRestriction> getRestrictions() {
+        return this.restrictions;
+    }
+
+    public void setRestrictions(final List<IContextVariableRestriction> restrictions) {
+        this.restrictions = restrictions;
+    }
+    
+    
+
+    @Override
+    public V get(final Object key) {
+
+        if (this.restrictions != null && !this.restrictions.isEmpty()) {
+            for (final IContextVariableRestriction restriction : this.restrictions) {
+                if (restriction != null) {
+                    restriction.checkAccess(this, (String)key);
+                }
+            }
+        }
+        
+        return super.get(key);
+
+    }
+
+
+    public VariablesMap clone() {
+        return (VariablesMap) super.clone();
+    }
+
+
+
+    /**
+     * Extension of {@code MapPropertyAccessor} that handles getting of size
+     * property. When there is entry with key "size" it is returned instead of
+     * size property from {@code VariablesMap}. Otherwise this property accessor
+     * works exactly same like {@code MapPropertyAccessor}.
+     * 
+     * @author Michal Kreuzman
+     * 
+     * @see MapPropertyAccessor
+     * 
+     * @since 2.0
+     */
+    private static class VariablesMapPropertyAccessor extends MapPropertyAccessor {
+        
+        private static final String RESERVED_SIZE_PROPERTY_NAME = "size";
+
+        VariablesMapPropertyAccessor() {
+            super();
+        }
+        
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Object getProperty(final Map context, final Object target, final Object name) throws OgnlException {
+            
+            if (!RESERVED_SIZE_PROPERTY_NAME.equals(name)) {
+                return super.getProperty(context, target, name);
+            }
+
+            if (!(target instanceof VariablesMap)) {
+                throw new IllegalStateException(
+                        "Wrong target type. This property accessor is only usable for VariableMap class.");
+            }
+
+            final Map map = (Map) target;
+            Object result = map.get(RESERVED_SIZE_PROPERTY_NAME);
+            if (result == null) {
+                result = Integer.valueOf(map.size());
+            }
+            return result;
+            
+        }
+        
+    }
     
 }

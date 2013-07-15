@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.context;
 
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -69,8 +68,8 @@ public abstract class AbstractContext implements IContext {
      * 
      * @param locale the locale to be used.
      */
-    protected AbstractContext(final Locale locale) {
-        this(locale, new HashMap<String,Object>());
+    AbstractContext(final Locale locale) {
+        this(locale, (Map<String,?>)null);
     }
     
     /**
@@ -82,13 +81,16 @@ public abstract class AbstractContext implements IContext {
      * @param locale the locale to be used.
      * @param variables the initial set of context variables.
      */
-    protected AbstractContext(final Locale locale, final Map<String,?> variables) {
+    AbstractContext(final Locale locale, final Map<String, ?> variables) {
         super();
         Validate.notNull(locale, "Locale cannot be null");
         this.locale = locale;
-        final VariablesMap<String,Object> newVariablesMap = new VariablesMap<String,Object>();
+        final VariablesMap<String,Object> newVariablesMap;
         if (variables != null) {
+            newVariablesMap = new VariablesMap<String,Object>((variables.size()*3)/2, 1.0f);
             newVariablesMap.putAll(variables);
+        } else {
+            newVariablesMap = new VariablesMap<String,Object>(5);
         }
         this.variables = newVariablesMap;
     }
@@ -104,7 +106,7 @@ public abstract class AbstractContext implements IContext {
      * 
      * @since 2.0.9
      */
-    protected AbstractContext(final Locale locale, final VariablesMap<String,Object> variablesMap) {
+    AbstractContext(final Locale locale, final VariablesMap<String, Object> variablesMap) {
         super();
         Validate.notNull(locale, "Locale cannot be null");
         Validate.notNull(variablesMap, "Variables map cannot be null");

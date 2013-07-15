@@ -61,7 +61,7 @@ public class StandardSubstituteByFragmentAttrProcessor
         if (attributeName != null) {
             final String prefix = PrefixUtils.getPrefix(attributeName);
             if (prefix != null) {
-                return prefix + ":" + FRAGMENT_ATTR_NAME;
+                return prefix + ':' + FRAGMENT_ATTR_NAME;
             }
         }
         return FRAGMENT_ATTR_NAME;

@@ -37,12 +37,12 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
     
     
     
-    public AbstractConditionalFixedValueAttrProcessor(final String attributeName) {
+    protected AbstractConditionalFixedValueAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractConditionalFixedValueAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractConditionalFixedValueAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -59,6 +59,7 @@ public abstract class AbstractConditionalFixedValueAttrProcessor
         final String targetAttributeName = getTargetAttributeName(arguments, element, attributeName);
 
         if (!visible) {
+            element.removeAttribute(targetAttributeName);
             element.removeAttribute(attributeName);
             return ProcessorResult.OK;
         }

@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Standards;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.util.PrefixUtils;
 
@@ -35,33 +36,7 @@ public final class StandardConditionalFixedValueAttrProcessor
 
     public static final int ATTR_PRECEDENCE = 1000;
     
-    public static final String[] ATTR_NAMES = 
-        new String[] {
-                "async",
-                "autofocus",
-                "autoplay",
-                "checked",
-                "controls",
-                "declare",
-                "default",
-                "defer",
-                "disabled",
-                "formnovalidate",
-                "hidden",
-                "ismap",
-                "loop",
-                "multiple",
-                "novalidate",
-                "nowrap",
-                "open",
-                "pubdate",
-                "readonly",
-                "required",
-                "reversed",
-                "selected",
-                "scoped",
-                "seamless"
-        };
+    public static final String[] ATTR_NAMES = Standards.HTML_CONDITIONAL_FIXED_VALUE_ATTR_NAMES;
 
     
     public static final StandardConditionalFixedValueAttrProcessor[] PROCESSORS;

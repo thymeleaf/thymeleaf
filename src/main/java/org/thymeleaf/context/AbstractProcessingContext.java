@@ -40,12 +40,14 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     protected static final String EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME = "%%{SELECTION_TARGET}%%";
     
 
-    private IContext context;
-    private Object evaluationRoot;
-    private Object selectionEvaluationRoot;
+    private final IContext context;
+    private final Object evaluationRoot;
+    private final Object selectionEvaluationRoot;
     private final HashMap<String,Object> localVariables;
     
-    private final Map<String, Object> baseContextVariables;
+    private boolean computedBaseContextVariables = false;
+    private Map<String, Object> expressionObjects = null;
+    
 
     
     
@@ -73,8 +75,8 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.localVariables =
                 (localVariables != null?
                         new HashMap<String,Object>(localVariables) : 
-                        (selectionTarget != null?
-                                new HashMap<String, Object>() : 
+                        (selectionTargetSet?
+                                new HashMap<String, Object>(2, 1.0f) :
                                 null));
         if (selectionTargetSet) {
             this.localVariables.put(EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME, selectionTarget);
@@ -82,18 +84,20 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.evaluationRoot = createEvaluationRoot();
         this.selectionEvaluationRoot = createSelectedEvaluationRoot();
         
-        this.baseContextVariables = computeBaseContextVariables(); 
-        
     }
     
     
     
-    
+    @SuppressWarnings("unchecked")
     private Object createEvaluationRoot() {
-        
-        final Map<String,Object> newEvaluationRoot = new VariablesMap<String,Object>();
-        newEvaluationRoot.putAll(this.context.getVariables());
-        if (hasLocalVariables()) {
+
+        final VariablesMap<String, Object> contextVariables = this.context.getVariables();
+        // We create a new VariablesMap instance using its constructor instead of cloning the existing one
+        // because we want to avoid undesirable interactions like, for example, those that could happen
+        // if we executed putAll on a WebVariablesMap object (which would add those variables to the HttpServletRequest
+        // and therefore make them available to the whole page and not just the local variable scope).
+        final VariablesMap<String,Object> newEvaluationRoot = new VariablesMap<String, Object>(contextVariables);
+        if (this.localVariables != null) {
             newEvaluationRoot.putAll(this.localVariables);
         }
         
@@ -112,17 +116,23 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     
-    protected Map<String,Object> computeBaseContextVariables() {
+    protected Map<String,Object> computeExpressionObjects() {
         return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
     }
     
-    
-    
 
-    public Map<String,Object> getBaseContextVariables() {
-        final Map<String,Object> variables = new HashMap<String, Object>();
-        variables.putAll(this.baseContextVariables);
-        return variables;
+
+    public Map<String,Object> getExpressionObjects() {
+        if (!this.computedBaseContextVariables) {
+            // Base context variables are computed lazily so that subclasses have
+            // the chance to override the basic computing behaviour.
+            // The boolean flag is modified first so that if this method is called by
+            // error during the implementation of "computeExpressionObjects()" it does
+            // not result in an infinite loop.
+            this.computedBaseContextVariables = true;
+            this.expressionObjects = computeExpressionObjects();
+        }
+        return this.expressionObjects;
     }
 
     
@@ -187,23 +197,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     }
     
     
-    /**
-     * <p>
-     *   Returns the real inner map of local variables. This
-     *   method should not be called directly.
-     * </p>
-     * 
-     * @return the local variables map, which could be null if no variables are defined
-     * @deprecated Use {@link #getLocalVariables()} instead. Will be removed in 2.1.x.
-     */
-    @Deprecated
-    public HashMap<String,Object> unsafeGetLocalVariables() {
-        return this.localVariables;
-    }
-    
-    
-    
-        
     protected Map<String,Object> mergeNewLocalVariables(final Map<String,Object> newVariables) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this.localVariables;

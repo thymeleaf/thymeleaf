@@ -132,6 +132,13 @@ public abstract class AbstractTextNode extends Node {
     
     
     @Override
+    final void doAdditionalProcessableComputing(final boolean processable) {
+        // Nothing to be done here!
+    }
+
+    
+    
+    @Override
     final void doAdditionalPrecomputeNode(final Configuration configuration) {
         // Nothing to be done here!
     }
@@ -139,7 +146,7 @@ public abstract class AbstractTextNode extends Node {
     
     
     @Override
-    final void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes) {
+    final void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
         // Nothing to be done here
     }
     

@@ -19,19 +19,16 @@
  */
 package org.thymeleaf.dom;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.processor.ProcessorAndContext;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.IdentityCounter;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 
@@ -48,8 +45,6 @@ import org.thymeleaf.util.Validate;
 public abstract class Node implements Serializable {
 
     private static final long serialVersionUID = 3082306990735650683L;
-    
-    private static final int DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE = 3;
 
     /**
      * <p>
@@ -87,15 +82,25 @@ public abstract class Node implements Serializable {
     private final String documentName;
     private final Integer lineNumber;
     
-    private final boolean shouldConsiderAsElementForProcessing;
-    
     NestableNode parent;
+    
+    /*
+     * An internal flag determining whether a node "can" be skipped because there are
+     * no processors that apply to it.
+     */
     private boolean skippable;
+    
+    /*
+     * An externally-set flag determining that a specific subtree of the DOM
+     * tree should not be processed at all.
+     */
+    private boolean processable;
+    
     private boolean precomputed;
     private boolean recomputeProcessorsAfterEachExecution;
     private boolean recomputeProcessorsImmediately;
     
-    private HashMap<String,Object> nodeLocalVariables;
+    private NodeLocalVariablesMap nodeLocalVariables;
 
     private ArrayList<ProcessorAndContext> processors;
 
@@ -137,10 +142,10 @@ public abstract class Node implements Serializable {
         if (name == null) {
             return null;
         }
-        if (dialectPrefix == null || dialectPrefix.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(dialectPrefix)) {
             return name;
         }
-        return dialectPrefix + ":" + name;
+        return dialectPrefix + ':' + name;
     }
     
     
@@ -149,14 +154,13 @@ public abstract class Node implements Serializable {
         super();
         this.documentName = documentName;
         this.lineNumber = lineNumber;
+        this.processable = true;
         this.skippable = false;
         this.precomputed = false;
         this.recomputeProcessorsAfterEachExecution = false;
         this.recomputeProcessorsImmediately = false;
         this.nodeLocalVariables = null;
         this.processors = null;
-        this.shouldConsiderAsElementForProcessing = 
-                (this instanceof NestableAttributeHolderNode || this instanceof Document);
         this.nodeProperties = null;
     }
 
@@ -212,7 +216,7 @@ public abstract class Node implements Serializable {
     public final void setNodeProperty(final String name, final Object value) {
         Validate.notNull(name, "Property name cannot be null");
         if (this.nodeProperties == null) {
-            this.nodeProperties = new HashMap<String,Object>();
+            this.nodeProperties = new HashMap<String,Object>(3,1.0f);
         }
         this.nodeProperties.put(name, value);
     }
@@ -445,11 +449,9 @@ public abstract class Node implements Serializable {
      *   this node (and its children).
      * </p>
      * <p>
-     *   This flag can be set by the engine -and also by processors- in order to avoid the
-     *   execution of certain parts of the DOM tree, both because it is known that there is
-     *   nothing to execute (and therefore it would be a waste of time trying to process it)
-     *   and also because we want to signal that specific parts of the tree should not be 
-     *   executed for security reasons (for example, to avoid code injection).
+     *   This flag can be set by the engine -not by processors- in order to avoid the
+     *   execution of certain parts of the DOM tree because it is known that there is
+     *   nothing to execute (and therefore it would be a waste of time trying to process it).
      * </p>
      * 
      * @return the value of the 'skippable' flag
@@ -459,35 +461,82 @@ public abstract class Node implements Serializable {
     }
     
 
-    /**
-     * <p>
-     *   Sets the value of a flag indicating whether there is any reason to process
-     *   this node (and its children).
-     * </p>
-     * <p>
-     *   This flag can be set by the engine -and also by processors- in order to avoid the
-     *   execution of certain parts of the DOM tree, both because it is known that there is
-     *   nothing to execute (and therefore it would be a waste of time trying to process it)
-     *   and also because we want to signal that specific parts of the tree should not be 
-     *   executed for security reasons (for example, to avoid code injection).
-     * </p>
-     * 
-     * @param skippable the new value for the flag
-     */
-    public final void setSkippable(final boolean skippable) {
-        this.skippable = skippable;
-        if (!skippable && hasParent()) {
+    protected final void setSkippable(final boolean isSkippable) {
+        this.skippable = isSkippable;
+        if (!isSkippable && hasParent()) {
             // If this node is marked as non-skippable, set its parent as
             // non-skippable too.
             if (this.parent.isSkippable()) {
                 this.parent.setSkippable(false);
             }
         }
-        doAdditionalSkippableComputing(skippable);
+        doAdditionalSkippableComputing(isSkippable);
     }
     
     abstract void doAdditionalSkippableComputing(final boolean isSkippable);
 
+    
+    
+    /**
+     * <p>
+     *   Returns the value of a flag indicating whether this node (and its children)
+     *   should be processed. It differs from <tt>skippable</tt> in that processing a skippable
+     *   node simply means not taking profit from a performance advantage, whereas processing
+     *   a non-processable node is completely forbidden.
+     * </p>
+     * <p>
+     *   This flag can be set by processors in order to avoid the
+     *   execution of certain parts of the DOM tree, because we want to signal that specific 
+     *   parts of the tree should not be executed for security reasons (for example, to avoid
+     *   code injection).
+     * </p>
+     * 
+     * @return the value of the 'processable' flag
+     * @since 2.0.13
+     */
+    public final boolean isProcessable() {
+        return this.processable;
+    }
+    
+
+    /**
+     * <p>
+     *   Sets the value of a flag indicating whether this node (and its children)
+     *   should be processed. It differs from <tt>skippable</tt> in that processing a skippable
+     *   node simply means not taking profit from a performance advantage, whereas processing
+     *   a non-processable node is completely forbidden.
+     * </p>
+     * <p>
+     *   This flag can be set by processors in order to avoid the
+     *   execution of certain parts of the DOM tree, because we want to signal that specific 
+     *   parts of the tree should not be executed for security reasons (for example, to avoid
+     *   code injection).
+     * </p>
+     * 
+     * @param processable the new value for the flag
+     * @since 2.0.13
+     */
+    public final void setProcessable(final boolean processable) {
+        this.processable = processable;
+        if (processable && hasParent()) {
+            // If this node is marked as non-skippable, set its parent as
+            // non-skippable too.
+            if (!this.parent.isProcessable()) {
+                this.parent.setProcessable(true);
+            }
+        }
+        doAdditionalProcessableComputing(processable);
+        if (processable) {
+            // If it is now processable, we should make sure
+            // processors are computed again just in case.
+            setPrecomputed(false);
+        }
+    }
+    
+    abstract void doAdditionalProcessableComputing(final boolean isProcessable);
+
+    
+    
 
     final boolean isDetached() {
         if (this instanceof Document) {
@@ -581,7 +630,7 @@ public abstract class Node implements Serializable {
      * 
      * @return the map of node local variables
      */
-    public final Map<String,Object> unsafeGetNodeLocalVariables() {
+    final NodeLocalVariablesMap unsafeGetNodeLocalVariables() {
         return this.nodeLocalVariables;
     }
 
@@ -614,7 +663,7 @@ public abstract class Node implements Serializable {
      */
     public final void setNodeLocalVariable(final String name, final Object value) {
         if (this.nodeLocalVariables == null) {
-            this.nodeLocalVariables = new HashMap<String, Object>(DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE);
+            this.nodeLocalVariables = new NodeLocalVariablesMap();
         }
         this.nodeLocalVariables.put(name,  value);
     }
@@ -648,21 +697,17 @@ public abstract class Node implements Serializable {
     public final void setAllNodeLocalVariables(final Map<String,Object> variables) {
         if (variables != null) {
             if (this.nodeLocalVariables == null) {
-                this.nodeLocalVariables = new HashMap<String, Object>(variables);
-            } else {
-                this.nodeLocalVariables.putAll(variables);
+                this.nodeLocalVariables = new NodeLocalVariablesMap();
             }
+            this.nodeLocalVariables.putAll(variables);
         }
     }
 
     
     final void unsafeSetNodeLocalVariables(final Map<String,Object> variables) {
         if (variables != null) {
-            if (variables instanceof HashMap) {
-                this.nodeLocalVariables = (HashMap<String,Object>)variables;
-            } else {
-                this.nodeLocalVariables = new HashMap<String,Object>(variables);
-            }
+            this.nodeLocalVariables = new NodeLocalVariablesMap();
+            this.nodeLocalVariables.putAll(variables);
         } else { 
             this.nodeLocalVariables = null;
         }
@@ -673,6 +718,10 @@ public abstract class Node implements Serializable {
     
     final void precomputeNode(final Configuration configuration) {
 
+        if (!isProcessable()) {
+            return;
+        }
+        
         if (!isPrecomputed()) {
 
             /*
@@ -722,10 +771,34 @@ public abstract class Node implements Serializable {
     
     
     
-    void processNode(final Arguments arguments, final boolean processOnlyElementNodes) {
+    void processNode(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
 
-        if (!this.shouldConsiderAsElementForProcessing && processOnlyElementNodes) {
+        if (!isProcessable()) {
             return;
+        }
+
+        if (!(this instanceof Element) && !(this instanceof Document)) {
+            // Elements and Documents are always processed
+            // Macros are never processed
+            // Text/CDATAs and Comments will depend on their respective flag
+            
+            if (!processTextNodes && !processCommentNodes) {
+                // fail fast
+                return;
+            }
+            
+            if ((this instanceof Text || this instanceof CDATASection) && !processTextNodes) {
+                return;
+            }
+            
+            if (this instanceof Comment && !processCommentNodes) {
+                return;
+            }
+            
+            if (this instanceof Macro) {
+                return;
+            }
+            
         }
         
         if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
@@ -779,6 +852,7 @@ public abstract class Node implements Serializable {
                     }
                     
                     if (this.recomputeProcessorsImmediately || this.recomputeProcessorsAfterEachExecution) {
+                        setPrecomputed(false);
                         precomputeNode(arguments.getConfiguration());
                         this.recomputeProcessorsImmediately = false;
                     }
@@ -787,7 +861,7 @@ public abstract class Node implements Serializable {
                 
             }
             
-            doAdditionalProcess(executionArguments, executionArguments.getProcessOnlyElementNodes());
+            doAdditionalProcess(executionArguments, executionArguments.getProcessTextNodes(), executionArguments.getProcessCommentNodes());
             
         }
     
@@ -797,7 +871,7 @@ public abstract class Node implements Serializable {
     
     
     
-    private static final Arguments applyNextProcessor(final Arguments arguments, final Node node, final IdentityCounter<ProcessorAndContext> alreadyExecuted) {
+    private static Arguments applyNextProcessor(final Arguments arguments, final Node node, final IdentityCounter<ProcessorAndContext> alreadyExecuted) {
 
         if (!node.isDetached() && node.processors != null && node.processors.size() > 0) {
 
@@ -807,8 +881,27 @@ public abstract class Node implements Serializable {
                     
                     Arguments executionArguments = arguments;
 
-                    final ProcessorResult processorResult = 
+                    // Obtain a "hash snapshot" of the node local variables map before
+                    // the processor is executed
+                    final int nodeLocalVariablesHashBefore = 
+                            (node.nodeLocalVariables == null? -1 : node.nodeLocalVariables.contentsHash()); 
+                    
+                    // Execute processor
+                    ProcessorResult processorResult = 
                             processor.getProcessor().process(executionArguments, processor.getContext(), node);
+
+                    // Obtain a "hash snapshot" of the node local variables map after
+                    // the processor has been executed
+                    final int nodeLocalVariablesHashAfter = 
+                            (node.nodeLocalVariables == null? -1 : node.nodeLocalVariables.contentsHash()); 
+
+                    // Check whether the processor just modified the node variables map. This
+                    // is done BEFORE processorResult.computeNewArguments(...) so that variables
+                    // set from the ProcessorResult have higher priority (i.e. can override) variables
+                    // set directly into the nodeLocalVariables map.
+                    if (nodeLocalVariablesHashBefore != nodeLocalVariablesHashAfter) {
+                        executionArguments = executionArguments.addLocalVariables(node.nodeLocalVariables);
+                    }
                     
                     // The execution arguments need to be updated as instructed by the processor
                     // (for example, for adding local variables)
@@ -816,7 +909,7 @@ public abstract class Node implements Serializable {
                     
                     // If we have added local variables, we should update the node's map for these variables in
                     // order to keep them synchronized
-                    if (processorResult.hasLocalVariables() && executionArguments.hasLocalVariables()) {
+                    if ((processorResult.hasLocalVariables() || processorResult.isSelectionTargetSet()) && executionArguments.hasLocalVariables()) {
                         node.unsafeSetNodeLocalVariables(executionArguments.getLocalVariables());
                     }
                     
@@ -838,7 +931,7 @@ public abstract class Node implements Serializable {
     
     
     
-    abstract void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes);
+    abstract void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes);
     
     
 
@@ -886,7 +979,8 @@ public abstract class Node implements Serializable {
         }
         node.parent = newParent;
         if (this.nodeLocalVariables != null) {
-            node.nodeLocalVariables = new HashMap<String,Object>(this.nodeLocalVariables);
+            node.nodeLocalVariables = new NodeLocalVariablesMap();
+            node.nodeLocalVariables.putAll(this.nodeLocalVariables);
         }
         if (this.nodeProperties != null) {
             node.nodeProperties = new HashMap<String,Object>(this.nodeProperties);
@@ -907,6 +1001,45 @@ public abstract class Node implements Serializable {
      */
     public abstract void visit(final DOMVisitor visitor);
 
+    
+    
+    /**
+     * @since 2.0.17
+     */
+    public static class NodeLocalVariablesMap extends HashMap<String,Object> {
+        
+        private static final long serialVersionUID = 4632571067579619256L;
+        
+        
+        public static final int DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE = 3;
+        
+        public NodeLocalVariablesMap() {
+            super(DEFAULT_NODE_LOCAL_VARIABLES_MAP_SIZE);
+        }
+
+        /* 
+         * Creates a hash that can be used for comparing the state of the variables
+         * map before and after processor execution and therefore determine if processor
+         * execution changed the map's contents.  
+         */
+        int contentsHash() {
+            //noinspection MagicNumber
+            final int prime = 31;
+            int result = super.hashCode();
+            result = prime * result + System.identityHashCode(this);
+            for (final Map.Entry<String,Object> entry : this.entrySet()) {
+                final String key = entry.getKey();
+                final Object value = entry.getValue();
+                result = prime * result + ((key == null) ? 0 : System.identityHashCode(key));
+                result = prime * result + ((value == null) ? 0 : System.identityHashCode(value));
+            }
+            return result;
+        }
+
+        public NodeLocalVariablesMap clone() {
+            return (NodeLocalVariablesMap) super.clone();
+        }
+    }
     
     
 

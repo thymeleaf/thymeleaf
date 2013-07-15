@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,16 +42,16 @@ import org.thymeleaf.standard.expression.StandardExpressionProcessor;
  */
 public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor 
         extends AbstractLocalVariableDefinitionAttrProcessor {
-    
-    
-    
 
-    
-    public AbstractStandardLocalVariableDefinitionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+
+    protected AbstractStandardLocalVariableDefinitionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardLocalVariableDefinitionAttrProcessor(final String attributeName) {
+    protected AbstractStandardLocalVariableDefinitionAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 
@@ -71,14 +72,20 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
         }
-        
+
+        Arguments assignationExecutionArguments = arguments;
+
         final Map<String,Object> newLocalVariables = new HashMap<String,Object>(assignations.size() + 1, 1.0f);
         for (final Assignation assignation : assignations) {
             
             final String varName = assignation.getLeft().getValue();
             final Expression expression = assignation.getRight();
-            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, expression);
-            
+            final Object varValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, expression);
+
+            // Creating a new Arguments object allows the reuse of variables in, for example, th:with expressions.
+            assignationExecutionArguments =
+                    assignationExecutionArguments.addLocalVariables(Collections.singletonMap(varName, varValue));
+
             newLocalVariables.put(varName, varValue);
             
         }

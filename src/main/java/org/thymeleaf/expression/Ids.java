@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
 public class Ids {
 
     
-    private Arguments arguments;
+    private final Arguments arguments;
     
     
     public String seq(final Object id) {

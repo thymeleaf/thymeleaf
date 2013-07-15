@@ -41,11 +41,11 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
     
 
     
-    public AbstractStandardFragmentHandlingAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractStandardFragmentHandlingAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardFragmentHandlingAttrProcessor(final String attributeName) {
+    protected AbstractStandardFragmentHandlingAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 
@@ -55,13 +55,15 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
     
     @Override
     protected final FragmentAndTarget getFragmentAndTarget(final Arguments arguments,
-            final Element element, final String attributeName, final String attributeValue) {
+            final Element element, final String attributeName, final String attributeValue, 
+            final boolean substituteInclusionNode) {
 
         final String targetAttributeName = 
                 getTargetAttributeName(arguments, element, attributeName, attributeValue);
         
         return StandardFragmentProcessor.computeStandardFragmentSpec(
-                arguments.getConfiguration(), arguments, attributeValue, null, targetAttributeName);
+                arguments.getConfiguration(), arguments, attributeValue, null, targetAttributeName,
+                !substituteInclusionNode);
         
     }
 

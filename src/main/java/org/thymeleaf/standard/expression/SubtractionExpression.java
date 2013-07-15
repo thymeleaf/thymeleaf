@@ -66,17 +66,18 @@ public final class SubtractionExpression extends AdditionSubtractionExpression {
     
     
     static Object executeSubtraction(final Configuration configuration, final IProcessingContext processingContext, 
-            final SubtractionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final SubtractionExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating subtraction expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
 
         Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator);
+            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
         
         if (leftValue == null) {
             leftValue = "null";

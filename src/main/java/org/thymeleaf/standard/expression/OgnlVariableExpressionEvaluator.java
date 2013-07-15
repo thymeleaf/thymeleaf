@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javassist.ClassPool;
@@ -35,8 +36,12 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IContextVariableRestriction;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.ObjectUtils;
 
@@ -63,7 +68,7 @@ public class OgnlVariableExpressionEvaluator
     
     public final Object evaluate(final Configuration configuration, 
             final IProcessingContext processingContext, final String expression, 
-            final boolean useSelectionAsRoot) {
+            final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
        
         try {
 
@@ -91,12 +96,12 @@ public class OgnlVariableExpressionEvaluator
                     cache.put(OGNL_CACHE_PREFIX + expression, expressionTree);
                 }
             }
+
             
-            
-            final Map<String,Object> contextVariables = processingContext.getBaseContextVariables();
-            
+            final Map<String,Object> contextVariables = processingContext.getExpressionObjects();
+
             final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
-            if (additionalContextVariables != null && !additionalContextVariables.isEmpty()) {
+            if (additionalContextVariables != null) {
                 contextVariables.putAll(additionalContextVariables);
             }
             
@@ -105,6 +110,7 @@ public class OgnlVariableExpressionEvaluator
                             processingContext.getExpressionSelectionEvaluationRoot() :
                             processingContext.getExpressionEvaluationRoot());
 
+            setVariableRestrictions(expContext, evaluationRoot, contextVariables);
             
             return Ognl.getValue(expressionTree, contextVariables, evaluationRoot);
             
@@ -124,6 +130,25 @@ public class OgnlVariableExpressionEvaluator
     protected Map<String,Object> computeAdditionalContextVariables(
             @SuppressWarnings("unused") final IProcessingContext processingContext) {
         return Collections.emptyMap();
+    }
+    
+    
+    protected void setVariableRestrictions(final StandardExpressionExecutionContext expContext, 
+            final Object evaluationRoot, final Map<String,Object> contextVariables) {
+        
+        final List<IContextVariableRestriction> restrictions =
+                (expContext.getForbidRequestParameters()? 
+                        StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
+        
+        final Object context = contextVariables.get(ExpressionEvaluatorObjects.CONTEXT_VARIABLE_NAME);
+        if (context != null && context instanceof IContext) {
+            final VariablesMap<?,?> variablesMap = ((IContext)context).getVariables();
+            variablesMap.setRestrictions(restrictions);
+        }
+        if (evaluationRoot != null && evaluationRoot instanceof VariablesMap<?,?>) {
+            ((VariablesMap<?,?>)evaluationRoot).setRestrictions(restrictions);
+        }
+        
     }
     
     

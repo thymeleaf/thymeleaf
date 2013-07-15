@@ -129,7 +129,29 @@ public final class StandardExpressionProcessor {
      */
     public static Object executeExpression(final Configuration configuration, 
             final IProcessingContext processingContext, final Expression expression) {
-        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression);
+        return getExecutorAttribute(configuration).executeExpression(
+                configuration, processingContext, expression);
+    }
+    
+
+    
+    /**
+     * @since 2.0.16
+     */
+    public static Object executeExpression(final Arguments arguments, final Expression expression,
+            final StandardExpressionExecutionContext expContext) {
+        return getExecutorAttribute(arguments.getConfiguration()).executeExpression(
+                arguments, expression, expContext);
+    }
+    
+    /**
+     * @since 2.0.16
+     */
+    public static Object executeExpression(final Configuration configuration, 
+            final IProcessingContext processingContext, final Expression expression,
+            final StandardExpressionExecutionContext expContext) {
+        return getExecutorAttribute(configuration).executeExpression(
+                configuration, processingContext, expression, expContext);
     }
     
     
@@ -150,6 +172,31 @@ public final class StandardExpressionProcessor {
         return executeExpression(configuration, processingContext, parseExpression(configuration, processingContext, input));
     }
     
+
+    
+    /**
+     * @since 2.0.16
+     */
+    public static Object processExpression(final Arguments arguments, final String input,
+            final StandardExpressionExecutionContext expContext) {
+        return executeExpression(
+                arguments, 
+                parseExpression(arguments, input), 
+                expContext);
+    }
+    
+    /**
+     * @since 2.0.16
+     */
+    public static Object processExpression(final Configuration configuration, 
+            final IProcessingContext processingContext, final String input,
+            final StandardExpressionExecutionContext expContext) {
+        return executeExpression(
+                configuration, 
+                processingContext, 
+                parseExpression(configuration, processingContext, input),
+                expContext);
+    }
 
     
     
@@ -191,17 +238,6 @@ public final class StandardExpressionProcessor {
 
 
     
-    
-    /**
-     * @deprecated Use {@link #createStandardExpressionExecutor(IStandardVariableExpressionEvaluator)}
-     *             instead. Will be removed in 2.1.x
-     */
-    @Deprecated
-    public static StandardExpressionExecutor createStandardExpressionExecutor(
-            final IStandardExpressionEvaluator expressionEvaluator) {
-        return new StandardExpressionExecutor(
-                new DeprecatedBridgeStandardExpressionEvaluator(expressionEvaluator));
-    }
     
     public static StandardExpressionExecutor createStandardExpressionExecutor(
             final IStandardVariableExpressionEvaluator expressionEvaluator) {

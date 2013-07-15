@@ -41,7 +41,7 @@ public final class Comment extends Node {
     
     private static final long serialVersionUID = 1750478035496424682L;
 
-    private final char[] content;
+    private char[] content;
 
 
     
@@ -110,26 +110,60 @@ public final class Comment extends Node {
     public char[] unsafeGetContentCharArray() {
         return this.content;
     }
+    
+
+    /**
+     * <p>
+     *   Modify the textual content of this node.
+     * </p>
+     * 
+     * @param content the new content
+     * @since 2.0.15
+     */
+    public void setContent(final String content) {
+        this.content = content.toCharArray();
+    }
+    
+    
+    /**
+     * <p>
+     *   Modify the textual content of this node. This method
+     *   is considered <i>unsafe</i> because it does not copy the
+     *   specified array (instead, it is merely assigned to an internal variable).
+     * </p>
+     * 
+     * @param newContent the new content
+     * @since 2.0.15
+     */
+    public void unsafeSetContent(final char[] newContent) {
+        this.content = newContent;
+    }
 
     
 
 
     
     @Override
-    final void doAdditionalSkippableComputing(final boolean skippable) {
+    void doAdditionalSkippableComputing(final boolean skippable) {
+        // Nothing to be done here!
+    }
+
+
+    @Override
+    void doAdditionalProcessableComputing(final boolean processable) {
         // Nothing to be done here!
     }
 
     
     
     @Override
-    final void doAdditionalPrecomputeNode(final Configuration configuration) {
+    void doAdditionalPrecomputeNode(final Configuration configuration) {
         // Nothing to be done here!
     }
 
 
     @Override
-    final void doAdditionalProcess(final Arguments arguments, final boolean processOnlyElementNodes) {
+    void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
         // Nothing to be done here
     }
 
@@ -137,7 +171,7 @@ public final class Comment extends Node {
 
 
     @Override
-    public final void visit(final DOMVisitor visitor) {
+    public void visit(final DOMVisitor visitor) {
         visitor.visit(this);
     }
     

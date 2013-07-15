@@ -30,6 +30,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -111,7 +112,7 @@ public final class MessageExpression extends SimpleExpression {
 
         final String content = matcher.group(1);
 
-        if (content == null || content.trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace(content)) {
             return null;
         }
         
@@ -203,7 +204,8 @@ public final class MessageExpression extends SimpleExpression {
 
     static Object executeMessage(final Configuration configuration,
             final IProcessingContext processingContext, final MessageExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
+            final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating message: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -221,12 +223,12 @@ public final class MessageExpression extends SimpleExpression {
         
         final Expression baseExpression = expression.getBase();
         Object messageKey = 
-            Expression.execute(configuration, arguments, baseExpression, expressionEvaluator);
+            Expression.execute(configuration, arguments, baseExpression, expressionEvaluator, expContext);
         messageKey = LiteralValue.unwrap(messageKey);
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
         }
-        if (messageKey == null || ((String)messageKey).trim().equals("")) {
+        if (StringUtils.isEmptyOrWhitespace((String)messageKey)) {
             throw new TemplateProcessingException(
                     "Message key for message resolution must be a non-null and non-empty String");
         }
@@ -238,7 +240,7 @@ public final class MessageExpression extends SimpleExpression {
         if (expression.hasParameters()) {
             for (final Expression parameter  : expression.getParameters()) {
                 final Object result = 
-                    Expression.execute(configuration, arguments, parameter, expressionEvaluator);
+                    Expression.execute(configuration, arguments, parameter, expressionEvaluator, expContext);
                 messageParameters[parIndex++] = LiteralValue.unwrap(result);
             }
         }

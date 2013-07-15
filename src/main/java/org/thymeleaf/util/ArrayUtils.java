@@ -138,13 +138,14 @@ public final class ArrayUtils {
         if (target instanceof Iterable<?>) {
             
             Class<?> computedComponentClass = null;
-            final List<Object> elements = new ArrayList<Object>();
+            final Iterable<?> iterableTarget = (Iterable<?>)target;
+            final List<Object> elements = new ArrayList<Object>(5); // init capacity guessed - not know from iterable.
             
-            for (final Object element : (Iterable<?>)target) {
-                if (componentClass == null) {
-                    if (element != null && computedComponentClass == null) {
+            for (final Object element : iterableTarget) {
+                if (componentClass == null && element != null) {
+                    if (computedComponentClass == null) {
                         computedComponentClass = element.getClass();
-                    } else if (element != null && computedComponentClass != null && !computedComponentClass.equals(Object.class)) {
+                    } else if (!computedComponentClass.equals(Object.class)) {
                         if (!computedComponentClass.equals(element.getClass())) {
                             computedComponentClass = Object.class;
                         }
@@ -176,7 +177,7 @@ public final class ArrayUtils {
     @SuppressWarnings("unchecked")
     public static <T,X> X[] copyOf(final T[] original, final int newLength, final Class<? extends X[]> newType) {
         final X[] newArray = 
-                ((Object)newType == (Object)Object[].class)? 
+                (newType == (Object)Object[].class)?
                         (X[]) new Object[newLength] : 
                         (X[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, 0, newArray, 0, Math.min(original.length, newLength));

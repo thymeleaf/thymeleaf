@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
@@ -53,16 +53,16 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
     public static final String DART_INLINE = "dart";
     public static final String NONE_INLINE = "none";
 
-    
-    
-    
 
-    
-    public AbstractStandardTextInlinerAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+
+    protected AbstractStandardTextInlinerAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardTextInlinerAttrProcessor(final String attributeName) {
+    protected AbstractStandardTextInlinerAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 
@@ -76,14 +76,15 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
         
         final IStandardTextInliner textInliner = getTextInliner(element, attributeName);
 
-        final Map<String,Object> localVariables = new HashMap<String,Object>();
+        final Map<String,Object> localVariables = new HashMap<String,Object>(2, 1.0f);
         localVariables.put(StandardDialect.INLINER_LOCAL_VARIABLE, textInliner);
-        
-        clearSkippability(element);
+
+        // This is probably unnecessary...
+        ensureChildrenArePrecomputed(element);
         
         element.removeAttribute(attributeName);
         
-        return ProcessorResult.setLocalVariablesAndProcessOnlyElementNodes(localVariables, false);
+        return ProcessorResult.setLocalVariablesAndProcessTextNodes(localVariables, true);
         
     }
     
@@ -115,13 +116,13 @@ public abstract class AbstractStandardTextInlinerAttrProcessor
     
 
     
-    private static void clearSkippability(final Node node) {
+    private static void ensureChildrenArePrecomputed(final Node node) {
         if (node != null) {
-            node.setSkippable(false);
+            node.setRecomputeProcessorsImmediately(true);
             if (node instanceof NestableNode) {
                 final List<Node> children = ((NestableNode)node).getChildren();
                 for (final Node child : children) {
-                    clearSkippability(child);
+                    ensureChildrenArePrecomputed(child);
                 }
             }
         }

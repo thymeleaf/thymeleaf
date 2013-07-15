@@ -61,7 +61,7 @@ public final class StandardAttrprependAttrProcessor
     @Override
     protected boolean removeAttributeIfEmpty(
             final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return false;
+        return true;
     }
 
 

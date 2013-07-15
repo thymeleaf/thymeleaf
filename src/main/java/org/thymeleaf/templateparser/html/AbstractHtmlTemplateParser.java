@@ -1,3 +1,22 @@
+/*
+ * =============================================================================
+ * 
+ *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
+ * 
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ * 
+ * =============================================================================
+ */
 package org.thymeleaf.templateparser.html;
 
 import java.io.Reader;
@@ -32,12 +51,14 @@ import org.xml.sax.InputSource;
  */
 public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
 
+    private static final int BUFFER_SIZE = 8192;
+
     private final String templateModeName;
     private final boolean nekoInClasspath;
     private final NekoBasedHtmlParser parser;
-    
-    
-    public AbstractHtmlTemplateParser(final String templateModeName, int poolSize) {
+
+
+    protected AbstractHtmlTemplateParser(final String templateModeName, int poolSize) {
         
         super();
 
@@ -45,9 +66,9 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         try {
             ClassLoaderUtils.getClassLoader(AbstractHtmlTemplateParser.class).
                     loadClass("org.cyberneko.html.parsers.DOMParser");
-        } catch (final ClassNotFoundException e) {
+        } catch (final ClassNotFoundException ignored) {
             nekoFound = false;
-        } catch (final NoClassDefFoundError e) {
+        } catch (final NoClassDefFoundError ignored) {
             nekoFound = false;
         }
         this.nekoInClasspath = nekoFound;
@@ -108,11 +129,11 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         // The org.apache.xerces.parsers.DOMParser is not used here as a type
         // parameter to avoid the class loader to try to load this xerces class
         // (and fail) before we control the error at the constructor.
-        private ResourcePool<Object> pool;
+        private final ResourcePool<Object> pool;
         private boolean canResetParsers = true;
 
         
-        public NekoBasedHtmlParser(int poolSize) {
+        private NekoBasedHtmlParser(int poolSize) {
             super();
             this.pool = new ResourcePool<Object>(new HtmlTemplateParserFactory(), poolSize);
         }
@@ -139,7 +160,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                          * Reset the parser so that it can be used again.
                          */
                         domParser.reset();
-                    } catch (final UnsupportedOperationException e) {
+                    } catch (final UnsupportedOperationException ignored) {
                         if (this.logger.isWarnEnabled()) {
                             this.logger.warn(
                                     "[THYMELEAF] The HTML Parser implementation being used (\"{}\") does not implement " +
@@ -161,6 +182,14 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                 throw new TemplateInputException("Exception parsing document", e);
             } finally {
 
+                if (templateReader != null) {
+                    try {
+                        templateReader.close();
+                    } catch (final Exception ignored) {
+                        // ignored
+                    }
+                }
+                
                 if (this.canResetParsers) {
                     this.pool.release(domParser);
                 } else {
@@ -177,7 +206,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
     
     static class HtmlTemplateParserFactory implements ResourcePool.IResourceFactory<Object> {
         
-        public HtmlTemplateParserFactory() {
+        HtmlTemplateParserFactory() {
             super();
         }
 
@@ -229,9 +258,9 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         if (reader instanceof TemplatePreprocessingReader) {
             final TemplatePreprocessingReader templatePreprocessingReader = (TemplatePreprocessingReader) reader;
             return new TemplatePreprocessingReader(
-                    templatePreprocessingReader.getInnerReader(), 8192, shouldAddThymeleafRootToParser());
+                    templatePreprocessingReader.getInnerReader(), BUFFER_SIZE, shouldAddThymeleafRootToParser());
         }
-        return new TemplatePreprocessingReader(reader, 8192, shouldAddThymeleafRootToParser());
+        return new TemplatePreprocessingReader(reader, BUFFER_SIZE, shouldAddThymeleafRootToParser());
     }
     
     

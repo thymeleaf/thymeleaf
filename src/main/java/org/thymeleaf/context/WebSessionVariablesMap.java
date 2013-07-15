@@ -52,7 +52,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     
 
-    public WebSessionVariablesMap(final HttpSession session) {
+    WebSessionVariablesMap(final HttpSession session) {
         super(1, 1.0f);
         this.session = session;
     }
@@ -166,7 +166,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
             throw new IllegalStateException(
                     "Cannot remove attribute from session: no HTTP session exists!");
         }
-        final List<String> attributeNamesList = new ArrayList<String>(); 
+        final List<String> attributeNamesList = new ArrayList<String>(5);
         final Enumeration<String> attributeNames = this.session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             attributeNamesList.add(attributeNames.nextElement()); 
@@ -204,8 +204,8 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public Object clone() {
-        return new WebSessionVariablesMap(this.session);
+    public WebSessionVariablesMap clone() {
+        return (WebSessionVariablesMap) super.clone();
     }
 
     
@@ -216,7 +216,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
         if (this.session == null) {
             return Collections.emptySet();
         }
-        final Set<String> keySet = new LinkedHashSet<String>();
+        final Set<String> keySet = new LinkedHashSet<String>(5);
         final Enumeration<String> attributeNames = this.session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             keySet.add(attributeNames.nextElement());
@@ -232,7 +232,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
         if (this.session == null) {
             return Collections.emptyList();
         }
-        final List<Object> values = new ArrayList<Object>();
+        final List<Object> values = new ArrayList<Object>(5);
         final Enumeration<String> attributeNames = this.session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
@@ -299,7 +299,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
             return Collections.emptyMap();
         }
         
-        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>();
+        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>(6,1.0f);
         final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();

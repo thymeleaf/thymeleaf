@@ -19,15 +19,6 @@
  */
 package org.thymeleaf.standard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.thymeleaf.Standards;
 import org.thymeleaf.dialect.AbstractXHTMLEnabledDialect;
 import org.thymeleaf.doctype.DocTypeIdentifier;
@@ -36,38 +27,12 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
-import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAttrAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAttrappendAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardAttrprependAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardCaseAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardClassappendAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardConditionalFixedValueAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardDOMEventAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardEachAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardIfAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardIncludeFragmentAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardInlineAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardLangXmlLangAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardRemoveAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSingleNonRemovableAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSubstituteByFragmentAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSwitchAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardTextAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardUnlessAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardUtextAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardWithAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor;
+import org.thymeleaf.standard.expression.*;
+import org.thymeleaf.standard.processor.attr.*;
 import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
+import org.thymeleaf.util.Validate;
+
+import java.util.*;
 
 /**
  * <p>
@@ -79,6 +44,7 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *   <li><b>Attribute processors</b>:
  *         <ul>
  *           <li>{@link StandardAltTitleAttrProcessor}</li>
+ *           <li>{@link StandardAssertAttrProcessor}</li>
  *           <li>{@link StandardAttrAttrProcessor}</li>
  *           <li>{@link StandardAttrappendAttrProcessor}</li>
  *           <li>{@link StandardAttrprependAttrProcessor}</li>
@@ -95,6 +61,7 @@ import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
  *           <li>{@link StandardIncludeFragmentAttrProcessor}</li>
  *           <li>{@link StandardLangXmlLangAttrProcessor}</li>
  *           <li>{@link StandardRemoveAttrProcessor}</li>
+ *           <li>{@link StandardReplaceFragmentAttrProcessor}</li>
  *           <li>{@link StandardSingleNonRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSingleRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSubstituteByFragmentAttrProcessor}</li>
@@ -134,6 +101,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     public static final String INLINER_LOCAL_VARIABLE = "%STANDARD_INLINER%";
     
+    /**
+     * @since 2.0.14
+     */
+    public static final String EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE = "EXPRESSION_EVALUATOR";
     
     
     public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF1_SYSTEMID = 
@@ -354,6 +325,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                                 XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION
                                 })));
 
+
+    
+    
+    private Set<IProcessor> additionalProcessors = null;
     
 
     
@@ -361,7 +336,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     static {
         
-        final Set<IDocTypeResolutionEntry> newDocTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> newDocTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>(15, 1.0f);
         newDocTypeResolutionEntries.add(XHTML1_STRICT_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY);
@@ -405,7 +380,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     @Override
     public Set<IDocTypeTranslation> getDocTypeTranslations() {
-        final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>();
+        final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>(8, 1.0f);
         docTypeTranslations.addAll(DOC_TYPE_TRANSLATIONS);
         final Set<IDocTypeTranslation> additionalDocTypeTranslations = getAdditionalDocTypeTranslations();
         if (additionalDocTypeTranslations != null) {
@@ -422,7 +397,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     @Override
     public Set<IDocTypeResolutionEntry> getSpecificDocTypeResolutionEntries() {
-        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>(8, 1.0f);
         docTypeResolutionEntries.addAll(DOC_TYPE_RESOLUTION_ENTRIES);
         final Set<IDocTypeResolutionEntry> additionalDocTypeResolutionEntries = getAdditionalDocTypeResolutionEntries();
         if (additionalDocTypeResolutionEntries != null) {
@@ -440,34 +415,57 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     @Override
     public Set<IProcessor> getProcessors() {
         
-        final List<IProcessor> processors = new ArrayList<IProcessor>();
-        
-        final Set<IProcessor> additionalProcessors = getAdditionalProcessors();
-        final Set<Class<? extends IProcessor>> removedProcessors = getRemovedProcessors();
-        
-        for (final IProcessor processor : createStandardProcessorsSet()) {
-            if (removedProcessors == null || !removedProcessors.contains(processor.getClass())) {
-                processors.add(processor);
-            }
+        final Set<IProcessor> processors = createStandardProcessorsSet();
+        final Set<IProcessor> dialectAdditionalProcessors = getAdditionalProcessors();
+
+        if (dialectAdditionalProcessors != null) {
+            processors.addAll(dialectAdditionalProcessors);
         }
         
-        if (additionalProcessors != null) {
-            processors.addAll(additionalProcessors);
+        return new LinkedHashSet<IProcessor>(processors);
+        
+    }
+
+
+    /**
+     * <p>
+     *   Retrieves the additional set of processors that has been set for this dialect, or null
+     *   if no additional processors have been set.
+     * </p>
+     *
+     * @return the set of additional processors. Might be null.
+     */
+    public final Set<IProcessor> getAdditionalProcessors() {
+        if (this.additionalProcessors == null) {
+            return null;
         }
-        
-        return Collections.unmodifiableSet(new LinkedHashSet<IProcessor>(processors));
-        
+        return Collections.unmodifiableSet(this.additionalProcessors);
     }
+
     
     
-    protected Set<IProcessor> getAdditionalProcessors() {
-        return null;
+    /**
+     * <p>
+     *   Sets an additional set of processors for this dialect, all of which will be
+     *   available within the same dialect prefix.
+     * </p>
+     * <p>
+     *   This operation can only be executed before processing templates for the first
+     *   time. Once a template is processed, the template engine is considered to be
+     *   <i>initialized</i>, and from then on any attempt to change its configuration
+     *   will result in an exception.
+     * </p>
+     * 
+     * @param additionalProcessors the set of {@link IProcessor} objects to be added.
+     * 
+     * @since 2.0.14
+     * 
+     */
+    public final void setAdditionalProcessors(final Set<IProcessor> additionalProcessors) {
+        Validate.notNull(additionalProcessors, "Additional processor set cannot be null");
+        this.additionalProcessors = new LinkedHashSet<IProcessor>(additionalProcessors);
     }
-    
-    protected Set<Class<? extends IProcessor>> getRemovedProcessors() {
-        return null;
-    }
-    
+
 
     
     
@@ -476,13 +474,17 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     @Override
     public Map<String, Object> getExecutionAttributes() {
+
+        final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
         
         final StandardExpressionExecutor executor = 
-                StandardExpressionProcessor.createStandardExpressionExecutor(OgnlVariableExpressionEvaluator.INSTANCE);
+                StandardExpressionProcessor.createStandardExpressionExecutor(expressionEvaluator);
         final StandardExpressionParser parser = 
                 StandardExpressionProcessor.createStandardExpressionParser(executor);
         
-        final Map<String,Object> executionAttributes = new HashMap<String, Object>();
+        final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);
+        executionAttributes.put(
+                EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
                 StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
@@ -498,10 +500,23 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
 
     
-    
+    /**
+     * <p>
+     *   Create a the set of Standard processors, all of them freshly instanced.
+     * </p>
+     * 
+     * @return the set of Standard processors.
+     */
     public static Set<IProcessor> createStandardProcessorsSet() {
-        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
+        /*
+         * It is important that we create new instances here because, if there are
+         * several dialects in the TemplateEngine that extend StandardDialect, they should
+         * not be returning the exact same instances for their processors in order
+         * to allow specific instances to be directly linked with their owner dialect.
+         */
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(35, 1.0f);
         processors.add(new StandardAltTitleAttrProcessor());
+        processors.add(new StandardAssertAttrProcessor());
         processors.add(new StandardAttrAttrProcessor());
         processors.add(new StandardAttrappendAttrProcessor());
         processors.add(new StandardAttrprependAttrProcessor());
@@ -518,6 +533,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.add(new StandardIncludeFragmentAttrProcessor());
         processors.add(new StandardLangXmlLangAttrProcessor());
         processors.add(new StandardRemoveAttrProcessor());
+        processors.add(new StandardReplaceFragmentAttrProcessor());
         processors.addAll(Arrays.asList(StandardSingleNonRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.addAll(Arrays.asList(StandardSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.add(new StandardSubstituteByFragmentAttrProcessor());

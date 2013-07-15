@@ -1,3 +1,22 @@
+/*
+ * =============================================================================
+ * 
+ *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
+ * 
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ * 
+ * =============================================================================
+ */
 package org.thymeleaf.templateparser.xmldom;
 
 import java.io.IOException;
@@ -44,8 +63,9 @@ import org.xml.sax.SAXException;
  * 
  */
 public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplateParser {
-    
-    
+
+    private static final int BUFFER_SIZE = 8192;
+
     private static final String SAXPARSEEXCEPTION_BAD_ELEMENT_CONTENT =
         "The content of elements must consist of well-formed character data or markup.";
     
@@ -123,7 +143,7 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
                      * Reset the parser so that it can be used again.
                      */
                     docBuilder.reset();
-                } catch (final UnsupportedOperationException e) {
+                } catch (final UnsupportedOperationException ignored) {
                     if (this.logger.isWarnEnabled()) {
                         this.logger.warn(
                                 "[THYMELEAF] The DOM Parser implementation being used (\"{}\") does not implement " +
@@ -162,6 +182,15 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
             throw new TemplateInputException("Exception parsing document", e);
             
         } finally {
+
+            if (templateReader != null) {
+                try {
+                    templateReader.close();
+                } catch (final Exception ignored) {
+                    // ignored
+                }
+            }
+            
 
             if (this.canResetParsers) {
                 poolToBeUsed.release(docBuilder);
@@ -210,9 +239,9 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
         if (reader instanceof TemplatePreprocessingReader) {
             final TemplatePreprocessingReader templatePreprocessingReader = (TemplatePreprocessingReader) reader;
             return new TemplatePreprocessingReader(
-                    templatePreprocessingReader.getInnerReader(), 8192, shouldAddThymeleafRootToParser());
+                    templatePreprocessingReader.getInnerReader(), BUFFER_SIZE, shouldAddThymeleafRootToParser());
         }
-        return new TemplatePreprocessingReader(reader, 8192, shouldAddThymeleafRootToParser());
+        return new TemplatePreprocessingReader(reader, BUFFER_SIZE, shouldAddThymeleafRootToParser());
     }
     
     
@@ -223,7 +252,7 @@ public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplat
 
         private final DocumentBuilderFactory docBuilderFactory;
         
-        public DOMTemplateParserFactory(final DocumentBuilderFactory docBuilderFactory) {
+        DOMTemplateParserFactory(final DocumentBuilderFactory docBuilderFactory) {
             super();
             this.docBuilderFactory = docBuilderFactory;
         }

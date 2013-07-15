@@ -42,7 +42,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     
-    public static final String SCRIPT_ADD_INLINE_EVAL = "\\/\\*\\[\\+(.*?)\\+\\]\\*\\/";
+    public static final String SCRIPT_ADD_INLINE_EVAL = "/\\*\\[\\+(.*?)\\+\\]\\*\\/";
     public static final Pattern SCRIPT_ADD_INLINE_EVAL_PATTERN = Pattern.compile(SCRIPT_ADD_INLINE_EVAL, Pattern.DOTALL);
 
     public static final String SCRIPT_REMOVE_INLINE_EVAL = "\\/\\*\\[\\-(.*?)\\-\\]\\*\\/";
@@ -79,7 +79,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     
 
-    private final String processScriptingInline(
+    private String processScriptingInline(
             final String input, final Arguments arguments) {
         
         return
@@ -96,7 +96,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
     
     
-    private final String processScriptingAddInline(final String input) {
+    private String processScriptingAddInline(final String input) {
         
         final Matcher matcher = SCRIPT_ADD_INLINE_EVAL_PATTERN.matcher(input);
 
@@ -133,7 +133,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
 
     
-    private final String processScriptingRemoveInline(final String input) {
+    private String processScriptingRemoveInline(final String input) {
         
         final Matcher matcher = SCRIPT_REMOVE_INLINE_EVAL_PATTERN.matcher(input);
 
@@ -170,7 +170,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     
     
-    private final String processScriptingVariableExpressionInline(final String input) {
+    private String processScriptingVariableExpressionInline(final String input) {
         
         final Matcher matcher = SCRIPT_VARIABLE_EXPRESSION_INLINE_EVAL_PATTERN.matcher(input);
         
@@ -185,7 +185,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 
                 strBuilder.append(matcher.group(1));
                 
-                strBuilder.append(computeLineEndCharForInline(matcher.group(3)));
+                strBuilder.append(computeLineEndForInline(matcher.group(3)));
                 
                 strBuilder.append('\n');
                 
@@ -205,22 +205,43 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
 
     
     
-    private static char computeLineEndCharForInline(final String lastPartOfLine) {
-        if (lastPartOfLine != null) {
-            final String trimmedLastPartOfLine = lastPartOfLine.trim();
-            final char lastChar = trimmedLastPartOfLine.charAt(trimmedLastPartOfLine.length() - 1);
-            if (lastChar == ',') {
-                return ',';
-            } else if (lastChar == ';') {
-                return ';';
-            } 
+    private static String computeLineEndForInline(final String lineRemainder) {
+        
+        if (lineRemainder == null) {
+            return "";
         }
-        return ' ';
+
+        boolean inLiteral = false;
+        final int len = lineRemainder.length();
+        for (int i = 0; i < len; i++) {
+            final char c = lineRemainder.charAt(i);
+            if (c == '\'') {
+                if (!inLiteral || i == 0 || lineRemainder.charAt(i - 1) != '\\') {
+                    inLiteral = !inLiteral;
+                }
+            }
+            if (!inLiteral) {
+                if (c == ';' || c == ',') {
+                    return lineRemainder.substring(i);
+                }
+                if (c == '/' && ((i+1) < len)) {
+                    final char c1 = lineRemainder.charAt(i+1);
+                    if (c1 == '/' || c1 == '*') {
+                        return lineRemainder.substring(i);
+                    }
+                }
+            }
+        }
+
+        return "";
+        
     }
     
     
     
-    private final String processScriptingVariableInline(final String input, final Arguments arguments) {
+    
+    
+    private String processScriptingVariableInline(final String input, final Arguments arguments) {
         
         final Matcher matcher = SCRIPT_INLINE_EVAL_PATTERN.matcher(input);
         
@@ -247,10 +268,10 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                     
                     strBuilder.append(formatEvaluationResult(result));
                     
-                } catch (final TemplateProcessingException e) {
+                } catch (final TemplateProcessingException ignored) {
                     
                     // If it is not a standard expression, just output it as original
-                    strBuilder.append(SCRIPT_INLINE_PREFIX + match + SCRIPT_INLINE_SUFFIX);
+                    strBuilder.append(SCRIPT_INLINE_PREFIX).append(match).append(SCRIPT_INLINE_SUFFIX);
                     
                 }
                 

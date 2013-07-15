@@ -52,20 +52,14 @@ class WebRequestParamsVariablesMap extends VariablesMap<String,String[]> {
     
 
     @SuppressWarnings("unchecked")
-    public WebRequestParamsVariablesMap(final HttpServletRequest request) {
+    WebRequestParamsVariablesMap(final HttpServletRequest request) {
         super(1, 1.0f);
         Validate.notNull(request, "Request cannot be null");
         this.parameterMap = request.getParameterMap();
     }
 
     
-    private WebRequestParamsVariablesMap(final Map<String,String[]> parameterMap) {
-        super(1, 1.0f);
-        this.parameterMap = parameterMap;
-    }
 
-    
-    
     @Override
     public int size() {
         return this.parameterMap.size();
@@ -112,8 +106,8 @@ class WebRequestParamsVariablesMap extends VariablesMap<String,String[]> {
     }
 
     @Override
-    public Object clone() {
-        return new WebRequestParamsVariablesMap(this.parameterMap);
+    public WebRequestParamsVariablesMap clone() {
+        return (WebRequestParamsVariablesMap) super.clone();
     }
 
     @Override

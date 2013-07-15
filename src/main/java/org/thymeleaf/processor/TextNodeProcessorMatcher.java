@@ -27,6 +27,11 @@ import org.thymeleaf.dom.Node;
 
 
 /**
+ * <p>
+ *   Implementation of {@link ITextNodeProcessorMatcher} that matches every node extending
+ *   from {@link AbstractTextNode}, this is, {@link org.thymeleaf.dom.Text} and 
+ *   {@link org.thymeleaf.dom.CDATASection} nodes.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
@@ -48,7 +53,7 @@ public final class TextNodeProcessorMatcher implements ITextNodeProcessorMatcher
 
 
     
-    public final Class<? extends AbstractTextNode> appliesTo() {
+    public Class<? extends AbstractTextNode> appliesTo() {
         return AbstractTextNode.class;
     }
     

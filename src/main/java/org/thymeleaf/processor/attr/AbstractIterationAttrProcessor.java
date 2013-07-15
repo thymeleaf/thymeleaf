@@ -24,6 +24,8 @@ import java.util.List;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
+import org.thymeleaf.dom.Node;
+import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.ObjectUtils;
@@ -47,12 +49,12 @@ public abstract class AbstractIterationAttrProcessor
     
     
     
-    public AbstractIterationAttrProcessor(final String attributeName) {
+    protected AbstractIterationAttrProcessor(final String attributeName) {
         super(attributeName);
     }
     
     
-    public AbstractIterationAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    protected AbstractIterationAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -66,7 +68,36 @@ public abstract class AbstractIterationAttrProcessor
 
         
         final NestableNode parentNode = element.getParent();
-        
+
+        // Find out if there's some whitespace to duplicate so as to preserve the
+        // 'look' of the HTML code when completed
+        Node previousNode = null;
+        for (Node child: parentNode.getChildren()) {
+            if (child == element) {
+                break;
+            }
+            previousNode = child;
+        }
+        boolean preserveWhitespace = false;
+        String whitespace = null;
+        if (previousNode != null && previousNode instanceof Text) {
+            String content = ((Text)previousNode).getContent();
+            if (content.trim().length() == 0) {
+                preserveWhitespace = true;
+                whitespace = content;
+            }
+            else {
+                int i = content.length();
+                while (i > 0 && Character.isWhitespace(content.charAt(i - 1))) {
+                    i--;
+                }
+                if (i < content.length()) {
+                    preserveWhitespace = true;
+                    whitespace = content.substring(i);
+                }
+            }
+        }
+
         final IterationSpec iterationSpec = 
             getIterationSpec(arguments, element, attributeName);
         
@@ -100,6 +131,10 @@ public abstract class AbstractIterationAttrProcessor
                 clonedElement.setNodeLocalVariable(iterVar + DEFAULT_STATUS_VAR_SUFFIX, status);
             }
             
+            // Add whitespace to preserve the look in the resulting HTML code
+            if (preserveWhitespace && index > 0) {
+                parentNode.insertBefore(element, new Text(whitespace));
+            }
             parentNode.insertBefore(element, clonedElement);
 
             processClonedHostIterationElement(arguments, clonedElement, attributeName);
