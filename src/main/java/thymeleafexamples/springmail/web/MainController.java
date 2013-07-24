@@ -69,7 +69,7 @@ public class MainController {
      * Send HTML mail (simple) 
      */
     @RequestMapping(value = "/sendMailSimple", method = RequestMethod.POST)
-    public String sendTextMail(
+    public String sendSimpleMail(
             @RequestParam("recipientName") final String recipientName,
             @RequestParam("recipientEmail") final String recipientEmail,
             final Locale locale) 
