@@ -222,7 +222,7 @@ public class StandardTestResourceResolver implements ITestResourceResolver {
             originalTokens.add(newToken);
         }
         
-        return resolveClassPathTestResource(StringUtils.join(originalTokens,"/"));
+        return resolveClassPathTestResource(StringUtils.join(originalTokens,'/'));
         
     }
 
