@@ -20,9 +20,9 @@
 package org.thymeleaf.standard.expression;
 
 
-import org.thymeleaf.exceptions.TemplateProcessingException;
-
 import java.lang.reflect.Method;
+
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * 

@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.lang.reflect.Method;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
@@ -26,8 +28,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.ObjectUtils;
-
-import java.lang.reflect.Method;
 
 
 /**

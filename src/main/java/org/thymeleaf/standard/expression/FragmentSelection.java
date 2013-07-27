@@ -19,15 +19,15 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.StringUtils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.util.StringUtils;
 
 
 /**

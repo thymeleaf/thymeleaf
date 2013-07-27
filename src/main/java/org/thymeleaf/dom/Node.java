@@ -19,6 +19,13 @@
  */
 package org.thymeleaf.dom;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.processor.ProcessorAndContext;
@@ -26,9 +33,6 @@ import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.util.IdentityCounter;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
-
-import java.io.Serializable;
-import java.util.*;
 
 
 

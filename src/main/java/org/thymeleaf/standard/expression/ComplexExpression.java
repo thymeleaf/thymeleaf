@@ -19,12 +19,9 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.List;
-
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.StringUtils;
 
 
 

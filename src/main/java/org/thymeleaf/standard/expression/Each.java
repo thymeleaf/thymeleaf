@@ -20,10 +20,6 @@
 package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;

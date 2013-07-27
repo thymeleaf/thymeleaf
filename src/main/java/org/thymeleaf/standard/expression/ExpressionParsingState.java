@@ -20,10 +20,7 @@
 package org.thymeleaf.standard.expression;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 

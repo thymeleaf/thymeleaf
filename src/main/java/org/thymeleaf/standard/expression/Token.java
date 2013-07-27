@@ -19,13 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.io.Serializable;
-import java.util.regex.Pattern;
-
-import org.thymeleaf.util.Validate;
-
-
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez
