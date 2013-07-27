@@ -19,13 +19,12 @@
  */
 package org.thymeleaf.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.util.Calendar;
 
 import org.junit.Test;
-import org.thymeleaf.util.DateUtils;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  *

@@ -23,7 +23,6 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
 public class FragmentSignatureTest {

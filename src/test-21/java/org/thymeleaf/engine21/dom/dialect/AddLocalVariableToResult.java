@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.engine21.dom.dialect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
@@ -27,9 +30,6 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddLocalVariableToResult extends AbstractAttrProcessor {
 

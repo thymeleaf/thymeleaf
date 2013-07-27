@@ -23,8 +23,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
-import java.util.HashMap;
-
 
 public class AttrProcessors21Test {
 

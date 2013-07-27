@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Random;
 
 import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;

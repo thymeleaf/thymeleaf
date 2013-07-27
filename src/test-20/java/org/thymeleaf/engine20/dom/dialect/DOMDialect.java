@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.engine20.dom.dialect;
 
-import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.processor.IProcessor;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.processor.IProcessor;
 
 public class DOMDialect extends AbstractDialect {
 

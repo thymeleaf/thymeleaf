@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;

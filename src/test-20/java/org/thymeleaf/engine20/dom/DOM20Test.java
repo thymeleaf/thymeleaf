@@ -19,14 +19,14 @@
  */
 package org.thymeleaf.engine20.dom;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine20.dom.dialect.DOMDialect;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-
-import java.util.Arrays;
 
 
 public class DOM20Test {

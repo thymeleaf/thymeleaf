@@ -1,7 +1,5 @@
 package org.thymeleaf.parser;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -27,6 +25,8 @@ import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplate
 import org.thymeleaf.templateresolver.NonCacheableTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.templatewriter.ITemplateWriter;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * <p>
