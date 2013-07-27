@@ -19,13 +19,10 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.math.BigDecimal;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.Validate;
 
 
 
@@ -33,59 +30,57 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 2.1.0
  *
  */
-public final class NumberLiteralExpression extends SimpleExpression {
-    
-    private static final Logger logger = LoggerFactory.getLogger(NumberLiteralExpression.class);
+public final class GenericTokenExpression extends Token {
 
-    private static final long serialVersionUID = -3729844055243242571L;
+    private static final Logger logger = LoggerFactory.getLogger(GenericTokenExpression.class);
+
+    private static final long serialVersionUID = 7913229642187691263L;
 
 
-    static final char DECIMAL_POINT = '.';
-    
-    
-    private final BigDecimal value;
-
-    
-    public NumberLiteralExpression(final String value) {
-        super();
-        Validate.notNull(value, "Value cannot be null");
-        this.value = new BigDecimal(value);
+    GenericTokenExpression(final String value) {
+        super(value);
     }
-    
-    
-    
-    public BigDecimal getValue() {
-        return this.value;
-    }
+
 
     
     @Override
-    public String getStringRepresentation() {
-        return this.value.toPlainString();
+    public String toString() {
+        return getStringRepresentation();
+    }
+
+    
+    
+    
+    public static GenericTokenExpression parseGenericToken(final String input) {
+        if (input == null) {
+            return null;
+        }
+        final int inputLen = input.length();
+        for (int i = 0; i < inputLen; i++) {
+            if (!isTokenChar(input, i)) {
+                return null;
+            }
+        }
+        return new GenericTokenExpression(input);
     }
 
 
-    
-    static NumberLiteralExpression parseNumberLiteral(final String input) {
-        return new NumberLiteralExpression(input);
-    }
-    
 
-    
-    static Object executeNumberLiteral(
-            @SuppressWarnings("unused") final IProcessingContext processingContext, 
-            final NumberLiteralExpression expression, 
+    static Object executeGenericToken(
+            @SuppressWarnings("unused") final IProcessingContext processingContext,
+            final GenericTokenExpression expression,
             @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Evaluating number literal: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
+            logger.trace("[THYMELEAF][{}] Evaluating generic token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-        
+
         return expression.getValue();
-        
+
     }
-    
+
+
 }

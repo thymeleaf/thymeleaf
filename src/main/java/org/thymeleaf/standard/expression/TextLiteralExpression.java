@@ -103,5 +103,31 @@ public final class TextLiteralExpression extends SimpleExpression {
         return expression.getValue();
         
     }
+
+
+
+    public static String wrapStringIntoLiteral(final String str) {
+
+        if (str == null) {
+            return null;
+        }
+
+        final StringBuilder strBuilder = new StringBuilder(str.length() + 5);
+
+        strBuilder.append('\'');
+        final int strLen = str.length();
+        for (int i = 0; i < strLen; i++) {
+            final char c = str.charAt(i);
+            if (c == '\'') {
+                strBuilder.append('\\');
+            }
+            strBuilder.append(c);
+        }
+        strBuilder.append('\'');
+
+        return strBuilder.toString();
+
+    }
+
     
 }

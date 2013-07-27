@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -32,49 +33,39 @@ import org.thymeleaf.context.IProcessingContext;
  * @since 2.1.0
  *
  */
-public final class NullLiteralExpression extends SimpleExpression {
+public final class BooleanTokenExpression extends Token {
 
-    private static final Logger logger = LoggerFactory.getLogger(NullLiteralExpression.class);
+    private static final Logger logger = LoggerFactory.getLogger(BooleanTokenExpression.class);
 
-    private static final long serialVersionUID = -927282151625647619L;
-
-    private static final NullLiteralExpression SINGLETON = new NullLiteralExpression();
+    private static final long serialVersionUID = 7003426193298054476L;
 
 
-    public NullLiteralExpression() {
-        super();
-    }
-    
-    
-    
-    public Object getValue() {
-        return null;
+    public BooleanTokenExpression(final String value) {
+        super(Boolean.valueOf(value));
     }
 
-    
-    @Override
-    public String getStringRepresentation() {
-        return "null";
+    public BooleanTokenExpression(final Boolean value) {
+        super(value);
     }
 
 
     
-    static NullLiteralExpression parseNullLiteral(final String input) {
-        if ("null".equalsIgnoreCase(input)) {
-            return SINGLETON;
+    static BooleanTokenExpression parseBooleanToken(final String input) {
+        if ("true".equalsIgnoreCase(input) || "false".equalsIgnoreCase(input)) {
+            return new BooleanTokenExpression(input);
         }
         return null;
     }
     
 
     
-    static Object executeNullLiteral(
-            @SuppressWarnings("unused") final IProcessingContext processingContext, 
-            final NullLiteralExpression expression,
+    static Object executeBooleanToken(
+            @SuppressWarnings("unused") final IProcessingContext processingContext,
+            final BooleanTokenExpression expression,
             @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Evaluating null literal: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
+            logger.trace("[THYMELEAF][{}] Evaluating boolean token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         return expression.getValue();

@@ -19,9 +19,10 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.List;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
+import java.lang.reflect.Method;
 
 /**
  * 
@@ -46,7 +47,7 @@ public abstract class GreaterLesserExpression extends BinaryOperationExpression 
     protected static final String LESS_OR_EQUAL_TO_OPERATOR_2 = "le";
 
 
-    private static final String[] OPERATORS = new String[] { 
+    static final String[] OPERATORS = new String[] {
         GREATER_THAN_OPERATOR, GREATER_OR_EQUAL_TO_OPERATOR, LESS_THAN_OPERATOR, LESS_OR_EQUAL_TO_OPERATOR,
         GREATER_THAN_OPERATOR_2, GREATER_OR_EQUAL_TO_OPERATOR_2, LESS_THAN_OPERATOR_2, LESS_OR_EQUAL_TO_OPERATOR_2};
     private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false, false, false, false, false };
@@ -59,19 +60,42 @@ public abstract class GreaterLesserExpression extends BinaryOperationExpression 
             GreaterThanExpression.class, GreaterOrEqualToExpression.class,
             LessThanExpression.class, LessOrEqualToExpression.class};
 
+    private static Method LEFT_ALLOWED_METHOD;
+    private static Method RIGHT_ALLOWED_METHOD;
+
+
+    static {
+        try {
+            LEFT_ALLOWED_METHOD = GreaterLesserExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
+            RIGHT_ALLOWED_METHOD = GreaterLesserExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+        } catch (final NoSuchMethodException e) {
+            throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
+        }
+    }
+
     
     
     protected GreaterLesserExpression(final Expression left, final Expression right) {
         super(left, right);
     }
 
+
+
+
+    static boolean isRightAllowed(final Expression right) {
+        return right != null && !(right instanceof Token && !(right instanceof NumberTokenExpression));
+    }
+
+    static boolean isLeftAllowed(final Expression left) {
+        return left != null && !(left instanceof Token && !(left instanceof NumberTokenExpression));
+    }
+
     
     
-    
-    protected static List<ExpressionParsingNode> composeGreaterLesserExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    protected static ExpressionParsingState composeGreaterLesserExpression(
+            final ExpressionParsingState state, int nodeIndex) {
         return composeBinaryOperationExpression(
-                decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);
+                state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }
 
     

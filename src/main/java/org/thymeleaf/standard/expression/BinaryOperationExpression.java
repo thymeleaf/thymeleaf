@@ -19,9 +19,12 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -59,8 +62,8 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
         return this.right;
     }
 
-    
-    
+
+
     protected String getStringRepresentation(final String operator) {
         final StringBuilder sb = new StringBuilder();
         if (this.left instanceof ComplexExpression) {
@@ -86,28 +89,26 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
     
     
     
-    protected static List<ExpressionParsingNode> composeBinaryOperationExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex, final String[] operators,
-            final boolean[] leniencies, 
-            final Class<? extends BinaryOperationExpression>[] operationClasses) {
+    protected static ExpressionParsingState composeBinaryOperationExpression(
+            final ExpressionParsingState state, int nodeIndex, final String[] operators,
+            final boolean[] leniencies, final Class<? extends BinaryOperationExpression>[] operationClasses,
+            final Method leftAllowedMethod, final Method rightAllowedMethod) {
 
-        // Returning "decomposition"/"result"  means "try next kind of operator in chain"
+        // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
         //
         // "Lenient" means that if the last operator occurrence found does not result
         // in a valid parse result, the previous-to-last (and all previous to that)
         // should also be tried in sequence (this is mainly to avoid "-" symbols from
         // minus operators getting in the way of subtraction operations).
-        
-        final String input = decomposition.get(inputIndex).getInput();
-        if (input.length() == 0) {
+
+        final String input = state.get(nodeIndex).getInput();
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
         String scannedInput = input.toLowerCase(); 
-        boolean checkPreviousOperatorOccurence = false;
-        
-        List<ExpressionParsingNode> result = decomposition;
 
         do {
             
@@ -133,91 +134,78 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
                 }
             }
             if (operatorPosFrom == -1) {
-                return decomposition;
+                return state;
             }
             
-            result =
-                doComposeBinaryOperationExpression(
-                        decomposition, inputIndex, operators[operatorIndex], operationClasses[operatorIndex], input, operatorPosFrom);
-            
-            if (leniencies[operatorIndex]) {
-                if (result == null) {
-                    checkPreviousOperatorOccurence = true;
+            if (doComposeBinaryOperationExpression(
+                        state, nodeIndex, operators[operatorIndex], operationClasses[operatorIndex],
+                        leftAllowedMethod, rightAllowedMethod, input, operatorPosFrom) == null) {
+
+                if (leniencies[operatorIndex]) {
                     scannedInput = scannedInput.substring(0, operatorPosFrom);
                 } else {
-                    checkPreviousOperatorOccurence = false;
+                    return null;
                 }
+
             } else {
-                checkPreviousOperatorOccurence = false;
+                return state;
             }
+
             
-            
-        } while (checkPreviousOperatorOccurence);
+        } while (true);
         
-        
-        
-        return result;
-        
+
     }
         
         
     
     
     
-    private static List<ExpressionParsingNode> doComposeBinaryOperationExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex, final String operator,
+    private static ExpressionParsingState doComposeBinaryOperationExpression(
+            final ExpressionParsingState state, int nodeIndex, final String operator,
             final Class<? extends BinaryOperationExpression> operationClass,
+            final Method leftAllowedMethod, final Method rightAllowedMethod,
             final String input, final int operatorPos) {
              
-        List<ExpressionParsingNode> result = decomposition;
-        
         final String leftStr = input.substring(0, operatorPos).trim();
         final String rightStr = input.substring(operatorPos + operator.length()).trim();
          
         if (leftStr.length() == 0 || rightStr.length() == 0) {
             return null;
         }
-        
-        int leftIndex = Expression.placeHolderToIndex(leftStr);
-        if (leftIndex == -1) {
-            leftIndex = result.size();
-            result.add(new ExpressionParsingNode(leftStr));
-        }
-        result = ComplexExpression.composeComplexExpressions(result, leftIndex);
-        if (result == null) {
-            return null;
+
+        final Expression leftExpr = ExpressionParsingUtil.parseAndCompose(state, leftStr);
+        try {
+            if (leftExpr == null || !((Boolean)leftAllowedMethod.invoke(null,leftExpr)).booleanValue()) {
+                return null;
+            }
+        } catch (final IllegalAccessException e) {
+            // Should never happen, would be a programming error
+            throw new TemplateProcessingException("Error invoking operand validation in binary operation", e);
+        } catch (final InvocationTargetException e) {
+            // Should never happen, would be a programming error
+            throw new TemplateProcessingException("Error invoking operand validation in binary operation", e);
         }
 
-        
-        int rightIndex = Expression.placeHolderToIndex(rightStr);
-        if (rightIndex == -1) {
-            rightIndex = result.size();
-            result.add(new ExpressionParsingNode(rightStr));
-        }
-        result = ComplexExpression.composeComplexExpressions(result, rightIndex);
-        if (result == null) {
-            return null;
-        }
-        
-        
-        final ExpressionParsingNode leftEPN = result.get(leftIndex);
-        final Expression leftExpr = leftEPN.getExpression();
-        if (leftExpr == null) {
-            return null;
-        }
-        
-        final ExpressionParsingNode rightEPN = result.get(rightIndex);
-        final Expression rightExpr = rightEPN.getExpression();
-        if (rightExpr == null) {
-            return null;
-        }
-        
-        
+        final Expression rightExpr = ExpressionParsingUtil.parseAndCompose(state, rightStr);
         try {
+            if (rightExpr == null || !((Boolean)rightAllowedMethod.invoke(null,rightExpr)).booleanValue()) {
+                return null;
+            }
+        } catch (final IllegalAccessException e) {
+            // Should never happen, would be a programming error
+            throw new TemplateProcessingException("Error invoking operand validation in binary operation", e);
+        } catch (final InvocationTargetException e) {
+            // Should never happen, would be a programming error
+            throw new TemplateProcessingException("Error invoking operand validation in binary operation", e);
+        }
+
+        try {
+
             final BinaryOperationExpression operationExpression =
                 operationClass.getDeclaredConstructor(Expression.class, Expression.class).
                             newInstance(leftExpr, rightExpr);
-            result.set(inputIndex, new ExpressionParsingNode(operationExpression));
+            state.setNode(nodeIndex, operationExpression);
             
         } catch (final TemplateProcessingException e) {
             throw e;
@@ -225,9 +213,8 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
             throw new TemplateProcessingException(
                     "Error during creation of Binary Operation expression for operator: \"" + operator + "\"", e);
         }
-        
-        
-        return result;
+
+        return state;
         
     }
     

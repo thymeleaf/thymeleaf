@@ -20,6 +20,8 @@
 package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,18 +43,16 @@ public final class Each implements Serializable {
 
     private static final long serialVersionUID = -4085690403057997591L;
 
-
-    private static final Pattern EACH_PATTERN = 
-        Pattern.compile("^\\s*(.*?)\\s*(?:,\\s*(.+?)\\s*)?\\:\\s*(.+?)\\s*$", Pattern.DOTALL);
+    private static final String OPERATOR = ":";
+    private static final String STAT_SEPARATOR = ",";
 
     
-    
-    private final Token iterVar;
-    private final Token statusVar;
+    private final Expression iterVar;
+    private final Expression statusVar;
     private final Expression iterable;
          
          
-    private Each(final Token iterVar, final Token statusVar, final Expression iterable) {
+    private Each(final Expression iterVar, final Expression statusVar, final Expression iterable) {
         super();
         Validate.notNull(iterVar, "Iteration variable cannot be null");
         Validate.notNull(iterable, "Iterable cannot be null");
@@ -62,15 +62,15 @@ public final class Each implements Serializable {
     }
 
     
-    public Token getIterVar() {
+    public Expression getIterVar() {
         return this.iterVar;
     }
     
     public boolean hasStatusVar() {
-        return this.statusVar != null && !StringUtils.isEmptyOrWhitespace(this.statusVar.getValue());
+        return this.statusVar != null;
     }
 
-    public Token getStatusVar() {
+    public Expression getStatusVar() {
         return this.statusVar;
     }
 
@@ -102,54 +102,97 @@ public final class Each implements Serializable {
     
     
     static Each parse(final String input) {
-        
+
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
-        
-        final String trimmedInput = input.trim();
-        
-        final Matcher matcher = EACH_PATTERN.matcher(trimmedInput);
-        if (!matcher.matches()) {
+
+        final ExpressionParsingState decomposition =
+                ExpressionParsingUtil.decompose(input,ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
+
+        if (decomposition == null) {
             return null;
         }
-        
-        final String iterVar = matcher.group(1);
-        final String statusVar = matcher.group(2);
-        final String iterable = matcher.group(3);
-        
-        if (StringUtils.isEmptyOrWhitespace(iterVar)) {
+
+        return composeEach(decomposition, 0);
+
+    }
+
+
+
+
+    private static Each composeEach(final ExpressionParsingState state, final int nodeIndex) {
+
+        if (state == null || nodeIndex >= state.size()) {
             return null;
         }
-        if (StringUtils.isEmptyOrWhitespace(iterable)) {
+
+        if (state.hasExpressionAt(nodeIndex)) {
+            // shouldn't happen in this case (ExpressionSequences are not Expressions). We need a string to parse!
             return null;
         }
-        final Expression iterableExpression = Expression.parse(iterable);
-        if (iterableExpression == null) {
+
+        final String input = state.get(nodeIndex).getInput();
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
-        
-        final Token iterVarToken = Token.parse(iterVar);
-        if (iterVarToken == null) {
+
+        // First, check whether we are just dealing with a pointer input
+        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
+        if (pointer != -1) {
+            return composeEach(state, pointer);
+        }
+
+        final int inputLen = input.length();
+
+        final int operatorLen = OPERATOR.length();
+        final int operatorPos = input.indexOf(OPERATOR);
+        if (operatorPos == -1 || operatorPos == 0 || operatorPos >= (inputLen - operatorLen)) {
             return null;
         }
-        
-        Each each = null;
-        if (!StringUtils.isEmptyOrWhitespace(statusVar)) {
-            final Token statusVarToken = Token.parse(statusVar);
-            if (statusVarToken == null) {
+
+        final String left = input.substring(0,operatorPos).trim();
+        final String iterableStr = input.substring(operatorPos + operatorLen).trim();
+
+        final int statPos = left.indexOf(STAT_SEPARATOR);
+        final String iterVarStr;
+        final String statusVarStr;
+        if (statPos == -1) {
+            iterVarStr = left;
+            statusVarStr = null;
+        } else {
+            if (statPos == 0 || statPos >= (left.length() - operatorLen)) {
                 return null;
             }
-            each = new Each(iterVarToken, statusVarToken, iterableExpression);
-        } else {
-            each = new Each(iterVarToken, null, iterableExpression);
+            iterVarStr = left.substring(0, statPos);
+            statusVarStr = left.substring(statPos + operatorLen);
         }
-        
-        return each;
-        
+
+        final Expression iterVarExpr = ExpressionParsingUtil.parseAndCompose(state, iterVarStr);
+        if (iterVarStr == null) {
+            return null;
+        }
+
+        final Expression statusVarExpr;
+        if (statusVarStr != null) {
+            statusVarExpr = ExpressionParsingUtil.parseAndCompose(state, statusVarStr);
+            if (statusVarExpr == null) {
+                return null;
+            }
+        } else {
+            statusVarExpr = null;
+        }
+
+        final Expression iterableExpr = ExpressionParsingUtil.parseAndCompose(state, iterableStr);
+        if (iterableExpr == null) {
+            return null;
+        }
+
+        return new Each(iterVarExpr,statusVarExpr,iterableExpr);
+
     }
-    
-    
-    
-    
+
+
+
 }

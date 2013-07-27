@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
@@ -50,8 +47,11 @@ public final class ConditionalExpression extends ComplexExpression {
     
     private static final char CONDITION_SUFFIX_CHAR = '?';
     private static final char CONDITION_THENELSE_SEPARATOR_CHAR = ':';
-    
-    
+    // These are all the tokens registered by this expression
+    static final String[] OPERATORS =
+            new String[] {String.valueOf(CONDITION_SUFFIX_CHAR), String.valueOf(CONDITION_THENELSE_SEPARATOR_CHAR)};
+
+
     private final Expression conditionExpression;
     private final Expression thenExpression;
     private final Expression elseExpression;
@@ -115,17 +115,13 @@ public final class ConditionalExpression extends ComplexExpression {
     
     
     
-    static List<ExpressionParsingNode> composeConditionalExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    static ExpressionParsingState composeConditionalExpression(
+            final ExpressionParsingState state, int nodeIndex) {
 
-        // Returning "result" means "try next in chain"
+        // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
         
-        final ExpressionParsingNode inputParsingNode = decomposition.get(inputIndex);
-        
-        List<ExpressionParsingNode> result = decomposition;
-        
-        final String input = inputParsingNode.getInput();
+        final String input = state.get(nodeIndex).getInput();
             
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
@@ -134,7 +130,7 @@ public final class ConditionalExpression extends ComplexExpression {
         // Trying to fail quickly...
         int condSuffixPos = input.indexOf(CONDITION_SUFFIX_CHAR);
         if (condSuffixPos == -1) {
-            return result;
+            return state;
         }
         
         final String condStr = input.substring(0, condSuffixPos);
@@ -156,7 +152,7 @@ public final class ConditionalExpression extends ComplexExpression {
         if (thenElseSepPos != -1) {
             if (thenElseSepPos == 0) {
                 // Maybe it is a default operation
-                return result;
+                return state;
             }
             thenStr = remainder.substring(0, thenElseSepPos);
             elseStr = remainder.substring(thenElseSepPos + 1);
@@ -165,94 +161,30 @@ public final class ConditionalExpression extends ComplexExpression {
         }
 
         
-        int condIndex = Expression.placeHolderToIndex(condStr);
-        if (condIndex == -1) {
-            List<ExpressionParsingNode> newResult = 
-                new ArrayList<ExpressionParsingNode>(result);
-            condIndex = newResult.size();
-            newResult.add(new ExpressionParsingNode(condStr));
-            newResult = ComplexExpression.composeComplexExpressions(newResult, condIndex);
-            if (newResult == null) {
-                return null;
-            }
-            result = newResult;
-        } else {
-            result = ComplexExpression.composeComplexExpressions(result, condIndex);
-            if (result == null) {
-                return null;
-            }
-        }
-        
-        
-        int thenIndex = Expression.placeHolderToIndex(thenStr);
-        if (thenIndex == -1) {
-            List<ExpressionParsingNode> newResult = 
-                new ArrayList<ExpressionParsingNode>(result);
-            thenIndex = newResult.size();
-            newResult.add(new ExpressionParsingNode(thenStr));
-            newResult = ComplexExpression.composeComplexExpressions(newResult, thenIndex);
-            if (newResult == null) {
-                return null;
-            }
-            result = newResult;
-        } else {
-            result = ComplexExpression.composeComplexExpressions(result, thenIndex);
-            if (result == null) {
-                return null;
-            }
-        }
-
-        
-        final ExpressionParsingNode condEPN = result.get(condIndex);
-        final Expression condExpr = condEPN.getExpression();
+        final Expression condExpr = ExpressionParsingUtil.parseAndCompose(state, condStr);
         if (condExpr == null) {
             return null;
         }
-        
-        
-        final ExpressionParsingNode thenEPN = result.get(thenIndex);
-        final Expression thenExpr = thenEPN.getExpression();
+
+        final Expression thenExpr = ExpressionParsingUtil.parseAndCompose(state, thenStr);
         if (thenExpr == null) {
             return null;
         }
-        
-        
+
         Expression elseExpr = VariableExpression.NULL_VALUE;
         if (elseStr != null) {
-            
-            int elseIndex = Expression.placeHolderToIndex(elseStr);
-            if (elseIndex == -1) {
-                List<ExpressionParsingNode> newResult = 
-                    new ArrayList<ExpressionParsingNode>(result);
-                elseIndex = newResult.size();
-                newResult.add(new ExpressionParsingNode(elseStr));
-                newResult = ComplexExpression.composeComplexExpressions(newResult, elseIndex);
-                if (newResult == null) {
-                    return null;
-                }
-                result = newResult;
-            } else {
-                result = ComplexExpression.composeComplexExpressions(result, elseIndex);
-                if (result == null) {
-                    return null;
-                }
-            }
-
-            final ExpressionParsingNode elseEPN = result.get(elseIndex);
-            elseExpr = elseEPN.getExpression();
+            elseExpr = ExpressionParsingUtil.parseAndCompose(state, elseStr);
             if (elseExpr == null) {
                 return null;
             }
-            
         }
 
         
         final ConditionalExpression conditionalExpressionResult = 
             new ConditionalExpression(condExpr, thenExpr, elseExpr);
+        state.setNode(nodeIndex,conditionalExpressionResult);
         
-        result.set(inputIndex, new ExpressionParsingNode(conditionalExpressionResult));
-        
-        return result;
+        return state;
         
     }
     

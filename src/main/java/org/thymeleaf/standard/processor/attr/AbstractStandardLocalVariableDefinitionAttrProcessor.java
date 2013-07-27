@@ -32,6 +32,7 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.util.StringUtils;
 
 /**
  * 
@@ -78,15 +79,23 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         final Map<String,Object> newLocalVariables = new HashMap<String,Object>(assignations.size() + 1, 1.0f);
         for (final Assignation assignation : assignations) {
             
-            final String varName = assignation.getLeft().getValue();
-            final Expression expression = assignation.getRight();
-            final Object varValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, expression);
+            final Expression leftExpr = assignation.getLeft();
+            final Object leftValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, leftExpr);
+
+            final Expression rightExpr = assignation.getRight();
+            final Object rightValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, rightExpr);
+
+            final String newVariableName = (leftValue == null? null : leftValue.toString());
+            if (StringUtils.isEmptyOrWhitespace(newVariableName)) {
+                throw new TemplateProcessingException(
+                        "Variable name expression evaluated as null or empty: \"" + leftExpr + "\"");
+            }
 
             // Creating a new Arguments object allows the reuse of variables in, for example, th:with expressions.
             assignationExecutionArguments =
-                    assignationExecutionArguments.addLocalVariables(Collections.singletonMap(varName, varValue));
+                    assignationExecutionArguments.addLocalVariables(Collections.singletonMap(newVariableName, rightValue));
 
-            newLocalVariables.put(varName, varValue);
+            newLocalVariables.put(newVariableName, rightValue);
             
         }
         

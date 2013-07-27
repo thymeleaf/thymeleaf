@@ -51,6 +51,8 @@ public final class MinusExpression extends ComplexExpression {
 
     
     private static final char OPERATOR = '-';
+    // Future proof, just in case in the future we add other tokens as operators
+    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
     
     private final Expression operand;
@@ -85,63 +87,41 @@ public final class MinusExpression extends ComplexExpression {
     
     
     
-    public static List<ExpressionParsingNode> composeMinusExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    public static ExpressionParsingState composeMinusExpression(
+            final ExpressionParsingState state, int nodeIndex) {
 
-        // Returning "result" means "try next in chain"
+        // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
-        
-        final ExpressionParsingNode inputParsingNode = decomposition.get(inputIndex);
-        
-        List<ExpressionParsingNode> result = decomposition;
-        
-        final String input = inputParsingNode.getInput();
-            
+
+        final String input = state.get(nodeIndex).getInput();
+
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
-        final String trimmedInput = input.trim(); 
+        final String trimmedInput = input.trim();
         
         // Trying to fail quickly...
         int operatorPos = trimmedInput.lastIndexOf(OPERATOR);
         if (operatorPos == -1) { 
-            return result;
+            return state;
         }
         if (operatorPos != 0) {
             // The '-' symbol should be the first character, after trimming.
-            return result;
+            return state;
         }
         
         final String operandStr = trimmedInput.substring(1);
-        
-        int index = Expression.placeHolderToIndex(operandStr);
-        if (index == -1) {
-            index = result.size();
-            result.add(new ExpressionParsingNode(operandStr));
-            result = ComplexExpression.composeComplexExpressions(result, index);
-            if (result == null) {
-                return null;
-            }
-        } else {
-            result = ComplexExpression.composeComplexExpressions(result, index);
-            if (result == null) {
-                return null;
-            }
-        }
 
-        
-        final ExpressionParsingNode epn = result.get(index);
-        final Expression expr = epn.getExpression();
-        if (expr == null) {
+        final Expression operandExpr = ExpressionParsingUtil.parseAndCompose(state, operandStr);
+        if (operandExpr == null) {
             return null;
         }
 
+        final MinusExpression minusExpression = new MinusExpression(operandExpr);
+        state.setNode(nodeIndex, minusExpression);
         
-        final MinusExpression minusExpression = new MinusExpression(expr); 
-        result.set(inputIndex, new ExpressionParsingNode(minusExpression));
-        
-        return result;
+        return state;
         
     }
     

@@ -26,10 +26,8 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateAssertionException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAssertionAttrProcessor;
-import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.ExpressionSequence;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
@@ -68,7 +66,7 @@ public abstract class AbstractStandardAssertionAttrProcessor
         final ExpressionSequence expressionSequence =
             StandardExpressionProcessor.parseExpressionSequence(arguments, attributeValue);
 
-        final List<Expression> expressions = expressionSequence.getExpression();
+        final List<Expression> expressions = expressionSequence.getExpressions();
 
         for (final Expression expression : expressions) {
             final Object expressionResult =

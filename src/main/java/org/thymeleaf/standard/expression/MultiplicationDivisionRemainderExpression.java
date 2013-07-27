@@ -19,9 +19,10 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.List;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
+import java.lang.reflect.Method;
 
 /**
  * 
@@ -38,32 +39,64 @@ public abstract class MultiplicationDivisionRemainderExpression extends BinaryOp
     
     protected static final String MULTIPLICATION_OPERATOR = "*";
     protected static final String DIVISION_OPERATOR = "/";
+    protected static final String DIVISION_OPERATOR_2 = "div";
     protected static final String REMAINDER_OPERATOR = "%";
+    protected static final String REMAINDER_OPERATOR_2 = "mod";
 
 
-    private static final String[] OPERATORS = new String[] { 
-        MULTIPLICATION_OPERATOR, DIVISION_OPERATOR, REMAINDER_OPERATOR };
-    private static final boolean[] LENIENCIES = new boolean[] { false, false, false };
-    
+    static final String[] OPERATORS = new String[] {
+        MULTIPLICATION_OPERATOR, DIVISION_OPERATOR, DIVISION_OPERATOR_2, REMAINDER_OPERATOR, REMAINDER_OPERATOR_2 };
+    private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false, false };
+
     @SuppressWarnings("unchecked")
-    private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES = 
-        (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { 
-            MultiplicationExpression.class, DivisionExpression.class, RemainderExpression.class };
+    private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES =
+            (Class<? extends BinaryOperationExpression>[]) new Class<?>[] {
+                    MultiplicationExpression.class, DivisionExpression.class, DivisionExpression.class,
+                    RemainderExpression.class, RemainderExpression.class };
+
+    private static Method LEFT_ALLOWED_METHOD;
+    private static Method RIGHT_ALLOWED_METHOD;
+
+
+
+    static {
+        try {
+            LEFT_ALLOWED_METHOD = MultiplicationDivisionRemainderExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
+            RIGHT_ALLOWED_METHOD = MultiplicationDivisionRemainderExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+        } catch (final NoSuchMethodException e) {
+            throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
+        }
+    }
+
 
     
     protected MultiplicationDivisionRemainderExpression(final Expression left, final Expression right) {
         super(left, right);
     }
-    
+
+
+
+
+    static boolean isRightAllowed(final Expression right) {
+        return right != null &&
+                !(right instanceof Token && !(right instanceof NumberTokenExpression)) &&
+                !(right instanceof TextLiteralExpression);
+    }
+
+    static boolean isLeftAllowed(final Expression left) {
+        return left != null && !(left instanceof Token &&
+                !(left instanceof NumberTokenExpression)) &&
+                !(left instanceof TextLiteralExpression);
+    }
 
     
     
     
-    static List<ExpressionParsingNode> composeMultiplicationDivisionRemainderExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    static ExpressionParsingState composeMultiplicationDivisionRemainderExpression(
+            final ExpressionParsingState state, int nodeIndex) {
         
         return composeBinaryOperationExpression(
-                decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);
+                state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
         
     }
     

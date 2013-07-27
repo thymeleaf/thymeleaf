@@ -42,7 +42,10 @@ import org.thymeleaf.util.Validate;
  */
 public final class StandardFragmentProcessor {
 
-    
+    private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
+    private static final char FRAGMENT_SELECTOR_XPATH_START = '[';
+    private static final char FRAGMENT_SELECTOR_XPATH_END = ']';
+
     
 
     /**
@@ -70,7 +73,13 @@ public final class StandardFragmentProcessor {
                         "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " +
                                 "returned null.");
             }
-            templateName = templateNameObject.toString();
+            final String evaluatedTemplateName = templateNameObject.toString();
+            if (TEMPLATE_NAME_CURRENT_TEMPLATE.equals(evaluatedTemplateName)) {
+                // Template name is "this" and therefore we are including a fragment from the same template.
+                templateName = null;
+            } else {
+                templateName = templateNameObject.toString();
+            }
         } else {
             // If template name expression is null, we will execute the fragment on the "current" template
             templateName = null;
@@ -88,9 +97,11 @@ public final class StandardFragmentProcessor {
 
             final String fragmentSelector = fragmentSelectorObject.toString();
             
-            if (fragmentSelection.isXPath()) {
+            if (fragmentSelector.charAt(0) == FRAGMENT_SELECTOR_XPATH_START &&
+                    fragmentSelector.charAt(fragmentSelector.length() - 1) == FRAGMENT_SELECTOR_XPATH_END) {
                 
-                final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector, returnOnlyChildrenIfContainingElement);
+                final IFragmentSpec fragmentSpec =
+                        new DOMSelectorFragmentSpec(fragmentSelector.substring(1,fragmentSelector.length() - 1), returnOnlyChildrenIfContainingElement);
                 return new FragmentAndTarget(templateName, fragmentSpec);
                 
             }

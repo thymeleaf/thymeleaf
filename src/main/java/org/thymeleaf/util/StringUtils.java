@@ -315,6 +315,11 @@ public final class StringUtils {
         if (targetLen == 0) {
             return true;
         }
+        final char c0 = target.charAt(0);
+        if ((c0 >= 'a' && c0 <= 'z') || (c0 >= 'A' && c0 <= 'Z')) {
+            // Fail fast, by quickly checking first char without executing Character.isWhitespace(...)
+            return false;
+        }
         for (int i = 0; i < targetLen; i++) {
             final char c = target.charAt(i);
             if (c != ' ' && !Character.isWhitespace(c)) {
@@ -348,6 +353,24 @@ public final class StringUtils {
 
         Validate.notNull(target, "Cannot apply join on null");
         Validate.notNull(separator, "Separator cannot be null");
+
+        final StringBuilder sb = new StringBuilder();
+        final Iterator<?> it = target.iterator();
+        if (it.hasNext()) {
+            sb.append(it.next());
+            while (it.hasNext()) {
+                sb.append(separator);
+                sb.append(it.next());
+            }
+        }
+        return sb.toString();
+
+    }
+
+
+    public static String join(final Iterable<?> target, final char separator) {
+
+        Validate.notNull(target, "Cannot apply join on null");
 
         final StringBuilder sb = new StringBuilder();
         final Iterator<?> it = target.iterator();

@@ -72,7 +72,7 @@ public final class FragmentSignature implements Serializable {
         }
         return this.fragmentName + " " +
                 FRAGMENT_SIGNATURE_PARAMETERS_START +
-                StringUtils.join(this.parameterNames, ",") +
+                StringUtils.join(this.parameterNames, ',') +
                 FRAGMENT_SIGNATURE_PARAMETERS_END;
     }
 

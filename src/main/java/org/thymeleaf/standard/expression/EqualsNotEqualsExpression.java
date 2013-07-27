@@ -19,9 +19,10 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.List;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
+import java.lang.reflect.Method;
 
 /**
  * 
@@ -39,15 +40,30 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
     protected static final String EQUALS_OPERATOR_2 = "eq";
     protected static final String NOT_EQUALS_OPERATOR = "!=";
     protected static final String NOT_EQUALS_OPERATOR_2 = "neq";
+    protected static final String NOT_EQUALS_OPERATOR_3 = "ne";
 
 
-    private static final String[] OPERATORS = new String[] { EQUALS_OPERATOR, NOT_EQUALS_OPERATOR, EQUALS_OPERATOR_2, NOT_EQUALS_OPERATOR_2 };
-    private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false };
-    
+    static final String[] OPERATORS = new String[] { EQUALS_OPERATOR, NOT_EQUALS_OPERATOR, EQUALS_OPERATOR_2, NOT_EQUALS_OPERATOR_2, NOT_EQUALS_OPERATOR_3 };
+    private static final boolean[] LENIENCIES = new boolean[] { false, false, false, false, false };
+
     @SuppressWarnings("unchecked")
-    private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES = 
-        (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { 
-            EqualsExpression.class, NotEqualsExpression.class, EqualsExpression.class, NotEqualsExpression.class };
+    private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES =
+            (Class<? extends BinaryOperationExpression>[]) new Class<?>[] {
+                    EqualsExpression.class, NotEqualsExpression.class, EqualsExpression.class, NotEqualsExpression.class, NotEqualsExpression.class };
+
+    private static Method LEFT_ALLOWED_METHOD;
+    private static Method RIGHT_ALLOWED_METHOD;
+
+
+    static {
+        try {
+            LEFT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
+            RIGHT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+        } catch (final NoSuchMethodException e) {
+            throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
+        }
+    }
+
 
     
     
@@ -55,13 +71,23 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
         super(left, right);
     }
 
+
+
+    static boolean isRightAllowed(final Expression right) {
+        return true;
+    }
+
+    static boolean isLeftAllowed(final Expression left) {
+        return true;
+    }
+
     
     
     
-    protected static List<ExpressionParsingNode> composeEqualsNotEqualsExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    protected static ExpressionParsingState composeEqualsNotEqualsExpression(
+            final ExpressionParsingState state, int nodeIndex) {
         return composeBinaryOperationExpression(
-                decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);
+                state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }
     
     

@@ -43,14 +43,16 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     private static final long serialVersionUID = -4915282307441011014L;
 
 
-    private static final char SEQUENCE_SEPARATOR_CHAR = ',';
-    
+    private static final char OPERATOR = ',';
+    // Future proof, just in case in the future we add other tokens as operators
+    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
+
     
     private final List<Assignation> assignations;
     
     
     
-    private AssignationSequence(final List<Assignation> assignations) {
+    AssignationSequence(final List<Assignation> assignations) {
         super();
         Validate.notNull(assignations, "Assignation list cannot be null");
         Validate.containsNoNulls(assignations, "Assignation list cannot contain any nulls");
@@ -76,7 +78,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
         if (this.assignations.size() > 0) {
             sb.append(this.assignations.get(0));
             for (int i = 1; i < this.assignations.size(); i++) {
-                sb.append(SEQUENCE_SEPARATOR_CHAR);
+                sb.append(OPERATOR);
                 sb.append(this.assignations.get(i));
             }
         }
@@ -98,103 +100,78 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
             return null;
         }
 
-        List<ExpressionParsingNode> result = 
-            SimpleExpression.decomposeSimpleExpressionsExceptNumberLiterals(input);
+        final ExpressionParsingState decomposition =
+            ExpressionParsingUtil.decompose(input,ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
 
-        if (result == null) {
+        if (decomposition == null) {
             return null;
         }
-        
-        result = composeSequence(result, 0, allowParametersWithoutValue);
-        
-        if (result == null || !result.get(0).isAssignationSequence()) {
-            return null;
-        }
-        
-        return result.get(0).getAssignationSequence();
-        
+
+        return composeSequence(decomposition, 0, allowParametersWithoutValue);
+
     }
     
     
     
     
-    private static List<ExpressionParsingNode> composeSequence(
-            final List<ExpressionParsingNode> inputExprs, final int inputIndex, final boolean allowParametersWithoutValue) {
+    private static AssignationSequence composeSequence(
+            final ExpressionParsingState state, final int nodeIndex, final boolean allowParametersWithoutValue) {
 
-        if (inputExprs == null || inputExprs.size() == 0 || inputIndex >= inputExprs.size()) {
+        if (state == null || nodeIndex >= state.size()) {
             return null;
         }
 
-        final String input = inputExprs.get(inputIndex).getInput();
-
-        
-        final StringBuilder inputWithPlaceholders = new StringBuilder();
-        StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(5);
-        int currentIndex = inputExprs.size();
-        
-        final List<Integer> assignationIndexes = new ArrayList<Integer>(5);
-        
-        final int inputLen = input.length();
-        for (int i = 0; i < inputLen; i++) {
-            
-            final char c = input.charAt(i);
-
-            if (c == SEQUENCE_SEPARATOR_CHAR) {
-                // end assignation
-                if (fragments.size() > 0) {
-                    inputWithPlaceholders.append(SEQUENCE_SEPARATOR_CHAR);
-                }
-                assignationIndexes.add(Integer.valueOf(currentIndex));
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                inputWithPlaceholders.append(String.valueOf(currentIndex++));
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                fragments.add(new ExpressionParsingNode(fragment.toString()));
-                fragment = new StringBuilder();
-                
-            } else {
-                
-                fragment.append(c);
-               
-            }
-            
-            
-        }
-
-        if (fragments.size() > 0) {
-            inputWithPlaceholders.append(SEQUENCE_SEPARATOR_CHAR);
-        }
-        assignationIndexes.add(Integer.valueOf(currentIndex));
-        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        inputWithPlaceholders.append(String.valueOf(currentIndex++));
-        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        fragments.add(new ExpressionParsingNode(fragment.toString()));
-
-        
-        List<ExpressionParsingNode> result = inputExprs;
-        result.set(inputIndex, new ExpressionParsingNode(inputWithPlaceholders.toString()));
-        result.addAll(fragments);
-
-        final List<Assignation> assignations = new ArrayList<Assignation>(5);
-        for (final Integer assignationIndex : assignationIndexes) {
-            final int assignationIdx = assignationIndex.intValue();
-            result = Assignation.composeAssignation(result, assignationIdx, allowParametersWithoutValue);
-            if (result == null) {
+        if (state.hasExpressionAt(nodeIndex)) {
+            if (!allowParametersWithoutValue) {
                 return null;
             }
-            final ExpressionParsingNode assignationNode = result.get(assignationIdx);
-            if (!assignationNode.isAssignation()) {
+            // could happen if we are traversing pointers recursively, so we will consider it a sequence containing
+            // only one, no-value assignation (though we will let the Assignation.compose(...) method do the job.
+            final Assignation assignation =
+                    Assignation.composeAssignation(state, nodeIndex, allowParametersWithoutValue);
+            if (assignation == null) {
                 return null;
             }
-            assignations.add(assignationNode.getAssignation());
+            final List<Assignation> assignations = new ArrayList<Assignation>(2);
+            assignations.add(assignation);
+            return new AssignationSequence(assignations);
         }
-        
-        
-        final AssignationSequence assignationSequence = new AssignationSequence(assignations);
-        result.set(inputIndex, new ExpressionParsingNode(assignationSequence));
-        
-        return result; 
-        
+
+        final String input = state.get(nodeIndex).getInput();
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
+            return null;
+        }
+
+        // First, check whether we are just dealing with a pointer input
+        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
+        if (pointer != -1) {
+            return composeSequence(state, pointer, allowParametersWithoutValue);
+        }
+
+        final String[] inputParts = StringUtils.split(input, ",");
+
+        for (final String inputPart : inputParts) {
+            // We create new String parsing nodes for all of the elements
+            // We add all nodes first so that we know the exact indexes in which they are
+            // (composing assignations here can modify the size of the state object without we noticing)
+            state.addNode(inputPart.trim());
+        }
+
+        final List<Assignation> assignations = new ArrayList<Assignation>(4);
+        final int startIndex = state.size() - inputParts.length;
+        final int endIndex = state.size();
+        for (int i = startIndex; i < endIndex; i++) {
+            final Assignation assignation =
+                    Assignation.composeAssignation(state, i, allowParametersWithoutValue);
+            if (assignation == null) {
+                return null;
+            }
+            assignations.add(assignation);
+        }
+
+        return new AssignationSequence(assignations);
+
     }
     
     

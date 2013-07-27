@@ -33,42 +33,24 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class Token implements Serializable {
-    
-    
-    private static final long serialVersionUID = 1375274391088787250L;
-    
-    
-    private static final String VALID_TOKEN_NAME_START_END_CHARS =
-        "~:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C-\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD" +
-        "\\-\\.0-9/\\\\\u00B7\u0300-\u036F\u203F-\u2040#\\[\\]\\{\\}";
-    private static final String VALID_TOKEN_NAME_CHARS = VALID_TOKEN_NAME_START_END_CHARS + ' ';
-    
-    private static final String TOKEN_NAME_START_END_CHARS = '[' + VALID_TOKEN_NAME_START_END_CHARS + ']';
-    private static final String TOKEN_NAME_CHARS = '[' + VALID_TOKEN_NAME_CHARS + ']';
-
-    private static final String TOKEN = TOKEN_NAME_START_END_CHARS + "(?:(?:" + TOKEN_NAME_CHARS + "*?)" + TOKEN_NAME_START_END_CHARS + ")?";
-    private static final Pattern TOKEN_PATTERN = Pattern.compile('^' + TOKEN + '$');
+public abstract class Token extends SimpleExpression {
 
     
+    private final Object value;
+
     
-    private final String value;
-    
-    
-    
-    Token(final String value) {
+    protected Token(final Object value) {
         super();
-        Validate.notNull(value, "Value cannot be null");
         this.value = value;
     }
     
     
-    public String getValue() {
+    public Object getValue() {
         return this.value;
     }
     
     public String getStringRepresentation() {
-        return this.value;
+        return this.value.toString();
     }
     
     
@@ -78,17 +60,173 @@ public final class Token implements Serializable {
     }
 
     
-    
-    
-    public static Token parse(final String input) {
-        if (input == null) {
-            return null;
+
+
+    public static boolean isTokenChar(final String context, final int pos) {
+
+        /*
+         * TOKEN chars: A-Za-z0-9[]._ (and '-' in some contexts)
+         * (additionally, also, a series of internationalized characters: accents, other alphabets, etc.)
+         *
+         * '-' can also be a numeric operator, so it will only be considered a token char if:
+          *    * there are immediately previous chars which we can consider a token, but not a numeric token
+          *    * there are immediately following chars which we can consider a token, but not a numeric token
+         *
+         */
+
+        final char c = context.charAt(pos);
+
+        /*
+         * First, the most common true's
+         */
+        if (c >= 'a' && c <= 'z') {
+            return true;
         }
-        if (TOKEN_PATTERN.matcher(input.trim()).matches()) {
-            return new Token(input.trim());
+        if (c >= 'A' && c <= 'Z') {
+            return true;
         }
-        return null;
+        if (c >= '0' && c <= '9') {
+            return true;
+        }
+        /*
+         * The most common false's now, for failing fast
+         */
+        if (c == ' ' || c == '\n' || c == '(' || c == ')' || c == '\'' || c == '"' ||
+                c == '<' || c == '>' || c == '{' || c == '}' ||
+                c == '=' || c == ',' || c == ';' || c == ':' || c == '+' ||
+                c == '*' || c == '$' || c == '%' || c == '&' || c == '#') {
+            return false;
+        }
+        /*
+         * Some more (less common) true's
+         */
+        if (c == '[' || c == ']' || c == '.' || c == '_') {
+            return true;
+        }
+        /*
+         * The special case: the dash
+         */
+        if (c == '-') {
+
+            if (pos > 0) {
+                // let's scan backwards, looking for a token char that is not a number
+
+                for (int i = pos - 1; i >= 0; i--) {
+                    if (!isTokenChar(context,i)) {
+                        break;
+                    }
+                    final char cc = context.charAt(i);
+                    if (!((cc >= '0' && cc <= '9') || cc == '.')) {
+                        // It is a token, but not a digit or ., so the dash is not an operator, it is a token char
+                        return true;
+                    }
+                }
+
+            }
+
+            final int contextLen = context.length();
+            if (pos + 1 < contextLen) {
+                // let's scan forward, looking for a token char that is not a number
+
+                for (int i = pos + 1; i < contextLen; i++) {
+                    if (!isTokenChar(context,i)) {
+                        break;
+                    }
+                    final char cc = context.charAt(i);
+                    if (!((cc >= '0' && cc <= '9') || cc == '.')) {
+                        // It is a token, but not a digit or ., so the dash is not an operator, it is a token char
+                        return true;
+                    }
+                }
+
+            }
+
+            return false;
+
+        }
+        /*
+         * Finally, the rest of the true's
+         */
+        if (c == '\u00B7') {
+            return true;
+        }
+        if (c >= '\u00C0' && c <= '\u00D6') {
+            return true;
+        }
+        if (c >= '\u00D8' && c <= '\u00F6') {
+            return true;
+        }
+        if (c >= '\u00F8' && c <= '\u02FF') {
+            return true;
+        }
+        if (c >= '\u0300' && c <= '\u036F') {
+            return true;
+        }
+        if (c >= '\u0370' && c <= '\u037D') {
+            return true;
+        }
+        if (c >= '\u037F' && c <= '\u1FFF') {
+            return true;
+        }
+        if (c >= '\u200C' && c <= '\u200D') {
+            return true;
+        }
+        if (c >= '\u203F' && c <= '\u2040') {
+            return true;
+        }
+        if (c >= '\u2070' && c <= '\u218F') {
+            return true;
+        }
+        if (c >= '\u2C00' && c <= '\u2FEF') {
+            return true;
+        }
+        if (c >= '\u3001' && c <= '\uD7FF') {
+            return true;
+        }
+        if (c >= '\uF900' && c <= '\uFDCF') {
+            return true;
+        }
+        if (c >= '\uFDF0' && c <= '\uFFFD') {
+            return true;
+        }
+        if (c >= '\uFDF0' && c <= '\uFFFD') {
+            return true;
+        }
+        return false;
     }
-    
-    
+
+
+
+
+
+    public static class TokenParsingTracer {
+
+        public static final char TOKEN_SUBSTITUTE = '#';
+
+        private TokenParsingTracer() {
+            super();
+        }
+
+        public static String trace(final String input) {
+
+            final StringBuilder strBuilder = new StringBuilder();
+
+            final int inputLen = input.length();
+            for (int i = 0; i < inputLen; i++) {
+                if (isTokenChar(input, i)) {
+                    strBuilder.append(TOKEN_SUBSTITUTE);
+                } else {
+                    strBuilder.append(input.charAt(i));
+                }
+            }
+
+            return strBuilder.toString();
+
+        }
+
+    }
+
+
+
+
 }

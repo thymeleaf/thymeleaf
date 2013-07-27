@@ -160,17 +160,17 @@ public final class LinkExpression extends SimpleExpression {
                         
                         if (i == 0) {
                             // It was not a parameter specification, but a base URL surrounded by parentheses! 
-                            final Expression baseExpr = computeBase(trimmedInput); 
+                            final Expression baseExpr = parseBaseDefaultAsLiteral(trimmedInput);
                             if (baseExpr == null) {
                                 return null;
                             }
                             return new LinkExpression(baseExpr, null);
                         }
                         
-                        final String base = trimmedInput.substring(0, i);
-                        final String parameters = trimmedInput.substring(i + 1, trimmedInput.length() - 1);
+                        final String base = trimmedInput.substring(0, i).trim();
+                        final String parameters = trimmedInput.substring(i + 1, trimmedInput.length() - 1).trim();
 
-                        final Expression baseExpr = computeBase(base);
+                        final Expression baseExpr = parseBaseDefaultAsLiteral(base);
                         if (baseExpr == null) {
                             return null;
                         }
@@ -193,36 +193,33 @@ public final class LinkExpression extends SimpleExpression {
             
         }
 
-        final Expression baseExpr = computeBase(trimmedInput); 
+        final Expression baseExpr = parseBaseDefaultAsLiteral(trimmedInput);
         if (baseExpr == null) {
             return null;
         }
-        
+
         return new LinkExpression(baseExpr, null);
         
     }
-    
-    
 
-    
-    private static Expression computeBase(final String baseStr) {
-    	//if baseStr starts with #{, consider it as a message resource.
-    	//cannot remove # pattern in org.thymeleaf.standard.expression.Token,
-    	//tokens starting with # in org.thymeleaf.standard.expression.Token 
-        //are used to represent Strings,Objects.. utils 
-    	if(!baseStr.startsWith("#{")){
-            // Base will be tried to be computed first as token, then as expression
-            final Token token = Token.parse(baseStr);
-            if (token != null) {
-                return TextLiteralExpression.parseTextLiteral(token.getValue());
-            }
-    	}
-        return Expression.parse(baseStr);
+
+
+
+
+    private static Expression parseBaseDefaultAsLiteral(final String base) {
+
+        if (StringUtils.isEmptyOrWhitespace(base)) {
+            return null;
+        }
+
+        final Expression expr = Expression.parse(base);
+        if (expr == null) {
+            return Expression.parse(TextLiteralExpression.wrapStringIntoLiteral(base));
+        }
+        return expr;
+
     }
-    
 
-    
-    
     
     
     
@@ -259,7 +256,7 @@ public final class LinkExpression extends SimpleExpression {
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression.getParameters(), expressionEvaluator, expContext) :
+                    resolveParameters(configuration, processingContext, expression, expressionEvaluator, expContext) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -398,14 +395,29 @@ public final class LinkExpression extends SimpleExpression {
     
     private static Map<String,List<Object>> resolveParameters(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final AssignationSequence assignationValues, final IStandardVariableExpressionEvaluator expressionEvaluator,
+            final LinkExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {
-        
+
+        final AssignationSequence assignationValues = expression.getParameters();
+
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
             
-            final String parameterName = assignationValue.getLeft().getValue();
-            final Expression parameterExpression = assignationValue.getRight();
+            final Expression parameterNameExpr = assignationValue.getLeft();
+            final Expression parameterValueExpr = assignationValue.getRight();
+
+            // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
+            final Object parameterNameValue =
+                    Expression.execute(configuration, processingContext, parameterNameExpr, expressionEvaluator, expContext);
+            final String parameterName =
+                    (parameterNameValue == null? null : parameterNameValue.toString());
+
+            if (StringUtils.isEmptyOrWhitespace(parameterName)) {
+                throw new TemplateProcessingException(
+                        "Parameters in link expression \"" + expression.getStringRepresentation() + "\" are " +
+                        "incorrect: parameter name expression \"" + parameterNameExpr.getStringRepresentation() +
+                        "\" evaluated as null or empty string.");
+            }
 
             List<Object> currentParameterValues = parameters.get(parameterName);
             if (currentParameterValues == null) {
@@ -413,13 +425,13 @@ public final class LinkExpression extends SimpleExpression {
                 parameters.put(parameterName, currentParameterValues);
             }
             
-            if (parameterExpression == null) {
+            if (parameterValueExpr == null) {
                 // If this is null, it means we want to render the parameter without a value and
                 // also without an equals sign.
                 currentParameterValues.add(URL_PARAM_NO_VALUE);
             } else {
                 final Object value = 
-                        Expression.execute(configuration, processingContext, parameterExpression, expressionEvaluator, expContext);
+                        Expression.execute(configuration, processingContext, parameterValueExpr, expressionEvaluator, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
                     currentParameterValues.add("");

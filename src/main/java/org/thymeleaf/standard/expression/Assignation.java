@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -39,31 +40,24 @@ public final class Assignation implements Serializable {
     private static final long serialVersionUID = -20278893925937213L;
     
 
-    private static final char ASSIGNATION_CHAR = '=';
+    private static final char OPERATOR = '=';
+    // Future proof, just in case in the future we add other tokens as operators
+    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
-    private final Token left;
+    private final Expression left;
     private final Expression right;
          
     
-    private Assignation(final Token left, final Expression right) {
+    Assignation(final Expression left, final Expression right) {
         super();
         Validate.notNull(left, "Assignation left side cannot be null");
-        Validate.notNull(right, "Assignation right side cannot be null");
         this.left = left;
         this.right = right;
     }
-    
-    private Assignation(final Token left) {
-        // This type of assignations are for URL parameters, where no value (and no "=") sign
-        // can be specified.
-        super();
-        Validate.notNull(left, "Assignation left side cannot be null");
-        this.left = left;
-        this.right = null;
-    }
-    
 
-    public Token getLeft() {
+
+
+    public Expression getLeft() {
         return this.left;
     }
 
@@ -75,7 +69,7 @@ public final class Assignation implements Serializable {
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(this.left.getStringRepresentation());
         if (this.right != null) {
-            strBuilder.append(ASSIGNATION_CHAR);
+            strBuilder.append(OPERATOR);
             if (this.right instanceof ComplexExpression) {
                 strBuilder.append('(');
                 strBuilder.append(this.right.getStringRepresentation());
@@ -87,6 +81,7 @@ public final class Assignation implements Serializable {
         return strBuilder.toString();
     }
 
+
     @Override
     public String toString() {
         return getStringRepresentation();
@@ -95,125 +90,64 @@ public final class Assignation implements Serializable {
     
     
     
-    static List<ExpressionParsingNode> composeAssignation(
-            final List<ExpressionParsingNode> inputExprs, final int inputIndex, final boolean allowParametersWithoutValue) {
+    static Assignation composeAssignation(
+            final ExpressionParsingState state, final int nodeIndex, final boolean allowParametersWithoutValue) {
 
-        if (inputExprs == null || inputExprs.size() == 0 || inputIndex >= inputExprs.size()) {
+        if (state == null || nodeIndex >= state.size()) {
             return null;
         }
 
-        final String input = inputExprs.get(inputIndex).getInput();
+        if (state.hasExpressionAt(nodeIndex)) {
+            if (!allowParametersWithoutValue) {
+                return null;
+            }
+            // could happen if we are traversing pointers recursively, so we will consider it a no-value assignation
+            return new Assignation(state.get(nodeIndex).getExpression(),null);
+        }
 
-        
-        final StringBuilder inputWithPlaceholders = new StringBuilder();
-        StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(5);
-        
-        int tokenIndex = inputExprs.size();
-        
-        Token token = null;
+        final String input = state.get(nodeIndex).getInput();
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
+            return null;
+        }
+
+        // First, check whether we are just dealing with a pointer input
+        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
+        if (pointer != -1) {
+            return composeAssignation(state, pointer, allowParametersWithoutValue);
+        }
 
         final int inputLen = input.length();
-        for (int i = 0; i < inputLen; i++) {
-            
-            final char c = input.charAt(i);
+        final int operatorPos = input.indexOf(OPERATOR);
 
-            if (c == ASSIGNATION_CHAR && token == null) {
-                
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                inputWithPlaceholders.append(String.valueOf(tokenIndex));
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                token = Token.parse(fragment.toString());
-                if (token == null) {
-                    return null;
-                }
-                fragments.add(new ExpressionParsingNode(token));
-                fragment = new StringBuilder();
-                
-            } else {
-                
-                fragment.append(c);
-               
-            }
-            
-            
-        }
-        
-        if (token == null) {
-            
-            if (allowParametersWithoutValue) {
-                
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                inputWithPlaceholders.append(String.valueOf(tokenIndex));
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                token = Token.parse(fragment.toString());
-                if (token == null) {
-                    return null;
-                }
-                fragments.add(new ExpressionParsingNode(token));
-                fragment = null;
-                
-            } else {
-                
-                return null;
-                
-            }
-            
+        final String leftInput =
+                (operatorPos == -1? input.trim() : input.substring(0,operatorPos).trim());
+        final String rightInput =
+                (operatorPos == -1 || operatorPos == (inputLen - 1) ? null : input.substring(operatorPos + 1).trim());
+
+        if (StringUtils.isEmptyOrWhitespace(leftInput)) {
+            return null;
         }
 
-        
-        int expressionIndex = -1;
-        if (fragment != null) {
-            // Could be null if assignation has no "=" and no value (can happen for URL parameters)
-            expressionIndex = tokenIndex + 1;
-            inputWithPlaceholders.append(ASSIGNATION_CHAR);
-            inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-            inputWithPlaceholders.append(String.valueOf(expressionIndex));
-            inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-            fragments.add(new ExpressionParsingNode(fragment.toString()));
+        final Expression leftExpr = ExpressionParsingUtil.parseAndCompose(state, leftInput);
+        if (leftExpr == null) {
+            return null;
         }
 
-        
-        List<ExpressionParsingNode> result = inputExprs;
-        result.set(inputIndex, new ExpressionParsingNode(inputWithPlaceholders.toString()));
-        result.addAll(fragments);
-        
-        if (expressionIndex != -1) {
-            
-            result = SimpleExpression.addNumberLiteralDecomposition(result, expressionIndex);
-            if (result == null) {
+        final Expression rightExpr;
+        if (!StringUtils.isEmptyOrWhitespace(rightInput)) {
+            rightExpr = ExpressionParsingUtil.parseAndCompose(state, rightInput);
+            if (rightExpr == null) {
                 return null;
             }
-            
-            result = Expression.unnest(result, expressionIndex);
-            if (result == null) {
-                return null;
-            }
-
-        
-            if (!result.get(expressionIndex).isExpression()) {
-                result = ComplexExpression.composeComplexExpressions(result, expressionIndex);
-                if (result == null) {
-                    return null;
-                }
-                if (!result.get(expressionIndex).isExpression()) {
-                    return null;
-                }
-            }
-
-            final Assignation assignation = new Assignation(token, result.get(expressionIndex).getExpression());
-            result.set(inputIndex, new ExpressionParsingNode(assignation));
-            
+        } else if (!allowParametersWithoutValue) {
+            return null;
         } else {
-
-            final Assignation assignation = new Assignation(token);
-            result.set(inputIndex, new ExpressionParsingNode(assignation));
-            
+            rightExpr = null;
         }
-        
-        
-        return result; 
-        
+
+        return new Assignation(leftExpr, rightExpr);
+
     }
     
     

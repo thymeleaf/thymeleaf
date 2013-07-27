@@ -21,11 +21,13 @@ package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.util.StringUtils;
 
 /**
  * 
@@ -66,14 +68,33 @@ public abstract class AbstractStandardIterationAttrProcessor
         
         final Each each = StandardExpressionProcessor.parseEach(arguments, attributeValue);
 
-        final Expression iterableExpression = each.getIterable();
-        
-        final Object iteratedObject = StandardExpressionProcessor.executeExpression(arguments, iterableExpression);
-        
-        if (each.hasStatusVar()) {
-            return new IterationSpec(each.getIterVar().getValue(), each.getStatusVar().getValue(), iteratedObject);
+        final Expression iterVarExpr = each.getIterVar();
+        final Object iterVarValue = StandardExpressionProcessor.executeExpression(arguments, iterVarExpr);
+
+        final Expression statusVarExpr = each.getStatusVar();
+        final Object statusVarValue;
+        if (statusVarExpr != null) {
+            statusVarValue = StandardExpressionProcessor.executeExpression(arguments, statusVarExpr);
+        } else {
+            statusVarValue = null;
         }
-        return new IterationSpec(each.getIterVar().getValue(), null, iteratedObject);
+
+        final Expression iterableExpr = each.getIterable();
+        final Object iteratedValue = StandardExpressionProcessor.executeExpression(arguments, iterableExpr);
+
+        final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
+        if (StringUtils.isEmptyOrWhitespace(iterVarName)) {
+            throw new TemplateProcessingException(
+                    "Iteration variable name expression evaluated as null: \"" + iterVarExpr + "\"");
+        }
+
+        final String statusVarName = (statusVarValue == null? null : statusVarValue.toString());
+        if (statusVarExpr != null && StringUtils.isEmptyOrWhitespace(statusVarName)) {
+            throw new TemplateProcessingException(
+                    "Status variable name expression evaluated as null or empty: \"" + statusVarExpr + "\"");
+        }
+
+        return new IterationSpec(iterVarName, statusVarName, iteratedValue);
         
     }
 

@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
@@ -47,8 +44,10 @@ public final class DefaultExpression extends ComplexExpression {
     private static final long serialVersionUID = 1830867943963082362L;
 
 
-    private static final String DEFAULT_OPERATOR = "?:";
-    
+    private static final String OPERATOR = "?:";
+    // Future proof, just in case in the future we add other tokens as operators
+    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
+
     
     private final Expression queriedExpression;
     private final Expression defaultExpression;
@@ -82,7 +81,7 @@ public final class DefaultExpression extends ComplexExpression {
             sb.append(this.queriedExpression);
         }
         sb.append(' ');
-        sb.append(DEFAULT_OPERATOR);
+        sb.append(OPERATOR);
         sb.append(' ');
         if (this.defaultExpression instanceof ComplexExpression) {
             sb.append(Expression.NESTING_START_CHAR);
@@ -97,95 +96,48 @@ public final class DefaultExpression extends ComplexExpression {
     
     
     
-    static List<ExpressionParsingNode> composeDefaultExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    static ExpressionParsingState composeDefaultExpression(
+            final ExpressionParsingState state, int nodeIndex) {
 
-        // Returning "result" means "try next in chain"
+        // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
-        
-        final ExpressionParsingNode inputParsingNode = decomposition.get(inputIndex);
-        
-        List<ExpressionParsingNode> result = decomposition;
-        
-        final String input = inputParsingNode.getInput();
-            
+
+        final String input = state.get(nodeIndex).getInput();
+
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
         // Trying to fail quickly...
-        int defaultOperatorPos = input.indexOf(DEFAULT_OPERATOR);
+        int defaultOperatorPos = input.indexOf(OPERATOR);
         if (defaultOperatorPos == -1) {
-            return result;
+            return state;
         }
         
         final String queriedStr = input.substring(0, defaultOperatorPos);
         final String defaultStr = input.substring(defaultOperatorPos + 2);
         
-        if (defaultStr.contains(DEFAULT_OPERATOR)) {
+        if (defaultStr.contains(OPERATOR)) {
             // There are two "?:" operators
             return null;
         }
-        
-        
 
-        
-        int queriedIndex = Expression.placeHolderToIndex(queriedStr);
-        if (queriedIndex == -1) {
-            List<ExpressionParsingNode> newResult = 
-                new ArrayList<ExpressionParsingNode>(result);
-            queriedIndex = newResult.size();
-            newResult.add(new ExpressionParsingNode(queriedStr));
-            newResult = ComplexExpression.composeComplexExpressions(newResult, queriedIndex);
-            if (newResult == null) {
-                return null;
-            }
-            result = newResult;
-        } else {
-            result = ComplexExpression.composeComplexExpressions(result, queriedIndex);
-            if (result == null) {
-                return null;
-            }
-        }
-        
-        
-        int defaultIndex = Expression.placeHolderToIndex(defaultStr);
-        if (defaultIndex == -1) {
-            List<ExpressionParsingNode> newResult = 
-                new ArrayList<ExpressionParsingNode>(result);
-            defaultIndex = newResult.size();
-            newResult.add(new ExpressionParsingNode(defaultStr));
-            newResult = ComplexExpression.composeComplexExpressions(newResult, defaultIndex);
-            if (newResult == null) {
-                return null;
-            }
-            result = newResult;
-        } else {
-            result = ComplexExpression.composeComplexExpressions(result, defaultIndex);
-            if (result == null) {
-                return null;
-            }
-        }
-        
-        
-        final ExpressionParsingNode queriedEPN = result.get(queriedIndex);
-        final Expression queriedExpr = queriedEPN.getExpression();
+
+        final Expression queriedExpr = ExpressionParsingUtil.parseAndCompose(state, queriedStr);
         if (queriedExpr == null) {
             return null;
         }
-        
-        final ExpressionParsingNode defaultEPN = result.get(defaultIndex);
-        final Expression defaultExpr = defaultEPN.getExpression();
+
+        final Expression defaultExpr = ExpressionParsingUtil.parseAndCompose(state, defaultStr);
         if (defaultExpr == null) {
             return null;
         }
+
+
+        final DefaultExpression defaultExpressionResult = new DefaultExpression(queriedExpr, defaultExpr);
+        state.setNode(nodeIndex, defaultExpressionResult);
         
-        final DefaultExpression defaultExpressionResult = 
-            new DefaultExpression(queriedExpr, defaultExpr);
-        
-        result.set(inputIndex, new ExpressionParsingNode(defaultExpressionResult));
-        
-        return result;
+        return state;
         
     }
     

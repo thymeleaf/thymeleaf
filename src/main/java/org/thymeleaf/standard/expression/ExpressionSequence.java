@@ -42,8 +42,10 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
     private static final long serialVersionUID = -6069208208568731809L;
     
 
-    private static final char SEQUENCE_SEPARATOR_CHAR = ',';
-    
+    private static final char OPERATOR = ',';
+    // Future proof, just in case in the future we add other tokens as operators
+    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
+
     private final List<Expression> expressions;
          
     public ExpressionSequence(final List<? extends Expression> expressions) {
@@ -54,7 +56,7 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
     }
 
     
-    public List<Expression> getExpression() {
+    public List<Expression> getExpressions() {
         return this.expressions;
     }
   
@@ -71,7 +73,7 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
         if (this.expressions.size() > 0) {
             sb.append(this.expressions.get(0));
             for (int i = 1; i < this.expressions.size(); i++) {
-                sb.append(SEQUENCE_SEPARATOR_CHAR);
+                sb.append(OPERATOR);
                 sb.append(this.expressions.get(i));
             }
         }
@@ -89,119 +91,74 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
 
     
     static ExpressionSequence parse(final String input) {
-        
+
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
 
-        List<ExpressionParsingNode> result = 
-            SimpleExpression.decomposeSimpleExpressions(input);
+        final ExpressionParsingState decomposition =
+                ExpressionParsingUtil.decompose(input,ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
 
-        if (result == null) {
+        if (decomposition == null) {
             return null;
         }
-        
-        result = composeSequence(result, 0);
-        
-        if (result == null || !result.get(0).isExpressionSequence()) {
-            return null;
-        }
-        
-        return result.get(0).getExpressionSequence();
-        
+
+        return composeSequence(decomposition, 0);
+
     }
         
     
 
-    private static List<ExpressionParsingNode> composeSequence(
-            final List<ExpressionParsingNode> inputExprs, final int inputIndex) {
 
-        
-        if (inputExprs == null || inputExprs.size() == 0 || inputIndex >= inputExprs.size()) {
+    private static ExpressionSequence composeSequence(final ExpressionParsingState state, final int nodeIndex) {
+
+        if (state == null || nodeIndex >= state.size()) {
             return null;
         }
 
-        final String input = inputExprs.get(inputIndex).getInput();
-
-        final StringBuilder inputWithPlaceholders = new StringBuilder();
-        StringBuilder fragment = new StringBuilder();
-        final List<ExpressionParsingNode> fragments = new ArrayList<ExpressionParsingNode>(10);
-        int currentIndex = inputExprs.size();
-        
-        final List<Integer> expressionIndexes = new ArrayList<Integer>(10);
-        
-        final int inputLen = input.length();
-        for (int i = 0; i < inputLen; i++) {
-            
-            final char c = input.charAt(i);
-
-            if (c == SEQUENCE_SEPARATOR_CHAR) {
-                // end assignation
-                if (fragments.size() > 0) {
-                    inputWithPlaceholders.append(SEQUENCE_SEPARATOR_CHAR);
-                }
-                expressionIndexes.add(Integer.valueOf(currentIndex));
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                inputWithPlaceholders.append(String.valueOf(currentIndex++));
-                inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-                fragments.add(new ExpressionParsingNode(fragment.toString()));
-                fragment = new StringBuilder();
-                
-            } else {
-                
-                fragment.append(c);
-               
-            }
-            
-            
+        if (state.hasExpressionAt(nodeIndex)) {
+            // could happen if we are traversing pointers recursively, so we will consider an expression sequence
+            // with one expression only
+            final List<Expression> expressions = new ArrayList<Expression>(2);
+            expressions.add(state.get(nodeIndex).getExpression());
+            return new ExpressionSequence(expressions);
         }
 
-        if (fragments.size() > 0) {
-            inputWithPlaceholders.append(SEQUENCE_SEPARATOR_CHAR);
+        final String input = state.get(nodeIndex).getInput();
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
+            return null;
         }
-        expressionIndexes.add(Integer.valueOf(currentIndex));
-        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        inputWithPlaceholders.append(String.valueOf(currentIndex++));
-        inputWithPlaceholders.append(Expression.PARSING_PLACEHOLDER_CHAR);
-        fragments.add(new ExpressionParsingNode(fragment.toString()));
 
-        
-        List<ExpressionParsingNode> result = inputExprs;
-        result.set(inputIndex, new ExpressionParsingNode(inputWithPlaceholders.toString()));
-        result.addAll(fragments);
+        // First, check whether we are just dealing with a pointer input
+        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
+        if (pointer != -1) {
+            return composeSequence(state, pointer);
+        }
 
-        final List<Expression> expressions = new ArrayList<Expression>(10);
-        for (final Integer expressionIndex : expressionIndexes) {
-            
-            final int expressionIdx = expressionIndex.intValue();
-            
-            result = Expression.unnest(result, expressionIdx);
-            if (result == null) {
+        final String[] inputParts = StringUtils.split(input, ",");
+
+        final List<Expression> expressions = new ArrayList<Expression>(4);
+        for (final String inputPart : inputParts) {
+            final Expression expression = ExpressionParsingUtil.parseAndCompose(state, inputPart);
+            if (expression == null) {
                 return null;
             }
-
-            if (!result.get(expressionIdx).isExpression()) {
-                result = ComplexExpression.composeComplexExpressions(result, expressionIdx);
-                if (result == null) {
-                    return null;
-                }
-                if (!result.get(expressionIdx).isExpression()) {
-                    return null;
-                }
-            }
-            
-            expressions.add(result.get(expressionIdx).getExpression());
-            
+            expressions.add(expression);
         }
-        
-        
-        final ExpressionSequence expressionSequence = new ExpressionSequence(expressions);
-        result.set(inputIndex, new ExpressionParsingNode(expressionSequence));
-        
-        return result; 
-        
+
+        return new ExpressionSequence(expressions);
+
     }
-    
+
+
+
+
+    public static void main(String[] args) {
+
+        System.out.println(parse("'one',${two},'three'"));
+
+    }
     
     
 }

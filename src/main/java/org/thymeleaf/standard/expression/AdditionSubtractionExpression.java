@@ -19,9 +19,10 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.List;
 
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
+import java.lang.reflect.Method;
 
 /**
  * 
@@ -38,26 +39,49 @@ public abstract class AdditionSubtractionExpression extends BinaryOperationExpre
     protected static final String ADDITION_OPERATOR = "+";
     protected static final String SUBTRACTION_OPERATOR = "-";
 
-    private static final String[] OPERATORS = new String[] { ADDITION_OPERATOR, SUBTRACTION_OPERATOR };
+    static final String[] OPERATORS = new String[] { ADDITION_OPERATOR, SUBTRACTION_OPERATOR };
     private static final boolean[] LENIENCIES = new boolean[] { false, true };
-    
+
     @SuppressWarnings("unchecked")
-    private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES = 
-        (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { 
-            AdditionExpression.class, SubtractionExpression.class };
-    
+    private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES =
+            (Class<? extends BinaryOperationExpression>[]) new Class<?>[] {
+                    AdditionExpression.class, SubtractionExpression.class };
+
+    private static Method LEFT_ALLOWED_METHOD;
+    private static Method RIGHT_ALLOWED_METHOD;
+
+
+    static {
+        try {
+            LEFT_ALLOWED_METHOD = AdditionSubtractionExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
+            RIGHT_ALLOWED_METHOD = AdditionSubtractionExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+        } catch (final NoSuchMethodException e) {
+            throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
+        }
+    }
+
+
+
     protected AdditionSubtractionExpression(final Expression left, final Expression right) {
         super(left, right);
     }
-    
 
-    
-    
-    
-    static List<ExpressionParsingNode> composeAdditionSubtractionExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+
+
+    static boolean isRightAllowed(final Expression right) {
+        return right != null && !(right instanceof Token && !(right instanceof NumberTokenExpression));
+    }
+
+    static boolean isLeftAllowed(final Expression left) {
+        return left != null && !(left instanceof Token && !(left instanceof NumberTokenExpression));
+    }
+
+
+
+    static ExpressionParsingState composeAdditionSubtractionExpression(
+            final ExpressionParsingState state, int nodeIndex) {
         return composeBinaryOperationExpression(
-                decomposition, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES);
+                state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }
     
 

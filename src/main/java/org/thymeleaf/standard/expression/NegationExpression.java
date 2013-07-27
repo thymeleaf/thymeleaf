@@ -48,7 +48,10 @@ public final class NegationExpression extends ComplexExpression {
     private static final Logger logger = LoggerFactory.getLogger(NegationExpression.class);
 
     
-    private static final char OPERATOR = '!';
+    private static final String OPERATOR_1 = "!";
+    private static final String OPERATOR_2 = "not";
+    // Future proof, just in case in the future we add "not" as an operator
+    static final String[] OPERATORS = new String[] {OPERATOR_1, OPERATOR_2};
 
     
     private final Expression operand;
@@ -69,7 +72,7 @@ public final class NegationExpression extends ComplexExpression {
     @Override
     public String getStringRepresentation() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(OPERATOR);
+        sb.append(OPERATOR_1);
         if (this.operand instanceof ComplexExpression) {
             sb.append(Expression.NESTING_START_CHAR);
             sb.append(this.operand);
@@ -83,18 +86,14 @@ public final class NegationExpression extends ComplexExpression {
     
     
     
-    public static List<ExpressionParsingNode> composeNegationExpression(
-            final List<ExpressionParsingNode> decomposition, int inputIndex) {
+    public static ExpressionParsingState composeNegationExpression(
+            final ExpressionParsingState state, int nodeIndex) {
 
-        // Returning "result" means "try next in chain"
+        // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
-        
-        final ExpressionParsingNode inputParsingNode = decomposition.get(inputIndex);
-        
-        List<ExpressionParsingNode> result = decomposition;
-        
-        final String input = inputParsingNode.getInput();
-            
+
+        final String input = state.get(nodeIndex).getInput();
+
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
@@ -102,44 +101,35 @@ public final class NegationExpression extends ComplexExpression {
         final String trimmedInput = input.trim(); 
         
         // Trying to fail quickly...
-        int operatorPos = trimmedInput.lastIndexOf(OPERATOR);
-        if (operatorPos == -1) { 
-            return result;
-        }
-        if (operatorPos != 0) {
-            // The '-' symbol should be the first character, after trimming.
-            return result;
-        }
-        
-        final String operandStr = trimmedInput.substring(1);
-        
-        int index = Expression.placeHolderToIndex(operandStr);
-        if (index == -1) {
-            index = result.size();
-            result.add(new ExpressionParsingNode(operandStr));
-            result = ComplexExpression.composeComplexExpressions(result, index);
-            if (result == null) {
-                return null;
+        String operatorFound = null;
+        int operatorPos = trimmedInput.lastIndexOf(OPERATOR_1);
+        if (operatorPos == -1) {
+            operatorPos = trimmedInput.lastIndexOf(OPERATOR_2);
+            if (operatorPos == -1) {
+                return state;
+            } else {
+                operatorFound = OPERATOR_2;
             }
         } else {
-            result = ComplexExpression.composeComplexExpressions(result, index);
-            if (result == null) {
-                return null;
-            }
+            operatorFound = OPERATOR_1;
         }
 
+        if (operatorPos != 0) {
+            // The operator (any of them) should be at the first character, after trimming.
+            return state;
+        }
         
-        final ExpressionParsingNode epn = result.get(index);
-        final Expression expr = epn.getExpression();
-        if (expr == null) {
+        final String operandStr = trimmedInput.substring(operatorFound.length());
+
+        final Expression operandExpr = ExpressionParsingUtil.parseAndCompose(state, operandStr);
+        if (operandExpr == null) {
             return null;
         }
 
+        final NegationExpression minusExpression = new NegationExpression(operandExpr);
+        state.setNode(nodeIndex, minusExpression);
         
-        final NegationExpression minusExpression = new NegationExpression(expr); 
-        result.set(inputIndex, new ExpressionParsingNode(minusExpression));
-        
-        return result;
+        return state;
         
     }
     

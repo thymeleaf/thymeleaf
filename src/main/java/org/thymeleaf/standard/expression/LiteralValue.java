@@ -64,6 +64,6 @@ public final class LiteralValue implements Serializable {
         }
         return obj;
     }
-    
-    
+
+
 }

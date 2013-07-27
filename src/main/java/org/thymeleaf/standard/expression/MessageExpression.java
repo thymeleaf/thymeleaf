@@ -154,7 +154,7 @@ public final class MessageExpression extends SimpleExpression {
                         final String base = trimmedInput.substring(0, i);
                         final String parameters = trimmedInput.substring(i + 1, trimmedInput.length() - 1);
 
-                        final Expression baseExpr = computeBase(base);
+                        final Expression baseExpr = parseDefaultAsLiteral(base);
                         if (baseExpr == null) {
                             return null;
                         }
@@ -176,7 +176,7 @@ public final class MessageExpression extends SimpleExpression {
         }
             
         
-        final Expression baseExpr = computeBase(trimmedInput); 
+        final Expression baseExpr = parseDefaultAsLiteral(trimmedInput);
         if (baseExpr == null) {
             return null;
         }
@@ -184,21 +184,24 @@ public final class MessageExpression extends SimpleExpression {
         return new MessageExpression(baseExpr, null);
         
     }
-    
 
-    
-    private static Expression computeBase(final String baseStr) {
-        // Base will be tried to be computed first as token, then as expression
-        final Token token = Token.parse(baseStr);
-        if (token != null) {
-            return TextLiteralExpression.parseTextLiteral(token.getValue());
+
+
+
+    private static Expression parseDefaultAsLiteral(final String input) {
+
+        if (StringUtils.isEmptyOrWhitespace(input)) {
+            return null;
         }
-        return Expression.parse(baseStr);
-    }
-    
 
-    
-    
+        final Expression expr = Expression.parse(input);
+        if (expr == null) {
+            return Expression.parse(TextLiteralExpression.wrapStringIntoLiteral(input));
+        }
+        return expr;
+
+    }
+
     
     
 
