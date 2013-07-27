@@ -17,20 +17,22 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.parsing;
+package org.thymeleaf.engine20.dom;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.engine20.dom.dialect.DOMDialect;
+import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
+import java.util.Arrays;
 
 
+public class DOM20Test {
 
 
-public class ParsingTest {
-    
-    
-    public ParsingTest() {
+    public DOM20Test() {
         super();
     }
     
@@ -38,10 +40,12 @@ public class ParsingTest {
     
     
     @Test
-    public void testParsing() throws Exception {
+    public void testDOM() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:engine/parsing");
+        executor.setDialects(
+                Arrays.asList(new IDialect[] { new StandardDialect(), new DOMDialect()}));
+        executor.execute("classpath:engine20/dom");
         
         Assert.assertTrue(executor.isAllOK());
         

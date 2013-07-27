@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.dom.dialect;
+package org.thymeleaf.engine21.dom.dialect;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -57,12 +57,13 @@ public class AddLocalVariableToNode extends AbstractAttrProcessor {
 
         for (final Assignation assignation : assignationSequence.getAssignations()) {
             
-            final String varName = assignation.getLeft().getValue();
-            final Expression varExpression = assignation.getRight();
+            final Expression varNameExpr = assignation.getLeft();
+            final Expression varValueExpr = assignation.getRight();
+
+            final Object varName = StandardExpressionProcessor.executeExpression(arguments, varNameExpr);
+            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, varValueExpr);
             
-            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, varExpression);
-            
-            element.setNodeLocalVariable(varName, varValue);
+            element.setNodeLocalVariable((varName == null? null : varName.toString()), varValue);
             
         }
         

@@ -58,8 +58,8 @@ public class FeaturesTest {
         Assert.assertTrue(executor.isAllOK());
         
     }
-    
-    
+
+
     @Test
     public void testUtil() throws Exception {
 
@@ -69,18 +69,18 @@ public class FeaturesTest {
         Assert.assertTrue(executor.isAllOK());
         
     }
-  
-    
+
+
     @Test
     public void testExpression() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:engine/features/expression");
-        
+
         Assert.assertTrue(executor.isAllOK());
-        
+
     }
-  
+
     
     @Test
     public void testMessages() throws Exception {

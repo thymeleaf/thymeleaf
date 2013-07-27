@@ -1,0 +1,56 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+class = 'My class text'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${class}">...</p>
+<div th:with="oo='My local oo text'">
+    <p th:text="${oo}">Some text</p>
+</div>
+<div th:with="class='My local class text'">
+    <p th:text="${class}">Some text</p>
+</div>
+<div dom:add-local-variable-to-node="oo='My local oo text from Java code using Node'">
+    <p th:text="${oo}">Some text</p>
+</div>
+<div dom:add-local-variable-to-result="oo='My local oo text from Java code using ProcessorResult'">
+    <p th:text="${oo}">Some text</p>
+</div>
+<div dom:add-local-variable-to-node="class='My local class text from Java code using Node'">
+    <p th:text="${class}">Some text</p>
+</div>
+<div dom:add-local-variable-to-result="class='My local class text from Java code using ProcessorResult'">
+    <p th:text="${class}">Some text</p>
+</div>
+<div dom:add-local-variable-to-result="oo='My local oo text from Java code using ProcessorResult'">
+  <div dom:add-local-variable-to-result="oooo=' (end)'">
+    <p th:text="${oo} + ${oooo}">Some text</p>
+  </div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<p>My class text</p>
+<div>
+    <p>My local oo text</p>
+</div>
+<div>
+    <p>My local class text</p>
+</div>
+<div>
+    <p>My local oo text from Java code using Node</p>
+</div>
+<div>
+    <p>My local oo text from Java code using ProcessorResult</p>
+</div>
+<div>
+    <p>My local class text from Java code using Node</p>
+</div>
+<div>
+    <p>My local class text from Java code using ProcessorResult</p>
+</div>
+<div>
+  <div>
+    <p>My local oo text from Java code using ProcessorResult (end)</p>
+  </div>
+</div>

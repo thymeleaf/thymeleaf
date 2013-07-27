@@ -17,42 +17,30 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.dom;
+package org.thymeleaf.engine20.dom.dialect;
 
-import java.util.Arrays;
+import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.processor.IProcessor;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.engine.dom.dialect.DOMDialect;
-import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import java.util.HashSet;
+import java.util.Set;
 
+public class DOMDialect extends AbstractDialect {
 
+    public String getPrefix() {
+        return "dom";
+    }
 
-
-
-public class DOMTest {
-    
-    
-    public DOMTest() {
-        super();
+    public boolean isLenient() {
+        return false;
     }
     
-    
-    
-    
-    @Test
-    public void testDOM() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.setDialects(
-                Arrays.asList(new IDialect[] { new StandardDialect(), new DOMDialect()}));
-        executor.execute("classpath:engine/dom");
-        
-        Assert.assertTrue(executor.isAllOK());
-        
+    @Override
+    public Set<IProcessor> getProcessors() {
+        final Set<IProcessor> processors = new HashSet<IProcessor>();
+        processors.add(new AddLocalVariableToNode());
+        processors.add(new AddLocalVariableToResult());
+        return processors;
     }
-    
-    
+
 }

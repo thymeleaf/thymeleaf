@@ -17,35 +17,30 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.parsing;
+package org.thymeleaf.engine21.dom.dialect;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.processor.IProcessor;
 
+import java.util.HashSet;
+import java.util.Set;
 
+public class DOMDialect extends AbstractDialect {
 
+    public String getPrefix() {
+        return "dom";
+    }
 
-
-public class ParsingTest {
-    
-    
-    public ParsingTest() {
-        super();
+    public boolean isLenient() {
+        return false;
     }
     
-    
-    
-    
-    @Test
-    public void testParsing() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:engine/parsing");
-        
-        Assert.assertTrue(executor.isAllOK());
-        
+    @Override
+    public Set<IProcessor> getProcessors() {
+        final Set<IProcessor> processors = new HashSet<IProcessor>();
+        processors.add(new AddLocalVariableToNode());
+        processors.add(new AddLocalVariableToResult());
+        return processors;
     }
-    
-    
+
 }

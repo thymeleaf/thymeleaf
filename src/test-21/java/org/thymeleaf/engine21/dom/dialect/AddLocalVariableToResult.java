@@ -17,10 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.dom.dialect;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.thymeleaf.engine21.dom.dialect;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
@@ -30,6 +27,9 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddLocalVariableToResult extends AbstractAttrProcessor {
 
@@ -60,14 +60,15 @@ public class AddLocalVariableToResult extends AbstractAttrProcessor {
 
         final Map<String,Object> localVariables = new HashMap<String,Object>();
         for (final Assignation assignation : assignationSequence.getAssignations()) {
-            
-            final String varName = assignation.getLeft().getValue();
-            final Expression varExpression = assignation.getRight();
-            
-            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, varExpression);
-            
-            localVariables.put(varName, varValue);
-            
+
+            final Expression varNameExpr = assignation.getLeft();
+            final Expression varValueExpr = assignation.getRight();
+
+            final Object varName = StandardExpressionProcessor.executeExpression(arguments, varNameExpr);
+            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, varValueExpr);
+
+            localVariables.put((varName == null? null : varName.toString()), varValue);
+
         }
         
         element.removeAttribute(attributeName);

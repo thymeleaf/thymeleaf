@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 
- *   Copyright (c) 2011-2013, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
  * 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -17,30 +17,37 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.dom.dialect;
+package org.thymeleaf.engine20.features;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.junit.Assert;
+import org.junit.Test;
+import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
-import org.thymeleaf.dialect.AbstractDialect;
-import org.thymeleaf.processor.IProcessor;
 
-public class DOMDialect extends AbstractDialect {
 
-    public String getPrefix() {
-        return "dom";
-    }
 
-    public boolean isLenient() {
-        return false;
+
+public class Features20Test {
+    
+    
+    public Features20Test() {
+        super();
     }
     
-    @Override
-    public Set<IProcessor> getProcessors() {
-        final Set<IProcessor> processors = new HashSet<IProcessor>();
-        processors.add(new AddLocalVariableToNode());
-        processors.add(new AddLocalVariableToResult());
-        return processors;
+    
+    
+
+    
+    @Test
+    public void testLink() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine/features/link");
+        
+        Assert.assertTrue(executor.isAllOK());
+        
     }
 
+
+    
 }
