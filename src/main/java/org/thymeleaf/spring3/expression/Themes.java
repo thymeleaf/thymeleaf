@@ -20,12 +20,12 @@
 
 package org.thymeleaf.spring3.expression;
 
+import java.util.Locale;
+
 import org.springframework.ui.context.Theme;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-
-import java.util.Locale;
 
 /**
  * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>

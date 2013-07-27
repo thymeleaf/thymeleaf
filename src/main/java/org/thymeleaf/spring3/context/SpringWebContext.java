@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.spring3.context;
 
-import java.text.AttributedString;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;

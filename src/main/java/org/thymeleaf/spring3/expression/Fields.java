@@ -21,7 +21,6 @@ package org.thymeleaf.spring3.expression;
 
 import java.util.List;
 
-import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.spring3.util.FieldUtils;
