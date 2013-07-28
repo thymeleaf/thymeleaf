@@ -32,7 +32,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
-import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
+import org.thymeleaf.fragment.FragmentSignatureAttributeFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
@@ -147,8 +147,7 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
                     } else {
                         // Fragment is not a DOM selector, therefore it is a fragment name
                         
-                        fragmentSpec =
-                                new ElementAndAttributeNameFragmentSpec(null, fragmentAttributeName, fragmentToRender);
+                        fragmentSpec = new FragmentSignatureAttributeFragmentSpec(fragmentAttributeName, fragmentToRender);
                         
                     }
                     
