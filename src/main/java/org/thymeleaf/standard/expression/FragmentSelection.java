@@ -94,7 +94,7 @@ public final class FragmentSelection implements Serializable {
             final StandardExpressionExecutionContext expContext) {
 
         // The parameter sequence will be considered "synthetically named" if its variable names are all synthetic
-        // (see the "variableNamesAreSynthetic" method for more info).
+        // (see the "parameterNamesAreSynthetic" method for more info).
 
         if (this.parameters == null) {
             return false;
@@ -113,7 +113,7 @@ public final class FragmentSelection implements Serializable {
 
         }
 
-        return variableNamesAreSynthetic(variableNames);
+        return parameterNamesAreSynthetic(variableNames);
 
     }
 
@@ -320,24 +320,24 @@ public final class FragmentSelection implements Serializable {
 
 
 
-    static boolean variableNamesAreSynthetic(final Set<String> variableNames) {
+    public static boolean parameterNamesAreSynthetic(final Set<String> parameterNames) {
 
-        // Variable names in an assignation sequence will be considered "synthetic" if all variable names
+        // Parameter names in an assignation sequence will be considered "synthetic" if all variable names
         // start by "_arg", followed by a number. This will mean they have been automatically
         // assigned when parsed because no names were assigned.
 
-        for (final String variableName : variableNames) {
+        for (final String parameterName : parameterNames) {
 
-            if (variableName == null) {
+            if (parameterName == null) {
                 return false;
             }
 
-            if (!variableName.startsWith(UNNAMED_PARAMETERS_PREFIX)) {
+            if (!parameterName.startsWith(UNNAMED_PARAMETERS_PREFIX)) {
                 return false;
             }
-            final int variableNameLen = variableName.length();
-            for (int i = UNNAMED_PARAMETERS_PREFIX.length(); i < variableNameLen; i++) {
-                final char c = variableName.charAt(i);
+            final int parameterNameLen = parameterName.length();
+            for (int i = UNNAMED_PARAMETERS_PREFIX.length(); i < parameterNameLen; i++) {
+                final char c = parameterName.charAt(i);
                 if (!Character.isDigit(c)) {
                     return false;
                 }
@@ -349,6 +349,13 @@ public final class FragmentSelection implements Serializable {
     }
 
 
+
+    public static String getSyntheticParameterNameForIndex(final int index) {
+        return UNNAMED_PARAMETERS_PREFIX + index;
+    }
+
+
+
     private static AssignationSequence createSyntheticallyNamedParameterSequence(final ExpressionSequence expSeq) {
 
         final List<Assignation> assignations = new ArrayList<Assignation>(expSeq.size() + 2);
@@ -356,7 +363,7 @@ public final class FragmentSelection implements Serializable {
         int argIndex = 0;
         for (final Expression expression : expSeq.getExpressions()) {
             final Expression parameterName =
-                    Expression.parse(TextLiteralExpression.wrapStringIntoLiteral(UNNAMED_PARAMETERS_PREFIX + argIndex));
+                    Expression.parse(TextLiteralExpression.wrapStringIntoLiteral(UNNAMED_PARAMETERS_PREFIX + argIndex++));
             assignations.add(new Assignation(parameterName, expression));
         }
 

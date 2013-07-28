@@ -163,11 +163,11 @@ public final class DOMUtils {
         
     }
 
-    
 
-    
-    
-    
+
+
+
+
     public static char[] escapeXml(final char[] ch, final boolean escapeQuotes) throws IOException {
         
         if (ch == null) {

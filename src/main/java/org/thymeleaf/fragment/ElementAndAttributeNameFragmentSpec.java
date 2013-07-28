@@ -20,12 +20,15 @@
 package org.thymeleaf.fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -42,8 +45,7 @@ import org.thymeleaf.util.Validate;
  *   Objects of this class are <b>thread-safe</b>.
  * </p>
  * 
- * @author Daniel Fern&aacute;ndez
- * 
+ *
  * @since 2.0.9
  *
  */
@@ -53,8 +55,9 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
     private final String attributeName;
     private final String attributeValue;
     private final boolean returnOnlyChildren;
-    
-    
+
+    private final Map<String,Object> parameterValues;
+
     
 
     /**
@@ -70,9 +73,63 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
             final String elementName, 
             final String attributeName, 
             final String attributeValue) {
-        this(elementName, attributeName, attributeValue, false);
+        this(elementName, attributeName, attributeValue, null, false);
     }
 
+
+    /**
+     * <p>
+     *   Create a fragment spec specifying element name and/or attribute name+value.
+     * </p>
+     * <p>
+     *   This constructor allows the specification of a series of fragment parameters, which will be applied
+     *   as local variables to the extracted nodes.
+     * </p>
+     *
+     * @param elementName the element name to look for, optional.
+     * @param attributeName the attribute name to look for, optional.
+     * @param attributeValue the value of the attribute (if attribute name has been specified).
+     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
+     *                        returned as extraction result. Might be null if no parameters are applied.
+     *
+     * @since 2.1.0
+     */
+    public ElementAndAttributeNameFragmentSpec(
+            final String elementName,
+            final String attributeName,
+            final String attributeValue,
+            final Map<String,Object> parameterValues) {
+        this(elementName, attributeName, attributeValue, parameterValues, false);
+    }
+
+
+
+    /**
+     * <p>
+     *   Create a fragment spec specifying element name and/or attribute name+value, and
+     *   specifying whether the selected element itself (or selected elements if more than
+     *   one) must be returned or only its/their children.
+     * </p>
+     * <p>
+     *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name
+     *   and/or containing the specified attribute will be discarded, and only its/their
+     *   children will be returned.
+     * </p>
+     *
+     * @param elementName the element name to look for, optional.
+     * @param attributeName the attribute name to look for, optional.
+     * @param attributeValue the value of the attribute (if attribute name has been specified).
+     * @param returnOnlyChildren whether the selected elements should be returned (false),
+     *        or only their children (true).
+     * @since 2.0.12
+     */
+    public ElementAndAttributeNameFragmentSpec(
+            final String elementName,
+            final String attributeName,
+            final String attributeValue,
+            final boolean returnOnlyChildren) {
+        this(elementName, attributeName, attributeValue, null, returnOnlyChildren);
+    }
     
     
     /**
@@ -80,6 +137,10 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
      *   Create a fragment spec specifying element name and/or attribute name+value, and
      *   specifying whether the selected element itself (or selected elements if more than
      *   one) must be returned or only its/their children.
+     * </p>
+     * <p>
+     *   This constructor allows the specification of a series of fragment parameters, which will be applied
+     *   as local variables to the extracted nodes.
      * </p>
      * <p>
      *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name 
@@ -90,14 +151,18 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
      * @param elementName the element name to look for, optional.
      * @param attributeName the attribute name to look for, optional.
      * @param attributeValue the value of the attribute (if attribute name has been specified).
+     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
+     *                        returned as extraction result. Might be null if no parameters are applied.
      * @param returnOnlyChildren whether the selected elements should be returned (false),
      *        or only their children (true).
-     * @since 2.0.12
+     *
+     * @since 2.1.0
      */
     public ElementAndAttributeNameFragmentSpec(
             final String elementName, 
             final String attributeName, 
             final String attributeValue,
+            final Map<String,Object> parameterValues,
             final boolean returnOnlyChildren) {
         
         super();
@@ -116,8 +181,20 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
         this.elementName = elementName;
         this.attributeName = attributeName;
         this.attributeValue = attributeValue;
+        this.parameterValues = parameterValues;
         this.returnOnlyChildren = returnOnlyChildren;
-        
+
+        if (this.parameterValues != null && this.parameterValues.size() > 0) {
+            if (FragmentSelection.parameterNamesAreSynthetic(this.parameterValues.keySet())) {
+                throw new TemplateProcessingException(
+                        "Cannot process fragment selection parameters " + this.parameterValues.toString() + ", " +
+                        "as they are specified for an element name/attribute name+value -based fragment selector " +
+                        "(<"+ this.elementName + " " + this.attributeName + "=\"" + this.attributeValue + "\">), " +
+                        "but using synthetic (non-named) parameter is only allowed for fragment-signature-based " +
+                        "(e.g. 'th:fragment') selection");
+            }
+        }
+
     }
 
 
@@ -166,6 +243,7 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
     }
 
 
+
     /**
      * <p>
      *   Returns the attribute value, if <tt>attributeName</tt> has been set. If 
@@ -204,6 +282,33 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
     }
 
 
+    /**
+     * <p>
+     *   Returns the map of parameter values that will be applied as local variables to the extracted nodes.
+     * </p>
+     *
+     * @return the map of parameters.
+     * @since 2.1.0
+     */
+    public Map<String,Object> getParameterValues() {
+        return Collections.unmodifiableMap(this.parameterValues);
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether this fragment specifies parameter values, to be set as local variables into the extracted
+     *   nodes.
+     * </p>
+     *
+     * @return true if the fragment spec specifies parameters, false if not
+     * @since 2.1.0
+     */
+    public boolean hasParameterValues() {
+        return this.parameterValues != null && this.parameterValues.size() > 0;
+    }
+
+
     
     
     
@@ -214,6 +319,7 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
                         nodes, this.elementName, this.attributeName, this.attributeValue);
         
         if (!this.returnOnlyChildren) {
+            applyParameters(extraction, this.parameterValues);
             return extraction;
         }
         
@@ -235,9 +341,17 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
             extractionChildren.addAll(((NestableNode)extractionNode).getChildren());
             
         }
-        
+
+        applyParameters(extractionChildren, this.parameterValues);
         return extractionChildren;
         
+    }
+
+
+    private static void applyParameters(final List<Node> nodes, final Map<String,Object> parameterValues) {
+        for (final Node node : nodes) {
+            node.setAllNodeLocalVariables(parameterValues);
+        }
     }
 
 

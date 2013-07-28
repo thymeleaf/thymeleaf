@@ -20,7 +20,9 @@
 package org.thymeleaf.fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.cache.ICache;
@@ -29,6 +31,7 @@ import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.util.Validate;
 
 
@@ -66,6 +69,9 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     private final String selectorExpression;
     private final boolean returnOnlyChildren;
 
+    // Note: DOM Selector-based fragments do not allow synthetic parameter values. They should always be named.
+    private final Map<String,Object> parameterValues;
+
     
 
     /**
@@ -79,7 +85,26 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     public DOMSelectorFragmentSpec(final String selectorExpression) {
         this(selectorExpression, false);
     }
-    
+
+
+    /**
+     * <p>
+     *   Creates a new instance, specifying the expression to be used for a
+     *   {@link DOMSelector} object to be created internally, and specifying also
+     *   a series of parameters that will be applied as local variables to the Nodes returned
+     *   by the extraction method.
+     * </p>
+     *
+     * @param selectorExpression the expression to be used for the DOM selector.
+     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
+     *                        returned as extraction result. Might be null if no parameters are applied.
+     *
+     * @since 2.1.0
+     */
+    public DOMSelectorFragmentSpec(final String selectorExpression, final Map<String,Object> parameterValues) {
+        this(selectorExpression, parameterValues, false);
+    }
+
 
     /**
      * <p>
@@ -100,14 +125,61 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
      * @since 2.0.12
      */
     public DOMSelectorFragmentSpec(final String selectorExpression, final boolean returnOnlyChildren) {
+        this(selectorExpression,null,returnOnlyChildren);
+    }
+
+
+    /**
+     * <p>
+     *   Creates a new instance, specifying the expression to be used for a
+     *   {@link DOMSelector} object to be created internally and also a flag indicating
+     *   whether the selected element itself (or selected elements if more than
+     *   one) must be returned or only its/their children.
+     * </p>
+     * <p>
+     *   This constructor also allows the specification of a series of parameters that will be applied as
+     *   local variables to the Nodes returned by the extraction method.
+     * </p>
+     * <p>
+     *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name
+     *   and/or containing the specified attribute will be discarded, and only its/their
+     *   children will be returned.
+     * </p>
+     *
+     * @param selectorExpression the expression to be used for the DOM selector.
+     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
+     *                        returned as extraction result. Might be null if no parameters are applied.
+     * @param returnOnlyChildren whether the selected elements should be returned (false),
+     *        or only their children (true).
+     *
+     * @since 2.1.0
+     */
+    public DOMSelectorFragmentSpec(
+            final String selectorExpression, final Map<String,Object> parameterValues, final boolean returnOnlyChildren) {
+
         super();
+
         Validate.notEmpty(selectorExpression, "DOM selector expression cannot be null or empty");
+
+        this.parameterValues = parameterValues;
         this.selectorExpression = selectorExpression;
         this.returnOnlyChildren = returnOnlyChildren;
+
+        if (this.parameterValues != null && this.parameterValues.size() > 0) {
+            if (FragmentSelection.parameterNamesAreSynthetic(this.parameterValues.keySet())) {
+                throw new TemplateProcessingException(
+                        "Cannot process fragment selection parameters " + this.parameterValues.toString() + ", " +
+                        "as they are specified for a DOM-Selector-based fragment selector " +
+                        "(\"" + this.selectorExpression + "\"), but using synthetic (non-named) " +
+                        "parameter is only allowed for fragment-signature-based (e.g. 'th:fragment') selection");
+            }
+        }
+
     }
+
     
-    
-    
+
+
     public String getSelectorExpression() {
         return this.selectorExpression;
     }
@@ -126,7 +198,33 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     public boolean isReturnOnlyChildren() {
         return this.returnOnlyChildren;
     }
-    
+
+
+    /**
+     * <p>
+     *   Returns the map of parameter values that will be applied as local variables to the extracted nodes.
+     * </p>
+     *
+     * @return the map of parameters.
+     * @since 2.1.0
+     */
+    public Map<String,Object> getParameterValues() {
+        return Collections.unmodifiableMap(this.parameterValues);
+    }
+
+
+    /**
+     * <p>
+     *   Returns whether this fragment specifies parameter values, to be set as local variables into the extracted
+     *   nodes.
+     * </p>
+     *
+     * @return true if the fragment spec specifies parameters, false if not
+     * @since 2.1.0
+     */
+    public boolean hasParameterValues() {
+        return this.parameterValues != null && this.parameterValues.size() > 0;
+    }
 
     
 
@@ -158,6 +256,7 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
             
         
         if (!this.returnOnlyChildren) {
+            applyParameters(extraction, this.parameterValues);
             return extraction;
         }
         
@@ -178,13 +277,20 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
             extractionChildren.addAll(((NestableNode)extractionNode).getChildren());
             
         }
-        
+
+        applyParameters(extractionChildren, this.parameterValues);
         return extractionChildren;
         
     }
 
     
-    
+    private static void applyParameters(final List<Node> nodes, final Map<String,Object> parameterValues) {
+        for (final Node node : nodes) {
+            node.setAllNodeLocalVariables(parameterValues);
+        }
+    }
+
+
 
     
     

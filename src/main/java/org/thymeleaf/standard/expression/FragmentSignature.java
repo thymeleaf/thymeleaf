@@ -61,6 +61,12 @@ public final class FragmentSignature implements Serializable {
         return this.fragmentName;
     }
 
+
+    public boolean hasParameters() {
+        return this.parameterNames != null && this.parameterNames.size() > 0;
+    }
+
+
     public List<String> getParameterNames() {
         return this.parameterNames;
     }
@@ -85,7 +91,7 @@ public final class FragmentSignature implements Serializable {
     
     
     
-    static FragmentSignature parse(final String input) {
+    public static FragmentSignature parse(final String input) {
         
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
