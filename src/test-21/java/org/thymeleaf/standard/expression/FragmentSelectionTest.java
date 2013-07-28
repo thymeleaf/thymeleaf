@@ -63,6 +63,10 @@ public class FragmentSelectionTest {
         checkFragmentSelection(" ${lala slatr}+'ele'   :: ('index_'+(2*2)) (a=('something'+23),b=4123)", "${lala slatr} + 'ele'", "'index_' + (2 * 2)", "a=('something' + 23),b=4123");
         checkFragmentSelection(" ${lala slatr}+'ele'   :: ('index_'+(2*2)) (${name}=('something'+23),b=4123)", "${lala slatr} + 'ele'", "'index_' + (2 * 2)", "${name}=('something' + 23),b=4123");
         checkFragmentSelection(" ${lala slatr}+'ele'   :: ('index_'+(2*2)) ((${name} + 0)=('something'+23),b=4123)", "${lala slatr} + 'ele'", "'index_' + (2 * 2)", "${name} + 0=('something' + 23),b=4123");
+        checkFragmentSelection("C:\\Program Files\\apps\\templates\\WEB-INF\\temp.html", "'C:\\Program Files\\apps\\templates\\WEB-INF\\temp.html'",null, null);
+        checkFragmentSelection("C:\\Program Files\\apps\\templates\\WEB-INF\\temp.html :: 'fragment number one'", "'C:\\Program Files\\apps\\templates\\WEB-INF\\temp.html'","'fragment number one'", null);
+        checkFragmentSelection("/home/user/apps/templates/WEB-INF/temp.html :: 'fragment number one'", "'/home/user/apps/templates/WEB-INF/temp.html'","'fragment number one'", null);
+        checkFragmentSelection("home/user :: 'fragment number one'", "'home/user'","'fragment number one'", null);
     }
 
 
@@ -103,7 +107,7 @@ public class FragmentSelectionTest {
 
         final Set<String> variableNames =
                 new HashSet<String>(Arrays.asList(StringUtils.split(variableNamesSpec, ",")));
-        final boolean computedNamed = FragmentSelection.variableNamesAreSynthetic(variableNames);
+        final boolean computedNamed = FragmentSelection.parameterNamesAreSynthetic(variableNames);
 
         Assert.assertEquals(Boolean.valueOf(synth), Boolean.valueOf(computedNamed));
 
