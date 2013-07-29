@@ -20,8 +20,8 @@
 package org.thymeleaf.processor.element;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 

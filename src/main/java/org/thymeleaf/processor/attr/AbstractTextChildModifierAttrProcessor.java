@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 
