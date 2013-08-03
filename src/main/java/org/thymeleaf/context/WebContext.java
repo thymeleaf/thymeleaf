@@ -138,26 +138,46 @@ public class WebContext
     }
 
 
+    /**
+     * @deprecated Get parameters from the HttpServletRequest object directly instead. Will be removed in 3.0.
+     */
+    @Deprecated
     public VariablesMap<String, String[]> getRequestParameters() {
         return getWebVariablesMap().getRequestParamsVariablesMap();
     }
 
 
+    /**
+     * @deprecated Get attributes from the HttpServletRequest object directly instead. Will be removed in 3.0.
+     */
+    @Deprecated
     public VariablesMap<String, Object> getRequestAttributes() {
         return getWebVariablesMap();
     }
 
 
+    /**
+     * @deprecated Get attributes from the HttpSession object directly instead. Will be removed in 3.0.
+     */
+    @Deprecated
     public VariablesMap<String, Object> getSessionAttributes() {
         return getWebVariablesMap().getSessionVariablesMap();
     }
 
 
+    /**
+     * @deprecated Get attributes from the ServletContext object directly instead. Will be removed in 3.0.
+     */
+    @Deprecated
     public VariablesMap<String, Object> getApplicationAttributes() {
         return getWebVariablesMap().getServletContextVariablesMap();
     }
 
-    
+
+    /**
+     * @deprecated Get variables map from the {@link #getVariables()} method directly. Will be removed in 3.0.
+     */
+    @Deprecated
     WebVariablesMap getWebVariablesMap() {
         return (WebVariablesMap) getVariables();
     }

@@ -64,10 +64,6 @@ public final class ExpressionEvaluatorObjects {
      */
     public static final String HTTP_SESSION_VARIABLE_NAME = "httpSession";
     
-    public static final String PARAM_EVALUATION_VARIABLE_NAME = "param";
-    public static final String SESSION_EVALUATION_VARIABLE_NAME = "session";
-    public static final String APPLICATION_EVALUATION_VARIABLE_NAME = "application";
-    
     public static final String CALENDARS_EVALUATION_VARIABLE_NAME = "calendars";
     public static final String DATES_EVALUATION_VARIABLE_NAME = "dates";
     public static final String BOOLS_EVALUATION_VARIABLE_NAME = "bools";
@@ -166,12 +162,7 @@ public final class ExpressionEvaluatorObjects {
         
         if (context instanceof IWebContext) {
             final IWebContext webContext = (IWebContext) context;
-            variables.put(
-                    PARAM_EVALUATION_VARIABLE_NAME, webContext.getRequestParameters());
-            variables.put(
-                    SESSION_EVALUATION_VARIABLE_NAME, webContext.getSessionAttributes());
-            variables.put(
-                    APPLICATION_EVALUATION_VARIABLE_NAME, webContext.getApplicationAttributes());
+            // This gives access to the HttpServletRequest and HttpSession objects, if they exist
             variables.put(
                     HTTP_SERVLET_REQUEST_VARIABLE_NAME, webContext.getHttpServletRequest());
             variables.put(

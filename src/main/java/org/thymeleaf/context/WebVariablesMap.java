@@ -30,7 +30,6 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * <p>
@@ -72,8 +71,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
      * </p>
      */
     public static final String APPLICATION_VARIABLE_NAME = "application";
-    
-    
+
     
     /*
      * ---------------------------------------------------------------------------
@@ -105,12 +103,12 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         this.servletContext = servletContext;
 
         this.requestParamsVariablesMap = new WebRequestParamsVariablesMap(this.request);
+        this.sessionVariablesMap = new WebSessionVariablesMap(this.request);
         this.servletContextVariablesMap = new WebServletContextVariablesMap(this.servletContext);
-
-        initializeSessionContainer();
 
         super.put(APPLICATION_VARIABLE_NAME, this.servletContextVariablesMap);
         super.put(PARAM_VARIABLE_NAME, this.requestParamsVariablesMap);
+        super.put(SESSION_VARIABLE_NAME, this.sessionVariablesMap);
 
         if (m != null) {
             // This must be done at the end because it relies on the request having been already set.
@@ -122,21 +120,6 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
 
     
-    private void initializeSessionContainer() {
-        if (this.sessionVariablesMap != null) {
-            return;
-        }
-        final HttpSession session = this.request.getSession(false); 
-        if (session == null) {
-            super.put(SESSION_VARIABLE_NAME, null);
-            return;
-        }
-        this.sessionVariablesMap = new WebSessionVariablesMap(session);
-        super.put(SESSION_VARIABLE_NAME, this.sessionVariablesMap);
-    }
-
-    
-    
     public WebRequestParamsVariablesMap getRequestParamsVariablesMap() {
         return this.requestParamsVariablesMap;
     }
@@ -144,7 +127,6 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
 
     public WebSessionVariablesMap getSessionVariablesMap() {
-        initializeSessionContainer();
         return this.sessionVariablesMap;
     }
 
@@ -181,9 +163,6 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @Override
     public Object get(final Object key) {
         if (isReservedVariableName((String)key)) {
-            if (isSessionVariableName((String)key)) {
-                initializeSessionContainer();
-            }
             return super.get(key);
         }
         return this.request.getAttribute((String)key);

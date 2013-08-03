@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -48,13 +49,13 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     private static final long serialVersionUID = 3866833203758601975L;
     
     
-    private final HttpSession session;
+    private final HttpServletRequest request;
     
     
 
-    WebSessionVariablesMap(final HttpSession session) {
+    WebSessionVariablesMap(final HttpServletRequest request) {
         super(1, 1.0f);
-        this.session = session;
+        this.request = request;
     }
 
     
@@ -63,11 +64,12 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public int size() {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return 0;
         }
         int size = 0;
-        final Enumeration<String> attributeNames = this.session.getAttributeNames();
+        final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             attributeNames.nextElement();
             size++;
@@ -79,20 +81,22 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     @Override
     public boolean isEmpty() {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return true;
         }
-        return !this.session.getAttributeNames().hasMoreElements();
+        return !session.getAttributeNames().hasMoreElements();
     }
 
     
     
     @Override
     public Object get(final Object key) {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return null;
         }
-        return this.session.getAttribute((String)key);
+        return session.getAttribute((String)key);
     }
 
     
@@ -100,10 +104,11 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean containsKey(final Object key) {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return false;
         }
-        final Enumeration<String> attributeNames = this.session.getAttributeNames();
+        final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement(); 
             if (key == null) {
@@ -123,11 +128,12 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     @Override
     public Object put(final String key, final Object value) {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             throw new IllegalStateException(
                     "Cannot put attribute into session: no HTTP session exists!");
         }
-        this.session.setAttribute(key, value);
+        session.setAttribute(key, value);
         return value;
     }
 
@@ -135,12 +141,13 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     @Override
     public void putAll(final Map<? extends String, ? extends Object> m) {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             throw new IllegalStateException(
                     "Cannot put attributes into session: no HTTP session exists!");
         }
         for (final Map.Entry<? extends String, ? extends Object> mEntry : m.entrySet()) {
-            this.session.setAttribute(mEntry.getKey(), mEntry.getValue());
+            session.setAttribute(mEntry.getKey(), mEntry.getValue());
         }
     }
 
@@ -148,12 +155,13 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     @Override
     public Object remove(final Object key) {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             throw new IllegalStateException(
                     "Cannot remove attribute from session: no HTTP session exists!");
         }
-        final Object value = this.session.getAttribute((String)key);
-        this.session.removeAttribute((String)key);
+        final Object value = session.getAttribute((String)key);
+        session.removeAttribute((String)key);
         return value;
     }
 
@@ -162,17 +170,18 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public void clear() {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             throw new IllegalStateException(
                     "Cannot remove attribute from session: no HTTP session exists!");
         }
         final List<String> attributeNamesList = new ArrayList<String>(5);
-        final Enumeration<String> attributeNames = this.session.getAttributeNames();
+        final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             attributeNamesList.add(attributeNames.nextElement()); 
         }
         for (final String attributeName : attributeNamesList) {
-            this.session.removeAttribute(attributeName);
+            session.removeAttribute(attributeName);
         }
     }
 
@@ -181,13 +190,14 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean containsValue(final Object value) {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return false;
         }
-        final Enumeration<String> attributeNames = this.session.getAttributeNames();
+        final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
-            final Object attributeValue = this.session.getAttribute(attributeName);
+            final Object attributeValue = session.getAttribute(attributeName);
             if (value == null) {
                 if (attributeValue == null) {
                     return true;
@@ -213,11 +223,12 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Set<String> keySet() {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return Collections.emptySet();
         }
         final Set<String> keySet = new LinkedHashSet<String>(5);
-        final Enumeration<String> attributeNames = this.session.getAttributeNames();
+        final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             keySet.add(attributeNames.nextElement());
         }
@@ -229,14 +240,15 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Object> values() {
-        if (this.session == null) {
+        final HttpSession session = this.request.getSession(false);
+        if (session == null) {
             return Collections.emptyList();
         }
         final List<Object> values = new ArrayList<Object>(5);
-        final Enumeration<String> attributeNames = this.session.getAttributeNames();
+        final Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
-            values.add(this.session.getAttribute(attributeName));
+            values.add(session.getAttribute(attributeName));
         }
         return values;
     }
@@ -245,23 +257,26 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     @Override
     public Set<java.util.Map.Entry<String,Object>> entrySet() {
-        return getAttributeMap(this.session).entrySet();
+        final HttpSession session = this.request.getSession(false);
+        return getAttributeMap(session).entrySet();
     }
 
     
     
     @Override
     public String toString() {
-        return getAttributeMap(this.session).toString();
+        final HttpSession session = this.request.getSession(false);
+        return getAttributeMap(session).toString();
     }
 
     
 
     @Override
     public int hashCode() {
+        final HttpSession session = this.request.getSession(false);
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + this.session.hashCode();
+        result = prime * result + session.hashCode();
         return result;
     }
 
@@ -279,11 +294,13 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
             return false;
         }
         final WebSessionVariablesMap other = (WebSessionVariablesMap) obj;
-        if (this.session == null) {
-            if (other.session != null) {
+        final HttpSession session = this.request.getSession(false);
+        final HttpSession otherSession = other.request.getSession(false);
+        if (session == null) {
+            if (otherSession != null) {
                 return false;
             }
-        } else if (!this.session.equals(other.session)) {
+        } else if (!session.equals(otherSession)) {
             return false;
         }
         return true;
