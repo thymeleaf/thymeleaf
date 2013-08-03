@@ -1,0 +1,82 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+class = 'My class text'
+# ------------------------------------------------------------
+%INPUT
+<context:add-context-variable />
+
+<p th:text="${newvar0}">Some text 1</p>
+<p th:text="${newvar1}">Some text 1</p>
+<p th:text="${newvar2}">Some text 1</p>
+<p th:text="${newvar3}">Some text 1</p>
+<p th:text="${newvar4}">Some text 1</p>
+<p th:text="${newvar5}">Some text 1</p>
+
+<p th:text="${application.newvar0}">Some text 1</p>
+<p th:text="${application.newvar1}">Some text 1</p>
+<p th:text="${application.newvar2}">Some text 1</p>
+<p th:text="${application.newvar3}">Some text 1</p>
+<p th:text="${application.newvar4}">Some text 1</p>
+<p th:text="${application.newvar5}">Some text 1</p>
+
+<p th:text="${#ctx.variables.newvar0}">Some text 1</p>
+<p th:text="${#ctx.variables.newvar1}">Some text 1</p>
+<p th:text="${#ctx.variables.newvar2}">Some text 1</p>
+<p th:text="${#ctx.variables.newvar3}">Some text 1</p>
+<p th:text="${#ctx.variables.newvar4}">Some text 1</p>
+<p th:text="${#ctx.variables.newvar5}">Some text 1</p>
+
+<p th:text="${#ctx.requestAttributes.newvar0}">Some text 1</p>
+<p th:text="${#ctx.requestAttributes.newvar1}">Some text 1</p>
+<p th:text="${#ctx.requestAttributes.newvar2}">Some text 1</p>
+<p th:text="${#ctx.requestAttributes.newvar3}">Some text 1</p>
+<p th:text="${#ctx.requestAttributes.newvar4}">Some text 1</p>
+<p th:text="${#ctx.requestAttributes.newvar5}">Some text 1</p>
+
+<p th:text="${#ctx.applicationAttributes.newvar0}">Some text 1</p>
+<p th:text="${#ctx.applicationAttributes.newvar1}">Some text 1</p>
+<p th:text="${#ctx.applicationAttributes.newvar2}">Some text 1</p>
+<p th:text="${#ctx.applicationAttributes.newvar3}">Some text 1</p>
+<p th:text="${#ctx.applicationAttributes.newvar4}">Some text 1</p>
+<p th:text="${#ctx.applicationAttributes.newvar5}">Some text 1</p>
+
+
+# ------------------------------------------------------------
+%OUTPUT
+# This strange result should be OK until thymeleaf/thymeleaf#193 is implemented. When this is implemented
+# context variables should be changeable from a processor and therefore we should get no empty <p></p>'s.
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p>ApplicationAttributesNewVar4</p>
+<p>ApplicationAttributesNewVar5</p>
+
+<p>VariablesNewVar0</p>
+<p>VariablesNewVar1</p>
+<p>RequestAttributesNewVar2</p>
+<p>ServletRequestNewVar3</p>
+<p></p>
+<p></p>
+
+<p>VariablesNewVar0</p>
+<p>VariablesNewVar1</p>
+<p>RequestAttributesNewVar2</p>
+<p>ServletRequestNewVar3</p>
+<p></p>
+<p></p>
+
+<p></p>
+<p></p>
+<p></p>
+<p></p>
+<p>ApplicationAttributesNewVar4</p>
+<p>ApplicationAttributesNewVar5</p>
