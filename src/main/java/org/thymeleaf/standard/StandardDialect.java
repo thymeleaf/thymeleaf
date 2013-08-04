@@ -68,6 +68,7 @@ import org.thymeleaf.standard.processor.attr.StandardWithAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor;
+import org.thymeleaf.standard.processor.element.StandardBlockElementProcessor;
 import org.thymeleaf.standard.processor.text.StandardTextInliningTextProcessor;
 import org.thymeleaf.util.Validate;
 
@@ -582,6 +583,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.add(new StandardXmlLangAttrProcessor());
         processors.add(new StandardXmlSpaceAttrProcessor());
         processors.add(new StandardTextInliningTextProcessor());
+        processors.add(new StandardBlockElementProcessor());
         return processors;
     }
 
