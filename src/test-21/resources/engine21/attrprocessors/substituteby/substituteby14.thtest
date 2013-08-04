@@ -6,7 +6,7 @@ m2 = '...and for you too!'
 %INPUT
 <div>
   <p>This is some text before</p>
-  <div th:include="templates/template-1 :: frag-1 (mss2='Message for you!')">...</div>
+  <div th:substituteby="templates/template-1 :: frag-1 (mesg='Message for you!')">...</div>
   <p>This is some text after</p>
 </div>
 # ------------------------------------------------------------

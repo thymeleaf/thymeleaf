@@ -11,10 +11,10 @@ m2 = '...and for you too!'
 </div>
 # ------------------------------------------------------------
 %INPUT[templates/template-1]
-<div th:fragment="frag-1(mesg, mss2)">
+<footer th:fragment="frag-1(mesg, mss2)">
   <p th:text="${mesg}">Here goes the message</p>
   <p th:text="${mss2}">Here goes the message</p>
-</div>
+</footer>
 # ------------------------------------------------------------
 %OUTPUT
 <div>

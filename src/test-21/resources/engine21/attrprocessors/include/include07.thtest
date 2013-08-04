@@ -8,17 +8,17 @@
 </div>
 # ------------------------------------------------------------
 %INPUT[templates/template-1]
-<div>
+<footer>
   <p th:text="${msg}">Here goes the message</p>
-</div>
+</footer>
 # ------------------------------------------------------------
 %OUTPUT
 <div>
   <p>This is some text before</p>
   <div>
-    <div>
+    <footer>
       <p>Message for you!</p>
-    </div>
+    </footer>
   </div>
   <p>This is some text after</p>
 </div>

@@ -8,9 +8,9 @@
 </div>
 # ------------------------------------------------------------
 %INPUT[templates/template-1]
-<div th:fragment="frag-1(msg,m2)">
+<footer th:fragment="frag-1(msg,m2)">
   <p th:text="${m2} + ' - ' + ${msg}">Here goes the message</p>
-</div>
+</footer>
 # ------------------------------------------------------------
 %OUTPUT
 <div>

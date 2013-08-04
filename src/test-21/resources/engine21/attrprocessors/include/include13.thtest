@@ -3,14 +3,14 @@
 %INPUT
 <div>
   <p>This is some text before</p>
-  <div th:include="templates/template-1 :: [//div[@id='f1']] (msg='Message for you!',m2='oh!')">...</div>
+  <div th:include="templates/template-1 :: [//footer[@id='f1']] (msg='Message for you!',m2='oh!')">...</div>
   <p>This is some text after</p>
 </div>
 # ------------------------------------------------------------
 %INPUT[templates/template-1]
-<div id="f1">
+<footer id="f1">
   <p th:text="${m2} + ' - ' + ${msg}">Here goes the message</p>
-</div>
+</footer>
 # ------------------------------------------------------------
 %OUTPUT
 <div>
