@@ -60,7 +60,7 @@ final class ConfigurationPrinterHelper {
     
     
     static void printConfiguration(
-            final Set<DialectConfiguration> dialectConfigurations, final Map<String,Boolean> lenienciesByPrefix, 
+            final Set<DialectConfiguration> dialectConfigurations,
             final Set<ITemplateResolver> templateResolvers, final Set<IMessageResolver> messageResolvers,
             final ICacheManager cacheFactory, final Set<ITemplateModeHandler> templateModeHandlers) {
 
@@ -112,13 +112,6 @@ final class ConfigurationPrinterHelper {
             
         }
 
-        if (totalDialects.intValue() > 1) {
-            logBuilder.line("[THYMELEAF] * Leniencies by prefix:");
-            for (final Map.Entry<String,Boolean> lenienciesByPrefixEntry : lenienciesByPrefix.entrySet()) {
-                logBuilder.line("[THYMELEAF]     * \"{}\": {}", lenienciesByPrefixEntry.getKey(), (lenienciesByPrefixEntry.getValue().booleanValue()? "LENIENT" : "NON-LENIENT"));
-            }
-        }
-
         logBuilder.end("[THYMELEAF] TEMPLATE ENGINE CONFIGURED OK");
 
         /*
@@ -144,7 +137,6 @@ final class ConfigurationPrinterHelper {
         final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass = dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass();
         
         final Map<String,Object> executionAttributes = dialectConfiguration.getExecutionAttributes();
-        final boolean lenient = dialectConfiguration.isLenient();
         final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = dialectConfiguration.getDialect().getDocTypeResolutionEntries();
         final Set<IDocTypeTranslation> docTypeTranslations = dialectConfiguration.getDialect().getDocTypeTranslations();
         
@@ -164,7 +156,6 @@ final class ConfigurationPrinterHelper {
             orderedSpecificProcessorsByAttributeName.put(attrName, specificProcessorsByAttributeName.get(attrName));
         }
         
-        logBuilder.line("[THYMELEAF]     * Lenient: {}", Boolean.valueOf(lenient));
         if (!orderedSpecificProcessorsByElementName.isEmpty()) {
             logBuilder.line("[THYMELEAF]     * Processors matching nodes by element name [precedence]:");
             for (final Map.Entry<String,Set<ProcessorAndContext>> elementApplicabilityEntry : orderedSpecificProcessorsByElementName.entrySet()) {

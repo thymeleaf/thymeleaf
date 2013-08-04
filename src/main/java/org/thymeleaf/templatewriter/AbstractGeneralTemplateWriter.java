@@ -200,19 +200,14 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                 boolean writeAttribute = true;
                 
                 if (attribute.isXmlnsAttribute()) {
+                    // xmlns attributes related to thymeleaf-managed prefixes (prefixes assigned to any of the
+                    // dialects configured at the template engine) are always removed.
                     final String xmlnsPrefix = attribute.getXmlnsPrefix();
                     if (configuration.isPrefixManaged(xmlnsPrefix)) {
-                        writeAttribute = configuration.isLenient(xmlnsPrefix);
-                    }
-                } else if (attribute.hasPrefix()) {
-                    final String prefix = attribute.getNormalizedPrefix();
-                    if (configuration.isPrefixManaged(prefix) && !configuration.isLenient(prefix)) {
-                        throw new TemplateProcessingException(
-                                "Error processing template: dialect prefix \"" + attribute.getNormalizedPrefix() + "\" " +
-                                "is set as non-lenient but attribute \"" + attribute.getOriginalName() + "\" has not " +
-                                "been removed during process", arguments.getTemplateName(), element.getLineNumber());
+                        writeAttribute = false;
                     }
                 }
+
                 if (writeAttribute) {
                     
                     writer.write(' ');

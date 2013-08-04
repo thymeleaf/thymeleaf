@@ -88,7 +88,6 @@ public final class Configuration {
     private Map<Class<? extends Node>, Set<ProcessorAndContext>> mergedNonSpecificProcessorsByNodeClass;
 
     private Map<String,Object> mergedExecutionAttributes = null;
-    private Map<String,Boolean> mergedLenienciesByPrefix = null;
     private Set<IDocTypeResolutionEntry> mergedDocTypeResolutionEntries = null;
     private Set<IDocTypeTranslation> mergedDocTypeTranslations = null;
 
@@ -184,9 +183,7 @@ public final class Configuration {
                 Collections.unmodifiableMap(mergedDialectArtifacts.getMergedNonSpecificProcessorsByNodeClass());
             this.mergedExecutionAttributes =
                 Collections.unmodifiableMap(mergedDialectArtifacts.getExecutionAttributes());
-            this.mergedLenienciesByPrefix = 
-                Collections.unmodifiableMap(mergedDialectArtifacts.getLeniencyByPrefix());
-            this.mergedDocTypeResolutionEntries = 
+            this.mergedDocTypeResolutionEntries =
                 Collections.unmodifiableSet(mergedDialectArtifacts.getDocTypeResolutionEntries());
             this.mergedDocTypeTranslations = 
                 Collections.unmodifiableSet(mergedDialectArtifacts.getDocTypeTranslations());
@@ -277,8 +274,7 @@ public final class Configuration {
     
     void printConfiguration() {
         ConfigurationPrinterHelper.printConfiguration(
-                this.dialectConfigurations, this.mergedLenienciesByPrefix,
-                this.templateResolvers, this.messageResolvers, 
+                this.dialectConfigurations, this.templateResolvers, this.messageResolvers,
                 this.cacheManager, this.templateModeHandlers);
     }
     
@@ -595,24 +591,12 @@ public final class Configuration {
     
     public Set<String> getAllPrefixes() {
         checkInitialized();
-        return this.mergedLenienciesByPrefix.keySet();
+        return this.dialectsByPrefix.keySet();
     }
-    
-    
-    public boolean isLenient(final String normalizedPrefix) {
-        checkInitialized();
-        final Boolean leniency = this.mergedLenienciesByPrefix.get(normalizedPrefix);
-        if (leniency == null) {
-            throw new ConfigurationException(
-                    "Cannot compute leniency for prefix \"" + normalizedPrefix + "\": No dialect/s " +
-                    "have been configured for such prefix."); 
-        }
-        return leniency.booleanValue();
-    }
-    
+
     
     public boolean isPrefixManaged(final String prefix) {
-        return this.mergedLenienciesByPrefix.containsKey(prefix);
+        return this.dialectsByPrefix.containsKey(prefix);
     }
 
     
@@ -646,8 +630,7 @@ public final class Configuration {
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(20);
         final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new HashSet<IDocTypeResolutionEntry>(20);
         final Set<IDocTypeTranslation> docTypeTranslations = new HashSet<IDocTypeTranslation>(20);
-        final Map<String,Boolean> leniencyByPrefix = new HashMap<String, Boolean>(20);
-        
+
         if (dialectConfigurations.size() == 1) {
             // No conflicts possible!
             
@@ -659,13 +642,12 @@ public final class Configuration {
             nonSpecificProcessorsByNodeClass.putAll(dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass());
 
             executionAttributes.putAll(dialectConfiguration.getExecutionAttributes());
-            leniencyByPrefix.put(dialectConfiguration.getPrefix(), Boolean.valueOf(dialectConfiguration.isLenient()));
             docTypeResolutionEntries.addAll(dialect.getDocTypeResolutionEntries());
             docTypeTranslations.addAll(dialect.getDocTypeTranslations());
             
             return new MergedDialectArtifacts(
                     specificProcessorsByElementName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
-                    executionAttributes, leniencyByPrefix, dialect.getDocTypeResolutionEntries(), dialect.getDocTypeTranslations());
+                    executionAttributes, dialect.getDocTypeResolutionEntries(), dialect.getDocTypeTranslations());
             
         }
         
@@ -714,20 +696,7 @@ public final class Configuration {
              * Merge execution attributes
              */
             executionAttributes.putAll(dialectConfiguration.getExecutionAttributes());
-            
-            
-            /*
-             * Merge leniency flags per prefix. A prefix will be considered to be "lenient" 
-             * if at least one of the dialects configured with that prefix is lenient.
-             */
-            
-            final String prefix = dialectConfiguration.getPrefix();
-            if (leniencyByPrefix.containsKey(prefix)) {
-                leniencyByPrefix.put(prefix, Boolean.valueOf(dialectConfiguration.isLenient() || leniencyByPrefix.get(prefix).booleanValue()));
-            } else {
-                leniencyByPrefix.put(prefix, Boolean.valueOf(dialectConfiguration.isLenient()));
-            }
-            
+
             
             /*
              * Check that two dialects do not specify conflicting DOCTYPE resolution entries
@@ -866,7 +835,7 @@ public final class Configuration {
         
         return new MergedDialectArtifacts(
                 specificProcessorsByElementName, specificProcessorsByAttributeName, nonSpecificProcessorsByNodeClass,
-                executionAttributes, leniencyByPrefix, docTypeResolutionEntries, docTypeTranslations);
+                executionAttributes, docTypeResolutionEntries, docTypeTranslations);
         
     }
     
@@ -879,7 +848,6 @@ public final class Configuration {
         private final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName;
         private final Map<Class<? extends Node>, Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass;
         private final Map<String,Object> executionAttributes;
-        private final Map<String,Boolean> leniencyByPrefix;
         private final Set<IDocTypeResolutionEntry> docTypeResolutionEntries;
         private final Set<IDocTypeTranslation> docTypeTranslations;
         
@@ -889,7 +857,6 @@ public final class Configuration {
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName,
                 final Map<Class<? extends Node>,Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass,
                 final Map<String,Object> executionAttributes,
-                final Map<String,Boolean> leniencyByPrefix,
                 final Set<IDocTypeResolutionEntry> docTypeResolutionEntries,
                 final Set<IDocTypeTranslation> docTypeTranslations) {
             super();
@@ -897,7 +864,6 @@ public final class Configuration {
             this.specificProcessorsByAttributeName = specificProcessorsByAttributeName;
             this.nonSpecificProcessorsByNodeClass = nonSpecificProcessorsByNodeClass;
             this.executionAttributes = executionAttributes;
-            this.leniencyByPrefix = leniencyByPrefix;
             this.docTypeResolutionEntries = docTypeResolutionEntries;
             this.docTypeTranslations = docTypeTranslations;
         }
@@ -916,10 +882,6 @@ public final class Configuration {
 
         public Map<String,Object> getExecutionAttributes() {
             return this.executionAttributes;
-        }
-
-        public Map<String, Boolean> getLeniencyByPrefix() {
-            return this.leniencyByPrefix;
         }
 
         public Set<IDocTypeResolutionEntry> getDocTypeResolutionEntries() {

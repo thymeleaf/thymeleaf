@@ -59,7 +59,6 @@ public final class DialectConfiguration {
     private final String prefix;
     private final IDialect dialect;
     
-    private boolean lenient;
     private Set<IDocTypeTranslation> docTypeTranslations;
     private Set<IDocTypeResolutionEntry> docTypeResolutionEntries;
     
@@ -205,12 +204,6 @@ public final class DialectConfiguration {
             this.executionAttributes.putAll(this.dialect.getExecutionAttributes());
 
             
-            /*
-             * Initializing XML-specific parameters
-             */
-            this.lenient = this.dialect.isLenient();
-
-            
             
             /*
              * Configuring DOCTYPE translations
@@ -252,13 +245,6 @@ public final class DialectConfiguration {
     
     public String getPrefix() {
         return this.prefix;
-    }
-
-    
-    
-    public boolean isLenient() {
-        checkInitialized();
-        return this.lenient;
     }
 
 

@@ -63,5 +63,36 @@ public abstract class AbstractDialect implements IDialect {
         return Collections.emptySet();
     }
 
-    
+
+    /**
+     * <p>
+     *   Returns whether the dialect is lenient or not. If the dialect is not lenient, then
+     *   after execution of a template no attributes or elements should exist in the result
+     *   with the prefix specified by this dialect (an error is raised if such thing happens).
+     * </p>
+     * <p>
+     *   For non-lenient dialects, any xmlns:{prefix} attributes in the document root or any
+     *   other element will be removed from output. These attributes will <b>not</b> be removed
+     *   for lenient dialects.
+     * </p>
+     * <p>
+     *   When several dialects act on the same prefix, a prefix
+     *   will be considered to be lenient if any of the dialects for that prefix is lenient.
+     * </p>
+     * <p>
+     *   Unless it is really required (for instance, in dialects with <i>null</i> prefix),
+     *   dialects should be non-lenient.
+     * </p>
+     *
+     * @return <tt>true</tt> if the dialect is lenient, <tt>false</tt> if not.
+     *
+     * @deprecated The leniency flag is not used anymore since 2.1.0. Will be removed in 3.0. This
+     *             method was removed from the IDialect interface and added here as a default implementation
+     *             in order to allow backwards-compatibility of dialects.
+     */
+    @Deprecated
+    public boolean isLenient() {
+        return true;
+    }
+
 }
