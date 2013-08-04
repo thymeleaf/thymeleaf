@@ -1,0 +1,22 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <p th:unknown="oh!">Something!</p>
+  </body>
+</html>
+# ------------------------------------------------------------
+%OUTPUT
+# ------------------------------------------------------------
+# Leniency flags dissapeared in 2.1, so every unknown attribute
+# should simply be let pass (though the xmlns attribute should have
+# dissapeared...
+# ------------------------------------------------------------
+<!DOCTYPE html>
+<html>
+  <body>
+    <p th:unknown="oh!">Something!</p>
+  </body>
+</html>
