@@ -74,7 +74,7 @@ public abstract class AbstractFragmentHandlingAttrProcessor
         if (fragmentNodes == null) {
             throw new TemplateProcessingException(
                     "Cannot correctly process \"" + attributeName + "\" attribute. " +
-                    "Fragment specification \"" + attributeValue + "\" matched null.");
+                    "Fragment specification \"" + attributeValue + "\" did not match anything.");
         }
 
         
