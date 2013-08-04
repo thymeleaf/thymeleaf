@@ -254,8 +254,11 @@ public final class TemplateRepository {
         
         final String templateMode = templateResolution.getTemplateMode();
         
-        // templateParser cannot be null (Configuration already checked that)
         final ITemplateParser templateParser = this.parsersByTemplateMode.get(templateMode);
+        if (templateParser == null) {
+            throw new TemplateInputException(
+                    "Template mode \"" + templateMode + "\" has not been configured");
+        }
         
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Starting parsing of template \"{}\"", TemplateEngine.threadIndex(), templateName);
