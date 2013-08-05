@@ -327,6 +327,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         private boolean xmlStandalone = false;
 
         private boolean xmlDeclarationComputed = false;
+
+        private boolean inParserLevelCommentBlock = false;
+
         
         
         private XmlSAXHandler(final String documentName,
@@ -397,6 +400,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
         @Override
         public void startCDATA() throws SAXException {
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
             super.startCDATA();
             flushBuffer();
             this.cdataMode = true;
@@ -405,9 +411,13 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         @Override
         public void endCDATA() throws SAXException {
-            
+
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
+
             super.endCDATA();
-            
+
             this.cdataMode = false;
             if(this.cdataBufferLen > 0) {
                 Node cdata = 
@@ -435,7 +445,11 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         @Override
         public void characters(final char[] ch, final int start, final int length) {
-            
+
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
+
             TemplatePreprocessingReader.removeEntitySubstitutions(ch, start, length);
             if (this.cdataMode) {
                 
@@ -461,6 +475,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         @Override
         public void ignorableWhitespace(final char[] ch, final int start, final int length)
                 throws SAXException {
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
             characters(ch, start, length);
         }
         
@@ -477,10 +494,26 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         @Override
         public void comment(final char[] ch, final int start, final int length) 
                 throws SAXException {
-            
+
+            final boolean startsTLCBlock = startsPLCBlock(ch, start, length);
+            final boolean endsTLCBlock = endsPLCBlock(ch, start, length);
+
+            if (this.inParserLevelCommentBlock && endsTLCBlock) {
+                this.inParserLevelCommentBlock = false;
+                return;
+            }
+
+            if (startsTLCBlock) {
+                if (!endsTLCBlock) {
+                    this.inParserLevelCommentBlock = true;
+                }
+                return;
+            }
+
             if (!this.dtdMode) {
+
                 flushBuffer();
-                
+
                 final Comment comment = 
                         new Comment(ArrayUtils.copyOfRange(ch, start, start + length));
                 
@@ -494,7 +527,22 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             }
             
         }
-        
+
+        private static boolean startsPLCBlock(final char[] ch, final int start, final int length) {
+            if (length < 2) {
+                return false;
+            }
+            return (ch[start] == '/' && ch[start + 1] == '*');
+        }
+
+        private static boolean endsPLCBlock(final char[] ch, final int start, final int length) {
+            if (length < 2) {
+                return false;
+            }
+            final int lastPos = start + length - 1;
+            return (ch[lastPos - 1] == '*' && ch[lastPos] == '/');
+        }
+
         
 
        
@@ -508,8 +556,11 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         @Override
         public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) 
                 throws SAXException {
-            
-            
+
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
+
             if (!this.xmlDeclarationComputed) {
                 
                 // SAX specification says the "getEncoding()" method in Locator2 can only
@@ -557,9 +608,13 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         @Override
         public void endElement(final String uri, final String localName, final String qName) {
-            
+
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
+
             flushBuffer();
-            
+
             final NestableNode node = this.elementStack.pop();
             
             if (node instanceof Element) {
@@ -601,6 +656,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         @Override
         public void startDTD(final String name, final String publicId, final String systemId)
                 throws SAXException {
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
             super.startDTD(name, publicId, systemId);
             this.docTypeRootElementName = name;
             this.docTypePublicId = publicId;
@@ -612,6 +670,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
         
         @Override
         public void endDTD() throws SAXException {
+            if (this.inParserLevelCommentBlock) {
+                return;
+            }
             super.endDTD();
             this.dtdMode = false;
         }
