@@ -60,8 +60,10 @@ import org.xml.sax.SAXException;
  * @since 2.0.0
  * 
  * @author Daniel Fern&aacute;ndez
- * 
+ *
+ * @deprecated DOM parsers are not supported anymore. Use SAX equivalents instead. Will be removed in 3.0.
  */
+@Deprecated
 public abstract class AbstractNonValidatingDOMTemplateParser implements ITemplateParser {
 
     private static final int BUFFER_SIZE = 8192;

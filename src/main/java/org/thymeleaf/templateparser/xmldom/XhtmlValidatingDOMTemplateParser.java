@@ -39,8 +39,10 @@ import org.thymeleaf.dom.Node;
  * @since 2.0.0
  * 
  * @author Daniel Fern&aacute;ndez
- * 
+ *
+ * @deprecated DOM parsers are not supported anymore. Use SAX equivalents instead. Will be removed in 3.0.
  */
+@Deprecated
 public final class XhtmlValidatingDOMTemplateParser extends AbstractValidatingDOMTemplateParser {
 
 
