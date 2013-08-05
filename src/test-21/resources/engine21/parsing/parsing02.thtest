@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div>
+  <!--/*-->
+    <div>
+       you can see me only before thymeleaf processes me!
+    </div>
+  <!--*/-->
+  <span>Something here!</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <span>Something here!</span>
+</div>
