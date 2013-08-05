@@ -73,6 +73,9 @@ public final class TemplatePreprocessingReader extends Reader {
     private static final int[] XML_PROLOG =
             convertToIndexes(("<?xml" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + "?>").toCharArray());
 
+    private static final int[] PROTOTYPE_ONLY_COMMENT_START = convertToIndexes("<!--/*/".toCharArray());
+    private static final int[] PROTOTYPE_ONLY_COMMENT_END = convertToIndexes("/*/-->".toCharArray());
+
 
     private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
     private static final char[] NORMALIZED_DOCTYPE_PUBLIC = "PUBLIC ".toCharArray();
@@ -428,26 +431,68 @@ public final class TemplatePreprocessingReader extends Reader {
                 }
                 
             }
-            
-            
-            final int matchedStartOfComment = 
-                    (this.inComment? 
+
+            /*
+             * ------------------
+             * CHECK FOR PROTOTYPE-ONLY COMMENT BLOCKS
+             * ------------------
+             */
+
+            // Completely ignored if inside comment
+            final int matchedStartOfPrototypeOnlyComment =
+                    (this.inComment?
+                            -2 : match(PROTOTYPE_ONLY_COMMENT_START, 0, PROTOTYPE_ONLY_COMMENT_START.length, this.buffer, buffi, bufferSize));
+
+            if (matchedStartOfPrototypeOnlyComment > 0) {
+
+                // no changes to "cbufi", as nothing is copied into result
+                // no changes to "totalRead", as nothing is copied into result
+                buffi += matchedStartOfPrototypeOnlyComment; // We just skip all characters in comment start
+                continue;
+
+            }
+
+
+            // Completely ignored if inside comment, in contrast with "normal" comment end
+            final int matchedEndOfPrototypeOnlyComment =
+                    (this.inComment?
+                            -2 : match(PROTOTYPE_ONLY_COMMENT_END, 0, PROTOTYPE_ONLY_COMMENT_END.length, this.buffer, buffi, bufferSize));
+
+            if (matchedEndOfPrototypeOnlyComment > 0) {
+
+                // no changes to "cbufi", as nothing is copied into result
+                // no changes to "totalRead", as nothing is copied into result
+                buffi += matchedEndOfPrototypeOnlyComment; // We just skip all characters in comment start
+                continue;
+
+            }
+
+
+
+            /*
+             * ------------------
+             * CHECK FOR NORMAL COMMENT BLOCKS (which should change the "inComment" flag)
+             * ------------------
+             */
+
+            final int matchedStartOfComment =
+                    (this.inComment?
                             -2 : match(COMMENT_START, 0, COMMENT_START.length, this.buffer, buffi, bufferSize));
-            
+
             if (matchedStartOfComment > 0) {
-                
+
                 this.inComment = true;
                 final int copied =
-                    copyToResult(
-                            this.buffer, buffi, matchedStartOfComment, 
-                            cbuf, cbufi, last);
+                        copyToResult(
+                                this.buffer, buffi, matchedStartOfComment,
+                                cbuf, cbufi, last);
                 cbufi += copied;
                 totalRead += copied;
                 buffi += matchedStartOfComment;
                 continue;
-                
+
             }
-            
+
             
             final int matchedEndOfComment = 
                     (this.inComment? 
@@ -466,7 +511,14 @@ public final class TemplatePreprocessingReader extends Reader {
                 continue;
                 
             }
-            
+
+
+
+            /*
+             * ------------------
+             * CHECK FOR ENTITIES(& sign will be replaced in order to avoid parser behaviours)
+             * ------------------
+             */
 
             final int matchedEntity = 
                 (this.inComment? 
@@ -484,8 +536,15 @@ public final class TemplatePreprocessingReader extends Reader {
                 continue;
                 
             }
-            
-            
+
+
+
+            /*
+             * ------------------
+             * ADD A SYNTHETIC ROOT ELEMENT IF NEEDED (e.g. in order to allow several-root-node documents)
+             * ------------------
+             */
+
             if (!Character.isWhitespace(this.buffer[buffi]) && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment) {
                 // This block will be reached if we did not have to process a
                 // DOCTYPE clause (because the DOCTYPE would have
