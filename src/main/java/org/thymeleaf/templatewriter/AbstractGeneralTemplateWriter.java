@@ -35,7 +35,6 @@ import org.thymeleaf.dom.GroupNode;
 import org.thymeleaf.dom.Macro;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
