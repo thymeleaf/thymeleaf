@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+msg = 'Hello, World!'
+# ------------------------------------------------------------
+%INPUT
+<span>before</span>
+<!--/*/
+  <div th:text="${msg}">Some message here...</div>
+/*/-->
+<span>after</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>before</span>
+  <div>Hello, World!</div>
+<span>after</span>
