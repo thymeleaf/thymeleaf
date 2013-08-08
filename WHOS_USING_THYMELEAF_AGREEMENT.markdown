@@ -14,7 +14,7 @@ By agreeing on this text, you are helping Thymeleaf a lot. So first of all: **TH
   * _"Thymeleaf User"_ means the company or organization using the Technology, willing to allow Thymeleaf to display its logo and/or trademarks on Thymeleaf's website and presentations.
   * _"Presentation"_ means any kind of digital or printed document explaining aspects of the Technology suitable to be used for training or marketing purposes by Thymeleaf.
 
-### 2. Conditions
+### 2. Main Conditions
 
   * You must be entitled --in a way Thymeleaf considers proven enough-- by the Thymeleaf User to agree on this conditions on the User's behalf.
   * You will provide Thymeleaf with:
@@ -24,11 +24,17 @@ By agreeing on this text, you are helping Thymeleaf a lot. So first of all: **TH
   * You grant Thymeleaf a worldwide, non-exclusive, royalty-free permission to display this logo and description at:
 	1. The _'Who's using Thymeleaf'_ section at the **Thymeleaf's website**.
 	2. **Presentations** about the Technology, used at events, websites, webinars, etc.
+
+### 3. Usage
+
   * Thymeleaf will never modify your provided logo or texts, other than to scale them to the right size in order to be displayed.
   * Due to space restrictions, Thymeleaf might decide not to include Your logo or description, or include only your logo (and not your description) in a Presentation. If that is the case, such Presentation will always include the URL of the _'Who's using Thymeleaf'_ section of the Thymeleaf website, where all logos and descriptions will be displayed.
   * In no case the logos and/or descriptions on the _'Who's using Thymeleaf'_ section of the website or Presentations will be displayed in any specific order at Your request. Thymeleaf, however, guarantees that all logos and descriptions in these sections will be displayed in the same size/proportion.
   * You understand and agree that Presentations may be uploaded to Presentation-sharing websites (like e.g. _slideshare.net_) and also downloaded from the Thymeleaf website by third parties. You also agree that Thymeleaf cannot be made responsible for the use these third parties make of your logo and/or description.
   * You grant Thymeleaf permission to upload Your logo and description text to Thymeleaf's project-hosting systems (e.g. GitHub). This is a technical requirement in order to being able to display them.
-  * You agree that Thymeleaf may remove Your logo and description from the website and presentations at any time for website reorganization reasons, or even cancel the _'Who's using Thymeleaf'_ section completely, without previous notice.
-  * **IMPORTANT**: You will have the right to cancel the display of your logo and description at the Thymeleaf website and Presentations at any moment, and Thymeleaf will remove them from the website as soon as possible after your request, as well as cease including them in any Presentation files created from then on. An email to Thymeleaf should be enough to request this cancellation.
 
+### 4. Cancellation
+
+  * You have the right to cancel the display of your logo and description at the Thymeleaf website and Presentations at any moment. Thymeleaf will remove them from its website as soon as possible after your request, as well as cease including them in any Presentation files created from then on. An email to the Thymeleaf team members should be enough to request this cancellation.
+  * You agree that Thymeleaf may remove Your logo and description from the website and presentations at any time for website reorganization reasons, or even cancel the _'Who's using Thymeleaf'_ section completely, without previous notice.
+  
