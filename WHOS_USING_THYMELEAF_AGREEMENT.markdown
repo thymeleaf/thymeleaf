@@ -20,12 +20,12 @@ By agreeing on this text, you are helping Thymeleaf a lot. So first of all: **TH
   * You will provide Thymeleaf with:
   	1. A copy of the official Thymeleaf User **logo** in a common digital image format (.svg, .png, .gif...), in high resolution.
   	2. A brief **description** of the work you do with the Technology or how you use it, with as much detail as you wish, in no more than 100 words.
-  	3. A **URL** your logo and/or description will link at from the Thymeleaf's website.
-  * You grant Thymeleaf a worldwide, non-exclusive, royalty-free and non-perpetual permission to display this logo and description at (and exclusively at):
+  	3. A **URL** your logo and/or description will link to from the Thymeleaf's website.
+  * You grant Thymeleaf a worldwide, non-exclusive, royalty-free permission to display this logo and description at:
 	1. The _'Who's using Thymeleaf'_ section at the **Thymeleaf's website**.
 	2. **Presentations** about the Technology, used at events, websites, webinars, etc.
-  * Due to space restrictions, Thymeleaf might decide not to include Your logo or description, or include only your logo (and not your description) in a Presentation. If that is the case, such Presentation will always display the URL of the _'Who's using Thymeleaf'_ section of the Thymeleaf website, where all logos and descriptions will be displayed.
-  * In no case the logos and/or descriptions on the _'Who's using Thymeleaf'_ section of the website or Presentations will be displayed in any specific order at Your request. Thymeleaf, however, guarantees that all logos in these sections will be displayed in the same size/proportion.
+  * Due to space restrictions, Thymeleaf might decide not to include Your logo or description, or include only your logo (and not your description) in a Presentation. If that is the case, such Presentation will always include the URL of the _'Who's using Thymeleaf'_ section of the Thymeleaf website, where all logos and descriptions will be displayed.
+  * In no case the logos and/or descriptions on the _'Who's using Thymeleaf'_ section of the website or Presentations will be displayed in any specific order at Your request. Thymeleaf, however, guarantees that all logos and descriptions in these sections will be displayed in the same size/proportion.
   * You understand and agree that Presentations may be uploaded to Presentation-sharing websites (like e.g. _slideshare.net_) and also downloaded from the Thymeleaf website by third parties. You also agree that Thymeleaf cannot be made responsible for the use these third parties make of your logo and/or description.
   * You grant Thymeleaf permission to upload Your logo and description text to Thymeleaf's project-hosting systems (e.g. GitHub). This is a technical requirement in order to being able to display them.
   * You agree that Thymeleaf may remove Your logo and description from the website and presentations at any time for website reorganization reasons, or even cancel the _'Who's using Thymeleaf'_ section completely, without previous notice.
