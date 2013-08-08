@@ -16,7 +16,7 @@ By agreeing on this text, you are helping Thymeleaf a lot. So first of all: **TH
 
 ### 2. Main Conditions
 
-  * You must be entitled --in a way Thymeleaf considers proven enough-- by the Thymeleaf User to agree on this conditions on the User's behalf.
+  * You must be entitled --in a way Thymeleaf considers proven enough-- by the Thymeleaf User to agree on these conditions on the User's behalf.
   * You will provide Thymeleaf with:
   	1. A copy of the official Thymeleaf User **logo** in a common digital image format (.svg, .png, .gif...), in high resolution. White background is preferred, if possible.
   	2. A brief **description** of the work you do with the Technology or how you use it, with as much detail as you wish, in no more than 100 words.
@@ -27,7 +27,7 @@ By agreeing on this text, you are helping Thymeleaf a lot. So first of all: **TH
 
 ### 3. Usage
 
-  * Thymeleaf will never modify your provided logo or texts, other than to scale them to the right size in order to be displayed.
+  * Thymeleaf will never modify Your provided logo or texts, other than to scale them to the right size in order to be displayed.
   * Due to space restrictions, Thymeleaf might decide not to include Your logo or description, or include only your logo (and not your description) in a Presentation. If that is the case, such Presentation will always include the URL of the _'Who's using Thymeleaf'_ section of the Thymeleaf website, where all logos and descriptions will be displayed.
   * In no case the logos and/or descriptions on the _'Who's using Thymeleaf'_ section of the website or Presentations will be displayed in any specific order at Your request. Thymeleaf, however, guarantees that all logos and descriptions in these sections will be displayed in the same size/proportion.
   * You understand and agree that Presentations may be uploaded to Presentation-sharing websites (like e.g. _slideshare.net_) and also downloaded from the Thymeleaf website by third parties. You also agree that Thymeleaf cannot be made responsible for the use these third parties make of your logo and/or description.
@@ -35,6 +35,6 @@ By agreeing on this text, you are helping Thymeleaf a lot. So first of all: **TH
 
 ### 4. Cancellation
 
-  * You have the right to cancel the display of your logo and description at the Thymeleaf website and Presentations at any moment. Thymeleaf will remove them from its website as soon as possible after your request, as well as cease including them in any Presentation files created from then on. An email to the Thymeleaf team members should be enough to request this cancellation.
+  * You have the right to cancel the display of your logo and description at the Thymeleaf website and Presentations at any moment. Thymeleaf will remove them from its website as soon as possible after your request, as well as cease including them in any Presentation files created from then on. An email to the Thymeleaf team members will be enough to request this cancellation.
   * You agree that Thymeleaf may remove Your logo and description from the website and presentations at any time for website reorganization reasons, or even cancel the _'Who's using Thymeleaf'_ section completely, without previous notice.
   
