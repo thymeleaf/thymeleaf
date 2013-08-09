@@ -1,0 +1,6 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT //a[@href='documentation.html']
+# ------------------------------------------------------------
+%OUTPUT
+<a href="documentation.html">documentation</a>

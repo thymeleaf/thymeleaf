@@ -1,0 +1,6 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT //li/b
+# ------------------------------------------------------------
+%OUTPUT
+<b>Java template engine for XML, XHTML and HTML5</b><b>dialects</b><b>internationalization</b><b>parsed template cache</b>

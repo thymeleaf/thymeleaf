@@ -1,0 +1,6 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT /ul/li[4]
+# ------------------------------------------------------------
+%OUTPUT
+<li>Full (and extensible) <b>internationalization</b> support.</li>

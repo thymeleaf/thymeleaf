@@ -1,0 +1,6 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT div[@id='header']/a[@href='index.html']
+# ------------------------------------------------------------
+%OUTPUT
+<a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>
