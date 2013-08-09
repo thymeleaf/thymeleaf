@@ -1,5 +1,7 @@
 %TEMPLATE_MODE HTML5
 # ------------------------------------------------------------
+%FRAGMENT[evaluator] org.thymeleaf.engine21.domselector.TestFragmentTestFieldEvaluator
+# ------------------------------------------------------------
 %INPUT
 <div id="header">
   <a href="index.html" title="Thymeleaf home"><img src="images/thymeleaflogonameverysmall.png" class="logo" alt="Thymeleaf Template Engine"/></a>

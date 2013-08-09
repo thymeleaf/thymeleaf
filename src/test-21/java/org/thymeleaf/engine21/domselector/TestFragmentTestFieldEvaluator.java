@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.domselector;
+package org.thymeleaf.engine21.domselector;
 
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;

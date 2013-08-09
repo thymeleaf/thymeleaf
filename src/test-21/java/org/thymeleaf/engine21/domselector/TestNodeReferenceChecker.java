@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.domselector;
+package org.thymeleaf.engine21.domselector;
 
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
