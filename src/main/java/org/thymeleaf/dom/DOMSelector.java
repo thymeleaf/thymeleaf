@@ -72,6 +72,7 @@ public final class DOMSelector implements Serializable {
 
     private static final long serialVersionUID = -1680336779267140369L;
 
+    private static final String TEXT_SELECTOR = "text()";
     
     private static final String selectorPatternStr =
             "(/{1,2})([^/\\s]*?)(?:\\[(.*?)\\](?:\\[(.*?)\\])?)?";
@@ -99,6 +100,12 @@ public final class DOMSelector implements Serializable {
     public DOMSelector(final String selectorExpression) {
         
         super();
+
+        /*
+         * STRATEGY: We will divide the DOM Selector into several, one for each level, and chain them all using the
+         * 'next' property. That way, a '/x//y[0]/z[@id='a']' selector will be divided into three chained selectors,
+         * like: '/x' -(next)-> '//y[0]' -(next)-> '/z[@id='a']'
+         */
 
         this.selectorExpression = selectorExpression;
         
@@ -160,12 +167,19 @@ public final class DOMSelector implements Serializable {
         }
         
         this.selectorName = Node.normalizeName(selectorNameGroup);
-        this.text = "text()".equals(this.selectorName);
-        
+        this.text = TEXT_SELECTOR.equals(this.selectorName);
+
         if (index1Group != null) {
-            
+
+            /*
+             * A selector level can include two types of filters between [...], in this order:
+             *   * 1. Attribute based: [@a='X' and @b='Y']
+             *   * 2. Index based: [23]
+             */
+
             Integer ind = parseIndex(index1Group);
             if (ind == null) {
+                // It's not an index-based filter. So we try to parse it as attributes.
                 HashMap<String,String> attribs = parseAttributes(selectorExpression, index1Group);
                 if (attribs == null) {
                     throw new TemplateProcessingException(
@@ -178,6 +192,7 @@ public final class DOMSelector implements Serializable {
             }
 
             if (index2Group != null) {
+                // The second filter must always be index-based (attribute-based must appear first).
 
                 if (this.index != null) {
                     throw new TemplateProcessingException(
@@ -283,20 +298,39 @@ public final class DOMSelector implements Serializable {
         }
     }
 
-    
-    
+
+
     /**
      * <p>
      *   Executes the DOM selector against the specified node, returning
      *   the result of applying the selector expression.
      * </p>
-     * 
+     *
      * @param node the node on which the selector will be executed.
      * @return the result of executing the selector.
      */
     public List<Node> select(final Node node) {
         Validate.notNull(node, "Node to be searched cannot be null");
-        return select(Collections.singletonList(node));
+        return select(Collections.singletonList(node), null);
+    }
+
+
+    /**
+     * <p>
+     *   Executes the DOM selector against the specified node and
+     *   using the specified reference checker (if references are used in the DOM selector
+     *   expression).
+     * </p>
+     *
+     * @param node the node on which the selector will be executed.
+     * @param referenceChecker the checker that will be used to compute whether a Node matches or not
+     *        a specified reference. Can be null.
+     * @return the result of executing the selector.
+     * @since 2.1.0
+     */
+    public List<Node> select(final Node node, final INodeReferenceChecker referenceChecker) {
+        Validate.notNull(node, "Node to be searched cannot be null");
+        return select(Collections.singletonList(node), referenceChecker);
     }
 
 
@@ -310,17 +344,38 @@ public final class DOMSelector implements Serializable {
      * @return the result of executing the selector.
      */
     public List<Node> select(final List<Node> nodes) {
+        return select(nodes, null);
+    }
+
+
+    /**
+     * <p>
+     *   Executes the DOM selector against the specified list of nodes and
+     *   using the specified reference checker (if references are used in the DOM selector
+     *   expression).
+     * </p>
+     *
+     * @param nodes the nodes on which the selector will be executed.
+     * @param referenceChecker the checker that will be used to compute whether a Node matches or not
+     *        a specified reference. Can be null.
+     * @return the result of executing the selector.
+     * @since 2.1.0
+     */
+    public List<Node> select(final List<Node> nodes, final INodeReferenceChecker referenceChecker) {
         Validate.notEmpty(nodes, "Nodes to be searched cannot be null or empty");
         final List<Node> selected = new ArrayList<Node>(10);
         for (final Node node : nodes) {
-            doCheckNodeSelection(selected, node);
+            doCheckNodeSelection(selected, node, referenceChecker);
         }
         return selected;
     }
+
+
+
+
     
-    
-    
-    private boolean checkChildrenSelection(final List<Node> selectedNodes, final Node node) {
+    private boolean checkChildrenSelection(final List<Node> selectedNodes,
+            final Node node, final INodeReferenceChecker referenceChecker) {
         // will return true if any nodes are added to selectedNodes
 
             if (node instanceof NestableNode) {
@@ -331,7 +386,7 @@ public final class DOMSelector implements Serializable {
                 if (nestableNode.hasChildren()) {
                     for (final Node child : nestableNode.getChildren()) {
                         final List<Node> childSelectedNodes = new ArrayList<Node>(10);
-                        if (doCheckNodeSelection(childSelectedNodes, child)) {
+                        if (doCheckNodeSelection(childSelectedNodes, child, referenceChecker)) {
                             selectedNodesForChildren.add(childSelectedNodes);
                         }
                     }
@@ -369,18 +424,19 @@ public final class DOMSelector implements Serializable {
     
     
     
-    private boolean doCheckNodeSelection(final List<Node> selectedNodes, final Node node) {
+    private boolean doCheckNodeSelection(final List<Node> selectedNodes,
+            final Node node, final INodeReferenceChecker referenceChecker) {
         
-        if (!doCheckSpecificNodeSelection(node)) {
+        if (!doCheckSpecificNodeSelection(node, referenceChecker)) {
             
-            if (this.descendMoreThanOneLevel) {
+            if (this.descendMoreThanOneLevel || node instanceof Document) {
                 // This level doesn't match, but maybe next levels do...
                 
                 if (node instanceof NestableNode) {
                     
                     final NestableNode nestableNode = (NestableNode) node;
                     if (nestableNode.hasChildren()) {
-                        return checkChildrenSelection(selectedNodes, node);
+                        return checkChildrenSelection(selectedNodes, node, referenceChecker);
                     }
                     
                 }
@@ -400,7 +456,7 @@ public final class DOMSelector implements Serializable {
             
             final NestableNode nestableNode = (NestableNode) node;
             if (nestableNode.hasChildren()) {
-                return this.next.checkChildrenSelection(selectedNodes, node);
+                return this.next.checkChildrenSelection(selectedNodes, node, referenceChecker);
             }
             
         }
@@ -409,11 +465,11 @@ public final class DOMSelector implements Serializable {
         
     }
     
-    private boolean doCheckSpecificNodeSelection(final Node node) {
+    private boolean doCheckSpecificNodeSelection(final Node node, final INodeReferenceChecker referenceChecker) {
         
         // This method checks all aspects except index (index can only
         // be applied from the superior level)
-        
+
         if (this.text) {
             return node instanceof AbstractTextNode;
         }
@@ -456,5 +512,14 @@ public final class DOMSelector implements Serializable {
     }
 
    
-    
+
+
+
+    public static interface INodeReferenceChecker {
+
+        public boolean checkReference(final Node node, final String referenceValue);
+
+    }
+
+
 }

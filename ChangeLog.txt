@@ -13,6 +13,7 @@
   an array or object definition).
 - Added th:replace as a synonym for th:substituteby.
 - Added literal synonyms for operators in standard expressions: "ne" (!=), "div" (/), "mod" (%), "not" (!).
+- Minor fix on DOM Selectors when first level is '/' and not '//'.
 
 
 2.0.17
