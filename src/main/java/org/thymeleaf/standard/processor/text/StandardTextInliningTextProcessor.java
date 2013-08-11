@@ -69,7 +69,7 @@ public final class StandardTextInliningTextProcessor
     @Override
     public ProcessorResult processTextNode(final Arguments arguments, final AbstractTextNode textNode) {
         
-        if (!arguments.getProcessTextNodes()) {
+        if (!textNode.getProcessTextNodes()) {
             throw new TemplateProcessingException("Cannot execute text inlining processor: Text processors are not active");
         }
         
