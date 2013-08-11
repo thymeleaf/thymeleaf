@@ -105,10 +105,11 @@ public abstract class Node implements Serializable {
     private boolean recomputeProcessorsImmediately;
     
     private NodeLocalVariablesMap nodeLocalVariables;
-
     private ArrayList<ProcessorAndContext> processors;
-
     private HashMap<String,Object> nodeProperties;
+
+    private boolean processTextNodes;
+    private boolean processCommentNodes;
     
 
     /**
@@ -166,6 +167,8 @@ public abstract class Node implements Serializable {
         this.nodeLocalVariables = null;
         this.processors = null;
         this.nodeProperties = null;
+        this.processTextNodes = false;
+        this.processCommentNodes = false;
     }
 
 
@@ -316,7 +319,78 @@ public abstract class Node implements Serializable {
     public final Map<String,Object> unsafeGetNodeProperties() {
         return this.nodeProperties;
     }
-    
+
+
+    /**
+     * <p>
+     *   Returns the value of the node flag that specifies whether the text nodes contained inside this node
+     *   (or this node itself, if it is a Text node) should be processed.
+     * </p>
+     * <p>
+     *   Text nodes by default are not processed.
+     * </p>
+     *
+     * @return whether Text nodes should be processed or not.
+     *
+     * @since 2.0.18
+     */
+    public final boolean getProcessTextNodes() {
+        return this.processTextNodes;
+    }
+
+    /**
+     * <p>
+     *   Sets the node flag that specifies whether the text nodes contained inside this node (or this node itself,
+     *   if it is a Text node) should be processed.
+     * </p>
+     * <p>
+     *   Text nodes by default are not processed.
+     * </p>
+     *
+     * @param processTextNodes the new value for the flag.
+     *
+     * @since 2.0.18
+     */
+    public void setProcessTextNodes(final boolean processTextNodes) {
+        this.processTextNodes = processTextNodes;
+    }
+
+    /**
+     * <p>
+     *   Returns the value of the node flag that specifies whether the comment nodes contained inside this node
+     *   (or this node itself, if it is a Comment node) should be processed.
+     * </p>
+     * <p>
+     *   Comment nodes by default are not processed.
+     * </p>
+     *
+     * @return whether Comment nodes should be processed or not.
+     *
+     * @since 2.0.18
+     */
+    public final boolean getProcessCommentNodes() {
+        return this.processCommentNodes;
+    }
+
+    /**
+     * <p>
+     *   Sets the node flag that specifies whether the comment nodes contained inside this node (or this node itself,
+     *   if it is a Comment node) should be processed.
+     * </p>
+     * <p>
+     *   Comment nodes by default are not processed.
+     * </p>
+     *
+     * @param processCommentNodes the new value for the flag.
+     *
+     * @since 2.0.18
+     */
+    public void setProcessCommentNodes(final boolean processCommentNodes) {
+        this.processCommentNodes = processCommentNodes;
+    }
+
+
+
 
     
     /**
@@ -359,6 +433,8 @@ public abstract class Node implements Serializable {
      */
     public final void setParent(final NestableNode parent) {
         this.parent = parent;
+        this.processTextNodes = this.parent.getProcessTextNodes();
+        this.processCommentNodes = this.parent.getProcessCommentNodes();
     }
     
 
@@ -775,7 +851,7 @@ public abstract class Node implements Serializable {
     
     
     
-    void processNode(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
+    void processNode(final Arguments arguments) {
 
         if (!isProcessable()) {
             return;
@@ -786,7 +862,7 @@ public abstract class Node implements Serializable {
             // Macros are never processed
             // Text/CDATAs and Comments will depend on their respective flag
             
-            if (!processTextNodes && !processCommentNodes) {
+            if (!this.processTextNodes && !this.processCommentNodes) {
                 // fail fast
                 return;
             }
@@ -795,7 +871,7 @@ public abstract class Node implements Serializable {
                 return;
             }
             
-            if (this instanceof Comment && !processCommentNodes) {
+            if (this instanceof Comment && !this.processCommentNodes) {
                 return;
             }
             
@@ -865,7 +941,7 @@ public abstract class Node implements Serializable {
                 
             }
             
-            doAdditionalProcess(executionArguments, executionArguments.getProcessTextNodes(), executionArguments.getProcessCommentNodes());
+            doAdditionalProcess(executionArguments);
             
         }
     
@@ -910,7 +986,17 @@ public abstract class Node implements Serializable {
                     // The execution arguments need to be updated as instructed by the processor
                     // (for example, for adding local variables)
                     executionArguments = processorResult.computeNewArguments(executionArguments);
-                    
+
+                    // Using only the Arguments object for keeping track of whether the text/comment nodes had to be
+                    // computed or not is not a good option because such information dissapears if the node
+                    // setting these flags dissapears afterwards (because of a "remove", for instance).
+                    if (processorResult.isProcessTextNodesSet()) {
+                        node.setProcessTextNodes(processorResult.getProcessTextNodes());
+                    }
+                    if (processorResult.isProcessCommentNodesSet()) {
+                        node.setProcessCommentNodes(processorResult.getProcessCommentNodes());
+                    }
+
                     // If we have added local variables, we should update the node's map for these variables in
                     // order to keep them synchronized
                     if ((processorResult.hasLocalVariables() || processorResult.isSelectionTargetSet()) && executionArguments.hasLocalVariables()) {
@@ -935,7 +1021,7 @@ public abstract class Node implements Serializable {
     
     
     
-    abstract void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes);
+    abstract void doAdditionalProcess(final Arguments arguments);
     
     
 
@@ -989,6 +1075,8 @@ public abstract class Node implements Serializable {
         if (this.nodeProperties != null) {
             node.nodeProperties = new HashMap<String,Object>(this.nodeProperties);
         }
+        node.processTextNodes = this.processTextNodes;
+        node.processCommentNodes = this.processCommentNodes;
     }
 
     

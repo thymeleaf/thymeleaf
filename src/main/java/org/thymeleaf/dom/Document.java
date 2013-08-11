@@ -90,7 +90,7 @@ public final class Document extends NestableNode {
     
     public void process(final Arguments arguments) {
         Validate.notNull(arguments, "Arguments cannot be null");
-        processNode(arguments, arguments.getProcessTextNodes(), arguments.getProcessCommentNodes());
+        processNode(arguments);
     }
     
     
