@@ -221,18 +221,6 @@ public final class ProcessorResult {
         
         if (this.localVariables != null && this.localVariables.size() > 0) {
             // There are local variables
-            if (this.processTextNodesSet && this.processCommentNodesSet) {
-                // Both flags have been set
-                return arguments.addLocalVariablesAndProcessTextAndCommentNodes(this.localVariables, this.processTextNodes, this.processCommentNodes);
-            }
-            if (this.processTextNodesSet) {
-                // Text nodes should be processed from here on
-                return arguments.addLocalVariablesAndProcessTextNodes(this.localVariables, this.processTextNodes);
-            }
-            if (this.processCommentNodesSet) {
-                // Text nodes should be processed from here on
-                return arguments.addLocalVariablesAndProcessCommentNodes(this.localVariables, this.processCommentNodes);
-            }
             if (this.selectionTargetSet) {
                 return arguments.addLocalVariablesAndSelectionTarget(this.localVariables, this.selectionTarget);
             }
@@ -240,18 +228,6 @@ public final class ProcessorResult {
             return arguments.addLocalVariables(this.localVariables);
         }
         // There are no local variables
-        if (this.processTextNodesSet && this.processCommentNodesSet) {
-            // Both flags have been set
-            return arguments.setProcessTextAndCommentNodes(this.processTextNodes, this.processCommentNodes);
-        }
-        if (this.processTextNodesSet) {
-            // Text nodes should be processed from here on
-            return arguments.setProcessTextNodes(this.processTextNodes);
-        }
-        if (this.processCommentNodesSet) {
-            // Text nodes should be processed from here on
-            return arguments.setProcessCommentNodes(this.processCommentNodes);
-        }
         if (this.selectionTargetSet) {
             // A text inliner has been set
             return arguments.setSelectionTarget(this.selectionTarget);
