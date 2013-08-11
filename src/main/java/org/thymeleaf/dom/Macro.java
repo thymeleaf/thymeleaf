@@ -148,7 +148,7 @@ public final class Macro extends Node {
     
     
     @Override
-    void doAdditionalProcess(final Arguments arguments, final boolean processTextNodes, final boolean processCommentNodes) {
+    void doAdditionalProcess(final Arguments arguments) {
         // Nothing to be done here
     }
 
