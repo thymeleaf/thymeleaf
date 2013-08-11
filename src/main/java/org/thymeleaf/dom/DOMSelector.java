@@ -87,18 +87,41 @@ public final class DOMSelector implements Serializable {
     private Integer index = null; // will be -1 if last()
     
     private final DOMSelector next;
-    
+
+    private final INodeReferenceChecker referenceChecker;
+
+
 
     /**
      * <p>
      *   Creates a new DOM selector specified by the argument selector
      *   expression.
      * </p>
-     * 
+     *
      * @param selectorExpression the expression specifying the selector to be used.
      */
     public DOMSelector(final String selectorExpression) {
-        
+        this(selectorExpression, null);
+    }
+
+
+    /**
+     * <p>
+     *   Creates a new DOM selector specified by the argument selector
+     *   expression.
+     * </p>
+     * <p>
+     *   This constructor allows the specification of an {@link INodeReferenceChecker}. If another one
+     *   is specified when calling the <i>select</i> methods, they will be aggregated by means of a
+     *   {@link AggregatingNodeReferenceChecker} implementation.
+     * </p>
+     *
+     * @param selectorExpression the expression specifying the selector to be used.
+     * @param referenceChecker the reference checker to be used. Might be null.
+     * @since 2.1.0
+     */
+    public DOMSelector(final String selectorExpression, final INodeReferenceChecker referenceChecker) {
+
         super();
 
         /*
@@ -108,6 +131,7 @@ public final class DOMSelector implements Serializable {
          */
 
         this.selectorExpression = selectorExpression;
+        this.referenceChecker = referenceChecker;
         
         String selectorSpecStr =
             (selectorExpression.trim().startsWith("/")? selectorExpression.trim() : "/" + selectorExpression.trim());
@@ -127,7 +151,7 @@ public final class DOMSelector implements Serializable {
         if (selEnd != -1) {
             final String tail = selectorSpecStr.substring(firstNonSlash).substring(selEnd);
             selectorSpecStr = selectorSpecStr.substring(0, firstNonSlash + selEnd);
-            this.next = new DOMSelector(tail);
+            this.next = new DOMSelector(tail, this.referenceChecker);
         } else {
             this.next = null;
         }
@@ -362,12 +386,22 @@ public final class DOMSelector implements Serializable {
      * @since 2.1.0
      */
     public List<Node> select(final List<Node> nodes, final INodeReferenceChecker referenceChecker) {
+
         Validate.notEmpty(nodes, "Nodes to be searched cannot be null or empty");
+
+        final INodeReferenceChecker computedReferenceChecker =
+                (this.referenceChecker == null? referenceChecker :
+                        (referenceChecker == null?
+                                this.referenceChecker :
+                                new AggregatingNodeReferenceChecker(this.referenceChecker, referenceChecker)));
+
         final List<Node> selected = new ArrayList<Node>(10);
         for (final Node node : nodes) {
-            doCheckNodeSelection(selected, node, referenceChecker);
+            doCheckNodeSelection(selected, node, computedReferenceChecker);
         }
+
         return selected;
+
     }
 
 
@@ -521,5 +555,36 @@ public final class DOMSelector implements Serializable {
 
     }
 
+
+    public abstract class AbstractNodeReferenceChecker implements INodeReferenceChecker {
+
+        protected AbstractNodeReferenceChecker() {
+            super();
+        }
+
+    }
+
+
+    public final class AggregatingNodeReferenceChecker extends AbstractNodeReferenceChecker {
+
+        private final INodeReferenceChecker one;
+        private final INodeReferenceChecker two;
+
+        public AggregatingNodeReferenceChecker(final INodeReferenceChecker one, final INodeReferenceChecker two) {
+            super();
+            Validate.notNull(one, "Reference checker one cannot be null");
+            Validate.notNull(two, "Reference checker two cannot be null");
+            this.one = one;
+            this.two = two;
+        }
+
+        public boolean checkReference(final Node node, final String referenceValue) {
+            if (this.one.checkReference(node, referenceValue)) {
+                return true;
+            }
+            return this.two.checkReference(node, referenceValue);
+        }
+
+    }
 
 }
