@@ -1,0 +1,8 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT[evaluator] org.thymeleaf.engine21.domselector.TestFragmentTestFieldEvaluator
+# ------------------------------------------------------------
+%FRAGMENT .five
+# ------------------------------------------------------------
+%OUTPUT
+<li class="four five">Two dialects available out-of-the-box: <i>Standard</i> and <i>SpringStandard</i> (for Spring MVC apps, same syntax as <i>Standard</i>).</li>

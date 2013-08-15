@@ -1,0 +1,8 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT[evaluator] org.thymeleaf.engine21.domselector.TestFragmentTestFieldEvaluator
+# ------------------------------------------------------------
+%FRAGMENT ul//[@class='not-important']
+# ------------------------------------------------------------
+%OUTPUT
+<li class="last not-important">Extremely extensible: can be used as a <i>template engine framework</i> if needed.</li>

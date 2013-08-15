@@ -1,0 +1,8 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT[evaluator] org.thymeleaf.engine21.domselector.TestFragmentTestFieldEvaluator
+# ------------------------------------------------------------
+%FRAGMENT a[href!='index.html' and href!='documentation.html']
+# ------------------------------------------------------------
+%OUTPUT
+<a href="index2.html">thymeleaf</a>

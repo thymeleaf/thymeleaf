@@ -1,0 +1,8 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%FRAGMENT[evaluator] org.thymeleaf.engine21.domselector.TestFragmentTestFieldEvaluator
+# ------------------------------------------------------------
+%FRAGMENT li#xml
+# ------------------------------------------------------------
+%OUTPUT
+<li id="xml" class="important"><b>XML</b>: validating against a DTD or not.</li>

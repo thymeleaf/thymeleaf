@@ -1,6 +1,6 @@
 %EXTENDS domselector.common
 # ------------------------------------------------------------
-%FRAGMENT /h2[0]
+%FRAGMENT span
 # ------------------------------------------------------------
 %OUTPUT
-<h2>Core Features</h2>
+<span class="current">features</span>

@@ -47,8 +47,11 @@ public class TestFragmentTestFieldEvaluator extends AbstractStandardTestFieldEva
         if (fieldValue == null || fieldValue.trim().equals("")) {
             return StandardTestEvaluatedField.forDefaultValue(DEFAULT_VALUE);
         }
-        
-        return StandardTestEvaluatedField.forSpecifiedValue(new DOMSelectorFragmentSpec(fieldValue.trim()));
+
+        final IFragmentSpec fragmentSpec =
+                new DOMSelectorFragmentSpec(fieldValue.trim(), new TestNodeReferenceChecker());
+
+        return StandardTestEvaluatedField.forSpecifiedValue(fragmentSpec);
         
     }
     

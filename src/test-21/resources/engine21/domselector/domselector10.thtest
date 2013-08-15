@@ -1,6 +1,6 @@
 %EXTENDS domselector.common
 # ------------------------------------------------------------
-%FRAGMENT /h2[0]
+%FRAGMENT li.important
 # ------------------------------------------------------------
 %OUTPUT
-<h2>Core Features</h2>
+<li id="xml" class="important"><b>XML</b>: validating against a DTD or not.</li>
