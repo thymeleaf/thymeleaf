@@ -149,7 +149,8 @@ public final class DOMSelector implements Serializable {
     private final String selectorExpression;
     private final boolean descendMoreThanOneLevel;
 
-    private final String selectorPath;
+    private final String selectorPath; // This will not be normalized in case it is a reference
+    private final String normalizedSelectorPath; // We keep a normalized version in case it refers to a tag name
     private final String selectorPathIdModifier;
     private final String selectorPathClassModifier;
     private final String selectorPathReferenceModifier;
@@ -254,7 +255,7 @@ public final class DOMSelector implements Serializable {
          * Process path: extract id, class, reference modifiers...
          */
 
-        String path = Node.normalizeName(selectorNameGroup);
+        String path = selectorNameGroup;
 
         final int idModifierPos = path.indexOf(ID_MODIFIER_SEPARATOR);
         final int classModifierPos = path.indexOf(CLASS_MODIFIER_SEPARATOR);
@@ -312,7 +313,8 @@ public final class DOMSelector implements Serializable {
         }
 
         this.selectorPath = path;
-        this.text = TEXT_SELECTOR.equals(this.selectorPath);
+        this.normalizedSelectorPath = Node.normalizeName(this.selectorPath);
+        this.text = TEXT_SELECTOR.equals(this.normalizedSelectorPath);
 
 
         /*
@@ -794,8 +796,8 @@ public final class DOMSelector implements Serializable {
 
         final String elementName = element.getNormalizedName();
 
-        if (!StringUtils.isEmptyOrWhitespace(this.selectorPath)) {
-            if (!this.selectorPath.equals(elementName)) {
+        if (!StringUtils.isEmptyOrWhitespace(this.normalizedSelectorPath)) {
+            if (!this.normalizedSelectorPath.equals(elementName)) {
                 return false;
             }
 
@@ -814,8 +816,8 @@ public final class DOMSelector implements Serializable {
 
         final String elementName = element.getNormalizedName();
 
-        if (!StringUtils.isEmptyOrWhitespace(this.selectorPath)) {
-            if (!this.selectorPath.equals(elementName)) {
+        if (!StringUtils.isEmptyOrWhitespace(this.normalizedSelectorPath)) {
+            if (!this.normalizedSelectorPath.equals(elementName)) {
                 return false;
             }
 
@@ -835,8 +837,8 @@ public final class DOMSelector implements Serializable {
 
         final String elementName = element.getNormalizedName();
 
-        if (!StringUtils.isEmptyOrWhitespace(this.selectorPath)) {
-            if (!this.selectorPath.equals(elementName)) {
+        if (!StringUtils.isEmptyOrWhitespace(this.normalizedSelectorPath)) {
+            if (!this.normalizedSelectorPath.equals(elementName)) {
                 return false;
             }
 
@@ -851,11 +853,11 @@ public final class DOMSelector implements Serializable {
 
         final String elementName = element.getNormalizedName();
         if (!StringUtils.isEmptyOrWhitespace(this.selectorPath)) {
-            if (!this.selectorPath.equals(elementName)) {
+            if (!this.normalizedSelectorPath.equals(elementName)) {
                 if (referenceChecker == null) {
                     return false;
                 }
-                return referenceChecker.checkReference(element, this.selectorPath);
+                return referenceChecker.checkReference(element, this.selectorPath); // This is the NOT normalized one!
             }
         }
         // We don't have any reasons to deny it matches
