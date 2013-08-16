@@ -20,7 +20,7 @@
     <ul>
       <li class="four">Dialect features (e.g.: evaluation, iteration, etc.) are applied by linking them to template's tags and/or attributes.</li>
       <li class="four five">Two dialects available out-of-the-box: <i>Standard</i> and <i>SpringStandard</i> (for Spring MVC apps, same syntax as <i>Standard</i>).</li>
-      <li>Developers can extend and create custom dialects.</li>
+      <li ref="aOa">Developers can extend and create custom dialects.</li>
     </ul>
   </li>
   <li>Several <i ref="two">template modes</i> out-of-the-box (extensible):
