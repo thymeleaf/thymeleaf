@@ -28,7 +28,7 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentHandlingAttrProcessor;
-import org.thymeleaf.standard.dom.StandardFragmentSignatureNodeReferenceChecker;
+import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
 import org.thymeleaf.standard.fragment.StandardFragment;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
 

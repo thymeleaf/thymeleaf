@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.dom;
+package org.thymeleaf.standard.fragment;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.DOMSelector;
