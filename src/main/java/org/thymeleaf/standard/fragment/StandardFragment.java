@@ -118,9 +118,12 @@ public final class StandardFragment {
      *   Returns the parameters that will be applied to the fragment.
      * </p>
      *
-     * @return the map of parameters.
+     * @return the map of parameters. May return null if no parameters exist.
      */
     public Map<String,Object> getParameters() {
+        if (this.parameters == null) {
+            return null;
+        }
         return Collections.unmodifiableMap(this.parameters);
     }
 
