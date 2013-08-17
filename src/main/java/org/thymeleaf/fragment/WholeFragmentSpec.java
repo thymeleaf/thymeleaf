@@ -19,14 +19,10 @@
  */
 package org.thymeleaf.fragment;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.FragmentSelection;
 
 
 /**
@@ -58,97 +54,20 @@ public final class WholeFragmentSpec implements IFragmentSpec {
 
 
 
-    private final Map<String,Object> parameterValues;
-
-
-
     /**
      * <p>
      *   Creates a new instance. In most cases {@link #INSTANCE} can be used
      *   instead of creating new objects of this class.
      * </p>
      */
-    public WholeFragmentSpec() {
-        this(null);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance. In cases when there are no parameters, {@link #INSTANCE} can be used
-     *   instead of creating new objects of this class.
-     * </p>
-     * <p>
-     *   This constructor allows the specification of a series of fragment parameters, which will be applied
-     *   as local variables to the extracted nodes.
-     * </p>
-     *
-     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
-     *                        returned as extraction result. Might be null if no parameters are applied.
-     *
-     * @since 2.1.0
-     */
-    public WholeFragmentSpec(final Map<String,Object> parameterValues) {
-
+    private WholeFragmentSpec() {
         super();
-
-        this.parameterValues = parameterValues;
-
-        if (this.parameterValues != null && this.parameterValues.size() > 0) {
-            if (FragmentSelection.parameterNamesAreSynthetic(this.parameterValues.keySet())) {
-                throw new TemplateProcessingException(
-                        "Cannot process fragment selection parameters " + this.parameterValues.toString() + ", " +
-                                "as they are specified for a whole-template fragment selector, " +
-                                "but using synthetic (non-named) parameter is only allowed for fragment-signature-based " +
-                                "(e.g. 'th:fragment') selection");
-            }
-        }
-
     }
-
-
-
-    /**
-     * <p>
-     *   Returns the map of parameter values that will be applied as local variables to the extracted nodes.
-     * </p>
-     *
-     * @return the map of parameters.
-     * @since 2.1.0
-     */
-    public Map<String,Object> getParameterValues() {
-        return Collections.unmodifiableMap(this.parameterValues);
-    }
-
-
-    /**
-     * <p>
-     *   Returns whether this fragment specifies parameter values, to be set as local variables into the extracted
-     *   nodes.
-     * </p>
-     *
-     * @return true if the fragment spec specifies parameters, false if not
-     * @since 2.1.0
-     */
-    public boolean hasParameterValues() {
-        return this.parameterValues != null && this.parameterValues.size() > 0;
-    }
-
-
 
 
     
     public List<Node> extractFragment(final Configuration configuration, final List<Node> nodes) {
-        applyParameters(nodes, this.parameterValues);
         return nodes;
-    }
-
-
-
-    private static void applyParameters(final List<Node> nodes, final Map<String,Object> parameterValues) {
-        for (final Node node : nodes) {
-            node.setAllNodeLocalVariables(parameterValues);
-        }
     }
 
 

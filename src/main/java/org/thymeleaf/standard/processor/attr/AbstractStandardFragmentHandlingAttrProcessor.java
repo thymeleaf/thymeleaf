@@ -19,11 +19,17 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
+import java.util.List;
+
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.fragment.FragmentAndTarget;
+import org.thymeleaf.dom.Node;
+import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentHandlingAttrProcessor;
+import org.thymeleaf.standard.dom.StandardFragmentSignatureNodeReferenceChecker;
+import org.thymeleaf.standard.fragment.StandardFragment;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
 
 /**
@@ -36,9 +42,6 @@ import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
 public abstract class AbstractStandardFragmentHandlingAttrProcessor 
         extends AbstractFragmentHandlingAttrProcessor {
 
-    
-    
-    
 
     
     protected AbstractStandardFragmentHandlingAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
@@ -50,28 +53,61 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
     }
 
 
-    
 
-    
+
+
     @Override
-    protected final FragmentAndTarget getFragmentAndTarget(final Arguments arguments,
-            final Element element, final String attributeName, final String attributeValue, 
-            final boolean substituteInclusionNode) {
+    protected final List<Node> computeFragment(
+            final Arguments arguments, final Element element, final String attributeName, final String attributeValue) {
 
-        final String targetAttributeName = 
-                getTargetAttributeName(arguments, element, attributeName, attributeValue);
-        
-        return StandardFragmentProcessor.computeStandardFragmentSpec(
-                arguments.getConfiguration(), arguments, attributeValue, null, targetAttributeName,
-                !substituteInclusionNode);
-        
+        final String fragmentSignatureAttributeName =
+                getFragmentSignatureAttributeName(arguments, element, attributeName, attributeValue);
+
+        final DOMSelector.INodeReferenceChecker fragmentSignatureReferenceChecker =
+                new StandardFragmentSignatureNodeReferenceChecker(arguments.getConfiguration(), fragmentSignatureAttributeName);
+
+        final StandardFragment fragment =
+                StandardFragmentProcessor.computeStandardFragmentSpec(
+                        arguments.getConfiguration(), arguments, attributeValue, fragmentSignatureReferenceChecker);
+
+        final List<Node> extractedNodes =
+                fragment.extractFragment(arguments.getConfiguration(), arguments,
+                        arguments.getTemplateRepository(), fragmentSignatureAttributeName);
+
+        final boolean removeHostNode = getRemoveHostNode(arguments, element, attributeName, attributeValue);
+
+        // If fragment is a whole document (no selection inside), we should never remove its parent node/s
+        // Besides, we know that StandardFragmentProcessor.computeStandardFragmentSpec only creates two types of
+        // IFragmentSpec objects: WholeFragmentSpec and DOMSelectorFragmentSpec.
+        final boolean isWholeDocument = (fragment.getFragmentSpec() instanceof WholeFragmentSpec);
+
+        if (extractedNodes == null || removeHostNode || isWholeDocument) {
+            return extractedNodes;
+        }
+
+        // Host node is NOT to be removed, therefore what should be removed is the top-level elements of the returned
+        // nodes.
+
+        final Element containerElement = new Element("container");
+
+        for (final Node extractedNode : extractedNodes) {
+            // This is done in this indirect way in order to preserver internal structures like e.g. local variables.
+            containerElement.addChild(extractedNode);
+            containerElement.extractChild(extractedNode);
+        }
+
+        final List<Node> extractedChildren = containerElement.getChildren();
+        containerElement.clearChildren();
+
+        return extractedChildren;
+
     }
 
-    
-    
-    protected abstract String getTargetAttributeName(
-            final Arguments arguments, final Element element, 
+
+
+    protected abstract String getFragmentSignatureAttributeName(
+            final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue);
 
-    
+
 }

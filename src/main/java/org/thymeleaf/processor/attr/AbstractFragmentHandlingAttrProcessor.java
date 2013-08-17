@@ -24,8 +24,6 @@ import java.util.List;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.fragment.FragmentAndTarget;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -60,39 +58,16 @@ public abstract class AbstractFragmentHandlingAttrProcessor
     public final ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName) {
         
         final String attributeValue = element.getAttributeValue(attributeName);
-        
-        final boolean substituteInclusionNode =
-            getSubstituteInclusionNode(arguments, element, attributeName, attributeValue);
-        
-        final FragmentAndTarget fragmentAndTarget = 
-                getFragmentAndTarget(arguments, element, attributeName, attributeValue, substituteInclusionNode);
-        
-        final List<Node> fragmentNodes = 
-                fragmentAndTarget.extractFragment(
-                        arguments.getConfiguration(), arguments, arguments.getTemplateRepository());
-        
-        if (fragmentNodes == null) {
-            throw new TemplateProcessingException(
-                    "Cannot correctly process \"" + attributeName + "\" attribute. " +
-                    "Fragment specification \"" + attributeValue + "\" did not match anything.");
-        }
 
-        
-        
+        final List<Node> fragmentNodes =
+                computeFragment(arguments, element, attributeName, attributeValue);
+
         element.clearChildren();
         element.removeAttribute(attributeName);
-        
-        if (substituteInclusionNode) {
-            
-            element.setChildren(fragmentNodes);
+        element.setChildren(fragmentNodes);
+
+        if (getRemoveHostNode(arguments, element, attributeName, attributeValue)) {
             element.getParent().extractChild(element);
-            
-        } else {
-         
-            for (final Node fragmentNode : fragmentNodes) {
-                element.addChild(fragmentNode);
-            }
-            
         }
         
         return ProcessorResult.OK;
@@ -101,15 +76,13 @@ public abstract class AbstractFragmentHandlingAttrProcessor
 
 
 
-    protected abstract boolean getSubstituteInclusionNode(
-            final Arguments arguments, final Element element, 
+    protected abstract boolean getRemoveHostNode(
+            final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue);
     
-    protected abstract FragmentAndTarget getFragmentAndTarget(
-            final Arguments arguments, final Element element, 
-            final String attributeName, final String attributeValue, 
-            final boolean substituteInclusionNode);
-    
+    protected abstract List<Node> computeFragment(
+            final Arguments arguments, final Element element,
+            final String attributeName, final String attributeValue);
 
     
     

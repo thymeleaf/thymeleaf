@@ -24,11 +24,9 @@ import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
-import org.thymeleaf.fragment.ElementAndAttributeNameFragmentSpec;
-import org.thymeleaf.fragment.FragmentAndTarget;
-import org.thymeleaf.fragment.FragmentSignatureAttributeFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.standard.expression.Assignation;
@@ -49,18 +47,15 @@ import org.thymeleaf.util.Validate;
 public final class StandardFragmentProcessor {
 
     private static final String TEMPLATE_NAME_CURRENT_TEMPLATE = "this";
-    private static final char FRAGMENT_SELECTOR_DOM_SELECTOR_START = '[';
-    private static final char FRAGMENT_SELECTOR_DOM_SELECTOR_END = ']';
 
     
 
     /**
      * @since 2.0.12
      */
-    public static FragmentAndTarget computeStandardFragmentSpec(
+    public static StandardFragment computeStandardFragmentSpec(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final String standardFragmentSpec, final String targetElementName, final String targetAttributeName,
-            final boolean returnOnlyChildrenIfContainingElement) {
+            final String standardFragmentSpec, final DOMSelector.INodeReferenceChecker nodeReferenceChecker) {
         
         Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
@@ -106,44 +101,24 @@ public final class StandardFragmentProcessor {
                         "returned null.");
             }
 
-            final String fragmentSelector = fragmentSelectorObject.toString();
-            
-            if (fragmentSelector.charAt(0) == FRAGMENT_SELECTOR_DOM_SELECTOR_START &&
-                    fragmentSelector.charAt(fragmentSelector.length() - 1) == FRAGMENT_SELECTOR_DOM_SELECTOR_END) {
-                // This selector has the form [...], therefore we will consider it a DOM Selector-based selector.
+            String fragmentSelector = fragmentSelectorObject.toString();
 
-                final IFragmentSpec fragmentSpec =
-                        new DOMSelectorFragmentSpec(
-                                fragmentSelector.substring(1,fragmentSelector.length() - 1),
-                                fragmentParameters, returnOnlyChildrenIfContainingElement);
-
-                return new FragmentAndTarget(templateName, fragmentSpec);
-                
+            if (fragmentSelector.length() > 3 &&
+                    fragmentSelector.charAt(0) == '[' && fragmentSelector.charAt(fragmentSelector.length() - 1) == ']' &&
+                    fragmentSelector.charAt(fragmentSelector.length() - 2) != '\'') {
+                // For legacy compatibility reasons, we allow fragment DOM Selector expressions to be specified
+                // between brackets. Just remove them.
+                fragmentSelector = fragmentSelector.substring(1, fragmentSelector.length() - 1);
             }
 
-            if (targetElementName == null) {
-                // If we are not looking for a specific element name, we will consider we are looking for a fragment
-                // signature, which might specify fragment parameters and has no limitations on the eleent on which
-                // they can appear.
 
-                final IFragmentSpec fragmentSpec =
-                        new FragmentSignatureAttributeFragmentSpec(
-                                targetAttributeName, fragmentSelector, fragmentParameters, returnOnlyChildrenIfContainingElement);
-                return new FragmentAndTarget(templateName, fragmentSpec);
+            final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector, nodeReferenceChecker);
 
-            }
-            
-            final IFragmentSpec fragmentSpec = 
-                    new ElementAndAttributeNameFragmentSpec(
-                            targetElementName, targetAttributeName, fragmentSelector,
-                            fragmentParameters, returnOnlyChildrenIfContainingElement);
-            return new FragmentAndTarget(templateName, fragmentSpec);
+            return new StandardFragment(templateName, fragmentSpec, fragmentParameters);
             
         }
         
-        final IFragmentSpec fragmentSpec =
-                (fragmentParameters == null? WholeFragmentSpec.INSTANCE : new WholeFragmentSpec(fragmentParameters));
-        return new FragmentAndTarget(templateName, fragmentSpec);
+        return new StandardFragment(templateName, WholeFragmentSpec.INSTANCE, fragmentParameters);
         
     }
 

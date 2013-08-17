@@ -17,75 +17,80 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.fragment;
+package org.thymeleaf.standard.fragment;
 
 import java.util.List;
+import java.util.Map;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Template;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.TemplateRepository;
-import org.thymeleaf.context.DialectAwareProcessingContext;
-import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.standard.expression.FragmentSignature;
+import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.util.Validate;
-
-
 
 
 /**
  * <p>
- *   Container class for a pair of <i>template name</i> + <i>fragment spec</i>,
- *   capable of executing the fragment spec on the specified template, after
- *   obtaining the template from {@link TemplateRepository}.
+ *   Object modelling the result of resolving a standard fragment specification, after all its expressions
+ *   have been evaluated, its parameters parsed, etc.
  * </p>
  * <p>
  *   Note that the specified template can be null, in which case the fragment will
  *   be considered to be executed on the current template (obtained from the
  *   IProcessingContext argument in
- *   {@link #extractFragment(Configuration, IProcessingContext, TemplateRepository)},
+ *   {@link #extractFragment(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext,
+ *      org.thymeleaf.TemplateRepository, java.lang.String)},
  *   which will therefore need to be an instance of
  *   {@link org.thymeleaf.Arguments}).
  * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.0.9
+ *
+ * @since 2.1.0
  *
  */
-public final class FragmentAndTarget {
-    
+public final class StandardFragment {
+
     private final String templateName;
     private final IFragmentSpec fragmentSpec;
-    
+    private final Map<String,Object> parameters;
+
 
     /**
      * <p>
      *   Create a new instance of this class.
      * </p>
-     * 
+     *
      * @param templateName the name of the template that will be resolved and parsed, null if
      *                     fragment is to be executed on the current template.
      * @param fragmentSpec the fragment spec that will be applied to the template, once parsed.
+     * @param parameters the parameters to be applied to the fragment, when processed.
      */
-    public FragmentAndTarget(final String templateName, final IFragmentSpec fragmentSpec) {
+    public StandardFragment(final String templateName, final IFragmentSpec fragmentSpec,
+                            final Map<String, Object> parameters) {
         super();
         // templateName can be null if target template is the current one
         Validate.notNull(fragmentSpec, "Fragment spec cannot be null or empty");
         this.templateName = templateName;
         this.fragmentSpec = fragmentSpec;
+        this.parameters = parameters;
     }
 
-    
+
 
     /**
      * <p>
      *   Returns the name of the template that will be resolved and parsed.
      * </p>
-     * 
+     *
      * @return the template name.
      */
     public String getTemplateName() {
@@ -93,57 +98,27 @@ public final class FragmentAndTarget {
     }
 
 
-    
+
     /**
      * <p>
-     *   Returns the {@link IFragmentSpec} that will be applied to the template.
+     *   Returns the {@link org.thymeleaf.fragment.IFragmentSpec} that will be applied to the template.
      * </p>
-     * 
+     *
      * @return the fragment spec.
      */
     public IFragmentSpec getFragmentSpec() {
         return this.fragmentSpec;
     }
-    
 
-    
+
+
     /**
      * <p>
-     *   Read the specified template from {@link TemplateRepository}, and then apply
-     *   the {@link IFragmentSpec} to the result of parsing it (the template).
+     *   Read the specified template from {@link org.thymeleaf.TemplateRepository}, and then apply
+     *   the {@link org.thymeleaf.fragment.IFragmentSpec} to the result of parsing it (the template).
      * </p>
      * <p>
-     *   If an {@link IProcessingContext} instance is available, using 
-     *   {@link #extractFragment(Configuration, IProcessingContext, TemplateRepository)}
-     *   should be preferred to using this method. If this one is used, the
-     *   specified {@link IContext} object will be converted into a 
-     *   {@link DialectAwareProcessingContext} instance.
-     * </p>
-     * 
-     * @param configuration the configuration to be used for resolving the template and
-     *        processing the fragment spec.
-     * @param context the context to be used for resolving and parsing the template (
-     *        after being converted to an {@link IProcessingContext} implementation.
-     * @param templateRepository the template repository to be asked for the template.
-     * @return the result of parsing + applying the fragment spec.
-     * @deprecated Should use {@link #extractFragment(Configuration, IProcessingContext, TemplateRepository)}
-     *             instead. Will be removed in 2.1.5
-     */
-    @Deprecated
-    public List<Node> extractFragment(
-            final Configuration configuration, final IContext context, final TemplateRepository templateRepository) {
-        return extractFragment(
-                configuration, 
-                new DialectAwareProcessingContext(context, configuration.getDialectSet()), 
-                templateRepository);
-    }
-
-
-    
-    /**
-     * <p>
-     *   Read the specified template from {@link TemplateRepository}, and then apply
-     *   the {@link IFragmentSpec} to the result of parsing it (the template).
+     *   Fragment parameters will also be processed and applied as local variables of the returned nodes.
      * </p>
      * <p>
      *   In order to execute on the current template (templateName == null), the <tt>context</tt>
@@ -154,10 +129,13 @@ public final class FragmentAndTarget {
      *        processing the fragment spec.
      * @param context the processing context to be used for resolving and parsing the template.
      * @param templateRepository the template repository to be asked for the template.
+     * @param fragmentSignatureAttributeName the name of the attribute in which we could expect to find a
+     *        fragment
      * @return the result of parsing + applying the fragment spec.
      */
     public List<Node> extractFragment(
-            final Configuration configuration, final IProcessingContext context, final TemplateRepository templateRepository) {
+            final Configuration configuration, final IProcessingContext context,
+            final TemplateRepository templateRepository, final String fragmentSignatureAttributeName) {
 
         String targetTemplateName = getTemplateName();
         if (targetTemplateName == null) {
@@ -177,10 +155,60 @@ public final class FragmentAndTarget {
         final Template parsedFragmentTemplate = 
                 templateRepository.getTemplate(fragmentTemplateProcessingParameters);
         
-        return this.fragmentSpec.extractFragment(configuration, parsedFragmentTemplate.getDocument().getChildren());
-        
+        final List<Node> nodes =
+                this.fragmentSpec.extractFragment(configuration, parsedFragmentTemplate.getDocument().getChildren());
+
+        /*
+         * CHECK RETURNED NODES: if there is only one node, check whether it contains a fragment signature (normally,
+         * a "th:fragment" attribute). If so, let the signature process the parameters before being applied. If no
+         * signature is found, then just apply the parameters to every returning node.
+         */
+
+        if (nodes == null) {
+            return null;
+        }
+
+        // Detach nodes from their parents, before returning them. This might help the GC.
+        for (final Node node : nodes) {
+            if (node.hasParent()) {
+                node.getParent().clearChildren();
+            }
+        }
+
+        // Check whether this is a node specifying a fragment signature. If it is, process its parameters.
+        if (nodes.size() == 1 && fragmentSignatureAttributeName != null) {
+            final Node node = nodes.get(0);
+            if (node instanceof NestableAttributeHolderNode) {
+                final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode)node;
+                if (attributeHolderNode.hasNormalizedAttribute(fragmentSignatureAttributeName)) {
+                    final String attributeValue = attributeHolderNode.getAttributeValue(fragmentSignatureAttributeName);
+                    if (attributeValue != null) {
+                        final FragmentSignature fragmentSignature =
+                                StandardExpressionProcessor.parseFragmentSignature(configuration, attributeValue);
+                        if (fragmentSignature != null) {
+                            final Map<String,Object> processedParameters =
+                                    fragmentSignature.processParameters(this.parameters);
+                            applyParameters(nodes, processedParameters);
+                            return nodes;
+                        }
+                    }
+                }
+            }
+        }
+
+        applyParameters(nodes, this.parameters);
+
+        return nodes;
+
     }
-    
+
+
+    private static void applyParameters(final List<Node> nodes, final Map<String,Object> parameters) {
+        for (final Node node : nodes) {
+            node.setAllNodeLocalVariables(parameters);
+        }
+    }
+
 
 }
 

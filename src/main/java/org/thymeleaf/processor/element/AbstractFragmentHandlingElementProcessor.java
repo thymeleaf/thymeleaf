@@ -24,8 +24,6 @@ import java.util.List;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.fragment.FragmentAndTarget;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
 
@@ -55,39 +53,16 @@ public abstract class AbstractFragmentHandlingElementProcessor
     
     @Override
     public final ProcessorResult processElement(final Arguments arguments, final Element element) {
-        
-        final boolean substituteInclusionNode = getSubstituteInclusionNode(arguments, element);
-        
-        final FragmentAndTarget fragmentAndTarget = getFragmentAndTarget(arguments, element, substituteInclusionNode);
-        
-        final List<Node> fragmentNodes = 
-                fragmentAndTarget.extractFragment(
-                        arguments.getConfiguration(), arguments, arguments.getTemplateRepository());
-        
-        if (fragmentNodes == null) {
-            throw new TemplateProcessingException(
-                    "Cannot correctly process \"" + element.getOriginalName() + "\" element. " +
-                    "Fragment specification matched null.");
+
+        final List<Node> fragmentNodes = computeFragment(arguments, element);
+
+        element.clearChildren();
+        element.setChildren(fragmentNodes);
+
+        if (getRemoveHostNode(arguments, element)) {
+            element.getParent().extractChild(element);
         }
 
-        
-        element.clearChildren();
-        
-        if (substituteInclusionNode) {
-            
-            element.setChildren(fragmentNodes);
-            element.getParent().extractChild(element);
-            
-        } else {
-            
-            for (final Node fragmentNode : fragmentNodes) {
-                element.addChild(fragmentNode);
-            }
-            
-        }
-        
-        doAdditionalElementProcessing(arguments, element);
-        
         return ProcessorResult.OK;
             
     }
@@ -96,17 +71,11 @@ public abstract class AbstractFragmentHandlingElementProcessor
     
     
 
-    protected abstract boolean getSubstituteInclusionNode(
+    protected abstract boolean getRemoveHostNode(
+            final Arguments arguments, final Element element);
+
+    protected abstract List<Node> computeFragment(
             final Arguments arguments, final Element element);
     
-    protected abstract FragmentAndTarget getFragmentAndTarget(
-            final Arguments arguments, final Element element, final boolean substituteInclusionNode);
-    
-    
-    
-    @SuppressWarnings("unused")
-    protected void doAdditionalElementProcessing(final Arguments arguments, final Element element) {
-        // Meant for overriding. Nothing to do.
-    }
-    
+
 }

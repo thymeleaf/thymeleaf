@@ -100,18 +100,34 @@ public final class StandardExpressionProcessor {
     public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         return getParserAttribute(configuration).parseEach(configuration, processingContext, input);
     }
-    
 
-    
+
+
     public static FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
         return getParserAttribute(arguments.getConfiguration()).parseFragmentSelection(arguments, input);
     }
-    
+
     /**
      * @since 2.0.9
      */
     public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         return getParserAttribute(configuration).parseFragmentSelection(configuration, processingContext, input);
+    }
+
+
+
+    /**
+     * @since 2.1.0
+     */
+    public static FragmentSignature parseFragmentSignature(final Arguments arguments, final String input) {
+        return getParserAttribute(arguments.getConfiguration()).parseFragmentSignature(arguments, input);
+    }
+
+    /**
+     * @since 2.1.0
+     */
+    public static FragmentSignature parseFragmentSignature(final Configuration configuration, final String input) {
+        return getParserAttribute(configuration).parseFragmentSignature(configuration, input);
     }
 
     

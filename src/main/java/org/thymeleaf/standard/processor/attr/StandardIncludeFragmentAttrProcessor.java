@@ -54,8 +54,8 @@ public class StandardIncludeFragmentAttrProcessor
 
 
     @Override
-    protected String getTargetAttributeName(
-            final Arguments arguments,final Element element, 
+    protected String getFragmentSignatureAttributeName(
+            final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue) {
         
         if (attributeName != null) {
@@ -71,8 +71,8 @@ public class StandardIncludeFragmentAttrProcessor
 
 
     @Override
-    protected boolean getSubstituteInclusionNode(
-            final Arguments arguments, 
+    protected boolean getRemoveHostNode(
+            final Arguments arguments,
             final Element element, final String attributeName, final String attributeValue) {
         // th:include does not substitute the inclusion node
         return false;

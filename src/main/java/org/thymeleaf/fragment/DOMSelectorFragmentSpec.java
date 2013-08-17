@@ -19,19 +19,13 @@
  */
 package org.thymeleaf.fragment;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dom.DOMSelector;
-import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.util.Validate;
 
 
@@ -67,11 +61,6 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     public static final String DOM_SELECTOR_EXPRESSION_PREFIX = "{dom_selector}";
     
     private final String selectorExpression;
-    private final boolean returnOnlyChildren;
-
-    // Note: DOM Selector-based fragments do not allow synthetic parameter values. They should always be named.
-    private final Map<String,Object> parameterValues;
-
     private DOMSelector.INodeReferenceChecker referenceChecker;
 
 
@@ -85,74 +74,7 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
      * @param selectorExpression the expression to be used for the DOM selector.
      */
     public DOMSelectorFragmentSpec(final String selectorExpression) {
-        this(selectorExpression, null, null, false);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally.
-     * </p>
-     * <p>
-     *   This constructor allows the specification of an {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}.
-     *   If another one is specified when calling the <i>select</i> methods, they will be aggregated by means of a
-     *   {@link org.thymeleaf.dom.DOMSelector.AggregatingNodeReferenceChecker} implementation.
-     * </p>
-     *
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param referenceChecker the reference checker to be used. Might be null.
-     *
-     * @since 2.1.0
-     */
-    public DOMSelectorFragmentSpec(final String selectorExpression,
-            final DOMSelector.INodeReferenceChecker referenceChecker) {
-        this(selectorExpression, referenceChecker, null, false);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally, and specifying also
-     *   a series of parameters that will be applied as local variables to the Nodes returned
-     *   by the extraction method.
-     * </p>
-     *
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
-     *                        returned as extraction result. Might be null if no parameters are applied.
-     *
-     * @since 2.1.0
-     */
-    public DOMSelectorFragmentSpec(final String selectorExpression, final Map<String,Object> parameterValues) {
-        this(selectorExpression, null, parameterValues, false);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally, and specifying also
-     *   a series of parameters that will be applied as local variables to the Nodes returned
-     *   by the extraction method.
-     * </p>
-     * <p>
-     *   This constructor allows the specification of an {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}.
-     *   If another one is specified when calling the <i>select</i> methods, they will be aggregated by means of a
-     *   {@link org.thymeleaf.dom.DOMSelector.AggregatingNodeReferenceChecker} implementation.
-     * </p>
-     *
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param referenceChecker the reference checker to be used. Might be null.
-     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
-     *                        returned as extraction result. Might be null if no parameters are applied.
-     *
-     * @since 2.1.0
-     */
-    public DOMSelectorFragmentSpec(final String selectorExpression,
-            final DOMSelector.INodeReferenceChecker referenceChecker, final Map<String,Object> parameterValues) {
-        this(selectorExpression, referenceChecker, parameterValues, false);
+        this(selectorExpression, null);
     }
 
 
@@ -164,118 +86,17 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
      *   one) must be returned or only its/their children.
      * </p>
      * <p>
-     *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name 
-     *   and/or containing the specified attribute will be discarded, and only its/their
-     *   children will be returned.
-     * </p>
-     * 
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param returnOnlyChildren whether the selected elements should be returned (fals, default),
-     *        or only their children (true).
-     *
-     * @since 2.0.12
-     */
-    public DOMSelectorFragmentSpec(final String selectorExpression, final boolean returnOnlyChildren) {
-        this(selectorExpression, null, null, returnOnlyChildren);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally and also a flag indicating
-     *   whether the selected element itself (or selected elements if more than
-     *   one) must be returned or only its/their children.
-     * </p>
-     * <p>
-     *   This constructor allows the specification of an {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}.
-     *   If another one is specified when calling the <i>select</i> methods, they will be aggregated by means of a
-     *   {@link org.thymeleaf.dom.DOMSelector.AggregatingNodeReferenceChecker} implementation.
-     * </p>
-     * <p>
-     *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name
-     *   and/or containing the specified attribute will be discarded, and only its/their
-     *   children will be returned.
+     *   This constructor allows the specification of an {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}
+     *   that will be applied during the executing of the contained {@link DOMSelector} object.
      * </p>
      *
      * @param selectorExpression the expression to be used for the DOM selector.
      * @param referenceChecker the reference checker to be used. Might be null.
-     * @param returnOnlyChildren whether the selected elements should be returned (fals, default),
-     *        or only their children (true).
-     *
-     * @since 2.1.0
-     */
-    public DOMSelectorFragmentSpec(final String selectorExpression,
-            final DOMSelector.INodeReferenceChecker referenceChecker, final boolean returnOnlyChildren) {
-        this(selectorExpression, referenceChecker, null, returnOnlyChildren);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally and also a flag indicating
-     *   whether the selected element itself (or selected elements if more than
-     *   one) must be returned or only its/their children.
-     * </p>
-     * <p>
-     *   This constructor also allows the specification of a series of parameters that will be applied as
-     *   local variables to the Nodes returned by the extraction method.
-     * </p>
-     * <p>
-     *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name
-     *   and/or containing the specified attribute will be discarded, and only its/their
-     *   children will be returned.
-     * </p>
-     *
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
-     *                        returned as extraction result. Might be null if no parameters are applied.
-     * @param returnOnlyChildren whether the selected elements should be returned (false, default),
-     *        or only their children (true).
      *
      * @since 2.1.0
      */
     public DOMSelectorFragmentSpec(
-            final String selectorExpression, final Map<String,Object> parameterValues, final boolean returnOnlyChildren) {
-        this (selectorExpression, null, parameterValues, returnOnlyChildren);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally and also a flag indicating
-     *   whether the selected element itself (or selected elements if more than
-     *   one) must be returned or only its/their children.
-     * </p>
-     * <p>
-     *   This constructor allows the specification of an {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}.
-     *   If another one is specified when calling the <i>select</i> methods, they will be aggregated by means of a
-     *   {@link org.thymeleaf.dom.DOMSelector.AggregatingNodeReferenceChecker} implementation.
-     * </p>
-     * <p>
-     *   This constructor also allows the specification of a series of parameters that will be applied as
-     *   local variables to the Nodes returned by the extraction method.
-     * </p>
-     * <p>
-     *   If <tt>returnOnlyChildren</tt> is true, the element with the specified name
-     *   and/or containing the specified attribute will be discarded, and only its/their
-     *   children will be returned.
-     * </p>
-     *
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param referenceChecker the reference checker to be used. Might be null.
-     * @param parameterValues the fragment parameters, which will be applied as local variables to the nodes
-     *                        returned as extraction result. Might be null if no parameters are applied.
-     * @param returnOnlyChildren whether the selected elements should be returned (false, default),
-     *        or only their children (true).
-     *
-     * @since 2.1.0
-     */
-    public DOMSelectorFragmentSpec(
-            final String selectorExpression, final DOMSelector.INodeReferenceChecker referenceChecker,
-            final Map<String,Object> parameterValues, final boolean returnOnlyChildren) {
+            final String selectorExpression, final DOMSelector.INodeReferenceChecker referenceChecker) {
 
         super();
 
@@ -283,18 +104,6 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
         this.selectorExpression = selectorExpression;
         this.referenceChecker = referenceChecker;
-        this.parameterValues = parameterValues;
-        this.returnOnlyChildren = returnOnlyChildren;
-
-        if (this.parameterValues != null && this.parameterValues.size() > 0) {
-            if (FragmentSelection.parameterNamesAreSynthetic(this.parameterValues.keySet())) {
-                throw new TemplateProcessingException(
-                        "Cannot process fragment selection parameters " + this.parameterValues.toString() + ", " +
-                        "as they are specified for a DOM-Selector-based fragment selector " +
-                        "(\"" + this.selectorExpression + "\"), but using synthetic (non-named) " +
-                        "parameter is only allowed for fragment-signature-based (e.g. 'th:fragment') selection");
-            }
-        }
 
     }
 
@@ -303,48 +112,6 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
     public String getSelectorExpression() {
         return this.selectorExpression;
-    }
-    
-    
-    /**
-     * <p>
-     *   Returns whether this spec should only return the children of the selected nodes
-     *   (<tt>true</tt>) or the selected nodes themselves (<tt>false</tt>, default).
-     * </p>
-     * 
-     * @return whether this spec should only return the children of the selected nodes
-     *         or not (default: false).
-     * @since 2.0.12
-     */
-    public boolean isReturnOnlyChildren() {
-        return this.returnOnlyChildren;
-    }
-
-
-    /**
-     * <p>
-     *   Returns the map of parameter values that will be applied as local variables to the extracted nodes.
-     * </p>
-     *
-     * @return the map of parameters.
-     * @since 2.1.0
-     */
-    public Map<String,Object> getParameterValues() {
-        return Collections.unmodifiableMap(this.parameterValues);
-    }
-
-
-    /**
-     * <p>
-     *   Returns whether this fragment specifies parameter values, to be set as local variables into the extracted
-     *   nodes.
-     * </p>
-     *
-     * @return true if the fragment spec specifies parameters, false if not
-     * @since 2.1.0
-     */
-    public boolean hasParameterValues() {
-        return this.parameterValues != null && this.parameterValues.size() > 0;
     }
 
 
@@ -392,39 +159,8 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
         }
             
         
-        if (!this.returnOnlyChildren) {
-            applyParameters(extraction, this.parameterValues);
-            return extraction;
-        }
-        
-        final List<Node> extractionChildren = new ArrayList<Node>(5);
-        for (final Node extractionNode : extraction) {
-            
-            if (extractionNode == null) {
-                continue;
-            }
-            
-            if (!(extractionNode instanceof NestableNode)) {
-                throw new TemplateProcessingException(
-                        "Cannot correctly retrieve children of node selected by fragment spec " +
-                        "with DOM selector \"" + this.selectorExpression + "\". Node is not a " +
-                		"nestable node (" + extractionNode.getClass().getSimpleName() + ").");
-            }
-            
-            extractionChildren.addAll(((NestableNode)extractionNode).getChildren());
-            
-        }
+        return extraction;
 
-        applyParameters(extractionChildren, this.parameterValues);
-        return extractionChildren;
-        
-    }
-
-    
-    private static void applyParameters(final List<Node> nodes, final Map<String,Object> parameterValues) {
-        for (final Node node : nodes) {
-            node.setAllNodeLocalVariables(parameterValues);
-        }
     }
 
 

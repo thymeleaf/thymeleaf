@@ -28,7 +28,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -183,17 +182,6 @@ public final class ElementAndAttributeNameFragmentSpec implements IFragmentSpec 
         this.attributeValue = attributeValue;
         this.parameterValues = parameterValues;
         this.returnOnlyChildren = returnOnlyChildren;
-
-        if (this.parameterValues != null && this.parameterValues.size() > 0) {
-            if (FragmentSelection.parameterNamesAreSynthetic(this.parameterValues.keySet())) {
-                throw new TemplateProcessingException(
-                        "Cannot process fragment selection parameters " + this.parameterValues.toString() + ", " +
-                        "as they are specified for an element name/attribute name+value -based fragment selector " +
-                        "(<"+ this.elementName + " " + this.attributeName + "=\"" + this.attributeValue + "\">), " +
-                        "but using synthetic (non-named) parameter is only allowed for fragment-signature-based " +
-                        "(e.g. 'th:fragment') selection");
-            }
-        }
 
     }
 
