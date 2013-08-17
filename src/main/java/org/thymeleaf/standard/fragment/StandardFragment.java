@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.standard.fragment;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -108,6 +109,19 @@ public final class StandardFragment {
      */
     public IFragmentSpec getFragmentSpec() {
         return this.fragmentSpec;
+    }
+
+
+
+    /**
+     * <p>
+     *   Returns the parameters that will be applied to the fragment.
+     * </p>
+     *
+     * @return the map of parameters.
+     */
+    public Map<String,Object> getParameters() {
+        return Collections.unmodifiableMap(this.parameters);
     }
 
 
