@@ -30,11 +30,12 @@ import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
-import org.thymeleaf.fragment.FragmentSignatureAttributeFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.standard.dom.StandardFragmentSignatureNodeReferenceChecker;
 import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
@@ -129,28 +130,28 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
 
             final TemplateEngine templateEngine = getTemplateEngine();
             final String fragmentAttributeName = getFragmentAttributeName(templateEngine);
+
+            final DOMSelector.INodeReferenceChecker nodeReferenceChecker =
+                    new StandardFragmentSignatureNodeReferenceChecker(
+                            templateEngine.getConfiguration(), fragmentAttributeName);
             
             for (final String fragmentToRender : fragmentsToRender) {
                 
                 if (fragmentToRender != null) {
-                    
-                    IFragmentSpec fragmentSpec = null;
-                    if (fragmentToRender.length() > 2 && 
-                            fragmentToRender.charAt(0) == '[' &&
-                            fragmentToRender.charAt(fragmentToRender.length() - 1) == ']') {
-                        // Fragment is a DOM selector
-                        
-                        fragmentSpec =
-                                new DOMSelectorFragmentSpec(
-                                        fragmentToRender.substring(1, fragmentToRender.length() - 1).trim());
-                        
-                    } else {
-                        // Fragment is not a DOM selector, therefore it is a fragment name
-                        
-                        fragmentSpec = new FragmentSignatureAttributeFragmentSpec(fragmentAttributeName, fragmentToRender);
-                        
+
+                    String fragmentSelector = fragmentToRender;
+
+                    if (fragmentSelector.length() > 3 &&
+                            fragmentSelector.charAt(0) == '[' && fragmentSelector.charAt(fragmentSelector.length() - 1) == ']' &&
+                            fragmentSelector.charAt(fragmentSelector.length() - 2) != '\'') {
+                        // For legacy compatibility reasons, we allow fragment DOM Selector expressions to be specified
+                        // between brackets. Just remove them.
+                        fragmentSelector = fragmentSelector.substring(1, fragmentSelector.length() - 1);
                     }
-                    
+
+
+                    final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector, nodeReferenceChecker);
+
                     super.renderFragment(fragmentSpec, model, request, response);
                     
                 }
