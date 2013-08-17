@@ -35,7 +35,7 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
-import org.thymeleaf.standard.dom.StandardFragmentSignatureNodeReferenceChecker;
+import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
 import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
