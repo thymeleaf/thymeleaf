@@ -27,7 +27,7 @@ import org.thymeleaf.processor.element.AbstractNoOpElementProcessor;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 2.1.0
  *
  */
 public final class StandardBlockElementProcessor
