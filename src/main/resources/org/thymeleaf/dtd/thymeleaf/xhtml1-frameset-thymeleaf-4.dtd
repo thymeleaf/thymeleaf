@@ -1337,7 +1337,6 @@ several semantically related columns together.
   th:onsubmit        CDATA  #IMPLIED
   th:onunload        CDATA  #IMPLIED
   th:readonly        CDATA  #IMPLIED
-  th:ref             CDATA  #IMPLIED
   th:rel             CDATA  #IMPLIED
   th:remove          CDATA  #IMPLIED
   th:rev             CDATA  #IMPLIED

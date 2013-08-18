@@ -401,7 +401,6 @@
   th:onunload        CDATA  #IMPLIED
   th:readonly        CDATA  #IMPLIED
   th:rel             CDATA  #IMPLIED
-  th:ref             CDATA  #IMPLIED
   th:remove          CDATA  #IMPLIED
   th:rev             CDATA  #IMPLIED
   th:rows            CDATA  #IMPLIED
