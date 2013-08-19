@@ -223,6 +223,9 @@ public final class NumberUtils {
             case COMMA :
                 symbols.setDecimalSeparator(',');
                 break;
+            case WHITESPACE :
+                symbols.setDecimalSeparator(' ');
+                break;
             case DEFAULT :
                 final DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
                 symbols.setDecimalSeparator(dfs.getDecimalSeparator());
@@ -238,6 +241,9 @@ public final class NumberUtils {
                 break;
             case COMMA :
                 symbols.setGroupingSeparator(',');
+                break;
+            case WHITESPACE :
+                symbols.setGroupingSeparator(' ');
                 break;
             case DEFAULT :
                 final DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);

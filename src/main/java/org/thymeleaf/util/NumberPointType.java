@@ -33,8 +33,9 @@ public enum NumberPointType {
 
 
     POINT("POINT"),
-    COMMA("COMMA"), 
-    NONE("NONE"), 
+    COMMA("COMMA"),
+    WHITESPACE("WHITESPACE"),
+    NONE("NONE"),
     DEFAULT("DEFAULT");
     
 
@@ -55,6 +56,9 @@ public enum NumberPointType {
         }
         if ("COMMA".equals(name)) {
             return COMMA;
+        }
+        if ("WHITESPACE".equals(name)) {
+            return WHITESPACE;
         }
         return null;
     }
