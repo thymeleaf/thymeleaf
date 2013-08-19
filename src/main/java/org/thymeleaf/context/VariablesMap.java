@@ -19,13 +19,12 @@
  */
 package org.thymeleaf.context;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ognl.MapPropertyAccessor;
-import ognl.OgnlException;
-import ognl.OgnlRuntime;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * <p>
@@ -53,7 +52,30 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
     
     
     static {
-        OgnlRuntime.setPropertyAccessor(VariablesMap.class, new VariablesMapPropertyAccessor());
+
+        try {
+
+            final Class<?> ognlRuntimeClass = Class.forName("ognl.OgnlRuntime");
+            final Class<?> ognlPropertyAccessorClass = Class.forName("ognl.PropertyAccessor");
+            final Class<?> newPropertyAccessorClass =
+                    Class.forName(VariablesMap.class.getPackage().getName() + ".OGNLVariablesMapPropertyAccessor");
+            final Method setPropertyAccessorMethod =
+                    ognlRuntimeClass.getMethod("setPropertyAccessor",Class.class, ognlPropertyAccessorClass);
+            final Object newPropertyAccessor = newPropertyAccessorClass.newInstance();
+            setPropertyAccessorMethod.invoke(null, VariablesMap.class, newPropertyAccessor);
+
+        } catch (final ClassNotFoundException ignored) {
+            // Nothing bad. We simply don't have OGNL in our classpath. We're probably using Spring.
+        } catch (final NoSuchMethodException e) {
+            // We will not ignore this: we have OGNL, but probably not the right version.
+            throw new TemplateProcessingException(
+                    "Class ognl.OgnlRuntime does not have method 'setPropertyAccessor'. " +
+                    "Maybe OGNL version is too old/new?", e);
+        } catch (final Exception e) {
+            // We will not ignore this: there's a problem creating an instance of the new property accessor!
+            throw new TemplateProcessingException("Exception while configuring OGNL variables map property accessor", e);
+        }
+
     }
 
     
@@ -110,48 +132,4 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
 
 
 
-    /**
-     * Extension of {@code MapPropertyAccessor} that handles getting of size
-     * property. When there is entry with key "size" it is returned instead of
-     * size property from {@code VariablesMap}. Otherwise this property accessor
-     * works exactly same like {@code MapPropertyAccessor}.
-     * 
-     * @author Michal Kreuzman
-     * 
-     * @see MapPropertyAccessor
-     * 
-     * @since 2.0
-     */
-    private static class VariablesMapPropertyAccessor extends MapPropertyAccessor {
-        
-        private static final String RESERVED_SIZE_PROPERTY_NAME = "size";
-
-        VariablesMapPropertyAccessor() {
-            super();
-        }
-        
-        @Override
-        @SuppressWarnings("rawtypes")
-        public Object getProperty(final Map context, final Object target, final Object name) throws OgnlException {
-            
-            if (!RESERVED_SIZE_PROPERTY_NAME.equals(name)) {
-                return super.getProperty(context, target, name);
-            }
-
-            if (!(target instanceof VariablesMap)) {
-                throw new IllegalStateException(
-                        "Wrong target type. This property accessor is only usable for VariableMap class.");
-            }
-
-            final Map map = (Map) target;
-            Object result = map.get(RESERVED_SIZE_PROPERTY_NAME);
-            if (result == null) {
-                result = Integer.valueOf(map.size());
-            }
-            return result;
-            
-        }
-        
-    }
-    
 }
