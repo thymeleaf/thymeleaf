@@ -1,0 +1,16 @@
+%EXTENDS numbers.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#numbers.formatInteger(one, 5, 'WHITESPACE')}">...</p>
+<p th:text="${#numbers.formatInteger(two, 5, 'WHITESPACE')}">...</p>
+<p th:text="${#numbers.formatInteger(three, 5, 'WHITESPACE')}">...</p>
+<p th:text="${#numbers.formatInteger(four, 5, 'WHITESPACE')}">...</p>
+<p th:text="${#numbers.formatInteger(five, 5, 'WHITESPACE')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>00 123</p>
+<p>25 412 315 412 312 412 312 545 213</p>
+<p>00 000</p>
+<p>00 000</p>
+<p>25 412 315 412 312 412 312 545 213</p>
+

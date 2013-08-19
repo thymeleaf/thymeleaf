@@ -1,0 +1,13 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+
+one = new java.math.BigInteger('123')
+two = new java.math.BigInteger('25412315412312412312545213')
+three = new java.math.BigDecimal('0.124')
+four = new java.math.BigDecimal('0.1243541231123123124123125412312')
+five = new java.math.BigDecimal('25412315412312412312545213.1243541231123123124123125412312')
+
+numberList = { one, two, three, four, five }
+integerList = { one, two }
+decimalList = { three, four, five }
