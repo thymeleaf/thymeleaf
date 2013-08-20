@@ -89,7 +89,9 @@ final class ExpressionParsingUtil {
 
     public static ExpressionParsingState decompose(
             final String input, final ExpressionParsingDecompositionConfig config) {
-        final ExpressionParsingState state = decomposeSimpleExpressions(input, config);
+        // Just before starting decomposing simple expressions, we perform the processing of literal substitutions...
+        final ExpressionParsingState state =
+                decomposeSimpleExpressions(LiteralSubstitutionUtil.performLiteralSubstitution(input), config);
         return (config.getUnnest()? decomposeNestingParenthesis(state, 0) : state);
     }
 
@@ -145,7 +147,7 @@ final class ExpressionParsingUtil {
 
             final char c = input.charAt(i);
 
-            if (inNothing && c == TextLiteralExpression.DELIMITER && !isEscaping(input, i)) {
+            if (inNothing && c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaping(input, i)) {
                 // We are opening a literal
 
                 finishCurrentFragment(decomposedInput, currentFragment);
@@ -155,7 +157,7 @@ final class ExpressionParsingUtil {
                 inLiteral = true;
                 inNothing = false;
 
-            } else if (inLiteral && c == TextLiteralExpression.DELIMITER && !isEscaping(input, i)) {
+            } else if (inLiteral && c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaping(input, i)) {
                 // We are closing a literal
 
                 currentFragment.append(c);
@@ -509,26 +511,6 @@ final class ExpressionParsingUtil {
 
 
 
-
-
-
-    private static boolean isEscaping(final String input, final int pos) {
-        // Only an odd number of \'s will indicate escaping
-        if (pos == 0 || input.charAt(pos - 1) != '\\') {
-            return false;
-        }
-        int i = pos - 1;
-        boolean odd = false;
-        while (i >= 0) {
-            if (input.charAt(i) == '\\') {
-                odd = !odd;
-            } else {
-                return odd;
-            }
-            i--;
-        }
-        return odd;
-    }
 
 
 
