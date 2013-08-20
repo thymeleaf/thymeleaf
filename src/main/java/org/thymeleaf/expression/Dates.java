@@ -65,8 +65,8 @@ public final class Dates {
      * 
      * @since 1.1.2
      */
-    public static Date create(final Object year, final Object month, final Object day) {
-        return DateUtils.create(year, month, day).getTime();
+    public Date create(final Object year, final Object month, final Object day) {
+        return DateUtils.create(year, month, day, null, null, null, null, null, this.locale).getTime();
     }
 
     
@@ -74,9 +74,9 @@ public final class Dates {
      * 
      * @since 1.1.2
      */
-    public static Date create(final Object year, final Object month, final Object day, 
+    public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute) {
-        return DateUtils.create(year, month, day, hour, minute).getTime();
+        return DateUtils.create(year, month, day, hour, minute, null, null, null, this.locale).getTime();
     }
 
     
@@ -84,28 +84,19 @@ public final class Dates {
      * 
      * @since 1.1.2
      */
-    public static Date create(final Object year, final Object month, final Object day, 
+    public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second) {
-        return DateUtils.create(year, month, day, hour, minute, second).getTime();
+        return DateUtils.create(year, month, day, hour, minute, second, null, null, this.locale).getTime();
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @since 1.1.2
      */
-    public static Date create(final Object year, final Object month, final Object day, 
+    public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return DateUtils.create(year, month, day, hour, minute, second, millisecond).getTime();
-    }
-    
-
-    /**
-     * 
-     * @since 1.1.2
-     */
-    public static Date createNow() {
-        return DateUtils.createNow().getTime();
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, null, this.locale).getTime();
     }
 
 
@@ -113,10 +104,37 @@ public final class Dates {
      * 
      * @since 1.1.2
      */
-    public static Date createToday() {
-        return DateUtils.createToday().getTime();
+    public Date createNow() {
+        return DateUtils.createNow(null, this.locale).getTime();
     }
-    
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Date createNowForTimeZone(final Object timeZone) {
+        return DateUtils.createNow(timeZone, this.locale).getTime();
+    }
+
+
+    /**
+     *
+     * @since 1.1.2
+     */
+    public Date createToday() {
+        return DateUtils.createToday(null, this.locale).getTime();
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Date createTodayForTimeZone(final Object timeZone) {
+        return DateUtils.createToday(timeZone, this.locale).getTime();
+    }
+
     
     
     

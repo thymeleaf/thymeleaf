@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -51,7 +52,7 @@ public final class DateUtils {
      * @since 1.1.2
      */
     public static Calendar create(final Object year, final Object month, final Object day) {
-        return create(year, month, day, null, null, null, null);
+        return create(year, month, day, null, null, null, null, null, null);
     }
 
     
@@ -61,7 +62,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
             final Object hour, final Object minute) {
-        return create(year, month, day, hour, minute, null, null);
+        return create(year, month, day, hour, minute, null, null, null, null);
     }
 
     
@@ -71,16 +72,38 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
             final Object hour, final Object minute, final Object second) {
-        return create(year, month, day, hour, minute, second, null);
+        return create(year, month, day, hour, minute, second, null, null, null);
     }
-    
+
+
+    /**
+     *
+     * @since 1.1.2
+     */
+    public static Calendar create(final Object year, final Object month, final Object day,
+            final Object hour, final Object minute, final Object second, final Object millisecond) {
+        return create(year, month, day, hour, minute, second, millisecond, null, null);
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public static Calendar create(final Object year, final Object month, final Object day,
+            final Object hour, final Object minute, final Object second, final Object millisecond,
+            final Object timeZone) {
+        return create(year, month, day, hour, minute, second, millisecond, timeZone, null);
+    }
+
     
     /**
      * 
-     * @since 1.1.2
+     * @since 2.1.0
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
-            final Object hour, final Object minute, final Object second, final Object millisecond) {
+            final Object hour, final Object minute, final Object second, final Object millisecond,
+            final Object timeZone, final Locale locale) {
         
         final BigDecimal nYear = ObjectUtils.evaluateAsNumber(year);
         final BigDecimal nMonth = ObjectUtils.evaluateAsNumber(month);
@@ -89,9 +112,24 @@ public final class DateUtils {
         final BigDecimal nMinute = ObjectUtils.evaluateAsNumber(minute);
         final BigDecimal nSecond = ObjectUtils.evaluateAsNumber(second);
         final BigDecimal nMillisecond = ObjectUtils.evaluateAsNumber(millisecond);
-        
-        final Calendar cal = Calendar.getInstance();
-        
+
+        final TimeZone tzTimeZone =
+                (timeZone != null?
+                        (timeZone instanceof TimeZone?
+                                (TimeZone) timeZone : TimeZone.getTimeZone(timeZone.toString())) :
+                        null);
+
+        final Calendar cal;
+        if (tzTimeZone != null && locale != null) {
+            cal = Calendar.getInstance(tzTimeZone, locale);
+        } else if (tzTimeZone != null) {
+            cal = Calendar.getInstance(tzTimeZone);
+        } else if (locale != null) {
+            cal = Calendar.getInstance(locale);
+        } else {
+            cal = Calendar.getInstance();
+        }
+
         if (nYear == null || nMonth == null || nDay == null) {
             throw new IllegalArgumentException(
                     "Cannot create Calendar/Date object with null year (" + nYear + "), " +
@@ -154,16 +192,70 @@ public final class DateUtils {
      * @since 1.1.2
      */
     public static Calendar createNow() {
-        return Calendar.getInstance();
+        return createNow(null, null);
     }
-    
+
 
     /**
-     * 
+     *
+     * @since 2.1.0
+     */
+    public static Calendar createNow(final Object timeZone) {
+        return createNow(timeZone, null);
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public static Calendar createNow(final Object timeZone, final Locale locale) {
+
+        final TimeZone tzTimeZone =
+                (timeZone != null?
+                    (timeZone instanceof TimeZone?
+                            (TimeZone) timeZone : TimeZone.getTimeZone(timeZone.toString())) :
+                    null);
+
+        if (tzTimeZone != null && locale != null) {
+            return Calendar.getInstance(tzTimeZone, locale);
+        } else if (tzTimeZone != null) {
+            return Calendar.getInstance(tzTimeZone);
+        } else if (locale != null) {
+            return Calendar.getInstance(locale);
+        }
+        return Calendar.getInstance();
+
+    }
+
+
+
+    /**
+     *
      * @since 1.1.2
      */
     public static Calendar createToday() {
-        final Calendar cal = Calendar.getInstance();
+        return createToday(null, null);
+    }
+
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public static Calendar createToday(final Object timeZone) {
+        return createToday(timeZone, null);
+    }
+
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public static Calendar createToday(final Object timeZone, final Locale locale) {
+        final Calendar cal = createNow(timeZone, locale);
         cal.set(Calendar.MILLISECOND, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -298,7 +390,7 @@ public final class DateUtils {
         Validate.notNull(locale, "Locale cannot be null");
         
 
-        final DateFormatKey key = new DateFormatKey(pattern, locale);
+        final DateFormatKey key = new DateFormatKey(target, pattern, locale);
         
         DateFormat dateFormat = dateFormats.get(key);
         if (dateFormat == null) {
@@ -306,6 +398,9 @@ public final class DateUtils {
                 dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
             } else {
                 dateFormat = new SimpleDateFormat(pattern, locale);
+            }
+            if (key.timeZone != null) {
+                dateFormat.setTimeZone(key.timeZone);
             }
             dateFormats.put(key, dateFormat);
         }
@@ -345,13 +440,19 @@ public final class DateUtils {
     private static final class DateFormatKey {
         
         private final String format;
+        private final TimeZone timeZone;
         private final Locale locale;
         
-        private DateFormatKey(final String format, final Locale locale) {
+        private DateFormatKey(final Object target, final String format, final Locale locale) {
             super();
             Validate.notNull(locale, "Locale cannot be null");
             this.format = format;
             this.locale = locale;
+            if (target != null && target instanceof Calendar) {
+                this.timeZone = ((Calendar)target).getTimeZone();
+            } else {
+                this.timeZone = null;
+            }
         }
 
         @Override
@@ -360,6 +461,7 @@ public final class DateUtils {
             int result = 1;
             result = prime * result + ((this.format == null) ? 0 : this.format.hashCode());
             result = prime * result + this.locale.hashCode();
+            result = prime * result + ((this.timeZone == null) ? 0 : this.timeZone.hashCode());
             return result;
         }
 
@@ -380,6 +482,13 @@ public final class DateUtils {
                     return false;
                 }
             } else if (!this.format.equals(other.format)) {
+                return false;
+            }
+            if (this.timeZone == null) {
+                if (other.timeZone != null) {
+                    return false;
+                }
+            } else if (!this.timeZone.equals(other.timeZone)) {
                 return false;
             }
             return this.locale.equals(other.locale);

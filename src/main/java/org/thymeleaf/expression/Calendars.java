@@ -62,8 +62,8 @@ public final class Calendars {
      * 
      * @since 1.1.2
      */
-    public static Calendar create(final Object year, final Object month, final Object day) {
-        return DateUtils.create(year, month, day);
+    public Calendar create(final Object year, final Object month, final Object day) {
+        return DateUtils.create(year, month, day, null, null, null, null, null, this.locale);
     }
 
     
@@ -71,9 +71,9 @@ public final class Calendars {
      * 
      * @since 1.1.2
      */
-    public static Calendar create(final Object year, final Object month, final Object day, 
+    public Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute) {
-        return DateUtils.create(year, month, day, hour, minute);
+        return DateUtils.create(year, month, day, hour, minute, null, null, null, this.locale);
     }
 
     
@@ -81,39 +81,97 @@ public final class Calendars {
      * 
      * @since 1.1.2
      */
-    public static Calendar create(final Object year, final Object month, final Object day, 
+    public Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second) {
-        return DateUtils.create(year, month, day, hour, minute, second);
+        return DateUtils.create(year, month, day, hour, minute, second, null, null, this.locale);
     }
-    
-    
+
+
     /**
-     * 
+     *
      * @since 1.1.2
      */
-    public static Calendar create(final Object year, final Object month, final Object day, 
+    public Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return DateUtils.create(year, month, day, hour, minute, second, millisecond);
-    }
-    
-
-    /**
-     * 
-     * @since 1.1.2
-     */
-    public static Calendar createNow() {
-        return DateUtils.createNow();
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, null, this.locale);
     }
 
 
     /**
-     * 
+     *
+     * @since 2.1.0
+     */
+    public Calendar createForTimeZone(final Object year, final Object month, final Object day, final Object timeZone) {
+        return DateUtils.create(year, month, day, null, null, null, null, timeZone, this.locale);
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Calendar createForTimeZone(final Object year, final Object month, final Object day,
+            final Object hour, final Object minute, final Object timeZone) {
+        return DateUtils.create(year, month, day, hour, minute, null, null, timeZone, this.locale);
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Calendar createForTimeZone(final Object year, final Object month, final Object day,
+            final Object hour, final Object minute, final Object second, final Object timeZone) {
+        return DateUtils.create(year, month, day, hour, minute, second, null, timeZone, this.locale);
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Calendar createForTimeZone(final Object year, final Object month, final Object day,
+            final Object hour, final Object minute, final Object second, final Object millisecond,
+            final Object timeZone) {
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, timeZone, this.locale);
+    }
+
+
+    /**
+     *
      * @since 1.1.2
      */
-    public static Calendar createToday() {
-        return DateUtils.createToday();
+    public Calendar createNow() {
+        return DateUtils.createNow(null, this.locale);
     }
-    
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Calendar createNowForTimeZone(final Object timeZone) {
+        return DateUtils.createNow(timeZone, this.locale);
+    }
+
+
+    /**
+     *
+     * @since 1.1.2
+     */
+    public Calendar createToday() {
+        return DateUtils.createToday(null, this.locale);
+    }
+
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Calendar createTodayForTimeZone(final Object timeZone) {
+        return DateUtils.createToday(timeZone, this.locale);
+    }
+
     
     
     
