@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+onevar = 'Hello'
+twovar = 'World'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="|John Apricot's message is: ${onevar}, ${twovar}!|">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>John Apricot&#39;s message is: Hello, World!</p>
+
