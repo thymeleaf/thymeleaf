@@ -273,7 +273,7 @@
         </plugins>
       </build>
       <properties>
-        <thymeleaf.version>2.0.18-SNAPSHOT</thymeleaf.version>
+        <thymeleaf.version>2.0.19-SNAPSHOT</thymeleaf.version>
         <thymeleaf-testing.version>2.0.4-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.0.0</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.0.0</thymeleaf-extras-tiles2.version>
