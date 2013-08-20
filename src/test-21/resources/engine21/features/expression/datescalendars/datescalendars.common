@@ -1,0 +1,16 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+
+tzPST = @java.util.TimeZone@getTimeZone('PST')
+tzCET = @java.util.TimeZone@getTimeZone('CET')
+tzJST = @java.util.TimeZone@getTimeZone('JST')
+
+cal01 = #calendars.createForTimeZone(1492,10,12,tzPST)
+cal01b = #calendars.createForTimeZone(1492,10,12,'PST')
+cal02 = #calendars.createForTimeZone(1492,10,12,tzCET)
+cal02b = #calendars.createForTimeZone(1492,10,12,'CET')
+cal03 = #calendars.createForTimeZone(1492,10,12,tzJST)
+cal03b = #calendars.createForTimeZone(1492,10,12,'JST')
+cal04 = #calendars.createForTimeZone(1492,10,12,10,35,tzPST)
+cal05 = #calendars.createForTimeZone(1492,10,12,10,35,23,455,tzPST)

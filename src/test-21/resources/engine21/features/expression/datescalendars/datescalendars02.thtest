@@ -1,0 +1,10 @@
+%EXTENDS datescalendars.common
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#calendars.format(cal02,'yyyy MM dd HH:mm:ss:SS zzz')}">...</p>
+<p th:text="${#calendars.format(cal02b,'yyyy MM dd HH:mm:ss:SS zzz')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>1492 10 12 00:00:00:00 CET</p>
+<p>1492 10 12 00:00:00:00 CET</p>
+
