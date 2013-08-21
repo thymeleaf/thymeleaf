@@ -211,26 +211,28 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
             return "";
         }
 
-        boolean inLiteral = false;
+        char literalDelimiter = 0;
         int arrayLevel = 0;
         int objectLevel = 0;
         final int len = lineRemainder.length();
         for (int i = 0; i < len; i++) {
             final char c = lineRemainder.charAt(i);
-            if (c == '\'') {
-                if (!inLiteral || i == 0 || lineRemainder.charAt(i - 1) != '\\') {
-                    inLiteral = !inLiteral;
+            if (c == '\'' || c == '"') {
+                if (literalDelimiter == 0 || i == 0) {
+                    literalDelimiter = c;
+                } else if (c == literalDelimiter && lineRemainder.charAt(i - 1) != '\\') {
+                    literalDelimiter = 0;
                 }
-            } else if (c == '{' && !inLiteral) {
+            } else if (c == '{' && literalDelimiter == 0) {
                 objectLevel++;
-            } else if (c == '}' && !inLiteral) {
+            } else if (c == '}' && literalDelimiter == 0) {
                 objectLevel--;
-            } else if (c == '[' && !inLiteral) {
+            } else if (c == '[' && literalDelimiter == 0) {
                 arrayLevel++;
-            } else if (c == ']' && !inLiteral) {
+            } else if (c == ']' && literalDelimiter == 0) {
                 arrayLevel--;
             }
-            if (!inLiteral && arrayLevel == 0 && objectLevel == 0) {
+            if (literalDelimiter == 0 && arrayLevel == 0 && objectLevel == 0) {
                 if (c == ';' || c == ',') {
                     return lineRemainder.substring(i);
                 }
