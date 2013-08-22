@@ -1,0 +1,3 @@
+Onegini is an independent free service to create a Digital Identity. With your Onegini account you will be able to securely register and login to third parties. After registration at Onegini, you control which data to share with third parties. Have a look at www.onegini.me to get more info and create your identity.
+
+We use Thymeleaf for our SAAS service. With thymeleaf we can work on our templates both with and without running the service. This way our UI developers can create / maintain the templates while the backend developers make them dynamic.

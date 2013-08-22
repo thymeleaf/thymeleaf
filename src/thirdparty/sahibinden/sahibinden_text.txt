@@ -1,0 +1,13 @@
+
+Established back in 2000 by Aksoy Group, sahibinden.com played a significant role in the
+development of internet in Turkey. Last 13 years, sahibinden.com earned a well deserved
+pioneering role in the Turkish internet sector by delivering innovative services and products.
+
+Today, sahibinden.com is one of the largest classifeds and marketplace website with more
+than 28 million monthly visitors and over 3 billion page views per month. With a great team
+of 300 people, sahibinden.com is enjoying a fast paced growth even after 13 years.
+
+At sahibinden.com, Thymeleaf is mainly used to serve classified search results, which
+roughly is 50% of sahibinden.com's traffic.
+
+LINK: http://www.sahibinden.com/en/

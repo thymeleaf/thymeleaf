@@ -1,0 +1,3 @@
+About the company: PPI AG is a German Software Development Company which develops products and individual software. 
+
+About the project: In this case we developped a test management system for a large German bank. It was a small project which concentrated on the things which had the greatest business value. We used Thymeleaf in combination with Spring MVC. Despite the fact that many team members weren't  familiar with the technic stack, the project could be realized in time and budget.

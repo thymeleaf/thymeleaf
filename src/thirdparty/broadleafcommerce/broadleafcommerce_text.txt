@@ -1,0 +1,5 @@
+Broadleaf is an open source, enterprise-ready eCommerce solution developed using the widely adopted Spring Framework. We built our 2.0 demo site in Thymeleaf.
+
+After an overwhelmingly positive building experience, picking a templating language for our admin tool when we were replatforming was obvious. We currently leverage Thymeleaf for both our 3.0 demo site and internal admin tool. 
+
+The flexibility and extension hooks Thymeleaf provided made it the easy choice for a framework that embodies the same characteristics.

@@ -279,6 +279,7 @@ ul li ul {
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
 div.widetable {
   text-align: center;
   margin: 0px 20px;
@@ -296,6 +297,25 @@ div.widetable {
   border-collapse: collapse;
   background-color: #f0f0f0;
   padding: 5px 10px;
+}
+
+div.semiwidetable {
+    text-align: center;
+    margin: 0px 80px;
+}
+.semiwidetable table {
+    text-align: left;
+    padding: 0px;
+    width: 100%;
+}
+.semiwidetable table th {
+    border-collapse: collapse;
+    padding: 5px 10px;
+}
+.semiwidetable table td {
+    border-collapse: collapse;
+    background-color: #f0f0f0;
+    padding: 5px 10px;
 }
 
 .caption {
@@ -321,4 +341,27 @@ div.widetable {
 #workingOn {
   margin-top: 80px;
   font-size: 11px; 
+}
+
+
+
+
+/* ---------------------- */
+/* USERS TABLE            */
+/* ---------------------- */
+#usersTable td {
+  background-color: #ffffff;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+#usersTable td.logo {
+  vertical-align: top;
+  text-align: right;
+}
+#usersTable td.logo a:link, #usersTable td.logo a:visited, #usersTable td.logo a:hover, #usersTable td.logo a:active {
+  text-decoration: none;
+  border: 0px;
+}
+#usersTable td p {
+  margin: 0px 0px 10px 0px;
 }
