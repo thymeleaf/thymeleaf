@@ -349,6 +349,10 @@ div.semiwidetable {
 /* ---------------------- */
 /* USERS TABLE            */
 /* ---------------------- */
+#usersTable {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
 #usersTable td {
   background-color: #ffffff;
   padding-top: 20px;
@@ -357,11 +361,22 @@ div.semiwidetable {
 #usersTable td.logo {
   vertical-align: top;
   text-align: right;
+  padding-right: 30px;
 }
 #usersTable td.logo a:link, #usersTable td.logo a:visited, #usersTable td.logo a:hover, #usersTable td.logo a:active {
   text-decoration: none;
   border: 0px;
 }
-#usersTable td p {
-  margin: 0px 0px 10px 0px;
+#usersTable td.text {
+  vertical-align: top;
+  text-align: left;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+#usersTable tr:not(:last-child) td.text {
+  border-bottom: 1px dotted #bbb;
+}
+
+#usersTable td.text p {
+    margin: 0px 0px 10px 0px;
 }
