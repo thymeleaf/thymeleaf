@@ -1,0 +1,3 @@
+YobiDrive is a cloud sharing services factory: it contains everything to build fast and operate at best cost tailored made collaborative cloud services, for any company wanting to propose services in the area of file sharing, video, collaboration...
+
+YobiDrive uses Thymeleaf  in its distributed application server layer, for rendering HTML5 pages and RESTFUL Apis XMLs. Thymeleaf is fully integrated, bringing ease of customization and giving back the power to the web design specialists.

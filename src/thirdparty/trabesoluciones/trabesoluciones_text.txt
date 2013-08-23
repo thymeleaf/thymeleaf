@@ -1,3 +1,5 @@
 Trabe Soluciones is a company based in Spain mainly focused on web development using Java and Ruby On Rails. 
 
-We discovered the project at a very early stage and, from the very begining, we loved the tidiness and readability of Thymeleaf templates. We were at the time looking for a replacement for JSP in our Java stack and we ended up combining Spring MVC and Thymeleaf. Since then we have successfully developed a variety of internet and intranet applications using this combination. Thymeleaf has also improved our workflow, making easier the communication between the different profiles involved in our projects.
+We discovered Thymeleaf at a very early stage and, from the very begining, we loved the tidiness and readability of its templates. We were at the time looking for a replacement for JSP in our Java stack and we ended up combining Spring MVC and Thymeleaf. 
+
+Since then we have successfully developed a variety of internet and intranet applications using this combination. Thymeleaf has also improved our workflow, easing the communication between the different profiles involved in our projects.
