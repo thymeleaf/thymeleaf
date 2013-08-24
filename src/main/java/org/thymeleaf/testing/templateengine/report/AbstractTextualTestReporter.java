@@ -45,12 +45,46 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
     protected AbstractTextualTestReporter() {
         super();
     }
-    
-    
-    
+
 
     
-    public void sequenceStart(final String executionId, final int nestingLevel, final ITestSequence sequence) {
+
+    @Override
+    public final void executionStart(final String executionId) {
+        outputMessage(executionId, msgExecutionStart(), 0, false);
+    }
+
+    public String msgExecutionStart() {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[EXECUTION:START]");
+        return strBuilder.toString();
+    }
+
+
+
+    @Override
+    public final void executionEnd(final String executionId, final int okTests, final int totalTests, final long executionTimeNanos) {
+        outputMessage(executionId, msgExecutionEnd(okTests, totalTests, executionTimeNanos), 0, false);
+    }
+
+    public String msgExecutionEnd(final int okTests, final int totalTests, final long executionTimeNanos) {
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append("[EXECUTION:END]");
+        strBuilder.append("[" + okTests + "]");
+        strBuilder.append("[" + totalTests + "]");
+        strBuilder.append("[" + executionTimeNanos + "]");
+        strBuilder.append(" Tests OK: " + okTests + " of " + totalTests +
+                (okTests < totalTests ? (" (FAILED: " + (totalTests - okTests) + ")") : "") + ".");
+        strBuilder.append(" Sequence executed in " + duration(executionTimeNanos));
+        return strBuilder.toString();
+    }
+
+
+
+
+
+    @Override
+    public final void sequenceStart(final String executionId, final int nestingLevel, final ITestSequence sequence) {
         outputMessage(executionId, msgSequenceStart(sequence), nestingLevel, false);
     }
     
@@ -62,11 +96,12 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         }
         return strBuilder.toString();
     }
-    
-    
 
-    
-    public void sequenceEnd(final String executionId, final int nestingLevel,  
+
+
+
+    @Override
+    public final void sequenceEnd(final String executionId, final int nestingLevel,
             final ITestSequence sequence, final int okTests, final int totalTests, final long executionTimeNanos) {
         outputMessage(executionId, msgSequenceEnd(sequence, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
@@ -86,10 +121,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void iteratorStart(final String executionId, final int nestingLevel, final ITestIterator iterator) {
+
+
+
+    @Override
+    public final void iteratorStart(final String executionId, final int nestingLevel, final ITestIterator iterator) {
         outputMessage(executionId, msgIteratorStart(iterator), nestingLevel, false);
     }
     
@@ -103,10 +139,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void iteratorEnd(final String executionId, final int nestingLevel, 
+
+
+
+    @Override
+    public final void iteratorEnd(final String executionId, final int nestingLevel,
             final ITestIterator iterator, final int okTests, final int totalTests, final long executionTimeNanos) {
         outputMessage(executionId, msgIteratorEnd(iterator, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
@@ -127,10 +164,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void iterationStart(final String executionId, final int nestingLevel,  
+
+
+
+    @Override
+    public final void iterationStart(final String executionId, final int nestingLevel,
             final ITestIterator iterator, final int iterationNumber) {
         outputMessage(executionId, msgIterationStart(iterator, iterationNumber), nestingLevel, false);
     }
@@ -146,10 +184,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void iterationEnd(final String executionId, final int nestingLevel,  
+
+
+
+    @Override
+    public final void iterationEnd(final String executionId, final int nestingLevel,
             final ITestIterator iterator, final int iterationNumber, final int okTests, final int totalTests, final long executionTimeNanos) {
         outputMessage(executionId, msgIterationEnd(iterator, iterationNumber, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
@@ -172,13 +211,14 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
 
-    
-    
-    
-    public void parallelizerStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer) {
+
+
+
+
+
+    @Override
+    public final void parallelizerStart(final String executionId, final int nestingLevel, final ITestParallelizer parallelizer) {
         outputMessage(executionId, msgParallelizerStart(parallelizer), nestingLevel, false);
     }
     
@@ -192,10 +232,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void parallelizerEnd(final String executionId, final int nestingLevel, 
+
+
+
+    @Override
+    public final void parallelizerEnd(final String executionId, final int nestingLevel,
             final ITestParallelizer parallelizer, final int okTests, final int totalTests, final long executionTimeNanos) {
         outputMessage(executionId, msgParallelizerEnd(parallelizer, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
@@ -216,10 +257,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void parallelThreadStart(final String executionId, final int nestingLevel,  
+
+
+
+    @Override
+    public final void parallelThreadStart(final String executionId, final int nestingLevel,
             final ITestParallelizer parallelizer, final int threadNumber) {
         outputMessage(executionId, msgParallelThreadStart(parallelizer, threadNumber), nestingLevel, false);
     }
@@ -235,10 +277,11 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
         return strBuilder.toString();
     }
 
-    
-    
-    
-    public void parallelThreadEnd(final String executionId, final int nestingLevel,  
+
+
+
+    @Override
+    public final void parallelThreadEnd(final String executionId, final int nestingLevel,
             final ITestParallelizer parallelizer, final int threadNumber, final int okTests, final int totalTests, final long executionTimeNanos) {
         outputMessage(executionId, msgParallelThreadEnd(parallelizer, threadNumber, okTests, totalTests, executionTimeNanos), nestingLevel, false);
     }
@@ -266,7 +309,7 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
     
     
     @Override
-    public void reportTestStart(final String executionId, final int nestingLevel, final ITest test, final String testName) {
+    public final void reportTestStart(final String executionId, final int nestingLevel, final ITest test, final String testName) {
         outputMessage(executionId, msgTestStart(test, testName), nestingLevel, false);
     }
     
@@ -280,7 +323,7 @@ public abstract class AbstractTextualTestReporter extends AbstractTestReporter {
     
     
     @Override
-    public void reportTestEnd(final String executionId, final int nestingLevel, final ITest test, 
+    public final void reportTestEnd(final String executionId, final int nestingLevel, final ITest test,
             final String testName, final ITestResult result, final long executionTimeNanos) {
         outputMessage(executionId, msgTestEnd(test, testName, result, executionTimeNanos), nestingLevel, !result.isOK());
     }

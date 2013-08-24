@@ -203,9 +203,15 @@ public final class TestExecutor {
         templateEngine.setCacheManager(cacheManager);
         
         context.setTemplateEngine(templateEngine);
-        
-        executeTestable(testable, context);
-        
+
+        this.reporter.executionStart(context.getExecutionId());
+
+        final TestExecutionResult result = executeTestable(testable, context);
+
+        this.reporter.executionEnd(
+                context.getExecutionId(), result.getTotalTestsOk(), result.getTotalTestsExecuted(),
+                result.getTotalTimeNanos());
+
     }
 
     
