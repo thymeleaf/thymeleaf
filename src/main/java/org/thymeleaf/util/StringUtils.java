@@ -257,6 +257,23 @@ public final class StringUtils {
         return target + suffix;
     }
 
+
+    /**
+     * @since 2.1.0
+     */
+    public static String repeat(final Object target, final int times) {
+        if (target == null) {
+            return null;
+        }
+        final String str = target.toString();
+        final StringBuilder strBuilder = new StringBuilder(str.length() * times + 10);
+        for (int i = 0; i < times; i++) {
+            strBuilder.append(str);
+        }
+        return strBuilder.toString();
+    }
+
+
     /**
      * @since 2.0.16
      */

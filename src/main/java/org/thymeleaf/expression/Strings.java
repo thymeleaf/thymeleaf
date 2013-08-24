@@ -569,9 +569,19 @@ public final class Strings {
     }
 
 
-    
 
-    
+
+
+
+    /**
+     * @since 2.1.0
+     */
+    public String repeat(final Object target, final int times) {
+        return StringUtils.repeat(target, times);
+    }
+
+
+
     
     
     
