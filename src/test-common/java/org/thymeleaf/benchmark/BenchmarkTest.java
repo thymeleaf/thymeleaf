@@ -22,7 +22,7 @@ package org.thymeleaf.benchmark;
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-
+import org.thymeleaf.testing.templateengine.report.AbstractTestReporter;
 
 
 public class BenchmarkTest {
@@ -39,10 +39,27 @@ public class BenchmarkTest {
     public void testBenchmark() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
+        executor.setReporter(new BenchmarkTestReporter());
         executor.execute("classpath:benchmark/benchmark.thindex");
-        
+
         Assert.assertTrue(executor.isAllOK());
         
+    }
+
+
+
+    private static class BenchmarkTestReporter extends AbstractTestReporter {
+
+        public void executionEnd(final String executionId, final int okTests, final int totalTests, final long executionTimeNanos) {
+            if (okTests == totalTests) {
+                final long nanos = executionTimeNanos;
+                final long millis = nanos / 1000000;
+                System.out.println("[THYMELEAF][" + nanos + "][" + millis + "] BENCHMARK EXECUTED IN " + nanos + "ns (" + millis + "ms)");
+            } else {
+                System.out.println("[THYMELEAF] ERRORS DURING THE EXECUTION OF BENCHMARK: " + (totalTests - okTests) + " ERRORS IN " + totalTests + " TESTS");
+            }
+        }
+
     }
 
     
