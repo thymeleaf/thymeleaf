@@ -37,7 +37,6 @@ import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.standard.expression.TextLiteralExpression;
-import org.thymeleaf.util.StringUtils;
 
 
 
@@ -77,7 +76,7 @@ public class AuthorizeAclAttrProcessor
 
         String attributeValue = element.getAttributeValue(attributeName);
         
-        if (attributeValue == null || StringUtils.isEmptyOrWhitespace(attributeValue)) {
+        if (attributeValue == null || attributeValue.trim().equals("")) {
             return false;
         }
         attributeValue = attributeValue.trim();

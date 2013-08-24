@@ -24,7 +24,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
-import org.thymeleaf.util.StringUtils;
 
 
 
@@ -64,7 +63,7 @@ public class AuthenticationAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
 
-        if (attributeValue == null || StringUtils.isEmptyOrWhitespace(attributeValue)) {
+        if (attributeValue == null || attributeValue.trim().equals("")) {
             return null;
         }
         

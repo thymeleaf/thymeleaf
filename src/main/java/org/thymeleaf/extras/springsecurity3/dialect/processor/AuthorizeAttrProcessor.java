@@ -31,7 +31,6 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
-import org.thymeleaf.util.StringUtils;
 
 
 
@@ -75,7 +74,7 @@ public class AuthorizeAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        if (attributeValue == null || StringUtils.isEmptyOrWhitespace(attributeValue)) {
+        if (attributeValue == null || attributeValue.trim().equals("")) {
             return false;
         }
         
