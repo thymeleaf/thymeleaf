@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.features.expression;
+package org.thymeleaf.engine21.features;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,8 +43,19 @@ public class Features21Test {
         Assert.assertTrue(executor.isAllOK());
         
     }
-  
-    
 
-    
+
+
+    @Test
+    public void testLink() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/features/link");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
+
 }
