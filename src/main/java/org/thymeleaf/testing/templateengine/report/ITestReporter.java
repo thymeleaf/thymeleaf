@@ -32,6 +32,9 @@ import org.thymeleaf.testing.templateengine.testable.ITestSequence;
 public interface ITestReporter {
 
 
+    public void executionStart(final String executionId);
+    public void executionEnd(final String executionId, final int okTests, final int totalTests, final long executionTimeNanos);
+
     public void sequenceStart(final String executionId, final int nestingLevel, final ITestSequence sequence);
     public void sequenceEnd(final String executionId, final int nestingLevel, final ITestSequence sequence, final int okTests, final int totalTests, final long executionTimeNanos);
     
