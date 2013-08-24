@@ -20,14 +20,8 @@
 package org.thymeleaf.extras.springsecurity3.auth;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletContext;
@@ -46,18 +40,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
 import org.springframework.security.access.expression.ExpressionUtils;
-import org.springframework.security.acls.domain.DefaultPermissionFactory;
-import org.springframework.security.acls.domain.ObjectIdentityRetrievalStrategyImpl;
-import org.springframework.security.acls.domain.PermissionFactory;
-import org.springframework.security.acls.domain.SidRetrievalStrategyImpl;
-import org.springframework.security.acls.model.Acl;
-import org.springframework.security.acls.model.AclService;
-import org.springframework.security.acls.model.NotFoundException;
-import org.springframework.security.acls.model.ObjectIdentity;
-import org.springframework.security.acls.model.ObjectIdentityRetrievalStrategy;
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
-import org.springframework.security.acls.model.SidRetrievalStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
@@ -67,7 +49,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.expression.SpelEvaluationContext;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
@@ -347,180 +328,7 @@ public final class AuthUtils {
         return (WebInvocationPrivilegeEvaluator) privilegeEvaluators.values().toArray()[0];
         
     }
-    
 
-    
-    
-    
-    
-    public static boolean authorizeUsingAccessControlList(
-            final Object domainObject, final List<Permission> permissions, 
-            final Authentication authentication, final ServletContext servletContext) {
-
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Checking authorization using Access Control List for user \"{}\". " +
-            		"Domain object is of class \"{}\" and permissions are \"{}\".",
-                    new Object[] {TemplateEngine.threadIndex(), (authentication == null? null : authentication.getName()),
-                            (domainObject == null? null : domainObject.getClass().getName()), permissions});
-        }
-        
-        final ApplicationContext applicationContext = getContext(servletContext);
-
-        final AclService aclService = getBeanOfType(applicationContext, AclService.class);
-
-        if (authentication == null) {
-            // If authentication is null, authorization cannot be granted.
-            
-            if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] Authentication object is null. Access is DENIED. ",
-                        new Object[] {TemplateEngine.threadIndex()});
-            }
-            
-            return false;
-            
-        }
-        
-        
-        /*
-         * Initialize required objects
-         */
-        
-        SidRetrievalStrategy sidRetrievalStrategy = getBeanOfType(applicationContext, SidRetrievalStrategy.class);
-        if (sidRetrievalStrategy == null) {
-            sidRetrievalStrategy = new SidRetrievalStrategyImpl();
-        }
-
-        ObjectIdentityRetrievalStrategy objectIdentityRetrievalStrategy = getBeanOfType(applicationContext, ObjectIdentityRetrievalStrategy.class);
-        if (objectIdentityRetrievalStrategy == null) {
-            objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategyImpl();
-        }
-        
-
-        /*
-         * Compute permissions
-         */
-        
-        if ((null == permissions) || permissions.isEmpty()) {
-            
-            if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] Permissions are null or empty. Access is DENIED. ",
-                        new Object[] {TemplateEngine.threadIndex()});
-            }
-            
-            return false;
-            
-        }
-
-        if (domainObject == null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] Domain object for resolved to null. Access by " +
-                		"Access Control List is GRANTED.", new Object[] {TemplateEngine.threadIndex()});
-            }
-            // Access to null object is considered always true
-            return true;
-        }
-
-        final List<Sid> sids = 
-                sidRetrievalStrategy.getSids(SecurityContextHolder.getContext().getAuthentication());
-        
-        final ObjectIdentity oid = 
-                objectIdentityRetrievalStrategy.getObjectIdentity(domainObject);
-
-        try {
-            
-            final Acl acl = aclService.readAclById(oid, sids);
-
-            if (acl.isGranted(permissions, sids, false)) {
-                
-                if (logger.isTraceEnabled()) {
-                    logger.trace("[THYMELEAF][{}] Checked authorization using Access Control List for user \"{}\". " +
-                            "Domain object is of class \"{}\" and permissions are \"{}\". Access is GRANTED.",
-                            new Object[] {TemplateEngine.threadIndex(), authentication.getName(),
-                                    domainObject.getClass().getName(), permissions});
-                }
-                
-                return true;
-                
-            }
-
-            if (logger.isTraceEnabled()) {
-                logger.trace("[THYMELEAF][{}] Checked authorization using Access Control List for user \"{}\". " +
-                        "Domain object is of class \"{}\" and permissions are \"{}\". Access is DENIED.",
-                        new Object[] {TemplateEngine.threadIndex(), authentication.getName(),
-                                domainObject.getClass().getName(), permissions});
-            }
-            
-            return false;
-            
-        } catch (final NotFoundException nfe) {
-            return false;
-        }
-        
-    }
-
-    
-
-
-
-    public static List<Permission> parsePermissionsString(
-            final ApplicationContext applicationContext, final String permissionsString) 
-            throws NumberFormatException {
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("[THYMELEAF][{}] Parsing permissions string \"{}\".",
-                    new Object[] {TemplateEngine.threadIndex(), permissionsString});
-        }
-        
-        if (permissionsString == null || permissionsString.trim().equals("")) {
-            return Collections.emptyList();
-        }
-        
-        PermissionFactory permissionFactory = getBeanOfType(applicationContext, PermissionFactory.class);
-        if (permissionFactory == null) {
-            permissionFactory = new DefaultPermissionFactory();
-        }
-        
-        final Set<Permission> permissions = new HashSet<Permission>();
-        final StringTokenizer tokenizer = new StringTokenizer(permissionsString, ",", false);
-
-        while (tokenizer.hasMoreTokens()) {
-            String permission = tokenizer.nextToken();
-            try {
-                permissions.add(permissionFactory.buildFromMask(Integer.valueOf(permission).intValue()));
-            } catch (final NumberFormatException nfe) {
-                // Not an integer mask. Try using a name
-                permissions.add(permissionFactory.buildFromName(permission));
-            }
-        }
-
-        return new ArrayList<Permission>(permissions);
-        
-    }
-    
-    
-    
-    
-    private static <T> T getBeanOfType(final ApplicationContext applicationContext, final Class<T> type) {
-        
-        final Map<String, T> map = applicationContext.getBeansOfType(type);
-
-        for (ApplicationContext context = applicationContext.getParent(); context != null; context = context.getParent()) {
-            map.putAll(context.getBeansOfType(type));
-        }
-
-        if (map.size() == 0) {
-            return null;
-        } else if (map.size() == 1) {
-            return map.values().iterator().next();
-        }
-
-        throw new ConfigurationException(
-                "Found incorrect number of " + type.getSimpleName() +" instances in " +
-                "application context - you must have only have one!");
-        
-    }
-    
 
 
     

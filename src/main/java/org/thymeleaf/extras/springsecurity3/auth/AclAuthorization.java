@@ -19,68 +19,48 @@
  */
 package org.thymeleaf.extras.springsecurity3.auth;
 
+import java.util.List;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 
-
-
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez
+ * @since 2.0.1
  *
  */
-public final class Authorization {
+public final class AclAuthorization {
 
 
-    private final IProcessingContext processingContext;
     private final Authentication authentication;
-    private final HttpServletRequest request;
-    private final HttpServletResponse response;
     private final ServletContext servletContext;
-    
-    
 
 
-    public Authorization(
-            final IProcessingContext processingContext,
-            final Authentication authentication, 
-            final HttpServletRequest request, final HttpServletResponse response,
+
+
+    public AclAuthorization(
+            final Authentication authentication,
             final ServletContext servletContext) {
         
         super();
 
-        this.processingContext = processingContext;
         this.authentication = authentication;
-        this.request = request;
-        this.response = response;
         this.servletContext = servletContext;
         
     }
 
 
-    public IProcessingContext getProcessingContext() {
-        return this.processingContext;
-    }
-
     public Authentication getAuthentication() {
         return this.authentication;
-    }
-
-
-    public HttpServletRequest getRequest() {
-        return this.request;
-    }
-
-
-    public HttpServletResponse getResponse() {
-        return this.response;
     }
 
 
@@ -90,36 +70,17 @@ public final class Authorization {
 
 
 
-    // Synonym method
-    public boolean expr(final String expression) {
-        return expression(expression);
-    }
+    public boolean acl(final Object domainObject, final String permissions) {
+        
+        Validate.notEmpty(permissions, "permissions cannot be null or empty");
 
-
-    public boolean expression(final String expression) {
+        final ApplicationContext applicationContext = AuthUtils.getContext(this.servletContext);
         
-        Validate.notEmpty(expression, "Access expression cannot be null");
+        final List<Permission> permissionsList =
+                AclAuthUtils.parsePermissionsString(applicationContext, permissions);
         
-        return AuthUtils.authorizeUsingAccessExpression(
-                this.processingContext, expression, this.authentication, this.request, this.response, this.servletContext);
-        
-    }
-    
-
-    
-    
-    public boolean url(final String url) {
-        return url("GET", url);
-    }
-
-    
-    
-    public boolean url(final String method, final String url) {
-        
-        Validate.notEmpty(url, "URL cannot be null");
-        
-        return AuthUtils.authorizeUsingUrlCheck(
-                url, method, this.authentication, this.request, this.servletContext);
+        return AclAuthUtils.authorizeUsingAccessControlList(
+                domainObject, permissionsList, this.authentication, this.servletContext);
         
     }
 

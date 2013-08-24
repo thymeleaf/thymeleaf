@@ -19,12 +19,9 @@
  */
 package org.thymeleaf.extras.springsecurity3.dialect.processor;
 
-import java.util.List;
-
 import javax.servlet.ServletContext;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
@@ -34,6 +31,7 @@ import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.extras.springsecurity3.auth.AclAuthUtils;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
@@ -126,12 +124,9 @@ public class AuthorizeAclAttrProcessor
         final String permissionsStr = 
                 (permissionsObject == null? null : permissionsObject.toString());
 
-        final List<Permission> permissions =
-                AuthUtils.parsePermissionsString(applicationContext, permissionsStr);
-        
-        return AuthUtils.authorizeUsingAccessControlList(
-                domainObject, permissions, authentication, servletContext);
-        
+        return AclAuthUtils.authorizeUsingAccessControlList(
+                domainObject, applicationContext, permissionsStr, authentication, servletContext);
+
     }
 
     
