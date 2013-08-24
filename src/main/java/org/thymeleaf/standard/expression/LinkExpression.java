@@ -356,9 +356,9 @@ public final class LinkExpression extends SimpleExpression {
             url = linkBase.substring(1) + parametersBuilder + urlFragment;
             
         } else if (isLinkBaseAbsolute(linkBase)) {
-            
+
             url = linkBase + parametersBuilder + urlFragment;
-            
+
         } else {
             // Link base is current-URL-relative
             
@@ -379,14 +379,16 @@ public final class LinkExpression extends SimpleExpression {
     
     
     private static boolean isLinkBaseAbsolute(final String linkBase) {
-        return (linkBase.contains("://") || linkBase.toLowerCase().startsWith("mailto:"));
+        return (linkBase.contains("://") ||
+                linkBase.toLowerCase().startsWith("mailto:") || // Email URLs
+                linkBase.startsWith("//")); // protocol-relative URLs
     }
-    
-    
+
+
     private static boolean isLinkBaseContextRelative(final String linkBase) {
-        return linkBase.startsWith("/");
+        return linkBase.startsWith("/") && !linkBase.startsWith("//");
     }
-    
+
     
     private static boolean isLinkBaseServerRelative(final String linkBase) {
         return linkBase.startsWith("~/");
