@@ -1,0 +1,9 @@
+2.0.1
+=====
+- Removed required runtime dependency on springsecurity-acl so that applications aren't required to add this jar to
+  classpath if they don't use the ACL mechanism.
+
+
+2.0.0
+=====
+- First release of thymeleaf-extras-springsecurity3
