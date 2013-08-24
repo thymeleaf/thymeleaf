@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+str = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#strings.repeat(str,0)}">...</p>
+<p th:text="${#strings.repeat(str,1)}">...</p>
+<p th:text="${#strings.repeat(str,3)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p></p>
+<p>Hello</p>
+<p>HelloHelloHello</p>
