@@ -29,6 +29,9 @@ package org.thymeleaf.standard.expression;
 public abstract class Token extends SimpleExpression {
 
     
+    private static final long serialVersionUID = 4357087922344497120L;
+    
+    
     private final Object value;
 
     

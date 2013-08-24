@@ -126,8 +126,9 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
     }
 
 
-    public VariablesMap clone() {
-        return (VariablesMap) super.clone();
+    @SuppressWarnings("unchecked")
+    public VariablesMap<K,V> clone() {
+        return (VariablesMap<K,V>) super.clone();
     }
 
 

@@ -439,11 +439,11 @@ public final class DateUtils {
     
     private static final class DateFormatKey {
         
-        private final String format;
-        private final TimeZone timeZone;
-        private final Locale locale;
+        final String format;
+        final TimeZone timeZone;
+        final Locale locale;
         
-        private DateFormatKey(final Object target, final String format, final Locale locale) {
+        DateFormatKey(final Object target, final String format, final Locale locale) {
             super();
             Validate.notNull(locale, "Locale cannot be null");
             this.format = format;

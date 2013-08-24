@@ -88,7 +88,6 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     
-    @SuppressWarnings("unchecked")
     private Object createEvaluationRoot() {
 
         final VariablesMap<String, Object> contextVariables = this.context.getVariables();

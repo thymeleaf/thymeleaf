@@ -299,7 +299,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
     
     private static final class XmlSAXHandler extends DefaultHandler2 {
 
-        private static final int BUFFER_SIZE = 512;
+        private static final int HANDLER_BUFFER_SIZE = 512;
 
         private final String documentName;
         private final Stack<NestableNode> elementStack;
@@ -332,7 +332,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
         
         
-        private XmlSAXHandler(final String documentName,
+        XmlSAXHandler(final String documentName,
                               final org.xml.sax.EntityResolver entityResolver,
                               final org.xml.sax.ErrorHandler errorHandler) {
             
@@ -343,8 +343,8 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             this.elementStack = new Stack<NestableNode>();
             this.rootNodes = new ArrayList<Node>(4);
             
-            this.textBuffer = new char[BUFFER_SIZE];
-            this.cdataBuffer = new char[BUFFER_SIZE];
+            this.textBuffer = new char[HANDLER_BUFFER_SIZE];
+            this.cdataBuffer = new char[HANDLER_BUFFER_SIZE];
             
             this.entityResolver = entityResolver;
             this.errorHandler = errorHandler;

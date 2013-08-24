@@ -939,16 +939,16 @@ public final class DOMSelector implements Serializable {
             this.value = value;
         }
 
-        private String getName() {
+        String getName() {
             return this.name;
         }
 
-        private Operator getOperator() {
-            return operator;
+        Operator getOperator() {
+            return this.operator;
         }
 
-        private String getValue() {
-            return value;
+        String getValue() {
+            return this.value;
         }
 
     }

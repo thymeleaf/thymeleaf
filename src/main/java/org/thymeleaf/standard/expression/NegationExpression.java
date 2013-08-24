@@ -105,9 +105,8 @@ public final class NegationExpression extends ComplexExpression {
             operatorPos = trimmedInput.lastIndexOf(OPERATOR_2);
             if (operatorPos == -1) {
                 return state;
-            } else {
-                operatorFound = OPERATOR_2;
             }
+            operatorFound = OPERATOR_2;
         } else {
             operatorFound = OPERATOR_1;
         }

@@ -190,18 +190,18 @@ public final class FragmentSignature implements Serializable {
         if (parametersAreSynthetic) {
             // No need to match parameter names, just apply the ones from the signature
 
-            final List<String> parameterNames = getParameterNames();
+            final List<String> signatureParameterNames = getParameterNames();
 
-            if (parameterNames.size() != specifiedParameters.size()) {
+            if (signatureParameterNames.size() != specifiedParameters.size()) {
                 throw new TemplateProcessingException(
                         "Cannot resolve fragment. Signature \"" + getStringRepresentation() +  "\" " +
-                                "declares " + parameterNames.size() + " parameters, but fragment selection specifies " +
+                                "declares " + signatureParameterNames.size() + " parameters, but fragment selection specifies " +
                                 specifiedParameters.size() + " parameters. Fragment selection does not correctly match.");
             }
 
-            final Map<String,Object> processedParameters = new HashMap<String, Object>(parameterNames.size() + 1, 1.0f);
+            final Map<String,Object> processedParameters = new HashMap<String, Object>(signatureParameterNames.size() + 1, 1.0f);
             int index = 0;
-            for (final String parameterName : parameterNames) {
+            for (final String parameterName : signatureParameterNames) {
                 final String syntheticParameterName =
                         FragmentSelection.getSyntheticParameterNameForIndex(index++);
                 final Object parameterValue = specifiedParameters.get(syntheticParameterName);

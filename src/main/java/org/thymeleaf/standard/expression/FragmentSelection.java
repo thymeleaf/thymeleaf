@@ -125,7 +125,7 @@ public final class FragmentSelection implements Serializable {
                 (this.templateName != null? this.templateName.getStringRepresentation() : "");
 
         final String templateSelectionParameters;
-        if (this.parameters == null && this.parameters.size() > 0) {
+        if (this.parameters == null || this.parameters.size() > 0) {
             templateSelectionParameters = "";
         } else {
             final StringBuilder paramBuilder = new StringBuilder();

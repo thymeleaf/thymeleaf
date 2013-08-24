@@ -867,7 +867,7 @@ public abstract class Node implements Serializable {
                 return;
             }
             
-            if ((this instanceof Text || this instanceof CDATASection) && !processTextNodes) {
+            if ((this instanceof Text || this instanceof CDATASection) && !this.processTextNodes) {
                 return;
             }
             

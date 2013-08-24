@@ -852,7 +852,7 @@ public final class Configuration {
         private final Set<IDocTypeTranslation> docTypeTranslations;
         
         
-        private MergedDialectArtifacts(
+        MergedDialectArtifacts(
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByElementName,
                 final Map<String,Set<ProcessorAndContext>> specificProcessorsByAttributeName,
                 final Map<Class<? extends Node>,Set<ProcessorAndContext>> nonSpecificProcessorsByNodeClass,

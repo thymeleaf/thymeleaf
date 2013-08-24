@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.context;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import ognl.MapPropertyAccessor;
