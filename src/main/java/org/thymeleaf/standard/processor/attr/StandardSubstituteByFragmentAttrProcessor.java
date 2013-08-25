@@ -21,6 +21,7 @@ package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.util.PrefixUtils;
 
 /**
@@ -60,9 +61,7 @@ public class StandardSubstituteByFragmentAttrProcessor
         
         if (attributeName != null) {
             final String prefix = PrefixUtils.getPrefix(attributeName);
-            if (prefix != null) {
-                return prefix + ':' + FRAGMENT_ATTR_NAME;
-            }
+            return Node.applyDialectPrefix(FRAGMENT_ATTR_NAME, prefix);
         }
         return FRAGMENT_ATTR_NAME;
         
