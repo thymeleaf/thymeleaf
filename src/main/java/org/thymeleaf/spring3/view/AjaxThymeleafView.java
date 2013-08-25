@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.DOMSelector;
+import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
@@ -202,7 +203,8 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
     
     private static String getFragmentAttributeName(final TemplateEngine templateEngine) {
         // In most cases: "th:fragment"
-        return getStandardDialectPrefix(templateEngine) + ":" + StandardFragmentAttrProcessor.ATTR_NAME;
+        final String prefix = getStandardDialectPrefix(templateEngine);
+        return Node.applyDialectPrefix(StandardFragmentAttrProcessor.ATTR_NAME, prefix);
     }
     
 
