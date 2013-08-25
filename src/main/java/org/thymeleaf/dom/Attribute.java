@@ -84,9 +84,29 @@ public final class Attribute implements Serializable {
         this.value = value;
         
     }
-    
 
-    
+
+    /*
+     * This private constructor is only used from the "cloneForValue(...)" method, so that there is no need to
+     * recompute prefix, etc when an attribute is simply changed value.
+     */
+    private Attribute(final String originalName, final String normalizedName, final String normalizedPrefix,
+                      final String unprefixedNormalizedName, final boolean hasPrefix, final boolean xmlnsAttribute,
+                      final String xmlnsPrefix, final boolean onlyName, final String value) {
+        super();
+        this.originalName = originalName;
+        this.normalizedName = normalizedName;
+        this.normalizedPrefix = normalizedPrefix;
+        this.unprefixedNormalizedName = unprefixedNormalizedName;
+        this.hasPrefix = hasPrefix;
+        this.xmlnsAttribute = xmlnsAttribute;
+        this.xmlnsPrefix = xmlnsPrefix;
+        this.onlyName = onlyName;
+        this.value = value;
+    }
+
+
+
     /**
      * <p>
      *   Returns the original name of the attribute. Given the fact that the engine
@@ -228,5 +248,14 @@ public final class Attribute implements Serializable {
     public String getXmlnsPrefix() {
         return this.xmlnsPrefix;
     }
+
+
+
+    Attribute cloneForValue(final boolean onlyName, final String value) {
+        return new Attribute(
+                this.originalName, this.normalizedName, this.normalizedPrefix, this.unprefixedNormalizedName,
+                this.hasPrefix, this.xmlnsAttribute, this.xmlnsPrefix, onlyName, value);
+    }
+
 
 }

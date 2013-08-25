@@ -292,10 +292,22 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
     public final void setAttribute(final String name, final boolean onlyName, final String value) {
         
         Validate.notNull(name, "Attribute name cannot be null");
-        
+
+        final String attributeNormalizedName = Node.normalizeName(name);
+
+        if (this.attributesLen > 0) {
+            for (int i = 0; i < this.attributesLen; i++) {
+                // First, we will check if attribute already exists
+                if (this.attributeNormalizedNames[i].equals(attributeNormalizedName)) {
+                    this.attributes[i] = this.attributes[i].cloneForValue(onlyName, value);
+                    return;
+                }
+            }
+        }
+
+        // Attribute does not already exist, so we cannot take advantage from cloning it (with a different value)
         final Attribute attribute = new Attribute(name, onlyName, value);
-        final String attributeNormalizedName = attribute.getNormalizedName();
-        
+
         if (this.attributesLen == 0) {
             
             this.attributeNormalizedNames = new String[DEFAULT_ATTRIBUTES_SIZE];
@@ -309,15 +321,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
             return;
             
         }
-        
-        for (int i = 0; i < this.attributesLen; i++) {
-            // First, we will check if attribute already exists
-            if (this.attributeNormalizedNames[i].equals(attributeNormalizedName)) {
-                this.attributes[i] = attribute;
-                return;
-            }
-        }
-        
+
         if (this.attributesLen >= this.attributes.length) {
             final int newLength = this.attributesLen * 2;
             final String[] newAttributeNormalizedNames = ArrayUtils.copyOf(this.attributeNormalizedNames, newLength);
