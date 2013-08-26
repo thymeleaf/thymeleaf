@@ -3,8 +3,8 @@
 /* BODY                   */
 /* ---------------------- */
 body {
-  font-family: 'DejaVu Serif', 'Times New Roman', Times;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
   text-align: center;
   background-color: #f0f0f0;
   margin: 0px;
@@ -28,8 +28,8 @@ body {
 /* MENU                   */
 /* ---------------------- */
 #menu, #menu ul {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 13px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
   text-align: left;
   text-transform: lowercase;
   list-style: none;
@@ -86,8 +86,8 @@ body {
 /* BREADCRUMB             */
 /* ---------------------- */
 #breadcrumb {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 12px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
   background-color: #ffffff;
   border-bottom: 1px solid #cccccc;
   line-height: 30px;
@@ -125,7 +125,7 @@ body {
   border: 1px dotted #888;
   padding: 5px;
   background-color: #F3F3F3;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 17px;
 }
 
@@ -135,8 +135,8 @@ body {
 /* HEADERS                */
 /* ---------------------- */
 h1 {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 24px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 25px;
   font-weight: bold;
   font-variant: small-caps;
   margin-left: 40px;
@@ -150,8 +150,8 @@ h1.hidden {
   display: none;
 }
 h2 {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 20px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 22px;
   font-weight: bold;
   color: #352726;
   margin-top: 35px;
@@ -165,7 +165,7 @@ h2 {
   margin-top: 10px;
 }
 h3 {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: bold;
   color: #352726;
@@ -177,8 +177,8 @@ h3 {
   padding: 3px 10px;
 }
 h4 {
-  font-family: 'DejaVu Sans', Arial, Helvetica;
-  font-size: 11px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 14px;
   font-style: italic;
   font-weight: bold;
   color: #352726;
@@ -190,7 +190,7 @@ h4 {
   padding: 3px 10px;
 }
 #author {
-  font-size: 12px;
+  font-size: 13px;
   text-align:right;
   margin-bottom: 50px;
 }
@@ -201,7 +201,7 @@ h4 {
 /* ---------------------- */
 #footer {
   border-top: 1px solid #cccccc;
-  font-size: 11px;
+  font-size: 13px;
   background-color: #fcfef0;
   padding: 10px 35px 5px 35px;
   text-align: left;
@@ -228,7 +228,7 @@ h4 {
 /* TT, CODE && STRINGS    */
 /* ---------------------- */
 kbd, tt, code {
-  font-family: 'DejaVu Sans Mono', 'Courier New', Courier, monospace;
+  font-family: Monaco, Menlo, Consolas, 'Courier New', monospace;
 }
 kbd, tt {
   color: #707070;
@@ -389,13 +389,13 @@ div.semiwidetable {
 #usersTable td.text .url a {
   text-decoration: none;
   border: 0px;
-  font-size: 12px;
+  font-size: 13px;
 }
 #usersTable td.text .url a:hover {
   border-bottom: 1px dotted #352726;
 }
 
 #downloadStats {
-    text-align: center;
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
