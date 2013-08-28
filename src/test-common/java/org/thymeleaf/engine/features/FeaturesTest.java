@@ -91,17 +91,28 @@ public class FeaturesTest {
         Assert.assertTrue(executor.isAllOK());
         
     }
-  
-    
+
+
     @Test
     public void testRequest() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
         executor.execute("classpath:engine/features/request");
-        
+
         Assert.assertTrue(executor.isAllOK());
-        
+
     }
-    
+
+
+    @Test
+    public void testNormalization() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine/features/normalization");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
     
 }
