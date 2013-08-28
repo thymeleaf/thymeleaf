@@ -41,21 +41,8 @@ public final class Attribute implements Serializable {
 
     private static final long serialVersionUID = 7133984802585560958L;
 
-    /**
-     * <p>
-     *   Prefix for namespace-definition attributes (like <tt>xmlns:th</tt>).
-     * </p>
-     */
-    public static final String XMLNS_PREFIX = "xmlns";
-    
     private final String originalName;
     private final String normalizedName;
-    private final String normalizedPrefix;
-    private final String unprefixedNormalizedName;
-    private final boolean hasPrefix;
-    
-    private final boolean xmlnsAttribute;
-    private final String xmlnsPrefix;
 
     private final boolean onlyName;
     private final String value;
@@ -69,12 +56,6 @@ public final class Attribute implements Serializable {
         
         this.originalName = name;
         this.normalizedName = normalizeAttributeName(name);
-        this.normalizedPrefix = PrefixUtils.getPrefix(this.normalizedName);
-        this.unprefixedNormalizedName = PrefixUtils.getUnprefixed(this.normalizedName);
-        this.hasPrefix = this.normalizedPrefix != null;
-
-        this.xmlnsAttribute = XMLNS_PREFIX.equals(this.normalizedPrefix);
-        this.xmlnsPrefix = (this.xmlnsAttribute? this.unprefixedNormalizedName : null);
 
         // The "onlyName" flag determines whether the attribute was specified
         // only with its name (without an equals sign or a value).
@@ -91,17 +72,11 @@ public final class Attribute implements Serializable {
      * This private constructor is only used from the "cloneForValue(...)" method, so that there is no need to
      * recompute prefix, etc when an attribute is simply changed value.
      */
-    private Attribute(final String originalName, final String normalizedName, final String normalizedPrefix,
-                      final String unprefixedNormalizedName, final boolean hasPrefix, final boolean xmlnsAttribute,
-                      final String xmlnsPrefix, final boolean onlyName, final String value) {
+    private Attribute(final String originalName, final String normalizedName,
+                      final boolean onlyName, final String value) {
         super();
         this.originalName = originalName;
         this.normalizedName = normalizedName;
-        this.normalizedPrefix = normalizedPrefix;
-        this.unprefixedNormalizedName = unprefixedNormalizedName;
-        this.hasPrefix = hasPrefix;
-        this.xmlnsAttribute = xmlnsAttribute;
-        this.xmlnsPrefix = xmlnsPrefix;
         this.onlyName = onlyName;
         this.value = value;
     }
@@ -153,9 +128,11 @@ public final class Attribute implements Serializable {
      * </p>
      * 
      * @return the normalized prefix.
+     * @deprecated Deprecated in 2.1.0. There is no actual usage of this method
      */
+    @Deprecated
     public String getNormalizedPrefix() {
-        return this.normalizedPrefix;
+        return PrefixUtils.getPrefix(this.normalizedName);
     }
 
 
@@ -166,9 +143,11 @@ public final class Attribute implements Serializable {
      * </p>
      * 
      * @return the unprefixed normalized name.
+     * @deprecated Deprecated in 2.1.0. There is no actual usage of this method
      */
+    @Deprecated
     public String getUnprefixedNormalizedName() {
-        return this.unprefixedNormalizedName;
+        return PrefixUtils.getUnprefixed(this.normalizedName);
     }
 
 
@@ -178,9 +157,11 @@ public final class Attribute implements Serializable {
      * </p>
      * 
      * @return true if the attribute name has a prefix, false if not.
+     * @deprecated Deprecated in 2.1.0. There is no actual usage of this method
      */
+    @Deprecated
     public boolean hasPrefix() {
-        return this.hasPrefix;
+        return PrefixUtils.hasPrefix(this.normalizedName);
     }
 
     
@@ -228,9 +209,12 @@ public final class Attribute implements Serializable {
      * </p>
      * 
      * @return true if the attribute is a namespace declaration, false if not.
+     * @deprecated Deprecated in 2.1.0. The only usage of this method is at the moment of writing the template. No
+     *             need to be always pre-computed.
      */
+    @Deprecated
     public boolean isXmlnsAttribute() {
-        return this.xmlnsAttribute;
+        return this.normalizedName.startsWith("xmlns:");
     }
     
 
@@ -244,17 +228,23 @@ public final class Attribute implements Serializable {
      * </p>
      * 
      * @return the namespace prefix, if this is a namespace declaration attribute.
+     * @deprecated Deprecated in 2.1.0. The only usage of this method is at the moment of writing the template. No
+     *             need to be always pre-computed.
      */
+    @Deprecated
     public String getXmlnsPrefix() {
-        return this.xmlnsPrefix;
+        if (!isXmlnsAttribute()) {
+            return null;
+        }
+        return this.normalizedName.substring("xmlns:".length());
     }
 
 
 
     Attribute cloneForValue(final boolean onlyName, final String value) {
         return new Attribute(
-                this.originalName, this.normalizedName, this.normalizedPrefix, this.unprefixedNormalizedName,
-                this.hasPrefix, this.xmlnsAttribute, this.xmlnsPrefix, onlyName, value);
+                this.originalName, this.normalizedName,
+                onlyName, value);
     }
 
 

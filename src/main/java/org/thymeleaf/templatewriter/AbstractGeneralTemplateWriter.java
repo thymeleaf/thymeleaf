@@ -198,10 +198,10 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                 final Attribute attribute = attributes[i];
                 boolean writeAttribute = true;
                 
-                if (attribute.isXmlnsAttribute()) {
+                if (attribute.getNormalizedName().startsWith("xmlns:")) {
                     // xmlns attributes related to thymeleaf-managed prefixes (prefixes assigned to any of the
                     // dialects configured at the template engine) are always removed.
-                    final String xmlnsPrefix = attribute.getXmlnsPrefix();
+                    final String xmlnsPrefix = attribute.getNormalizedName().substring("xmlns:".length());
                     if (configuration.isPrefixManaged(xmlnsPrefix)) {
                         writeAttribute = false;
                     }

@@ -69,10 +69,7 @@ public final class Element extends NestableAttributeHolderNode {
     
     private final String originalName;
     private final String normalizedName;
-    private final String normalizedPrefix;
-    private final String unprefixedNormalizedName;
-    private final boolean hasPrefix;
-    
+
     private final boolean minimizableIfWeb;
     
     private RepresentationInTemplate representationInTemplate;
@@ -113,10 +110,7 @@ public final class Element extends NestableAttributeHolderNode {
         
         this.originalName = name;
         this.normalizedName = normalizeElementName(name);
-        this.normalizedPrefix = PrefixUtils.getPrefix(this.normalizedName);
-        this.unprefixedNormalizedName = PrefixUtils.getUnprefixed(this.normalizedName);
-        this.hasPrefix = this.normalizedPrefix != null;
-        
+
         this.minimizableIfWeb = 
                 Arrays.binarySearch(Standards.MINIMIZABLE_XHTML_TAGS, this.normalizedName) >= 0;
 
@@ -171,9 +165,11 @@ public final class Element extends NestableAttributeHolderNode {
      * </p>
      * 
      * @return the normalized prefix.
+     * @deprecated Deprecated in 2.1.0. There is no actual usage of this method
      */
+    @Deprecated
     public String getNormalizedPrefix() {
-        return this.normalizedPrefix;
+        return PrefixUtils.getPrefix(this.normalizedName);
     }
 
 
@@ -184,9 +180,11 @@ public final class Element extends NestableAttributeHolderNode {
      * </p>
      * 
      * @return the unprefixed normalized name.
+     * @deprecated Deprecated in 2.1.0. There is no actual usage of this method
      */
+    @Deprecated
     public String getUnprefixedNormalizedName() {
-        return this.unprefixedNormalizedName;
+        return PrefixUtils.getUnprefixed(this.normalizedName);
     }
 
 
@@ -196,9 +194,11 @@ public final class Element extends NestableAttributeHolderNode {
      * </p>
      * 
      * @return true if the element name has a prefix, false if not.
+     * @deprecated Deprecated in 2.1.0. There is no actual usage of this method
      */
+    @Deprecated
     public boolean hasPrefix() {
-        return this.hasPrefix;
+        return PrefixUtils.hasPrefix(this.normalizedName);
     }
 
     
