@@ -30,6 +30,7 @@ import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
@@ -204,7 +205,7 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
     private static String getFragmentAttributeName(final TemplateEngine templateEngine) {
         // In most cases: "th:fragment"
         final String prefix = getStandardDialectPrefix(templateEngine);
-        return Node.applyDialectPrefix(StandardFragmentAttrProcessor.ATTR_NAME, prefix);
+        return Attribute.applyPrefixToAttributeName(StandardFragmentAttrProcessor.ATTR_NAME, prefix);
     }
     
 
