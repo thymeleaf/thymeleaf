@@ -24,6 +24,7 @@ import java.util.Arrays;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
 import org.thymeleaf.util.PrefixUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -111,7 +112,7 @@ public final class Element extends NestableAttributeHolderNode {
         Validate.notNull(name, "Element name cannot be null");
         
         this.originalName = name;
-        this.normalizedName = Node.normalizeName(name);
+        this.normalizedName = normalizeElementName(name);
         this.normalizedPrefix = PrefixUtils.getPrefix(this.normalizedName);
         this.unprefixedNormalizedName = PrefixUtils.getUnprefixed(this.normalizedName);
         this.hasPrefix = this.normalizedPrefix != null;
@@ -146,7 +147,7 @@ public final class Element extends NestableAttributeHolderNode {
     /**
      * <p>
      *   Returns the normalized name of the element. Element names are normalized by
-     *   means of the {@link Node#normalizeName(String)} method so that the engine
+     *   means of the {@link #normalizeElementName(String)} method so that the engine
      *   can work in a case-insensitive way.
      * </p>
      * <p>
@@ -166,8 +167,7 @@ public final class Element extends NestableAttributeHolderNode {
      *   or null if the element is unprefixed.
      * </p>
      * <p>
-     *   Prefixes are normalized in the same way as element names, using the
-     *   {@link Node#normalizeName(String)} method.
+     *   Prefixes are normalized in the same way as element names.
      * </p>
      * 
      * @return the normalized prefix.
@@ -343,6 +343,56 @@ public final class Element extends NestableAttributeHolderNode {
     @Override
     void doCloneNestableAttributeHolderNodeInternals(final NestableNode node, final NestableNode newParent, final boolean cloneProcessors) {
         // Nothing to be done here
+    }
+
+
+
+
+
+
+
+    /**
+     * <p>
+     *   Normalizes an element name by converting it
+     *   to lower-case. Elements are processed as
+     *   case-insensitive, and this method allows normalizing their
+     *   names before processing.
+     * </p>
+     *
+     * @param name the name to be normalized.
+     * @return the normalized name.
+     * @since 2.1.0
+     */
+    public static String normalizeElementName(final String name) {
+        if (name == null) {
+            return null;
+        }
+        return name.toLowerCase();
+    }
+
+
+    /**
+     * <p>
+     *   Applies a prefix (a dialect prefix) to the specified name in order to obtain a complete
+     *   valid element (tag) name.
+     * </p>
+     * <p>
+     *   The result looks like: <tt>"${prefix}:${name}"</tt>.
+     * </p>
+     *
+     * @param name the name to be prefixed
+     * @param dialectPrefix the prefix to be applied
+     * @return the prefixed name
+     * @since 2.1.0
+     */
+    public static String applyPrefixToElementName(final String name, final String dialectPrefix) {
+        if (name == null) {
+            return null;
+        }
+        if (StringUtils.isEmptyOrWhitespace(dialectPrefix)) {
+            return name;
+        }
+        return dialectPrefix + ':' + name;
     }
 
 

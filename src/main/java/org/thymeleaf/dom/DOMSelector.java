@@ -311,7 +311,8 @@ public final class DOMSelector implements Serializable {
         }
 
         this.selectorPath = path;
-        this.normalizedSelectorPath = Node.normalizeName(this.selectorPath);
+        // We use element normalization because path is made up of element names
+        this.normalizedSelectorPath = Element.normalizeElementName(this.selectorPath);
         this.text = TEXT_SELECTOR.equals(this.normalizedSelectorPath);
 
 
@@ -461,7 +462,7 @@ public final class DOMSelector implements Serializable {
                 throw new TemplateProcessingException(
                         "Invalid syntax in DOM selector: \"" + selectorSpec + "\"");
             }
-            attributes.add(new AttributeCondition(Node.normalizeName(attrName), operator, attrValue.substring(1, attrValue.length() - 1)));
+            attributes.add(new AttributeCondition(Attribute.normalizeAttributeName(attrName), operator, attrValue.substring(1, attrValue.length() - 1)));
 
         } else {
             // There is NO operator
@@ -470,7 +471,7 @@ public final class DOMSelector implements Serializable {
             if (attrName.startsWith("@")) {
                 attrName = attrName.substring(1);
             }
-            attributes.add(new AttributeCondition(Node.normalizeName(attrName), null, null));
+            attributes.add(new AttributeCondition(Attribute.normalizeAttributeName(attrName), null, null));
 
         }
 

@@ -22,6 +22,7 @@ package org.thymeleaf.dom;
 import java.io.Serializable;
 
 import org.thymeleaf.util.PrefixUtils;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -67,7 +68,7 @@ public final class Attribute implements Serializable {
         Validate.notNull(name, "Attribute name cannot be null");
         
         this.originalName = name;
-        this.normalizedName = Node.normalizeName(name);
+        this.normalizedName = normalizeAttributeName(name);
         this.normalizedPrefix = PrefixUtils.getPrefix(this.normalizedName);
         this.unprefixedNormalizedName = PrefixUtils.getUnprefixed(this.normalizedName);
         this.hasPrefix = this.normalizedPrefix != null;
@@ -128,7 +129,7 @@ public final class Attribute implements Serializable {
     /**
      * <p>
      *   Returns the normalized name of the attribute. Attribute names are normalized by
-     *   means of the {@link Node#normalizeName(String)} method so that the engine
+     *   means of the {@link #normalizeAttributeName(String)} method so that the engine
      *   can work in a case-insensitive way.
      * </p>
      * <p>
@@ -148,8 +149,7 @@ public final class Attribute implements Serializable {
      *   or null if the element is unprefixed.
      * </p>
      * <p>
-     *   Prefixes are normalized in the same way as element names, using the
-     *   {@link Node#normalizeName(String)} method.
+     *   Prefixes are normalized in the same way as attribute names.
      * </p>
      * 
      * @return the normalized prefix.
@@ -255,6 +255,54 @@ public final class Attribute implements Serializable {
         return new Attribute(
                 this.originalName, this.normalizedName, this.normalizedPrefix, this.unprefixedNormalizedName,
                 this.hasPrefix, this.xmlnsAttribute, this.xmlnsPrefix, onlyName, value);
+    }
+
+
+
+
+
+    /**
+     * <p>
+     *   Normalizes an attribute name by converting it
+     *   to lower-case. Attributes are processed as
+     *   case-insensitive, and this method allows normalizing their
+     *   names before processing.
+     * </p>
+     *
+     * @param name the name to be normalized.
+     * @return the normalized name.
+     * @since 2.1.0
+     */
+    public static String normalizeAttributeName(final String name) {
+        if (name == null) {
+            return null;
+        }
+        return name.toLowerCase();
+    }
+
+
+    /**
+     * <p>
+     *   Applies a prefix (a dialect prefix) to the specified name in order to obtain a complete
+     *   valid attribute name.
+     * </p>
+     * <p>
+     *   The result looks like: <tt>"${prefix}:${name}"</tt>.
+     * </p>
+     *
+     * @param name the name to be prefixed
+     * @param dialectPrefix the prefix to be applied
+     * @return the prefixed name
+     * @since 2.1.0
+     */
+    public static String applyPrefixToAttributeName(final String name, final String dialectPrefix) {
+        if (name == null) {
+            return null;
+        }
+        if (StringUtils.isEmptyOrWhitespace(dialectPrefix)) {
+            return name;
+        }
+        return dialectPrefix + ':' + name;
     }
 
 

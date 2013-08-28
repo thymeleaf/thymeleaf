@@ -20,6 +20,7 @@
 package org.thymeleaf.standard.fragment;
 
 import org.thymeleaf.Configuration;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
@@ -55,7 +56,7 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(fragmentAttributeName, "Fragment attribute name cannot be null");
         this.configuration = configuration;
-        this.fragmentAttributeName = Node.normalizeName(fragmentAttributeName);
+        this.fragmentAttributeName = Attribute.normalizeAttributeName(fragmentAttributeName);
     }
 
     public Configuration getConfiguration() {

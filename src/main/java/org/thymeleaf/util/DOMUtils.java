@@ -34,6 +34,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
@@ -84,8 +85,8 @@ public final class DOMUtils {
         // Element name, attribute name and attribute value CAN be null 
         // (in that case, all elements will be searched)
 
-        final String normalizedElementName = Node.normalizeName(elementName);
-        final String normalizedAttributeName = Node.normalizeName(attributeName);
+        final String normalizedElementName = Element.normalizeElementName(elementName);
+        final String normalizedAttributeName = Attribute.normalizeAttributeName(attributeName);
         
         final List<Node> fragmentNodes = new ArrayList<Node>(5);
         for (final Node rootNode : rootNodes) {

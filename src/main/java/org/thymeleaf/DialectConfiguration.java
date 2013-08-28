@@ -29,6 +29,8 @@ import java.util.Set;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
+import org.thymeleaf.dom.Attribute;
+import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
@@ -80,7 +82,7 @@ public final class DialectConfiguration {
         super();
         // Prefix CAN be null
         Validate.notNull(dialect, "Dialect cannot be null");
-        this.prefix = Node.normalizeName(prefix);
+        this.prefix = prefix;
         this.dialect = dialect;
         this.initialized = false;
     }
@@ -140,7 +142,7 @@ public final class DialectConfiguration {
                                 "Processor of class \"" + processor.getClass().getName() + "\" " +
                                 "returned a null element name as a part of its applicability specifications.");
                     }
-                    final String normalizedElementName = Node.normalizeName(elementName);
+                    final String normalizedElementName = Element.normalizeElementName(elementName);
                     
                     Set<ProcessorAndContext> elementProcessorsForElementName = newSpecificProcessorsByElementName.get(normalizedElementName);
                     if (elementProcessorsForElementName == null) {
@@ -162,7 +164,7 @@ public final class DialectConfiguration {
                                 "Processor of class \"" + processor.getClass().getName() + "\" " +
                                 "returned a null attribute name as a part of its applicability specifications.");
                     }
-                    final String normalizedAttributeName = Node.normalizeName(attributeName);
+                    final String normalizedAttributeName = Attribute.normalizeAttributeName(attributeName);
                     
                     Set<ProcessorAndContext> elementProcessorsForAttributeName = newSpecificProcessorsByAttributeName.get(normalizedAttributeName);
                     if (elementProcessorsForAttributeName == null) {

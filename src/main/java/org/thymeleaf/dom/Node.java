@@ -122,7 +122,10 @@ public abstract class Node implements Serializable {
      * 
      * @param name the name to be normalized.
      * @return the normalized name.
+     * @deprecated Deprecated in 2.1.0. Use {@link Attribute#normalizeAttributeName(String)} or
+     *             {@link Element#normalizeElementName(String)} instead.
      */
+    @Deprecated
     public static String normalizeName(final String name) {
         if (name == null) {
             return null;
@@ -142,7 +145,10 @@ public abstract class Node implements Serializable {
      * @param name the name to be prefixed
      * @param dialectPrefix the prefix to be applied
      * @return the prefixed name
+     * @deprecated Deprecated in 2.1.0. Use {@link Attribute#applyPrefixToAttributeName(String, String)} or
+     *             {@link Element#applyPrefixToElementName(String, String)} instead.
      */
+    @Deprecated
     public static String applyDialectPrefix(final String name, final String dialectPrefix) {
         if (name == null) {
             return null;

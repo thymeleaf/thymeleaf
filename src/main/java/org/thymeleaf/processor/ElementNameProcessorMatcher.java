@@ -98,7 +98,7 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
     public String getElementName(final ProcessorMatchingContext context) {
         
         if (this.applyDialectPrefix) {
-            return Node.applyDialectPrefix(this.elementName, context.getDialectPrefix());
+            return Element.applyPrefixToElementName(this.elementName, context.getDialectPrefix());
         } 
         
         return this.elementName;
@@ -123,7 +123,7 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
         }
         
         final Element element = (Element) node;
-        final String completeNormalizedElementName = Node.normalizeName(getElementName(context)); 
+        final String completeNormalizedElementName = Element.normalizeElementName(getElementName(context));
         
         if (!element.getNormalizedName().equals(completeNormalizedElementName)) {
             return false;

@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
@@ -71,7 +72,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
         super();
         Validate.notEmpty(attributeName, "Attribute name cannot be null or empty");
         this.attributeName = attributeName;
-        this.elementNameFilter = Node.normalizeName(elementNameFilter);
+        this.elementNameFilter = Element.normalizeElementName(elementNameFilter);
         if (attributeValuesByNameFilter == null || attributeValuesByNameFilter.size() == 0) {
             this.attributeValuesByNameFilter = null;
         } else {
@@ -86,7 +87,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
     
     
     public String getAttributeName(final ProcessorMatchingContext context) {
-        return Node.applyDialectPrefix(this.attributeName, context.getDialectPrefix());
+        return Attribute.applyPrefixToAttributeName(this.attributeName, context.getDialectPrefix());
     }
 
     public String getElementNameFilter() {

@@ -103,7 +103,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
      */
     public final boolean hasAttribute(final String attributeName) {
         if (this.attributesLen > 0) {
-            final String normalizedAttributeName = Node.normalizeName(attributeName);
+            final String normalizedAttributeName = Attribute.normalizeAttributeName(attributeName);
             for (int i = 0; i < this.attributesLen; i++) {
                 if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
                     return true;
@@ -230,7 +230,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
      */
     public final String getAttributeValue(final String attributeName) {
         if (this.attributesLen > 0) {
-            final String normalizedAttributeName = Node.normalizeName(attributeName);
+            final String normalizedAttributeName = Attribute.normalizeAttributeName(attributeName);
             for (int i = 0; i < this.attributesLen; i++) {
                 if (this.attributeNormalizedNames[i].equals(normalizedAttributeName)) {
                     return this.attributes[i].getValue();
@@ -293,7 +293,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
         
         Validate.notNull(name, "Attribute name cannot be null");
 
-        final String attributeNormalizedName = Node.normalizeName(name);
+        final String attributeNormalizedName = Attribute.normalizeAttributeName(name);
 
         if (this.attributesLen > 0) {
             for (int i = 0; i < this.attributesLen; i++) {
@@ -387,7 +387,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
 
         if (this.attributesLen > 0) {
             
-            final String normalizedAttributeName = Node.normalizeName(attributeName);
+            final String normalizedAttributeName = Attribute.normalizeAttributeName(attributeName);
             
             for (int i = 0; i < this.attributesLen; i++) {
                 
