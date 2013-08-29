@@ -20,9 +20,9 @@
 package org.thymeleaf.spring3.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
-import org.thymeleaf.util.PrefixUtils;
 
 
 /**
@@ -57,7 +57,7 @@ public final class SpringMethodAttrProcessor
     @Override
     protected String getTargetAttributeName(
             final Arguments arguments, final Element element, final String attributeName) {
-        return PrefixUtils.getUnprefixed(attributeName);
+        return Attribute.getUnprefixedAttributeName(attributeName);
     }
 
     
