@@ -20,8 +20,8 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.util.PrefixUtils;
 
 /**
  * 
@@ -141,7 +141,7 @@ public final class StandardDOMEventAttributeModifierAttrProcessor
     @Override
     protected String getTargetAttributeName(
             final Arguments arguments, final Element element, final String attributeName) {
-        return PrefixUtils.getUnprefixed(attributeName);
+        return Attribute.getUnprefixedAttributeName(attributeName);
     }
 
     

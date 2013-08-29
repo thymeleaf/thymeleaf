@@ -22,8 +22,6 @@ package org.thymeleaf.standard.processor.attr;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Node;
-import org.thymeleaf.util.PrefixUtils;
 
 /**
  * 
@@ -59,12 +57,8 @@ public class StandardSubstituteByFragmentAttrProcessor
     protected String getFragmentSignatureAttributeName(
             final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue) {
-        
-        if (attributeName != null) {
-            final String prefix = PrefixUtils.getPrefix(attributeName);
-            return Attribute.applyPrefixToAttributeName(FRAGMENT_ATTR_NAME, prefix);
-        }
-        return FRAGMENT_ATTR_NAME;
+
+        return Attribute.computeFellowAttributeName(FRAGMENT_ATTR_NAME, attributeName);
         
     }
 

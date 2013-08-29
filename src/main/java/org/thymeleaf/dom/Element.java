@@ -169,7 +169,7 @@ public final class Element extends NestableAttributeHolderNode {
      */
     @Deprecated
     public String getNormalizedPrefix() {
-        return PrefixUtils.getPrefix(this.normalizedName);
+        return getPrefix(this.normalizedName);
     }
 
 
@@ -184,7 +184,7 @@ public final class Element extends NestableAttributeHolderNode {
      */
     @Deprecated
     public String getUnprefixedNormalizedName() {
-        return PrefixUtils.getUnprefixed(this.normalizedName);
+        return getUnprefixedElementName(this.normalizedName);
     }
 
 
@@ -198,7 +198,8 @@ public final class Element extends NestableAttributeHolderNode {
      */
     @Deprecated
     public boolean hasPrefix() {
-        return PrefixUtils.hasPrefix(this.normalizedName);
+        final int colonPos = this.normalizedName.indexOf(':');
+        return colonPos != -1;
     }
 
     
@@ -395,6 +396,62 @@ public final class Element extends NestableAttributeHolderNode {
         return dialectPrefix + ':' + name;
     }
 
+
+
+
+
+    /**
+     * <p>
+     *   Computes the complete (i.e. prefixed) name of an element starting from another, already
+     *   complete (i.e. prefixed) element name from the same dialect.
+     * </p>
+     *
+     * @param elementName the incomplete element name to be prefixed.
+     * @param baseElementName the element name to be used as a base to compute the prefix to be applied.
+     * @return the result of completing the element name.
+     * @since 2.1.0
+     */
+    public static String computeFellowElementName(final String elementName, final String baseElementName) {
+        if (elementName == null){
+            return null;
+        }
+        if (baseElementName == null){
+            return elementName;
+        }
+        final String prefix = getPrefix(baseElementName);
+        return applyPrefixToElementName(elementName, prefix);
+    }
+
+
+
+    /**
+     * <p>
+     *   Returns the equivalent, un-prefixed name of an element from its complete (prefixed, if applies) version.
+     * </p>
+     *
+     * @param name the complete (prefixed, if applies) version of an element name.
+     * @return the unprefixed version of the specified element name.
+     * @since 2.1.0
+     */
+    public static String getUnprefixedElementName(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        final int colonPos = name.indexOf(':');
+        if (colonPos != -1) {
+            return name.substring(colonPos + 1);
+        }
+        return name;
+    }
+
+
+
+
+    private static String getPrefix(final String name) {
+        final int colonPos = name.indexOf(':');
+        if (colonPos != -1) {
+            return name.substring(0, colonPos);
+        }
+        return null;
+    }
 
 
 }

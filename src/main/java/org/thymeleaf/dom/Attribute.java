@@ -132,7 +132,7 @@ public final class Attribute implements Serializable {
      */
     @Deprecated
     public String getNormalizedPrefix() {
-        return PrefixUtils.getPrefix(this.normalizedName);
+        return getPrefix(this.normalizedName);
     }
 
 
@@ -147,7 +147,7 @@ public final class Attribute implements Serializable {
      */
     @Deprecated
     public String getUnprefixedNormalizedName() {
-        return PrefixUtils.getUnprefixed(this.normalizedName);
+        return getUnprefixedAttributeName(this.normalizedName);
     }
 
 
@@ -161,7 +161,8 @@ public final class Attribute implements Serializable {
      */
     @Deprecated
     public boolean hasPrefix() {
-        return PrefixUtils.hasPrefix(this.normalizedName);
+        final int colonPos = this.normalizedName.indexOf(':');
+        return colonPos != -1;
     }
 
     
@@ -293,6 +294,61 @@ public final class Attribute implements Serializable {
             return name;
         }
         return dialectPrefix + ':' + name;
+    }
+
+
+
+    /**
+     * <p>
+     *   Computes the complete (i.e. prefixed) name of an attribute starting from another, already
+     *   complete (i.e. prefixed) attribute name from the same dialect.
+     * </p>
+     *
+     * @param attributeName the incomplete attribute name to be prefixed.
+     * @param baseAttributeName the attribute name to be used as a base to compute the prefix to be applied.
+     * @return the result of completing the attribute name.
+     * @since 2.1.0
+     */
+    public static String computeFellowAttributeName(final String attributeName, final String baseAttributeName) {
+        if (attributeName == null){
+            return null;
+        }
+        if (baseAttributeName == null){
+            return attributeName;
+        }
+        final String prefix = getPrefix(baseAttributeName);
+        return Attribute.applyPrefixToAttributeName(attributeName, prefix);
+    }
+
+
+
+    /**
+     * <p>
+     *   Returns the equivalent, un-prefixed name of an attribute from its complete (prefixed, if applies) version.
+     * </p>
+     *
+     * @param name the complete (prefixed, if applies) version of an attribute name.
+     * @return the unprefixed version of the specified attribute name.
+     * @since 2.1.0
+     */
+    public static String getUnprefixedAttributeName(final String name) {
+        Validate.notNull(name, "Name cannot be null");
+        final int colonPos = name.indexOf(':');
+        if (colonPos != -1) {
+            return name.substring(colonPos + 1);
+        }
+        return name;
+    }
+
+
+
+
+    private static String getPrefix(final String name) {
+        final int colonPos = name.indexOf(':');
+        if (colonPos != -1) {
+            return name.substring(0, colonPos);
+        }
+        return null;
     }
 
 
