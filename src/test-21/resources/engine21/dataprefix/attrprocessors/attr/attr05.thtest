@@ -1,0 +1,30 @@
+%TEMPLATE_MODE XML
+# ------------------------------------------------------------
+%CONTEXT
+sel = true 
+# ------------------------------------------------------------
+%INPUT
+<?xml version="1.0"?>
+<option data-th-attr="selected=${sel}">..</option>
+<option data-th-attr="multiple=${sel}">..</option>
+<option data-th-attr="selected=!${sel}">..</option>
+<option data-th-attr="multiple=!${sel}">..</option>
+<option data-th-attr="selected='a'">..</option>
+<option data-th-attr="multiple='a'">..</option>
+<option data-th-attr="selected=''">..</option>
+<option data-th-attr="multiple=''">..</option>
+<option data-th-attr="selected=${null}">..</option>
+<option data-th-attr="multiple=${null}">..</option>
+# ------------------------------------------------------------
+%OUTPUT
+<?xml version="1.0"?>
+<option selected="true">..</option>
+<option multiple="true">..</option>
+<option selected="false">..</option>
+<option multiple="false">..</option>
+<option selected="a">..</option>
+<option multiple="a">..</option>
+<option>..</option>
+<option>..</option>
+<option>..</option>
+<option>..</option>

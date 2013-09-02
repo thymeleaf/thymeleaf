@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-xmlspace="${one}">..</div>
+<div data-th-xmlspace="'hello'">..</div>
+<div data-th-xmlspace="${null}">..</div>
+<div data-th-xmlspace="''">..</div>
+
+<div xml:space="old" data-th-xmlspace="${one}">..</div>
+<div xml:space="old" data-th-xmlspace="'hello'">..</div>
+<div xml:space="old" data-th-xmlspace="${null}">..</div>
+<div xml:space="old" data-th-xmlspace="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div xml:space="one!">..</div>
+<div xml:space="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div xml:space="one!">..</div>
+<div xml:space="hello">..</div>
+<div>..</div>
+<div>..</div>

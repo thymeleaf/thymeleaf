@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%MESSAGES
+bools.true = Yes!
+bools.false = No!
+# ------------------------------------------------------------
+%CONTEXT
+value0 = true
+value1 = false
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${value0} ? #{bools.true} : #{bools.false}">Some text</p>
+<p data-th-text="${value1} ? #{bools.true} : #{bools.false}">Some text</p>
+<p data-th-text="#{'bools.' + ${value0}}">Some text</p>
+<p data-th-text="#{'bools.' + ${value1}}">Some text</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Yes!</p>
+<p>No!</p>
+<p>Yes!</p>
+<p>No!</p>

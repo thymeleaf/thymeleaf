@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-bgcolor="${one}">..</div>
+<div data-th-bgcolor="'hello'">..</div>
+<div data-th-bgcolor="${null}">..</div>
+<div data-th-bgcolor="''">..</div>
+<div bgcolor="old" data-th-bgcolor="${one}">..</div>
+<div bgcolor="old" data-th-bgcolor="'hello'">..</div>
+<div bgcolor="old" data-th-bgcolor="${null}">..</div>
+<div bgcolor="old" data-th-bgcolor="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div bgcolor="one!">..</div>
+<div bgcolor="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div bgcolor="one!">..</div>
+<div bgcolor="hello">..</div>
+<div>..</div>
+<div>..</div>

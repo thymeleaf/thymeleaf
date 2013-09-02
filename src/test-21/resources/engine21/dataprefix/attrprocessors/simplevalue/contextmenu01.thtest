@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-contextmenu="${one}">..</div>
+<div data-th-contextmenu="'hello'">..</div>
+<div data-th-contextmenu="${null}">..</div>
+<div data-th-contextmenu="''">..</div>
+<div contextmenu="old" data-th-contextmenu="${one}">..</div>
+<div contextmenu="old" data-th-contextmenu="'hello'">..</div>
+<div contextmenu="old" data-th-contextmenu="${null}">..</div>
+<div contextmenu="old" data-th-contextmenu="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div contextmenu="one!">..</div>
+<div contextmenu="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div contextmenu="one!">..</div>
+<div contextmenu="hello">..</div>
+<div>..</div>
+<div>..</div>

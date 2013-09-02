@@ -1,0 +1,32 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+param.a = 'Some text'
+param.b = 123
+param.c = 'Hello'
+param.c = 'World'
+param.c = 0
+# ------------------------------------------------------------
+%INPUT
+<div data-th-with="p=${#httpServletRequest.getParameterValues('a')}">
+    <p data-th-each="pi : ${p}" data-th-text="${pi}">...</p>
+</div>
+<div data-th-with="p=${#httpServletRequest.getParameterValues('b')}">
+    <p data-th-each="pi : ${p}" data-th-text="${pi}">...</p>
+</div>
+<div data-th-with="p=${#httpServletRequest.getParameterValues('c')}">
+    <p data-th-each="pi : ${p}" data-th-text="${pi}">...</p>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+   <p>Some text</p>
+</div>
+<div>
+   <p>123</p>
+</div>
+<div>
+   <p>Hello</p>
+   <p>World</p>
+   <p>0</p>
+</div>

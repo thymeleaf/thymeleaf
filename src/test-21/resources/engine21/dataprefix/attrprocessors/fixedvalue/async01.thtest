@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-async="${t}">..</div>
+<div data-th-async="${f}">..</div>
+<div data-th-async="${one}">..</div>
+<div data-th-async="'hello'">..</div>
+<div data-th-async="${null}">..</div>
+<div data-th-async="''">..</div>
+
+<div async="old" data-th-async="${t}">..</div>
+<div async="old" data-th-async="${f}">..</div>
+<div async="old" data-th-async="${one}">..</div>
+<div async="old" data-th-async="'hello'">..</div>
+<div async="old" data-th-async="${null}">..</div>
+<div async="old" data-th-async="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div async="async">..</div>
+<div>..</div>
+<div async="async">..</div>
+<div async="async">..</div>
+<div>..</div>
+<div async="async">..</div>
+
+<div async="async">..</div>
+<div>..</div>
+<div async="async">..</div>
+<div async="async">..</div>
+<div>..</div>
+<div async="async">..</div>

@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-accept-charset="${one}">..</div>
+<div data-th-accept-charset="'hello'">..</div>
+<div data-th-accept-charset="${null}">..</div>
+<div data-th-accept-charset="''">..</div>
+
+<div accept-charset="old" data-th-accept-charset="${one}">..</div>
+<div accept-charset="old" data-th-accept-charset="'hello'">..</div>
+<div accept-charset="old" data-th-accept-charset="${null}">..</div>
+<div accept-charset="old" data-th-accept-charset="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div accept-charset="one!">..</div>
+<div accept-charset="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div accept-charset="one!">..</div>
+<div accept-charset="hello">..</div>
+<div>..</div>
+<div>..</div>

@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+test = #{ 'text': 'Hi there!' }
+# ------------------------------------------------------------
+%INPUT
+<div data-th-object="${test}" data-th-remove="body">
+    <span data-th-text="*{text}">Text</span>
+</div> 
+<div data-th-object="${test}" data-th-remove="body">
+    <span data-th-text="*{text}">Text</span>
+    <span data-th-text="*{text}">Text</span>
+    <span data-th-text="*{text}">Text</span>
+    <span data-th-text="*{text}">Text</span>
+</div> 
+# ------------------------------------------------------------
+%OUTPUT
+<div></div>
+<div></div>

@@ -1,0 +1,16 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+request.a = 'Some text'
+request.b = 123
+request.c = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#httpServletRequest.getAttribute('a')}">...</p>
+<p data-th-text="${#httpServletRequest.getAttribute('b')}">...</p>
+<p data-th-text="${#httpServletRequest.getAttribute('c')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Some text</p>
+<p>123</p>
+<p>Hello</p>

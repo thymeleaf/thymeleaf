@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-default="${t}">..</div>
+<div data-th-default="${f}">..</div>
+<div data-th-default="${one}">..</div>
+<div data-th-default="'hello'">..</div>
+<div data-th-default="${null}">..</div>
+<div data-th-default="''">..</div>
+
+<div default="old" data-th-default="${t}">..</div>
+<div default="old" data-th-default="${f}">..</div>
+<div default="old" data-th-default="${one}">..</div>
+<div default="old" data-th-default="'hello'">..</div>
+<div default="old" data-th-default="${null}">..</div>
+<div default="old" data-th-default="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div default="default">..</div>
+<div>..</div>
+<div default="default">..</div>
+<div default="default">..</div>
+<div>..</div>
+<div default="default">..</div>
+
+<div default="default">..</div>
+<div>..</div>
+<div default="default">..</div>
+<div default="default">..</div>
+<div>..</div>
+<div default="default">..</div>

@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+atext = 'Lorem ipsum blah blah'
+# ------------------------------------------------------------
+%INPUT
+<div class="one" data-th-replace="frag :: [//b]">
+  <p>Some text over here: <span data-th-text="${i}">i</span></p>
+</div>
+# ------------------------------------------------------------
+%INPUT[frag]
+<p>
+  This is a text <b>with some parts in bold</b> and a text: <b class="now"><i data-th-text="${atext}">bluh bluh</i></b>.
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<b>with some parts in bold</b><b class="now"><i>Lorem ipsum blah blah</i></b>
+
+

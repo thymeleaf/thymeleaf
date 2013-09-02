@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+product = #{ 'name': 'Lettuce',\
+             'price': 12.0 }
+identifier = 32
+# ------------------------------------------------------------
+%INPUT
+<span data-th-attr="class='separate',id=(${identifier} + 1),title=${product.name}">..</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span class="separate" id="33" title="Lettuce">..</span>

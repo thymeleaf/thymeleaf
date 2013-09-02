@@ -1,0 +1,32 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+param.a = 'Hello, World!'
+param.b = 12
+param.b = 244
+# ------------------------------------------------------------
+%INPUT
+<span data-th-text="${#httpServletRequest.contentType}">some text</span>
+<span data-th-text="${#httpServletRequest.method}">some text</span>
+<span data-th-text="${#httpServletRequest.protocol}">some text</span>
+<span data-th-text="${#httpServletRequest.scheme}">some text</span>
+<span data-th-text="${#httpServletRequest.serverName}">some text</span>
+<span data-th-text="${#httpServletRequest.serverPort}">some text</span>
+<span data-th-text="${#httpServletRequest.contextPath}">some text</span>
+<span data-th-text="${#httpServletRequest.servletPath}">some text</span>
+<span data-th-text="${#httpServletRequest.requestURI}">some text</span>
+<span data-th-text="${#httpServletRequest.requestURL}">some text</span>
+<span data-th-text="${#httpServletRequest.queryString} ?: '[null]'">some text</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>text/html</span>
+<span>GET</span>
+<span>HTTP/1.1</span>
+<span>http</span>
+<span>testing-server</span>
+<span>80</span>
+<span>/testing</span>
+<span>/request02</span>
+<span>/testing/request02</span>
+<span>http://testing-server/testing/request02</span>
+<span>a=Hello%2C+World%21&amp;b=12&amp;b=244</span>

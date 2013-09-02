@@ -1,0 +1,16 @@
+%EXTENDS numbers.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#numbers.formatInteger(one, 5)}">...</p>
+<p data-th-text="${#numbers.formatInteger(two, 5)}">...</p>
+<p data-th-text="${#numbers.formatInteger(three, 5)}">...</p>
+<p data-th-text="${#numbers.formatInteger(four, 5)}">...</p>
+<p data-th-text="${#numbers.formatInteger(five, 5)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>00123</p>
+<p>25412315412312412312545213</p>
+<p>00000</p>
+<p>00000</p>
+<p>25412315412312412312545213</p>
+

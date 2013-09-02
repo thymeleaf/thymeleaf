@@ -1,0 +1,9 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%INPUT
+<a data-th-href="@{#(param=1)}">go</a>
+<a data-th-href="@{#(param)}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="#?param=1">go</a>
+<a href="#?param">go</a>

@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-challenge="${one}">..</div>
+<div data-th-challenge="'hello'">..</div>
+<div data-th-challenge="${null}">..</div>
+<div data-th-challenge="''">..</div>
+<div challenge="old" data-th-challenge="${one}">..</div>
+<div challenge="old" data-th-challenge="'hello'">..</div>
+<div challenge="old" data-th-challenge="${null}">..</div>
+<div challenge="old" data-th-challenge="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div challenge="one!">..</div>
+<div challenge="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div challenge="one!">..</div>
+<div challenge="hello">..</div>
+<div>..</div>
+<div>..</div>

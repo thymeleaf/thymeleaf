@@ -1,0 +1,27 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<span data-th-text="${#httpServletRequest.contentType}">some text</span>
+<span data-th-text="${#httpServletRequest.method}">some text</span>
+<span data-th-text="${#httpServletRequest.protocol}">some text</span>
+<span data-th-text="${#httpServletRequest.scheme}">some text</span>
+<span data-th-text="${#httpServletRequest.serverName}">some text</span>
+<span data-th-text="${#httpServletRequest.serverPort}">some text</span>
+<span data-th-text="${#httpServletRequest.contextPath}">some text</span>
+<span data-th-text="${#httpServletRequest.servletPath}">some text</span>
+<span data-th-text="${#httpServletRequest.requestURI}">some text</span>
+<span data-th-text="${#httpServletRequest.requestURL}">some text</span>
+<span data-th-text="${#httpServletRequest.queryString} ?: '[null]'">some text</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>text/html</span>
+<span>GET</span>
+<span>HTTP/1.1</span>
+<span>http</span>
+<span>testing-server</span>
+<span>80</span>
+<span>/testing</span>
+<span>/request01</span>
+<span>/testing/request01</span>
+<span>http://testing-server/testing/request01</span>
+<span>[null]</span>

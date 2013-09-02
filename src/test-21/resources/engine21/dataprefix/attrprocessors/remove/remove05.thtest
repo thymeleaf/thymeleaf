@@ -1,0 +1,18 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+test = #{ 'text': 'Hi there!' }
+# ------------------------------------------------------------
+%INPUT
+<div data-th-remove="all-but-first">
+    <!-- This will be a bit weird because only the bold text will be removed
+         (it is the only element) -->
+    Some text here and counting: <b>one</b>, <b>two</b>, three 
+</div> 
+# ------------------------------------------------------------
+%OUTPUT
+<div> 
+    <!-- This will be a bit weird because only the bold text will be removed
+         (it is the only element) -->
+    Some text here and counting: <b>one</b>, , three
+</div> 

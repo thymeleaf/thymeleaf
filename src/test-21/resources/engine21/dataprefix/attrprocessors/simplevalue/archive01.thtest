@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-archive="${one}">..</div>
+<div data-th-archive="'hello'">..</div>
+<div data-th-archive="${null}">..</div>
+<div data-th-archive="''">..</div>
+<div archive="old" data-th-archive="${one}">..</div>
+<div archive="old" data-th-archive="'hello'">..</div>
+<div archive="old" data-th-archive="${null}">..</div>
+<div archive="old" data-th-archive="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div archive="one!">..</div>
+<div archive="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div archive="one!">..</div>
+<div archive="hello">..</div>
+<div>..</div>
+<div>..</div>

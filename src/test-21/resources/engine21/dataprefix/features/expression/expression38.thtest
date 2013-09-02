@@ -1,0 +1,55 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+a1 = 'a'
+a2 = 12
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${a1} == 'a'">...</p>
+<p data-th-text="${a1} != 'a'">...</p>
+<p data-th-text="${a1} == 'b'">...</p>
+<p data-th-text="${a1} != 'b'">...</p>
+
+<p data-th-text="${a2} == 12">...</p>
+<p data-th-text="${a2} != 12">...</p>
+<p data-th-text="${a2} == 11">...</p>
+<p data-th-text="${a2} != 11">...</p>
+
+<p data-th-text="${a1} eq 'a'">...</p>
+<p data-th-text="${a1} ne 'a'">...</p>
+<p data-th-text="${a1} neq 'a'">...</p>
+<p data-th-text="${a1} eq 'b'">...</p>
+<p data-th-text="${a1} ne 'b'">...</p>
+<p data-th-text="${a1} neq 'b'">...</p>
+
+<p data-th-text="${a2} eq 12">...</p>
+<p data-th-text="${a2} ne 12">...</p>
+<p data-th-text="${a2} neq 12">...</p>
+<p data-th-text="${a2} eq 11">...</p>
+<p data-th-text="${a2} ne 11">...</p>
+<p data-th-text="${a2} neq 11">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>

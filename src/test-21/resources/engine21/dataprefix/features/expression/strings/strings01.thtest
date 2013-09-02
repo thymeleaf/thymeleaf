@@ -1,0 +1,23 @@
+%EXTENDS strings.common
+# ------------------------------------------------------------
+%CONTEXT
+anotherOne = 'one'
+anotherOne2 = 'oneone'
+anotherTwo = 'TWO'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#strings.equals(one, anotherOne)}">...</p>
+<p data-th-text="${#strings.equals(one, anotherOne2)}">...</p>
+<p data-th-text="${#strings.equals(two, anotherTwo)}">...</p>
+<p data-th-text="${#strings.equalsIgnoreCase(one, anotherOne)}">...</p>
+<p data-th-text="${#strings.equalsIgnoreCase(one, anotherOneOne)}">...</p>
+<p data-th-text="${#strings.equalsIgnoreCase(two, anotherTwo)}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>false</p>
+<p>true</p>
+

@@ -1,0 +1,20 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%MESSAGES
+subscribe.submit = Subscribe me please!
+# ------------------------------------------------------------
+%INPUT
+<form action="subscribe.html" data-th-attr="action=@{/subscribe}">
+  <fieldset>
+    <input type="text" name="email" />
+    <input type="submit" value="Subscribe me!" data-th-attr="value=#{subscribe.submit}"/>
+  </fieldset>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/subscribe">
+  <fieldset>
+    <input type="text" name="email" />
+    <input type="submit" value="Subscribe me please!" />
+  </fieldset>
+</form>

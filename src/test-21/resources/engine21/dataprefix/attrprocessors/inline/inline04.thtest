@@ -1,0 +1,46 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%MESSAGES
+foo = http://www.thymeleaf.org/download.html
+# ------------------------------------------------------------
+%INPUT
+<script data-th-inline="javascript">
+    objArray: {
+        obj1:{
+            attr11: /*[[#{foo}]]*/ 'Some text 11',
+            attr12: /*[[#{foo}]]*/ 'Some text 12',
+            attr13: /*[[#{foo}]]*/ 'http://www.thymeleaf.org/documentation.html'
+        },
+        obj2:{
+            attr21: /*[[#{foo}]]*/ 'Some text 21',
+            attr22: /*[[#{foo}]]*/ 'Some text 22',
+            attr23: /*[[#{foo}]]*/ 'http://www.thymeleaf.org/documentation.html' // some comment here
+        },
+        obj3:{
+            attr11: /*[[#{foo}]]*/ 'Some text 11',
+            attr12: /*[[#{foo}]]*/ 'http://www.thymeleaf.org/documentation.html',
+            attr13: /*[[#{foo}]]*/ 'Some text 13'
+        }
+    }
+</script> 
+# ------------------------------------------------------------
+%OUTPUT
+<script> 
+    objArray: {
+        obj1:{
+            attr11: 'http://www.thymeleaf.org/download.html',
+            attr12: 'http://www.thymeleaf.org/download.html',
+            attr13: 'http://www.thymeleaf.org/download.html'
+        },
+        obj2:{
+            attr21: 'http://www.thymeleaf.org/download.html',
+            attr22: 'http://www.thymeleaf.org/download.html',
+            attr23: 'http://www.thymeleaf.org/download.html'// some comment here
+        },
+        obj3:{
+            attr11: 'http://www.thymeleaf.org/download.html',
+            attr12: 'http://www.thymeleaf.org/download.html',
+            attr13: 'http://www.thymeleaf.org/download.html'
+        }
+    }
+</script> 

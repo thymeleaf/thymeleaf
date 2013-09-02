@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-readonly="${t}">..</div>
+<div data-th-readonly="${f}">..</div>
+<div data-th-readonly="${one}">..</div>
+<div data-th-readonly="'hello'">..</div>
+<div data-th-readonly="${null}">..</div>
+<div data-th-readonly="''">..</div>
+
+<div readonly="old" data-th-readonly="${t}">..</div>
+<div readonly="old" data-th-readonly="${f}">..</div>
+<div readonly="old" data-th-readonly="${one}">..</div>
+<div readonly="old" data-th-readonly="'hello'">..</div>
+<div readonly="old" data-th-readonly="${null}">..</div>
+<div readonly="old" data-th-readonly="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div readonly="readonly">..</div>
+<div>..</div>
+<div readonly="readonly">..</div>
+<div readonly="readonly">..</div>
+<div>..</div>
+<div readonly="readonly">..</div>
+
+<div readonly="readonly">..</div>
+<div>..</div>
+<div readonly="readonly">..</div>
+<div readonly="readonly">..</div>
+<div>..</div>
+<div readonly="readonly">..</div>

@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-charset="${one}">..</div>
+<div data-th-charset="'hello'">..</div>
+<div data-th-charset="${null}">..</div>
+<div data-th-charset="''">..</div>
+<div charset="old" data-th-charset="${one}">..</div>
+<div charset="old" data-th-charset="'hello'">..</div>
+<div charset="old" data-th-charset="${null}">..</div>
+<div charset="old" data-th-charset="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div charset="one!">..</div>
+<div charset="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div charset="one!">..</div>
+<div charset="hello">..</div>
+<div>..</div>
+<div>..</div>

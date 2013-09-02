@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+foo = 'fooo!'
+# ------------------------------------------------------------
+%INPUT
+<script data-th-inline="javascript">
+    var foo1 = /*[[${foo}]]*/; 
+    var foo2 = /*[[${foo}]]*/; // some comment like "will be replaced by thymeleaf"
+</script> 
+# ------------------------------------------------------------
+%OUTPUT
+<script> 
+    var foo1 = 'fooo!';
+    var foo2 = 'fooo!'; // some comment like "will be replaced by thymeleaf" 
+</script>

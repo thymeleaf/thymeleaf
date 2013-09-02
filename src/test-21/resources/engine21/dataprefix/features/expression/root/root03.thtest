@@ -1,0 +1,17 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+prices = #{ 'euros': 9.00,\
+            'dollars': 12.00 }
+product = #{ 'name': 'Lettuce',\
+             'prices': prices }
+# ------------------------------------------------------------
+%INPUT
+<div data-th-object="${product}">
+  <p data-th-text="${#root.product.name}">...</p>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>Lettuce</p>
+</div>

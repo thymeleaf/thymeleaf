@@ -1,0 +1,31 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="0.0 &lt;= 0.0 and 0.0 &gt;= 0.0">...</p>
+<p data-th-text="0.0 &lt;= 2 and 4 &gt; 12">...</p>
+<p data-th-text="4 &gt; 12 and 0.0 &lt;= 2">...</p>
+<p data-th-text="0.0 &lt;= 2 or 34 &gt; 42">...</p>
+<p data-th-text="34 &gt; 42 or 0.0 &lt;= 2">...</p>
+<p data-th-text="34 &gt; 42 or 4.0 &lt;= 2">...</p>
+
+<p data-th-text="0.0 le 0.0 and 0.0 ge 0.0">...</p>
+<p data-th-text="0.0 le 2 and 4 gt 12">...</p>
+<p data-th-text="4 gt 12 and 0.0 le 2">...</p>
+<p data-th-text="0.0 le 2 or 34 gt 42">...</p>
+<p data-th-text="34 gt 42 or 0.0 le 2">...</p>
+<p data-th-text="34 gt 42 or 4.0 le 2">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>
+
+<p>true</p>
+<p>false</p>
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>

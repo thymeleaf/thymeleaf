@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-autocomplete="${one}">..</div>
+<div data-th-autocomplete="'hello'">..</div>
+<div data-th-autocomplete="${null}">..</div>
+<div data-th-autocomplete="''">..</div>
+<div autocomplete="old" data-th-autocomplete="${one}">..</div>
+<div autocomplete="old" data-th-autocomplete="'hello'">..</div>
+<div autocomplete="old" data-th-autocomplete="${null}">..</div>
+<div autocomplete="old" data-th-autocomplete="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div autocomplete="one!">..</div>
+<div autocomplete="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div autocomplete="one!">..</div>
+<div autocomplete="hello">..</div>
+<div>..</div>
+<div>..</div>

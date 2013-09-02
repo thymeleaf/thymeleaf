@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-href="${one}">..</div>
+<div data-th-href="'hello'">..</div>
+<div data-th-href="${null}">..</div>
+<div data-th-href="''">..</div>
+
+<div href="old" data-th-href="${one}">..</div>
+<div href="old" data-th-href="'hello'">..</div>
+<div href="old" data-th-href="${null}">..</div>
+<div href="old" data-th-href="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div href="one!">..</div>
+<div href="hello">..</div>
+<div href="">..</div>
+<div href="">..</div>
+
+<div href="one!">..</div>
+<div href="hello">..</div>
+<div href="">..</div>
+<div href="">..</div>

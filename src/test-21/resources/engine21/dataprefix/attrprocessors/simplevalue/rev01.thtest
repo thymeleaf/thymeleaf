@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-rev="${one}">..</div>
+<div data-th-rev="'hello'">..</div>
+<div data-th-rev="${null}">..</div>
+<div data-th-rev="''">..</div>
+
+<div rev="old" data-th-rev="${one}">..</div>
+<div rev="old" data-th-rev="'hello'">..</div>
+<div rev="old" data-th-rev="${null}">..</div>
+<div rev="old" data-th-rev="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div rev="one!">..</div>
+<div rev="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div rev="one!">..</div>
+<div rev="hello">..</div>
+<div>..</div>
+<div>..</div>

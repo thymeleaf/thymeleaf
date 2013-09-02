@@ -1,0 +1,16 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+onevar = false
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="not (5.3 gt 3)">...</p>
+<p data-th-text="2 gt 1 and not (5.3 lt 3)">...</p>
+<p data-th-text="2 gt 1 and (not ${onevar})">...</p>
+<p data-th-text="2 lt 1 and (not ${onevar})">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>false</p>
+<p>true</p>
+<p>true</p>
+<p>false</p>

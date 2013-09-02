@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-standby="${one}">..</div>
+<div data-th-standby="'hello'">..</div>
+<div data-th-standby="${null}">..</div>
+<div data-th-standby="''">..</div>
+
+<div standby="old" data-th-standby="${one}">..</div>
+<div standby="old" data-th-standby="'hello'">..</div>
+<div standby="old" data-th-standby="${null}">..</div>
+<div standby="old" data-th-standby="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div standby="one!">..</div>
+<div standby="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div standby="one!">..</div>
+<div standby="hello">..</div>
+<div>..</div>
+<div>..</div>

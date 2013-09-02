@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+userRoles = {'MANAGER','SALES'}
+# ------------------------------------------------------------
+%INPUT
+<script data-th-inline="javascript">
+    var userRoles = /*[[${userRoles}]]*/ ['USER','ADMINISTRATOR'];
+</script> 
+# ------------------------------------------------------------
+%OUTPUT
+<script> 
+    var userRoles = ['MANAGER','SALES'];
+</script> 

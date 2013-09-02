@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-xmllang="${one}">..</div>
+<div data-th-xmllang="'hello'">..</div>
+<div data-th-xmllang="${null}">..</div>
+<div data-th-xmllang="''">..</div>
+
+<div xml:lang="old" data-th-xmllang="${one}">..</div>
+<div xml:lang="old" data-th-xmllang="'hello'">..</div>
+<div xml:lang="old" data-th-xmllang="${null}">..</div>
+<div xml:lang="old" data-th-xmllang="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div xml:lang="one!">..</div>
+<div xml:lang="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div xml:lang="one!">..</div>
+<div xml:lang="hello">..</div>
+<div>..</div>
+<div>..</div>

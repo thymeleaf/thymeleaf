@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-axis="${one}">..</div>
+<div data-th-axis="'hello'">..</div>
+<div data-th-axis="${null}">..</div>
+<div data-th-axis="''">..</div>
+<div axis="old" data-th-axis="${one}">..</div>
+<div axis="old" data-th-axis="'hello'">..</div>
+<div axis="old" data-th-axis="${null}">..</div>
+<div axis="old" data-th-axis="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div axis="one!">..</div>
+<div axis="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div axis="one!">..</div>
+<div axis="hello">..</div>
+<div>..</div>
+<div>..</div>

@@ -1,0 +1,32 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+user = #{ 'age': 24 }
+# ------------------------------------------------------------
+%INPUT
+Text before
+<div data-th-unless="${user.age > 24}" data-th-remove="tag">
+    Bigger 01
+</div>
+<div data-th-unless="${user.age} > 24" data-th-remove="body">
+    Bigger 02
+</div>
+<div data-th-unless="${user.age} > 24.0" data-th-remove="all">
+    Bigger 03
+</div>
+<div data-th-unless="${user.age >= 24}" data-th-remove="tag">
+    Or equal 01
+</div>
+<div data-th-unless="${user.age} >= 24" data-th-remove="body">
+    Or equal 02
+</div>
+<div data-th-unless="${user.age} >= 24.0" data-th-remove="all">
+    Or equal 03
+</div>
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+    Bigger 01
+<div></div>
+Text after 

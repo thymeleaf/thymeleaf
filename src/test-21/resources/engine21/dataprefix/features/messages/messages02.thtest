@@ -1,0 +1,33 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%MESSAGES
+msg01 = Hello!
+msg02 = Hello {0}!
+msg03 = Hello {0}, welcome to planet {1}!
+# ------------------------------------------------------------
+%CONTEXT
+var01 = 'John Apricot'
+var02 = var01 + ' Jr.'
+var03 = 'Saturn'
+# ------------------------------------------------------------
+%INPUT
+<span data-th-text="${#messages.msg('msg01')}">Some text</span>
+<span data-th-text="${#messages.msg('msg02','Jack Lettuce')}">Some text</span>
+<span data-th-text="${#messages.msg('msg02',var01)}">Some text</span>
+<span data-th-text="${#messages.msg('msg02',var02)}">Some text</span>
+<span data-th-text="${#messages.msg('msg02', var01 + ' Jr.')}">Some text</span>
+<span data-th-text="${#messages.msg('msg02', var01 + ' Jr.')}">Some text</span>
+<span data-th-text="${#messages.msg('msg03', var01 + ' Jr.', var03)}">Some text</span>
+<span data-th-text="${#messages.msg('msg03', var01 + ' Jr.', 'Mars')}">Some text</span>
+<span data-th-text="${#messages.msg('msg03', var01 + ' Jr.', 'Mars')}">Some text</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>Hello!</span>
+<span>Hello Jack Lettuce!</span>
+<span>Hello John Apricot!</span>
+<span>Hello John Apricot Jr.!</span>
+<span>Hello John Apricot Jr.!</span>
+<span>Hello John Apricot Jr.!</span>
+<span>Hello John Apricot Jr., welcome to planet Saturn!</span>
+<span>Hello John Apricot Jr., welcome to planet Mars!</span>
+<span>Hello John Apricot Jr., welcome to planet Mars!</span>

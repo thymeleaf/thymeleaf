@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-media="${one}">..</div>
+<div data-th-media="'hello'">..</div>
+<div data-th-media="${null}">..</div>
+<div data-th-media="''">..</div>
+
+<div media="old" data-th-media="${one}">..</div>
+<div media="old" data-th-media="'hello'">..</div>
+<div media="old" data-th-media="${null}">..</div>
+<div media="old" data-th-media="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div media="one!">..</div>
+<div media="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div media="one!">..</div>
+<div media="hello">..</div>
+<div>..</div>
+<div>..</div>

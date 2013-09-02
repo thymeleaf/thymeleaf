@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-codebase="${one}">..</div>
+<div data-th-codebase="'hello'">..</div>
+<div data-th-codebase="${null}">..</div>
+<div data-th-codebase="''">..</div>
+<div codebase="old" data-th-codebase="${one}">..</div>
+<div codebase="old" data-th-codebase="'hello'">..</div>
+<div codebase="old" data-th-codebase="${null}">..</div>
+<div codebase="old" data-th-codebase="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT	
+<div codebase="one!">..</div>
+<div codebase="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div codebase="one!">..</div>
+<div codebase="hello">..</div>
+<div>..</div>
+<div>..</div>

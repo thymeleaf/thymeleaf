@@ -1,0 +1,34 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+param.a = 'Some text'
+param.b = 123
+param.c = 'Hello'
+param.c = 'World'
+param.c = 0
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${param.a.class.name}">...</p>
+<p data-th-text="${param.a.length}">...</p>
+<p data-th-text="${param.a[0]}">...</p>
+<p data-th-text="${param.b.class.name}">...</p>
+<p data-th-text="${param.b.length}">...</p>
+<p data-th-text="${param.b[0]}">...</p>
+<p data-th-text="${param.c.class.name}">...</p>
+<p data-th-text="${param.c.length}">...</p>
+<p data-th-text="${param.c[0]}">...</p>
+<p data-th-text="${param.c[1]}">...</p>
+<p data-th-text="${param.c[2]}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>[Ljava.lang.String;</p>
+<p>1</p>
+<p>Some text</p>
+<p>[Ljava.lang.String;</p>
+<p>1</p>
+<p>123</p>
+<p>[Ljava.lang.String;</p>
+<p>3</p>
+<p>Hello</p>
+<p>World</p>
+<p>0</p>

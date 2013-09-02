@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-loop="${t}">..</div>
+<div data-th-loop="${f}">..</div>
+<div data-th-loop="${one}">..</div>
+<div data-th-loop="'hello'">..</div>
+<div data-th-loop="${null}">..</div>
+<div data-th-loop="''">..</div>
+
+<div loop="old" data-th-loop="${t}">..</div>
+<div loop="old" data-th-loop="${f}">..</div>
+<div loop="old" data-th-loop="${one}">..</div>
+<div loop="old" data-th-loop="'hello'">..</div>
+<div loop="old" data-th-loop="${null}">..</div>
+<div loop="old" data-th-loop="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div loop="loop">..</div>
+<div>..</div>
+<div loop="loop">..</div>
+<div loop="loop">..</div>
+<div>..</div>
+<div loop="loop">..</div>
+
+<div loop="loop">..</div>
+<div>..</div>
+<div loop="loop">..</div>
+<div loop="loop">..</div>
+<div>..</div>
+<div loop="loop">..</div>

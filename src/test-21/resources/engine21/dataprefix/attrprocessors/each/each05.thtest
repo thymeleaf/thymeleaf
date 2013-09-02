@@ -1,0 +1,23 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+capitals = new java.util.LinkedHashMap()
+capitals['Galicia'] = 'Santiago de Compostela'
+capitals['Asturias'] = 'Oviedo'
+capitals['Cantabria'] = 'Santander'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-each="entry : ${capitals}">
+  <span data-th-text="${entry.key}">region</span> : <span data-th-text="${entry.value}">city</span>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <span>Galicia</span> : <span>Santiago de Compostela</span>
+</div>
+<div>
+  <span>Asturias</span> : <span>Oviedo</span>
+</div>
+<div>
+  <span>Cantabria</span> : <span>Santander</span>
+</div>

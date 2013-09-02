@@ -1,0 +1,49 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div data-th-with="index=0">
+  <p>This is some text</p>
+  <div data-th-include="frag :: f">...</div>
+</div>
+%INPUT[frag]
+<div data-th-fragment="f" class="a">
+  <div data-th-with="index=(${index}+1)">
+    <p>before</p>
+    <div data-th-if="${index &lt; 3}" data-th-include="frag :: f">...</div>
+    <p>after</p>
+  </div>
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>
+  <p>This is some text</p>
+  <div>
+# start fragment
+    <div>
+# index = 1
+      <p>before</p>
+      <div>
+# start fragment
+        <div>
+# index = 2
+          <p>before</p>
+          <div>
+# start fragment
+            <div>
+# index = 3
+              <p>before</p>
+# no fragment to be included... index == 3!
+              <p>after</p>
+            </div>
+# end fragment
+          </div>
+          <p>after</p>
+        </div>
+# end fragment
+      </div>
+      <p>after</p>
+    </div>
+# end fragment
+  </div>
+</div>
+

@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%MESSAGES
+foo = fooo!
+# ------------------------------------------------------------
+%INPUT
+<script data-th-inline="javascript">
+    objArray: {
+        obj1:{
+            attr11: /*[[#{foo}]]*/ 'Some text 11',
+            attr12: /*[[#{foo}]]*/ 'Some text 12',
+            attr13: /*[[#{foo}]]*/ 'Some text 13'
+        },
+        obj2:{
+            attr21: /*[[#{foo}]]*/ 'Some text 21',
+            attr22: /*[[#{foo}]]*/ 'Some text 22', // some comment here
+            attr23: /*[[#{foo}]]*/ 'Some text 23' // some comment here
+        }
+    }
+</script> 
+# ------------------------------------------------------------
+%OUTPUT
+<script> 
+    objArray: {
+        obj1:{
+            attr11: 'fooo!',
+            attr12: 'fooo!',
+            attr13: 'fooo!'
+        },
+        obj2:{
+            attr21: 'fooo!',
+            attr22: 'fooo!', // some comment here
+            attr23: 'fooo!'// some comment here
+        }
+    }
+</script> 

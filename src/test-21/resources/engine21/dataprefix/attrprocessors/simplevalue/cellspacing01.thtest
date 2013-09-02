@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-cellspacing="${one}">..</div>
+<div data-th-cellspacing="'hello'">..</div>
+<div data-th-cellspacing="${null}">..</div>
+<div data-th-cellspacing="''">..</div>
+<div cellspacing="old" data-th-cellspacing="${one}">..</div>
+<div cellspacing="old" data-th-cellspacing="'hello'">..</div>
+<div cellspacing="old" data-th-cellspacing="${null}">..</div>
+<div cellspacing="old" data-th-cellspacing="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div cellspacing="one!">..</div>
+<div cellspacing="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div cellspacing="one!">..</div>
+<div cellspacing="hello">..</div>
+<div>..</div>
+<div>..</div>

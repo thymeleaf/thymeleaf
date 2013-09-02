@@ -1,0 +1,11 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-object="${user}" data-th-text="#{salute(*{firstName})} +
+       '... and welcome to this application called ' + ${applicationName} + '!'">
+  Some text
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>&lt;b&gt;Hello&lt;/b&gt;, John &#39;The Great&#39;!... 
+   and welcome to this application called Testing App!</p>

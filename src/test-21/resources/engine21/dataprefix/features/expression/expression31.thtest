@@ -1,0 +1,11 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="'hello'">...</p>
+<p data-th-text="'goodbye'">...</p>
+<p data-th-text="'hello, ' + 'world'">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>hello</p>
+<p>goodbye</p>
+<p>hello, world</p>

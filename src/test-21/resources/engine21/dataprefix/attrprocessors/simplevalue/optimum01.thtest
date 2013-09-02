@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-optimum="${one}">..</div>
+<div data-th-optimum="'hello'">..</div>
+<div data-th-optimum="${null}">..</div>
+<div data-th-optimum="''">..</div>
+
+<div optimum="old" data-th-optimum="${one}">..</div>
+<div optimum="old" data-th-optimum="'hello'">..</div>
+<div optimum="old" data-th-optimum="${null}">..</div>
+<div optimum="old" data-th-optimum="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div optimum="one!">..</div>
+<div optimum="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div optimum="one!">..</div>
+<div optimum="hello">..</div>
+<div>..</div>
+<div>..</div>

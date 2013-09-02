@@ -1,0 +1,16 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+session.a = 'Some text'
+session.b = 123
+session.c = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#httpServletRequest.getSession(true).getAttribute('a')}">...</p>
+<p data-th-text="${#httpServletRequest.getSession(true).getAttribute('b')}">...</p>
+<p data-th-text="${#httpServletRequest.getSession(true).getAttribute('c')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Some text</p>
+<p>123</p>
+<p>Hello</p>

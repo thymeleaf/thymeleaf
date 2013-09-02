@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-formnovalidate="${t}">..</div>
+<div data-th-formnovalidate="${f}">..</div>
+<div data-th-formnovalidate="${one}">..</div>
+<div data-th-formnovalidate="'hello'">..</div>
+<div data-th-formnovalidate="${null}">..</div>
+<div data-th-formnovalidate="''">..</div>
+
+<div formnovalidate="old" data-th-formnovalidate="${t}">..</div>
+<div formnovalidate="old" data-th-formnovalidate="${f}">..</div>
+<div formnovalidate="old" data-th-formnovalidate="${one}">..</div>
+<div formnovalidate="old" data-th-formnovalidate="'hello'">..</div>
+<div formnovalidate="old" data-th-formnovalidate="${null}">..</div>
+<div formnovalidate="old" data-th-formnovalidate="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div formnovalidate="formnovalidate">..</div>
+<div>..</div>
+<div formnovalidate="formnovalidate">..</div>
+<div formnovalidate="formnovalidate">..</div>
+<div>..</div>
+<div formnovalidate="formnovalidate">..</div>
+
+<div formnovalidate="formnovalidate">..</div>
+<div>..</div>
+<div formnovalidate="formnovalidate">..</div>
+<div formnovalidate="formnovalidate">..</div>
+<div>..</div>
+<div formnovalidate="formnovalidate">..</div>

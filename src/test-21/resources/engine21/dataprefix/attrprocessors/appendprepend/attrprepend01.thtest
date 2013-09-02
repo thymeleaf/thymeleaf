@@ -1,0 +1,37 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-attrprepend="style=${one}">..</div>
+<div data-th-attrprepend="style='hello'">..</div>
+<div data-th-attrprepend="style=${null}">..</div>
+<div data-th-attrprepend="style=''">..</div>
+
+<div style="old" data-th-attrprepend="style=${one}">..</div>
+<div style="old" data-th-attrprepend="style='hello'">..</div>
+<div style="old" data-th-attrprepend="style=${null}">..</div>
+<div style="old" data-th-attrprepend="style=''">..</div>
+
+<div style="" data-th-attrprepend="style=${one}">..</div>
+<div style="" data-th-attrprepend="style='hello'">..</div>
+<div style="" data-th-attrprepend="style=${null}">..</div>
+<div style="" data-th-attrprepend="style=''">..</div>
+
+# ------------------------------------------------------------
+%OUTPUT
+<div style="one!">..</div>
+<div style="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div style="one!old">..</div>
+<div style="helloold">..</div>
+<div style="old">..</div>
+<div style="old">..</div>
+
+<div style="one!">..</div>
+<div style="hello">..</div>
+<div style="">..</div>
+<div style="">..</div>

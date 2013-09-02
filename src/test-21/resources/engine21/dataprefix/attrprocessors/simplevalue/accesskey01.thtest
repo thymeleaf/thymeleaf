@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-accesskey="${one}">..</div>
+<div data-th-accesskey="'hello'">..</div>
+<div data-th-accesskey="${null}">..</div>
+<div data-th-accesskey="''">..</div>
+
+<div accesskey="old" data-th-accesskey="${one}">..</div>
+<div accesskey="old" data-th-accesskey="'hello'">..</div>
+<div accesskey="old" data-th-accesskey="${null}">..</div>
+<div accesskey="old" data-th-accesskey="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div accesskey="one!">..</div>
+<div accesskey="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div accesskey="one!">..</div>
+<div accesskey="hello">..</div>
+<div>..</div>
+<div>..</div>

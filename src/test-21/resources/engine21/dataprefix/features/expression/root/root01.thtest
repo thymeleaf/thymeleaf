@@ -1,0 +1,17 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+a = 'Letter A'
+b = 'Letter B'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#root} ? 'root exists' : 'root does not exist'">...</p>
+<p data-th-text="${#root.class == null}">...</p>
+<p data-th-text="${#root.a}">...</p>
+<p data-th-text="${#root.b}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>root exists</p>
+<p>true</p>
+<p>Letter A</p>
+<p>Letter B</p>

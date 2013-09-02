@@ -1,0 +1,17 @@
+%EXTENDS ../../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+a = 'Letter A'
+b = 'Letter B'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#ctx.variables} ? 'ctx.variables exists' : 'ctx.variables does not exist'">...</p>
+<p data-th-text="${#ctx.variables.class == null}">...</p>
+<p data-th-text="${#ctx.variables.a}">...</p>
+<p data-th-text="${#ctx.variables.b}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>ctx.variables exists</p>
+<p>true</p>
+<p>Letter A</p>
+<p>Letter B</p>

@@ -1,0 +1,36 @@
+%EXTENDS index.common
+# ------------------------------------------------------------
+%CONTEXT
+j_username = 'jim'
+j_password = 'demo'
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Thymeleafexamples - Spring security</title>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="/testing/css/main.css" />
+    </head>
+    <body>
+        <div class="logout">
+            Logged user: <span>jim</span> |
+            Roles: <span>[ROLE_ADMIN]</span> |
+            <a href="/testing/j_spring_security_logout">Logout</a>
+        </div>
+        <h1>Thymeleafexamples - Spring security</h1>
+        <p>This is a demo of Thymeleaf and Spring-security integration.</p>
+        <h2>Private pages</h2>
+        <p>This is a public page, but you can navigate to protected pages to trigger authentication.</p>
+        <ul>
+            <li>Go to <a href="/testing/admin/index.html">administration zone</a> (only admins)</li>
+            <li>Go to <a href="/testing/user/index.html">user zone</a> (only users)</li>
+            <li>Go to <a href="/testing/shared/index.html">shared zone</a> (both users and admins)</li>
+        </ul>
+        <h2>Exception handling</h2>
+        <ul>
+            <li>You can <a href="/testing/simulateError.html">simulate an exception</a> to see custom ErrorPage.</li>
+        </ul>
+    </body>
+</html>

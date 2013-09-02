@@ -1,0 +1,21 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${salute_bold}">
+  Some text
+</p>
+<p data-th-text="*{salute_bold}">
+  Some text
+</p>
+<p data-th-utext="${salute_bold}">
+  Some text
+</p>
+<p data-th-utext="*{salute_bold}">
+  Some text
+</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>&lt;b&gt;Hello!&lt;/b&gt;</p>
+<p>&lt;b&gt;Hello!&lt;/b&gt;</p>
+<p><b>Hello!</b></p>
+<p><b>Hello!</b></p>

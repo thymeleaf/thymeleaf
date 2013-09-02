@@ -1,0 +1,9 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%INPUT
+<div data-th-text="${applicationName}">
+  Some text
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Testing App</div>

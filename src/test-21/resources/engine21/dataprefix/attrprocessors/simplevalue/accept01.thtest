@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-accept="${one}">..</div>
+<div data-th-accept="'hello'">..</div>
+<div data-th-accept="${null}">..</div>
+<div data-th-accept="''">..</div>
+
+<div accept="old" data-th-accept="${one}">..</div>
+<div accept="old" data-th-accept="'hello'">..</div>
+<div accept="old" data-th-accept="${null}">..</div>
+<div accept="old" data-th-accept="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div accept="one!">..</div>
+<div accept="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div accept="one!">..</div>
+<div accept="hello">..</div>
+<div>..</div>
+<div>..</div>

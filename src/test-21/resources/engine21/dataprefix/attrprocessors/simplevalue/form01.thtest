@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-form="${one}">..</div>
+<div data-th-form="'hello'">..</div>
+<div data-th-form="${null}">..</div>
+<div data-th-form="''">..</div>
+
+<div form="old" data-th-form="${one}">..</div>
+<div form="old" data-th-form="'hello'">..</div>
+<div form="old" data-th-form="${null}">..</div>
+<div form="old" data-th-form="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div form="one!">..</div>
+<div form="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div form="one!">..</div>
+<div form="hello">..</div>
+<div>..</div>
+<div>..</div>

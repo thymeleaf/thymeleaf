@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-alt="${one}">..</div>
+<div data-th-alt="'hello'">..</div>
+<div data-th-alt="${null}">..</div>
+<div data-th-alt="''">..</div>
+<div alt="old" data-th-alt="${one}">..</div>
+<div alt="old" data-th-alt="'hello'">..</div>
+<div alt="old" data-th-alt="${null}">..</div>
+<div alt="old" data-th-alt="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div alt="one!">..</div>
+<div alt="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div alt="one!">..</div>
+<div alt="hello">..</div>
+<div>..</div>
+<div>..</div>

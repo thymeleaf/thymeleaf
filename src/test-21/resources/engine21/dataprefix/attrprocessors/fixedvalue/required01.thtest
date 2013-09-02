@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+t = true
+f = false
+# ------------------------------------------------------------
+%INPUT
+<div data-th-required="${t}">..</div>
+<div data-th-required="${f}">..</div>
+<div data-th-required="${one}">..</div>
+<div data-th-required="'hello'">..</div>
+<div data-th-required="${null}">..</div>
+<div data-th-required="''">..</div>
+
+<div required="old" data-th-required="${t}">..</div>
+<div required="old" data-th-required="${f}">..</div>
+<div required="old" data-th-required="${one}">..</div>
+<div required="old" data-th-required="'hello'">..</div>
+<div required="old" data-th-required="${null}">..</div>
+<div required="old" data-th-required="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>
+<div required="required">..</div>
+<div>..</div>
+<div required="required">..</div>

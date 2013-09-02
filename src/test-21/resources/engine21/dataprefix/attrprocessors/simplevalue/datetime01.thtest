@@ -1,0 +1,26 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div data-th-datetime="${one}">..</div>
+<div data-th-datetime="'hello'">..</div>
+<div data-th-datetime="${null}">..</div>
+<div data-th-datetime="''">..</div>
+
+<div datetime="old" data-th-datetime="${one}">..</div>
+<div datetime="old" data-th-datetime="'hello'">..</div>
+<div datetime="old" data-th-datetime="${null}">..</div>
+<div datetime="old" data-th-datetime="''">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div datetime="one!">..</div>
+<div datetime="hello">..</div>
+<div>..</div>
+<div>..</div>
+
+<div datetime="one!">..</div>
+<div datetime="hello">..</div>
+<div>..</div>
+<div>..</div>

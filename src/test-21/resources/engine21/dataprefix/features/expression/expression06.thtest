@@ -1,0 +1,20 @@
+%EXTENDS ../html5.01.common
+# ------------------------------------------------------------
+%CONTEXT
+request.a = 'Some text'
+request.b = 123
+request.c = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${a.class.name}">...</p>
+<p data-th-text="${a}">...</p>
+<p data-th-text="${b.class.name}">...</p>
+<p data-th-text="${b}">...</p>
+<p data-th-text="${c}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>java.lang.String</p>
+<p>Some text</p>
+<p>java.lang.Integer</p>
+<p>123</p>
+<p>Hello</p>

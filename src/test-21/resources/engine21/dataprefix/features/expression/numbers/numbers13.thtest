@@ -1,0 +1,19 @@
+%EXTENDS numbers.common
+# ------------------------------------------------------------
+%CONTEXT
+locale = 'es'
+# ------------------------------------------------------------
+%INPUT
+<p data-th-text="${#numbers.formatDecimal(one, 5, 4, 'DEFAULT')}">...</p>
+<p data-th-text="${#numbers.formatDecimal(two, 5, 4, 'DEFAULT')}">...</p>
+<p data-th-text="${#numbers.formatDecimal(three, 5, 4, 'DEFAULT')}">...</p>
+<p data-th-text="${#numbers.formatDecimal(four, 5, 4, 'DEFAULT')}">...</p>
+<p data-th-text="${#numbers.formatDecimal(five, 5, 4, 'DEFAULT')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>00123,0000</p>
+<p>25412315412312412312545213,0000</p>
+<p>00000,1240</p>
+<p>00000,1244</p>
+<p>25412315412312412312545213,1244</p>
+

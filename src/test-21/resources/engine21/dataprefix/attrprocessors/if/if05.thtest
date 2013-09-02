@@ -1,0 +1,43 @@
+%EXTENDS booleans.common 
+# ------------------------------------------------------------
+%INPUT
+Text before
+
+<div data-th-if="${value13}">
+    First value
+</div>
+
+<div data-th-if="${value14}">
+    Second value
+</div>
+
+<div data-th-if="${value15}">
+    Third value
+</div>
+
+<div data-th-if="${value16}">
+    Fourth value
+</div>
+
+<div data-th-if="${value17}">
+    Fifth value
+</div>
+
+Text after 
+# ------------------------------------------------------------
+%OUTPUT
+Text before
+
+<div> 
+    First value
+</div>
+
+<div> 
+    Second value
+</div>
+
+<div> 
+    Fifth value
+</div>
+
+Text after 
