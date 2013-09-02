@@ -48,6 +48,17 @@ public class AttrProcessors21Test {
 
 
     @Test
+    public void testAttr() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/attrprocessors/attr");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
+    @Test
     public void testWith() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
