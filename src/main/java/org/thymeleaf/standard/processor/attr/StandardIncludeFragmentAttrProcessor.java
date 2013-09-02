@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
 
 /**
@@ -54,11 +53,11 @@ public class StandardIncludeFragmentAttrProcessor
 
 
     @Override
-    protected String getFragmentSignatureAttributeName(
+    protected String getFragmentSignatureUnprefixedAttributeName(
             final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue) {
-        
-        return Attribute.computeFellowAttributeName(FRAGMENT_ATTR_NAME, attributeName);
+
+        return FRAGMENT_ATTR_NAME;
 
     }
 

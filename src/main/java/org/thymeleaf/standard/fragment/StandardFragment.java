@@ -48,7 +48,7 @@ import org.thymeleaf.util.Validate;
  *   be considered to be executed on the current template (obtained from the
  *   IProcessingContext argument in
  *   {@link #extractFragment(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext,
- *      org.thymeleaf.TemplateRepository, java.lang.String)},
+ *      org.thymeleaf.TemplateRepository, java.lang.String, java.lang.String)},
  *   which will therefore need to be an instance of
  *   {@link org.thymeleaf.Arguments}).
  * </p>
@@ -146,13 +146,16 @@ public final class StandardFragment {
      *        processing the fragment spec.
      * @param context the processing context to be used for resolving and parsing the template.
      * @param templateRepository the template repository to be asked for the template.
+     * @param dialectPrefix the dialect prefix to be applied to the attribute name in which we could expect to find a
+     *        fragment. Can be null.
      * @param fragmentSignatureAttributeName the name of the attribute in which we could expect to find a
      *        fragment
      * @return the result of parsing + applying the fragment spec.
      */
     public List<Node> extractFragment(
             final Configuration configuration, final IProcessingContext context,
-            final TemplateRepository templateRepository, final String fragmentSignatureAttributeName) {
+            final TemplateRepository templateRepository,
+            final String dialectPrefix, final String fragmentSignatureAttributeName) {
 
         String targetTemplateName = getTemplateName();
         if (targetTemplateName == null) {
@@ -197,8 +200,9 @@ public final class StandardFragment {
             final Node node = nodes.get(0);
             if (node instanceof NestableAttributeHolderNode) {
                 final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode)node;
-                if (attributeHolderNode.hasNormalizedAttribute(fragmentSignatureAttributeName)) {
-                    final String attributeValue = attributeHolderNode.getAttributeValue(fragmentSignatureAttributeName);
+                if (attributeHolderNode.hasNormalizedAttribute(dialectPrefix, fragmentSignatureAttributeName)) {
+                    final String attributeValue =
+                            attributeHolderNode.getAttributeValueFromNormalizedName(dialectPrefix, fragmentSignatureAttributeName);
                     if (attributeValue != null) {
                         final FragmentSignature fragmentSignature =
                                 StandardExpressionProcessor.parseFragmentSignature(configuration, attributeValue);

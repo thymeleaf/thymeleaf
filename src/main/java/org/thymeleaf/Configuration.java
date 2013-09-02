@@ -516,11 +516,12 @@ public final class Configuration {
                 
             }
 
-            final String[] attributeNormalizedNames = nestableNode.unsafeGetAttributeNormalizedNames();
-            final int attributesLen = nestableNode.numAttributes();
-            for (int i = 0; i < attributesLen; i++) {
+            final String[] normalizedAttributeNames = nestableNode.unsafeGetAttributeNormalizedNames();
+            final int normalizedAttributesLen = nestableNode.numAttributes();
+            for (int i = 0; i < normalizedAttributesLen; i++) {
+                final String normalizedAttributeName = normalizedAttributeNames[i];
                 final Set<ProcessorAndContext> processorsForAttributeName = 
-                        this.mergedSpecificProcessorsByAttributeName.get(attributeNormalizedNames[i]);
+                        this.mergedSpecificProcessorsByAttributeName.get(normalizedAttributeName);
                 if (processorsForAttributeName != null) {
                     for (final ProcessorAndContext processorAndContext : processorsForAttributeName) {
                         if (processorAndContext.matches(node)) {

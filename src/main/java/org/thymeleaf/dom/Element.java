@@ -20,10 +20,10 @@
 package org.thymeleaf.dom;
 
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
-import org.thymeleaf.util.PrefixUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -65,6 +65,14 @@ public final class Element extends NestableAttributeHolderNode {
     
     
     private static final long serialVersionUID = -8434931215899913983L;
+
+
+    // @since 2.1.0
+    private static final ConcurrentHashMap<String,ConcurrentHashMap<String,String[]>> prefixedElementNamesByPrefix =
+            new ConcurrentHashMap<String, ConcurrentHashMap<String,String[]>>(3);
+
+    // @since 2.1.0
+    private static final ConcurrentHashMap<String,String> prefixesByElementName = new ConcurrentHashMap<String,String>(100);
 
     
     private final String originalName;
@@ -154,6 +162,28 @@ public final class Element extends NestableAttributeHolderNode {
         return this.normalizedName;
     }
 
+
+    /**
+     * <p>
+     *   Returns whether the element matches its name with any of the specified normalized names.
+     * </p>
+     *
+     * @param dialectPrefix the dialect prefix to be applied to the specified attribute. Can be null.
+     * @param normalizedElementName the normalized name of the attribute.
+     * @return the normalized name of the element.
+     * @since 2.1.0
+     */
+    public boolean hasNormalizedName(final String dialectPrefix, final String normalizedElementName) {
+        final String[] prefixedElementNames =
+                Element.applyPrefixToElementName(normalizedElementName, dialectPrefix);
+        for (final String prefixedElementName : prefixedElementNames) {
+            if (this.normalizedName.equals(prefixedElementName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     
     /**
      * <p>
@@ -169,7 +199,7 @@ public final class Element extends NestableAttributeHolderNode {
      */
     @Deprecated
     public String getNormalizedPrefix() {
-        return getPrefix(this.normalizedName);
+        return getPrefixFromElementName(this.normalizedName);
     }
 
 
@@ -372,6 +402,8 @@ public final class Element extends NestableAttributeHolderNode {
     }
 
 
+
+
     /**
      * <p>
      *   Applies a prefix (a dialect prefix) to the specified name in order to obtain a complete
@@ -381,45 +413,42 @@ public final class Element extends NestableAttributeHolderNode {
      *   The result looks like: <tt>"${prefix}:${name}"</tt>.
      * </p>
      *
-     * @param name the name to be prefixed
-     * @param dialectPrefix the prefix to be applied
-     * @return the prefixed name
+     * @param name the name to be prefixed.
+     * @param dialectPrefix the prefix to be applied.
+     * @return the prefixed name.
      * @since 2.1.0
      */
-    public static String applyPrefixToElementName(final String name, final String dialectPrefix) {
+    public static String[] applyPrefixToElementName(final String name, final String dialectPrefix) {
+
         if (name == null) {
             return null;
         }
-        if (StringUtils.isEmptyOrWhitespace(dialectPrefix)) {
-            return name;
+
+        // ConcurrentHashMaps dont allow null keys, so we will use the empty string as equivalent
+        final String prefix = (dialectPrefix == null? "" : dialectPrefix);
+
+        ConcurrentHashMap<String,String[]> prefixedElementNamesForPrefix = prefixedElementNamesByPrefix.get(prefix);
+        if (prefixedElementNamesForPrefix == null) {
+            prefixedElementNamesForPrefix = new ConcurrentHashMap<String, String[]>(100);
+            prefixedElementNamesByPrefix.put(prefix, prefixedElementNamesForPrefix);
         }
-        return dialectPrefix + ':' + name;
-    }
 
-
-
-
-
-    /**
-     * <p>
-     *   Computes the complete (i.e. prefixed) name of an element starting from another, already
-     *   complete (i.e. prefixed) element name from the same dialect.
-     * </p>
-     *
-     * @param elementName the incomplete element name to be prefixed.
-     * @param baseElementName the element name to be used as a base to compute the prefix to be applied.
-     * @return the result of completing the element name.
-     * @since 2.1.0
-     */
-    public static String computeFellowElementName(final String elementName, final String baseElementName) {
-        if (elementName == null){
-            return null;
+        String[] prefixedElementNames = prefixedElementNamesForPrefix.get(name);
+        if (prefixedElementNames != null) {
+            // cache hit!
+            return prefixedElementNames;
         }
-        if (baseElementName == null){
-            return elementName;
+
+        if (StringUtils.isEmptyOrWhitespace(prefix)) {
+            prefixedElementNames = new String[] { name };
+        } else {
+            prefixedElementNames = new String[] { prefix + ':' + name, prefix + '-' + name };
         }
-        final String prefix = getPrefix(baseElementName);
-        return applyPrefixToElementName(elementName, prefix);
+
+        prefixedElementNamesForPrefix.put(name, prefixedElementNames);
+
+        return prefixedElementNames;
+
     }
 
 
@@ -428,29 +457,80 @@ public final class Element extends NestableAttributeHolderNode {
      * <p>
      *   Returns the equivalent, un-prefixed name of an element from its complete (prefixed, if applies) version.
      * </p>
+     * <p>
+     *   It supports both namespace prefix style (using <tt>:</tt>) and HTML5 custom element style
+     *   (using '-' as a separator). Examples: table -> table, th:block -> block, th-block -> block.
+     * </p>
      *
-     * @param name the complete (prefixed, if applies) version of an element name.
+     * @param elementName the complete (prefixed, if applies) version of an element name.
      * @return the unprefixed version of the specified element name.
      * @since 2.1.0
      */
-    public static String getUnprefixedElementName(final String name) {
-        Validate.notNull(name, "Name cannot be null");
-        final int colonPos = name.indexOf(':');
-        if (colonPos != -1) {
-            return name.substring(colonPos + 1);
+    public static String getUnprefixedElementName(final String elementName) {
+        if (elementName == null) {
+            return null;
         }
-        return name;
+        final int colonPos = elementName.indexOf(':');
+        if (colonPos != -1) {
+            return elementName.substring(colonPos + 1);
+        }
+        final int dashPos = elementName.indexOf('-');
+        if (dashPos != -1) {
+            return elementName.substring(dashPos + 1);
+        }
+        return elementName;
     }
 
 
 
 
-    private static String getPrefix(final String name) {
-        final int colonPos = name.indexOf(':');
-        if (colonPos != -1) {
-            return name.substring(0, colonPos);
+    /**
+     * <p>
+     *   Returns the prefix being applied to an element.
+     * </p>
+     *
+     * @param elementName the complete (prefixed, if applies) version of an element name.
+     * @return the prefix being applied to the name, or null if the element has no prefix.
+     * @since 2.1.0
+     */
+    public static String getPrefixFromElementName(final String elementName) {
+
+        if (elementName == null) {
+            return null;
         }
-        return null;
+
+        String prefix = prefixesByElementName.get(elementName);
+        if (prefix != null) {
+            // cache hit!
+            if (prefix.equals("")) {
+                // ConcurrentHashMap objects do not allow null values. So we use "" as a substitute.
+                return null;
+            }
+            return prefix;
+        }
+
+        final int colonPos = elementName.indexOf(':');
+        if (colonPos != -1) {
+            prefix = elementName.substring(0, colonPos);
+        } else {
+            final int dashPos = elementName.indexOf('-');
+            if (dashPos != -1) {
+                prefix = elementName.substring(0, dashPos);
+            }
+        }
+
+        if (prefix == null) {
+            // ConcurrentHashMap objects do not allow null values. So we use "" as a substitute.
+            prefix = "";
+        }
+
+        prefixesByElementName.put(elementName, prefix);
+
+        if (prefix.equals("")) {
+            return null;
+        }
+        return prefix;
+
     }
 
 

@@ -95,13 +95,14 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
 
 
     
-    public String getElementName(final ProcessorMatchingContext context) {
+
+    public String[] getElementNames(final ProcessorMatchingContext context) {
         
         if (this.applyDialectPrefix) {
             return Element.applyPrefixToElementName(this.elementName, context.getDialectPrefix());
-        } 
-        
-        return this.elementName;
+        }
+
+        return Element.applyPrefixToElementName(this.elementName, null);
         
     }
     
@@ -123,19 +124,20 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
         }
         
         final Element element = (Element) node;
-        final String completeNormalizedElementName = Element.normalizeElementName(getElementName(context));
-        
-        if (!element.getNormalizedName().equals(completeNormalizedElementName)) {
+        final String prefix = (this.applyDialectPrefix? context.getDialectPrefix() : null);
+
+
+        if (!element.hasNormalizedName(prefix, this.elementName)) {
             return false;
         }
-        
+
         if (this.attributeValuesByNameFilter != null) {
-            
+
             for (final Map.Entry<String,String> filterAttributeEntry : this.attributeValuesByNameFilter.entrySet()) {
-                
+
                 final String filterAttributeName = filterAttributeEntry.getKey();
                 final String filterAttributeValue = filterAttributeEntry.getValue();
-                
+
                 if (!element.hasAttribute(filterAttributeName)) {
                     if (filterAttributeValue != null) {
                         return false;
@@ -152,9 +154,9 @@ public final class ElementNameProcessorMatcher implements IElementNameProcessorM
                         return false;
                     }
                 }
-                
+
             }
-            
+
         }
         
         return true;

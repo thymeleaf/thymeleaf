@@ -43,6 +43,6 @@ import org.thymeleaf.dom.NestableAttributeHolderNode;
  */
 public interface IAttributeNameProcessorMatcher extends IProcessorMatcher<NestableAttributeHolderNode> {
 
-    public String getAttributeName(final ProcessorMatchingContext context);
+    public String[] getAttributeNames(final ProcessorMatchingContext context);
     
 }

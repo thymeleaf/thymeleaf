@@ -65,14 +65,27 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
     
     @Override
     protected final ProcessorResult doProcess(final Arguments arguments, final ProcessorMatchingContext processorMatchingContext, final Node node) {
+
         // Because of the type of applicability being used, casts to Element here will not fail
-        if (this.logger.isTraceEnabled()) {
-            final String attributeName = this.matcher.getAttributeName(processorMatchingContext);
-            final String attributeValue = ((Element)node).getAttributeValue(attributeName);
-            this.logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in element \"{}\"",
-                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), attributeName, (attributeValue == null? "" : attributeValue), ((Element)node).getNormalizedName()});
+        final Element element = (Element) node;
+        final String[] attributeNames = this.matcher.getAttributeNames(processorMatchingContext);
+
+        String matchedAttributeName = null;
+        for (final String attributeName : attributeNames) {
+            if (element.hasNormalizedAttribute(attributeName)) {
+                matchedAttributeName = attributeName;
+                break;
+            }
         }
-        return processAttribute(arguments, (Element)node, this.matcher.getAttributeName(processorMatchingContext));
+
+        if (this.logger.isTraceEnabled()) {
+            final String attributeValue = ((Element)node).getAttributeValueFromNormalizedName(matchedAttributeName);
+            this.logger.trace("[THYMELEAF][{}][{}] Processing attribute \"{}\" with value \"{}\" in element \"{}\"",
+                    new Object[] {TemplateEngine.threadIndex(), arguments.getTemplateName(), matchedAttributeName, (attributeValue == null? "" : attributeValue), ((Element)node).getNormalizedName()});
+        }
+
+        return processAttribute(arguments, element, matchedAttributeName);
+
     }
     
     protected abstract ProcessorResult processAttribute(final Arguments arguments, final Element element, final String attributeName);

@@ -29,8 +29,6 @@ import java.util.Set;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
-import org.thymeleaf.dom.Attribute;
-import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
@@ -136,57 +134,58 @@ public final class DialectConfiguration {
                 if (processorMatcher instanceof IElementNameProcessorMatcher) {
                     // Processor will be indexed as "specific" for one or more element names
                     
-                    final String elementName = ((IElementNameProcessorMatcher) processorMatcher).getElementName(context);
-                    if (elementName == null) {
+                    final String[] elementNames = ((IElementNameProcessorMatcher) processorMatcher).getElementNames(context);
+                    if (elementNames == null) {
                         throw new ConfigurationException(
                                 "Processor of class \"" + processor.getClass().getName() + "\" " +
                                 "returned a null element name as a part of its applicability specifications.");
                     }
-                    final String normalizedElementName = Element.normalizeElementName(elementName);
-                    
-                    Set<ProcessorAndContext> elementProcessorsForElementName = newSpecificProcessorsByElementName.get(normalizedElementName);
-                    if (elementProcessorsForElementName == null) {
-                        elementProcessorsForElementName = new HashSet<ProcessorAndContext>(20);
-                        newSpecificProcessorsByElementName.put(normalizedElementName, elementProcessorsForElementName);
+
+                    for (final String elementName : elementNames) {
+                        Set<ProcessorAndContext> processorsForElementName = newSpecificProcessorsByElementName.get(elementName);
+                        if (processorsForElementName == null) {
+                            processorsForElementName = new HashSet<ProcessorAndContext>(20);
+                            newSpecificProcessorsByElementName.put(elementName, processorsForElementName);
+                        }
+                        processorsForElementName.add(new ProcessorAndContext(processor, context));
                     }
-                    
-                    elementProcessorsForElementName.add(new ProcessorAndContext(processor,context));
-                    
+
+
                 }
                 
                 if (processorMatcher instanceof IAttributeNameProcessorMatcher) {
                     // Processor will be indexed as "specific" for one or more attribute names
                     
                     
-                    final String attributeName = ((IAttributeNameProcessorMatcher) processorMatcher).getAttributeName(context);
-                    if (attributeName == null) {
+                    final String[] attributeNames = ((IAttributeNameProcessorMatcher) processorMatcher).getAttributeNames(context);
+                    if (attributeNames == null) {
                         throw new ConfigurationException(
                                 "Processor of class \"" + processor.getClass().getName() + "\" " +
                                 "returned a null attribute name as a part of its applicability specifications.");
                     }
-                    final String normalizedAttributeName = Attribute.normalizeAttributeName(attributeName);
-                    
-                    Set<ProcessorAndContext> elementProcessorsForAttributeName = newSpecificProcessorsByAttributeName.get(normalizedAttributeName);
-                    if (elementProcessorsForAttributeName == null) {
-                        elementProcessorsForAttributeName = new HashSet<ProcessorAndContext>(20);
-                        newSpecificProcessorsByAttributeName.put(normalizedAttributeName, elementProcessorsForAttributeName);
+
+                    for (final String attributeName : attributeNames) {
+                        Set<ProcessorAndContext> processorsForAttributeName = newSpecificProcessorsByAttributeName.get(attributeName);
+                        if (processorsForAttributeName == null) {
+                            processorsForAttributeName = new HashSet<ProcessorAndContext>(20);
+                            newSpecificProcessorsByAttributeName.put(attributeName, processorsForAttributeName);
+                        }
+                        processorsForAttributeName.add(new ProcessorAndContext(processor, context));
                     }
-                    
-                    elementProcessorsForAttributeName.add(new ProcessorAndContext(processor,context));
-                    
+
                 }
                 
                 if (!(processorMatcher instanceof IElementNameProcessorMatcher) && !(processorMatcher instanceof IAttributeNameProcessorMatcher)) {
                     
                     final Class<? extends Node> appliesTo = processorMatcher.appliesTo();
                         
-                    Set<ProcessorAndContext> elementProcessorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesTo);
-                    if (elementProcessorsForNodeClass == null) {
-                        elementProcessorsForNodeClass = new HashSet<ProcessorAndContext>(20);
-                        newNonSpecificProcessorsByNodeClass.put(appliesTo, elementProcessorsForNodeClass);
+                    Set<ProcessorAndContext> processorsForNodeClass = newNonSpecificProcessorsByNodeClass.get(appliesTo);
+                    if (processorsForNodeClass == null) {
+                        processorsForNodeClass = new HashSet<ProcessorAndContext>(20);
+                        newNonSpecificProcessorsByNodeClass.put(appliesTo, processorsForNodeClass);
                     }
                     
-                    elementProcessorsForNodeClass.add(new ProcessorAndContext(processor,context));
+                    processorsForNodeClass.add(new ProcessorAndContext(processor, context));
 
                 }
                 

@@ -71,7 +71,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
             final String elementNameFilter, final Map<String,String> attributeValuesByNameFilter) {
         super();
         Validate.notEmpty(attributeName, "Attribute name cannot be null or empty");
-        this.attributeName = attributeName;
+        this.attributeName = Attribute.normalizeAttributeName(attributeName);
         this.elementNameFilter = Element.normalizeElementName(elementNameFilter);
         if (attributeValuesByNameFilter == null || attributeValuesByNameFilter.size() == 0) {
             this.attributeValuesByNameFilter = null;
@@ -86,7 +86,7 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
 
     
     
-    public String getAttributeName(final ProcessorMatchingContext context) {
+    public String[] getAttributeNames(final ProcessorMatchingContext context) {
         return Attribute.applyPrefixToAttributeName(this.attributeName, context.getDialectPrefix());
     }
 
@@ -107,12 +107,12 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
         }
         
         final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) node;
-        final String completeAttributeName = getAttributeName(context); 
-        
-        if (!attributeHolderNode.hasAttribute(completeAttributeName)) {
+        final String prefix = context.getDialectPrefix();
+
+        if (!attributeHolderNode.hasNormalizedAttribute(prefix, this.attributeName)) {
             return false;
         }
-        
+
         if (this.elementNameFilter != null) {
             if (attributeHolderNode instanceof Element) {
                 final Element element = (Element) attributeHolderNode;
@@ -125,14 +125,14 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
                 return false;
             }
         }
-        
+
         if (this.attributeValuesByNameFilter != null) {
-            
+
             for (final Map.Entry<String,String> filterAttributeEntry : this.attributeValuesByNameFilter.entrySet()) {
-                
+
                 final String filterAttributeName = filterAttributeEntry.getKey();
                 final String filterAttributeValue = filterAttributeEntry.getValue();
-                
+
                 if (!attributeHolderNode.hasAttribute(filterAttributeName)) {
                     if (filterAttributeValue != null) {
                         return false;
@@ -149,9 +149,9 @@ public final class AttributeNameProcessorMatcher implements IAttributeNameProces
                         return false;
                     }
                 }
-                
+
             }
-            
+
         }
         
         return true;

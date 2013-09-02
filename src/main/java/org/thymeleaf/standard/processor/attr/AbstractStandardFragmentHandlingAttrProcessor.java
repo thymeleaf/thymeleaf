@@ -22,15 +22,16 @@ package org.thymeleaf.standard.processor.attr;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.fragment.WholeFragmentSpec;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentHandlingAttrProcessor;
-import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
 import org.thymeleaf.standard.fragment.StandardFragment;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
+import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
 
 /**
  * 
@@ -60,11 +61,13 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
     protected final List<Node> computeFragment(
             final Arguments arguments, final Element element, final String attributeName, final String attributeValue) {
 
+        final String dialectPrefix = Attribute.getPrefixFromAttributeName(attributeName);
+
         final String fragmentSignatureAttributeName =
-                getFragmentSignatureAttributeName(arguments, element, attributeName, attributeValue);
+                getFragmentSignatureUnprefixedAttributeName(arguments, element, attributeName, attributeValue);
 
         final DOMSelector.INodeReferenceChecker fragmentSignatureReferenceChecker =
-                new StandardFragmentSignatureNodeReferenceChecker(arguments.getConfiguration(), fragmentSignatureAttributeName);
+                new StandardFragmentSignatureNodeReferenceChecker(arguments.getConfiguration(), dialectPrefix, fragmentSignatureAttributeName);
 
         final StandardFragment fragment =
                 StandardFragmentProcessor.computeStandardFragmentSpec(
@@ -72,7 +75,7 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
 
         final List<Node> extractedNodes =
                 fragment.extractFragment(arguments.getConfiguration(), arguments,
-                        arguments.getTemplateRepository(), fragmentSignatureAttributeName);
+                        arguments.getTemplateRepository(), dialectPrefix, fragmentSignatureAttributeName);
 
         final boolean removeHostNode = getRemoveHostNode(arguments, element, attributeName, attributeValue);
 
@@ -105,7 +108,7 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
 
 
 
-    protected abstract String getFragmentSignatureAttributeName(
+    protected abstract String getFragmentSignatureUnprefixedAttributeName(
             final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue);
 

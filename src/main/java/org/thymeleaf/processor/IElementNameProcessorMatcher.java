@@ -43,6 +43,6 @@ import org.thymeleaf.dom.Element;
  */
 public interface IElementNameProcessorMatcher extends IProcessorMatcher<Element> {
 
-    public String getElementName(final ProcessorMatchingContext context);
+    public String[] getElementNames(final ProcessorMatchingContext context);
     
 }

@@ -51,7 +51,7 @@ public final class StandardFragmentProcessor {
     
 
     /**
-     * @since 2.0.12
+     * @since 2.1.0
      */
     public static StandardFragment computeStandardFragmentSpec(
             final Configuration configuration, final IProcessingContext processingContext, 

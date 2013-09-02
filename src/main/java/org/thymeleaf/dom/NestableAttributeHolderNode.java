@@ -136,6 +136,30 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
 
     /**
      * <p>
+     *   Returns whether an attribute (by any of its names) exists in the element or not. The specified
+     *   names have to be already normalized because no normalization operations will
+     *   be performed before comparing.
+     * </p>
+     *
+     * @param dialectPrefix the dialect prefix to be applied to the specified attribute. Can be null.
+     * @param normalizedAttributeName the names of the attribute to be checked, already normalized.
+     * @return true if the attribute exists (any matches found), false if not.
+     * @since 2.1.0
+     */
+    public final boolean hasNormalizedAttribute(final String dialectPrefix, final String normalizedAttributeName) {
+        final String[] prefixedAttributeNames =
+                Attribute.applyPrefixToAttributeName(normalizedAttributeName, dialectPrefix);
+        for (final String prefixedAttributeName : prefixedAttributeNames) {
+            if (hasNormalizedAttribute(prefixedAttributeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * <p>
      *   Returns an attribute, if it exists (null if not). The specified
      *   name has to be already normalized because no normalization operations will
      *   be performed before comparing.
@@ -198,13 +222,13 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
         }
         return null;
     }
-    
+
 
     /**
      * <p>
      *   Returns the value of an attribute from its normalized name.
      * </p>
-     * 
+     *
      * @param normalizedAttributeName the normalized name of the attribute.
      * @return the valur of the attribute, or null if the attribute does not exist.
      */
@@ -216,7 +240,32 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
         }
         return null;
     }
-    
+
+
+    /**
+     * <p>
+     *   Returns the value of an attribute from its normalized names, usually obtained by applying a prefix to a
+     *   unprefixed name.
+     * </p>
+     *
+     * @param dialectPrefix the dialect prefix to be applied to the specified attribute. Can be null.
+     * @param normalizedAttributeName the normalized name of the attribute.
+     * @return the valur of the attribute, or null if the attribute does not exist.
+     * @since 2.1.0
+     */
+    public final String getAttributeValueFromNormalizedName(final String dialectPrefix, final String normalizedAttributeName) {
+        final String[] prefixedAttributeNames =
+                Attribute.applyPrefixToAttributeName(normalizedAttributeName, dialectPrefix);
+        for (int i = 0; i < this.attributesLen; i++) {
+            for (final String prefixedAttributeName : prefixedAttributeNames) {
+                if (this.attributeNormalizedNames[i].equals(prefixedAttributeName)) {
+                    return this.attributes[i].getValue();
+                }
+            }
+        }
+        return null;
+    }
+
 
     /**
      * <p>
@@ -239,7 +288,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
         }
         return null;
     }
-    
+
 
     /**
      * <p>

@@ -20,8 +20,8 @@
 package org.thymeleaf.dom;
 
 import java.io.Serializable;
+import java.util.concurrent.ConcurrentHashMap;
 
-import org.thymeleaf.util.PrefixUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -40,6 +40,14 @@ import org.thymeleaf.util.Validate;
 public final class Attribute implements Serializable {
 
     private static final long serialVersionUID = 7133984802585560958L;
+
+    // @since 2.1.0
+    private static final ConcurrentHashMap<String,ConcurrentHashMap<String,String[]>> prefixedAttributeNamesByPrefix =
+            new ConcurrentHashMap<String, ConcurrentHashMap<String,String[]>>(3);
+
+    // @since 2.1.0
+    private static final ConcurrentHashMap<String,String> prefixesByAttributeName = new ConcurrentHashMap<String,String>(100);
+
 
     private final String originalName;
     private final String normalizedName;
@@ -132,7 +140,7 @@ public final class Attribute implements Serializable {
      */
     @Deprecated
     public String getNormalizedPrefix() {
-        return getPrefix(this.normalizedName);
+        return getPrefixFromAttributeName(this.normalizedName);
     }
 
 
@@ -272,6 +280,7 @@ public final class Attribute implements Serializable {
     }
 
 
+
     /**
      * <p>
      *   Applies a prefix (a dialect prefix) to the specified name in order to obtain a complete
@@ -281,43 +290,42 @@ public final class Attribute implements Serializable {
      *   The result looks like: <tt>"${prefix}:${name}"</tt>.
      * </p>
      *
-     * @param name the name to be prefixed
-     * @param dialectPrefix the prefix to be applied
-     * @return the prefixed name
+     * @param name the name to be prefixed.
+     * @param dialectPrefix the prefix to be applied.
+     * @return the prefixed name.
      * @since 2.1.0
      */
-    public static String applyPrefixToAttributeName(final String name, final String dialectPrefix) {
+    public static String[] applyPrefixToAttributeName(final String name, final String dialectPrefix) {
+
         if (name == null) {
             return null;
         }
-        if (StringUtils.isEmptyOrWhitespace(dialectPrefix)) {
-            return name;
-        }
-        return dialectPrefix + ':' + name;
-    }
 
+        // ConcurrentHashMaps dont allow null keys, so we will use the empty string as equivalent
+        final String prefix = (dialectPrefix == null? "" : dialectPrefix);
 
+        ConcurrentHashMap<String,String[]> prefixedAttributeNamesForPrefix = prefixedAttributeNamesByPrefix.get(prefix);
+        if (prefixedAttributeNamesForPrefix == null) {
+            prefixedAttributeNamesForPrefix = new ConcurrentHashMap<String, String[]>(100);
+            prefixedAttributeNamesByPrefix.put(prefix, prefixedAttributeNamesForPrefix);
+        }
 
-    /**
-     * <p>
-     *   Computes the complete (i.e. prefixed) name of an attribute starting from another, already
-     *   complete (i.e. prefixed) attribute name from the same dialect.
-     * </p>
-     *
-     * @param attributeName the incomplete attribute name to be prefixed.
-     * @param baseAttributeName the attribute name to be used as a base to compute the prefix to be applied.
-     * @return the result of completing the attribute name.
-     * @since 2.1.0
-     */
-    public static String computeFellowAttributeName(final String attributeName, final String baseAttributeName) {
-        if (attributeName == null){
-            return null;
+        String[] prefixedAttributeNames = prefixedAttributeNamesForPrefix.get(name);
+        if (prefixedAttributeNames != null) {
+            // cache hit!
+            return prefixedAttributeNames;
         }
-        if (baseAttributeName == null){
-            return attributeName;
+
+        if (StringUtils.isEmptyOrWhitespace(prefix)) {
+            prefixedAttributeNames = new String[] { name };
+        } else {
+            prefixedAttributeNames = new String[] { prefix + ':' + name, "data-" + prefix + '-' + name };
         }
-        final String prefix = getPrefix(baseAttributeName);
-        return Attribute.applyPrefixToAttributeName(attributeName, prefix);
+
+        prefixedAttributeNamesForPrefix.put(name, prefixedAttributeNames);
+
+        return prefixedAttributeNames;
+
     }
 
 
@@ -326,29 +334,82 @@ public final class Attribute implements Serializable {
      * <p>
      *   Returns the equivalent, un-prefixed name of an attribute from its complete (prefixed, if applies) version.
      * </p>
+     * <p>
+     *   It supports both namespace prefix style (using <tt>:</tt>) and HTML5 custom attribute style
+     *   ('<tt>data-{prefix}-{name}</tt>'). Examples: src -> src, th:href -> href, data-th-class -> class.
+     * </p>
      *
-     * @param name the complete (prefixed, if applies) version of an attribute name.
+     * @param attributeName the complete (prefixed, if applies) version of an attribute name.
      * @return the unprefixed version of the specified attribute name.
      * @since 2.1.0
      */
-    public static String getUnprefixedAttributeName(final String name) {
-        Validate.notNull(name, "Name cannot be null");
-        final int colonPos = name.indexOf(':');
-        if (colonPos != -1) {
-            return name.substring(colonPos + 1);
+    public static String getUnprefixedAttributeName(final String attributeName) {
+        if (attributeName == null) {
+            return null;
         }
-        return name;
+        final int colonPos = attributeName.indexOf(':');
+        if (colonPos != -1) {
+            return attributeName.substring(colonPos + 1);
+        }
+        if (attributeName.startsWith("data-")) {
+            final int dashPos = attributeName.substring(5).indexOf('-');
+            if (dashPos != -1) {
+                return attributeName.substring(dashPos + 6); // 5 are because of the 'data-' prefix
+            }
+        }
+        return attributeName;
     }
 
 
 
 
-    private static String getPrefix(final String name) {
-        final int colonPos = name.indexOf(':');
-        if (colonPos != -1) {
-            return name.substring(0, colonPos);
+    /**
+     * <p>
+     *   Returns the prefix being applied to an attribute.
+     * </p>
+     *
+     * @param attributeName the complete (prefixed, if applies) version of an attribute name.
+     * @return the prefix being applied to the name, or null if the attribute has no prefix.
+     * @since 2.1.0
+     */
+    public static String getPrefixFromAttributeName(final String attributeName) {
+
+        if (attributeName == null) {
+            return null;
         }
-        return null;
+
+        String prefix = prefixesByAttributeName.get(attributeName);
+        if (prefix != null) {
+            // cache hit!
+            if (prefix.equals("")) {
+                // ConcurrentHashMap objects do not allow null values. So we use "" as a substitute.
+                return null;
+            }
+            return prefix;
+        }
+
+        final int colonPos = attributeName.indexOf(':');
+        if (colonPos != -1) {
+            prefix = attributeName.substring(0, colonPos);
+        } else if (attributeName.startsWith("data-")) {
+            final int dashPos = attributeName.substring(5).indexOf('-');
+            if (dashPos != -1) {
+                prefix = attributeName.substring(5, dashPos + 5); // 5 are because of the 'data-' prefix
+            }
+        }
+
+        if (prefix == null) {
+            // ConcurrentHashMap objects do not allow null values. So we use "" as a substitute.
+            prefix = "";
+        }
+
+        prefixesByAttributeName.put(attributeName, prefix);
+
+        if (prefix.equals("")) {
+            return null;
+        }
+        return prefix;
+
     }
 
 

@@ -49,23 +49,33 @@ import org.thymeleaf.util.Validate;
 public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSelector.AbstractNodeReferenceChecker {
 
     private final Configuration configuration;
+    private final String dialectPrefix;
     private final String fragmentAttributeName;
 
-    public StandardFragmentSignatureNodeReferenceChecker(final Configuration configuration, final String fragmentAttributeName) {
+
+    public StandardFragmentSignatureNodeReferenceChecker(
+            final Configuration configuration, final String dialectPrefix, final String fragmentAttributeName) {
         super();
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(fragmentAttributeName, "Fragment attribute name cannot be null");
         this.configuration = configuration;
+        this.dialectPrefix = dialectPrefix;
         this.fragmentAttributeName = Attribute.normalizeAttributeName(fragmentAttributeName);
     }
+
 
     public Configuration getConfiguration() {
         return this.configuration;
     }
 
+    public String getDialectPrefix() {
+        return this.dialectPrefix;
+    }
+
     public String getFragmentAttributeName() {
         return this.fragmentAttributeName;
     }
+
 
 
     public boolean checkReference(final Node node, final String referenceValue) {
@@ -74,8 +84,9 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
 
             final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) node;
 
-            if (attributeHolderNode.hasNormalizedAttribute(this.fragmentAttributeName)) {
-                final String elementAttrValue = attributeHolderNode.getAttributeValue(this.fragmentAttributeName);
+            if (attributeHolderNode.hasNormalizedAttribute(this.dialectPrefix, this.fragmentAttributeName)) {
+                final String elementAttrValue =
+                        attributeHolderNode.getAttributeValueFromNormalizedName(this.dialectPrefix, this.fragmentAttributeName);
                 if (elementAttrValue != null) {
                     final FragmentSignature fragmentSignature =
                             StandardExpressionProcessor.parseFragmentSignature(this.configuration, elementAttrValue);
