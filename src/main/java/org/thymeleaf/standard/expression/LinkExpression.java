@@ -241,10 +241,11 @@ public final class LinkExpression extends SimpleExpression {
         Object base = 
             Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator, expContext);
         base = LiteralValue.unwrap(base);
-        if (base == null || !(base instanceof String) || StringUtils.isEmptyOrWhitespace((String) base)) {
-            throw new TemplateProcessingException(
-                    "Base for link URL creation must be a non-null and non-empty String " +
-                    "(currently: " + (base == null? null : base.getClass().getName()) + ")");
+        if (base != null && !(base instanceof String)) {
+            base = base.toString();
+        }
+        if (base == null || StringUtils.isEmptyOrWhitespace((String) base)) {
+            base = "";
         }
 
         String linkBase = (String) base;
