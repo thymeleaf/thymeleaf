@@ -131,11 +131,11 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
             }
 
             final TemplateEngine templateEngine = getTemplateEngine();
-            final String fragmentAttributeName = getFragmentAttributeName(templateEngine);
+            final String standardDialectPrefix = getStandardDialectPrefix(templateEngine);
 
             final DOMSelector.INodeReferenceChecker nodeReferenceChecker =
                     new StandardFragmentSignatureNodeReferenceChecker(
-                            templateEngine.getConfiguration(), fragmentAttributeName);
+                            templateEngine.getConfiguration(), standardDialectPrefix, StandardFragmentAttrProcessor.ATTR_NAME);
             
             for (final String fragmentToRender : fragmentsToRender) {
                 
@@ -199,14 +199,6 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
                 "the " + SpringStandardDialect.class.getName() + " dialect at your Template Engine");
         
     }
-    
 
-    
-    private static String getFragmentAttributeName(final TemplateEngine templateEngine) {
-        // In most cases: "th:fragment"
-        final String prefix = getStandardDialectPrefix(templateEngine);
-        return Attribute.applyPrefixToAttributeName(StandardFragmentAttrProcessor.ATTR_NAME, prefix);
-    }
-    
 
 }
