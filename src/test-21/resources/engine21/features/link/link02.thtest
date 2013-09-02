@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{null(param=1)}">go</a>
+<a th:href="@{null(param)}">go</a>
+<a th:href="@{null}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="?param=1">go</a>
+<a href="?param">go</a>
+<a href="">go</a>

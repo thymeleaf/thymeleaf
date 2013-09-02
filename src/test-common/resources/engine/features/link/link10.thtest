@@ -1,0 +1,11 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{''(param=1)}">go</a>
+<a th:href="@{''(param)}">go</a>
+<a th:href="@{''}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="?param=1">go</a>
+<a href="?param">go</a>
+<a href="">go</a>
