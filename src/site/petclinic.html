@@ -32,7 +32,13 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
-    
+
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
+
   </head>
 
 
@@ -173,71 +179,37 @@
           original <kbd>InternalResourceViewResolver</kbd> bean which enabled JSP support in the original application.</li>
     </ul>
         
-<code>
+    <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+        <bean id="templateResolver"
+              class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+            <property name="prefix" value="/WEB-INF/thymeleaf/" />
+            <property name="suffix" value=".html" />
+            <property name="templateMode" value="HTML5" />
+            <!-- Template cache is set to false (default is true).        -->
+            <property name="cacheable" value="false" />
+        </bean>
 
+        <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
+            <property name="templateResolver" ref="templateResolver" />
+        </bean>
 
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateResolver&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/thymeleaf/&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;suffix&quot;</span>&nbsp;value=<span class="string">&quot;.html&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Template&nbsp;cache&nbsp;is&nbsp;set&nbsp;to&nbsp;false&nbsp;(default&nbsp;is&nbsp;true).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;cacheable&quot;</span>&nbsp;value=<span class="string">&quot;false&quot;</span>&nbsp;/&gt;
-<br />
-&lt;<b>/bean</b>&gt;
-<br />
-
-<br />
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
-<br />
-&lt;<b>/bean</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.ContentNegotiatingViewResolver&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;contentNegotiationManager&quot;</span>&nbsp;ref=<span class="string">&quot;cnManager&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;viewResolvers&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>list</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Used&nbsp;here&nbsp;for&nbsp;&#39;xml&#39;&nbsp;and&nbsp;&#39;atom&#39;&nbsp;views&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.springframework.web.servlet.view.BeanNameViewResolver&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;1&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;Used&nbsp;for&nbsp;Thymeleaf&nbsp;views&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/list</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
-<br />
-&lt;<b>/bean</b>&gt;
-<br />
-
-
-</code>
+        <bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+            <property name="contentNegotiationManager" ref="cnManager"/>
+            <property name="viewResolvers">
+                <list>
+                    <!-- Used here for 'xml' and 'atom' views  -->
+                    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+                        <property name="order" value="1"/>
+                    </bean>
+                    <!-- Used for Thymeleaf views  -->
+                    <bean class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
+                        <property name="templateEngine" ref="templateEngine" />
+                        <property name="order" value="2"/>
+                    </bean>
+                </list>
+            </property>
+        </bean>
+    ]]></script>
     
         <p>Note that, as a difference from the original application, our templates will live at the 
            <kbd>/WEB-INF/thymeleaf</kbd> folder instead of the original <kbd>/WEB-INF/jsp</kbd>.</p>
@@ -274,263 +246,138 @@
         <li>Replace the <kbd>jsp:include</kbd> tags which add head, header and footer to the page with tags containing 
         the thymeleaf attributes <kbd>th:substituteby</kbd> or <kbd>th:include</kbd>. Those page fragments 
         have been kept in the <kbd>fragments</kbd> folder and converted to thymeleaf as well</li>
-     </ul>
+    </ul>
         
-                <code>
-<span class="comment">&lt;!--&nbsp;ownersList.jsp&nbsp;--&gt;</span>
-<br />
-&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;spring&quot;</span>&nbsp;uri=<span class="string">&quot;http://www.springframework.org/tags&quot;</span>&nbsp;%&gt;
-<br />
-&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;fmt&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/fmt&quot;</span>&nbsp;%&gt;
-<br />
-&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;c&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/core&quot;</span>&nbsp;%&gt;
-<br />
-&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;fn&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/functions&quot;</span>&nbsp;%&gt;
-<br />
-&lt;<b>%@</b>&nbsp;taglib&nbsp;prefix=<span class="string">&quot;datatables&quot;</span>&nbsp;uri=<span class="string">&quot;http://github.com/dandelion/datatables&quot;</span>&nbsp;%&gt;
-<br />
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!-- ownersList.jsp -->
+        <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+        <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+        <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables" %>
 
-<br />
-&lt;<b>html</b>&nbsp;lang=<span class="string">&quot;en&quot;</span>&gt;
-<br />
+        <html lang="en">
 
-<br />
-&lt;<b>jsp:include</b>&nbsp;page=<span class="string">&quot;../fragments/headTag.jsp&quot;</span>/&gt;
-<br />
+            <jsp:include page="../fragments/headTag.jsp"/>
 
-<br />
-&lt;<b>body</b>&gt;
-<br />
-&lt;<b>div</b>&nbsp;class=<span class="string">&quot;container&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>jsp:include</b>&nbsp;page=<span class="string">&quot;../fragments/bodyHeader.jsp&quot;</span>/&gt;
-<br />
+            <body>
+            <div class="container">
+                <jsp:include page="../fragments/bodyHeader.jsp"/>
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;...&nbsp;--&gt;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>jsp:include</b>&nbsp;page=<span class="string">&quot;../fragments/footer.jsp&quot;</span>/&gt;
-<br />
+                <!-- ... -->
 
-<br />
-&lt;<b>/div</b>&gt;
-<br />
-&lt;<b>/body</b>&gt;
-<br />
+                <jsp:include page="../fragments/footer.jsp"/>
 
-<br />
-&lt;<b>/html</b>&gt;
-<br />
+            </div>
+            </body>
 
+        </html>
 
-</code>                <code>
+    ]]></script>
 
-<span class="comment">&lt;!--&nbsp;ownersList.html&nbsp;--&gt;</span>
-<br />
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!-- ownersList.html -->
+        <!DOCTYPE html>
 
-&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
-<br />
+        <html lang="en">
 
-<br />
-&lt;<b>html</b>&nbsp;lang=<span class="string">&quot;en&quot;</span>&gt;
-<br />
+        <head th:substituteby="fragments/headTag :: headTag">
 
-<br />
-&lt;<b>head</b>&nbsp;th:substituteby=<span class="string">&quot;fragments/headTag&nbsp;::&nbsp;headTag&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;============================================================================&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;This&nbsp;&lt;<b>head</b>&gt;&nbsp;is&nbsp;only&nbsp;used&nbsp;for&nbsp;static&nbsp;prototyping&nbsp;purposes&nbsp;(natural&nbsp;templates)&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;and&nbsp;is&nbsp;therefore&nbsp;entirely&nbsp;optionl,&nbsp;as&nbsp;this&nbsp;markup&nbsp;fragment&nbsp;will&nbsp;be&nbsp;included&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;from&nbsp;<span class="string">&quot;fragments.html&quot;</span>&nbsp;at&nbsp;runtime.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;============================================================================&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;PetClinic&nbsp;::&nbsp;a&nbsp;Spring&nbsp;Framework&nbsp;demonstration&lt;<b>/title</b>&gt;
-<br />
+            <!-- ============================================================================ -->
+            <!-- This <head> is only used for static prototyping purposes (natural templates) -->
+            <!-- and is therefore entirely optionl, as this markup fragment will be included  -->
+            <!-- from "fragments.html" at runtime.                                            -->
+            <!-- ============================================================================ -->
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;href=<span class="string">&quot;http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap.min.css&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}&quot;</span>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;href=<span class="string">&quot;../../../resources/css/petclinic.css&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{/resources/css/petclinic.css}&quot;</span>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>script</b>&nbsp;src=<span class="string">&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:src=<span class="string">&quot;@{/webjars/jquery/1.9.0/jquery.js}&quot;</span>&gt;&lt;<b>/script</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>script</b>&nbsp;src=<span class="string">&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:src=<span class="string">&quot;@{/webjars/jquery-ui/1.9.2/js/jquery-ui-1.9.2.custom.js}&quot;</span>&gt;&lt;<b>/script</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;href=<span class="string">&quot;http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{/webjars/jquery-ui/1.9.2/css/smoothness/jquery-ui-1.9.2.custom.css}&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&gt;&lt;<b>/link</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&lt;<b>/head</b>&gt;
-<br />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+            <title>PetClinic :: a Spring Framework demonstration</title>
 
-<br />
-&lt;<b>body</b>&gt;
-<br />
+            <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap.min.css"
+                  th:href="@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}" rel="stylesheet"/>
+            <link href="../../../resources/css/petclinic.css"
+                  th:href="@{/resources/css/petclinic.css}" rel="stylesheet"/>
 
-<br />
-&lt;<b>div</b>&nbsp;class=<span class="string">&quot;container&quot;</span>&gt;
-<br />
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"
+                    th:src="@{/webjars/jquery/1.9.0/jquery.js}">&lt;/script>
+            <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"
+                    th:src="@{/webjars/jquery-ui/1.9.2/js/jquery-ui-1.9.2.custom.js}">&lt;/script>
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;fragments/bodyHeader&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;===========================================================================&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;This&nbsp;div&nbsp;is&nbsp;only&nbsp;used&nbsp;for&nbsp;static&nbsp;prototyping&nbsp;purposes&nbsp;(natural&nbsp;templates)&nbsp;&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;and&nbsp;is&nbsp;therefore&nbsp;entirely&nbsp;optionl,&nbsp;as&nbsp;this&nbsp;markup&nbsp;fragment&nbsp;will&nbsp;be&nbsp;included&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;from&nbsp;<span class="string">&quot;fragments.html&quot;</span>&nbsp;at&nbsp;runtime.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;===========================================================================&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>img</b>&nbsp;th:src=<span class="string">&quot;@{/resources/images/banner-graphic.png}&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;src=<span class="string">&quot;../../../resources/images/banner-graphic.png&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;navbar&quot;</span>&nbsp;style=<span class="string">&quot;width:&nbsp;601px;&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;navbar-inner&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&nbsp;class=<span class="string">&quot;nav&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;100px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=<span class="string">&quot;../welcome.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/}&quot;</span>&gt;&lt;<b>i</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;icon-home&quot;</span>&gt;&lt;<b>/i</b>&gt;Home&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;130px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=<span class="string">&quot;../owners/findOwners.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/owners/find.html}&quot;</span>&gt;&lt;i
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;icon-search&quot;</span>&gt;&lt;<b>/i</b>&gt;Find&nbsp;owners&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;140px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=<span class="string">&quot;../vets/vetList.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/vets.html}&quot;</span>&gt;&lt;i
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;icon-th-list&quot;</span>&gt;&lt;<b>/i</b>&gt;Veterinarians&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;90px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=<span class="string">&quot;../exception.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/oups.html}&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title=<span class="string">&quot;trigger&nbsp;a&nbsp;RuntimeException&nbsp;to&nbsp;see&nbsp;how&nbsp;it&nbsp;is&nbsp;handled&quot;</span>&gt;&lt;i
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;icon-warning-sign&quot;</span>&gt;&lt;<b>/i</b>&gt;Error&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;style=<span class="string">&quot;width:&nbsp;80px;&quot;</span>&gt;&lt;<b>a</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=<span class="string">&quot;#&quot;</span>&nbsp;title=<span class="string">&quot;not&nbsp;available&nbsp;yet.&nbsp;Work&nbsp;in&nbsp;progress!!&quot;</span>&gt;&lt;<b>i</b>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;&nbsp;icon-question-sign&quot;</span>&gt;&lt;<b>/i</b>&gt;Help&lt;<b>/a</b>&gt;&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
+            <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css"
+                  th:href="@{/webjars/jquery-ui/1.9.2/css/smoothness/jquery-ui-1.9.2.custom.css}"
+                  rel="stylesheet"></link>
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;...&nbsp;--&gt;
-<br />
+        </head>
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>table</b>&nbsp;th:substituteby=<span class="string">&quot;fragments/footer&nbsp;::&nbsp;footer&quot;</span>&nbsp;class=<span class="string">&quot;footer&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;===========================================================================&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;This&nbsp;table&nbsp;section&nbsp;is&nbsp;only&nbsp;used&nbsp;for&nbsp;static&nbsp;prototyping&nbsp;purposes&nbsp;(natural&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;templates)&nbsp;and&nbsp;is&nbsp;therefore&nbsp;entirely&nbsp;optionl,&nbsp;as&nbsp;this&nbsp;markup&nbsp;fragment&nbsp;will&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;be&nbsp;included&nbsp;from&nbsp;<span class="string">&quot;fragments.html&quot;</span>&nbsp;at&nbsp;runtime.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!--</b>&nbsp;===========================================================================&nbsp;--&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;align=<span class="string">&quot;right&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>img</b>&nbsp;src=<span class="string">&quot;../../../resources/images/springsource-logo.png&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:src=<span class="string">&quot;@{/resources/images/springsource-logo.png}&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alt=<span class="string">&quot;Sponsored&nbsp;by&nbsp;SpringSource&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/table</b>&gt;
-<br />
+        <body>
 
-<br />
-&lt;<b>/div</b>&gt;
-<br />
+            <div class="container">
 
-<br />
-&lt;<b>/body</b>&gt;
-<br />
+                <div th:include="fragments/bodyHeader" th:remove="tag">
 
-<br />
-&lt;<b>/html</b>&gt;
-<br />
+                    <!-- =========================================================================== -->
+                    <!-- This div is only used for static prototyping purposes (natural templates)   -->
+                    <!-- and is therefore entirely optionl, as this markup fragment will be included -->
+                    <!-- from "fragments.html" at runtime.                                           -->
+                    <!-- =========================================================================== -->
+
+                    <img th:src="@{/resources/images/banner-graphic.png}"
+                         src="../../../resources/images/banner-graphic.png"/>
+
+                    <div class="navbar" style="width: 601px;">
+                        <div class="navbar-inner">
+                            <ul class="nav">
+                                <li style="width: 100px;"><a
+                                     href="../welcome.html" th:href="@{/}"><i
+                                     class="icon-home"></i>Home</a></li>
+                                <li style="width: 130px;"><a
+                                     href="../owners/findOwners.html" th:href="@{/owners/find.html}"><i
+                                     class="icon-search"></i>Find owners</a></li>
+                                <li style="width: 140px;"><a
+                                     href="../vets/vetList.html" th:href="@{/vets.html}"><i
+                                     class="icon-th-list"></i>Veterinarians</a></li>
+                                <li style="width: 90px;"><a
+                                     href="../exception.html" th:href="@{/oups.html}"
+                                     title="trigger a RuntimeException to see how it is handled"><i
+                                     class="icon-warning-sign"></i>Error</a></li>
+                                <li style="width: 80px;"><a
+                                     href="#" title="not available yet. Work in progress!!"><i
+                                     class=" icon-question-sign"></i>Help</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
 
 
-</code>
+                <!-- ... -->
+
+
+                <table th:substituteby="fragments/footer :: footer" class="footer">
+
+                    <!-- =========================================================================== -->
+                    <!-- This table section is only used for static prototyping purposes (natural    -->
+                    <!-- templates) and is therefore entirely optionl, as this markup fragment will  -->
+                    <!-- be included from "fragments.html" at runtime.                               -->
+                    <!-- =========================================================================== -->
+
+                    <tr>
+                        <td></td>
+                        <td align="right">
+                            <img src="../../../resources/images/springsource-logo.png"
+                                 th:src="@{/resources/images/springsource-logo.png}"
+                                 alt="Sponsored by SpringSource" />
+                        </td>
+                    </tr>
+
+                </table>
+
+            </div>
+
+        </body>
+
+        </html>
+
+    ]]></script>
 
     <p>                
         Note how our <kbd>ownersList.html</kbd> contains more code at its head, header and footer
@@ -550,131 +397,68 @@
         </li>
     </ul>
 
-<code>
-
-
-<span class="comment">&lt;!--&nbsp;ownersList.jsp&nbsp;--&gt;</span>
-<br />
-
-
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:table</b>&nbsp;id=<span class="string">&quot;owners&quot;</span>&nbsp;data=<span class="string">&quot;${selections}&quot;</span>&nbsp;cdn=<span class="string">&quot;true&quot;</span>&nbsp;row=<span class="string">&quot;owner&quot;</span>&nbsp;theme=<span class="string">&quot;bootstrap2&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cssClass=<span class="string">&quot;table&nbsp;table-striped&quot;</span>&nbsp;paginate=<span class="string">&quot;false&quot;</span>&nbsp;info=<span class="string">&quot;false&quot;</span>&nbsp;export=<span class="string">&quot;pdf&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Name&quot;</span>&nbsp;cssStyle=<span class="string">&quot;width:&nbsp;150px;&quot;</span>&nbsp;display=<span class="string">&quot;html&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>spring:url</b>&nbsp;value=<span class="string">&quot;owners/{ownerId}.html&quot;</span>&nbsp;var=<span class="string">&quot;ownerUrl&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>spring:param</b>&nbsp;name=<span class="string">&quot;ownerId&quot;</span>&nbsp;value=<span class="string">&quot;${owner.id}&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/spring:url</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;${fn:escapeXml(ownerUrl)}&quot;</span>&gt;&lt;<b>c:out</b>&nbsp;value=<span class="string">&quot;${owner.firstName}&nbsp;${owner.lastName}&quot;</span>/&gt;&lt;<b>/a</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:column</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Name&quot;</span>&nbsp;display=<span class="string">&quot;pdf&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:out</b>&nbsp;value=<span class="string">&quot;${owner.firstName}&nbsp;${owner.lastName}&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:column</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Address&quot;</span>&nbsp;property=<span class="string">&quot;address&quot;</span>&nbsp;cssStyle=<span class="string">&quot;width:&nbsp;200px;&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;City&quot;</span>&nbsp;property=<span class="string">&quot;city&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Telephone&quot;</span>&nbsp;property=<span class="string">&quot;telephone&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:column</b>&nbsp;title=<span class="string">&quot;Pets&quot;</span>&nbsp;cssStyle=<span class="string">&quot;width:&nbsp;100px;&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:forEach</b>&nbsp;var=<span class="string">&quot;pet&quot;</span>&nbsp;items=<span class="string">&quot;${owner.pets}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:out</b>&nbsp;value=<span class="string">&quot;${pet.name}&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/c:forEach</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:column</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>datatables:export</b>&nbsp;type=<span class="string">&quot;pdf&quot;</span>&nbsp;cssClass=<span class="string">&quot;btn&nbsp;btn-small&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/datatables:table</b>&gt;
-<br />
-
-
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!-- ownersList.jsp -->
+        <datatables:table id="owners" data="${selections}" cdn="true" row="owner" theme="bootstrap2"
+                          cssClass="table table-striped" paginate="false" info="false" export="pdf">
+            <datatables:column title="Name" cssStyle="width: 150px;" display="html">
+                <spring:url value="owners/{ownerId}.html" var="ownerUrl">
+                    <spring:param name="ownerId" value="${owner.id}"/>
+                </spring:url>
+                <a href="${fn:escapeXml(ownerUrl)}"><c:out value="${owner.firstName} ${owner.lastName}"/></a>
+            </datatables:column>
+            <datatables:column title="Name" display="pdf">
+                <c:out value="${owner.firstName} ${owner.lastName}"/>
+            </datatables:column>
+            <datatables:column title="Address" property="address" cssStyle="width: 200px;"/>
+            <datatables:column title="City" property="city"/>
+            <datatables:column title="Telephone" property="telephone"/>
+            <datatables:column title="Pets" cssStyle="width: 100px;">
+                <c:forEach var="pet" items="${owner.pets}">
+                    <c:out value="${pet.name}"/>
+                </c:forEach>
+            </datatables:column>
+            <datatables:export type="pdf" cssClass="btn btn-small" />
+        </datatables:table>
+    ]]></script>
 
     <p>
         Which we will replace with:
     </p>
 
-<code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!-- ownersList.html -->
+        <h2>Owners</h2>
 
-<span class="comment">&lt;!--&nbsp;ownersList.html&nbsp;--&gt;</span>
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;Owners&lt;<b>/h2</b>&gt;
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>table</b>&nbsp;class=<span class="string">&quot;table&nbsp;table-striped&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>thead</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&nbsp;style=<span class="string">&quot;width:&nbsp;150px;&quot;</span>&gt;Name&lt;<b>/th</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&nbsp;style=<span class="string">&quot;width:&nbsp;200px;&quot;</span>&gt;Address&lt;<b>/th</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;City&lt;<b>/th</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&gt;Telephone&lt;<b>/th</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b>&nbsp;style=<span class="string">&quot;width:&nbsp;100px;&quot;</span>&gt;Pets&lt;<b>/th</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/thead</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tbody</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;owner&nbsp;:&nbsp;${selections}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b>&nbsp;href=<span class="string">&quot;ownerDetails.html&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:href=<span class="string">&quot;@{&#39;/owners/&#39;&nbsp;+&nbsp;${owner.id}}&quot;</span>&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;${owner.firstName&nbsp;+&nbsp;&#39;&nbsp;&#39;&nbsp;+&nbsp;owner.lastName}&quot;</span>&gt;Mary&nbsp;Smith&lt;<b>/a</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.address}&quot;</span>&gt;45,&nbsp;Oxford&nbsp;Street&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.city}&quot;</span>&gt;Cambridge&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${owner.telephone}&quot;</span>&gt;555-555-555&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:each=<span class="string">&quot;pet&nbsp;:&nbsp;${owner.pets}&quot;</span>&nbsp;th:text=<span class="string">&quot;${pet.name}&quot;</span>&nbsp;th:remove=<span class="string">&quot;tag&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rob
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/span</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/tbody</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/table</b>&gt;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-
-
-</code>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th style="width: 150px;">Name</th>
+                <th style="width: 200px;">Address</th>
+                <th>City</th>
+                <th>Telephone</th>
+                <th style="width: 100px;">Pets</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="owner : ${selections}">
+                <td>
+                    <a href="ownerDetails.html"
+                       th:href="@{'/owners/' + ${owner.id}}"
+                       th:text="${owner.firstName + ' ' + owner.lastName}">Mary Smith</a>
+                </td>
+                <td th:text="${owner.address}">45, Oxford Street</td>
+                <td th:text="${owner.city}">Cambridge</td>
+                <td th:text="${owner.telephone}">555-555-555</td>
+                <td>
+                    <span th:each="pet : ${owner.pets}" th:text="${pet.name}" th:remove="tag">
+                       Rob
+                    </span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    ]]></script>
 
     <ul>
         <li>
@@ -730,6 +514,11 @@
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

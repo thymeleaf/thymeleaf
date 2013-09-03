@@ -20,6 +20,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -97,22 +102,23 @@
     <p>
       It looks like this:
     </p>
-    <code>
-      &lt;<b>table</b>&gt;<br/>
-      &nbsp;&nbsp;&lt;<b>thead</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b> th:text=<span class="string">"#{msgs.headers.name}"</span>&gt;Name&lt;/<b>th</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>th</b> th:text=<span class="string">"#{msgs.headers.price}"</span>&gt;Price&lt;/<b>th</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&lt;/<b>tr</b>&gt;<br/>
-      &nbsp;&nbsp;&lt;/<b>thead</b>&gt;<br/>
-      &nbsp;&nbsp;&lt;<b>tbody</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>tr</b> th:each=<span class="string">"prod : ${allProducts}"</span>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${prod.name}"</span>&gt;Oranges&lt;/<b>td</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b> th:text=<span class="string">"${#numbers.formatDecimal(prod.price,1,2)}"</span>&gt;0.99&lt;/<b>td</b>&gt;<br/>
-      &nbsp;&nbsp;&nbsp;&nbsp;&lt;/<b>tr</b>&gt;<br/>
-      &nbsp;&nbsp;&lt;/<b>tbody</b>&gt;<br/>
-      &lt;/<b>table</b>&gt;<br/>
-    </code>
+
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+       <table>
+         <thead>
+           <tr>
+             <th th:text="#{msgs.headers.name}">Name</th>
+             <th th:text="#{msgs.headers.price}">Price</th>
+           </tr>
+         </thead>
+         <tbody>
+           <tr th:each="prod : ${allProducts}">
+             <td th:text="${prod.name}">Oranges</td>
+             <td th:text="${#numbers.formatDecimal(prod.price,1,2)}">0.99</td>
+           </tr>
+         </tbody>
+       </table>
+    ]]></script>
     
     <p>
       A quick look at this piece of code reveals internationalization expressions (<kbd>#{...}</kbd>),
@@ -192,6 +198,10 @@
 
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
 
   </body>
 </html>

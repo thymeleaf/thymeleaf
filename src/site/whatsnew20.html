@@ -20,6 +20,12 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushPlain.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -128,14 +134,12 @@
       is compared with the result of evaluating expressions in inner <kbd>th:case</kbd> attributes.
     </p>
     
-    <code>
-&lt;<b>div</b>&nbsp;th:switch=<span class="string">&quot;${user.role}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;'admin'&quot;</span>&gt;User&nbsp;is&nbsp;an&nbsp;administrator&lt;/<b>p</b>&gt;<br />
-&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;#{roles.manager}&quot;</span>&gt;User&nbsp;is&nbsp;a&nbsp;manager&lt;/<b>p</b>&gt;
-<br />
-&lt;/<b>div</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <div th:switch="${user.role}">
+            <p th:case="'admin'">User is an administrator</p>
+            <p th:case="#{roles.manager}">User is a manager</p>
+        </div>
+    ]]></script>
 
     <p>
       Note that as soon as one <kbd>th:case</kbd> attribute is evaluated as <kbd>true</kbd>,
@@ -145,15 +149,13 @@
       The <kbd>default</kbd> option is specified as <kbd>th:case="*"</kbd>.
     </p>
     
-    <code>
-&lt;<b>div</b>&nbsp;th:switch=<span class="string">&quot;${user.role}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;'admin'&quot;</span>&gt;User&nbsp;is&nbsp;an&nbsp;administrator&lt;/<b>p</b>&gt;<br />
-&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;#{roles.manager}&quot;</span>&gt;User&nbsp;is&nbsp;a&nbsp;manager&lt;/<b>p</b>&gt;<br />
-&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:case=<span class="string">&quot;*&quot;</span>&gt;User&nbsp;is&nbsp;some&nbsp;other thing&lt;/<b>p</b>&gt;
-<br />
-&lt;/<b>div</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <div th:switch="${user.role}">
+            <p th:case="'admin'">User is an administrator</p>
+            <p th:case="#{roles.manager}">User is a manager</p>
+            <p th:case="*">User is some other thing</p>
+        </div>
+    ]]></script>
 
 
 
@@ -166,58 +168,38 @@
       when the template is processed (<kbd>th:remove</kbd>):
     </p>
 
-<code>
-&lt;<b>table</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${user.name}&quot;</span>&gt;John&nbsp;Apricot&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Martha&nbsp;Apple&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Frederic&nbsp;Orange&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&lt;<b>/table</b>&gt;
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <table>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.name}">John Apricot</td>
+            </tr>
+            <tr th:remove="all">
+                <td>Martha Apple</td>
+            </tr>
+            <tr th:remove="all">
+                <td>Frederic Orange</td>
+            </tr>
+        </table>
+    ]]></script>
 
     <p>
       A new value for <kbd>th:remove</kbd>, called <kbd>all-but-first</kbd>, does
       exactly that and saves some repetitive code:
     </p>
     
-<code>
-&lt;<b>table</b>&nbsp;th:remove=<span class="string">&quot;all-but-first&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>tr</b>&nbsp;th:each=<span class="string">&quot;user&nbsp;:&nbsp;${users}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&nbsp;th:text=<span class="string">&quot;${user.name}&quot;</span>&gt;John&nbsp;Apricot&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>tr</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Martha&nbsp;Apple&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>trsa</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>td</b>&gt;Frederic&nbsp;Orange&lt;<b>/td</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/tr</b>&gt;
-<br />
-&lt;<b>/table</b>&gt;
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <table th:remove="all-but-first">
+            <tr th:each="user : ${users}">
+                <td th:text="${user.name}">John Apricot</td>
+            </tr>
+            <tr>
+                <td>Martha Apple</td>
+            </tr>
+            <tr>
+                <td>Frederic Orange</td>
+            </tr>
+        </table>
+    ]]></script>
 
 
     <h2><a name="lnum"></a>Line number information in errors</h2>
@@ -229,15 +211,15 @@
 	  where a processing error has been found:
 	</p>
 
-<code>
-org.thymeleaf.exceptions.TemplateProcessingException: <br />
-&nbsp;&nbsp;&nbsp;&nbsp;Exception evaluating SpringEL expression: "#fields.hasErrors('*')" <b>(seedstartermng:69)</b><br />
-org.thymeleaf.spring3.expression.SpelExpressionEvaluator.evaluate(SpelExpressionEvaluator.java:108)<br />
-org.thymeleaf.standard.expression.VariableExpression.executeVariable(VariableExpression.java:116)<br />
-org.thymeleaf.standard.expression.SimpleExpression.executeSimple(SimpleExpression.java:392)<br />
-org.thymeleaf.standard.expression.Expression.execute(Expression.java:228)<br />
-...    
-</code>
+    <script type="syntaxhighlighter" class="brush:plain;gutter:false"><![CDATA[
+        org.thymeleaf.exceptions.TemplateProcessingException:
+        Exception evaluating SpringEL expression: "#fields.hasErrors('*')" (seedstartermng:69)
+        org.thymeleaf.spring3.expression.SpelExpressionEvaluator.evaluate(SpelExpressionEvaluator.java:108)
+        org.thymeleaf.standard.expression.VariableExpression.executeVariable(VariableExpression.java:116)
+        org.thymeleaf.standard.expression.SimpleExpression.executeSimple(SimpleExpression.java:392)
+        org.thymeleaf.standard.expression.Expression.execute(Expression.java:228)
+        ...
+    ]]></script>
 	
     <p>
 	  Simple as it might seem, this was one of the most asked-for enhancements in Thymeleaf,
@@ -257,11 +239,10 @@ org.thymeleaf.standard.expression.Expression.execute(Expression.java:228)<br />
       like:
     </p>
     
-<code>
-&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;sometemplate&nbsp;::&nbsp;[//div[@id=&#39;menu&#39;]]&quot;</span>&gt;
-<br />
-&lt;<b>/div</b>&gt;
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <div th:include="sometemplate :: [//div[@id='menu']]">
+        </div>
+    ]]></script>
 
     <p>
       Nevertheless, XPath execution heavily relies on the use of the standard DOM API, which
@@ -294,11 +275,10 @@ org.thymeleaf.standard.expression.Expression.execute(Expression.java:228)<br />
       So the following will still be completely valid in 2.0:
     </p>
     
-<code>
-&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;sometemplate&nbsp;::&nbsp;[//div[@id=&#39;menu&#39;]]&quot;</span>&gt;
-<br />
-&lt;<b>/div</b>&gt;
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <div th:include="sometemplate :: [//div[@id='menu']]">
+        </div>
+    ]]></script>
 
 
 
@@ -338,16 +318,13 @@ org.thymeleaf.standard.expression.Expression.execute(Expression.java:228)<br />
 	  developing custom implementations of the interface.
 	</p>
 	
-<code>
-StandardCacheManager&nbsp;manager&nbsp;=&nbsp;<b>new</b>&nbsp;StandardCacheManager();
-<br />
-manager.setTemplateCacheMaxSize(5);
-<br />
-manager.setExpressionCacheUseSoftReferences(<b>false</b>);
-<br />
-<br />
-templateEngine.setCacheManager(manager);
-</code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        StandardCacheManager manager = new StandardCacheManager();
+        manager.setTemplateCacheMaxSize(5);
+        manager.setExpressionCacheUseSoftReferences(false);
+
+        templateEngine.setCacheManager(manager);
+    ]]></script>
 
     
 
@@ -365,43 +342,29 @@ templateEngine.setCacheManager(manager);
       have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
     </p>
     
-    <code>
-    
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd">
+
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd">
+    ]]></script>
 
     <p>
       Can now be substituted by new versions containing the new attribute:
     </p>
     
-    <code>
-    
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd&quot;</span>&gt;
-    <br />
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-3.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-3.dtd&quot;</span>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd">
+
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-3.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-3.dtd">
+    ]]></script>
 
 
 
@@ -534,14 +497,11 @@ templateEngine.setCacheManager(manager);
 	  as Strings instead of using the now-deprecated <kbd>TemplateMode</kbd> enum:
 	</p>
 
-<code>
-ServletContextTemplateResolver&nbsp;templateResolver&nbsp;=&nbsp;<b>new</b>&nbsp;ServletContextTemplateResolver();
-<br />
-<span class="comment">//&nbsp;templateResolver.setTemplateMode(TemplateMode.HTML5);&nbsp;&nbsp;&nbsp;DEPRECATED!!
-</span><br />
-templateResolver.setTemplateMode(<span class="string">&quot;HTML5&quot;</span>);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;OK&nbsp;for&nbsp;2.0!
-</span><br />
-</code>  
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
+        // templateResolver.setTemplateMode(TemplateMode.HTML5);   DEPRECATED!!
+        templateResolver.setTemplateMode("HTML5");              // OK for 2.0!
+    ]]></script>
 
 
     <h2><a name="mino"></a>Minor API modifications</h2>
@@ -584,6 +544,11 @@ templateResolver.setTemplateMode(<span class="string">&quot;HTML5&quot;</span>);
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

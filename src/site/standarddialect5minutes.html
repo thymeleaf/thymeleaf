@@ -20,6 +20,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -112,21 +117,21 @@
       on the map of context variables &mdash;also called <i>model attributes</i> in Spring jargon. They look like this:
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       ${session.user.name}
-    </code>
+    ]]></script>
     
     <p>
       And you will find them as attribute values or as a part of them, depending on the attribute:
     </p>
     
-    <code>
-      &lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${book.author.name}&quot;</span>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <span th:text="${book.author.name}">
+    ]]></script>
     
-    <code>
-      &lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;book : ${books}&quot;</span>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <li th:each="book : ${books}">
+    ]]></script>
 
     <h3>Selection (asterisk) expressions</h3>
 
@@ -135,21 +140,21 @@
       previously selected object instead of the whole context variables map. They look like this: 
     </p>    
     
-    <code>
-      *{customer.name}
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        *{customer.name}
+    ]]></script>
 
     <p>
       The object they act on is specified by a <kbd>th:object</kbd> attribute: 
     </p>
     
-    <code>
-&lt;<b>div</b>&nbsp;th:object=<span class="string">&quot;${book}&quot;</span>&gt;
-<br />&nbsp;&nbsp;...
-<br />&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;*{title}&quot;</span>&gt;...&lt;<b>/span</b>&gt;
-<br />&nbsp;&nbsp;...
-<br />&lt;<b>/div</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <div th:object="${book}">
+            ...
+            <span th:text="*{title}">...</span>
+            ...
+        </div>
+    ]]></script>
 
     <h3>Text externalization expressions</h3>
     
@@ -159,26 +164,26 @@
       them by a key and (optionally) applying a set of parameters. 
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       #{main.title}
-    </code>
+    ]]></script>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       #{message.entrycreated(${entryId})}
-    </code>
+    ]]></script>
 
     <p>
       You can find them in templates like: 
     </p>
 
-    <code>
-&lt;<b>table</b>&gt;
-<br />&nbsp;&nbsp;...
-<br />&nbsp;&nbsp;&lt;<b>th</b>&nbsp;th:text=<span class="string">&quot;#{header.address.city}&quot;</span>&gt;...&lt;<b>/th</b>&gt;
-<br />&nbsp;&nbsp;&lt;<b>th</b>&nbsp;th:text=<span class="string">&quot;#{header.address.country}&quot;</span>&gt;...&lt;<b>/th</b>&gt;
-<br />&nbsp;&nbsp;...
-<br />&lt;<b>/table</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <table>
+            ...
+            <th th:text="#{header.address.city}">...</th>
+            <th th:text="#{header.address.country}">...</th>
+            ...
+        </table>
+    ]]></script>
 
     <h3>URL expressions</h3>
 
@@ -187,37 +192,37 @@
       called <i>URL rewriting</i>.
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       @{/order/list}
-    </code>
+    ]]></script>
     
     <p>
       URLs can also take parameters:
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       @{/order/details(id=${orderId})}
-    </code>
+    ]]></script>
     
     <p>
       And be relative (in which case no application context will be added to the URL):
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       @{../documents/report}
-    </code>
+    ]]></script>
     
     <p>
       Let's see these expressions in context:
     </p>
     
-    <code>
-      &lt;<b>form</b>&nbsp;th:action=<span class="string">&quot;@{/createOrder}&quot;</span>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <form th:action="@{/createOrder}">
+    ]]></script>
     
-    <code>
-      &lt;<b>a</b>&nbsp;href=<span class="string">&quot;main.html&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/main}&quot;</span>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <a href="main.html" th:href="@{/main}">
+    ]]></script>
 
     <p>
       From this last example, see how Thymleaf allows us to set an <kbd>href</kbd> value for static 
@@ -262,9 +267,9 @@
       preprocessing</i>, specified between <kbd>__</kbd>, which looks like this:
     </p>
 
-    <code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
       #{selection.__${sel.code}__}
-    </code>
+    ]]></script>
 
     <p>
       What we are seeing there is a variable expression (<kbd>${sel.code}</kbd>) that will be
@@ -282,9 +287,9 @@
       (notice again the prototyping abilities here):
     </p>
     
-    <code>
-      &lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;#{msg.welcome}&quot;</span>&gt;Welcome everyone!&lt;<b>/p</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p th:text="#{msg.welcome}">Welcome everyone!</p>
+    ]]></script>
     
     <p>
       Now <kbd>th:each</kbd>, which repeats the element it's in as many times as specified
@@ -292,9 +297,9 @@
       the iteration element with a syntax equivalent to that of a Java <i>foreach</i> expression:
     </p>
     
-    <code>
-      &lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;book : ${books}&quot;</span>&nbsp;th:text=<span class="string">&quot;${book.title}&quot;</span>&gt;En las Orillas del Sar&lt;<b>/li</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <li th:each="book : ${books}" th:text="${book.title}">En las Orillas del Sar</li>
+    ]]></script>
     
     <p>
       Lastly, Thymeleaf includes lots of <kbd>th</kbd> attributes for specific XHTML and HTML5 
@@ -302,17 +307,17 @@
       to their result. Their names mimic those of the attributes which values they set:
     </p>
     
-    <code>
-      &lt;<b>form</b>&nbsp;th:action=<span class="string">&quot;@{/createOrder}&quot;</span>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <form th:action="@{/createOrder}">
+    ]]></script>
     
-    <code>
-      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;button&quot;</span>&nbsp;th:value=<span class="string">&quot;#{form.submit}&quot;</span> /&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <input type="button" th:value="#{form.submit}" />
+    ]]></script>
     
-    <code>
-      &lt;<b>a</b>&nbsp;th:href=<span class="string">&quot;@{/admin/users}&quot;</span>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <a th:href="@{/admin/users}">
+    ]]></script>
 
 
     <h2>Want to know more?</h2>
@@ -341,6 +346,11 @@
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

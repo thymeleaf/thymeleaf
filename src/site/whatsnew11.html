@@ -20,6 +20,12 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushPlain.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -81,11 +87,9 @@
       For example, now you can concatenate Strings easily in your expressions, like:
     </p>
     
-    <code>
-    
-    &lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;#{title.username} + ': ' + ${user.name}&quot;</span>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p th:text="#{title.username} + ': ' + ${user.name}">
+    ]]></script>
 
 
     <h2>No more Value Processors</h2>
@@ -101,26 +105,16 @@
       attribute value:
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        final StandardValueProcessor valueProcessor =
+            arguments.getConfiguration().getValueProcessorByClass(this, StandardValueProcessor.class);
 
-<b>final</b>&nbsp;StandardValueProcessor&nbsp;valueProcessor&nbsp;=
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;arguments.getConfiguration().getValueProcessorByClass(<b>this</b>,&nbsp;StandardValueProcessor.<b>class</b>);
-<br />
-<br />
-<b>final</b>&nbsp;Value&nbsp;value&nbsp;=&nbsp;
+        final Value value =
+            StandardSyntax.parseValue(attributeValue, valueProcessor, arguments, templateResolution);
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;StandardSyntax.parseValue(attributeValue,&nbsp;valueProcessor,&nbsp;arguments,&nbsp;templateResolution);
-<br />
-<br />
-<b>final</b>&nbsp;String&nbsp;result&nbsp;=&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;valueProcessor.getValue(arguments,&nbsp;templateResolution,&nbsp;value);&nbsp;
-
-<br />
-
-    </code>
+        final String result =
+            (String) valueProcessor.getValue(arguments, templateResolution, value);
+    ]]></script>
     
     <p>
       Thymeleaf 1.1 completely removes the concept of <i>value processor</i> from its API, so that
@@ -133,11 +127,10 @@
       so that all the code above can now be written in a much more concise way:  
     </p>
     
-    <code>
-<b>final</b>&nbsp;String&nbsp;result&nbsp;=
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(arguments,&nbsp;templateResolution,&nbsp;attributeValue);
-    </code>    
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        final String result =
+            (String) StandardExpressionProcessor.processExpression(arguments, templateResolution, attributeValue);
+    ]]></script>
 
     
     
@@ -157,33 +150,24 @@
       In order to see the differences between these tags, the following fragment:
     </p>
     
-    <code>
-&lt;<b>footer</b>&nbsp;th:fragment=<span class="string">&quot;copy&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&amp;copy;&nbsp;2011&nbsp;The&nbsp;Good&nbsp;Thymes&nbsp;Virtual&nbsp;Grocery
-<br />
-&lt;/<b>footer</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <footer th:fragment="copy">
+            &copy; 2011 The Good Thymes Virtual Grocery
+        </footer>
+    ]]></script>
 
     <p>
       Referenced in your template with both a <kbd>th:include</kbd> and a <kbd>th:substituteby</kbd>:
     </p>
     
-    <code>
-    
-&lt;<b>body</b>&gt;
-<br />
-&nbsp;&nbsp;...
-<br />
-&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:include=<span class="string">&quot;footer&nbsp;::&nbsp;copy&quot;</span>&gt;&lt;/<b>div</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>div</b>&nbsp;th:substituteby=<span class="string">&quot;footer&nbsp;::&nbsp;copy&quot;</span>&gt;&lt;/<b>div</b>&gt;
-<br />
-&nbsp;&nbsp;...
-<br />
-&lt;/<b>body</b>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <body>
+            ...
+            <div th:include="footer :: copy"></div>
+            <div th:substituteby="footer :: copy"></div>
+            ...
+        </body>
+    ]]></script>
     
     <p>
       The results will be slightly different, because <kbd>th:include</kbd> will only
@@ -191,29 +175,18 @@
       replace the host tag by the whole fragment:
     </p>
 
-    <code>
-    
-&lt;<b>body</b>&gt;
-<br />
-&nbsp;&nbsp;...
-<br />
-&nbsp;&nbsp;&lt;<b>div</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&amp;copy;&nbsp;2011&nbsp;The&nbsp;Good&nbsp;Thymes&nbsp;Virtual&nbsp;Grocery
-<br />
-&nbsp;&nbsp;&lt;/<b>div</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>footer</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&amp;copy;&nbsp;2011&nbsp;The&nbsp;Good&nbsp;Thymes&nbsp;Virtual&nbsp;Grocery
-<br />
-&nbsp;&nbsp;&lt;/<b>footer</b>&gt;
-<br />
-&nbsp;&nbsp;...
-<br />
-&lt;/<b>body</b>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <body>
+            ...
+            <div>
+                &copy; 2011 The Good Thymes Virtual Grocery
+            </div>
+            <footer>
+                &copy; 2011 The Good Thymes Virtual Grocery
+            </footer>
+            ...
+        </body>
+    ]]></script>
 
     
     
@@ -233,43 +206,29 @@
       have been created, so that the old <kbd>DOCTYPE</kbd> declarations:
     </p>
     
-    <code>
-    
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-1.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-1.dtd&quot;</span>&gt;
-    <br />
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-1.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-1.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-1.dtd&quot;</span>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-1.dtd">
+
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-1.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-1.dtd">
+    ]]></script>
 
     <p>
       Can now be substituted by new versions containing the new attribute:
     </p>
     
-    <code>
-    
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd&quot;</span>&gt;
-    <br />
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    <br />
-    &lt;!<b>DOCTYPE</b>&nbsp;html&nbsp;<b>SYSTEM</b>&nbsp;<span class="string">&quot;http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd&quot;</span>&gt;
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-2.dtd">
+
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd">
+        <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd">
+    ]]></script>
 
 
     <h2>New date utility functions</h2>
@@ -278,31 +237,23 @@
       Thymeleaf 1.1 adds new functions to the <kbd>#dates</kbd> and <kbd>#calendars</kbd>
       utility function objects, which can be used in variable expressions as usual:
     </p>
-    <code>
-      #dates.hour(now)
-      <br />
-      #dates.minute(now)
-      <br />
-      #dates.second(now)
-      <br />
-      #dates.millisecond(now)
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        #dates.hour(now)
+        #dates.minute(now)
+        #dates.second(now)
+        #dates.millisecond(now)
+    ]]></script>
     <p>
       <i>Since 1.1.2, also:</i>
     </p>
-    <code>
-      #dates.createNow()
-      <br />
-      #dates.createToday()
-      <br />
-      #dates.create(year,month,day)
-      <br />
-      #dates.create(year,month,day,hour,minute)
-      <br />
-      #dates.create(year,month,day,hour,minute,second)
-      <br />
-      #dates.create(year,month,day,hour,minute,second,millisecond)
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        #dates.createNow()
+        #dates.createToday()
+        #dates.create(year,month,day)
+        #dates.create(year,month,day,hour,minute)
+        #dates.create(year,month,day,hour,minute,second)
+        #dates.create(year,month,day,hour,minute,second,millisecond)
+    ]]></script>
 
 
     <h2>Changes in condition evaluation</h2>
@@ -339,9 +290,9 @@
       exception like this: 
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:plain;gutter:false"><![CDATA[
       The entity "nbsp" was referenced, but not declared.
-    </code>
+    ]]></script>
     
     <p>
       ...in the following cases:
@@ -406,6 +357,11 @@
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

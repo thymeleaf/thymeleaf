@@ -225,22 +225,12 @@ h4 {
 
 
 /* ---------------------- */
-/* TT, CODE && STRINGS    */
+/* TT && STRINGS    */
 /* ---------------------- */
-kbd, tt, code {
-  font-family: Monaco, Menlo, Consolas, 'Courier New', monospace;
-}
 kbd, tt {
+  font-family: Monaco, Menlo, Consolas, 'Courier New', monospace;
   color: #707070;
   font-weight: bold;
-}
-code {
-  border: 1px solid #cccccc;
-  background-color: #f2f2f2;
-  font-size: 12px;
-  margin: 25px 50px;
-  display: block;
-  padding: 8px 15px;
 }
 span.string {
   color: blue;
@@ -258,6 +248,25 @@ span.comment {
 p, ul, ol {
   margin: 20px 40px;
   text-align: justify;
+}
+div.syntaxhighlighter {
+  /*
+   * Tweaks for the SyntaxHighlighter styles.
+   */
+  margin: 20px 40px !important;
+  width: auto !important;
+  font-size: 14px !important;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -khtml-border-radius: 8px;
+  border-radius: 8px;
+}
+.syntaxhighlighter table td.code .container {
+  /*
+   * Fix for unneeded vertical bar being displayed
+   * from http://xbfish.com/2011/04/26/remove-vertical-scrollbar-in-syntaxhighlighter/
+   */
+  padding: 10px 10px !important;
 }
 li {
   margin-top: 5px;

@@ -20,6 +20,12 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushPlain.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -72,17 +78,17 @@
       To the moment, our <kbd>HelloDialect</kbd> allowed us to turn this:
     </p>
     
-    <code>
-&lt;<b>p</b>&nbsp;hello:sayto=<span class="string">&quot;World&quot;</span>&gt;Hi&nbsp;ya!&lt;/<b>p</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p hello:sayto="World">Hi ya!</p>
+    ]]></script>
     
     <p>
       ...into this:
     </p>
 
-    <code>
-&lt;<b>p</b>&gt;Hello&nbsp;World!&lt;/<b>p</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p>Hello World!</p>
+    ]]></script>
 
     <p>
       And it works just fine... but we want to add some nice additional features. For example:
@@ -99,75 +105,40 @@
       like this:
     </p>
     
-    <code>
-    
-<br />
-&lt;<b>ul</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;planet&nbsp;:&nbsp;${planets}&quot;</span>&nbsp;hello:saytoplanet=<span class="string">&quot;${planet}&quot;</span>&gt;Hello&nbsp;Planet!&lt;<b>/li</b>&gt;
-
-<br />
-&lt;<b>/ul</b>&gt;
-<br />
-
-<br />
-
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <ul>
+            <li th:each="planet : ${planets}" hello:saytoplanet="${planet}">Hello Planet!</li>
+        </ul>
+    ]]></script>
 
     <p>
       ...backed by a Spring MVC controller that includes all those planets as a model attribute
       called <kbd>planets</kbd>:
     </p>
     
-    <code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
 
-<br />
-@Controller
-<br />
-<b>public</b>&nbsp;<b>class</b>&nbsp;SayHelloController&nbsp;{
-<br />
+        @Controller
+        public class SayHelloController {
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayHelloController()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@ModelAttribute(<span class="string">&quot;planets&quot;</span>)
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;List&lt;String&gt;&nbsp;populatePlanets()&nbsp;{
+            public SayHelloController() {
+                super();
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;Arrays.asList(<b>new</b>&nbsp;String[]&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">&quot;Mercury&quot;</span>,&nbsp;<span class="string">&quot;Venus&quot;</span>,&nbsp;<span class="string">&quot;Earth&quot;</span>,&nbsp;<span class="string">&quot;Mars&quot;</span>,&nbsp;<span class="string">&quot;Jupiter&quot;</span>,&nbsp;<span class="string">&quot;Saturn&quot;</span>,&nbsp;<span class="string">&quot;Uranus&quot;</span>,&nbsp;<span class="string">&quot;Neptune&quot;</span>
+            @ModelAttribute("planets")
+            public List<String> populatePlanets() {
+                return Arrays.asList(new String[] {
+                        "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"
+                    });
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;});
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping({<span class="string">&quot;/&quot;</span>,<span class="string">&quot;/sayhello&quot;</span>})
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;showSayHello()&nbsp;{
+            @RequestMapping({"/","/sayhello"})
+            public String showSayHello() {
+                return "sayhello";
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;sayhello&quot;</span>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-}
-<br />
-<br />
-    
-    </code>
+        }
+    ]]></script>
 
 
     <h2>Adding a new processor to our dialect</h2>
@@ -178,53 +149,26 @@
       our new <kbd>SayToPlanetAttrProcessor</kbd> class: 
     </p>
 
-<code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        public class HelloDialect extends AbstractDialect {
 
-<br />
-<b>public</b>&nbsp;<b>class</b>&nbsp;HelloDialect&nbsp;<b>extends</b>&nbsp;AbstractDialect&nbsp;{
-<br />
+            ...
 
-<br />
+            //
+            // The processors.
+            //
+            @Override
+            public Set<IProcessor> getProcessors() {
+                final Set<IProcessor> processors = new HashSet<IProcessor>();
+                processors.add(new SayToAttrProcessor());
+                processors.add(new SayToPlanetAttrProcessor());
+                return processors;
+            }
 
-&nbsp;&nbsp;&nbsp;&nbsp;...
+            ...
 
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;processors.
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;getProcessors()&nbsp;{
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;processors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IProcessor&gt;();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processors.add(<b>new</b>&nbsp;SayToAttrProcessor());
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processors.add(<b>new</b>&nbsp;SayToPlanetAttrProcessor());
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;processors;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;...
-
-<br />
-<br />
-}
-<br />
-<br />
-    
-</code>
+        }
+    ]]></script>
 
 
 
@@ -249,85 +193,34 @@
       logic to process these <i>standard expressions</i>:
     </p>
     
-    <code>
-<br />
-<b>public</b>&nbsp;<b>class</b>&nbsp;SayToPlanetAttrProcessor&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>extends</b>&nbsp;AbstractTextChildModifierAttrProcessor&nbsp;{
-<br />
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        public class SayToPlanetAttrProcessor
+               extends AbstractTextChildModifierAttrProcessor {
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>private</b>&nbsp;<b>static</b>&nbsp;<b>final</b>&nbsp;String&nbsp;SAYTO_PLANET_MESSAGE&nbsp;=&nbsp;<span class="string">&quot;msg.helloplanet&quot;</span>;&nbsp;
-<br />
+            private static final String SAYTO_PLANET_MESSAGE = "msg.helloplanet";
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToPlanetAttrProcessor()&nbsp;{
+            public SayToPlanetAttrProcessor() {
+                // Only execute this processor for 'saytoplanet' attributes.
+                super("saytoplanet");
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;saytoplanet&#39;&nbsp;attributes.
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>(<span class="string">&quot;saytoplanet&quot;</span>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
+            public int getPrecedence() {
+                // Higher (less-precedent) than any attribute in the
+                // SpringStandard dialect and also than 'sayto'.
+                return 11000;
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>int</b>&nbsp;getPrecedence()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Higher&nbsp;(less-precedent)&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
+            @Override
+            protected String getText(final Arguments arguments, final Element element,
+                        final String attributeName) {
+                final String planet =
+                    (String) StandardExpressionProcessor.processExpression(
+                                arguments, element.getAttributeValue(attributeName));
+                return "Hello, planet " + planet;
+            }
 
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;SpringStandard&nbsp;dialect&nbsp;and&nbsp;also&nbsp;than&nbsp;&#39;sayto&#39;.
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;11000;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName)&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments,&nbsp;element.getAttributeValue(attributeName));
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;planet&nbsp;&quot;</span>&nbsp;+&nbsp;planet;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-
-<br />
-
-<br />
-}
-
-<br />
-    
-    </code>
+        }
+    ]]></script>
 
 
     <p>
@@ -345,36 +238,24 @@
       Now we want to internationalize the message returned by our attribute processor. This means
       substituting this English-only message building code:
     </p>
-    <code>
-<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;planet&nbsp;&quot;</span>&nbsp;+&nbsp;planet;
-    </code>
+    <script type="syntaxhighlighter" class="brush:java;gutter:false"><![CDATA[
+        return "Hello, planet " + planet;
+    ]]></script>
     <p>
       ...by a message built from an externalized String that we must somehow obtain from our
       code. The abstract parent class <kbd>AbstractProcessor</kbd> offers three methods we 
       can use for this:
     </p>
-    <code>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessage(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessageForTemplate(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getMessageForProcessor(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;String&nbsp;messageKey,&nbsp;<b>final</b>&nbsp;Object[]&nbsp;messageParameters);
+    <script type="syntaxhighlighter" class="brush:java;gutter:false"><![CDATA[
+        protected String getMessage(
+            final Arguments arguments, final String messageKey, final Object[] messageParameters);
 
-<br />
-<br />
-    
-    </code>
+        protected String getMessageForTemplate(
+            final Arguments arguments, final String messageKey, final Object[] messageParameters);
+
+        protected String getMessageForProcessor(
+            final Arguments arguments, final String messageKey, final Object[] messageParameters);
+    ]]></script>
     <p>
       Each of them has a different meaning, let's start by the last two:
     </p>
@@ -417,15 +298,15 @@
       Enough about theory, let's put all this into practice. First we will need some <kbd>.properties</kbd>
       files, like <kbd>SayToPlanetAttrProcessor_es.properties</kbd> for Spanish:
     </p>
-    <code>
-msg.helloplanet=&iexcl;Hola, planeta {0}!
-    </code>
+    <script type="syntaxhighlighter" class="brush:plain;gutter:false"><![CDATA[
+        msg.helloplanet=&iexcl;Hola, planeta {0}!
+    ]]></script>
     <p>
       <kbd>SayToPlanetAttrProcessor_pt.properties</kbd> for Portuguese:
     </p>
-    <code>
-msg.helloplanet=Ol&aacute;, planeta {0}!
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        msg.helloplanet=Ol&aacute;, planeta {0}!
+    ]]></script>
     <p>
       ...etc.
     </p>
@@ -433,72 +314,34 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
       And now we will have to modify the <kbd>getText()</kbd> method in our <kbd>SayToPlanetAttrProcessor</kbd>
       class to make use of these messages:
     </p>
-    <code>
-    
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;
-<br />
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        @Override
+        protected String getText(final Arguments arguments, final Element element,
+                        final String attributeName) {
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName)&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;planet&nbsp;=
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(String)&nbsp;StandardExpressionProcessor.processExpression(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arguments,&nbsp;element.getAttributeValue(attributeName));
+            final String planet =
+                    (String) StandardExpressionProcessor.processExpression(
+                            arguments, element.getAttributeValue(attributeName));
 
-<br />
+            //
+            // This 'getMessage(...)' method will first try to resolve the
+            // message as a 'template message' (one that is defined for a specific
+            // template or templates, and that would be resolved, in a Spring MVC app,
+            // by Spring's MessageSource objects).
+            //
+            // If not found, it will try to resolve it as a 'processor message', a type
+            // of messages meant to appear in .properties files by the side of the
+            // attribute processor itself (or any of its superclasses) and, if needed,
+            // be packaged along with it in a .jar file for better encapsulation of UI
+            // components.
+            //
+            final String message =
+                    getMessage(arguments, SAYTO_PLANET_MESSAGE, new Object[] {planet});
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;This&nbsp;&#39;getMessage(...)&#39;&nbsp;method&nbsp;will&nbsp;first&nbsp;try&nbsp;to&nbsp;resolve&nbsp;the
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;message&nbsp;as&nbsp;a&nbsp;&#39;template&nbsp;message&#39;&nbsp;(one&nbsp;that&nbsp;is&nbsp;defined&nbsp;for&nbsp;a&nbsp;specific&nbsp;
+            return message;
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;template&nbsp;or&nbsp;templates,&nbsp;and&nbsp;that&nbsp;would&nbsp;be&nbsp;resolved,&nbsp;in&nbsp;a&nbsp;Spring&nbsp;MVC&nbsp;app,&nbsp;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;by&nbsp;Spring&#39;s&nbsp;MessageSource&nbsp;objects).
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;If&nbsp;not&nbsp;found,&nbsp;it&nbsp;will&nbsp;try&nbsp;to&nbsp;resolve&nbsp;it&nbsp;as&nbsp;a&nbsp;&#39;processor&nbsp;message&#39;,&nbsp;a&nbsp;type
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;of&nbsp;messages&nbsp;meant&nbsp;to&nbsp;appear&nbsp;in&nbsp;.properties&nbsp;files&nbsp;by&nbsp;the&nbsp;side&nbsp;of&nbsp;the&nbsp;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;attribute&nbsp;processor&nbsp;itself&nbsp;(or&nbsp;any&nbsp;of&nbsp;its&nbsp;superclasses)&nbsp;and,&nbsp;if&nbsp;needed,&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;be&nbsp;packaged&nbsp;along&nbsp;with&nbsp;it&nbsp;in&nbsp;a&nbsp;.jar&nbsp;file&nbsp;for&nbsp;better&nbsp;encapsulation&nbsp;of&nbsp;UI&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;components.
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;message&nbsp;=&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;getMessage(arguments,&nbsp;SAYTO_PLANET_MESSAGE,&nbsp;<b>new</b>&nbsp;Object[]&nbsp;{planet});
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;message;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />    
-<br />
-
-    </code>
+        }
+    ]]></script>
 
     <p>
       And that's it! Let's have a look at the results of executing our template with Spanish locale:
@@ -544,6 +387,11 @@ msg.helloplanet=Ol&aacute;, planeta {0}!
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

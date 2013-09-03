@@ -18,6 +18,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -72,17 +77,17 @@
        name (<kbd>http://</kbd> or <kbd>https://</kbd>)
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{http://www.thymeleaf/documentation.html}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{http://www.thymeleaf/documentation.html}">
+     ]]></script>
 
      <p>
        They are not modified at all:
      </p>
 
-     <code>
-       &lt;<b>a</b> href=<span class="string">"http://www.thymeleaf/documentation.html"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="http://www.thymeleaf/documentation.html">
+     ]]></script>
 
 
 
@@ -99,17 +104,17 @@
        Context-relative URLs start with <kbd>/</kbd>:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/order/list}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/list}">
+     ]]></script>
 
      <p>
        If our app is installed at <kbd>http://localhost:8080/myapp</kbd>, this URL will output:
      </p>
 
-     <code>
-       &lt;<b>a</b> href=<span class="string">"/myapp/order/list"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="/myapp/order/list">
+     ]]></script>
 
 
 
@@ -131,7 +136,8 @@
      </ul>
 
      <p>
-       All of this is automatically performed by Thymeleaf when outputting this kind of URLs.
+       All of this is automatically done when outputting this kind of URLs, because thymeleaf will
+       apply the standard application server's <kbd>response.encodeURL(url)</kbd> mechanism before outputting any URL.
      </p>
 
 
@@ -144,18 +150,18 @@
        allow you to link to a different context in the same server:
      </p>
      
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{~/billing-app/showDetails.htm}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{~/billing-app/showDetails.htm}">
+     ]]></script>
 
      <p>
        The current application's context will be ignored, therefore although our application is deployed at 
        <kbd>http://localhost:8080/myapp</kbd>, this URL will output:
      </p>
      
-     <code>
-       &lt;<b>a</b> href=<span class="string">"/billing-app/showDetails.htm"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="/billing-app/showDetails.htm">
+     ]]></script>
      
      <p>
        <i>(Note that server-relative URLs are only available since Thymeleaf 2.0.5)</i>
@@ -171,33 +177,33 @@
        expressions? Simple:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=3)}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/details(id=3)}">
+     ]]></script>
 
      <p>
        Which would output as:
      </p>
 
-     <code>
-       &lt;<b>a</b> href=<span class="string">"/order/details?id=3"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="/order/details?id=3">
+     ]]></script>
 
      <p>
        You can add several parameters, separating them with commas:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=3,action='show_all')}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/details(id=3,action='show_all')}">
+     ]]></script>
 
      <p>
        Which would output as:
      </p>
 
-     <code>
-       &lt;<b>a</b> href=<span class="string">"/order/details?id=3&action=show_all"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="/order/details?id=3&action=show_all">
+     ]]></script>
 
 
      <h2>URL fragment identifiers</h2>
@@ -207,17 +213,17 @@
        be included at the URL base, so that:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/home#all_info(action='show')}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/home#all_info(action='show')}">
+     ]]></script>
 
      <p>
        ...would output as:
      </p>
 
-     <code>
-       &lt;<b>a</b> href=<span class="string">"/home?action=show#all_info"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="/home?action=show#all_info">
+     ]]></script>
      
      <p>
        <i>(Note that fragment identifiers in parameterized URLs are only supported since Thymeleaf 2.0.7)</i>
@@ -237,15 +243,15 @@
        For example, you could use them in forms...
      </p>
      
-     <code>
-       &lt;<b>form</b> th:action=<span class="string">"@{/order/processOrder}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <form th:action="@{/order/processOrder}">
+     ]]></script>
      <p>
        ...or as a part of other expression. Here as a parameter of an externalized/internationalized string:
      </p>     
-     <code>
-       &lt;<b>p</b> th:text=<span class="string">"#{orders.explanation('3', @{/order/details(id=3,action='show_all')})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <p th:text="#{orders.explanation('3', @{/order/details(id=3,action='show_all')})}">
+     ]]></script>
 
 
      <h2>Using expressions in URLs</h2>
@@ -254,9 +260,9 @@
        What if we needed to write an URL expression like this:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=3,action='show_all')}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/details(id=3,action='show_all')}">
+     ]]></script>
 
      <p>
        ...but neither <kbd>3</kbd> nor <kbd>'show_all'</kbd> could be literals, because we only know their
@@ -267,70 +273,71 @@
        your literals with any other expressions, including i18n, conditionals...:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=${order.id},action=(${user.admin} ? 'show_all' : 'show_public'))}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/details(id=${order.id},action=(${user.admin} ? 'show_all' : 'show_public'))}">
+     ]]></script>
 
      <p>
        What's more: an URL expression like:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{/order/details(id=${order.id})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/details(id=${order.id})}">
+     ]]></script>
 
      <p>
        ...is in fact a shortcut for:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{'/order/details'(id=${order.id})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{'/order/details'(id=${order.id})}">
+     ]]></script>
 
      <p>
        Which means that the URL base itself can be specified as an expression, for example
        a variable expression:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{${detailsURL}(id=${order.id})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{${detailsURL}(id=${order.id})}">
+     ]]></script>
 
      <p>
        ...or an externalized/internationalized text:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{#{orders.details.localized_url}(id=${order.id})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{#{orders.details.localized_url}(id=${order.id})}">
+     ]]></script>
 
      <p>
        ...even complex expressions can be used, including conditionals, for example:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:href=<span class="string">"@{(${user.admin}? '/admin/home' : ${user.homeUrl})(id=${order.id})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{(${user.admin}? '/admin/home' : ${user.homeUrl})(id=${order.id})}">
+     ]]></script>
 
      <p>
        Want it cleaner? Use <kbd>th:with</kbd>:
      </p>
 
-     <code>
-       &lt;<b>a</b> th:with=<span class="string">"baseUrl=(${user.admin}? '/admin/home' : ${user.homeUrl})"</span> th:href=<span class="string">"@{${baseUrl}(id=${order.id})}"</span>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:with="baseUrl=(${user.admin}? '/admin/home' : ${user.homeUrl})"
+            th:href="@{${baseUrl}(id=${order.id})}">
+     ]]></script>
 
      <p>
        ...or...
      </p>
 
-     <code>
-       &lt;<b>div</b> th:with=<span class="string">"baseUrl=(${user.admin}? '/admin/home' : ${user.homeUrl})"</span>&gt;<br />
-       &nbsp;&nbsp;&nbsp;&nbsp;...<br />
-       &nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>a</b> th:href=<span class="string">"@{${baseUrl}(id=${order.id})}"</span>&gt;...&lt;/<b>a</b>&gt;<br />
-       &nbsp;&nbsp;&nbsp;&nbsp;...<br />
-       &lt;/<b>div</b>&gt;
-     </code>
+     <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+         <div th:with="baseUrl=(${user.admin}? '/admin/home' : ${user.homeUrl})">
+             ...
+             <a th:href="@{${baseUrl}(id=${order.id})}">...</a>
+             ...
+         </div>
+     ]]></script>
 
 
 
@@ -357,6 +364,11 @@
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

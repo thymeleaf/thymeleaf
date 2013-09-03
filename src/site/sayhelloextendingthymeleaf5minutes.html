@@ -20,6 +20,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -112,9 +117,9 @@
       want to add a new attribute that allows us to say hello to whoever we want, like this:
     </p>    
     
-    <code>
-&lt;<b>p</b>&nbsp;hello:sayto=<span class="string">&quot;World&quot;</span>&gt;Hi&nbsp;ya!&lt;/<b>p</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p hello:sayto="World">Hi ya!</p>
+    ]]></script>
     
     <h3>The processor</h3>
     
@@ -139,89 +144,41 @@
       a text (which is exactly what we want). So we will extend this class for our attribute
       processor:
     </p>
-    <code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        public class SayToAttrProcessor
+               extends AbstractTextChildModifierAttrProcessor {
 
 
+            public SayToAttrProcessor() {
+                // Only execute this processor for 'sayto' attributes.
+                super("sayto");
+            }
 
-<b>public</b>&nbsp;<b>class</b>&nbsp;SayToAttrProcessor&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>extends</b>&nbsp;AbstractTextChildModifierAttrProcessor&nbsp;{
-<br />
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;SayToAttrProcessor()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Only&nbsp;execute&nbsp;this&nbsp;processor&nbsp;for&nbsp;&#39;sayto&#39;&nbsp;attributes.
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>(<span class="string">&quot;sayto&quot;</span>);
+            public int getPrecedence() {
+                // A value of 10000 is higher than any attribute in the
+                // SpringStandard dialect. So this attribute will execute
+                // after all other attributes from that dialect, if in the
+                // same tag.
+                return 10000;
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>int</b>&nbsp;getPrecedence()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;A&nbsp;value&nbsp;of&nbsp;10000&nbsp;is&nbsp;higher&nbsp;than&nbsp;any&nbsp;attribute&nbsp;in&nbsp;the
+            //
+            // Our processor is a subclass of the convenience abstract implementation
+            // 'AbstractTextChildModifierAttrProcessor', which takes care of the
+            // DOM modifying stuff and allows us just to implement this 'getText(...)'
+            // method to compute the text to be set as tag body.
+            //
+            @Override
+            protected String getText(final Arguments arguments, final Element element,
+                    final String attributeName) {
+                return "Hello, "  + element.getAttributeValue(attributeName) + "!";
+            }
 
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;SpringStandard&nbsp;dialect.&nbsp;So&nbsp;this&nbsp;attribute&nbsp;will&nbsp;execute
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;after&nbsp;all&nbsp;other&nbsp;attributes&nbsp;from&nbsp;that&nbsp;dialect,&nbsp;if&nbsp;in&nbsp;the&nbsp;
 
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;same&nbsp;tag.
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;10000;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Our&nbsp;processor&nbsp;is&nbsp;a&nbsp;subclass&nbsp;of&nbsp;the&nbsp;convenience&nbsp;abstract&nbsp;implementation
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;&#39;AbstractTextChildModifierAttrProcessor&#39;,&nbsp;which&nbsp;takes&nbsp;care&nbsp;of&nbsp;the
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;DOM&nbsp;modifying&nbsp;stuff&nbsp;and&nbsp;allows&nbsp;us&nbsp;just&nbsp;to&nbsp;implement&nbsp;<b>this</b>&nbsp;&#39;getText(...)&#39;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;method&nbsp;to&nbsp;compute&nbsp;the&nbsp;text&nbsp;to&nbsp;be&nbsp;set&nbsp;as&nbsp;tag&nbsp;body.
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>protected</b>&nbsp;String&nbsp;getText(<b>final</b>&nbsp;Arguments&nbsp;arguments,&nbsp;<b>final</b>&nbsp;Element&nbsp;element,&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;attributeName)&nbsp;{
-
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;Hello,&nbsp;&quot;</span>&nbsp;&nbsp;+&nbsp;element.getAttributeValue(attributeName)&nbsp;+&nbsp;<span class="string">&quot;!&quot;</span>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-
-<br />
-}
-<br />
-
-    </code>
+        }
+    ]]></script>
 
     <h3>The dialect class</h3>
     
@@ -236,96 +193,44 @@
       already implements all methods from that interface, returning empty values for all of them (so
       that we only have to override the ones we require).
     </p>
-    <code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        public class HelloDialect extends AbstractDialect {
+
+            public HelloDialect() {
+                super();
+            }
+
+            //
+            // All of this dialect's attributes and/or tags
+            // will start with 'hello:'
+            //
+            public String getPrefix() {
+                return "hello";
+            }
 
 
-
-<b>public</b>&nbsp;<b>class</b>&nbsp;HelloDialect&nbsp;<b>extends</b>&nbsp;AbstractDialect&nbsp;{
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;HelloDialect()&nbsp;{
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>super</b>();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;All&nbsp;of&nbsp;this&nbsp;dialect&#39;s&nbsp;attributes&nbsp;and/or&nbsp;tags
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;will&nbsp;start&nbsp;with&nbsp;&#39;hello:*&#39;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;getPrefix()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;hello&quot;</span>;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;Non-lenient:&nbsp;if&nbsp;a&nbsp;tag&nbsp;starting&nbsp;with&nbsp;&#39;hello:&#39;&nbsp;is
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;found&nbsp;but&nbsp;no&nbsp;processor&nbsp;exists&nbsp;in&nbsp;this&nbsp;dialect&nbsp;for&nbsp;it,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;throw&nbsp;an&nbsp;exception.&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>boolean</b>&nbsp;isLenient()&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<b>false</b>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/*
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*&nbsp;The&nbsp;processors.
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;@Override
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;getProcessors()&nbsp;{
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Set&lt;IProcessor&gt;&nbsp;processors&nbsp;=&nbsp;<b>new</b>&nbsp;HashSet&lt;IProcessor&gt;();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;processors.add(<b>new</b>&nbsp;SayToAttrProcessor());
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;processors;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-
-<br />
-}
-<br />
+            //
+            // Non-lenient: if a tag starting with 'hello:' is
+            // found but no processor exists in this dialect for it,
+            // throw an exception.
+            //
+            public boolean isLenient() {
+                return false;
+            }
 
 
+            //
+            // The processors.
+            //
+            @Override
+            public Set<IProcessor> getProcessors() {
+                final Set<IProcessor> processors = new HashSet<IProcessor>();
+                processors.add(new SayToAttrProcessor());
+                return processors;
+            }
 
-    </code>
+        }
+    ]]></script>
     <p>
       As you can see, we didn't need to set any <i>DOCTYPE resolution entries</i> or <i>translations</i>. 
       We didn't need any of those because our dialect
@@ -343,41 +248,25 @@
       the default <i>SpringStandard</i> dialect:
     </p>
     
-    <code>
-
-
-<br />
-&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolver&quot;</span>&nbsp;ref=<span class="string">&quot;templateResolver&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;additionalDialects&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>set</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>bean</b>&nbsp;class=<span class="string">&quot;thymeleafexamples.sayhello.dialect.HelloDialect&quot;</span>/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/set</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
-
-<br />
-&nbsp;&nbsp;&lt;<b>/bean</b>&gt;
-<br /><br />
-
-
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <bean id="templateEngine"
+              class="org.thymeleaf.spring3.SpringTemplateEngine">
+            <property name="templateResolver" ref="templateResolver" />
+            <property name="additionalDialects">
+                <set>
+                    <bean class="thymeleafexamples.sayhello.dialect.HelloDialect"/>
+                </set>
+            </property>
+        </bean>
+    ]]></script>
 
     <p>
       And our new attribute would work seamlessly:
     </p>
     
-    <code>
-&lt;<b>p</b>&gt;Hello&nbsp;World!&lt;/<b>p</b>&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <p>Hello World!</p>
+    ]]></script>
 
     <h2>Want to know more?</h2>
     
@@ -406,6 +295,11 @@
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

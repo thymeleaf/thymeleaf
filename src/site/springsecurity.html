@@ -20,6 +20,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -87,68 +92,39 @@
          configuration file (usually <b>applicationContext-security.xml</b>):
      </p>
 
-<code>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>http</b>&nbsp;auto-config=<span class="string">"true"</span>&gt;
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>form-login</b>&nbsp;login-page=<span class="string">"/login.html"</span>&nbsp;authentication-failure-url=<span class="string">"/login-error.html"</span>&nbsp;/&gt;
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>logout</b>&nbsp;/&gt;
-
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/http</b>&gt;
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <http auto-config="true">
+            <form-login login-page="/login.html" authentication-failure-url="/login-error.html" />
+            <logout />
+            ...
+        </http>
+    ]]></script>
 
     <p>
         Now we have to match these pages inside a Spring Controller:
     </p>
 
-<code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        @Controller
+        public class MainController {
 
-&nbsp;&nbsp;&nbsp;&nbsp;@Controller
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>class</b>&nbsp;MainController&nbsp;{
-<br />
+            ...
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+            // Login form
+            @RequestMapping("/login.html")
+            public String login() {
+                return "login.html";
+            }
 
-<br />
+            // Login form with error
+            @RequestMapping("/login-error.html")
+            public String loginError(Model model) {
+                model.addAttribute("loginError", true);
+                return "login.html";
+            }
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**&nbsp;Login&nbsp;form.&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(<span class="string">&quot;/login.html&quot;</span>)
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;login()&nbsp;{
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;login.html&quot;</span>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**&nbsp;Login&nbsp;form&nbsp;with&nbsp;error.&nbsp;*/</span>
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(<span class="string">&quot;/login-error.html&quot;</span>)
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;loginError(Model&nbsp;model)&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(<span class="string">&quot;loginError&quot;</span>,&nbsp;<b>true</b>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;login.html&quot;</span>;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-</code>
+        }
+    ]]></script>
 
 
     <p>
@@ -160,50 +136,25 @@
         Our <b>login.html</b> template is as follows:
     </p>
 
-<code>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>html</b>&nbsp;xmlns=<span class="string">&quot;http://www.w3.org/1999/xhtml&quot;</span>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Login&nbsp;page&lt;<b>/title</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/head</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h1</b>&gt;Login&nbsp;page&lt;<b>/h1</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${loginError}&quot;</span>&gt;Wrong&nbsp;user&nbsp;or&nbsp;password&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>form</b>&nbsp;th:action=<span class="string">&quot;@{/j_spring_security_check}&quot;</span>&nbsp;method=<span class="string">&quot;post&quot;</span>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;j_username&quot;</span>&gt;Username&lt;<b>/label</b>&gt;:
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;text&quot;</span>&nbsp;id=<span class="string">&quot;j_username&quot;</span>&nbsp;name=<span class="string">&quot;j_username&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;j_password&quot;</span>&gt;Password&lt;<b>/label</b>&gt;:
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;password&quot;</span>&nbsp;id=<span class="string">&quot;j_password&quot;</span>&nbsp;name=<span class="string">&quot;j_password&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>br</b>&nbsp;/&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;submit&quot;</span>&nbsp;value=<span class="string">&quot;Log&nbsp;in&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/form</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/body</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/html</b>&gt;
-
-<br />
-
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+            <head>
+                <title>Login page</title>
+            </head>
+            <body>
+                <h1>Login page</h1>
+                <p th:if="${loginError}">Wrong user or password</p>
+                <form th:action="@{/j_spring_security_check}" method="post">
+                    <label for="j_username">Username</label>:
+                    <input type="text" id="j_username" name="j_username" /> <br />
+                    <label for="j_password">Password</label>:
+                    <input type="password" id="j_password" name="j_password" /> <br />
+                    <input type="submit" value="Log in" />
+                </form>
+            </body>
+        </html>
+    ]]></script>
 
 
     <h2>Error page</h2>
@@ -213,83 +164,45 @@
         should simply modify our <b>web.xml</b> adding error <b>&lt;error-page&gt;</b> elements like:
     </p>
 
-<code>
-
-&nbsp;&nbsp;&nbsp;&nbsp;...
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>error-page</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>exception-type</b>&gt;java.lang.Throwable&lt;<b>/exception-type</b>&gt;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/error.html&lt;<b>/location</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/error-page</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>error-page</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>error-code</b>&gt;500&lt;<b>/error-code</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>location</b>&gt;/error.html&lt;<b>/location</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/error-page</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;...
-
-</code>
+    <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+        ...
+        <error-page>
+            <exception-type>java.lang.Throwable</exception-type>
+            <location>/error.html</location>
+        </error-page>
+        <error-page>
+            <error-code>500</error-code>
+            <location>/error.html</location>
+        </error-page>
+        ...
+    ]]></script>
 
 
     <p>
         Then, we have to map the <b>/error.html</b> in our Spring Controller:
     </p>
 
-<code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        @Controller
+        public class HomeController {
 
-&nbsp;&nbsp;&nbsp;&nbsp;@Controller
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;<b>class</b>&nbsp;HomeController&nbsp;{
-<br />
+            ...
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+            // Error page
+            @RequestMapping("/error.html")
+            public String error(HttpServletRequest request, Model model) {
+                model.addAttribute("errorCode", request.getAttribute("javax.servlet.error.status_code"));
+                Throwable throwable = (Throwable) request.getAttribute("javax.servlet.error.exception");
+                String errorMessage = null;
+                if (throwable != null) {
+                    errorMessage = throwable.getMessage();
+                }
+                model.addAttribute("errorMessage", errorMessage.toString());
+                return "error.html";
+            }
 
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/**&nbsp;Error&nbsp;page.&nbsp;*/</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestMapping(<span class="string">&quot;/error.html&quot;</span>)
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b>&nbsp;String&nbsp;error(HttpServletRequest&nbsp;request,&nbsp;Model&nbsp;model)&nbsp;{
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(<span class="string">&quot;errorCode&quot;</span>,&nbsp;request.getAttribute(<span class="string">&quot;javax.servlet.error.status_code&quot;</span>));
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Throwable&nbsp;throwable&nbsp;=&nbsp;(Throwable)&nbsp;request.getAttribute(<span class="string">&quot;javax.servlet.error.exception&quot;</span>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;errorMessage&nbsp;=&nbsp;null;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;(throwable&nbsp;!=&nbsp;null)&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;errorMessage&nbsp;=&nbsp;throwable.getMessage();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute(<span class="string">&quot;errorMessage&quot;</span>,&nbsp;errorMessage.toString());
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;error.html&quot;</span>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;}
-<br />
-
-</code>
+        }
+    ]]></script>
 
 
     <p>
@@ -300,31 +213,18 @@
         The <b>error.html</b> template could be like:
     </p>
 
-<code>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>html</b>&nbsp;xmlns=<span class="string">&quot;http://www.w3.org/1999/xhtml&quot;</span>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Error&nbsp;page&lt;<b>/title</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/head</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h1</b>&nbsp;th:text=<span class="string">&quot;${errorCode}&quot;</span>&gt;500&lt;<b>/h1</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;${errorMessage}&quot;</span>&gt;java.lang.NullPointerException&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/body</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/html</b>&gt;
-
-</code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+            <head>
+                <title>Error page</title>
+            </head>
+            <body>
+                <h1 th:text="${errorCode}">500</h1>
+                <p th:text="${errorMessage}">java.lang.NullPointerException</p>
+            </body>
+        </html>
+    ]]></script>
 
 <h2>Spring security dialect</h2>
 
@@ -343,27 +243,23 @@
     is evaluated to <b>true</b>:
 </p>
 
-<code>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b> sec:authorize=<span class="string">&quot;hasRole('ROLE_ADMIN')&quot;</span>&gt;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This content is only shown to administrators.<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b> sec:authorize=<span class="string">&quot;hasRole('ROLE_USER')&quot;</span>&gt;<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This content is only shown to users.<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-
-</code>
+<script type="syntaxhighlighter" class="brush:html"><![CDATA[
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        This content is only shown to administrators.
+    </div>
+    <div sec:authorize="hasRole('ROLE_USER')">
+        This content is only shown to users.
+    </div>
+]]></script>
 
 <p>
     The attribute <b>sec:authentication</b> is used to print logged user name and roles:
 </p>
 
-<code>
-
-&nbsp;&nbsp;&nbsp;&nbsp;Logged user: &lt;<b>span</b> sec:authentication=<span class="string">&quot;name&quot;</span>&gt;Bob&lt;<b>/span</b>&gt; <br />
-&nbsp;&nbsp;&nbsp;&nbsp;Roles: &lt;<b>span</b> sec:authentication=<span class="string">&quot;principal.authorities&quot;</span>&gt;[ROLE_USER, ROLE_ADMIN]&lt;<b>/span</b>&gt; <br />
-
-</code>
+<script type="syntaxhighlighter" class="brush:html"><![CDATA[
+    Logged user: <span sec:authentication="name">Bob</span>
+    Roles: <span sec:authentication="principal.authorities">[ROLE_USER, ROLE_ADMIN]</span>
+]]></script>
 
 <h2>Download example</h2>
 
@@ -395,6 +291,11 @@
    </div>
 
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
 
 </html>

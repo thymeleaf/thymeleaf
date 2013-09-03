@@ -20,6 +20,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -122,59 +127,60 @@
       And this is our JSP code, making use of both JSTL (<kbd>core</kbd>) and Spring (<kbd>tags</kbd> and 
       <kbd>form</kbd>) JSP tag libraries:
     </p>
-    <code>
-    
-&lt;<b>%@&nbsp;taglib</b>&nbsp;prefix=<span class="string">&quot;sf&quot;</span>&nbsp;uri=<span class="string">&quot;http://www.springframework.org/tags/form&quot;</span>&nbsp;%&gt;&lt;<b>%@&nbsp;
-<br />taglib</b>&nbsp;prefix=<span class="string">&quot;s&quot;</span>&nbsp;uri=<span class="string">&quot;http://www.springframework.org/tags&quot;</span>&nbsp;%&gt;&lt;<b>%@
-<br />taglib</b>&nbsp;prefix=<span class="string">&quot;c&quot;</span>&nbsp;uri=<span class="string">&quot;http://java.sun.com/jsp/jstl/core&quot;</span>&nbsp;%&gt;&lt;<b>%@&nbsp;
-<br />page</b>&nbsp;contentType=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;pageEncoding=<span class="string">&quot;UTF-8&quot;</span>%&gt;&lt;<b>!DOCTYPE&nbsp;html</b>&gt;
-<br />
-<br />&lt;<b>html</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&lt;<b>head</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;<b>/title</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>&nbsp;media=<span class="string">&quot;all&quot;</span>&nbsp;href=<span class="string">&quot;&lt;<b>s:url</b>&nbsp;value='/css/thvsjsp.css'&nbsp;/&gt;&quot;</span>/&gt;
-<br />&nbsp;&nbsp;&lt;<b>/head</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&lt;<b>body</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;This&nbsp;is&nbsp;a&nbsp;JSP&lt;<b>/h2</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>s:url</b>&nbsp;var=<span class="string">&quot;formUrl&quot;</span>&nbsp;value=<span class="string">&quot;/subscribejsp&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>sf:form</b>&nbsp;modelAttribute=<span class="string">&quot;subscription&quot;</span>&nbsp;action=<span class="string">&quot;${formUrl}&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>fieldset</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;email&quot;</span>&gt;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscription.email&quot;</span>&nbsp;/&gt;:&nbsp;&lt;<b>/label</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>sf:input</b>&nbsp;path=<span class="string">&quot;email&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&gt;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscription.type&quot;</span>&nbsp;/&gt;:&nbsp;&lt;<b>/label</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>c:forEach</b>&nbsp;var=<span class="string">&quot;type&quot;</span>&nbsp;items=<span class="string">&quot;${allTypes}&quot;</span>&nbsp;varStatus=<span class="string">&quot;typeStatus&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>sf:radiobutton</b>&nbsp;path=<span class="string">&quot;subscriptionType&quot;</span>&nbsp;value=<span class="string">&quot;${type}&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;subscriptionType${typeStatus.count}&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscriptionType.${type}&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/label</b>&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/c:forEach</b>&gt;<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;submit&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>button</b>&nbsp;type=<span class="string">&quot;submit&quot;</span>&nbsp;name=<span class="string">&quot;save&quot;</span>&gt;&lt;<b>s:message</b>&nbsp;code=<span class="string">&quot;subscription.submit&quot;</span>&nbsp;/&gt;&lt;<b>/button</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/fieldset</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/sf:form</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&lt;<b>/body</b>&gt;
-<br />&nbsp;&nbsp;
-<br />&lt;<b>/html</b>&gt;    
 
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form" %><%@
+        taglib prefix="s" uri="http://www.springframework.org/tags" %><%@
+        taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@
+        page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%><!DOCTYPE html>
+
+        <html>
+
+        <head>
+            <title>Spring MVC view layer: Thymeleaf vs. JSP</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <link rel="stylesheet" type="text/css" media="all" href="<s:url value='/css/thvsjsp.css' />"/>
+        </head>
+
+        <body>
+
+        <h2>This is a JSP</h2>
+
+        <s:url var="formUrl" value="/subscribejsp" />
+        <sf:form modelAttribute="subscription" action="${formUrl}">
+
+            <fieldset>
+
+                <div>
+                    <label for="email"><s:message code="subscription.email" />: </label>
+                    <sf:input path="email" />
+                </div>
+                <div>
+                    <label><s:message code="subscription.type" />: </label>
+                    <ul>
+                        <c:forEach var="type" items="${allTypes}" varStatus="typeStatus">
+                            <li>
+                                <sf:radiobutton path="subscriptionType" value="${type}" />
+                                <label for="subscriptionType${typeStatus.count}">
+                                    <s:message code="subscriptionType.${type}" />
+                                </label>
+                            </li>
+                        </c:forEach>
+                    </ul>
+                </div>
+
+                <div class="submit">
+                    <button type="submit" name="save"><s:message code="subscription.submit" /></button>
+                </div>
+
+            </fieldset>
+
+        </sf:form>
+
+        </body>
+
+        </html>
+    ]]></script>
     
 
 
@@ -192,55 +198,54 @@
       And this is our Thymeleaf code:
     </p>
 
-    <code>
-    
-&lt;<b>!DOCTYPE&nbsp;html</b>&gt;
-<br />
-<br />&lt;<b>html</b>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
-<br />
-<br />&nbsp;&nbsp;&lt;<b>head</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&gt;Spring&nbsp;MVC&nbsp;view&nbsp;layer:&nbsp;Thymeleaf&nbsp;vs.&nbsp;JSP&lt;<b>/title</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>link</b>&nbsp;rel=<span class="string">&quot;stylesheet&quot;</span>&nbsp;type=<span class="string">&quot;text/css&quot;</span>&nbsp;media=<span class="string">&quot;all&quot;</span>&nbsp;href=<span class="string">&quot;../../css/thvsjsp.css&quot;</span>&nbsp;th:href=<span class="string">&quot;@{/css/thvsjsp.css}&quot;</span>/&gt;
-<br />&nbsp;&nbsp;&lt;<b>/head</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&lt;<b>body</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>h2</b>&gt;This&nbsp;is&nbsp;a&nbsp;Thymeleaf&nbsp;template&lt;<b>/h2</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>form</b>&nbsp;action=<span class="string">&quot;#&quot;</span>&nbsp;th:object=<span class="string">&quot;${subscription}&quot;</span>&nbsp;th:action=<span class="string">&quot;@{/subscribeth}&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>fieldset</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;for=<span class="string">&quot;email&quot;</span>&nbsp;th:text=<span class="string">&quot;#{subscription.email}&quot;</span>&gt;Email:&nbsp;&lt;<b>/label</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;text&quot;</span>&nbsp;th:field=<span class="string">&quot;*{email}&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;th:text=<span class="string">&quot;#{subscription.type}&quot;</span>&gt;Type:&nbsp;&lt;<b>/label</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;type&nbsp;:&nbsp;${allTypes}&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;radio&quot;</span>&nbsp;th:field=<span class="string">&quot;*{subscriptionType}&quot;</span>&nbsp;th:value=<span class="string">&quot;${type}&quot;</span>&nbsp;/&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>label</b>&nbsp;th:for=<span class="string">&quot;${#ids.prev('subscriptionType')}&quot;</span>&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;th:text=<span class="string">&quot;#{'subscriptionType.'+${type}}&quot;</span>&gt;First&nbsp;type&lt;<b>/label</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/li</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;&lt;<b>input</b>&nbsp;type=<span class="string">&quot;radio&quot;</span>&nbsp;/&gt;&nbsp;&lt;<b>label</b>&gt;Second&nbsp;Type&lt;<b>/label</b>&gt;&lt;<b>/li</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>div</b>&nbsp;class=<span class="string">&quot;submit&quot;</span>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>button</b>&nbsp;type=<span class="string">&quot;submit&quot;</span>&nbsp;name=<span class="string">&quot;save&quot;</span>&nbsp;th:text=<span class="string">&quot;#{subscription.submit}&quot;</span>&gt;Subscribe&nbsp;me!&lt;<b>/button</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/div</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/fieldset</b>&gt;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/form</b>&gt;
-<br />
-<br />&nbsp;&nbsp;&lt;<b>/body</b>&gt;
-<br />&nbsp;&nbsp;
-<br />&lt;<b>/html</b>&gt;    
-    
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html>
+
+        <html xmlns:th="http://www.thymeleaf.org">
+
+        <head>
+            <title>Spring MVC view layer: Thymeleaf vs. JSP</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <link rel="stylesheet" type="text/css" media="all"
+                  href="../../css/thvsjsp.css" th:href="@{/css/thvsjsp.css}"/>
+        </head>
+
+        <body>
+
+        <h2>This is a Thymeleaf template</h2>
+
+        <form action="#" th:object="${subscription}" th:action="@{/subscribeth}">
+
+            <fieldset>
+
+                <div>
+                    <label for="email" th:text="#{subscription.email}">Email: </label>
+                    <input type="text" th:field="*{email}" />
+                </div>
+                <div>
+                    <label th:text="#{subscription.type}">Type: </label>
+                    <ul>
+                        <li th:each="type : ${allTypes}">
+                            <input type="radio" th:field="*{subscriptionType}" th:value="${type}" />
+                            <label th:for="${#ids.prev('subscriptionType')}"
+                                   th:text="#{'subscriptionType.'+${type}}">First type</label>
+                        </li>
+                        <li th:remove="all"><input type="radio" /> <label>Second Type</label></li>
+                    </ul>
+                </div>
+
+                <div class="submit">
+                    <button type="submit" name="save" th:text="#{subscription.submit}">Subscribe me!</button>
+                </div>
+
+            </fieldset>
+
+        </form>
+
+        </body>
+
+        </html>
+    ]]></script>
     
     <p>
       Things to notice here:
@@ -436,9 +441,9 @@
       like:
     </p>
 
-    <code>
-      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;id=<span class="string">&quot;email&quot;</span>&nbsp;name=<span class="string">&quot;email&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;value=<span class="string">&quot;&quot;</span> /&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <input type="email" id="email" name="email" placeholder="your@email" value="" />
+    ]]></script>
     
     <p>
       But this was not correct! In Spring MVC we should never write a JSP input field like that,
@@ -448,10 +453,10 @@
       plain-HTML tag work as if an <kbd>&lt;sf:email/&gt;</kbd> tag existed:
     </p>
 
-    <code>
-      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;id=<span class="string">&quot;email&quot;</span>&nbsp;name=<span class="string">&quot;email&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;
-<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;value=<span class="string">&quot;&lt;<b>s:eval</b>&nbsp;expression=&#39;subscription.email&#39;&nbsp;/&gt;&quot;</span> /&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <input type="email" id="email" name="email" placeholder="your@email"
+               value="<s:eval expression='subscription.email' />" />
+    ]]></script>
 
     <h4>Since Spring 3.1</h4>
       
@@ -461,9 +466,9 @@
       <kbd>email</kbd>, which will work just fine:
     </p>
 
-    <code>
-      &lt;<b>sf:input</b>&nbsp;path=<span class="string">&quot;email&quot;</span>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;/&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <sf:input path="email" type="email" />
+    ]]></script>
 
     <p>
       And this will correctly perform our <i>form bindings</i> :-).
@@ -479,9 +484,9 @@
       when displayed as a prototype &mdash;something the <kbd>sf:input</kbd> tag won't&mdash;: 
     </p>
 
-    <code>
-      &lt;<b>input</b>&nbsp;type=<span class="string">&quot;email&quot;</span>&nbsp;th:field=<span class="string">&quot;*{email}&quot;</span>&nbsp;placeholder=<span class="string">&quot;your@email&quot;</span>&nbsp;/&gt;
-    </code>
+    <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+        <input type="email" th:field="*{email}" placeholder="your@email" />
+    ]]></script>
 
     <p>
       Done!
@@ -512,6 +517,11 @@
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>

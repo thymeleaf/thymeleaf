@@ -18,6 +18,11 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     </script>
+    <script type="text/javascript" src="sh/scripts/shCore.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushXml.js"></script>
+    <script type="text/javascript" src="sh/scripts/shBrushJava.js"></script>
+    <link href="sh/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/styles/shThemeThymeleaf.css" rel="stylesheet" type="text/css" />
   </head>
 
 
@@ -97,46 +102,33 @@
          following XML (your specific configuration needs might differ):
      </p>
 
-    <code>
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;mailSender&quot;</span>&nbsp;class=<span class="string">&quot;org.springframework.mail.javamail.JavaMailSenderImpl&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;host&quot;</span>&nbsp;value=<span class="string">&quot;${mail.server.host}&quot;</span>&nbsp;/&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;port&quot;</span>&nbsp;value=<span class="string">&quot;${mail.server.port}&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;protocol&quot;</span>&nbsp;value=<span class="string">&quot;${mail.server.protocol}&quot;</span>&nbsp;/&gt;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;username&quot;</span>&nbsp;value=<span class="string">&quot;${mail.server.username}&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;password&quot;</span>&nbsp;value=<span class="string">&quot;${mail.server.password}&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;javaMailProperties&quot;</span>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>util:properties</b>&nbsp;location=<span class="string">&quot;classpath:javamail.properties&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/property</b>&gt;
-<br />
-&lt;<b>/bean</b>&gt;
-<br />
-    </code>
+    <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+        <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+            <property name="host" value="${mail.server.host}" />
+            <property name="port" value="${mail.server.port}" />
+            <property name="protocol" value="${mail.server.protocol}" />
+            <property name="username" value="${mail.server.username}" />
+            <property name="password" value="${mail.server.password}" />
+            <property name="javaMailProperties">
+                <util:properties location="classpath:javamail.properties" />
+            </property>
+        </bean>
+    ]]></script>
 
     <p>
         Spring provides a class called <kbd>MimeMessageHelper</kbd> to ease the creation of email messages.
         Let's see how to use it together with our <kbd>mailSender</kbd>.
     </p>
 
-    <code>
-        <b>final</b> MimeMessage mimeMessage = <b>this</b>.mailSender.createMimeMessage(); <br />
-        <b>final</b> MimeMessageHelper message = <b>new</b> MimeMessageHelper(mimeMessage); <br />
-        message.setFrom(<span class="string">&quot;sender@example.com&quot;</span>); <br />
-        message.setTo(<span class="string">&quot;recipient@example.com&quot;</span>); <br />
-        message.setSubject(<span class="string">&quot;This is the message subject&quot;</span>); <br />
-        message.setText(<span class="string">&quot;This is the message body&quot;</span>); <br />
-        <b>this</b>.mailSender.send(mimeMessage);
-    </code>
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
+        message.setFrom("sender@example.com");
+        message.setTo("recipient@example.com");
+        message.setSubject("This is the message subject");
+        message.setText("This is the message body");
+        this.mailSender.send(mimeMessage);
+    ]]></script>
 
      <h2>Thymeleaf HTML email templates</h2>
 
@@ -176,88 +168,41 @@
        <kbd>spring-servlet.xml</kbd>:
      </p>
      
-     <code>
-     
-<span class="comment">&lt;!--&nbsp;THYMELEAF:&nbsp;Template&nbsp;Resolver&nbsp;for&nbsp;email&nbsp;templates&nbsp;--&gt;</span>
-<br />
+     <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+         <!-- THYMELEAF: Template Resolver for email templates -->
+         <bean id="emailTemplateResolver" class="org.thymeleaf.templateresolver.ClassLoaderTemplateResolver">
+             <property name="prefix" value="mail/" />
+             <property name="templateMode" value="HTML5" />
+             <property name="characterEncoding" value="UTF-8" />
+             <property name="order" value="1" />
+         </bean>
 
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;emailTemplateResolver&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ClassLoaderTemplateResolver&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;mail/&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
+         <!-- THYMELEAF: Template Resolver for webapp pages   -->
+         <!-- (we would not need this if our app was not web) -->
+         <bean id="webTemplateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+             <property name="prefix" value="/WEB-INF/templates/" />
+             <property name="templateMode" value="HTML5" />
+             <property name="characterEncoding" value="UTF-8" />
+             <property name="order" value="2" />
+         </bean>
 
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;characterEncoding&quot;</span>&nbsp;value=<span class="string">&quot;UTF-8&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;1&quot;</span>&nbsp;/&gt;
-<br />
+         <!-- THYMELEAF: Template Engine (Spring3-specific version) -->
+         <bean id="templateEngine" class="org.thymeleaf.spring3.SpringTemplateEngine">
+             <property name="templateResolvers">
+                 <set>
+                     <ref bean="emailTemplateResolver" />
+                     <ref bean="webTemplateResolver" />
+                 </set>
+             </property>
+         </bean>
 
-&lt;<b>/bean</b>&gt;
-<br />
-
-<br />
-<span class="comment">&lt;!--&nbsp;THYMELEAF:&nbsp;Template&nbsp;Resolver&nbsp;for&nbsp;webapp&nbsp;pages&nbsp;&nbsp;&nbsp;--&gt;</span>
-<br />
-<span class="comment">&lt;!--&nbsp;(we&nbsp;would&nbsp;not&nbsp;need&nbsp;this&nbsp;if&nbsp;our&nbsp;app&nbsp;was&nbsp;not&nbsp;web)&nbsp;--&gt;</span>
-
-<br />
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;webTemplateResolver&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.templateresolver.ServletContextTemplateResolver&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;prefix&quot;</span>&nbsp;value=<span class="string">&quot;/WEB-INF/templates/&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateMode&quot;</span>&nbsp;value=<span class="string">&quot;HTML5&quot;</span>&nbsp;/&gt;
-
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;characterEncoding&quot;</span>&nbsp;value=<span class="string">&quot;UTF-8&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;order&quot;</span>&nbsp;value=<span class="string">&quot;2&quot;</span>&nbsp;/&gt;
-<br />
-
-&lt;<b>/bean</b>&gt;
-<br />
-
-<br />
-<span class="comment">&lt;!--&nbsp;THYMELEAF:&nbsp;Template&nbsp;Engine&nbsp;(Spring3-specific&nbsp;version)&nbsp;--&gt;</span>
-<br />
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;templateEngine&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.SpringTemplateEngine&quot;</span>&gt;
-
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateResolvers&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>set</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ref</b>&nbsp;bean=<span class="string">&quot;emailTemplateResolver&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ref</b>&nbsp;bean=<span class="string">&quot;webTemplateResolver&quot;</span>&nbsp;/&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/set</b>&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>/property</b>&gt;
-<br />
-&lt;<b>/bean</b>&gt;
-<br />
-
-<br />
-<span class="comment">&lt;!--&nbsp;THYMELEAF:&nbsp;View&nbsp;Resolver&nbsp;-&nbsp;implementation&nbsp;of&nbsp;Spring&#39;s&nbsp;ViewResolver&nbsp;interface&nbsp;--&gt;</span>
-
-<br />
-<span class="comment">&lt;!--&nbsp;(we&nbsp;would&nbsp;not&nbsp;need&nbsp;this&nbsp;if&nbsp;our&nbsp;app&nbsp;was&nbsp;not&nbsp;web)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--&gt;</span>
-<br />
-&lt;<b>bean</b>&nbsp;id=<span class="string">&quot;viewResolver&quot;</span>&nbsp;class=<span class="string">&quot;org.thymeleaf.spring3.view.ThymeleafViewResolver&quot;</span>&gt;
-
-<br />
-
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;templateEngine&quot;</span>&nbsp;ref=<span class="string">&quot;templateEngine&quot;</span>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&lt;<b>property</b>&nbsp;name=<span class="string">&quot;characterEncoding&quot;</span>&nbsp;value=<span class="string">&quot;UTF-8&quot;</span>&nbsp;/&gt;
-<br />
-
-&lt;<b>/bean</b>&gt;
-<br />
-     
-     </code>
+         <!-- THYMELEAF: View Resolver - implementation of Spring's ViewResolver interface -->
+         <!-- (we would not need this if our app was not web)                              -->
+         <bean id="viewResolver" class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
+             <property name="templateEngine" ref="templateEngine" />
+             <property name="characterEncoding" value="UTF-8" />
+         </bean>
+     ]]></script>
      
      <p>
        Note that we have configured two <i>template resolvers</i> for our engine: one for the email templates
@@ -284,117 +229,58 @@
        is not web-dependent, an instance of <kbd>Context</kbd> will do:
      </p>
 
-    <code>
-    
-<b>final</b>&nbsp;Context&nbsp;ctx&nbsp;=&nbsp;<b>new</b>&nbsp;Context(locale);
-<br />
-ctx.setVariable(<span class="string">&quot;name&quot;</span>,&nbsp;recipientName);
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        final Context ctx = new Context(locale);
+        ctx.setVariable("name", recipientName);
+        ctx.setVariable("subscriptionDate", new Date());
+        ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
+        ctx.setVariable("imageResourceName", imageResourceName); // so that we can reference it from HTML
 
-<br />
-ctx.setVariable(<span class="string">&quot;subscriptionDate&quot;</span>,&nbsp;<b>new</b>&nbsp;Date());
-<br />
-ctx.setVariable(<span class="string">&quot;hobbies&quot;</span>,&nbsp;Arrays.asList(<span class="string">&quot;Cinema&quot;</span>,&nbsp;<span class="string">&quot;Sports&quot;</span>,&nbsp;<span class="string">&quot;Music&quot;</span>));
-
-<br />
-ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;imageResourceName);&nbsp;<span class="comment">//&nbsp;so&nbsp;that&nbsp;we&nbsp;can&nbsp;reference&nbsp;it&nbsp;from&nbsp;HTML
-</span><br />
-
-<br />
-
-<b>final</b>&nbsp;String&nbsp;htmlContent&nbsp;=&nbsp;<b>this</b>.templateEngine.process(<span class="string">&quot;email-inlineimage.html&quot;</span>,&nbsp;ctx);
-<br />
-
-    </code>
+        final String htmlContent = this.templateEngine.process("email-inlineimage.html", ctx);
+    ]]></script>
 
      <p>
          Our <kbd>email-inlineimage.html</kbd> is the template file we will use for sending emails
          with an inlined image, and it looks like:
      </p>
 
-    <code>
-    
-&lt;<b>!DOCTYPE</b>&nbsp;html&gt;
-<br />
-&lt;<b>html</b>&nbsp;xmlns:th=<span class="string">&quot;http://www.thymeleaf.org&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>head</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>title</b>&nbsp;th:remove=<span class="string">&quot;all&quot;</span>&gt;Template&nbsp;for&nbsp;HTML&nbsp;email&nbsp;with&nbsp;inline&nbsp;image&lt;<b>/title</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>meta</b>&nbsp;http-equiv=<span class="string">&quot;Content-Type&quot;</span>&nbsp;content=<span class="string">&quot;text/html;&nbsp;charset=UTF-8&quot;</span>&nbsp;/&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/head</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>body</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:text=<span class="string">&quot;#{greeting(${name})}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Hello,&nbsp;Peter&nbsp;Static!
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&nbsp;th:if=<span class="string">&quot;${name.length()&nbsp;&gt;&nbsp;10}&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Wow!&nbsp;You&#39;ve&nbsp;got&nbsp;a&nbsp;long&nbsp;name&nbsp;(more&nbsp;than&nbsp;10&nbsp;chars)!
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You&nbsp;have&nbsp;been&nbsp;successfully&nbsp;subscribed&nbsp;to&nbsp;the&nbsp;&lt;<b>b</b>&gt;Fake&nbsp;newsletter&lt;<b>/b</b>&gt;&nbsp;on
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>span</b>&nbsp;th:text=<span class="string">&quot;${#dates.format(subscriptionDate)}&quot;</span>&gt;28-12-2012&lt;<b>/span</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;Your&nbsp;hobbies&nbsp;are:&lt;<b>/p</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>ul</b>&nbsp;th:remove=<span class="string">&quot;all-but-first&quot;</span>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&nbsp;th:each=<span class="string">&quot;hobby&nbsp;:&nbsp;${hobbies}&quot;</span>&nbsp;th:text=<span class="string">&quot;${hobby}&quot;</span>&gt;Reading&lt;<b>/li</b>&gt;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&gt;Writing&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>li</b>&gt;Bowling&lt;<b>/li</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/ul</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;You&nbsp;can&nbsp;find&nbsp;&lt;<b>b</b>&gt;your&nbsp;inlined&nbsp;image&lt;<b>/b</b>&gt;&nbsp;just&nbsp;below&nbsp;this&nbsp;text.
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>img</b>&nbsp;src=<span class="string">&quot;sample.png&quot;</span>&nbsp;th:src=<span class="string">&quot;&#39;cid:&#39;&nbsp;+&nbsp;${imageResourceName}&quot;</span>&nbsp;/&gt;
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Regards,&nbsp;&lt;<b>br</b>&nbsp;/&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;emsp;&nbsp;&lt;<b>em</b>&gt;The&nbsp;Thymeleaf&nbsp;Team&lt;<b>/em</b>&gt;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/p</b>&gt;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;<b>/body</b>&gt;
-<br />
-&lt;<b>/html</b>&gt;
-<br />
-
-    </code>
+    <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+        <!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org">
+            <head>
+                <title th:remove="all">Template for HTML email with inline image</title>
+                <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            </head>
+            <body>
+                <p th:text="#{greeting(${name})}">
+                    Hello, Peter Static!
+                </p>
+                <p th:if="${name.length() > 10}">
+                    Wow! You've got a long name (more than 10 chars)!
+                </p>
+                <p>
+                    You have been successfully subscribed to the <b>Fake newsletter</b> on
+                    <span th:text="${#dates.format(subscriptionDate)}">28-12-2012</span>
+                </p>
+                <p>Your hobbies are:</p>
+                <ul th:remove="all-but-first">
+                    <li th:each="hobby : ${hobbies}" th:text="${hobby}">Reading</li>
+                    <li>Writing</li>
+                    <li>Bowling</li>
+                </ul>
+                <p>
+                    You can find <b>your inlined image</b> just below this text.
+                </p>
+                <p>
+                    <img src="sample.png" th:src="'cid:' + ${imageResourceName}" />
+                </p>
+                <p>
+                    Regards, <br />
+                    &emsp; <em>The Thymeleaf Team</em>
+                </p>
+            </body>
+        </html>
+    ]]></script>
 
     <p>
         Let's remark some points:
@@ -431,86 +317,40 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
       would look like: 
     </p>
 
-    <code>
-    
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        public void sendMailWithInline(
+                final String recipientName, final String recipientEmail, final String imageResourceName,
+                final byte[] imageBytes, final String imageContentType, final Locale locale)
+                throws MessagingException {
 
-<b>public</b>&nbsp;<b>void</b>&nbsp;sendMailWithInline(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;recipientName,&nbsp;<b>final</b>&nbsp;String&nbsp;recipientEmail,&nbsp;<b>final</b>&nbsp;String&nbsp;imageResourceName,&nbsp;
+            // Prepare the evaluation context
+            final Context ctx = new Context(locale);
+            ctx.setVariable("name", recipientName);
+            ctx.setVariable("subscriptionDate", new Date());
+            ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
+            ctx.setVariable("imageResourceName", imageResourceName); // so that we can reference it from HTML
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;<b>byte</b>[]&nbsp;imageBytes,&nbsp;<b>final</b>&nbsp;String&nbsp;imageContentType,&nbsp;<b>final</b>&nbsp;Locale&nbsp;locale)
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>throws</b>&nbsp;MessagingException&nbsp;{
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            // Prepare message using a Spring helper
+            final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+            final MimeMessageHelper message =
+                new MimeMessageHelper(mimeMessage, true, "UTF-8"); // true = multipart
+            message.setSubject("Example HTML email with inline image");
+            message.setFrom("thymeleaf@example.com");
+            message.setTo(recipientEmail);
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Prepare&nbsp;the&nbsp;evaluation&nbsp;context
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Context&nbsp;ctx&nbsp;=&nbsp;<b>new</b>&nbsp;Context(locale);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;ctx.setVariable(<span class="string">&quot;name&quot;</span>,&nbsp;recipientName);
+            // Create the HTML body using Thymeleaf
+            final String htmlContent = this.templateEngine.process("email-inlineimage.html", ctx);
+            message.setText(htmlContent, true); // true = isHtml
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;ctx.setVariable(<span class="string">&quot;subscriptionDate&quot;</span>,&nbsp;<b>new</b>&nbsp;Date());
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;ctx.setVariable(<span class="string">&quot;hobbies&quot;</span>,&nbsp;Arrays.asList(<span class="string">&quot;Cinema&quot;</span>,&nbsp;<span class="string">&quot;Sports&quot;</span>,&nbsp;<span class="string">&quot;Music&quot;</span>));
+            // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
+            final InputStreamSource imageSource = new ByteArrayResource(imageBytes);
+            message.addInline(imageResourceName, imageSource, imageContentType);
 
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;imageResourceName);&nbsp;<span class="comment">//&nbsp;so&nbsp;that&nbsp;we&nbsp;can&nbsp;reference&nbsp;it&nbsp;from&nbsp;HTML
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
+            // Send mail
+            this.mailSender.send(mimeMessage);
 
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Prepare&nbsp;message&nbsp;using&nbsp;a&nbsp;Spring&nbsp;helper
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;MimeMessage&nbsp;mimeMessage&nbsp;=&nbsp;<b>this</b>.mailSender.createMimeMessage();
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;MimeMessageHelper&nbsp;message&nbsp;=&nbsp;
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>new</b>&nbsp;MimeMessageHelper(mimeMessage,&nbsp;<b>true</b>&nbsp;<span class="comment">/*&nbsp;multipart&nbsp;*/</span>,&nbsp;<span class="string">&quot;UTF-8&quot;</span>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;message.setSubject(<span class="string">&quot;Example&nbsp;HTML&nbsp;email&nbsp;with&nbsp;inline&nbsp;image&quot;</span>);
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;message.setFrom(<span class="string">&quot;thymeleaf@example.com&quot;</span>);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;message.setTo(recipientEmail);
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Create&nbsp;the&nbsp;HTML&nbsp;body&nbsp;using&nbsp;Thymeleaf
-</span><br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;String&nbsp;htmlContent&nbsp;=&nbsp;<b>this</b>.templateEngine.process(<span class="string">&quot;email-inlineimage.html&quot;</span>,&nbsp;ctx);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;message.setText(htmlContent,&nbsp;<b>true</b>&nbsp;<span class="comment">/*&nbsp;isHtml&nbsp;*/</span>);
-<br />
-
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Add&nbsp;the&nbsp;inline&nbsp;image,&nbsp;referenced&nbsp;from&nbsp;the&nbsp;HTML&nbsp;code&nbsp;as&nbsp;&quot;cid:${imageResourceName}&quot;</span>
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;InputStreamSource&nbsp;imageSource&nbsp;=&nbsp;<b>new</b>&nbsp;ByteArrayResource(imageBytes);
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;message.addInline(imageResourceName,&nbsp;imageSource,&nbsp;imageContentType);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;Send&nbsp;mail
-</span><br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>this</b>.mailSender.send(mimeMessage);
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-}
-
-<br />
-
-    </code>
+        }
+    ]]></script>
 
     <p>
         Note that we have used an <kbd>org.springframework.core.io.ByteArrayResource</kbd> object to
@@ -528,49 +368,25 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
       Now for the controller method that calls our service:
     </p>
     
-    <code>
-    
+    <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+        /*
+         * Send HTML mail with inline image
+         */
+        @RequestMapping(value = "/sendMailWithInlineImage", method = RequestMethod.POST)
+        public String sendMailWithInline(
+                @RequestParam("recipientName") final String recipientName,
+                @RequestParam("recipientEmail") final String recipientEmail,
+                @RequestParam("image") final MultipartFile image,
+                final Locale locale)
+                throws MessagingException, IOException {
 
-<span class="comment">/*&nbsp;
-<br />
-&nbsp;*&nbsp;Send&nbsp;HTML&nbsp;mail&nbsp;with&nbsp;inline&nbsp;image
+            this.emailService.sendMailWithInline(
+                    recipientName, recipientEmail, image.getName(),
+                    image.getBytes(), image.getContentType(), locale);
+            return "redirect:sent.html";
 
-<br />
-&nbsp;*/</span>
-<br />
-@RequestMapping(value&nbsp;=&nbsp;<span class="string">&quot;/sendMailWithInlineImage&quot;</span>,&nbsp;method&nbsp;=&nbsp;RequestMethod.POST)
-<br />
-<b>public</b>&nbsp;String&nbsp;sendMailWithInline(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(<span class="string">&quot;recipientName&quot;</span>)&nbsp;<b>final</b>&nbsp;String&nbsp;recipientName,
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(<span class="string">&quot;recipientEmail&quot;</span>)&nbsp;<b>final</b>&nbsp;String&nbsp;recipientEmail,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@RequestParam(<span class="string">&quot;image&quot;</span>)&nbsp;<b>final</b>&nbsp;MultipartFile&nbsp;image,
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>final</b>&nbsp;Locale&nbsp;locale)
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>throws</b>&nbsp;MessagingException,&nbsp;IOException&nbsp;{
-<br />
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>this</b>.emailService.sendMailWithInline(
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;recipientName,&nbsp;recipientEmail,&nbsp;image.getName(),&nbsp;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;image.getBytes(),&nbsp;image.getContentType(),&nbsp;locale);
-
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b>&nbsp;<span class="string">&quot;redirect:sent.html&quot;</span>;
-<br />
-&nbsp;&nbsp;&nbsp;&nbsp;
-<br />
-}
-<br />    
-    
-    </code>
+        }
+    ]]></script>
     
     <p>
       Cannot be easier. Note how we use a Spring MVC <kbd>MultipartFile</kbd> object to model the
@@ -606,6 +422,11 @@ ctx.setVariable(<span class="string">&quot;imageResourceName&quot;</span>,&nbsp;
    </div>
    
   </div>
+
+  <script type="text/javascript">
+      SyntaxHighlighter.all();
+  </script>
+
   </body>
   
 </html>
