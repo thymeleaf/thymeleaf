@@ -68,9 +68,12 @@
       <b>Important: <em>Thymeleaf 2.1 is still in beta</em></b>. This document explains features that
       are already included in published beta versions and which you can use for testing purposes. Its use for production
       will not be recommended until a stable <strong>2.1.0</strong> version is released.
+        <br />
+        <br />
+      Current beta version is: <strong>2.1.0-beta1</strong>
     </p>
 	<p>
-      Thymeleaf 2.1 includes a lot of new interesting features. Here they are:
+      Thymeleaf 2.1 includes a lot of new powerful features. Here they are:
 	</p>
 	<ul>
       <li>Fragment inclusion:
@@ -82,24 +85,24 @@
       <li>Expression improvements:
         <ul>
           <li><a href="#doms">More powerful DOM selector syntax</a></li>
-          <li><a href="#lsub">Literal substitutions</a> #175</li>
-          <li><a href="#lit">Boolean and null literals</a> #53 #174</li>
-          <li><a href="#pru">Protocol-relative URLs</a> #204</li>
+          <li><a href="#lsub">Literal substitutions</a></li>
+          <li><a href="#bnlit">Boolean and null literals</a></li>
+          <li><a href="#pru">Protocol-relative URLs</a></li>
         </ul>
       </li>
       <li>Markup processing improvements:
         <ul>
-          <li><a href="#plcom">Parser-level block comments</a> #183</li>
-          <li><a href="#pocb">Prototype-only comment blocks</a> #185</li>
+          <li><a href="#plcom">Parser-level comment blocks</a></li>
+          <li><a href="#pocb">Prototype-only comment blocks</a></li>
         </ul>
       </li>
       <li>New Standard Dialect features:
         <ul>
-          <li><a href="#bloc">Synthetic block tag</a> #182</li>
-          <li><a href="#data">Support for HTML5-friendly attribute and element names</a> #93</li>
-          <li><a href="#assr">Added th:assert for in-template assertions</a> #178</li>
-          <li><a href="#repl">th:replace as a synonym of th:substituteby</a> #69</li>
-          <li><a href="#with">Reuse variables with th:with</a> #98</li>
+          <li><a href="#bloc">Synthetic <kbd>th:block</kbd> tag</a></li>
+          <li><a href="#data">Support for HTML5-friendly attribute and element names</a></li>
+          <li><a href="#assr">New <kbd>th:assert</kbd> for in-template assertions</a></li>
+          <li><a href="#repl">New <kbd>th:replace</kbd> as a synonym of <kbd>th:substituteby</kbd></a></li>
+          <li><a href="#with">Reuse variables in <kbd>th:with</kbd></a></li>
         </ul>
       </li>
 	</ul>
@@ -142,7 +145,8 @@
        ]]></script>
 
        <p>
-            This requires the use of one of these two syntaxes to call the fragment:
+           This requires the use of one of these two syntaxes to call the fragment from <kbd>th:include</kbd>,
+           <kbd>th:substituteby</kbd> or <kbd>th:replace</kbd>:
        </p>
 
        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
@@ -189,9 +193,9 @@
        ]]></script>
 
        <p>
-           But the difference is, this will also work with <kbd>th:substituteby</kbd> / <kbd>th:replace</kbd>.
-           Until now these attributes didn't work well with th:with because they effectively removed the host
-           tag before th:with got executed:
+           But the difference is, this will also work with <kbd>th:substituteby</kbd> (and the new <kbd>th:replace</kbd>).
+           Until now these attributes didn't work well with <kbd>th:with</kbd> because they effectively removed the host
+           tag before <kbd>th:with</kbd> got executed:
        </p>
 
        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
@@ -199,10 +203,8 @@
            <div th:replace="::frag" th:with="onevar=${value1},twovar=${value2}">
        ]]></script>
 
-       <h4>Context composition for fragments</h4>
-
        <p>
-           Note that this specification of local variables for a fragment &mdash;no matter whether it
+           <strong>Note</strong> that this specification of local variables for a fragment &mdash;no matter whether it
            has a signature or not&mdash; does not cause an initialization of the context to zero.
            Fragments will still be able to access every context variable being used at the calling
            template like they currently are.
@@ -216,99 +218,60 @@
 
         <p>
             DOM Selector syntax has been enhanced to include more selection possibilities and easier
-            selection of DOM fragments. These selectors can be used for fragment inclusion since 2.0, like:
+            selection of DOM fragments. These selectors are a way to specify fragments already available since
+            thymeleaf 2.0:
         </p>
 
         <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
             <div th:include="mytemplate :: [//div[@class='content']]">...</div>
         ]]></script>
 
-
-        <h4>Selection features</h4>
-
         <p>
-            DOM Selector selection operations are based on:
+            Thymeleaf 2.1 adds to these Selectors some syntax features borrowed from CSS and jQuery, in order to make them
+            more powerful and easy to use:
         </p>
 
         <ul>
-            <li>The type of node: both tags (<i>elements</i>) and text nodes can be selected.</li>
-            <li>The name of the element (<i>element = tag</i>).</li>
-            <li>The path and depth of the node in the DOM tree.</li>
-            <li>The attributes of the element (if it is an element).</li>
-            <li>The index of the node: its position among its siblings (<i>brother nodes of the same kind</i>).</li>
-            <li>The references applied to the node. These references are resolved by means of the specification
-                of an object implementing DOMSelector.INodeReferenceChecker at selector execution time, and allow
-                the selection of nodes by features other than the standard ones (name, attributes, etc.)</li>
+            <li>Now <kbd>x</kbd> is exactly equivalent to <kbd>//x</kbd> (search an element with name or <em>reference</em> "<kbd>x</kbd>"
+                at any depth level).</li>
+            <li>Allowed selectors without element name/reference, as long as it includes a specification of arguments. So
+                <kbd>[@class='oneclass']</kbd> is now a valid selector that looks for any elements (<em>tags</em>) with a
+                <kbd>class</kbd> attribute with value <kbd>"oneclass"</kbd>.</li>
+            <li>Attribute selection enhancements:
+                <ul>
+                    <li>Besides "<kbd>=</kbd>" (equal)., other comparison operators are now also valid: "<kbd>!=</kbd>" (not equal),
+                        "<kbd>^=</kbd>" (starts with) and "<kbd>$=</kbd>" (ends with). For example:
+                        <kbd>x[@class^='section']</kbd> means <em>elements with name <kbd>x</kbd> and a value for
+                            attribute class that starts with <kbd>section</kbd></em>.</li>
+                    <li>Attributes can be specified both starting with <kbd>@</kbd> (XPath-style) and without
+                        (jQuery-style). So <kbd>x[z='v']</kbd> is now equivalent to <kbd>x[@z='v']</kbd>.</li>
+                    <li>Multiple-attribute modifiers can now be joined both with "<kbd>and</kbd>" (XPath-style) and also by
+                        chaining multiple modifiers (jQuery-style). So <kbd>x[@z1='v1' and @z2='v2']</kbd> is
+                        actually equivalent to <kbd>x[@z1='v1'][@z2='v2']</kbd> (and also to
+                        <kbd>x[z1='v1'][z2='v2']</kbd>).</li>
+                </ul>
+            </li>
+            <li>Direct selectors:
+                <ul>
+                    <li><kbd>x.oneclass</kbd> is now equivalent to <kbd>x[class='oneclass']</kbd>.</li>
+                    <li><kbd>.oneclass</kbd> is now equivalent to <kbd>[class='oneclass']</kbd>.</li>
+                    <li><kbd>x#oneid</kbd> is now equivalent to <kbd>x[id='oneid']</kbd>.</li>
+                    <li><kbd>#oneid</kbd> is now equivalent to <kbd>[id='oneid']</kbd>.</li>
+                    <li><kbd>x%oneref</kbd> means nodes -not just <em>elements</em>- with name <kbd>x</kbd> that match reference
+                        <kbd>oneref</kbd> according to a specified <kbd>DOMSelector.INodeReferenceChecker</kbd> implementation.</li>
+                    <li><kbd>%oneref</kbd> means nodes -not just <em>elements</em>- with any name that match reference
+                        <kbd>oneref</kbd> according to a specified <kbd>DOMSelector.INodeReferenceChecker</kbd> implementation.
+                        <ul>
+                            <li>Note this is actually equivalent to simply <kbd>oneref</kbd> because references can be used instead of element names.</li>
+                        </ul>
+                    </li>
+                    <li>Direct selectors and attribute selectors can be mixed: <kbd>a.external[@href^='https']</kbd>.</li>
+                </ul>
+            </li>
+            <li>Specific feature: DOM Selectors now understand the <kbd>class</kbd> attribute to be multivalued, and therefore allow the
+                application of selectors on this attribute even if the element has several class values.
+                For example, <kbd>div[class='two']</kbd> will match <kbd>&lt;div class="one two three"/&gt;<kbd></kbd></li>
         </ul>
-
-        <h4>Syntax</h4>
-
-        <p>
-            DOM Selector syntax is similar to that of XPath, CSS or jQuery selectors:
-        </p>
-
-        <p>Paths:</p>
-
-        <ul>
-            <li><kbd>/x</kbd> means direct children of the current node which either have name <kbd>x</kbd>
-                or match reference <kbd>x</kbd>. For example: <kbd>/html/body/ul/li</kbd>.</li>
-            <li><kbd>//x</kbd> means children of the current node which either have name <kbd>x</kbd> or match
-                reference <kbd>x</kbd>, at any depth. For example: <kbd>//li</kbd>.</li>
-            <li><kbd>x</kbd> is exactly equivalent to <kbd>//x</kbd>.</li>
-            <li><kbd>text()</kbd> means Text nodes (at the specified level). For example: <kbd>//li/text()</kbd>.</li>
-        </ul>
-
-        <p>Attribute/index modifiers:</p>
-
-        <ul>
-            <li><kbd>x[@z='v']</kbd> means elements with name x and an attribute called <kbd>z</kbd>
-                with value <kbd>v</kbd>.</li>
-            <li><kbd>[@z='v']</kbd> means elements with any name and an attribute called <kbd>z</kbd>
-                with value <kbd>v</kbd>.</li>
-            <li>Other operators are also valid, besides <kbd>=</kbd> (equal): <kbd>!=</kbd> (not equal),
-                <kbd>^=</kbd> (starts with) and <kbd>$=</kbd> (ends with). For example:
-                <kbd>x[@class^='section']</kbd> means elements with name <kbd>x</kbd> and a value for
-                attribute class that starts with <kbd>section</kbd>.</li>
-            <li>Attributes can be specified both starting with <kbd>@</kbd> (XPath-style) and without
-                (jQuery-style). So <kbd>x[@z='v']</kbd> is actually equivalent to <kbd>x[z='v']</kbd>.</li>
-            <li><kbd>x[@z1='v1' and @z2='v2']</kbd> means elements with name <kbd>x</kbd> and attributes
-                <kbd>z1</kbd> and <kbd>z2</kbd> with values <kbd>v1</kbd> and <kbd>v2</kbd>, respectively.</li>
-            <li>Multiple-attribute modifiers can be joined with <kbd>and</kbd> (XPath-style) and also by
-                chaining multiple modifiers (jQuery-style). So <kbd>x[@z1='v1' and @z2='v2']</kbd> is
-                actually equivalent to <kbd>x[@z1='v1'][@z2='v2']</kbd> (and also to
-                <kbd>x[z1='v1'][z2='v2']</kbd>).</li>
-            <li><kbd>x[i]</kbd> means element with name <kbd>x</kbd> positioned in number <kbd>i</kbd>
-                among its siblings. Note index modifiers must always come after all attribute modifiers.</li>
-            <li><kbd>x[@z='v'][i]</kbd> means elements with name <kbd>x</kbd>, attribute <kbd>z</kbd> with value
-                <kbd>v</kbd> and positioned in number <kbd>i</kbd> among its siblings that also match this condition.</li>
-        </ul>
-
-        <p>Direct selectors:</p>
-
-        <ul>
-            <li><kbd>x.oneclass</kbd> is equivalent to <kbd>x[class='oneclass']</kbd>.
-            <li><kbd>.oneclass</kbd> is equivalent to <kbd>[class='oneclass']</kbd>.
-            <li><kbd>x#oneid</kbd> is equivalent to <kbd>x[id='oneid']</kbd>.
-            <li><kbd>#oneid</kbd> is equivalent to <kbd>[id='oneid']</kbd>.
-            <li><kbd>x%oneref</kbd> means nodes -not just elements- with name x that match reference oneref according
-            to the specified <kbd>DOMSelector.INodeReferenceChecker</kbd> implementation..
-            <li><kbd>%oneref</kbd> means nodes -not just elements- with any name that match reference oneref according
-            to the specified <kbd>DOMSelector.INodeReferenceChecker</kbd> implementation.. Note this is actually
-            equivalent to simply <kbd>oneref</kbd> because references can be used instead of element names,
-            as explained above.
-            <li>Direct selectors and attribute selectors can be mixed: <kbd>a.external[@href^='https']</kbd>.</li>
-        </ul>
-
-        <p>Specific features:</p>
-
-        <p>
-            DOM Selectors understand the class attribute to be multivalued, and therefore allow the
-            application of modifiers on this attribute even if the element has several class values.
-            For example, <kbd>x[class='two']</kbd> will match
-            </kbd>&lt;x class="one two three"/&gt;<kbd></kbd>.
-        </p>
-
-        <h4>Example</h4>
 
         <p>
             So now the above DOM Selector expression:
@@ -324,6 +287,398 @@
 
         <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
             <div th:include="mytemplate :: [div.content]">...</div>
+        ]]></script>
+
+        <h4>Fragment specifications adapted to new DOM Selectors</h4>
+
+        <p>
+            Also, in order to better take advantage of the new selector syntax, the syntax of the fragment inclusion
+            attributes (like the above <kbd>th:include</kbd>) has been modified to <em>convert every fragment selection
+            into a DOM selection</em>, so that brackets <kbd>[...]</kbd> are no longer needed (though <em>allowed</em>).
+        </p>
+
+        <p>
+            So the following, with no brackets, is now equivalent to the bracketed selector seen above:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:include="mytemplate :: div.content">...</div>
+        ]]></script>
+
+        <p>
+            So, summarizing, this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:replace="mytemplate :: myfrag">...</div>
+        ]]></script>
+
+        <p>
+            Will look for a <kbd>th:fragment="myfrag"</kbd> fragment signature. But would also look for tags with name <kbd>myfrag</kbd>
+            if they existed (which they don't, in HTML). Note the difference with:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:replace="mytemplate :: .myfrag">...</div>
+        ]]></script>
+
+        <p>
+            ...which will actually look for any elements with <kbd>class="myfrag"</kbd>, without caring about <kbd>th:fragment</kbd>
+            signatures.
+        </p>
+
+
+
+        <h2><a name="lsub"></a>Literal substitutions</h2>
+
+
+        <p>
+            The new literal substitutions in Thymeleaf Standard Expressions allow the easy formatting of strings which
+            may contain values from variables without the need to append literals with <kbd>'...' + '...'</kbd>.
+        </p>
+        <p>
+            These substitutions must be surrounded by vertical bars (<kbd>|</kbd>), like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <span th:text="|Welcome to our application, ${user.name}!|">
+        ]]></script>
+
+        <p>
+            Which is actually equivalent to:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <span th:text="'Welcome to our application, ' + ${user.name} + '!'">
+        ]]></script>
+
+        <p>
+            Literal substitutions can be combined with other types of expressions:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+           <span th:text="${onevar} + ' ' + |${twovar}, ${threevar}|">
+        ]]></script>
+
+        <p>
+            <strong>Note</strong>: Note: only variable expressions are allowed inside <kbd>|...|</kbd> literal
+            substitutions. No other literals (<kbd>'...'</kbd>), boolean/numeric tokens, conditional expressions etc.
+            are.
+        </p>
+
+
+
+        <h2><a name="bnlit"></a>Boolean and null literals</h2>
+
+
+        <p>
+            Thymeleaf 2.1 allows the specification of boolean literals in expressions (i.e. outside OGNL or SpringEL
+            variable expressions). So this is now valid:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${user.isAdmin()} == false"> ...
+        ]]></script>
+
+        <p>
+            Note the difference with what was allowed in 2.0, when the only way to do this was to specify the
+            <kbd>false</kbd> literal inside the OGNL/SpringEL expression and therefore let these expression engines
+            evaluate it (not thymeleaf).
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${user.isAdmin() == false}"> ...
+        ]]></script>
+
+        <p>
+            The <kbd>null</kbd> literal has also been added:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${variable.something} == null"> ...
+        ]]></script>
+
+
+
+
+
+        <h2><a name="pru"></a>Protocol-relative URLs</h2>
+
+
+        <p>
+            Thymeleaf 2.1 allows now protocol-relative URLs, like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            &lt;script th:src="@{//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js}">&lt;/script>
+        ]]></script>
+
+
+
+
+
+        <h2><a name="plcom"></a>Parser-level comment blocks</h2>
+
+
+        <p>
+            Parser-level comment blocks are code that will be simply removed from the template when
+            thymeleaf parses it. They should look like this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <!--/* This code will be removed at thymeleaf parsing time! */-->
+        ]]></script>
+
+        <p>
+            Thymeleaf will remove absolutely everything between <kbd>&lt;!--/* and */--&gt;</kbd>, so
+            these comment blocks can be used not only for template comments that shouldn't appear in the final result,
+            but also for displaying code when a template is statically open, knowing that it will be removed when thymeleaf processes it:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <!--/*-->
+            <div>
+                you can see me only before thymeleaf processes me!
+            </div>
+            <!--*/-->
+        ]]></script>
+
+        <p>
+            This might come very handy for prototyping tables with a lot of <kbd>&lt;tr&gt;</kbd>'s, for example:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+                <tr th:each="x : ${xs}">
+                    ...
+                </tr>
+                <!--/*-->
+                <tr>
+                    ...
+                </tr>
+                <tr>
+                    ...
+                </tr>
+                <!--*/-->
+            </table>
+        ]]></script>
+
+        <p>
+            Note that this feature is <em>dialect-independent</em>. So it will be available for you even if you don't
+            use the Standard Dialects.
+        </p>
+
+
+
+
+
+        <h2><a name="pocb"></a>Prototype-only comment blocks</h2>
+
+
+        <p>
+            As an evolution of parser-level comment blocks, Thymeleaf 2.1 allows the definition of
+            special comment blocks marked to be comments when the template is open statically (i.e. as a <em>prototype</em>),
+            but <em>considered normal markup</em> by thymeleaf when executing the template.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <span>hello!</span>
+            <!--/*/
+              <div th:text="${...}">
+                ...
+              </div>
+            /*/-->
+            <span>goodbye!</span>
+        ]]></script>
+
+        <p>
+           Thymeleaf's parsing system will simply remove the <kbd>&lt;!--/*/</kbd> and <kbd>/*/--&gt;</kbd> markers, but
+           not its contents, which will be left therefore <em>uncommented</em>. So when executing the template,
+           thymeleaf will actually see this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <span>hello!</span>
+
+              <div th:text="${...}">
+                ...
+              </div>
+
+            <span>goodbye!</span>
+        ]]></script>
+
+        <p>
+            As with parser-level comment blocks, note that this feature is also <em>dialect-independent</em>.
+        </p>
+
+
+
+
+
+        <h2><a name="bloc"></a>Synthetic <kbd>th:block</kbd> tag</h2>
+
+
+        <p>
+            Thymeleaf 2.1 adds the first <em>element processor</em> to the Standard Dialects (until now, all processors
+            were <em>attribute-based</em>): <kbd>th:block</kbd>
+        </p>
+
+        <p>
+            <kbd>th:block</kbd> is a mere attribute container that allows template developers to specify whichever
+            attributes they want, executes them, and then simply dissapears without a trace. So it could be useful, for
+            example, when creating iterated tables that require more than one <kbd>&lt;tr&gt;</kbd> for each element:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+              <th:block th:each="user : ${users}">
+                <tr>
+                    <td th:text="${user.login}">...</td>
+                    <td th:text="${user.name}">...</td>
+                </tr>
+                <tr>
+                    <td colspan="2" th:text="${user.address}">...</td>
+                </tr>
+              </th:block>
+            </table>
+        ]]></script>
+
+        <p>
+            And especially useful when used in combination with <em>prototype-only comment blocks</em>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+                <!--/*/ <th:block th:each="user : ${users}"> /*/-->
+                <tr>
+                    <td th:text="${user.login}">...</td>
+                    <td th:text="${user.name}">...</td>
+                </tr>
+                <tr>
+                    <td colspan="2" th:text="${user.address}">...</td>
+                </tr>
+                <!--/*/ </th:block> /*/-->
+            </table>
+        ]]></script>
+
+        <p>
+            Note how this solution allows templates to be valid HTML (no need to add forbidden <kbd>&lt;div&gt;</kbd>
+            blocks inside <kbd>&lt;table&gt;</kbd>), and still work OK when open statically in browsers as prototypes!
+        </p>
+
+
+
+
+
+        <h2><a name="data"></a>Support for HTML5-friendly attribute and element names</h2>
+
+
+        <p>
+            Thymeleaf 2.1 adds a completely new syntax you can use to apply processors to your templates, more
+            <em>HTML5-friendly</em>.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <table>
+                <tr data-th-each="user : ${users}">
+                    <td data-th-text="${user.login}">...</td>
+                    <td data-th-text="${user.name}">...</td>
+                </tr>
+            </table>
+        ]]></script>
+
+        <p>
+            The <kbd>data-{prefix}-{name}</kbd> syntax is the standard way to write <em>custom attributes</em> in
+            HTML5, without requiring developers to use any namespaced names like <kbd>th:*</kbd>. Thymeleaf 2.1 makes
+            this syntax automatically available to all your dialects (not only the Standard ones).
+        </p>
+
+        <p>
+            There is also a new syntax to specify custom tags: <kbd>{prefix}-{name}</kbd>, which follows the
+            <em>W3C Custom Elements</em> specification (a part of the larger <em>W3C Web Components</em> spec). You
+            can use this, for example, for the new <kbd>th:block</kbd> element (or also <kbd>th-block</kbd>):
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <!-- ======================================================= -->
+            <!-- Fully HTML5-valid, both prototype and working template! -->
+            <!-- ======================================================= -->
+            <table>
+                <!--/*/ <th-block data-th-each="user : ${users}"> /*/-->
+                <tr>
+                    <td data-th-text="${user.login}">...</td>
+                    <td data-th-text="${user.name}">...</td>
+                </tr>
+                <tr>
+                    <td colspan="2" data-th-text="${user.address}">...</td>
+                </tr>
+                <!--/*/ </th-block> /*/-->
+            </table>
+        ]]></script>
+
+        <p>
+            <strong>Important</strong>: this new syntax is an <strong>addition</strong> to the namespaced <kbd>th:*</kbd>
+            one, it does not replace it. There is no intention at all to deprecate the namespaced syntax in the future.
+        </p>
+
+
+
+
+        <h2><a name="assr"></a>New <kbd>th:assert</kbd> for in-template assertions</h2>
+
+
+        <p>
+            A new <em>attribute processor</em> is now available: <kbd>th:assert</kbd>. This attribute can specify
+            a comma-separated list of expressions which should be evaluated and produce <kbd>true</kbd> for every
+            evaluation, raising an exception if not.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:assert="${onevar},(${twovar} != 43)">...</div>
+        ]]></script>
+
+        <p>
+            This comes in handy for validating parameters at a fragment signature:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <header th:fragment="contentheader(title)" th:assert="${!#strings.isEmpty(title)}">...</header>
+        ]]></script>
+
+
+
+
+
+        <h2><a name="repl"></a>New <kbd>th:replace</kbd> as a synonym of <kbd>th:substituteby</kbd></h2>
+
+
+        <p>
+            For semantic reasons, a new <kbd>th:replace</kbd> has been introduced as a full synonym of
+            <kbd>th:substituteby</kbd> (in fact, it was <em>sneakily</em> added in 2.0.18):
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:replace="mytemplate :: .myfrag">...</div>
+        ]]></script>
+
+        <p>
+            Template developers are now recommended to use <kbd>th:replace</kbd> instead of <kbd>th:substituteby</kbd>,
+            as the latter will probably be deprecated (not <em>removed</em>) in thymeleaf 3.0.
+        </p>
+
+
+
+
+        <h2><a name="with"></a>Reuse variables in <kbd>th:with</kbd></h2>
+
+
+        <p>
+            As a minor optimization, the <kbd>th:with</kbd> attribute now allows <em>reusing</em> variables defined
+            in the same attribute:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:with="company=${user.company + ' Co.'},account=${accounts[company]}">...</div>
         ]]></script>
 
 
