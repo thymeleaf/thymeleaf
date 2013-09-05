@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.springintegration.context;
+package org.thymeleaf.engine21.springintegration.context;
 
 import java.util.List;
 import java.util.Locale;
@@ -28,9 +28,7 @@ import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionExcepti
 import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
-
-
-public class ErrorsSpringIntegrationWebProcessingContextBuilder 
+public class ErrorsSpringIntegrationWebProcessingContextBuilder
         extends SpringIntegrationWebProcessingContextBuilder {
 
     public static String BINDING_ERRORS_CONTEXT_VARIABLE_NAME = "bindingErrors";
