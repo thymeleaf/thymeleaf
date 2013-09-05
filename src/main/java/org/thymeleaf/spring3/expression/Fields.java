@@ -64,14 +64,21 @@ public final class Fields {
     public boolean hasGlobalErrors() {
         return FieldUtils.hasGlobalErrors(this.configuration, this.processingContext);
     }
-    
+
+    /**
+     * @since 2.1.0
+     */
+    public List<String> allErrors() {
+        return FieldUtils.errors(this.configuration, this.processingContext);
+    }
+
     /**
      * @since 2.1.0 
      */
     public List<String> errors() {
         return FieldUtils.errors(this.configuration, this.processingContext);
     }
-    
+
     public List<String> errors(final String field) {
         return FieldUtils.errors(this.configuration, this.processingContext, field);
     }
