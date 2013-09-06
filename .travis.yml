@@ -11,4 +11,5 @@ env:
     - PROFILE=2.1
 
 install:
+before_script:
 script: "mvn -P ${PROFILE} clean compile test"
