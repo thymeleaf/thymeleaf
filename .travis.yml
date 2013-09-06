@@ -10,4 +10,5 @@ env:
     - PROFILE=2.0
     - PROFILE=2.1
 
+install:
 script: "mvn -P ${PROFILE} clean compile test"
