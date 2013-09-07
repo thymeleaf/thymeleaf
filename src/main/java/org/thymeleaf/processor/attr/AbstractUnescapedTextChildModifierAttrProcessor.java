@@ -23,12 +23,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Macro;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.exceptions.TemplateEngineException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 
 /**
