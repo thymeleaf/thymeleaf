@@ -198,7 +198,7 @@ public final class DOMUtils {
         for (int i = 0; i < strLen; i++) {
             final char c = str.charAt(i);
             if (c == '&' || c == '<' || c == '>' || (escapeQuotes && (c == '\'' || c == '\"'))) {
-                final CharArrayWriter writer = new CharArrayWriter();
+                final StringWriter writer = new StringWriter();
                 writeXmlEscaped(str, writer, escapeQuotes);
                 return writer.toString();
             }

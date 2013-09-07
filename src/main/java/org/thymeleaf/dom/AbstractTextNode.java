@@ -42,15 +42,10 @@ public abstract class AbstractTextNode extends Node {
 
     private static final long serialVersionUID = -4406245492696671750L;
 
-    char[] content;
+    String content;
 
     
     AbstractTextNode(final String content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
-        this((content == null? null : content.toCharArray()), escapeXml, documentName, lineNumber);
-    }
-
-    
-    AbstractTextNode(final char[] content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
         super(documentName, lineNumber);
         Validate.notNull(content, "Content cannot be null");
         try {
@@ -77,25 +72,6 @@ public abstract class AbstractTextNode extends Node {
         return new String(this.content);
     }
 
-    
-    /**
-     * <p>
-     *   Returns the unsafe inner char[] with the textual content of this
-     *   code.
-     * </p>
-     * <p>
-     *   Calling this method avoids the need to create a new <tt>String</tt>
-     *   object (like {@link #getContent()} does, but requires to be extremely
-     *   careful with the result, as any modification to the returned char array
-     *   will actually modify the node's contents.
-     * </p>
-     * 
-     * @return the textual content of this node.
-     */
-    public char[] unsafeGetContentCharArray() {
-        return this.content;
-    }
-    
 
     /**
      * <p>
@@ -105,23 +81,9 @@ public abstract class AbstractTextNode extends Node {
      * @param content the new content
      */
     public void setContent(final String content) {
-        this.content = content.toCharArray();
+        this.content = content;
     }
-    
-    
-    /**
-     * <p>
-     *   Modify the textual content of this node. This method
-     *   is considered <i>unsafe</i> because it does not copy the
-     *   specified array (instead, it is merely assigned to an internal variable).
-     * </p>
-     * 
-     * @param newContent the new content
-     */
-    public void unsafeSetContent(final char[] newContent) {
-        this.content = newContent;
-    }
-    
+
 
     
     @Override

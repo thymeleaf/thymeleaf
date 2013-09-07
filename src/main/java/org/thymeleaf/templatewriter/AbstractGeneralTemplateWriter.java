@@ -305,7 +305,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     protected void writeCDATASection(final Arguments arguments, final Writer writer, final CDATASection cdataSection) 
             throws IOException {
         writer.write(CDATA_PREFIX);
-        writer.write(cdataSection.unsafeGetContentCharArray());
+        writer.write(cdataSection.getContent());
         writer.write(CDATA_SUFFIX);
     }
 
@@ -324,7 +324,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     @SuppressWarnings("unused")
     protected void writeText(final Arguments arguments, final Writer writer, final Text text) 
             throws IOException {
-        writer.write(text.unsafeGetContentCharArray());
+        writer.write(text.getContent());
     }
 
     

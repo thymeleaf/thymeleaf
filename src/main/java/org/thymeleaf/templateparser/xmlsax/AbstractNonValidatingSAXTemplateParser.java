@@ -421,7 +421,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             this.cdataMode = false;
             if(this.cdataBufferLen > 0) {
                 Node cdata = 
-                        new CDATASection(ArrayUtils.copyOf(this.cdataBuffer, this.cdataBufferLen), false);
+                        new CDATASection(new String(this.cdataBuffer, 0, this.cdataBufferLen), false);
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(cdata);
                 } else {
@@ -691,7 +691,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             if (this.textBufferLen > 0) {
 
                 final Node textNode = 
-                        new Text(ArrayUtils.copyOf(this.textBuffer, this.textBufferLen), false);
+                        new Text(new String(this.textBuffer, 0, this.textBufferLen), false);
                 
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(textNode);

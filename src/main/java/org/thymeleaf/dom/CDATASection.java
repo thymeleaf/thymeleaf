@@ -46,41 +46,22 @@ public final class CDATASection extends AbstractTextNode {
     public CDATASection(final String content) {
         this(content, true, null, null);
     }
-    
-    
-    public CDATASection(final char[] content) {
-        this(content, true, null, null);
-    }
-    
+
     
     public CDATASection(final String content, final boolean escapeXml) {
         this(content, escapeXml, null, null);
     }
-    
-    
-    public CDATASection(final char[] content, final boolean escapeXml) {
-        this(content, escapeXml, null, null);
-    }
-    
+
     
     public CDATASection(final String content, final boolean escapeXml, final String documentName) {
         this(content, escapeXml, documentName, null);
     }
-    
-    
-    public CDATASection(final char[] content, final boolean escapeXml, final String documentName) {
-        this(content, escapeXml, documentName, null);
-    }
-    
+
     
     public CDATASection(final String content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
         super(content, escapeXml, documentName, lineNumber);
     }
-    
-    public CDATASection(final char[] content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
-        super(content, escapeXml, documentName, lineNumber);
-    }
-    
+
 
 
     @Override

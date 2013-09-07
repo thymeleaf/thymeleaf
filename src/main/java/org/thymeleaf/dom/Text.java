@@ -47,42 +47,22 @@ public final class Text extends AbstractTextNode {
     public Text(final String content) {
         this(content, true, null, null);
     }
-    
-    
-    public Text(final char[] content) {
-        this(content, true, null, null);
-    }
-    
+
     
     public Text(final String content, final boolean escapeXml) {
         this(content, escapeXml, null, null);
     }
-    
-    
-    public Text(final char[] content, final boolean escapeXml) {
-        this(content, escapeXml, null, null);
-    }
-    
+
     
     public Text(final String content, final boolean escapeXml, final String documentName) {
         this(content, escapeXml, documentName, null);
     }
-    
-    
-    public Text(final char[] content, final boolean escapeXml, final String documentName) {
-        this(content, escapeXml, documentName, null);
-    }
-    
+
     
     public Text(final String content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
         super(content, escapeXml, documentName, lineNumber);
     }
-    
-    public Text(final char[] content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
-        super(content, escapeXml, documentName, lineNumber);
-    }
-    
-    
+
     
 
     @Override
