@@ -19,11 +19,13 @@
  */
 package org.thymeleaf.processor.attr;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateRepository;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.dom.Macro;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateEngineException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -59,25 +61,14 @@ public abstract class AbstractUnescapedTextChildModifierAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
         
         final String text = getText(arguments, element, attributeName);
-        
-        try {
-            
-            final TemplateRepository templateRepository = arguments.getTemplateRepository();
-            final List<Node> fragNodes = templateRepository.getFragment(arguments, text);
-            
-            for (final Node node : fragNodes) {
-                node.setProcessable(false);
-            }
 
-            return fragNodes;
-            
-        } catch (final TemplateEngineException e) {
-            throw e;
-        } catch (final Exception e) {
-            throw new TemplateProcessingException(
-                    "An error happened during parsing of unescaped text: \"" + element.getAttributeValue(attributeName) + "\"", e);
-        }
-        
+        final Macro node = new Macro(text);
+        // Setting this allows avoiding text inliners processing already generated text,
+        // which in turn avoids code injection.
+        node.setProcessable(false);
+
+        return Collections.singletonList((Node) node);
+
     }
 
     
