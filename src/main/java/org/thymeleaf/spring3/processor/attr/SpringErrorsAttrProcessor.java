@@ -103,6 +103,8 @@ public final class SpringErrorsAttrProcessor
             element.clearChildren();
 
             final Macro errorsNode = new Macro(strBuilder.toString());
+            errorsNode.setProcessable(false);
+
             element.addChild(errorsNode);
 
             element.removeAttribute(attributeName);
