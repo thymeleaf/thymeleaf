@@ -42,12 +42,23 @@ public class Features20Test {
     public void testLink() throws Exception {
 
         final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:engine/features/link");
+        executor.execute("classpath:engine20/features/link");
         
         Assert.assertTrue(executor.isAllOK());
         
     }
 
+
+
+    @Test
+    public void testText() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine20/features/text");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
 
     
 }

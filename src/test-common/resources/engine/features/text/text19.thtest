@@ -1,0 +1,12 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+customerName = 'Pear <br /> Apple'
+# ------------------------------------------------------------
+%INPUT
+<div th:utext="${customerName}">
+  Some text
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Pear <br /> Apple</div>

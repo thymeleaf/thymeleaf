@@ -58,4 +58,16 @@ public class Features21Test {
 
 
 
+    @Test
+    public void testText() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/features/text");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
+
 }
