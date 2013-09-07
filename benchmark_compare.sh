@@ -3,7 +3,7 @@
 # This script requires bash 4.0+ and awk
 #
 
-iter=10
+iter=5
 
 itermaxlen=`expr length $iter`
 timemaxlen=15
