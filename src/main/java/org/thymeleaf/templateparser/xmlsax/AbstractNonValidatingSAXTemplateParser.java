@@ -515,7 +515,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
                 flushBuffer();
 
                 final Comment comment = 
-                        new Comment(ArrayUtils.copyOfRange(ch, start, start + length));
+                        new Comment(new String(ch, start, start + length));
                 
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(comment);

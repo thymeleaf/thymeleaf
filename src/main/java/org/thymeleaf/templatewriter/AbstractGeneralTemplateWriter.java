@@ -315,7 +315,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     protected void writeComment(final Arguments arguments, final Writer writer, final Comment comment) 
             throws IOException {
         writer.write(COMMENT_PREFIX);
-        writer.write(comment.unsafeGetContentCharArray());
+        writer.write(comment.getContent());
         writer.write(COMMENT_SUFFIX);
     }
 
@@ -332,7 +332,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     @SuppressWarnings("unused")
     protected void writeMacro(final Arguments arguments, final Writer writer, final Macro macro) 
             throws IOException {
-        writer.write(macro.unsafeGetContentCharArray());
+        writer.write(macro.getContent());
     }
     
 

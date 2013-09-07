@@ -41,43 +41,26 @@ public final class Comment extends Node {
     
     private static final long serialVersionUID = 1750478035496424682L;
 
-    private char[] content;
+    private String content;
 
 
     
     public Comment(final String content) {
         this(content, null, null);
     }
-    
-    
-    public Comment(final char[] content) {
-        this(content, null, null);
-    }
-    
+
     
     public Comment(final String content, final String documentName) {
         this(content, documentName, null);
     }
-    
-    
-    public Comment(final char[] content, final String documentName) {
-        this(content, documentName, null);
-    }
-    
+
     
     public Comment(final String content, final String documentName, final Integer lineNumber) {
         super(documentName, lineNumber);
         Validate.notNull(content, "Comment content cannot be null");
-        this.content = content.toCharArray();
-    }
-    
-    
-    public Comment(final char[] content, final String documentName, final Integer lineNumber) {
-        super(documentName, lineNumber);
-        Validate.notNull(content, "Comment content cannot be null");
         this.content = content;
     }
-    
+
     
     
     
@@ -91,26 +74,7 @@ public final class Comment extends Node {
     public String getContent() {
         return new String(this.content);
     }
-    
-    
-    /**
-     * <p>
-     *   Returns the unsafe inner char[] with the textual content of this
-     *   code.
-     * </p>
-     * <p>
-     *   Calling this method avoids the need to create a new <tt>String</tt>
-     *   object (like {@link #getContent()} does, but requires to be extremely
-     *   careful with the result, as any modification to the returned char array
-     *   will actually modify the node's contents.
-     * </p>
-     * 
-     * @return the textual content of this node.
-     */
-    public char[] unsafeGetContentCharArray() {
-        return this.content;
-    }
-    
+
 
     /**
      * <p>
@@ -121,22 +85,7 @@ public final class Comment extends Node {
      * @since 2.0.15
      */
     public void setContent(final String content) {
-        this.content = content.toCharArray();
-    }
-    
-    
-    /**
-     * <p>
-     *   Modify the textual content of this node. This method
-     *   is considered <i>unsafe</i> because it does not copy the
-     *   specified array (instead, it is merely assigned to an internal variable).
-     * </p>
-     * 
-     * @param newContent the new content
-     * @since 2.0.15
-     */
-    public void unsafeSetContent(final char[] newContent) {
-        this.content = newContent;
+        this.content = content;
     }
 
     
