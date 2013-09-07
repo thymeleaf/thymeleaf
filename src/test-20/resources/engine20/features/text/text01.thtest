@@ -8,6 +8,6 @@ customerName = 'Pear <div th:text="\\'hu\\'"></div> Apple'
   Some text
 </div>
 # ------------------------------------------------------------
-%OUTPUT
-<div>Pear <div th:text="&#39;hu&#39;"></div>
- Apple</div>
+%EXCEPTION org.thymeleaf.exceptions.TemplateProcessingException
+%EXCEPTION_MESSAGE_PATTERN .*?lenient.*?
+
