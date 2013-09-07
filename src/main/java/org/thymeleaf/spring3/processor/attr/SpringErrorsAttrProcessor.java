@@ -21,21 +21,18 @@ package org.thymeleaf.spring3.processor.attr;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Node;
+import org.thymeleaf.dom.Macro;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
-import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.util.DOMUtils;
 
 
@@ -104,22 +101,10 @@ public final class SpringErrorsAttrProcessor
             
             // Remove previous element children
             element.clearChildren();
-            
-            
-            final Configuration configuration = arguments.getConfiguration();
-            
-            final ITemplateParser templateParser =
-                    configuration.getTemplateModeHandler(
-                            arguments.getTemplateResolution().getTemplateMode()).getTemplateParser();
-            
-            // Use the parser to obtain a DOM from the String
-            final List<Node> fragNodes = templateParser.parseFragment(configuration, strBuilder.toString());
 
-            for (final Node child : fragNodes) {
-                child.setProcessable(false);
-                element.addChild(child);
-            }
-            
+            final Macro errorsNode = new Macro(strBuilder.toString());
+            element.addChild(errorsNode);
+
             element.removeAttribute(attributeName);
             
             return ProcessorResult.setLocalVariables(localVariables);
