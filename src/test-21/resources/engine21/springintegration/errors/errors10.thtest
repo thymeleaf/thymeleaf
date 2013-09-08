@@ -2,7 +2,7 @@
 # ------------------------------------------------------------
 %CONTEXT
 
-binding = 'formBean01_01'
+binding = {'formBean01_01', 'formBean01_02' }
 
 bindingError01 = #{ 'binding' : 'formBean01_01',\
                     'field' : 'name',\
@@ -10,18 +10,23 @@ bindingError01 = #{ 'binding' : 'formBean01_01',\
 bindingError02 = #{ 'binding' : 'formBean01_01',\
                     'field' : null,\
                     'message' : 'Name has to be >= than \\'ab\\''}
-                    
-bindingErrors = { bindingError01, bindingError02 }
+
+bindingError03 = #{ 'binding' : 'formBean01_02',\
+                    'field' : 'name',\
+                    'message' : 'Name is not correctly spelled'}
+
+bindingErrors = { bindingError01, bindingError02, bindingError03 }
 # ------------------------------------------------------------
 %INPUT
 <form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
 
+<div th:errors="*"></div>
+<div th:errors="all"></div>
+<div th:errors="*{*}"></div>
+<div th:errors="*{all}"></div>
+
   <fieldset>
 
-    <div th:errors="all"></div>
-    <div th:errors="global"></div>
-    <div th:errors="*{all}"></div>
-    <div th:errors="*{global}"></div>
 
     <div>
       Name: <input type="text" th:field="*{name}" />
@@ -34,12 +39,13 @@ bindingErrors = { bindingError01, bindingError02 }
 %OUTPUT
 <form action="/testing/process" method="post">
 
+<div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
+<div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
+<div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
+<div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
+
   <fieldset>
       
-    <div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
-    <div>Name has to be &gt;= than &#39;ab&#39;</div>
-    <div>Name has to be &lt; than &#39;aa&#39;<br />Name has to be &gt;= than &#39;ab&#39;</div>
-    <div>Name has to be &gt;= than &#39;ab&#39;</div>
 
     <div>
       Name: <input type="text" id="name" name="name" value="Mark Lettuce" />

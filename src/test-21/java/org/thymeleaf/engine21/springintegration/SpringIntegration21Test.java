@@ -65,7 +65,6 @@ public class SpringIntegration21Test {
         Assert.assertTrue(executor.isAllOK());
         
     }
-    
-    
+
     
 }
