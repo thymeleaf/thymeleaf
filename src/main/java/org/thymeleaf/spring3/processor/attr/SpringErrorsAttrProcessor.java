@@ -110,7 +110,7 @@ public final class SpringErrorsAttrProcessor
             element.removeAttribute(attributeName);
             
             return ProcessorResult.setLocalVariables(localVariables);
-            
+
         }
         
         element.getParent().removeChild(element);

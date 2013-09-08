@@ -136,6 +136,12 @@ public final class FieldUtils {
     
     
     private static String convertToFieldExpression(final String field) {
+        if (field == null) {
+            return null;
+        }
+        if (field.trim().startsWith("*") || field.trim().startsWith("$")) {
+            return field;
+        }
         final StringBuilder strBuilder = new StringBuilder(20);
         strBuilder.append('*');
         strBuilder.append('{');
@@ -147,9 +153,9 @@ public final class FieldUtils {
 
 
     private static boolean checkErrors(final Configuration configuration, 
-            final IProcessingContext processingContext, final String fieldExpression, final boolean allowAllFields) {
+            final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
         final BindStatus bindStatus =
-                FieldUtils.getBindStatus(configuration, processingContext, fieldExpression, allowAllFields);
+                FieldUtils.getBindStatus(configuration, processingContext, expression, allowAllFields);
 
         return bindStatus.isError();
     }
@@ -157,13 +163,13 @@ public final class FieldUtils {
 
 
     public static BindStatus getBindStatus(
-            final Arguments arguments, final String fieldExpression, final boolean allowAllFields) {
-        return getBindStatus(arguments.getConfiguration(), arguments, fieldExpression, allowAllFields);
+            final Arguments arguments, final String expression, final boolean allowAllFields) {
+        return getBindStatus(arguments.getConfiguration(), arguments, expression, allowAllFields);
     }
     
     
     public static BindStatus getBindStatus(final Configuration configuration, 
-            final IProcessingContext processingContext, final String fieldExpression, final boolean allowAllFields) {
+            final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
         
         final RequestContext requestContext =
             (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
@@ -171,30 +177,21 @@ public final class FieldUtils {
             throw new TemplateProcessingException("A request context has not been created");
         }
 
+        String bindExpression = expression;
+
         if(allowAllFields) {
-            if (GLOBAL_EXPRESSION.equals(fieldExpression)) {
-        	
-        	final String completeExpression = 
-                        FieldUtils.validateAndGetValueExpressionForGlobal(processingContext);
-                    
-                    return new BindStatus(requestContext, completeExpression, false);
-        	
-            } else if(ALL_EXPRESSION.equals(fieldExpression)  || ALL_FIELDS.equals(fieldExpression) ) {
-                
-                final String completeExpression = 
-                    FieldUtils.validateAndGetValueExpressionForAllFields(processingContext);
-                
-                return new BindStatus(requestContext, completeExpression, false);
-                
+            if (GLOBAL_EXPRESSION.equals(bindExpression) || ALL_EXPRESSION.equals(bindExpression) || ALL_FIELDS.equals(bindExpression)) {
+        	    // If "global", "all" or "*" are used without prefix, they must be inside a form, so we add *{...}
+                bindExpression = "*{" + bindExpression + "}";
             }
         }
         
         
-        final Expression expression = 
-            StandardExpressionProcessor.parseExpression(configuration, processingContext, fieldExpression);
+        final Expression expressionObj =
+            StandardExpressionProcessor.parseExpression(configuration, processingContext, bindExpression);
         
         final String completeExpression = 
-            FieldUtils.validateAndGetValueExpressionForField(processingContext, expression);
+            FieldUtils.validateAndGetValueExpression(processingContext, expressionObj);
         
         return new BindStatus(requestContext, completeExpression, false);
         
@@ -203,7 +200,7 @@ public final class FieldUtils {
     
     
     
-    private static String validateAndGetValueExpressionForField(
+    private static String validateAndGetValueExpression(
             final IProcessingContext processingContext, final Expression expression) {
 
         /*
@@ -221,8 +218,21 @@ public final class FieldUtils {
             }
             
             final String formCommandExpression = formCommandValue.getExpression();
-            return formCommandExpression + '.' + ((SelectionVariableExpression)expression).getExpression();
+            final String expressionContent = ((SelectionVariableExpression)expression).getExpression();
+
+            if (GLOBAL_EXPRESSION.equals(expressionContent)) {
+                return formCommandExpression;
+            }
+            if (ALL_EXPRESSION.equals(expressionContent) || ALL_FIELDS.equals(expressionContent)) {
+                return formCommandExpression + '.' + ALL_FIELDS;
+            }
+
+            return formCommandExpression + '.' + expressionContent;
             
+        } else if (expression instanceof VariableExpression) {
+
+            return ((VariableExpression)expression).getExpression();
+
         }
         
         throw new TemplateProcessingException(
