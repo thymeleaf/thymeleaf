@@ -373,7 +373,7 @@ final class ExpressionParsingUtil {
 
         if (config.getDecomposeNumberTokens()) {
             final NumberTokenExpression numberTokenExpr = NumberTokenExpression.parseNumberToken(token);
-                if (numberTokenExpr != null) {
+            if (numberTokenExpr != null) {
                 return numberTokenExpr;
             }
         }

@@ -64,14 +64,28 @@ public final class NumberTokenExpression extends Token {
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
         }
+        boolean decimalFound = false;
         final int inputLen = input.length();
         for (int i = 0; i < inputLen; i++) {
             final char c = input.charAt(i);
-            if (!(Character.isDigit(c) || c == DECIMAL_POINT)) {
+            if (Character.isDigit(c)) {
+                continue;
+            } else if (c == DECIMAL_POINT) {
+                if (decimalFound) {
+                    return null;
+                }
+                decimalFound = true;
+                continue;
+            } else {
                 return null;
             }
         }
-        return new NumberTokenExpression(input);
+        try {
+            return new NumberTokenExpression(input);
+        } catch (final NumberFormatException e) {
+            // It seems after all it wasn't valid as a number
+            return null;
+        }
     }
     
 
