@@ -1,0 +1,8 @@
+%EXTENDS link.common
+# ------------------------------------------------------------
+%INPUT
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap.min.css"
+    th:href="@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}" rel="stylesheet"/>
+# ------------------------------------------------------------
+%OUTPUT
+<link href="/testing/webjars/bootstrap/2.3.0/css/bootstrap.min.css" rel="stylesheet"/>
