@@ -1,3 +1,14 @@
+2.0.19
+======
+- Applied annotation-based autowiring to custom Thymeleaf View classes even when they were not declared as a bean
+  at the application context.
+
+
+2.0.18
+======
+- (No changes)
+
+
 2.0.17
 ======
 - Added a "#themes.code('key')" expression object which looks up and returns the value of
