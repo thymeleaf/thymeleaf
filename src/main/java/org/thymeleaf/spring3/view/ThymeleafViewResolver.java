@@ -639,9 +639,13 @@ public class ThymeleafViewResolver
                 view = (AbstractThymeleafView) beanFactory.configureBean(view, viewName);
             } else {
                 view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
+                // The AUTOWIRE_NO mode applies autowiring only through annotations
+                beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
             }
         } else {
             view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
+            // The AUTOWIRE_NO mode applies autowiring only through annotations
+            beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
         }
 
         view.setTemplateEngine(getTemplateEngine());
