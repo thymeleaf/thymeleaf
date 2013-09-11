@@ -275,8 +275,9 @@
       <properties>
         <thymeleaf.version>2.0.19-SNAPSHOT</thymeleaf.version>
         <thymeleaf-testing.version>2.0.5-SNAPSHOT</thymeleaf-testing.version>
-        <thymeleaf-extras-springsecurity3.version>2.0.1</thymeleaf-extras-springsecurity3.version>
-        <thymeleaf-extras-tiles2.version>2.0.0</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-springsecurity3.version>2.0.2-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
+        <thymeleaf-extras-tiles2.version>2.0.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.0.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
       </properties>
@@ -330,6 +331,7 @@
         <thymeleaf-testing.version>2.1.0-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.0-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.0-SNAPSHOT</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.1.0-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
       </properties>
@@ -383,6 +385,7 @@
         <thymeleaf-testing.version>2.1.0-beta1</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.0-beta1</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.0-beta1</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.1.0-beta1</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
       </properties>
@@ -427,6 +430,13 @@
       <groupId>org.thymeleaf.extras</groupId>
       <artifactId>thymeleaf-extras-tiles2</artifactId>
       <version>${thymeleaf-extras-tiles2.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.thymeleaf.extras</groupId>
+      <artifactId>thymeleaf-extras-conditionalcomments</artifactId>
+      <version>${thymeleaf-extras-conditionalcomments.version}</version>
       <scope>compile</scope>
     </dependency>
 
