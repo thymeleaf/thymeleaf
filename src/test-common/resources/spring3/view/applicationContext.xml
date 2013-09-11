@@ -9,6 +9,9 @@
 
     <context:annotation-config/>
 
+    <!--                               -->
+    <!-- THYMELEAF VIEW RESOLVER TESTS -->
+    <!--                               -->
     <bean class="org.thymeleaf.spring3.view.TestThymeleafView" name="testview">
       <property name="something" value="view_value" />
     </bean>
@@ -16,5 +19,11 @@
     <bean class="org.thymeleaf.spring3.view.TestThymeleafView$ViewBean">
       <property name="value" value="bean_value" />
     </bean>
+
+    <!-- No class... just a bunch of properties! (a prototype, therefore) -->
+    <bean name="view_prototype" abstract="true">
+      <property name="something" value="value_from_prototype" />
+    </bean>
+
 
 </beans>

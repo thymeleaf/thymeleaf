@@ -81,4 +81,31 @@ public class ThymeleafViewResolverTest {
     }
 
 
+    @Test
+    public void testConfigureViewConfiguringBean() throws Exception {
+
+        final ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("classpath:spring3/view/applicationContext.xml");
+
+        final ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setApplicationContext(context);
+        resolver.setViewClass(TestThymeleafView.class);
+
+        // testview2 does not exist as a declared bean at the application context
+        final View view = resolver.loadView("view_prototype", Locale.US);
+
+        // There's no matching view definition, so "something" should not be populated
+        final String viewValue = ((TestThymeleafView)view).getSomething();
+        Assert.assertEquals("value_from_prototype", viewValue);
+
+        final TestThymeleafView.ViewBean viewBean = ((TestThymeleafView)view).getViewBean();
+        Assert.assertNotNull(viewBean);
+
+        // This should be there, because it is applied through an @Autowired annotation
+        final String beanValue = viewBean.getValue();
+        Assert.assertEquals("bean_value", beanValue);
+
+    }
+
+
 }
