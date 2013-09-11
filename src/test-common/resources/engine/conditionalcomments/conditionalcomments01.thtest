@@ -1,0 +1,21 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+message = 'Thank you for closing the message box.'
+# ------------------------------------------------------------
+%INPUT
+<!--[if gte IE 7]>
+<script language="javascript">
+alert("Congratulations! You are running Internet Explorer 7 or a later version of Internet Explorer.");
+</script>
+<p th:text="${message}">...</p>
+<![endif]-->
+# ------------------------------------------------------------
+%OUTPUT
+<!--[if gte IE 7]>
+<script language="javascript">
+alert("Congratulations! You are running Internet Explorer 7 or a later version of Internet Explorer.");
+</script>
+<p>Thank you for closing the message box.</p>
+<![endif]-->
+
