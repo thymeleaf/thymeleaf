@@ -635,17 +635,22 @@ public class ThymeleafViewResolver
 
         if (beanFactory.containsBean(viewName)) {
             final Class<?> viewBeanType = beanFactory.getType(viewName);
-            if (AbstractThymeleafView.class.isAssignableFrom(viewBeanType)) {
+            // viewBeanType could be null if bean is abstract (just a set of properties)
+            if (viewBeanType != null && AbstractThymeleafView.class.isAssignableFrom(viewBeanType)) {
                 view = (AbstractThymeleafView) beanFactory.configureBean(view, viewName);
             } else {
-                view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
                 // The AUTOWIRE_NO mode applies autowiring only through annotations
                 beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+                // A bean with this name exists, so we apply its properties
+                beanFactory.applyBeanPropertyValues(view, viewName);
+                // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
+                view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
             }
         } else {
-            view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
             // The AUTOWIRE_NO mode applies autowiring only through annotations
             beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+            // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
+            view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
         }
 
         view.setTemplateEngine(getTemplateEngine());
