@@ -31,12 +31,23 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.context.ProcessingContext;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.dom.DOMSelector;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.ChainedFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.context.SpringWebContext;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
+import org.thymeleaf.standard.expression.FragmentSelection;
+import org.thymeleaf.standard.fragment.StandardFragment;
+import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
+import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
+import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
 /**
@@ -186,17 +197,23 @@ public class ThymeleafView
             throws Exception {
 
         final ServletContext servletContext = getServletContext() ;
+        final String viewTemplateName = getTemplateName();
+        final TemplateEngine viewTemplateEngine = getTemplateEngine();
+        if (!viewTemplateEngine.isInitialized()) {
+            viewTemplateEngine.initialize();
+        }
 
-        if (getTemplateName() == null) {
+        if (viewTemplateName == null) {
             throw new IllegalArgumentException("Property 'templateName' is required");
         }
         if (getLocale() == null) {
             throw new IllegalArgumentException("Property 'locale' is required");
         }
-        if (getTemplateEngine() == null) {
+        if (viewTemplateEngine == null) {
             throw new IllegalArgumentException("Property 'templateEngine' is required");
         }
-        
+
+
         final Map<String, Object> mergedModel = new HashMap<String, Object>(30);
         final Map<String, Object> templateStaticVariables = getStaticVariables();
         if (templateStaticVariables != null) {
@@ -223,25 +240,77 @@ public class ThymeleafView
         
 
         
-        final IWebContext context = 
+        final SpringWebContext context =
                 new SpringWebContext(request, response, servletContext, getLocale(), mergedModel, getApplicationContext());
-        
-        final TemplateEngine viewTemplateEngine = getTemplateEngine();
-        
+
+
+        final String templateName;
+        final IFragmentSpec nameFragmentSpec;
+        if (viewTemplateName.indexOf("::") == -1) {
+            // No fragment specified at the template name
+
+            templateName = viewTemplateName;
+            nameFragmentSpec = null;
+
+        } else {
+            // Template name contains a fragment name, so we should parse it as such
+
+            final Configuration configuration = viewTemplateEngine.getConfiguration();
+            final ProcessingContext processingContext = new ProcessingContext(context);
+
+            final DOMSelector.INodeReferenceChecker fragmentSignatureReferenceChecker =
+                    createFragmentSignatureReferenceChecker(configuration);
+
+
+            final StandardFragment fragment =
+                    StandardFragmentProcessor.computeStandardFragmentSpec(
+                            configuration, processingContext, viewTemplateName, fragmentSignatureReferenceChecker);
+
+            if (fragment == null) {
+                throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
+            }
+
+            templateName = fragment.getTemplateName();
+            nameFragmentSpec = fragment.getFragmentSpec();
+            final Map<String,Object> nameFragmentParameters = fragment.getParameters();
+
+            if (nameFragmentParameters != null) {
+
+                if (FragmentSelection.parameterNamesAreSynthetic(nameFragmentParameters.keySet())) {
+                    // We cannot allow synthetic parameters because there is no way to specify them at the template
+                    // engine execution!
+                    throw new IllegalArgumentException(
+                            "Parameters in a view specification must be named (non-synthetic): '" + viewTemplateName + "'");
+                }
+
+                context.setVariables(nameFragmentParameters);
+
+            }
+
+
+        }
+
+
         final String templateContentType = getContentType();
         final Locale templateLocale = getLocale();
         final String templateCharacterEncoding = getCharacterEncoding();
         
-        IFragmentSpec templateFragmentSpec = null;
+        IFragmentSpec templateFragmentSpec = fragmentSpecToRender;
         final IFragmentSpec viewFragmentSpec = getFragmentSpec();
-        if (viewFragmentSpec == null) {
-            templateFragmentSpec = fragmentSpecToRender;
-        } else {
-            if (fragmentSpecToRender == null) {
+        if (viewFragmentSpec != null) {
+            if (templateFragmentSpec == null) {
                 templateFragmentSpec = viewFragmentSpec;
             } else {
                 templateFragmentSpec =
-                    new ChainedFragmentSpec(viewFragmentSpec, fragmentSpecToRender);
+                    new ChainedFragmentSpec(viewFragmentSpec, templateFragmentSpec);
+            }
+        }
+        if (nameFragmentSpec != null) {
+            if (templateFragmentSpec == null) {
+                templateFragmentSpec = nameFragmentSpec;
+            } else {
+                templateFragmentSpec =
+                        new ChainedFragmentSpec(nameFragmentSpec, templateFragmentSpec);
             }
         }
         
@@ -256,8 +325,33 @@ public class ThymeleafView
             response.setCharacterEncoding(templateCharacterEncoding);
         }
         
-        viewTemplateEngine.process(getTemplateName(), context, templateFragmentSpec, response.getWriter());
+        viewTemplateEngine.process(templateName, context, templateFragmentSpec, response.getWriter());
         
+    }
+
+
+
+
+    static DOMSelector.INodeReferenceChecker createFragmentSignatureReferenceChecker(final Configuration configuration) {
+        final String dialectPrefix = getStandardDialectPrefix(configuration);
+        final String fragmentSignatureAttributeName = StandardFragmentAttrProcessor.ATTR_NAME;
+        return new StandardFragmentSignatureNodeReferenceChecker(configuration, dialectPrefix, fragmentSignatureAttributeName);
+    }
+
+
+    static String getStandardDialectPrefix(final Configuration configuration) {
+
+        for (final Map.Entry<String,IDialect> dialectByPrefix : configuration.getDialects().entrySet()) {
+            final IDialect dialect = dialectByPrefix.getValue();
+            if (SpringStandardDialect.class.isAssignableFrom(dialect.getClass())) {
+                return dialectByPrefix.getKey();
+            }
+        }
+
+        throw new ConfigurationException(
+                "StandardDialect dialect has not been found. In order to use AjaxThymeleafView, you should configure " +
+                        "the " + SpringStandardDialect.class.getName() + " dialect at your Template Engine");
+
     }
 
 

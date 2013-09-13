@@ -29,14 +29,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
-import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
-import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
 /**
@@ -129,12 +125,9 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
             }
 
             final TemplateEngine templateEngine = getTemplateEngine();
-            final String standardDialectPrefix = getStandardDialectPrefix(templateEngine);
-
             final DOMSelector.INodeReferenceChecker nodeReferenceChecker =
-                    new StandardFragmentSignatureNodeReferenceChecker(
-                            templateEngine.getConfiguration(), standardDialectPrefix, StandardFragmentAttrProcessor.ATTR_NAME);
-            
+                    createFragmentSignatureReferenceChecker(templateEngine.getConfiguration());
+
             for (final String fragmentToRender : fragmentsToRender) {
                 
                 if (fragmentToRender != null) {
@@ -180,23 +173,6 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
     
     
     
-    
-    
-    
-    private static String getStandardDialectPrefix(final TemplateEngine templateEngine) {
-        
-        for (final Map.Entry<String,IDialect> dialectByPrefix : templateEngine.getDialectsByPrefix().entrySet()) {
-            final IDialect dialect = dialectByPrefix.getValue();
-            if (SpringStandardDialect.class.isAssignableFrom(dialect.getClass())) {
-                return dialectByPrefix.getKey();
-            }
-        }
-        
-        throw new ConfigurationException(
-                "StandardDialect dialect has not been found. In order to use AjaxThymeleafView, you should configure " +
-                "the " + SpringStandardDialect.class.getName() + " dialect at your Template Engine");
-        
-    }
 
 
 }
