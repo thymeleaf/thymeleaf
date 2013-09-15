@@ -79,13 +79,13 @@ public class Beans implements Map<String,Object> {
 
 
     public int size() {
-        throw new UnsupportedOperationException("Method \"size\" not supported in Beans object");
+        return this.ctx.getBeanDefinitionCount();
     }
 
 
 
     public boolean isEmpty() {
-        throw new UnsupportedOperationException("Method \"isEmpty\" not supported in Beans object");
+        return this.ctx.getBeanDefinitionCount() <= 0;
     }
 
 
