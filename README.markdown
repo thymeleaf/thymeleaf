@@ -11,7 +11,7 @@ This is an auxiliary testing library, not directly a part of the Thymeleaf core 
 
 Current versions: 
 
-  * **Version 2.0.4** - for Thymeleaf 2.0 (requires thymeleaf 2.0.16+)
+  * **Version 2.0.5** - for Thymeleaf 2.0 (requires thymeleaf 2.0.16+)
   * **Version 2.1.0-beta1** - for Thymeleaf 2.1 (requires 2.1.0-beta1)
 
 
