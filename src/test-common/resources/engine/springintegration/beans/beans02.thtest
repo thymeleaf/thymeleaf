@@ -1,0 +1,7 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<div th:text="${beans.isEmpty()}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>false</div>

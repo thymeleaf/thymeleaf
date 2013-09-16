@@ -30,7 +30,7 @@ import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingConte
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.testable.ITest;
-
+import org.thymeleaf.util.Validate;
 
 
 public class SpringIntegrationWebProcessingContextBuilder extends SpringWebProcessingContextBuilder {
@@ -38,8 +38,14 @@ public class SpringIntegrationWebProcessingContextBuilder extends SpringWebProce
 
     
     public SpringIntegrationWebProcessingContextBuilder() {
+        this("classpath:engine/springintegration/applicationContext.xml");
+    }
+
+
+    public SpringIntegrationWebProcessingContextBuilder(final String applicationContextLocation) {
         super();
-        setApplicationContextConfigLocation("classpath:engine/springintegration/applicationContext.xml");
+        Validate.notNull(applicationContextLocation, "Application context location cannot be null");
+        setApplicationContextConfigLocation(applicationContextLocation);
     }
 
     

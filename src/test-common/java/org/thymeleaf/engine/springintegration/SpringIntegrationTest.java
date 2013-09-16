@@ -55,8 +55,8 @@ public class SpringIntegrationTest {
         
     }
 
-    
-    
+
+
     @Test
     public void testErrors() throws Exception {
 
@@ -64,11 +64,26 @@ public class SpringIntegrationTest {
         executor.setProcessingContextBuilder(new ErrorsSpringIntegrationWebProcessingContextBuilder());
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
         executor.execute("classpath:engine/springintegration/errors");
-        
+
         Assert.assertTrue(executor.isAllOK());
-        
+
     }
-    
+
+
+
+    @Test
+    public void testBeans() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(
+                new SpringIntegrationWebProcessingContextBuilder("classpath:engine/springintegration/applicationContext-beans.xml"));
+        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.execute("classpath:engine/springintegration/beans");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
     
     
 }

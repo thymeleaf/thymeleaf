@@ -1,0 +1,7 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<div th:text="${beans.containsKey('myMap')}">..</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>true</div>
