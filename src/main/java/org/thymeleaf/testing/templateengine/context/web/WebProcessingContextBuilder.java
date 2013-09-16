@@ -46,6 +46,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.testing.templateengine.context.IProcessingContextBuilder;
@@ -153,16 +154,14 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
 
         doAdditionalVariableProcessing(test, request, response, servletContext, locale, variables);
         
-        final WebContext context = 
-                new WebContext(request, response, servletContext, locale, variables);
+        final IWebContext context =
+                doCreateWebContextInstance(test, request, response, servletContext, locale, variables);
         
         return new ProcessingContext(context);
         
     }
 
-    
-    
-    
+
     @SuppressWarnings("unused")
     protected void doAdditionalVariableProcessing(
             final ITest test, 
@@ -170,8 +169,16 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
             final Locale locale, final Map<String,Object> variables) {
         // Nothing to be done here, meant to be overriden
     }
-    
-    
+
+
+
+    protected IWebContext doCreateWebContextInstance(
+            final ITest test,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
+            final Locale locale, final Map<String,Object> variables) {
+        return new WebContext(request, response, servletContext, locale, variables);
+    }
+
     
     
     

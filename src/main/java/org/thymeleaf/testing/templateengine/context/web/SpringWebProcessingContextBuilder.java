@@ -39,6 +39,9 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
+import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring3.context.SpringWebContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
@@ -109,8 +112,22 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         initSpring(appCtx, test, request, response, servletContext, locale, variables);
         
     }
-    
-    
+
+
+
+    protected IWebContext doCreateWebContextInstance(
+            final ITest test,
+            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
+            final Locale locale, final Map<String,Object> variables) {
+
+        final ApplicationContext appCtx =
+                (ApplicationContext) servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+        return new SpringWebContext(request, response, servletContext, locale, variables, appCtx);
+
+    }
+
+
+
     /**
      * <p>
      *   Returns the name of the variables that must be considered "binding models", usually
