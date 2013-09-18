@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Attribute;
-import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.fragment.WholeFragmentSpec;
@@ -31,7 +30,6 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractFragmentHandlingAttrProcessor;
 import org.thymeleaf.standard.fragment.StandardFragment;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
-import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
 
 /**
  * 
@@ -66,16 +64,12 @@ public abstract class AbstractStandardFragmentHandlingAttrProcessor
         final String fragmentSignatureAttributeName =
                 getFragmentSignatureUnprefixedAttributeName(arguments, element, attributeName, attributeValue);
 
-        final DOMSelector.INodeReferenceChecker fragmentSignatureReferenceChecker =
-                new StandardFragmentSignatureNodeReferenceChecker(arguments.getConfiguration(), dialectPrefix, fragmentSignatureAttributeName);
-
         final StandardFragment fragment =
                 StandardFragmentProcessor.computeStandardFragmentSpec(
-                        arguments.getConfiguration(), arguments, attributeValue, fragmentSignatureReferenceChecker);
+                        arguments.getConfiguration(), arguments, attributeValue, dialectPrefix, fragmentSignatureAttributeName);
 
         final List<Node> extractedNodes =
-                fragment.extractFragment(arguments.getConfiguration(), arguments,
-                        arguments.getTemplateRepository(), dialectPrefix, fragmentSignatureAttributeName);
+                fragment.extractFragment(arguments.getConfiguration(), arguments, arguments.getTemplateRepository());
 
         final boolean removeHostNode = getRemoveHostNode(arguments, element, attributeName, attributeValue);
 

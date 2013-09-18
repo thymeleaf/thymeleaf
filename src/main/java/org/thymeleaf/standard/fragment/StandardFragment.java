@@ -48,7 +48,7 @@ import org.thymeleaf.util.Validate;
  *   be considered to be executed on the current template (obtained from the
  *   IProcessingContext argument in
  *   {@link #extractFragment(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext,
- *      org.thymeleaf.TemplateRepository, java.lang.String, java.lang.String)},
+ *      org.thymeleaf.TemplateRepository)},
  *   which will therefore need to be an instance of
  *   {@link org.thymeleaf.Arguments}).
  * </p>
@@ -63,6 +63,8 @@ public final class StandardFragment {
     private final String templateName;
     private final IFragmentSpec fragmentSpec;
     private final Map<String,Object> parameters;
+    private final String dialectPrefix;
+    private final String fragmentSignatureAttributeName;
 
 
     /**
@@ -77,12 +79,41 @@ public final class StandardFragment {
      */
     public StandardFragment(final String templateName, final IFragmentSpec fragmentSpec,
                             final Map<String, Object> parameters) {
+        this(templateName, fragmentSpec, parameters, null, null);
+    }
+
+
+    /**
+     * <p>
+     *   Create a new instance of this class.
+     * </p>
+     * <p>
+     *   This constructor allows the specification of the attribute in which a fragment signature
+     *   could be found (if applicable, can be null) so that this signature is processed if found and
+     *   the specified fragment parameters are processed and adapted accordingly (e.g. matching of
+     *   synthetic --not named-- parameters).
+     * </p>
+     *
+     * @param templateName the name of the template that will be resolved and parsed, null if
+     *                     fragment is to be executed on the current template.
+     * @param fragmentSpec the fragment spec that will be applied to the template, once parsed.
+     * @param parameters the parameters to be applied to the fragment, when processed.
+     * @param dialectPrefix the dialect prefix to be applied to the attribute name in which we could expect to find a
+     *        fragment. Can be null.
+     * @param fragmentSignatureAttributeName the name of the attribute in which we could expect to find a
+     *        fragment. Can be null.
+     */
+    public StandardFragment(final String templateName, final IFragmentSpec fragmentSpec,
+                            final Map<String, Object> parameters,
+                            final String dialectPrefix, final String fragmentSignatureAttributeName) {
         super();
         // templateName can be null if target template is the current one
         Validate.notNull(fragmentSpec, "Fragment spec cannot be null or empty");
         this.templateName = templateName;
         this.fragmentSpec = fragmentSpec;
         this.parameters = parameters;
+        this.dialectPrefix = dialectPrefix;
+        this.fragmentSignatureAttributeName = fragmentSignatureAttributeName;
     }
 
 
@@ -146,16 +177,11 @@ public final class StandardFragment {
      *        processing the fragment spec.
      * @param context the processing context to be used for resolving and parsing the template.
      * @param templateRepository the template repository to be asked for the template.
-     * @param dialectPrefix the dialect prefix to be applied to the attribute name in which we could expect to find a
-     *        fragment. Can be null.
-     * @param fragmentSignatureAttributeName the name of the attribute in which we could expect to find a
-     *        fragment
      * @return the result of parsing + applying the fragment spec.
      */
     public List<Node> extractFragment(
             final Configuration configuration, final IProcessingContext context,
-            final TemplateRepository templateRepository,
-            final String dialectPrefix, final String fragmentSignatureAttributeName) {
+            final TemplateRepository templateRepository) {
 
         String targetTemplateName = getTemplateName();
         if (targetTemplateName == null) {
@@ -196,13 +222,14 @@ public final class StandardFragment {
         }
 
         // Check whether this is a node specifying a fragment signature. If it is, process its parameters.
-        if (nodes.size() == 1 && fragmentSignatureAttributeName != null) {
+        if (nodes.size() == 1 && this.fragmentSignatureAttributeName != null) {
             final Node node = nodes.get(0);
             if (node instanceof NestableAttributeHolderNode) {
                 final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode)node;
-                if (attributeHolderNode.hasNormalizedAttribute(dialectPrefix, fragmentSignatureAttributeName)) {
+                if (attributeHolderNode.hasNormalizedAttribute(this.dialectPrefix, this.fragmentSignatureAttributeName)) {
                     final String attributeValue =
-                            attributeHolderNode.getAttributeValueFromNormalizedName(dialectPrefix, fragmentSignatureAttributeName);
+                            attributeHolderNode.getAttributeValueFromNormalizedName(
+                                    this.dialectPrefix, this.fragmentSignatureAttributeName);
                     if (attributeValue != null) {
                         final FragmentSignature fragmentSignature =
                                 StandardExpressionProcessor.parseFragmentSignature(configuration, attributeValue);

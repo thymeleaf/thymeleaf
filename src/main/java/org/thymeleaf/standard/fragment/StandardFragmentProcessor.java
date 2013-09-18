@@ -55,7 +55,7 @@ public final class StandardFragmentProcessor {
      */
     public static StandardFragment computeStandardFragmentSpec(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final String standardFragmentSpec, final DOMSelector.INodeReferenceChecker nodeReferenceChecker) {
+            final String standardFragmentSpec, final String dialectPrefix, final String fragmentSignatureAttributeName) {
         
         Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
@@ -111,10 +111,12 @@ public final class StandardFragmentProcessor {
                 fragmentSelector = fragmentSelector.substring(1, fragmentSelector.length() - 1);
             }
 
+            final DOMSelector.INodeReferenceChecker nodeReferenceChecker =
+                    new StandardFragmentSignatureNodeReferenceChecker(configuration, dialectPrefix, fragmentSignatureAttributeName);
 
             final IFragmentSpec fragmentSpec = new DOMSelectorFragmentSpec(fragmentSelector, nodeReferenceChecker);
 
-            return new StandardFragment(templateName, fragmentSpec, fragmentParameters);
+            return new StandardFragment(templateName, fragmentSpec, fragmentParameters, dialectPrefix, fragmentSignatureAttributeName);
             
         }
         
