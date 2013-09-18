@@ -28,11 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.js.ajax.AjaxHandler;
 import org.springframework.util.StringUtils;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
+import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
 /**
@@ -125,8 +128,13 @@ public class AjaxThymeleafView extends ThymeleafView implements AjaxEnabledView 
             }
 
             final TemplateEngine templateEngine = getTemplateEngine();
+            final Configuration configuration = templateEngine.getConfiguration();
+
+            final String dialectPrefix = getStandardDialectPrefix(configuration);
+            final String fragmentSignatureAttributeName = StandardFragmentAttrProcessor.ATTR_NAME;
+
             final DOMSelector.INodeReferenceChecker nodeReferenceChecker =
-                    createFragmentSignatureReferenceChecker(templateEngine.getConfiguration());
+                    new StandardFragmentSignatureNodeReferenceChecker(configuration, dialectPrefix, fragmentSignatureAttributeName);
 
             for (final String fragmentToRender : fragmentsToRender) {
                 

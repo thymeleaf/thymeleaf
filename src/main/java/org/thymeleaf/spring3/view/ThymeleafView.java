@@ -33,10 +33,8 @@ import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.ProcessingContext;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.fragment.ChainedFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
@@ -46,7 +44,6 @@ import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.fragment.StandardFragment;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
-import org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker;
 import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 
 
@@ -258,13 +255,11 @@ public class ThymeleafView
             final Configuration configuration = viewTemplateEngine.getConfiguration();
             final ProcessingContext processingContext = new ProcessingContext(context);
 
-            final DOMSelector.INodeReferenceChecker fragmentSignatureReferenceChecker =
-                    createFragmentSignatureReferenceChecker(configuration);
-
+            final String dialectPrefix = getStandardDialectPrefix(configuration);
 
             final StandardFragment fragment =
                     StandardFragmentProcessor.computeStandardFragmentSpec(
-                            configuration, processingContext, viewTemplateName, fragmentSignatureReferenceChecker);
+                            configuration, processingContext, viewTemplateName, dialectPrefix, StandardFragmentAttrProcessor.ATTR_NAME);
 
             if (fragment == null) {
                 throw new IllegalArgumentException("Invalid template name specification: '" + viewTemplateName + "'");
@@ -330,13 +325,6 @@ public class ThymeleafView
     }
 
 
-
-
-    static DOMSelector.INodeReferenceChecker createFragmentSignatureReferenceChecker(final Configuration configuration) {
-        final String dialectPrefix = getStandardDialectPrefix(configuration);
-        final String fragmentSignatureAttributeName = StandardFragmentAttrProcessor.ATTR_NAME;
-        return new StandardFragmentSignatureNodeReferenceChecker(configuration, dialectPrefix, fragmentSignatureAttributeName);
-    }
 
 
     static String getStandardDialectPrefix(final Configuration configuration) {
