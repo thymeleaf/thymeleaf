@@ -2,6 +2,7 @@
 ======
 - Applied annotation-based autowiring to custom Thymeleaf View classes even when they were not declared as a bean
   at the application context.
+- Implemented size() and isEmpty() in "beans" map in context variables.
 
 
 2.0.18
