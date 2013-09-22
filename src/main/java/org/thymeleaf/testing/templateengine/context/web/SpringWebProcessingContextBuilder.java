@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
@@ -40,8 +41,8 @@ import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.context.WebContext;
 import org.thymeleaf.spring3.context.SpringWebContext;
+import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
@@ -108,6 +109,14 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         final RequestContext requestContext = 
                 new RequestContext(request, response, servletContext, variables);
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
+
+        final ConversionService conversionService = getConversionService(appCtx); // can be null!
+
+        final ThymeleafEvaluationContext evaluationContext =
+                new ThymeleafEvaluationContext(appCtx, conversionService);
+
+        variables.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
+
 
         initSpring(appCtx, test, request, response, servletContext, locale, variables);
         
@@ -244,6 +253,26 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         // Nothing to be done. Meant to be overridden.
     }
     
-    
+
+
+
+    private ConversionService getConversionService(final ApplicationContext applicationContext) {
+
+        if (applicationContext == null) {
+            return null;
+        }
+
+        final Map<String, ConversionService> conversionServices =
+                applicationContext.getBeansOfType(ConversionService.class);
+
+        if (conversionServices.size() == 0) {
+            return null;
+        }
+
+        return (ConversionService) conversionServices.values().toArray()[0];
+
+    }
+
+
     
 }
