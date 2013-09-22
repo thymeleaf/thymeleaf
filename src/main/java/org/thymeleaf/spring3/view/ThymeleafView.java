@@ -28,6 +28,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
@@ -40,6 +42,7 @@ import org.thymeleaf.fragment.ChainedFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.spring3.context.SpringWebContext;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.FragmentSelection;
 import org.thymeleaf.standard.fragment.StandardFragment;
@@ -227,6 +230,8 @@ public class ThymeleafView
             mergedModel.putAll(model);
         }
 
+        final ApplicationContext applicationContext = getApplicationContext();
+
         final RequestContext requestContext = 
                 new RequestContext(request, response, getServletContext(), mergedModel);
         
@@ -234,7 +239,14 @@ public class ThymeleafView
         addRequestContextAsVariable(mergedModel, SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
         // For compatibility with AbstractTemplateView
         addRequestContextAsVariable(mergedModel, AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE, requestContext);
-        
+
+
+        // Expose Thymeleaf's own evaluation context as a model variable
+        final ConversionService conversionService =
+                (ConversionService) request.getAttribute(ConversionService.class.getName()); // might be null!
+        final ThymeleafEvaluationContext evaluationContext =
+                new ThymeleafEvaluationContext(applicationContext, conversionService);
+        mergedModel.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
         
         final SpringWebContext context =

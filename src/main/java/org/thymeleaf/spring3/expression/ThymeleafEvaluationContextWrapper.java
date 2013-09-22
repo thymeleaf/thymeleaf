@@ -20,7 +20,7 @@
 package org.thymeleaf.spring3.expression;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,75 +34,55 @@ import org.springframework.expression.TypeComparator;
 import org.springframework.expression.TypeConverter;
 import org.springframework.expression.TypeLocator;
 import org.springframework.expression.TypedValue;
+import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   The purpose of this class is to serve as a wrapper for a
- *   standard-defined {@link org.springframework.expression.spel.support.StandardEvaluationContext} object
- *   which will contain every expression-evaluation structure needed except for the
- *   expression variables. This avoids initializing the structures in 
- *   {@link org.springframework.expression.spel.support.StandardEvaluationContext} (some of which
- *   involve synchronized blocks) with every SpEL expression evaluation. 
+ *   Implementation of Spring's {@link org.springframework.expression.EvaluationContext}
+ *   interface designed to wrap around another delegated implementation of this same interface,
+ *   adding (if needed) the Thymeleaf-required
+ *   {@link org.springframework.expression.PropertyAccessor} implementations and (optionally)
+ *   a series of variables to be accessed like <tt>#variableName</tt> during expression evaluation.
  * </p>
- * 
- * @author Guven Demir
+ *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 1.1.3
+ * @since 2.1.0
  *
  */
-public final class SpelEvaluationContext implements EvaluationContext {
-    
-    private static final List<PropertyAccessor> THYMELEAF_PROPERTY_ACCESSORS;
+public final class ThymeleafEvaluationContextWrapper implements EvaluationContext {
 
-    private static final List<PropertyAccessor> DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS;
 
     private final EvaluationContext delegate;
-    private final Map<String,Object> variables;
     private final List<PropertyAccessor> propertyAccessors;
-    
-    static {
+    private final Map<String,Object> additionalVariables;
 
-        final List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>(4);
-        accessors.add(VariablesMapPropertyAccessor.INSTANCE);
-        accessors.add(BeansPropertyAccessor.INSTANCE);
-        THYMELEAF_PROPERTY_ACCESSORS = Collections.unmodifiableList(accessors);
 
-        final List<PropertyAccessor> defaultPlusThymeleafPropertyAccessors = new ArrayList<PropertyAccessor>(6);
-        defaultPlusThymeleafPropertyAccessors.addAll(
-                SpelVariableExpressionEvaluator.DEFAULT_EVALUATION_CONTEXT.getPropertyAccessors());
-        defaultPlusThymeleafPropertyAccessors.addAll(THYMELEAF_PROPERTY_ACCESSORS);
-        DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS = defaultPlusThymeleafPropertyAccessors;
 
+    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
+        this(delegate, null);
     }
-    
-    
-    
-    public SpelEvaluationContext(final EvaluationContext delegate, final Map<String,Object> variables) {
+
+
+    public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate, final Map<String,Object> additionalVariables) {
         
         super();
-        
+
+        Validate.notNull(delegate, "Evaluation context delegate cannot be null");
+
         this.delegate = delegate;
-        this.variables = variables;
 
-        if (delegate == SpelVariableExpressionEvaluator.DEFAULT_EVALUATION_CONTEXT) {
-
-            // If we are using the default as delegate (which will happen 99,99% times, just
-            // use the precomputed proeprty accessor list
-            this.propertyAccessors = DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS;
-
+        if (this.delegate instanceof ThymeleafEvaluationContext) {
+            this.propertyAccessors = this.delegate.getPropertyAccessors();
         } else {
-        
-            final List<PropertyAccessor> delegatePropertyAccessors = delegate.getPropertyAccessors();
-            if (delegatePropertyAccessors == null || delegatePropertyAccessors.size() == 0) {
-                this.propertyAccessors = THYMELEAF_PROPERTY_ACCESSORS;
-            } else {
-                this.propertyAccessors = new ArrayList<PropertyAccessor>(delegatePropertyAccessors);
-                this.propertyAccessors.addAll(THYMELEAF_PROPERTY_ACCESSORS);
-            }
-
+            this.propertyAccessors = new ArrayList<PropertyAccessor>(5);
+            this.propertyAccessors.addAll(this.delegate.getPropertyAccessors());
+            this.propertyAccessors.add(VariablesMapPropertyAccessor.INSTANCE);
+            this.propertyAccessors.add(BeansPropertyAccessor.INSTANCE);
         }
-        
+
+        this.additionalVariables = new HashMap<String,Object>(additionalVariables);
+
     }
 
     
@@ -143,11 +123,11 @@ public final class SpelEvaluationContext implements EvaluationContext {
     }
 
     public void setVariable(final String name, final Object value) {
-        this.variables.put(name, value);
+        this.additionalVariables.put(name, value);
     }
 
     public Object lookupVariable(final String name) {
-        final Object result = this.variables.get(name);
+        final Object result = this.additionalVariables.get(name);
         if (result != null) {
             return result;
         }

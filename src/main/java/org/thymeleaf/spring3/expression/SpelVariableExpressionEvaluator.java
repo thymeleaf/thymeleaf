@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -64,9 +65,7 @@ public class SpelVariableExpressionEvaluator
     private static final Logger logger = LoggerFactory.getLogger(SpelVariableExpressionEvaluator.class);
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
-    static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT = new StandardEvaluationContext();
-    
-    
+
     
     protected SpelVariableExpressionEvaluator() {
         super();
@@ -86,9 +85,18 @@ public class SpelVariableExpressionEvaluator
     
             final Map<String,Object> contextVariables = 
                     computeExpressionObjects(configuration, processingContext);
-            
-            final SpelEvaluationContext evaluationContext = 
-                    new SpelEvaluationContext(DEFAULT_EVALUATION_CONTEXT, contextVariables);
+
+            EvaluationContext baseEvaluationContext =
+                    (EvaluationContext) processingContext.getContext().getVariables().
+                            get(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME);
+
+            if (baseEvaluationContext == null) {
+                // Using a standard one as base: we are losing bean resolution and conversion service!!
+                baseEvaluationContext = new StandardEvaluationContext();
+            }
+
+            final ThymeleafEvaluationContextWrapper evaluationContext =
+                    new ThymeleafEvaluationContextWrapper(baseEvaluationContext, contextVariables);
 
             final SpelExpression exp = getExpression(configuration, spelExpression);
             
