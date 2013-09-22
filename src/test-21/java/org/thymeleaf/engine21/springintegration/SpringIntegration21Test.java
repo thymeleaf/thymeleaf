@@ -66,5 +66,21 @@ public class SpringIntegration21Test {
         
     }
 
+
+
+    @Test
+    public void testBeans() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(
+                new org.thymeleaf.engine.springintegration.context.SpringIntegrationWebProcessingContextBuilder(
+                        "classpath:engine21/springintegration/applicationContext-beans.xml"));
+        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.execute("classpath:engine21/springintegration/beans");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
     
 }
