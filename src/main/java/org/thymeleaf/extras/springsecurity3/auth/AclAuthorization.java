@@ -22,13 +22,10 @@ package org.thymeleaf.extras.springsecurity3.auth;
 import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.security.core.Authentication;
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 

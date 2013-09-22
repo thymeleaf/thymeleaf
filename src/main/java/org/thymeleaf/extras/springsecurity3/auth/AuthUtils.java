@@ -50,8 +50,8 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring3.expression.SpelEvaluationContext;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
+import org.thymeleaf.spring3.expression.ThymeleafEvaluationContextWrapper;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.util.Validate;
 
@@ -232,9 +232,11 @@ public final class AuthUtils {
         
         
         // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
-        final SpelEvaluationContext spelEvaluationContext = new SpelEvaluationContext(evaluationContext, contextVariables);
+        final ThymeleafEvaluationContextWrapper wrappedEvaluationContext =
+                new ThymeleafEvaluationContextWrapper(evaluationContext, contextVariables);
+
         
-        if (ExpressionUtils.evaluateAsBoolean(expressionObject, spelEvaluationContext)) {
+        if (ExpressionUtils.evaluateAsBoolean(expressionObject, wrappedEvaluationContext)) {
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] Checked authorization using access expression \"{}\" for user \"{}\". Access GRANTED.",
