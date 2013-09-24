@@ -423,7 +423,7 @@ div.semiwidetable {
 }
 .ecosystem-item .ecosystem-item-status {
     font-size: 12px;
-    color: #bbb;
+    color: #999;
     font-style: italic;
     padding-left: 4px;
 }
@@ -432,7 +432,7 @@ ul.ecosystem-item-content {
 }
 ul.ecosystem-item-content li.ecosystem-item-links, ul.ecosystem-item-content li.ecosystem-item-links a {
   font-size: 12px;
-  color: #bbb;
+  color: #999;
 }
 ul.ecosystem-item-content li.ecosystem-item-links a {
   font-weight: bold;
