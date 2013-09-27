@@ -53,15 +53,15 @@ public class AddLocalVariableToNode extends AbstractAttrProcessor {
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final AssignationSequence assignationSequence =
-                StandardExpressions.parseAssignationSequence(arguments, attributeValue, false);
+                StandardExpressions.parseAssignationSequence(arguments.getConfiguration(), arguments, attributeValue, false);
 
         for (final Assignation assignation : assignationSequence.getAssignations()) {
             
             final Expression varNameExpr = assignation.getLeft();
             final Expression varValueExpr = assignation.getRight();
 
-            final Object varName = StandardExpressions.executeExpression(arguments, varNameExpr);
-            final Object varValue = StandardExpressions.executeExpression(arguments, varValueExpr);
+            final Object varName = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, varNameExpr);
+            final Object varValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, varValueExpr);
             
             element.setNodeLocalVariable((varName == null? null : varName.toString()), varValue);
             
