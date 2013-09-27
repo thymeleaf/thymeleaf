@@ -276,7 +276,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 try {
                     
                     final Object result =
-                            StandardExpressions.processExpression(arguments, match);
+                            StandardExpressions.processExpression(arguments.getConfiguration(), arguments, match);
                     
                     strBuilder.append(formatEvaluationResult(result));
                     

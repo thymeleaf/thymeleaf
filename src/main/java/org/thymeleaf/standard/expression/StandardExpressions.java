@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -48,81 +47,36 @@ public final class StandardExpressions {
 
 
     
-    public static Expression parseExpression(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments.getConfiguration()).parseExpression(arguments, input);
-    }
-    
-    /**
-     * @since 2.0.9
-     */
     public static Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         return getParserAttribute(configuration).parseExpression(configuration, processingContext, input);
     }
 
     
     
-    public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
-        return getParserAttribute(arguments.getConfiguration()).parseAssignationSequence(arguments, input, allowParametersWithoutValue);
-    }
-    
-    /**
-     * @since 2.0.9
-     */
     public static AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
         return getParserAttribute(configuration).parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
     }
 
     
     
-    public static ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments.getConfiguration()).parseExpressionSequence(arguments, input);
-    }
-    
-    /**
-     * @since 2.0.9
-     */
     public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         return getParserAttribute(configuration).parseExpressionSequence(configuration, processingContext, input);
     }
 
     
     
-    public static Each parseEach(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments.getConfiguration()).parseEach(arguments, input);
-    }
-    
-    /**
-     * @since 2.0.9
-     */
     public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         return getParserAttribute(configuration).parseEach(configuration, processingContext, input);
     }
 
 
 
-    public static FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments.getConfiguration()).parseFragmentSelection(arguments, input);
-    }
-
-    /**
-     * @since 2.0.9
-     */
     public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         return getParserAttribute(configuration).parseFragmentSelection(configuration, processingContext, input);
     }
 
 
 
-    /**
-     * @since 2.1.0
-     */
-    public static FragmentSignature parseFragmentSignature(final Arguments arguments, final String input) {
-        return getParserAttribute(arguments.getConfiguration()).parseFragmentSignature(arguments, input);
-    }
-
-    /**
-     * @since 2.1.0
-     */
     public static FragmentSignature parseFragmentSignature(final Configuration configuration, final String input) {
         return getParserAttribute(configuration).parseFragmentSignature(configuration, input);
     }
@@ -133,38 +87,17 @@ public final class StandardExpressions {
     
     
     
-    public static Object executeExpression(final Arguments arguments, final Expression expression) {
-        return getExecutorAttribute(arguments.getConfiguration()).executeExpression(arguments, expression);
-    }
-    
-    /**
-     * @since 2.0.9
-     */
-    public static Object executeExpression(final Configuration configuration, 
+    public static Object executeExpression(final Configuration configuration,
             final IProcessingContext processingContext, final Expression expression) {
-        return getExecutorAttribute(configuration).executeExpression(
-                configuration, processingContext, expression);
+        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression);
     }
     
 
     
-    /**
-     * @since 2.0.16
-     */
-    public static Object executeExpression(final Arguments arguments, final Expression expression,
-            final StandardExpressionExecutionContext expContext) {
-        return getExecutorAttribute(arguments.getConfiguration()).executeExpression(
-                arguments, expression, expContext);
-    }
-    
-    /**
-     * @since 2.0.16
-     */
-    public static Object executeExpression(final Configuration configuration, 
+    public static Object executeExpression(final Configuration configuration,
             final IProcessingContext processingContext, final Expression expression,
             final StandardExpressionExecutionContext expContext) {
-        return getExecutorAttribute(configuration).executeExpression(
-                configuration, processingContext, expression, expContext);
+        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression, expContext);
     }
     
     
@@ -173,35 +106,14 @@ public final class StandardExpressions {
     
 
     
-    public static Object processExpression(final Arguments arguments, final String input) {
-        return executeExpression(arguments, parseExpression(arguments, input));
-    }
-    
-    /**
-     * @since 2.0.9
-     */
-    public static Object processExpression(final Configuration configuration, 
+    public static Object processExpression(final Configuration configuration,
             final IProcessingContext processingContext, final String input) {
         return executeExpression(configuration, processingContext, parseExpression(configuration, processingContext, input));
     }
     
 
     
-    /**
-     * @since 2.0.16
-     */
-    public static Object processExpression(final Arguments arguments, final String input,
-            final StandardExpressionExecutionContext expContext) {
-        return executeExpression(
-                arguments, 
-                parseExpression(arguments, input), 
-                expContext);
-    }
-    
-    /**
-     * @since 2.0.16
-     */
-    public static Object processExpression(final Configuration configuration, 
+    public static Object processExpression(final Configuration configuration,
             final IProcessingContext processingContext, final String input,
             final StandardExpressionExecutionContext expContext) {
         return executeExpression(
@@ -211,7 +123,24 @@ public final class StandardExpressions {
                 expContext);
     }
 
-    
+
+
+
+
+
+    public static boolean canConvert(final Configuration configuration,
+                                     final Class<?> sourceClass, final Class<?> targetClass) {
+        return getConversionService(configuration).canConvert(sourceClass, targetClass);
+    }
+
+
+
+    public static <S,T> T convert(final Configuration configuration,
+                                  final S object, final Class<? super S> sourceClass, final Class<T> targetClass) {
+        return getConversionService(configuration).convert(object, sourceClass, targetClass);
+    }
+
+
     
     
     
@@ -258,12 +187,12 @@ public final class StandardExpressions {
                 configuration.getExecutionAttributes().get(STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME);
         if (conversionService == null || (!(conversionService instanceof IStandardConversionService))) {
             throw new TemplateProcessingException(
-                    "No Standard Expression Executor has been registered as an execution argument. " +
+                    "No Standard Conversion Service has been registered as an execution argument. " +
                     "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
-                    "attribute of type " + StandardExpressionExecutor.class.getName() + " with name " +
-                    "\"" + STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME + "\"");
+                    "attribute of type " + IStandardConversionService.class.getName() + " with name " +
+                    "\"" + STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME + "\"");
         }
         return (IStandardConversionService) conversionService;
     }

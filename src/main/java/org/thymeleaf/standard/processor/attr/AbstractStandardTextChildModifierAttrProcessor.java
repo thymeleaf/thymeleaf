@@ -58,7 +58,7 @@ public abstract class AbstractStandardTextChildModifierAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final Object result =
-                StandardExpressions.processExpression(arguments, attributeValue);
+                StandardExpressions.processExpression(arguments.getConfiguration(), arguments, attributeValue);
         
         return (result == null? "" : result.toString());
         

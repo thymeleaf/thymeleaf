@@ -66,21 +66,21 @@ public abstract class AbstractStandardIterationAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        final Each each = StandardExpressions.parseEach(arguments, attributeValue);
+        final Each each = StandardExpressions.parseEach(arguments.getConfiguration(), arguments, attributeValue);
 
         final Expression iterVarExpr = each.getIterVar();
-        final Object iterVarValue = StandardExpressions.executeExpression(arguments, iterVarExpr);
+        final Object iterVarValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, iterVarExpr);
 
         final Expression statusVarExpr = each.getStatusVar();
         final Object statusVarValue;
         if (statusVarExpr != null) {
-            statusVarValue = StandardExpressions.executeExpression(arguments, statusVarExpr);
+            statusVarValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, statusVarExpr);
         } else {
             statusVarValue = null;
         }
 
         final Expression iterableExpr = each.getIterable();
-        final Object iteratedValue = StandardExpressions.executeExpression(arguments, iterableExpr);
+        final Object iteratedValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, iterableExpr);
 
         final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {

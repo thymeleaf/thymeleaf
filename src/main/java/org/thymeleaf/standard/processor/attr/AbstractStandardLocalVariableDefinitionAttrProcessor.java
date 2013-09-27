@@ -68,7 +68,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         
         final AssignationSequence assignations =
                 StandardExpressions.parseAssignationSequence(
-                    arguments, attributeValue, false /* no parameters without value */);
+                    arguments.getConfiguration(), arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
@@ -80,10 +80,14 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         for (final Assignation assignation : assignations) {
             
             final Expression leftExpr = assignation.getLeft();
-            final Object leftValue = StandardExpressions.executeExpression(assignationExecutionArguments, leftExpr);
+            final Object leftValue =
+                    StandardExpressions.executeExpression(
+                        assignationExecutionArguments.getConfiguration(), assignationExecutionArguments, leftExpr);
 
             final Expression rightExpr = assignation.getRight();
-            final Object rightValue = StandardExpressions.executeExpression(assignationExecutionArguments, rightExpr);
+            final Object rightValue =
+                    StandardExpressions.executeExpression(
+                            assignationExecutionArguments.getConfiguration(), assignationExecutionArguments, rightExpr);
 
             final String newVariableName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newVariableName)) {

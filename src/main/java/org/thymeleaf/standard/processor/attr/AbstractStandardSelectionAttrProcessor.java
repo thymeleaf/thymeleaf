@@ -60,11 +60,11 @@ public abstract class AbstractStandardSelectionAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final Expression expression =
-                StandardExpressions.parseExpression(arguments, attributeValue);
+                StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
         
         validateSelectionValue(arguments, element, attributeName, attributeValue, expression);
         
-        return StandardExpressions.executeExpression(arguments, expression);
+        return StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, expression);
         
     }
 

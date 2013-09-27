@@ -34,8 +34,10 @@ import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -519,6 +521,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                 StandardExpressions.createStandardExpressionExecutor(expressionEvaluator);
         final StandardExpressionParser parser =
                 StandardExpressions.createStandardExpressionParser(executor);
+        final IStandardConversionService conversionService = new StandardConversionService();
 
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);
         executionAttributes.put(
@@ -527,6 +530,8 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                 StandardExpressions.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
                 StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
+        executionAttributes.put(
+                StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, conversionService);
 
         return executionAttributes;
         

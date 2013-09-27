@@ -92,12 +92,12 @@ public abstract class AbstractStandardCaseAttrProcessor
         }
         
         final Expression caseExpression =
-                StandardExpressions.parseExpression(arguments, attributeValue);
+                StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
         
         final EqualsExpression equalsExpression = new EqualsExpression(switchStructure.getExpression(), caseExpression); 
 
         final Object value =
-                StandardExpressions.executeExpression(arguments, equalsExpression);
+                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, equalsExpression);
 
         final boolean visible = ObjectUtils.evaluateAsBoolean(value);
         

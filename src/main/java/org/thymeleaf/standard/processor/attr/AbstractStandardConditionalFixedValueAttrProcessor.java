@@ -66,7 +66,7 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
         
         final String attributeValue = element.getAttributeValue(attributeName);
-        final Object value = StandardExpressions.processExpression(arguments, attributeValue);
+        final Object value = StandardExpressions.processExpression(arguments.getConfiguration(), arguments, attributeValue);
         return ObjectUtils.evaluateAsBoolean(value);
         
     }

@@ -64,13 +64,13 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final Expression expression =
-                StandardExpressions.parseExpression(arguments, attributeValue);
+                StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
         
         final Set<String> newAttributeNames = 
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
         final Object valueForAttributes =
-                StandardExpressions.executeExpression(arguments, expression);
+                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, expression);
         
         final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {

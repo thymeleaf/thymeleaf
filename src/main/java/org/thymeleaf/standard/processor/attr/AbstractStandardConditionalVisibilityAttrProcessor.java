@@ -56,7 +56,7 @@ public abstract class AbstractStandardConditionalVisibilityAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        final Object value = StandardExpressions.processExpression(arguments, attributeValue);
+        final Object value = StandardExpressions.processExpression(arguments.getConfiguration(), arguments, attributeValue);
 
         final boolean visible = ObjectUtils.evaluateAsBoolean(value);
         

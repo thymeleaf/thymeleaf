@@ -60,7 +60,7 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
         
         final Object result =
                 StandardExpressions.processExpression(
-                    arguments, attributeValue, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
+                    arguments.getConfiguration(), arguments, attributeValue, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
         
         return (result == null? "" : result.toString());
         

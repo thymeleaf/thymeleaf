@@ -62,7 +62,7 @@ public abstract class AbstractStandardSwitchStructureAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final Expression switchExpression =
-                StandardExpressions.parseExpression(arguments, attributeValue);
+                StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
 
         final Map<String,Object> newVariables = new HashMap<String, Object>(2, 1.0f);
         newVariables.put(SWITCH_VARIABLE_NAME, new SwitchStructure(switchExpression));

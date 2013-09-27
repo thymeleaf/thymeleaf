@@ -64,13 +64,13 @@ public abstract class AbstractStandardAssertionAttrProcessor
         }
 
         final ExpressionSequence expressionSequence =
-                StandardExpressions.parseExpressionSequence(arguments, attributeValue);
+                StandardExpressions.parseExpressionSequence(arguments.getConfiguration(), arguments, attributeValue);
 
         final List<Expression> expressions = expressionSequence.getExpressions();
 
         for (final Expression expression : expressions) {
             final Object expressionResult =
-                    StandardExpressions.executeExpression(arguments, expression);
+                    StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, expression);
             final boolean expressionBooleanResult = ObjectUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(expression.getStringRepresentation(),

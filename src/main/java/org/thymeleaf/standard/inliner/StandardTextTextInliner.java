@@ -95,7 +95,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                 try {
                     
                     final Object result =
-                            StandardExpressions.processExpression(arguments, match);
+                            StandardExpressions.processExpression(arguments.getConfiguration(), arguments, match);
                     
                     strBuilder.append(result);
                     
