@@ -27,7 +27,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProcessor;
 
@@ -122,7 +122,7 @@ public final class SpringObjectAttrProcessor
 
             final String attributeValue = element.getAttributeValue(attributeName);
             final VariableExpression varExpression =
-                (VariableExpression) StandardExpressionProcessor.parseExpression(arguments, attributeValue);
+                (VariableExpression) StandardExpressions.parseExpression(arguments, attributeValue);
             additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);
             
         }

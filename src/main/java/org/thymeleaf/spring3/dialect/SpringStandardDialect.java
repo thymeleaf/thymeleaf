@@ -50,7 +50,7 @@ import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
 
@@ -465,16 +465,16 @@ public class SpringStandardDialect extends StandardDialect {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = SpelVariableExpressionEvaluator.INSTANCE;
         
-        final StandardExpressionExecutor executor = StandardExpressionProcessor.createStandardExpressionExecutor(expressionEvaluator);
-        final StandardExpressionParser parser = StandardExpressionProcessor.createStandardExpressionParser(executor);
+        final StandardExpressionExecutor executor = StandardExpressions.createStandardExpressionExecutor(expressionEvaluator);
+        final StandardExpressionParser parser = StandardExpressions.createStandardExpressionParser(executor);
         
         final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
         executionAttributes.put(
                 StandardDialect.EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
-                StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
+                StandardExpressions.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
-                StandardExpressionProcessor.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
+                StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
         
         return executionAttributes;
         

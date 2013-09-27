@@ -32,7 +32,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.SelectionVariableExpression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
 
 
@@ -188,7 +188,7 @@ public final class FieldUtils {
         
         
         final Expression expressionObj =
-            StandardExpressionProcessor.parseExpression(configuration, processingContext, bindExpression);
+                StandardExpressions.parseExpression(configuration, processingContext, bindExpression);
         
         final String completeExpression = 
             FieldUtils.validateAndGetValueExpression(processingContext, expressionObj);
