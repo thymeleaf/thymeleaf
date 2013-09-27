@@ -29,7 +29,7 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.EqualsExpression;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSwitchStructureAttrProcessor.SwitchStructure;
 import org.thymeleaf.util.ObjectUtils;
 
@@ -92,12 +92,12 @@ public abstract class AbstractStandardCaseAttrProcessor
         }
         
         final Expression caseExpression =
-                StandardExpressionProcessor.parseExpression(arguments, attributeValue);
+                StandardExpressions.parseExpression(arguments, attributeValue);
         
         final EqualsExpression equalsExpression = new EqualsExpression(switchStructure.getExpression(), caseExpression); 
 
         final Object value =
-                StandardExpressionProcessor.executeExpression(arguments, equalsExpression);
+                StandardExpressions.executeExpression(arguments, equalsExpression);
 
         final boolean visible = ObjectUtils.evaluateAsBoolean(value);
         

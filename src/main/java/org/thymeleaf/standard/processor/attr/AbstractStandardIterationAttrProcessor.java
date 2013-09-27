@@ -26,7 +26,7 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -66,21 +66,21 @@ public abstract class AbstractStandardIterationAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        final Each each = StandardExpressionProcessor.parseEach(arguments, attributeValue);
+        final Each each = StandardExpressions.parseEach(arguments, attributeValue);
 
         final Expression iterVarExpr = each.getIterVar();
-        final Object iterVarValue = StandardExpressionProcessor.executeExpression(arguments, iterVarExpr);
+        final Object iterVarValue = StandardExpressions.executeExpression(arguments, iterVarExpr);
 
         final Expression statusVarExpr = each.getStatusVar();
         final Object statusVarValue;
         if (statusVarExpr != null) {
-            statusVarValue = StandardExpressionProcessor.executeExpression(arguments, statusVarExpr);
+            statusVarValue = StandardExpressions.executeExpression(arguments, statusVarExpr);
         } else {
             statusVarValue = null;
         }
 
         final Expression iterableExpr = each.getIterable();
-        final Object iteratedValue = StandardExpressionProcessor.executeExpression(arguments, iterableExpr);
+        final Object iteratedValue = StandardExpressions.executeExpression(arguments, iterableExpr);
 
         final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {

@@ -31,7 +31,7 @@ import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -66,8 +66,8 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        final AssignationSequence assignations = 
-            StandardExpressionProcessor.parseAssignationSequence(
+        final AssignationSequence assignations =
+                StandardExpressions.parseAssignationSequence(
                     arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
@@ -80,10 +80,10 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         for (final Assignation assignation : assignations) {
             
             final Expression leftExpr = assignation.getLeft();
-            final Object leftValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, leftExpr);
+            final Object leftValue = StandardExpressions.executeExpression(assignationExecutionArguments, leftExpr);
 
             final Expression rightExpr = assignation.getRight();
-            final Object rightValue = StandardExpressionProcessor.executeExpression(assignationExecutionArguments, rightExpr);
+            final Object rightValue = StandardExpressions.executeExpression(assignationExecutionArguments, rightExpr);
 
             final String newVariableName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newVariableName)) {

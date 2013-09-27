@@ -24,7 +24,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSelectionTargetAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * 
@@ -59,12 +59,12 @@ public abstract class AbstractStandardSelectionAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        final Expression expression = 
-            StandardExpressionProcessor.parseExpression(arguments, attributeValue);
+        final Expression expression =
+                StandardExpressions.parseExpression(arguments, attributeValue);
         
         validateSelectionValue(arguments, element, attributeName, attributeValue, expression);
         
-        return StandardExpressionProcessor.executeExpression(arguments, expression);
+        return StandardExpressions.executeExpression(arguments, expression);
         
     }
 

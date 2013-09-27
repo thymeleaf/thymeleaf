@@ -32,7 +32,7 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
@@ -66,8 +66,8 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         
         
         final String attributeValue = element.getAttributeValue(attributeName);
-        final AssignationSequence assignations = 
-            StandardExpressionProcessor.parseAssignationSequence(
+        final AssignationSequence assignations =
+                StandardExpressions.parseAssignationSequence(
                     arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
@@ -79,10 +79,10 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         for (final Assignation assignation : assignations) {
             
             final Expression leftExpr = assignation.getLeft();
-            final Object leftValue = StandardExpressionProcessor.executeExpression(arguments, leftExpr);
+            final Object leftValue = StandardExpressions.executeExpression(arguments, leftExpr);
 
             final Expression rigtExpr = assignation.getRight();
-            final Object rightValue = StandardExpressionProcessor.executeExpression(arguments, rigtExpr);
+            final Object rightValue = StandardExpressions.executeExpression(arguments, rigtExpr);
 
             final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {

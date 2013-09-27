@@ -25,7 +25,7 @@ import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.standard.expression.FragmentSignature;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
 
@@ -89,7 +89,7 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
                         attributeHolderNode.getAttributeValueFromNormalizedName(this.dialectPrefix, this.fragmentAttributeName);
                 if (elementAttrValue != null) {
                     final FragmentSignature fragmentSignature =
-                            StandardExpressionProcessor.parseFragmentSignature(this.configuration, elementAttrValue);
+                            StandardExpressions.parseFragmentSignature(this.configuration, elementAttrValue);
                     if (fragmentSignature != null) {
                         final String signatureFragmentName = fragmentSignature.getFragmentName();
                         if (referenceValue.equals(signatureFragmentName)) {

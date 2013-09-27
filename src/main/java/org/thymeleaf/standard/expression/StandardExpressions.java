@@ -25,41 +25,23 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
-
-
-
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- *
- * @deprecated in 2.1.0 for semantic reasons. Should use the equivalent (but more complete)
- *             {@link StandardExpressions} instead. Will be removed in 3.0.
- * @since 1.1
+ * 
+ * @since 2.1.0
  *
  */
-@Deprecated
-public final class StandardExpressionProcessor {
+public final class StandardExpressions {
 
-    /**
-     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic reasons.
-     *             Should use the equivalent (but more complete) {@link StandardExpressions} instead.
-     *             Will be removed in 3.0.
-     */
-    @Deprecated
+
     public static final String STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME = "StandardExpressionExecutor";
-
-    /**
-     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic reasons.
-     *             Should use the equivalent (but more complete) {@link StandardExpressions} instead.
-     *             Will be removed in 3.0.
-     */
-    @Deprecated
     public static final String STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME = "StandardExpressionParser";
-   
-    
-    
-    private StandardExpressionProcessor() {
+    public static final String STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME = "StandardConversionService";
+
+
+
+    private StandardExpressions() {
         super();
     }
 
@@ -240,7 +222,7 @@ public final class StandardExpressionProcessor {
         if (parser == null || (!(parser instanceof StandardExpressionParser))) {
             throw new TemplateProcessingException(
                     "No Standard Expression Parser has been registered as an execution argument. " +
-                    "This is a requirement for using " + StandardExpressionProcessor.class.getSimpleName() + ", and might happen " +
+                    "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
                     "attribute of type " + StandardExpressionParser.class.getName() + " with name " +
@@ -258,7 +240,7 @@ public final class StandardExpressionProcessor {
         if (executor == null || (!(executor instanceof StandardExpressionExecutor))) {
             throw new TemplateProcessingException(
                     "No Standard Expression Executor has been registered as an execution argument. " +
-                    "This is a requirement for using " + StandardExpressionProcessor.class.getSimpleName() + ", and might happen " +
+                    "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
                     "attribute of type " + StandardExpressionExecutor.class.getName() + " with name " +
@@ -267,6 +249,24 @@ public final class StandardExpressionProcessor {
         return (StandardExpressionExecutor) executor;
     }
 
+
+
+
+
+    private static IStandardConversionService getConversionService(final Configuration configuration) {
+        final Object conversionService =
+                configuration.getExecutionAttributes().get(STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME);
+        if (conversionService == null || (!(conversionService instanceof IStandardConversionService))) {
+            throw new TemplateProcessingException(
+                    "No Standard Expression Executor has been registered as an execution argument. " +
+                    "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
+                    "if neither the Standard or the SpringStandard dialects have " +
+                    "been added to the Template Engine and none of the specified dialects registers an " +
+                    "attribute of type " + StandardExpressionExecutor.class.getName() + " with name " +
+                    "\"" + STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME + "\"");
+        }
+        return (IStandardConversionService) conversionService;
+    }
 
     
     

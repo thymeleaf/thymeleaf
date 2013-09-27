@@ -34,7 +34,7 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.standard.expression.FragmentSignature;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
 
@@ -232,7 +232,7 @@ public final class StandardFragment {
                                     this.dialectPrefix, this.fragmentSignatureAttributeName);
                     if (attributeValue != null) {
                         final FragmentSignature fragmentSignature =
-                                StandardExpressionProcessor.parseFragmentSignature(configuration, attributeValue);
+                                StandardExpressions.parseFragmentSignature(configuration, attributeValue);
                         if (fragmentSignature != null) {
                             final Map<String,Object> processedParameters =
                                     fragmentSignature.processParameters(this.parameters);

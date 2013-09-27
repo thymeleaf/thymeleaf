@@ -28,7 +28,7 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAssertionAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.ExpressionSequence;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
@@ -64,13 +64,13 @@ public abstract class AbstractStandardAssertionAttrProcessor
         }
 
         final ExpressionSequence expressionSequence =
-            StandardExpressionProcessor.parseExpressionSequence(arguments, attributeValue);
+                StandardExpressions.parseExpressionSequence(arguments, attributeValue);
 
         final List<Expression> expressions = expressionSequence.getExpressions();
 
         for (final Expression expression : expressions) {
             final Object expressionResult =
-                    StandardExpressionProcessor.executeExpression(arguments, expression);
+                    StandardExpressions.executeExpression(arguments, expression);
             final boolean expressionBooleanResult = ObjectUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(expression.getStringRepresentation(),

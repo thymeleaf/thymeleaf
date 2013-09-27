@@ -23,7 +23,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalFixedValueAttrProcessor;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ObjectUtils;
 
 /**
@@ -66,7 +66,7 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
         
         final String attributeValue = element.getAttributeValue(attributeName);
-        final Object value = StandardExpressionProcessor.processExpression(arguments, attributeValue);
+        final Object value = StandardExpressions.processExpression(arguments, attributeValue);
         return ObjectUtils.evaluateAsBoolean(value);
         
     }

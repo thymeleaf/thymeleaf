@@ -23,7 +23,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSingleAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * 
@@ -56,8 +56,8 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
 
         final String attributeValue = element.getAttributeValue(attributeName);
         
-        final Object result = 
-            StandardExpressionProcessor.processExpression(arguments, attributeValue);
+        final Object result =
+                StandardExpressions.processExpression(arguments, attributeValue);
         
         return (result == null? "" : result.toString());
         

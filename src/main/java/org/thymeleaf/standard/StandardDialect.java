@@ -38,7 +38,7 @@ import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardAssertAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardAttrAttrProcessor;
@@ -143,7 +143,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
      * @since 2.0.14
      */
     public static final String EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE = "EXPRESSION_EVALUATOR";
-    
+
     
     public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF1_SYSTEMID = 
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-1.dtd");
@@ -515,19 +515,19 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
         
-        final StandardExpressionExecutor executor = 
-                StandardExpressionProcessor.createStandardExpressionExecutor(expressionEvaluator);
-        final StandardExpressionParser parser = 
-                StandardExpressionProcessor.createStandardExpressionParser(executor);
-        
+        final StandardExpressionExecutor executor =
+                StandardExpressions.createStandardExpressionExecutor(expressionEvaluator);
+        final StandardExpressionParser parser =
+                StandardExpressions.createStandardExpressionParser(executor);
+
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);
         executionAttributes.put(
                 EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
-                StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
+                StandardExpressions.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
-                StandardExpressionProcessor.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
-        
+                StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
+
         return executionAttributes;
         
     }

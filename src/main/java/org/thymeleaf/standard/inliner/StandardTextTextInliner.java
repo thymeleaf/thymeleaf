@@ -28,7 +28,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * 
@@ -95,7 +95,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                 try {
                     
                     final Object result =
-                        StandardExpressionProcessor.processExpression(arguments, match);
+                            StandardExpressions.processExpression(arguments, match);
                     
                     strBuilder.append(result);
                     
