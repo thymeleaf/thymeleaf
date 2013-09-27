@@ -122,7 +122,7 @@ public final class SpringObjectAttrProcessor
 
             final String attributeValue = element.getAttributeValue(attributeName);
             final VariableExpression varExpression =
-                (VariableExpression) StandardExpressions.parseExpression(arguments, attributeValue);
+                (VariableExpression) StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
             additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);
             
         }
