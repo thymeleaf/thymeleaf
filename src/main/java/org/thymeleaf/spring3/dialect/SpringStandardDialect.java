@@ -47,7 +47,9 @@ import org.thymeleaf.spring3.processor.attr.SpringSelectFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringSingleRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringTextareaFieldAttrProcessor;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -464,18 +466,21 @@ public class SpringStandardDialect extends StandardDialect {
     public Map<String, Object> getExecutionAttributes() {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = SpelVariableExpressionEvaluator.INSTANCE;
-        
-        final StandardExpressionExecutor executor = StandardExpressions.createStandardExpressionExecutor(expressionEvaluator);
-        final StandardExpressionParser parser = StandardExpressions.createStandardExpressionParser(executor);
-        
+        final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
+        final StandardExpressionParser parser = new StandardExpressionParser(executor);
+        final IStandardConversionService conversionService = new StandardConversionService();
+
         final Map<String,Object> executionAttributes = new LinkedHashMap<String, Object>();
+
         executionAttributes.put(
                 StandardDialect.EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
         executionAttributes.put(
                 StandardExpressions.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
         executionAttributes.put(
                 StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
-        
+        executionAttributes.put(
+                StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, conversionService);
+
         return executionAttributes;
         
     }

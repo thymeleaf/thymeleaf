@@ -23,10 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProcessor;
@@ -121,8 +123,13 @@ public final class SpringObjectAttrProcessor
         if ("form".equals(element.getNormalizedName())) {
 
             final String attributeValue = element.getAttributeValue(attributeName);
+
+            final Configuration configuration = arguments.getConfiguration();
+            final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+
             final VariableExpression varExpression =
-                (VariableExpression) StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
+                (VariableExpression) expressionParser.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
+
             additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);
             
         }
