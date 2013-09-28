@@ -20,10 +20,13 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSelectionTargetAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -58,13 +61,16 @@ public abstract class AbstractStandardSelectionAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
 
         final String attributeValue = element.getAttributeValue(attributeName);
-        
-        final Expression expression =
-                StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
+        final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         
         validateSelectionValue(arguments, element, attributeName, attributeValue, expression);
         
-        return StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, expression);
+        return expressionExecutor.executeExpression(configuration, arguments, expression);
         
     }
 

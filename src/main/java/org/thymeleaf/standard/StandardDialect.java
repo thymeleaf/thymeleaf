@@ -516,11 +516,8 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     public Map<String, Object> getExecutionAttributes() {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
-        
-        final StandardExpressionExecutor executor =
-                StandardExpressions.createStandardExpressionExecutor(expressionEvaluator);
-        final StandardExpressionParser parser =
-                StandardExpressions.createStandardExpressionParser(executor);
+        final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
+        final StandardExpressionParser parser = new StandardExpressionParser(executor);
         final IStandardConversionService conversionService = new StandardConversionService();
 
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.Standards;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -32,6 +33,8 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.ObjectUtils;
@@ -66,9 +69,14 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         
         
         final String attributeValue = element.getAttributeValue(attributeName);
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final AssignationSequence assignations =
-                StandardExpressions.parseAssignationSequence(
-                    arguments.getConfiguration(), arguments, attributeValue, false /* no parameters without value */);
+                expressionParser.parseAssignationSequence(
+                    configuration, arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
@@ -79,10 +87,10 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         for (final Assignation assignation : assignations) {
             
             final Expression leftExpr = assignation.getLeft();
-            final Object leftValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, leftExpr);
+            final Object leftValue = expressionExecutor.executeExpression(configuration, arguments, leftExpr);
 
             final Expression rigtExpr = assignation.getRight();
-            final Object rightValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, rigtExpr);
+            final Object rightValue = expressionExecutor.executeExpression(configuration, arguments, rigtExpr);
 
             final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {

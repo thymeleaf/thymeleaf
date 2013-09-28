@@ -25,9 +25,13 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -78,7 +82,11 @@ public class StandardTextTextInliner implements IStandardTextInliner {
         final Matcher matcher = TEXT_INLINE_EVAL_PATTERN.matcher(input);
         
         if (matcher.find()) {
-            
+
+            final Configuration configuration = arguments.getConfiguration();
+            final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+            final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
             final StringBuilder strBuilder = new StringBuilder();
             int curr = 0;
             
@@ -93,10 +101,12 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                 }
                 
                 try {
-                    
+
+                    final Expression expression =
+                            expressionParser.parseExpression(configuration, arguments, match);
                     final Object result =
-                            StandardExpressions.processExpression(arguments.getConfiguration(), arguments, match);
-                    
+                            expressionExecutor.executeExpression(configuration, arguments, expression);
+
                     strBuilder.append(result);
                     
                 } catch (final TemplateProcessingException ignored) {

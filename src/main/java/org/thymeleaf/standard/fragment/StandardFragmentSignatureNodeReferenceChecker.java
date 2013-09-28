@@ -25,6 +25,7 @@ import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.standard.expression.FragmentSignature;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
@@ -49,6 +50,7 @@ import org.thymeleaf.util.Validate;
 public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSelector.AbstractNodeReferenceChecker {
 
     private final Configuration configuration;
+    private final StandardExpressionParser expressionParser;
     private final String dialectPrefix;
     private final String fragmentAttributeName;
 
@@ -59,6 +61,7 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(fragmentAttributeName, "Fragment attribute name cannot be null");
         this.configuration = configuration;
+        this.expressionParser = StandardExpressions.getExpressionParser(this.configuration);
         this.dialectPrefix = dialectPrefix;
         this.fragmentAttributeName = Attribute.normalizeAttributeName(fragmentAttributeName);
     }
@@ -89,7 +92,7 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
                         attributeHolderNode.getAttributeValueFromNormalizedName(this.dialectPrefix, this.fragmentAttributeName);
                 if (elementAttrValue != null) {
                     final FragmentSignature fragmentSignature =
-                            StandardExpressions.parseFragmentSignature(this.configuration, elementAttrValue);
+                            this.expressionParser.parseFragmentSignature(this.configuration, elementAttrValue);
                     if (fragmentSignature != null) {
                         final String signatureFragmentName = fragmentSignature.getFragmentName();
                         if (referenceValue.equals(signatureFragmentName)) {

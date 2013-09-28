@@ -20,9 +20,13 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSingleAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -55,9 +59,13 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
 
         final String attributeValue = element.getAttributeValue(attributeName);
-        
-        final Object result =
-                StandardExpressions.processExpression(arguments.getConfiguration(), arguments, attributeValue);
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
+        final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+        final Object result = expressionExecutor.executeExpression(configuration, arguments, expression);
         
         return (result == null? "" : result.toString());
         

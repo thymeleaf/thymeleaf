@@ -22,6 +22,7 @@ package org.thymeleaf.standard.processor.attr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -29,6 +30,8 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.EqualsExpression;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSwitchStructureAttrProcessor.SwitchStructure;
 import org.thymeleaf.util.ObjectUtils;
@@ -90,14 +93,16 @@ public abstract class AbstractStandardCaseAttrProcessor
             return true;
             
         }
-        
-        final Expression caseExpression =
-                StandardExpressions.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
+        final Expression caseExpression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         
         final EqualsExpression equalsExpression = new EqualsExpression(switchStructure.getExpression(), caseExpression); 
 
-        final Object value =
-                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, equalsExpression);
+        final Object value = expressionExecutor.executeExpression(configuration, arguments, equalsExpression);
 
         final boolean visible = ObjectUtils.evaluateAsBoolean(value);
         

@@ -20,10 +20,14 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractUnescapedTextChildModifierAttrProcessor;
+import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -57,10 +61,16 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
 
         final String attributeValue = element.getAttributeValue(attributeName);
-        
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
+        final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+
         final Object result =
-                StandardExpressions.processExpression(
-                    arguments.getConfiguration(), arguments, attributeValue, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
+                expressionExecutor.executeExpression(
+                        configuration, arguments, expression, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
         
         return (result == null? "" : result.toString());
         

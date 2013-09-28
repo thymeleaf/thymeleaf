@@ -43,7 +43,7 @@ public final class StandardExpressionExecutor {
     private final IStandardVariableExpressionEvaluator expressionEvaluator;
     
     
-    StandardExpressionExecutor(final IStandardVariableExpressionEvaluator expressionEvaluator) {
+    public StandardExpressionExecutor(final IStandardVariableExpressionEvaluator expressionEvaluator) {
         super();
         this.expressionEvaluator = expressionEvaluator;
     }

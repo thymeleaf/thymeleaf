@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
@@ -31,6 +32,8 @@ import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
@@ -65,10 +68,14 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
 
         final String attributeValue = element.getAttributeValue(attributeName);
-        
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final AssignationSequence assignations =
-                StandardExpressions.parseAssignationSequence(
-                    arguments.getConfiguration(), arguments, attributeValue, false /* no parameters without value */);
+                expressionParser.parseAssignationSequence(
+                        configuration, arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
             throw new TemplateProcessingException(
                     "Could not parse value as attribute assignations: \"" + attributeValue + "\"");
@@ -81,13 +88,11 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             
             final Expression leftExpr = assignation.getLeft();
             final Object leftValue =
-                    StandardExpressions.executeExpression(
-                        assignationExecutionArguments.getConfiguration(), assignationExecutionArguments, leftExpr);
+                    expressionExecutor.executeExpression(configuration, assignationExecutionArguments, leftExpr);
 
             final Expression rightExpr = assignation.getRight();
             final Object rightValue =
-                    StandardExpressions.executeExpression(
-                            assignationExecutionArguments.getConfiguration(), assignationExecutionArguments, rightExpr);
+                    expressionExecutor.executeExpression(configuration, assignationExecutionArguments, rightExpr);
 
             final String newVariableName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newVariableName)) {

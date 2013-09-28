@@ -58,14 +58,18 @@ public final class StandardExpressionParser {
     
     
     
-    StandardExpressionParser(final StandardExpressionExecutor executor) {
+    public StandardExpressionParser(final StandardExpressionExecutor executor) {
         super();
         this.executor = executor;
     }
 
 
-
-    
+    /**
+     * @deprecated since 2.1.0. Deprecated in favour of
+     *       {@link #parseExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
+     *       Will be removed in 3.0.
+     */
+    @Deprecated
     public Expression parseExpression(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
@@ -83,8 +87,14 @@ public final class StandardExpressionParser {
         return parseExpression(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
 
-    
-    
+
+
+    /**
+     * @deprecated since 2.1.0. Deprecated in favour of
+     *       {@link #parseAssignationSequence(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String, boolean)}.
+     *       Will be removed in 3.0.
+     */
+    @Deprecated
     public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
@@ -102,8 +112,14 @@ public final class StandardExpressionParser {
         return parseAssignationSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
     }
 
-    
-    
+
+
+    /**
+     * @deprecated since 2.1.0. Deprecated in favour of
+     *       {@link #parseExpressionSequence(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
+     *       Will be removed in 3.0.
+     */
+    @Deprecated
     public ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
@@ -121,8 +137,14 @@ public final class StandardExpressionParser {
         return parseExpressionSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
 
-    
-    
+
+
+    /**
+     * @deprecated since 2.1.0. Deprecated in favour of
+     *       {@link #parseEach(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
+     *       Will be removed in 3.0.
+     */
+    @Deprecated
     public Each parseEach(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
@@ -139,9 +161,15 @@ public final class StandardExpressionParser {
         Validate.notNull(input, "Input cannot be null");
         return parseEach(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
-    
 
-    
+
+
+    /**
+     * @deprecated since 2.1.0. Deprecated in favour of
+     *       {@link #parseFragmentSelection(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
+     *       Will be removed in 3.0.
+     */
+    @Deprecated
     public FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
@@ -160,15 +188,6 @@ public final class StandardExpressionParser {
     }
 
 
-
-    /**
-     * @since 2.1.0
-     */
-    public FragmentSignature parseFragmentSignature(final Arguments arguments, final String input) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return doParseFragmentSignature(arguments.getConfiguration(), DOMUtils.unescapeXml(input, true));
-    }
 
     /**
      * @since 2.1.0

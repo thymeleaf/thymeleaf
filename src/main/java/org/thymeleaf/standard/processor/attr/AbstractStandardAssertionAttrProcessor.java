@@ -22,12 +22,15 @@ package org.thymeleaf.standard.processor.attr;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateAssertionException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAssertionAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.ExpressionSequence;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
@@ -63,14 +66,18 @@ public abstract class AbstractStandardAssertionAttrProcessor
             return;
         }
 
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final ExpressionSequence expressionSequence =
-                StandardExpressions.parseExpressionSequence(arguments.getConfiguration(), arguments, attributeValue);
+                expressionParser.parseExpressionSequence(arguments.getConfiguration(), arguments, attributeValue);
 
         final List<Expression> expressions = expressionSequence.getExpressions();
 
         for (final Expression expression : expressions) {
             final Object expressionResult =
-                    StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, expression);
+                    expressionExecutor.executeExpression(arguments.getConfiguration(), arguments, expression);
             final boolean expressionBooleanResult = ObjectUtils.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(expression.getStringRepresentation(),

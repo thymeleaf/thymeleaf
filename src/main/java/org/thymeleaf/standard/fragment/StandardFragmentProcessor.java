@@ -33,6 +33,8 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.FragmentSelection;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
@@ -60,15 +62,18 @@ public final class StandardFragmentProcessor {
         Validate.notNull(processingContext, "Evaluation Context cannot be null");
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
         // Target element and attribute names can be null
-        
+
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final FragmentSelection fragmentSelection =
-                StandardExpressions.parseFragmentSelection(configuration, processingContext, standardFragmentSpec);
+                expressionParser.parseFragmentSelection(configuration, processingContext, standardFragmentSpec);
 
         final Expression templateNameExpression = fragmentSelection.getTemplateName();
         final String templateName;
         if (templateNameExpression != null) {
             final Object templateNameObject =
-                    StandardExpressions.executeExpression(configuration, processingContext, templateNameExpression);
+                    expressionExecutor.executeExpression(configuration, processingContext, templateNameExpression);
             if (templateNameObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of template name from spec \"" + standardFragmentSpec + "\" " +
@@ -94,7 +99,7 @@ public final class StandardFragmentProcessor {
         if (fragmentSelection.hasFragmentSelector()) {
 
             final Object fragmentSelectorObject =
-                    StandardExpressions.executeExpression(configuration, processingContext, fragmentSelection.getFragmentSelector());
+                    expressionExecutor.executeExpression(configuration, processingContext, fragmentSelection.getFragmentSelector());
             if (fragmentSelectorObject == null) {
                 throw new TemplateProcessingException(
                         "Evaluation of fragment selector from spec \"" + standardFragmentSpec + "\" " + 
@@ -136,18 +141,20 @@ public final class StandardFragmentProcessor {
             return null;
         }
 
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final Map<String,Object> parameterValues = new HashMap<String, Object>(parameters.size() + 2);
         for (final Assignation assignation : parameters.getAssignations()) {
 
             final Expression parameterNameExpr = assignation.getLeft();
             final Object parameterNameValue =
-                    StandardExpressions.executeExpression(configuration, processingContext, parameterNameExpr);
+                    expressionExecutor.executeExpression(configuration, processingContext, parameterNameExpr);
 
             final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
 
             final Expression parameterValueExpr = assignation.getRight();
             final Object parameterValueValue =
-                    StandardExpressions.executeExpression(configuration, processingContext, parameterValueExpr);
+                    expressionExecutor.executeExpression(configuration, processingContext, parameterValueExpr);
 
             parameterValues.put(parameterName, parameterValueValue);
 

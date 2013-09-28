@@ -20,7 +20,6 @@
 package org.thymeleaf.standard.expression;
 
 import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
@@ -45,107 +44,8 @@ public final class StandardExpressions {
     }
 
 
-
     
-    public static Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        return getParserAttribute(configuration).parseExpression(configuration, processingContext, input);
-    }
-
-    
-    
-    public static AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
-        return getParserAttribute(configuration).parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
-    }
-
-    
-    
-    public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        return getParserAttribute(configuration).parseExpressionSequence(configuration, processingContext, input);
-    }
-
-    
-    
-    public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        return getParserAttribute(configuration).parseEach(configuration, processingContext, input);
-    }
-
-
-
-    public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        return getParserAttribute(configuration).parseFragmentSelection(configuration, processingContext, input);
-    }
-
-
-
-    public static FragmentSignature parseFragmentSignature(final Configuration configuration, final String input) {
-        return getParserAttribute(configuration).parseFragmentSignature(configuration, input);
-    }
-
-    
-
-    
-    
-    
-    
-    public static Object executeExpression(final Configuration configuration,
-            final IProcessingContext processingContext, final Expression expression) {
-        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression);
-    }
-    
-
-    
-    public static Object executeExpression(final Configuration configuration,
-            final IProcessingContext processingContext, final Expression expression,
-            final StandardExpressionExecutionContext expContext) {
-        return getExecutorAttribute(configuration).executeExpression(configuration, processingContext, expression, expContext);
-    }
-    
-    
-    
-
-    
-
-    
-    public static Object processExpression(final Configuration configuration,
-            final IProcessingContext processingContext, final String input) {
-        return executeExpression(configuration, processingContext, parseExpression(configuration, processingContext, input));
-    }
-    
-
-    
-    public static Object processExpression(final Configuration configuration,
-            final IProcessingContext processingContext, final String input,
-            final StandardExpressionExecutionContext expContext) {
-        return executeExpression(
-                configuration, 
-                processingContext, 
-                parseExpression(configuration, processingContext, input),
-                expContext);
-    }
-
-
-
-
-
-
-    public static boolean canConvert(final Configuration configuration,
-                                     final Class<?> sourceClass, final Class<?> targetClass) {
-        return getConversionService(configuration).canConvert(sourceClass, targetClass);
-    }
-
-
-
-    public static <S,T> T convert(final Configuration configuration,
-                                  final S object, final Class<? super S> sourceClass, final Class<T> targetClass) {
-        return getConversionService(configuration).convert(object, sourceClass, targetClass);
-    }
-
-
-    
-    
-    
-    
-    private static StandardExpressionParser getParserAttribute(final Configuration configuration) {
+    public static StandardExpressionParser getExpressionParser(final Configuration configuration) {
         final Object parser =
                 configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
         if (parser == null || (!(parser instanceof StandardExpressionParser))) {
@@ -160,10 +60,10 @@ public final class StandardExpressions {
         return (StandardExpressionParser) parser;
     }
 
-    
-    
-    
-    private static StandardExpressionExecutor getExecutorAttribute(final Configuration configuration) {
+
+
+
+    public static StandardExpressionExecutor getExpressionExecutor(final Configuration configuration) {
         final Object executor =
                 configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME);
         if (executor == null || (!(executor instanceof StandardExpressionExecutor))) {
@@ -182,7 +82,7 @@ public final class StandardExpressions {
 
 
 
-    private static IStandardConversionService getConversionService(final Configuration configuration) {
+    public static IStandardConversionService getConversionService(final Configuration configuration) {
         final Object conversionService =
                 configuration.getExecutionAttributes().get(STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME);
         if (conversionService == null || (!(conversionService instanceof IStandardConversionService))) {
@@ -197,17 +97,5 @@ public final class StandardExpressions {
         return (IStandardConversionService) conversionService;
     }
 
-    
-    
-    public static StandardExpressionExecutor createStandardExpressionExecutor(
-            final IStandardVariableExpressionEvaluator expressionEvaluator) {
-        return new StandardExpressionExecutor(expressionEvaluator);
-    }
 
-    
-    public static StandardExpressionParser createStandardExpressionParser(
-            final StandardExpressionExecutor executor) {
-        return new StandardExpressionParser(executor);
-    }
-    
 }

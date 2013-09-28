@@ -20,9 +20,13 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalFixedValueAttrProcessor;
+import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ObjectUtils;
 
@@ -64,9 +68,14 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
     @Override
     protected final boolean isVisible(
             final Arguments arguments, final Element element, final String attributeName) {
-        
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final String attributeValue = element.getAttributeValue(attributeName);
-        final Object value = StandardExpressions.processExpression(arguments.getConfiguration(), arguments, attributeValue);
+        final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+        final Object value = expressionExecutor.executeExpression(configuration, arguments, expression);
         return ObjectUtils.evaluateAsBoolean(value);
         
     }

@@ -20,12 +20,15 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
@@ -65,22 +68,26 @@ public abstract class AbstractStandardIterationAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
 
         final String attributeValue = element.getAttributeValue(attributeName);
-        
-        final Each each = StandardExpressions.parseEach(arguments.getConfiguration(), arguments, attributeValue);
+
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
+        final Each each = expressionParser.parseEach(configuration, arguments, attributeValue);
 
         final Expression iterVarExpr = each.getIterVar();
-        final Object iterVarValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, iterVarExpr);
+        final Object iterVarValue = expressionExecutor.executeExpression(configuration, arguments, iterVarExpr);
 
         final Expression statusVarExpr = each.getStatusVar();
         final Object statusVarValue;
         if (statusVarExpr != null) {
-            statusVarValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, statusVarExpr);
+            statusVarValue = expressionExecutor.executeExpression(configuration, arguments, statusVarExpr);
         } else {
             statusVarValue = null;
         }
 
         final Expression iterableExpr = each.getIterable();
-        final Object iteratedValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, iterableExpr);
+        final Object iteratedValue = expressionExecutor.executeExpression(configuration, arguments, iterableExpr);
 
         final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {
