@@ -23,12 +23,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 public class AddLocalVariableToResult extends AbstractAttrProcessor {
@@ -55,8 +58,12 @@ public class AddLocalVariableToResult extends AbstractAttrProcessor {
 
         final String attributeValue = element.getAttributeValue(attributeName);
 
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final AssignationSequence assignationSequence =
-                StandardExpressions.parseAssignationSequence(arguments.getConfiguration(), arguments, attributeValue, false);
+                expressionParser.parseAssignationSequence(configuration, arguments, attributeValue, false);
 
         final Map<String,Object> localVariables = new HashMap<String,Object>();
         for (final Assignation assignation : assignationSequence.getAssignations()) {
@@ -64,8 +71,8 @@ public class AddLocalVariableToResult extends AbstractAttrProcessor {
             final Expression varNameExpr = assignation.getLeft();
             final Expression varValueExpr = assignation.getRight();
 
-            final Object varName = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, varNameExpr);
-            final Object varValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, varValueExpr);
+            final Object varName = expressionExecutor.executeExpression(configuration, arguments, varNameExpr);
+            final Object varValue = expressionExecutor.executeExpression(configuration, arguments, varValueExpr);
 
             localVariables.put((varName == null? null : varName.toString()), varValue);
 

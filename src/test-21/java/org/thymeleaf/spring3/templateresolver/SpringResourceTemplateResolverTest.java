@@ -28,7 +28,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateProcessingParameters;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.resourceresolver.IResourceResolver;
-import org.thymeleaf.spring3.resourceresolver.SpringResourceResourceResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 import org.thymeleaf.util.ClassLoaderUtils;

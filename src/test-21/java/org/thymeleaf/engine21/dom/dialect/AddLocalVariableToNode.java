@@ -20,12 +20,15 @@
 package org.thymeleaf.engine21.dom.dialect;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 public class AddLocalVariableToNode extends AbstractAttrProcessor {
@@ -52,16 +55,20 @@ public class AddLocalVariableToNode extends AbstractAttrProcessor {
 
         final String attributeValue = element.getAttributeValue(attributeName);
 
+        final Configuration configuration = arguments.getConfiguration();
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final AssignationSequence assignationSequence =
-                StandardExpressions.parseAssignationSequence(arguments.getConfiguration(), arguments, attributeValue, false);
+                expressionParser.parseAssignationSequence(configuration, arguments, attributeValue, false);
 
         for (final Assignation assignation : assignationSequence.getAssignations()) {
             
             final Expression varNameExpr = assignation.getLeft();
             final Expression varValueExpr = assignation.getRight();
 
-            final Object varName = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, varNameExpr);
-            final Object varValue = StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, varValueExpr);
+            final Object varName = expressionExecutor.executeExpression(configuration, arguments, varNameExpr);
+            final Object varValue = expressionExecutor.executeExpression(configuration, arguments, varValueExpr);
             
             element.setNodeLocalVariable((varName == null? null : varName.toString()), varValue);
             
