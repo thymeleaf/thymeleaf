@@ -35,6 +35,8 @@ import org.thymeleaf.extras.springsecurity3.auth.AclAuthUtils;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.StandardExpressionExecutor;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.TextLiteralExpression;
 
@@ -109,17 +111,20 @@ public class AuthorizeAclAttrProcessor
         
         final String domainObjectExpression = attributeValue.substring(0,separatorPos).trim();
         final String permissionsExpression = attributeValue.substring(separatorPos + 2).trim();
- 
+
+        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
+
         final Expression domainObjectExpr = 
-                getExpressionDefaultToLiteral(configuration, arguments, domainObjectExpression);
+                getExpressionDefaultToLiteral(expressionParser, configuration, arguments, domainObjectExpression);
         final Expression permissionsExpr = 
-                getExpressionDefaultToLiteral(configuration, arguments, permissionsExpression);
+                getExpressionDefaultToLiteral(expressionParser, configuration, arguments, permissionsExpression);
 
         final Object domainObject =
-                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, domainObjectExpr);
+                expressionExecutor.executeExpression(configuration, arguments, domainObjectExpr);
         
         final Object permissionsObject =
-                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, permissionsExpr);
+                expressionExecutor.executeExpression(configuration, arguments, permissionsExpr);
         final String permissionsStr = 
                 (permissionsObject == null? null : permissionsObject.toString());
 
@@ -132,11 +137,11 @@ public class AuthorizeAclAttrProcessor
     
     
     
-    protected static Expression getExpressionDefaultToLiteral(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input) {
+    protected static Expression getExpressionDefaultToLiteral(final StandardExpressionParser expressionParser,
+            final Configuration configuration, final IProcessingContext processingContext, final String input) {
         
         final Expression expression =
-                StandardExpressions.parseExpression(configuration, processingContext, input);
+                expressionParser.parseExpression(configuration, processingContext, input);
         if (expression == null) {
             return new TextLiteralExpression(input);
         }
