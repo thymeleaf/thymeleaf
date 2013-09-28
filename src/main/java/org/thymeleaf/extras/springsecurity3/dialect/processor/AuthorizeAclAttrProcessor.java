@@ -116,10 +116,10 @@ public class AuthorizeAclAttrProcessor
                 getExpressionDefaultToLiteral(configuration, arguments, permissionsExpression);
 
         final Object domainObject =
-                StandardExpressions.executeExpression(arguments, domainObjectExpr);
+                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, domainObjectExpr);
         
         final Object permissionsObject =
-                StandardExpressions.executeExpression(arguments, permissionsExpr);
+                StandardExpressions.executeExpression(arguments.getConfiguration(), arguments, permissionsExpr);
         final String permissionsStr = 
                 (permissionsObject == null? null : permissionsObject.toString());
 
