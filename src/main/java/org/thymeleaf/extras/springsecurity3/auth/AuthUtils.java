@@ -52,7 +52,8 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContextWrapper;
-import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
 
@@ -208,9 +209,9 @@ public final class AuthUtils {
             // this variable map.
             
             final Arguments arguments = (Arguments) processingContext;
-            final Object expressionEvaluator = 
-                    arguments.getExecutionAttribute(StandardDialect.EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE);
-            
+            final IStandardVariableExpressionEvaluator expressionEvaluator =
+                    StandardExpressions.getVariableExpressionEvaluator(arguments.getConfiguration());
+
             final SpelVariableExpressionEvaluator spelExprEval =
                     ((expressionEvaluator != null && expressionEvaluator instanceof SpelVariableExpressionEvaluator)?
                             (SpelVariableExpressionEvaluator) expressionEvaluator :
