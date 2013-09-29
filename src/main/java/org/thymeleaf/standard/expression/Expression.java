@@ -110,5 +110,29 @@ public abstract class Expression implements Serializable {
         
     }
 
+
+
+
+
+    public Object execute(final Configuration configuration, final IProcessingContext processingContext) {
+        return execute(configuration, processingContext, StandardExpressionExecutionContext.NORMAL);
+    }
+
+
+    public Object execute(final Configuration configuration, final IProcessingContext processingContext,
+                        final StandardExpressionExecutionContext expContext) {
+
+        Validate.notNull(configuration, "Configuration cannot be null");
+        Validate.notNull(processingContext, "Processing context cannot be null");
+
+        final IStandardVariableExpressionEvaluator variableExpressionEvaluator =
+                StandardExpressions.getVariableExpressionEvaluator(configuration);
+
+        final Object result = execute(configuration, processingContext, this, variableExpressionEvaluator, expContext);
+        return LiteralValue.unwrap(result);
+
+    }
+
+
     
 }

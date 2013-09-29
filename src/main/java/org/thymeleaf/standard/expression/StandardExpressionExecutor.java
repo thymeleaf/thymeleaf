@@ -34,69 +34,82 @@ import org.thymeleaf.util.Validate;
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.1
+ * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
+ *             in Expression objects returned by parsers should be used directly.
  *
  */
+@Deprecated
 public final class StandardExpressionExecutor {
 
 
     
     private final IStandardVariableExpressionEvaluator expressionEvaluator;
-    
-    
+
+
+    /**
+     *
+     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
+     *             in Expression objects returned by parsers should be used directly.
+     */
+    @Deprecated
     public StandardExpressionExecutor(final IStandardVariableExpressionEvaluator expressionEvaluator) {
         super();
         this.expressionEvaluator = expressionEvaluator;
     }
-    
-    
 
-    
+
+
+
 
     /**
+     *
+     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
+     *             in Expression objects returned by parsers should be used directly.
      */
+    @Deprecated
     public Object executeExpression(final Arguments arguments, final Expression expression) {
-        return executeExpression(arguments, expression, StandardExpressionExecutionContext.NORMAL);
-    }
-
-    
-    /**
-     * @since 2.0.16
-     */
-    public Object executeExpression(final Arguments arguments, final Expression expression, final StandardExpressionExecutionContext expContext) {
-
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
-        
-        final Object result = 
-            Expression.execute(arguments.getConfiguration(), arguments, expression, this.expressionEvaluator, expContext);
-        return LiteralValue.unwrap(result); 
-        
-    }
-
-    
-    
-    /**
-     * @since 2.0.9
-     */
-    public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext, 
-            final Expression expression) {
-        return executeExpression(configuration, processingContext, expression, StandardExpressionExecutionContext.NORMAL);
+        return expression.execute(arguments.getConfiguration(), arguments, StandardExpressionExecutionContext.NORMAL);
     }
 
     
     /**
      * @since 2.0.16
+     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
+     *             in Expression objects returned by parsers should be used directly.
      */
-    public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext, 
-            final Expression expression, final StandardExpressionExecutionContext expContext) {
-
-        Validate.notNull(processingContext, "Processing context cannot be null");
+    @Deprecated
+    public Object executeExpression(final Arguments arguments, final Expression expression, final StandardExpressionExecutionContext expContext) {
+        Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
-        
-        final Object result = 
-            Expression.execute(configuration, processingContext, expression, this.expressionEvaluator, expContext);
-        return LiteralValue.unwrap(result); 
-        
+        return expression.execute(arguments.getConfiguration(), arguments, expContext);
+    }
+
+    
+    
+    /**
+     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
+     *             in Expression objects returned by parsers should be used directly.
+     */
+    @Deprecated
+    public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext,
+            final Expression expression) {
+        Validate.notNull(expression, "Expression cannot be null");
+        return expression.execute(configuration, processingContext, StandardExpressionExecutionContext.NORMAL);
+    }
+
+    
+    /**
+     * @since 2.0.16
+     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
+     *             in Expression objects returned by parsers should be used directly.
+     */
+    @Deprecated
+    public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext,
+            final Expression expression, final StandardExpressionExecutionContext expContext) {
+        Validate.notNull(expression, "Expression cannot be null");
+        return expression.execute(configuration, processingContext, expContext);
     }
 
 

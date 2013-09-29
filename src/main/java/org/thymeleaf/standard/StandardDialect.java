@@ -41,6 +41,7 @@ import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardAssertAttrProcessor;
@@ -116,13 +117,15 @@ import org.thymeleaf.util.Validate;
  *         </ul>
  *       </li>
  *   <li><b>Element processors</b>: none</li>
- *   <li><b>Execution attributes</b>, by name:
+ *   <li><b>Execution attributes</b> (accessed through {@link StandardExpressions}):
  *         <ul>
- *           <li>"StandardExpressionExecutor": {@link StandardExpressionExecutor} 
- *               with expression evaluator of type {@link OgnlVariableExpressionEvaluator} 
+ *           <li>"StandardVariableExpressionEvaluator": {@link IStandardVariableExpressionEvaluator},
+ *               implemented by an object of type {@link OgnlVariableExpressionEvaluator}
  *               (<tt>OGNL</tt> expression language).</li>
- *           <li>"StandardExpressionParser": {@link IStandardExpressionParser}.</li>
- *           <li>"StandardConversionService": {@link IStandardConversionService}.</li>
+ *           <li>"StandardExpressionParser": {@link IStandardExpressionParser},
+ *               implemented by an object of type {@link StandardExpressionParser}.</li>
+ *           <li>"StandardConversionService": {@link IStandardConversionService},
+ *               implemented by an object of type {@link StandardConversionService}.</li>
  *         </ul>
  *       </li>
  *   <li><b>DOCTYPE translations</b>:</li>
@@ -145,7 +148,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     
     /**
      * @since 2.0.14
+     * @deprecated This constant was removed in 2.1.0. Access to expression evaluator and expression parser objects
+     *             should be made through the {@link StandardExpressions} class. Will be removed in 3.0
      */
+    @Deprecated
     public static final String EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE = "EXPRESSION_EVALUATOR";
 
     
@@ -518,19 +524,24 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     public Map<String, Object> getExecutionAttributes() {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
-        final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
-        final IStandardExpressionParser parser = new StandardExpressionParser(executor);
+        final IStandardExpressionParser parser = new StandardExpressionParser();
         final IStandardConversionService conversionService = new StandardConversionService();
 
-        final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);
+        final Map<String,Object> executionAttributes = new HashMap<String, Object>(5, 1.0f);
         executionAttributes.put(
-                EXPRESSION_EVALUATOR_EXECUTION_ATTRIBUTE, expressionEvaluator);
-        executionAttributes.put(
-                StandardExpressions.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
+                StandardExpressions.STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME, expressionEvaluator);
         executionAttributes.put(
                 StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
         executionAttributes.put(
                 StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, conversionService);
+
+        /*
+         * StandardExpressionExecutor is deprecated, but we add it as an execution attribute for backwards
+         * compatibility. Will be removed in 3.0.
+         */
+        final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
+        executionAttributes.put(
+                StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
 
         return executionAttributes;
         

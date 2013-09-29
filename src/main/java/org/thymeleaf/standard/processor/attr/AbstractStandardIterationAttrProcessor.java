@@ -28,7 +28,6 @@ import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
@@ -71,23 +70,22 @@ public abstract class AbstractStandardIterationAttrProcessor
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final Each each = expressionParser.parseEach(configuration, arguments, attributeValue);
 
         final Expression iterVarExpr = each.getIterVar();
-        final Object iterVarValue = expressionExecutor.executeExpression(configuration, arguments, iterVarExpr);
+        final Object iterVarValue = iterVarExpr.execute(configuration, arguments);
 
         final Expression statusVarExpr = each.getStatusVar();
         final Object statusVarValue;
         if (statusVarExpr != null) {
-            statusVarValue = expressionExecutor.executeExpression(configuration, arguments, statusVarExpr);
+            statusVarValue = statusVarExpr.execute(configuration, arguments);
         } else {
             statusVarValue = null;
         }
 
         final Expression iterableExpr = each.getIterable();
-        final Object iteratedValue = expressionExecutor.executeExpression(configuration, arguments, iterableExpr);
+        final Object iteratedValue = iterableExpr.execute(configuration, arguments);
 
         final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {

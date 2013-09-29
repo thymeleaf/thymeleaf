@@ -27,7 +27,6 @@ import org.thymeleaf.processor.attr.AbstractUnescapedTextChildModifierAttrProces
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -64,13 +63,11 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
 
         final Object result =
-                expressionExecutor.executeExpression(
-                        configuration, arguments, expression, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
+                expression.execute(configuration, arguments, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
         
         return (result == null? "" : result.toString());
         

@@ -44,11 +44,6 @@ import org.thymeleaf.util.Validate;
 public final class StandardExpressionParser implements IStandardExpressionParser {
 
     
-    
-    
-    private final StandardExpressionExecutor executor;
-    
-    
     private static final char PREPROCESS_DELIMITER = '_';
     private static final String PREPROCESS_EVAL = "\\_\\_(.*?)\\_\\_";
     private static final Pattern PREPROCESS_EVAL_PATTERN = Pattern.compile(PREPROCESS_EVAL, Pattern.DOTALL);
@@ -58,9 +53,8 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     
     
     
-    public StandardExpressionParser(final StandardExpressionExecutor executor) {
+    public StandardExpressionParser() {
         super();
-        this.executor = executor;
     }
 
 
@@ -420,16 +414,13 @@ public final class StandardExpressionParser implements IStandardExpressionParser
                         
                 strBuilder.append(previousText);
                 
-                final Expression expression = 
-                    parseExpression(
-                            configuration, processingContext, expressionText, false);
+                final Expression expression = parseExpression(configuration, processingContext, expressionText, false);
                 if (expression == null) {
                     return null;
                 }
                 
                 final Object result =
-                    this.executor.executeExpression(
-                            configuration, processingContext, expression, StandardExpressionExecutionContext.PREPROCESSING);
+                    expression.execute(configuration, processingContext, StandardExpressionExecutionContext.PREPROCESSING);
                 
                 strBuilder.append(result);
                 

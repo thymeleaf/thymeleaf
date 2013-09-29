@@ -22,18 +22,19 @@ package org.thymeleaf.standard.expression;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
-
-
-
-
+import org.thymeleaf.util.Validate;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  *
- * @deprecated in 2.1.0 for semantic and refactoring reasons. Should use the equivalent
- *             {@link StandardExpressions} instead for obtaining parser and executor instances. Will be removed in 3.0.
+ * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+ *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+ *             parser instances registered by the standard dialects, or instance your
+ *             parser instances using their constructors directly if you are building your own dialect
+ *             including these parserss. As for expression execution, this is no longer managed by executor
+ *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
  * @since 1.1
  *
  */
@@ -42,16 +43,22 @@ public final class StandardExpressionProcessor {
 
     /**
      * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
-     *             Should use the equivalent {@link StandardExpressions} instead for obtaining parser and
-     *             executor instances. Will be removed in 3.0.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
     @Deprecated
     public static final String STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME = "StandardExpressionExecutor";
 
     /**
      * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
-     *             Should use the equivalent {@link StandardExpressions} instead for obtaining parser and
-     *             executor instances. Will be removed in 3.0.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
     @Deprecated
     public static final String STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME = "StandardExpressionParser";
@@ -64,7 +71,16 @@ public final class StandardExpressionProcessor {
 
 
 
-    
+
+    /**
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
     public static Expression parseExpression(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
         return expressionParser.parseExpression(arguments.getConfiguration(), arguments, input);
@@ -72,14 +88,30 @@ public final class StandardExpressionProcessor {
     
     /**
      * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
+    @Deprecated
     public static Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseExpression(configuration, processingContext, input);
     }
 
-    
-    
+
+
+    /**
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
     public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
         return expressionParser.parseAssignationSequence(arguments.getConfiguration(), arguments, input, allowParametersWithoutValue);
@@ -87,14 +119,30 @@ public final class StandardExpressionProcessor {
     
     /**
      * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
+    @Deprecated
     public static AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
     }
 
-    
-    
+
+
+    /**
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
     public static ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
         return expressionParser.parseExpressionSequence(arguments.getConfiguration(), arguments, input);
@@ -102,14 +150,30 @@ public final class StandardExpressionProcessor {
     
     /**
      * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
+    @Deprecated
     public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseExpressionSequence(configuration, processingContext, input);
     }
 
-    
-    
+
+
+    /**
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
     public static Each parseEach(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
         return expressionParser.parseEach(arguments.getConfiguration(), arguments, input);
@@ -117,7 +181,14 @@ public final class StandardExpressionProcessor {
     
     /**
      * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
+    @Deprecated
     public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseEach(configuration, processingContext, input);
@@ -125,6 +196,15 @@ public final class StandardExpressionProcessor {
 
 
 
+    /**
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
     public static FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
         return expressionParser.parseFragmentSelection(arguments.getConfiguration(), arguments, input);
@@ -132,103 +212,17 @@ public final class StandardExpressionProcessor {
 
     /**
      * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
+    @Deprecated
     public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseFragmentSelection(configuration, processingContext, input);
-    }
-
-    
-
-    
-    
-    
-    
-    public static Object executeExpression(final Arguments arguments, final Expression expression) {
-        final StandardExpressionExecutor expressionExecutor =
-                StandardExpressions.getExpressionExecutor(arguments.getConfiguration());
-        return expressionExecutor.executeExpression(arguments, expression);
-    }
-    
-    /**
-     * @since 2.0.9
-     */
-    public static Object executeExpression(final Configuration configuration, 
-            final IProcessingContext processingContext, final Expression expression) {
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
-        return expressionExecutor.executeExpression(configuration, processingContext, expression);
-    }
-    
-
-    
-    /**
-     * @since 2.0.16
-     */
-    public static Object executeExpression(final Arguments arguments, final Expression expression,
-            final StandardExpressionExecutionContext expContext) {
-        final StandardExpressionExecutor expressionExecutor =
-                StandardExpressions.getExpressionExecutor(arguments.getConfiguration());
-        return expressionExecutor.executeExpression(arguments, expression, expContext);
-    }
-    
-    /**
-     * @since 2.0.16
-     */
-    public static Object executeExpression(final Configuration configuration, 
-            final IProcessingContext processingContext, final Expression expression,
-            final StandardExpressionExecutionContext expContext) {
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
-        return expressionExecutor.executeExpression(configuration, processingContext, expression, expContext);
-    }
-    
-    
-    
-
-    
-
-    
-    public static Object processExpression(final Arguments arguments, final String input) {
-        return executeExpression(arguments, parseExpression(arguments, input));
-    }
-    
-    /**
-     * @since 2.0.9
-     */
-    public static Object processExpression(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input) {
-        return executeExpression(configuration, processingContext, parseExpression(configuration, processingContext, input));
-    }
-    
-
-    
-    /**
-     * @since 2.0.16
-     */
-    public static Object processExpression(final Arguments arguments, final String input,
-            final StandardExpressionExecutionContext expContext) {
-
-        final Configuration configuration = arguments.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
-
-        final Expression expression = expressionParser.parseExpression(configuration, arguments, input);
-        return expressionExecutor.executeExpression(configuration, arguments, expression, expContext);
-
-    }
-    
-    /**
-     * @since 2.0.16
-     */
-    public static Object processExpression(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input,
-            final StandardExpressionExecutionContext expContext) {
-
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
-
-        final Expression expression = expressionParser.parseExpression(configuration, processingContext, input);
-        return expressionExecutor.executeExpression(configuration, processingContext, expression, expContext);
-
     }
 
 
@@ -240,9 +234,152 @@ public final class StandardExpressionProcessor {
     /**
      * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
      *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
-     *             parser and/or executor instances registered by the standard dialects, or instance your
-     *             parser/executor instances using their constructors directly if you are building your own dialect
-     *             including these parser/executors. Will be removed in 3.0.
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object executeExpression(final Arguments arguments, final Expression expression) {
+        Validate.notNull(arguments, "Arguments cannot be null");
+        return expression.execute(arguments.getConfiguration(), arguments);
+    }
+    
+    /**
+     * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object executeExpression(final Configuration configuration,
+            final IProcessingContext processingContext, final Expression expression) {
+        return expression.execute(configuration, processingContext);
+    }
+    
+
+    
+    /**
+     * @since 2.0.16
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object executeExpression(final Arguments arguments, final Expression expression,
+            final StandardExpressionExecutionContext expContext) {
+        Validate.notNull(arguments, "Arguments cannot be null");
+        return expression.execute(arguments.getConfiguration(), arguments, expContext);
+    }
+    
+    /**
+     * @since 2.0.16
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object executeExpression(final Configuration configuration,
+            final IProcessingContext processingContext, final Expression expression,
+            final StandardExpressionExecutionContext expContext) {
+        return expression.execute(configuration, processingContext, expContext);
+    }
+
+
+
+
+
+
+
+    /**
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object processExpression(final Arguments arguments, final String input) {
+        Validate.notNull(arguments, "Arguments cannot be null");
+        final Expression expression = parseExpression(arguments, input);
+        return expression.execute(arguments.getConfiguration(), arguments);
+    }
+    
+    /**
+     * @since 2.0.9
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object processExpression(final Configuration configuration,
+            final IProcessingContext processingContext, final String input) {
+        final Expression expression = parseExpression(configuration, processingContext, input);
+        return expression.execute(configuration, processingContext);
+    }
+    
+
+    
+    /**
+     * @since 2.0.16
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object processExpression(final Arguments arguments, final String input,
+            final StandardExpressionExecutionContext expContext) {
+        Validate.notNull(arguments, "Arguments cannot be null");
+        final Expression expression = parseExpression(arguments, input);
+        return expression.execute(arguments.getConfiguration(), arguments, expContext);
+    }
+    
+    /**
+     * @since 2.0.16
+     * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static Object processExpression(final Configuration configuration,
+            final IProcessingContext processingContext, final String input,
+            final StandardExpressionExecutionContext expContext) {
+        final Expression expression = parseExpression(configuration, processingContext, input);
+        return expression.execute(configuration, processingContext, expContext);
+    }
+
+
+
+
+
+
+
+    /**
+     * @deprecated the StandardExpres1sionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
+     *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
     @Deprecated
     public static StandardExpressionExecutor createStandardExpressionExecutor(
@@ -254,14 +391,15 @@ public final class StandardExpressionProcessor {
     /**
      * @deprecated the StandardExpressionProcessor class was deprecated in 2.1.0 for semantic and refactoring reasons.
      *             Should use the equivalent {@link StandardExpressions} instead if you want to obtain
-     *             parser and/or executor instances registered by the standard dialects, or instance your
-     *             parser/executor instances using their constructors directly if you are building your own dialect
-     *             including these parser/executors. Will be removed in 3.0.
+     *             parser instances registered by the standard dialects, or instance your
+     *             parser instances using their constructors directly if you are building your own dialect
+     *             including these parserss. As for expression execution, this is no longer managed by executor
+     *             objects (also deprecated) but by the expressions themselves. Will be removed in 3.0.
      */
     @Deprecated
     public static StandardExpressionParser createStandardExpressionParser(
             final StandardExpressionExecutor executor) {
-        return new StandardExpressionParser(executor);
+        return new StandardExpressionParser();
     }
     
 }

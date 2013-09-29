@@ -34,7 +34,6 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.ObjectUtils;
@@ -72,7 +71,6 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final AssignationSequence assignations =
                 expressionParser.parseAssignationSequence(
@@ -87,10 +85,10 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         for (final Assignation assignation : assignations) {
             
             final Expression leftExpr = assignation.getLeft();
-            final Object leftValue = expressionExecutor.executeExpression(configuration, arguments, leftExpr);
+            final Object leftValue = leftExpr.execute(configuration, arguments);
 
-            final Expression rigtExpr = assignation.getRight();
-            final Object rightValue = expressionExecutor.executeExpression(configuration, arguments, rigtExpr);
+            final Expression rightExpr = assignation.getRight();
+            final Object rightValue = rightExpr.execute(configuration, arguments);
 
             final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {

@@ -26,7 +26,6 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSelectionTargetAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -64,13 +63,12 @@ public abstract class AbstractStandardSelectionAttrProcessor
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         
         validateSelectionValue(arguments, element, attributeName, attributeValue, expression);
         
-        return expressionExecutor.executeExpression(configuration, arguments, expression);
+        return expression.execute(configuration, arguments);
         
     }
 

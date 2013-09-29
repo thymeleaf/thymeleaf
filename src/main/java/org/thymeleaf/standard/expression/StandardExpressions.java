@@ -33,7 +33,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 public final class StandardExpressions {
 
 
-    public static final String STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME = "StandardExpressionExecutor";
+    public static final String STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME = "StandardVariableExpressionEvaluator";
     public static final String STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME = "StandardExpressionParser";
     public static final String STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME = "StandardConversionService";
 
@@ -62,20 +62,19 @@ public final class StandardExpressions {
 
 
 
-
-    public static StandardExpressionExecutor getExpressionExecutor(final Configuration configuration) {
-        final Object executor =
-                configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME);
-        if (executor == null || (!(executor instanceof StandardExpressionExecutor))) {
+    public static IStandardVariableExpressionEvaluator getVariableExpressionEvaluator(final Configuration configuration) {
+        final Object expressionEvaluator =
+                configuration.getExecutionAttributes().get(STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME);
+        if (expressionEvaluator == null || (!(expressionEvaluator instanceof IStandardVariableExpressionEvaluator))) {
             throw new TemplateProcessingException(
-                    "No Standard Expression Executor has been registered as an execution argument. " +
+                    "No Standard Variable Expression Evaluator has been registered as an execution argument. " +
                     "This is a requirement for using Standard Expressions, and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
-                    "attribute of type " + StandardExpressionExecutor.class.getName() + " with name " +
-                    "\"" + STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME + "\"");
+                    "attribute of type " + IStandardVariableExpressionEvaluator.class.getName() + " with name " +
+                    "\"" + STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME + "\"");
         }
-        return (StandardExpressionExecutor) executor;
+        return (IStandardVariableExpressionEvaluator) expressionEvaluator;
     }
 
 
