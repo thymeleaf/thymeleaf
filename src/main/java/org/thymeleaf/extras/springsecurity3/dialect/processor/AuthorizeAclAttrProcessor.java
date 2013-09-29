@@ -36,7 +36,6 @@ import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.TextLiteralExpression;
 
@@ -113,18 +112,15 @@ public class AuthorizeAclAttrProcessor
         final String permissionsExpression = attributeValue.substring(separatorPos + 2).trim();
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final Expression domainObjectExpr = 
                 getExpressionDefaultToLiteral(expressionParser, configuration, arguments, domainObjectExpression);
         final Expression permissionsExpr = 
                 getExpressionDefaultToLiteral(expressionParser, configuration, arguments, permissionsExpression);
 
-        final Object domainObject =
-                expressionExecutor.executeExpression(configuration, arguments, domainObjectExpr);
+        final Object domainObject = domainObjectExpr.execute(configuration, arguments);
         
-        final Object permissionsObject =
-                expressionExecutor.executeExpression(configuration, arguments, permissionsExpr);
+        final Object permissionsObject = permissionsExpr.execute(configuration, arguments);
         final String permissionsStr = 
                 (permissionsObject == null? null : permissionsObject.toString());
 
