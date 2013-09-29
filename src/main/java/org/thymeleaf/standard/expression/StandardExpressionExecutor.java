@@ -90,7 +90,7 @@ public final class StandardExpressionExecutor {
     public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext, 
             final Expression expression, final StandardExpressionExecutionContext expContext) {
 
-        Validate.notNull(processingContext, "Expression evaluation context cannot be null");
+        Validate.notNull(processingContext, "Processing context cannot be null");
         Validate.notNull(expression, "Expression cannot be null");
         
         final Object result = 

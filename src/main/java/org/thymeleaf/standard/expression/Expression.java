@@ -109,6 +109,6 @@ public abstract class Expression implements Serializable {
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
         
     }
-    
+
     
 }

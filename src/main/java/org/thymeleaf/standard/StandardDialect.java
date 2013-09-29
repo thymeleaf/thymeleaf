@@ -35,6 +35,7 @@ import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.standard.expression.IStandardConversionService;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardConversionService;
@@ -115,12 +116,13 @@ import org.thymeleaf.util.Validate;
  *         </ul>
  *       </li>
  *   <li><b>Element processors</b>: none</li>
- *   <li><b>Execution attributes</b>:
+ *   <li><b>Execution attributes</b>, by name:
  *         <ul>
  *           <li>"StandardExpressionExecutor": {@link StandardExpressionExecutor} 
  *               with expression evaluator of type {@link OgnlVariableExpressionEvaluator} 
  *               (<tt>OGNL</tt> expression language).</li>
- *           <li>"StandardExpressionParser": {@link StandardExpressionParser}.</li>
+ *           <li>"StandardExpressionParser": {@link IStandardExpressionParser}.</li>
+ *           <li>"StandardConversionService": {@link IStandardConversionService}.</li>
  *         </ul>
  *       </li>
  *   <li><b>DOCTYPE translations</b>:</li>
@@ -517,7 +519,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
         final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
-        final StandardExpressionParser parser = new StandardExpressionParser(executor);
+        final IStandardExpressionParser parser = new StandardExpressionParser(executor);
         final IStandardConversionService conversionService = new StandardConversionService();
 
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(4, 1.0f);

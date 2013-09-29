@@ -41,7 +41,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class StandardExpressionParser {
+public final class StandardExpressionParser implements IStandardExpressionParser {
 
     
     
@@ -79,10 +79,10 @@ public final class StandardExpressionParser {
     /**
      * @since 2.0.9
      */
-    public Expression parseExpression(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input) {
+    public Expression parseExpression(final Configuration configuration,
+                                      final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
         return parseExpression(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
@@ -104,10 +104,10 @@ public final class StandardExpressionParser {
     /**
      * @since 2.0.9
      */
-    public AssignationSequence parseAssignationSequence(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
+    public AssignationSequence parseAssignationSequence(final Configuration configuration,
+                                                        final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
         return parseAssignationSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
     }
@@ -129,10 +129,10 @@ public final class StandardExpressionParser {
     /**
      * @since 2.0.9
      */
-    public ExpressionSequence parseExpressionSequence(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input) {
+    public ExpressionSequence parseExpressionSequence(final Configuration configuration,
+                                                      final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
         return parseExpressionSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
@@ -154,10 +154,10 @@ public final class StandardExpressionParser {
     /**
      * @since 2.0.9
      */
-    public Each parseEach(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input) {
+    public Each parseEach(final Configuration configuration,
+                          final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
         return parseEach(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
@@ -179,10 +179,10 @@ public final class StandardExpressionParser {
     /**
      * @since 2.0.9
      */
-    public FragmentSelection parseFragmentSelection(final Configuration configuration, 
-            final IProcessingContext processingContext, final String input) {
+    public FragmentSelection parseFragmentSelection(
+            final Configuration configuration, final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
         return parseFragmentSelection(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
     }
@@ -192,19 +192,21 @@ public final class StandardExpressionParser {
     /**
      * @since 2.1.0
      */
-    public FragmentSignature parseFragmentSignature(final Configuration configuration, final String input) {
+    public FragmentSignature parseFragmentSignature(
+            final Configuration configuration, final IProcessingContext processingContext, final String input) {
         Validate.notNull(configuration, "Configuration cannot be null");
+        // Processing context CAN (and many times will, in fact) be null! - no variables can be used in signatures.
         Validate.notNull(input, "Input cannot be null");
         return doParseFragmentSignature(configuration, DOMUtils.unescapeXml(input, true));
     }
 
-    
-    
-    
-    
-    
-    
-    Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
+
+
+
+
+
+
+    private Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
@@ -234,9 +236,9 @@ public final class StandardExpressionParser {
         
     }
 
-    
-    
-    AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
+
+
+    private AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
         
         final String trimmedInput = input.trim();
         
@@ -266,9 +268,9 @@ public final class StandardExpressionParser {
 
     }
 
-    
-    
-    ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
+
+
+    private ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
@@ -298,9 +300,9 @@ public final class StandardExpressionParser {
 
     }
 
-    
-    
-    Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
+
+
+    private Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
@@ -329,10 +331,10 @@ public final class StandardExpressionParser {
         return each;
 
     }
-    
 
-    
-    FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
+
+
+    private FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
         
         final String trimmedInput = input.trim();
         
@@ -364,7 +366,7 @@ public final class StandardExpressionParser {
 
 
 
-    FragmentSignature doParseFragmentSignature(final Configuration configuration, final String input) {
+    private FragmentSignature doParseFragmentSignature(final Configuration configuration, final String input) {
 
         // No need to preprocess, also no need to have a context, because fragment signatures are
         // token-only based (no expressions allowed).
@@ -390,11 +392,11 @@ public final class StandardExpressionParser {
 
     }
 
-    
 
-    
-    
-    String preprocess(final Configuration configuration, 
+
+
+
+    private String preprocess(final Configuration configuration,
             final IProcessingContext processingContext, final String input) {
 
         if (input.indexOf(PREPROCESS_DELIMITER) == -1) {

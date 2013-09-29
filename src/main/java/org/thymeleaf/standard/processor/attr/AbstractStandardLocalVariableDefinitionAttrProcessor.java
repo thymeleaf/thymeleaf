@@ -32,8 +32,8 @@ import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
@@ -70,7 +70,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final AssignationSequence assignations =

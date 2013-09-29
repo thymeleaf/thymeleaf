@@ -30,8 +30,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -264,7 +264,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
         if (matcher.find()) {
 
             final Configuration configuration = arguments.getConfiguration();
-            final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+            final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
             final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
             final StringBuilder strBuilder = new StringBuilder();

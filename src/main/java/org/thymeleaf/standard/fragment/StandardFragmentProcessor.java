@@ -33,8 +33,8 @@ import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
 import org.thymeleaf.standard.expression.FragmentSelection;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
@@ -59,11 +59,11 @@ public final class StandardFragmentProcessor {
             final Configuration configuration, final IProcessingContext processingContext, 
             final String standardFragmentSpec, final String dialectPrefix, final String fragmentSignatureAttributeName) {
         
-        Validate.notNull(processingContext, "Evaluation Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
         // Target element and attribute names can be null
 
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final FragmentSelection fragmentSelection =

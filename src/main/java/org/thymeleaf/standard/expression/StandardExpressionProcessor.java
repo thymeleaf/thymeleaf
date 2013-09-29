@@ -66,75 +66,75 @@ public final class StandardExpressionProcessor {
 
     
     public static Expression parseExpression(final Arguments arguments, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseExpression(arguments, input);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
+        return expressionParser.parseExpression(arguments.getConfiguration(), arguments, input);
     }
     
     /**
      * @since 2.0.9
      */
     public static Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseExpression(configuration, processingContext, input);
     }
 
     
     
     public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseAssignationSequence(arguments, input, allowParametersWithoutValue);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
+        return expressionParser.parseAssignationSequence(arguments.getConfiguration(), arguments, input, allowParametersWithoutValue);
     }
     
     /**
      * @since 2.0.9
      */
     public static AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
     }
 
     
     
     public static ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseExpressionSequence(arguments, input);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
+        return expressionParser.parseExpressionSequence(arguments.getConfiguration(), arguments, input);
     }
     
     /**
      * @since 2.0.9
      */
     public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseExpressionSequence(configuration, processingContext, input);
     }
 
     
     
     public static Each parseEach(final Arguments arguments, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseEach(arguments, input);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
+        return expressionParser.parseEach(arguments.getConfiguration(), arguments, input);
     }
     
     /**
      * @since 2.0.9
      */
     public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseEach(configuration, processingContext, input);
     }
 
 
 
     public static FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseFragmentSelection(arguments, input);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
+        return expressionParser.parseFragmentSelection(arguments.getConfiguration(), arguments, input);
     }
 
     /**
      * @since 2.0.9
      */
     public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         return expressionParser.parseFragmentSelection(configuration, processingContext, input);
     }
 
@@ -208,7 +208,7 @@ public final class StandardExpressionProcessor {
             final StandardExpressionExecutionContext expContext) {
 
         final Configuration configuration = arguments.getConfiguration();
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final Expression expression = expressionParser.parseExpression(configuration, arguments, input);
@@ -223,7 +223,7 @@ public final class StandardExpressionProcessor {
             final IProcessingContext processingContext, final String input,
             final StandardExpressionExecutionContext expContext) {
 
-        final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
         final StandardExpressionExecutor expressionExecutor = StandardExpressions.getExpressionExecutor(configuration);
 
         final Expression expression = expressionParser.parseExpression(configuration, processingContext, input);

@@ -45,19 +45,19 @@ public final class StandardExpressions {
 
 
     
-    public static StandardExpressionParser getExpressionParser(final Configuration configuration) {
+    public static IStandardExpressionParser getExpressionParser(final Configuration configuration) {
         final Object parser =
                 configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
-        if (parser == null || (!(parser instanceof StandardExpressionParser))) {
+        if (parser == null || (!(parser instanceof IStandardExpressionParser))) {
             throw new TemplateProcessingException(
                     "No Standard Expression Parser has been registered as an execution argument. " +
-                    "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
+                    "This is a requirement for using Standard Expressions, and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
-                    "attribute of type " + StandardExpressionParser.class.getName() + " with name " +
+                    "attribute of type " + IStandardExpressionParser.class.getName() + " with name " +
                     "\"" + STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME + "\"");
         }
-        return (StandardExpressionParser) parser;
+        return (IStandardExpressionParser) parser;
     }
 
 
@@ -69,7 +69,7 @@ public final class StandardExpressions {
         if (executor == null || (!(executor instanceof StandardExpressionExecutor))) {
             throw new TemplateProcessingException(
                     "No Standard Expression Executor has been registered as an execution argument. " +
-                    "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
+                    "This is a requirement for using Standard Expressions, and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
                     "attribute of type " + StandardExpressionExecutor.class.getName() + " with name " +
@@ -88,7 +88,7 @@ public final class StandardExpressions {
         if (conversionService == null || (!(conversionService instanceof IStandardConversionService))) {
             throw new TemplateProcessingException(
                     "No Standard Conversion Service has been registered as an execution argument. " +
-                    "This is a requirement for using " + StandardExpressions.class.getSimpleName() + ", and might happen " +
+                    "This is a requirement for using Standard Expressions, and might happen " +
                     "if neither the Standard or the SpringStandard dialects have " +
                     "been added to the Template Engine and none of the specified dialects registers an " +
                     "attribute of type " + IStandardConversionService.class.getName() + " with name " +
