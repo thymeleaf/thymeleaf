@@ -98,7 +98,7 @@ public final class FragmentSignature implements Serializable {
     
     
     
-    public static FragmentSignature parse(final String input) {
+    static FragmentSignature parse(final String input) {
         
         if (StringUtils.isEmptyOrWhitespace(input)) {
             return null;
