@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpression;
 
 /**
  * 
@@ -59,7 +59,7 @@ public final class StandardLangXmlLangAttrProcessor
     @Override
     protected Set<String> getModifiedAttributeNames(final Arguments arguments,
             final Element element, final String attributeName, final String attributeValue, 
-            final Expression expression) {
+            final IStandardExpression expression) {
         return TARGET_ATTR_NAMES;
     }
 

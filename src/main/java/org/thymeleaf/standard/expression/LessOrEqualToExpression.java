@@ -47,7 +47,7 @@ public final class LessOrEqualToExpression extends GreaterLesserExpression {
     
 
     
-    public LessOrEqualToExpression(final Expression left, final Expression right) {
+    public LessOrEqualToExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
@@ -65,18 +65,14 @@ public final class LessOrEqualToExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeLessOrEqualTo(final Configuration configuration, final IProcessingContext processingContext, 
-            final LessOrEqualToExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final LessOrEqualToExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating LESS OR EQUAL TO expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
-
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
+        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
+        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
         if (leftValue == null || rightValue == null) {
             throw new TemplateProcessingException(

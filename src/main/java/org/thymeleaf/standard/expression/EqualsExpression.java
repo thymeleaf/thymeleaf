@@ -45,7 +45,7 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
     private static final Logger logger = LoggerFactory.getLogger(EqualsExpression.class);
 
     
-    public EqualsExpression(final Expression left, final Expression right) {
+    public EqualsExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
@@ -62,14 +62,11 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
     
     @SuppressWarnings({"unchecked","null"})
     static Object executeEquals(final Configuration configuration, final IProcessingContext processingContext, 
-            final EqualsExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final EqualsExpression expression, final StandardExpressionExecutionContext expContext) {
 
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
+        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
 
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
+        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);

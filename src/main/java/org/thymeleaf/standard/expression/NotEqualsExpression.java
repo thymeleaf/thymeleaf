@@ -46,7 +46,7 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
 
     
     
-    public NotEqualsExpression(final Expression left, final Expression right) {
+    public NotEqualsExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
@@ -63,14 +63,10 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
     
     @SuppressWarnings({"unchecked","null"})
     static Object executeNotEquals(final Configuration configuration, final IProcessingContext processingContext, 
-            final NotEqualsExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final NotEqualsExpression expression, final StandardExpressionExecutionContext expContext) {
 
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
-
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
+        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
+        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);

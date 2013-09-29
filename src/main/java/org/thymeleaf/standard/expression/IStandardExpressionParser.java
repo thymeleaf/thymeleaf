@@ -31,23 +31,23 @@ import org.thymeleaf.context.IProcessingContext;
  */
 public interface IStandardExpressionParser {
 
-    public Expression parseExpression(
+    public IStandardExpression parseExpression(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 
-    public AssignationSequence parseAssignationSequence(
+    public IStandardExpressionAssignationSequenceStructure parseAssignationSequence(
             final Configuration configuration, final IProcessingContext processingContext, final String input,
             final boolean allowParametersWithoutValue);
 
-    public ExpressionSequence parseExpressionSequence(
+    public IStandardExpressionSequenceStructure parseExpressionSequence(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 
-    public Each parseEach(
+    public IStandardExpressionEachStructure parseEach(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 
-    public FragmentSelection parseFragmentSelection(
+    public IStandardExpressionFragmentSelectionStructure parseFragmentSelection(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 
-    public FragmentSignature parseFragmentSignature(
+    public IStandardExpressionFragmentSignatureStructure parseFragmentSignature(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 
 }

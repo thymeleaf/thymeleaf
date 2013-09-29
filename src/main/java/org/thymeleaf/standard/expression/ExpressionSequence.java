@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class ExpressionSequence implements Iterable<Expression>, Serializable {
+public final class ExpressionSequence implements IStandardExpressionSequenceStructure, Serializable {
 
     private static final long serialVersionUID = -6069208208568731809L;
     
@@ -46,9 +46,9 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
     // Future proof, just in case in the future we add other tokens as operators
     static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
-    private final List<Expression> expressions;
+    private final List<IStandardExpression> expressions;
          
-    public ExpressionSequence(final List<? extends Expression> expressions) {
+    public ExpressionSequence(final List<? extends IStandardExpression> expressions) {
         super();
         Validate.notNull(expressions, "Expression list cannot be null");
         Validate.containsNoNulls(expressions, "Expression list cannot contain any nulls");
@@ -56,7 +56,7 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
     }
 
     
-    public List<Expression> getExpressions() {
+    public List<IStandardExpression> getExpressions() {
         return this.expressions;
     }
   
@@ -64,7 +64,7 @@ public final class ExpressionSequence implements Iterable<Expression>, Serializa
         return this.expressions.size();
     }
     
-    public Iterator<Expression> iterator() {
+    public Iterator<IStandardExpression> iterator() {
         return this.expressions.iterator();
     }
 

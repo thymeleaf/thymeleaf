@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class Assignation implements Serializable {
+public final class Assignation implements IStandardExpressionAssignationStructure, Serializable {
 
     private static final long serialVersionUID = -20278893925937213L;
     
@@ -42,11 +42,11 @@ public final class Assignation implements Serializable {
     // Future proof, just in case in the future we add other tokens as operators
     static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
-    private final Expression left;
-    private final Expression right;
+    private final IStandardExpression left;
+    private final IStandardExpression right;
          
     
-    Assignation(final Expression left, final Expression right) {
+    Assignation(final IStandardExpression left, final IStandardExpression right) {
         super();
         Validate.notNull(left, "Assignation left side cannot be null");
         this.left = left;
@@ -55,11 +55,11 @@ public final class Assignation implements Serializable {
 
 
 
-    public Expression getLeft() {
+    public IStandardExpression getLeft() {
         return this.left;
     }
 
-    public Expression getRight() {
+    public IStandardExpression getRight() {
         return this.right;
     }
     

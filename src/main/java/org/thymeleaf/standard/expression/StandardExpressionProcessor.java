@@ -83,7 +83,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static Expression parseExpression(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseExpression(arguments.getConfiguration(), arguments, input);
+        return (Expression) expressionParser.parseExpression(arguments.getConfiguration(), arguments, input);
     }
     
     /**
@@ -98,7 +98,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        return expressionParser.parseExpression(configuration, processingContext, input);
+        return (Expression) expressionParser.parseExpression(configuration, processingContext, input);
     }
 
 
@@ -114,7 +114,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseAssignationSequence(arguments.getConfiguration(), arguments, input, allowParametersWithoutValue);
+        return (AssignationSequence) expressionParser.parseAssignationSequence(arguments.getConfiguration(), arguments, input, allowParametersWithoutValue);
     }
     
     /**
@@ -129,7 +129,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        return expressionParser.parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
+        return (AssignationSequence) expressionParser.parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
     }
 
 
@@ -145,7 +145,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseExpressionSequence(arguments.getConfiguration(), arguments, input);
+        return (ExpressionSequence) expressionParser.parseExpressionSequence(arguments.getConfiguration(), arguments, input);
     }
     
     /**
@@ -160,7 +160,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        return expressionParser.parseExpressionSequence(configuration, processingContext, input);
+        return (ExpressionSequence) expressionParser.parseExpressionSequence(configuration, processingContext, input);
     }
 
 
@@ -176,7 +176,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static Each parseEach(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseEach(arguments.getConfiguration(), arguments, input);
+        return (Each) expressionParser.parseEach(arguments.getConfiguration(), arguments, input);
     }
     
     /**
@@ -191,7 +191,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        return expressionParser.parseEach(configuration, processingContext, input);
+        return (Each) expressionParser.parseEach(configuration, processingContext, input);
     }
 
 
@@ -207,7 +207,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(arguments.getConfiguration());
-        return expressionParser.parseFragmentSelection(arguments.getConfiguration(), arguments, input);
+        return (FragmentSelection) expressionParser.parseFragmentSelection(arguments.getConfiguration(), arguments, input);
     }
 
     /**
@@ -222,7 +222,7 @@ public final class StandardExpressionProcessor {
     @Deprecated
     public static FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input) {
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        return expressionParser.parseFragmentSelection(configuration, processingContext, input);
+        return (FragmentSelection) expressionParser.parseFragmentSelection(configuration, processingContext, input);
     }
 
 

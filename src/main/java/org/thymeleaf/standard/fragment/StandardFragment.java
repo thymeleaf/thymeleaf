@@ -33,7 +33,7 @@ import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.standard.expression.FragmentSignature;
+import org.thymeleaf.standard.expression.IStandardExpressionFragmentSignatureStructure;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
@@ -234,7 +234,7 @@ public final class StandardFragment {
                     if (attributeValue != null) {
                         final IStandardExpressionParser expressionParser =
                                 StandardExpressions.getExpressionParser(configuration);
-                        final FragmentSignature fragmentSignature =
+                        final IStandardExpressionFragmentSignatureStructure fragmentSignature =
                                 expressionParser.parseFragmentSignature(configuration, context, attributeValue);
                         if (fragmentSignature != null) {
                             final Map<String,Object> processedParameters =

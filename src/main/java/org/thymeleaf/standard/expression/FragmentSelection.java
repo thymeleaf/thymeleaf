@@ -37,7 +37,7 @@ import org.thymeleaf.util.StringUtils;
  * @since 1.1
  *
  */
-public final class FragmentSelection implements Serializable {
+public final class FragmentSelection implements IStandardExpressionFragmentSelectionStructure, Serializable {
 
     
     private static final long serialVersionUID = -5310313871594922690L;
@@ -50,14 +50,14 @@ public final class FragmentSelection implements Serializable {
     private static final String UNNAMED_PARAMETERS_PREFIX = "_arg";
 
     
-    private final Expression templateName;
-    private final Expression fragmentSelector;
-    private final AssignationSequence parameters;
+    private final IStandardExpression templateName;
+    private final IStandardExpression fragmentSelector;
+    private final IStandardExpressionAssignationSequenceStructure parameters;
 
     
     
-    private FragmentSelection(final Expression templateName, final Expression fragmentSelector,
-            final AssignationSequence parameters) {
+    private FragmentSelection(final IStandardExpression templateName, final IStandardExpression fragmentSelector,
+            final IStandardExpressionAssignationSequenceStructure parameters) {
         super();
         // templateName can be null if fragment is to be executed on the current template
         this.templateName = templateName;
@@ -67,11 +67,11 @@ public final class FragmentSelection implements Serializable {
 
     
     
-    public Expression getTemplateName() {
+    public IStandardExpression getTemplateName() {
         return this.templateName;
     }
 
-    public Expression getFragmentSelector() {
+    public IStandardExpression getFragmentSelector() {
         return this.fragmentSelector;
     }
     
@@ -79,7 +79,7 @@ public final class FragmentSelection implements Serializable {
         return this.fragmentSelector != null;
     }
 
-    public AssignationSequence getParameters() {
+    public IStandardExpressionAssignationSequenceStructure getParameters() {
         return this.parameters;
     }
 
@@ -90,7 +90,6 @@ public final class FragmentSelection implements Serializable {
 
     public boolean hasSyntheticParameters(
             final Configuration configuration, final IProcessingContext processingContext,
-            final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {
 
         // The parameter sequence will be considered "synthetically named" if its variable names are all synthetic
@@ -101,11 +100,10 @@ public final class FragmentSelection implements Serializable {
         }
 
         final Set<String> variableNames = new HashSet<String>(this.parameters.size() + 2);
-        for (final Assignation assignation : this.parameters.getAssignations()) {
+        for (final IStandardExpressionAssignationStructure assignation : this.parameters.getAssignations()) {
 
-            final Expression variableNameExpr = assignation.getLeft();
-            final Object variableNameValue =
-                    Expression.execute(configuration, processingContext, variableNameExpr, expressionEvaluator, expContext);
+            final IStandardExpression variableNameExpr = assignation.getLeft();
+            final Object variableNameValue = variableNameExpr.execute(configuration, processingContext, expContext);
 
             final String variableName = (variableNameValue == null? null : variableNameValue.toString());
 
@@ -361,8 +359,8 @@ public final class FragmentSelection implements Serializable {
         final List<Assignation> assignations = new ArrayList<Assignation>(expSeq.size() + 2);
 
         int argIndex = 0;
-        for (final Expression expression : expSeq.getExpressions()) {
-            final Expression parameterName =
+        for (final IStandardExpression expression : expSeq.getExpressions()) {
+            final IStandardExpression parameterName =
                     Expression.parse(TextLiteralExpression.wrapStringIntoLiteral(UNNAMED_PARAMETERS_PREFIX + argIndex++));
             assignations.add(new Assignation(parameterName, expression));
         }

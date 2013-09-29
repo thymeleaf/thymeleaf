@@ -42,7 +42,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.1.0
  *
  */
-public final class FragmentSignature implements Serializable {
+public final class FragmentSignature implements IStandardExpressionFragmentSignatureStructure, Serializable {
 
     private static final long serialVersionUID = 6847640942405961705L;
 
@@ -161,7 +161,7 @@ public final class FragmentSignature implements Serializable {
      * @param specifiedParameters the set of specified parameters
      * @return the processed set of parameters, ready to be applied as local variables to the fragment's nodes.
      */
-    public Map<String,Object> processParameters(final Map<String,Object> specifiedParameters) {
+    public Map<String,Object> processParameters(final Map<String, Object> specifiedParameters) {
 
         if (specifiedParameters == null || specifiedParameters.size() == 0) {
 

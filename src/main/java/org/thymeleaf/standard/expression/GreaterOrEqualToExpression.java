@@ -45,7 +45,7 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
     private static final Logger logger = LoggerFactory.getLogger(GreaterOrEqualToExpression.class);
 
     
-    public GreaterOrEqualToExpression(final Expression left, final Expression right) {
+    public GreaterOrEqualToExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
     
@@ -61,14 +61,10 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeGreaterOrEqualTo(final Configuration configuration, final IProcessingContext processingContext, 
-            final GreaterOrEqualToExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final GreaterOrEqualToExpression expression, final StandardExpressionExecutionContext expContext) {
         
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
-
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
+        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
+        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);

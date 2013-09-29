@@ -29,9 +29,9 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor;
-import org.thymeleaf.standard.expression.Assignation;
-import org.thymeleaf.standard.expression.AssignationSequence;
-import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionAssignationSequenceStructure;
+import org.thymeleaf.standard.expression.IStandardExpressionAssignationStructure;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
@@ -71,7 +71,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final AssignationSequence assignations =
+        final IStandardExpressionAssignationSequenceStructure assignations =
                 expressionParser.parseAssignationSequence(
                         configuration, arguments, attributeValue, false /* no parameters without value */);
         if (assignations == null) {
@@ -82,12 +82,12 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         Arguments assignationExecutionArguments = arguments;
 
         final Map<String,Object> newLocalVariables = new HashMap<String,Object>(assignations.size() + 1, 1.0f);
-        for (final Assignation assignation : assignations) {
+        for (final IStandardExpressionAssignationStructure assignation : assignations) {
             
-            final Expression leftExpr = assignation.getLeft();
+            final IStandardExpression leftExpr = assignation.getLeft();
             final Object leftValue = leftExpr.execute(configuration, assignationExecutionArguments);
 
-            final Expression rightExpr = assignation.getRight();
+            final IStandardExpression rightExpr = assignation.getRight();
             final Object rightValue = rightExpr.execute(configuration, assignationExecutionArguments);
 
             final String newVariableName = (leftValue == null? null : leftValue.toString());

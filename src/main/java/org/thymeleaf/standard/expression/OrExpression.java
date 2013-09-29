@@ -57,15 +57,15 @@ public final class OrExpression extends BinaryOperationExpression {
 
     static {
         try {
-            LEFT_ALLOWED_METHOD = OrExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
-            RIGHT_ALLOWED_METHOD = OrExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+            LEFT_ALLOWED_METHOD = OrExpression.class.getDeclaredMethod("isLeftAllowed", IStandardExpression.class);
+            RIGHT_ALLOWED_METHOD = OrExpression.class.getDeclaredMethod("isRightAllowed", IStandardExpression.class);
         } catch (final NoSuchMethodException e) {
             throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
         }
     }
 
     
-    public OrExpression(final Expression left, final Expression right) {
+    public OrExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
@@ -78,11 +78,11 @@ public final class OrExpression extends BinaryOperationExpression {
 
 
 
-    static boolean isRightAllowed(final Expression right) {
+    static boolean isRightAllowed(final IStandardExpression right) {
         return right != null && !(right instanceof Token && !(right instanceof BooleanTokenExpression));
     }
 
-    static boolean isLeftAllowed(final Expression left) {
+    static boolean isLeftAllowed(final IStandardExpression left) {
         return left != null && !(left instanceof Token && !(left instanceof BooleanTokenExpression));
     }
 
@@ -100,15 +100,13 @@ public final class OrExpression extends BinaryOperationExpression {
 
     
     static Object executeOr(final Configuration configuration, final IProcessingContext processingContext, 
-            final OrExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final OrExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating OR expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-        
-        final Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
+
+        final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
         
         // Short circuit
         final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
@@ -116,9 +114,8 @@ public final class OrExpression extends BinaryOperationExpression {
             return Boolean.TRUE;
         }
 
-        final Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
-        
+        final Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
+
         final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);
         return Boolean.valueOf(rightBooleanValue);
         

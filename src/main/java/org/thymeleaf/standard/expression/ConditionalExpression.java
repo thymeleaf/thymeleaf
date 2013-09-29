@@ -193,21 +193,19 @@ public final class ConditionalExpression extends ComplexExpression {
 
     
     static Object executeConditional(final Configuration configuration, final IProcessingContext processingContext, 
-            final ConditionalExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final ConditionalExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating conditional expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        final Object condObj = 
-            Expression.execute(configuration, processingContext, expression.getConditionExpression(), expressionEvaluator, expContext);
+        final Object condObj = expression.getConditionExpression().execute(configuration, processingContext, expContext);
         final boolean cond = ObjectUtils.evaluateAsBoolean(condObj);
         
         if (cond) {
-            return Expression.execute(configuration, processingContext, expression.getThenExpression(), expressionEvaluator, expContext);
+            return expression.getThenExpression().execute(configuration, processingContext, expContext);
         }
-        return Expression.execute(configuration, processingContext, expression.getElseExpression(), expressionEvaluator, expContext);
+        return expression.getElseExpression().execute(configuration, processingContext, expContext);
         
     }
     

@@ -57,8 +57,8 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
 
     static {
         try {
-            LEFT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
-            RIGHT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+            LEFT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isLeftAllowed", IStandardExpression.class);
+            RIGHT_ALLOWED_METHOD = EqualsNotEqualsExpression.class.getDeclaredMethod("isRightAllowed", IStandardExpression.class);
         } catch (final NoSuchMethodException e) {
             throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
         }
@@ -67,17 +67,17 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
 
     
     
-    protected EqualsNotEqualsExpression(final Expression left, final Expression right) {
+    protected EqualsNotEqualsExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
 
 
-    static boolean isRightAllowed(final Expression right) {
+    static boolean isRightAllowed(final IStandardExpression right) {
         return true;
     }
 
-    static boolean isLeftAllowed(final Expression left) {
+    static boolean isLeftAllowed(final IStandardExpression left) {
         return true;
     }
 

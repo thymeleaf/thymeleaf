@@ -28,7 +28,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
@@ -68,7 +68,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final Expression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+        final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         
         final Set<String> newAttributeNames = 
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
@@ -86,7 +86,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
 
     protected abstract Set<String> getModifiedAttributeNames(final Arguments arguments,
-            final Element element, final String attributeName, final String attributeValue, final Expression expression);
+            final Element element, final String attributeName, final String attributeValue, final IStandardExpression expression);
 
 
 

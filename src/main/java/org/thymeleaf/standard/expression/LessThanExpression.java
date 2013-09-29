@@ -46,7 +46,7 @@ public final class LessThanExpression extends GreaterLesserExpression {
     private static final Logger logger = LoggerFactory.getLogger(LessThanExpression.class);
     
     
-    public LessThanExpression(final Expression left, final Expression right) {
+    public LessThanExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
@@ -63,18 +63,14 @@ public final class LessThanExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeLessThan(final Configuration configuration, final IProcessingContext processingContext, 
-            final LessThanExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final LessThanExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating LESS THAN expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
-
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
+        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
+        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
         if (leftValue == null || rightValue == null) {
             throw new TemplateProcessingException(

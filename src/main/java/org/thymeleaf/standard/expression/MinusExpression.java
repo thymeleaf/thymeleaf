@@ -127,15 +127,13 @@ public final class MinusExpression extends ComplexExpression {
     
 
     static Object executeMinus(final Configuration configuration, final IProcessingContext processingContext, 
-            final MinusExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final MinusExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating minus expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object operandValue = 
-            Expression.execute(configuration, processingContext, expression.getOperand(), expressionEvaluator, expContext);
+        Object operandValue = expression.getOperand().execute(configuration, processingContext, expContext);
         
         if (operandValue == null) {
             operandValue = "null";

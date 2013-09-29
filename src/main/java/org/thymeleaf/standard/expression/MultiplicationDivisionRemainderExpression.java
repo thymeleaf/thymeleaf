@@ -61,8 +61,8 @@ public abstract class MultiplicationDivisionRemainderExpression extends BinaryOp
 
     static {
         try {
-            LEFT_ALLOWED_METHOD = MultiplicationDivisionRemainderExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
-            RIGHT_ALLOWED_METHOD = MultiplicationDivisionRemainderExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+            LEFT_ALLOWED_METHOD = MultiplicationDivisionRemainderExpression.class.getDeclaredMethod("isLeftAllowed", IStandardExpression.class);
+            RIGHT_ALLOWED_METHOD = MultiplicationDivisionRemainderExpression.class.getDeclaredMethod("isRightAllowed", IStandardExpression.class);
         } catch (final NoSuchMethodException e) {
             throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
         }
@@ -70,20 +70,20 @@ public abstract class MultiplicationDivisionRemainderExpression extends BinaryOp
 
 
     
-    protected MultiplicationDivisionRemainderExpression(final Expression left, final Expression right) {
+    protected MultiplicationDivisionRemainderExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
 
 
 
-    static boolean isRightAllowed(final Expression right) {
+    static boolean isRightAllowed(final IStandardExpression right) {
         return right != null &&
                 !(right instanceof Token && !(right instanceof NumberTokenExpression)) &&
                 !(right instanceof TextLiteralExpression);
     }
 
-    static boolean isLeftAllowed(final Expression left) {
+    static boolean isLeftAllowed(final IStandardExpression left) {
         return left != null && !(left instanceof Token &&
                 !(left instanceof NumberTokenExpression)) &&
                 !(left instanceof TextLiteralExpression);

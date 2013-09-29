@@ -37,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class AssignationSequence implements Iterable<Assignation>, Serializable {
+public final class AssignationSequence implements IStandardExpressionAssignationSequenceStructure, Serializable {
 
     
     private static final long serialVersionUID = -4915282307441011014L;
@@ -48,11 +48,11 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
     
-    private final List<Assignation> assignations;
+    private final List<IStandardExpressionAssignationStructure> assignations;
     
     
     
-    AssignationSequence(final List<Assignation> assignations) {
+    AssignationSequence(final List<? extends IStandardExpressionAssignationStructure> assignations) {
         super();
         Validate.notNull(assignations, "Assignation list cannot be null");
         Validate.containsNoNulls(assignations, "Assignation list cannot contain any nulls");
@@ -60,7 +60,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
     }
 
     
-    public List<Assignation> getAssignations() {
+    public List<IStandardExpressionAssignationStructure> getAssignations() {
         return this.assignations;
     }
   
@@ -68,7 +68,7 @@ public final class AssignationSequence implements Iterable<Assignation>, Seriali
         return this.assignations.size();
     }
     
-    public Iterator<Assignation> iterator() {
+    public Iterator<IStandardExpressionAssignationStructure> iterator() {
         return this.assignations.iterator();
     }
 

@@ -27,7 +27,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor;
-import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
@@ -66,7 +66,7 @@ public abstract class AbstractStandardSwitchStructureAttrProcessor
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final Expression switchExpression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+        final IStandardExpression switchExpression = expressionParser.parseExpression(configuration, arguments, attributeValue);
 
         final Map<String,Object> newVariables = new HashMap<String, Object>(2, 1.0f);
         newVariables.put(SWITCH_VARIABLE_NAME, new SwitchStructure(switchExpression));
@@ -80,16 +80,16 @@ public abstract class AbstractStandardSwitchStructureAttrProcessor
     
     public static final class SwitchStructure {
         
-        private final Expression expression;
+        private final IStandardExpression expression;
         private boolean executed;
         
-        public SwitchStructure(final Expression expression) {
+        public SwitchStructure(final IStandardExpression expression) {
             super();
             this.expression = expression;
             this.executed = false;
         }
 
-        public Expression getExpression() {
+        public IStandardExpression getExpression() {
             return this.expression;
         }
 

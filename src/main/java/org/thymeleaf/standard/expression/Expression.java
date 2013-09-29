@@ -35,7 +35,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public abstract class Expression implements Serializable {
+public abstract class Expression implements IStandardExpression, Serializable {
 
     private static final long serialVersionUID = 1608378943284014151L;
 
@@ -103,7 +103,7 @@ public abstract class Expression implements Serializable {
             return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof ComplexExpression) {
-            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expressionEvaluator, expContext);
+            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expContext);
         }
 
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());

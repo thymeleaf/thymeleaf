@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class Each implements Serializable {
+public final class Each implements IStandardExpressionEachStructure, Serializable {
     
 
     private static final long serialVersionUID = -4085690403057997591L;
@@ -43,12 +43,12 @@ public final class Each implements Serializable {
     private static final String STAT_SEPARATOR = ",";
 
     
-    private final Expression iterVar;
-    private final Expression statusVar;
-    private final Expression iterable;
+    private final IStandardExpression iterVar;
+    private final IStandardExpression statusVar;
+    private final IStandardExpression iterable;
          
          
-    private Each(final Expression iterVar, final Expression statusVar, final Expression iterable) {
+    private Each(final IStandardExpression iterVar, final IStandardExpression statusVar, final IStandardExpression iterable) {
         super();
         Validate.notNull(iterVar, "Iteration variable cannot be null");
         Validate.notNull(iterable, "Iterable cannot be null");
@@ -58,7 +58,7 @@ public final class Each implements Serializable {
     }
 
     
-    public Expression getIterVar() {
+    public IStandardExpression getIterVar() {
         return this.iterVar;
     }
     
@@ -66,11 +66,11 @@ public final class Each implements Serializable {
         return this.statusVar != null;
     }
 
-    public Expression getStatusVar() {
+    public IStandardExpression getStatusVar() {
         return this.statusVar;
     }
 
-    public Expression getIterable() {
+    public IStandardExpression getIterable() {
         return this.iterable;
     }
     

@@ -68,13 +68,13 @@ public final class LinkExpression extends SimpleExpression {
     private static final String URL_PARAM_NO_VALUE = "%%%__NO_VALUE__%%%";
     
     
-    private final Expression base;
-    private final AssignationSequence parameters;
+    private final IStandardExpression base;
+    private final IStandardExpressionAssignationSequenceStructure parameters;
     
     
     
     
-    public LinkExpression(final Expression base, final AssignationSequence parameters) {
+    public LinkExpression(final IStandardExpression base, final IStandardExpressionAssignationSequenceStructure parameters) {
         super();
         Validate.notNull(base, "Base cannot be null");
         this.base = base;
@@ -84,11 +84,11 @@ public final class LinkExpression extends SimpleExpression {
     
     
     
-    public Expression getBase() {
+    public IStandardExpression getBase() {
         return this.base;
     }
     
-    public AssignationSequence getParameters() {
+    public IStandardExpressionAssignationSequenceStructure getParameters() {
         return this.parameters;
     }
     
@@ -227,17 +227,15 @@ public final class LinkExpression extends SimpleExpression {
 
     static Object executeLink(final Configuration configuration,
             final IProcessingContext processingContext, final LinkExpression expression, 
-            final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        final Expression baseExpression = expression.getBase();
-        Object base = 
-            Expression.execute(configuration, processingContext, baseExpression, expressionEvaluator, expContext);
-        base = LiteralValue.unwrap(base);
+        final IStandardExpression baseExpression = expression.getBase();
+        Object base = baseExpression.execute(configuration, processingContext, expContext);
+
         if (base != null && !(base instanceof String)) {
             base = base.toString();
         }
@@ -257,7 +255,7 @@ public final class LinkExpression extends SimpleExpression {
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression, expressionEvaluator, expContext) :
+                    resolveParameters(configuration, processingContext, expression, expContext) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -398,20 +396,18 @@ public final class LinkExpression extends SimpleExpression {
     
     private static Map<String,List<Object>> resolveParameters(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final LinkExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
 
-        final AssignationSequence assignationValues = expression.getParameters();
+        final IStandardExpressionAssignationSequenceStructure assignationValues = expression.getParameters();
 
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
-        for (final Assignation assignationValue : assignationValues) {
+        for (final IStandardExpressionAssignationStructure assignationValue : assignationValues) {
             
-            final Expression parameterNameExpr = assignationValue.getLeft();
-            final Expression parameterValueExpr = assignationValue.getRight();
+            final IStandardExpression parameterNameExpr = assignationValue.getLeft();
+            final IStandardExpression parameterValueExpr = assignationValue.getRight();
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
-            final Object parameterNameValue =
-                    Expression.execute(configuration, processingContext, parameterNameExpr, expressionEvaluator, expContext);
+            final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext, expContext);
             final String parameterName =
                     (parameterNameValue == null? null : parameterNameValue.toString());
 
@@ -433,8 +429,8 @@ public final class LinkExpression extends SimpleExpression {
                 // also without an equals sign.
                 currentParameterValues.add(URL_PARAM_NO_VALUE);
             } else {
-                final Object value = 
-                        Expression.execute(configuration, processingContext, parameterValueExpr, expressionEvaluator, expContext);
+                final Object value =
+                        parameterValueExpr.execute(configuration, processingContext, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
                     currentParameterValues.add("");

@@ -41,11 +41,11 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
     private static final long serialVersionUID = 7524261639178859585L;
 
 
-    private final Expression left;
-    private final Expression right;
+    private final IStandardExpression left;
+    private final IStandardExpression right;
 
     
-    protected BinaryOperationExpression(final Expression left, final Expression right) {
+    protected BinaryOperationExpression(final IStandardExpression left, final IStandardExpression right) {
         super();
         Validate.notNull(left, "Left-side expression cannot be null");
         Validate.notNull(right, "Right-side expression cannot be null");
@@ -53,11 +53,11 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
         this.right = right;
     }
     
-    public Expression getLeft() {
+    public IStandardExpression getLeft() {
         return this.left;
     }
 
-    public Expression getRight() {
+    public IStandardExpression getRight() {
         return this.right;
     }
 
@@ -202,7 +202,7 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
         try {
 
             final BinaryOperationExpression operationExpression =
-                operationClass.getDeclaredConstructor(Expression.class, Expression.class).
+                operationClass.getDeclaredConstructor(IStandardExpression.class, IStandardExpression.class).
                             newInstance(leftExpr, rightExpr);
             state.setNode(nodeIndex, operationExpression);
             

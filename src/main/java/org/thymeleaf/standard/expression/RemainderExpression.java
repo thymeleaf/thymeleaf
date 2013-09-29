@@ -51,7 +51,7 @@ public final class RemainderExpression extends MultiplicationDivisionRemainderEx
 
 
     
-    public RemainderExpression(final Expression left, final Expression right) {
+    public RemainderExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
     
@@ -66,19 +66,15 @@ public final class RemainderExpression extends MultiplicationDivisionRemainderEx
     
     
     static Object executeRemainder(final Configuration configuration, final IProcessingContext processingContext, 
-            final RemainderExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final RemainderExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating remainder expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = 
-            Expression.execute(configuration, processingContext, expression.getLeft(), expressionEvaluator, expContext);
+        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
+        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
-        Object rightValue = 
-            Expression.execute(configuration, processingContext, expression.getRight(), expressionEvaluator, expContext);
-        
         if (leftValue == null) {
             leftValue = "null";
         }

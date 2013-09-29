@@ -66,8 +66,8 @@ public abstract class GreaterLesserExpression extends BinaryOperationExpression 
 
     static {
         try {
-            LEFT_ALLOWED_METHOD = GreaterLesserExpression.class.getDeclaredMethod("isLeftAllowed", Expression.class);
-            RIGHT_ALLOWED_METHOD = GreaterLesserExpression.class.getDeclaredMethod("isRightAllowed", Expression.class);
+            LEFT_ALLOWED_METHOD = GreaterLesserExpression.class.getDeclaredMethod("isLeftAllowed", IStandardExpression.class);
+            RIGHT_ALLOWED_METHOD = GreaterLesserExpression.class.getDeclaredMethod("isRightAllowed", IStandardExpression.class);
         } catch (final NoSuchMethodException e) {
             throw new TemplateProcessingException("Cannot register is*Allowed methods in binary operation expression", e);
         }
@@ -75,18 +75,18 @@ public abstract class GreaterLesserExpression extends BinaryOperationExpression 
 
     
     
-    protected GreaterLesserExpression(final Expression left, final Expression right) {
+    protected GreaterLesserExpression(final IStandardExpression left, final IStandardExpression right) {
         super(left, right);
     }
 
 
 
 
-    static boolean isRightAllowed(final Expression right) {
+    static boolean isRightAllowed(final IStandardExpression right) {
         return right != null && !(right instanceof Token && !(right instanceof NumberTokenExpression));
     }
 
-    static boolean isLeftAllowed(final Expression left) {
+    static boolean isLeftAllowed(final IStandardExpression left) {
         return left != null && !(left instanceof Token && !(left instanceof NumberTokenExpression));
     }
 
