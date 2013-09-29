@@ -144,7 +144,7 @@ public class ExpressionBenchmark {
         final IStandardExpressionParser parser = new StandardExpressionParser();
 
         for (int i = 0; i < msgs.size(); i++) {
-            final Expression expression = parser.parseExpression(configuration, processingContext, msgs.get(i));
+            final IStandardExpression expression = parser.parseExpression(configuration, processingContext, msgs.get(i));
             Assert.assertNotNull(expression);
             final String exp = expression.getStringRepresentation();
             Assert.assertEquals(processedMsgs.get(i), exp);

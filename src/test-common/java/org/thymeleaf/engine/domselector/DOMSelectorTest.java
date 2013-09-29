@@ -19,13 +19,8 @@
  */
 package org.thymeleaf.engine.domselector;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.engine.context.dialect.ContextDialect;
-import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 

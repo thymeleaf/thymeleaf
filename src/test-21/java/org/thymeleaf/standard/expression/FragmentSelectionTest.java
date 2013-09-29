@@ -75,9 +75,9 @@ public class FragmentSelectionTest {
 
         final FragmentSelection fragmentSelection = FragmentSelection.parse(fragmentSelectionSpec);
 
-        final Expression parsedTemplateExpression = fragmentSelection.getTemplateName();
-        final Expression parsedFragmentExpression = fragmentSelection.getFragmentSelector();
-        final AssignationSequence parsedParameters = fragmentSelection.getParameters();
+        final IStandardExpression parsedTemplateExpression = fragmentSelection.getTemplateName();
+        final IStandardExpression parsedFragmentExpression = fragmentSelection.getFragmentSelector();
+        final IStandardExpressionAssignationSequenceStructure parsedParameters = fragmentSelection.getParameters();
 
         final String parsedTempalteExpressionStr =
                 (parsedTemplateExpression == null? null : parsedTemplateExpression.getStringRepresentation());
