@@ -30,7 +30,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.SelectionVariableExpression;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -189,7 +189,7 @@ public final class FieldUtils {
 
 
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final Expression expressionObj =
+        final IStandardExpression expressionObj =
                 expressionParser.parseExpression(configuration, processingContext, bindExpression);
         
         final String completeExpression = 
@@ -203,7 +203,7 @@ public final class FieldUtils {
     
     
     private static String validateAndGetValueExpression(
-            final IProcessingContext processingContext, final Expression expression) {
+            final IProcessingContext processingContext, final IStandardExpression expression) {
 
         /*
          * Only asterisk syntax (selection variable expressions) are allowed here.

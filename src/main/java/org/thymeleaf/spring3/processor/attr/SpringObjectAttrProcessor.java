@@ -27,7 +27,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-import org.thymeleaf.standard.expression.Expression;
+import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
@@ -67,7 +67,7 @@ public final class SpringObjectAttrProcessor
 
     @Override
     protected void validateSelectionValue(final Arguments arguments, final Element element,
-            final String attributeName, final String attributeValue, final Expression expression) {
+            final String attributeName, final String attributeValue, final IStandardExpression expression) {
         
         if ("form".equals(element.getNormalizedName())) {
             
