@@ -28,7 +28,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProcessor;
@@ -125,7 +125,7 @@ public final class SpringObjectAttrProcessor
             final String attributeValue = element.getAttributeValue(attributeName);
 
             final Configuration configuration = arguments.getConfiguration();
-            final StandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+            final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
             final VariableExpression varExpression =
                 (VariableExpression) expressionParser.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
