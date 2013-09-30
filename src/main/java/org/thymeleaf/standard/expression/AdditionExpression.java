@@ -67,9 +67,32 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating addition expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-        
-        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
-        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
+
+        final IStandardVariableExpressionEvaluator expressionEvaluator =
+                StandardExpressions.getVariableExpressionEvaluator(configuration);
+
+        final IStandardExpression leftExpr = expression.getLeft();
+        final IStandardExpression rightExpr = expression.getRight();
+
+        // We try use the Expression.execute methods directly if possible, because we cannot allow the results
+        // to be literal-unwrapped (if literal unwrap takes place, '.' + 3 + 2 = 2.3 instead of '.32' as it should be).
+        // Note this is only needed in AdditionExpression, because '+' is the only overloaded operator
+        Object leftValue;
+        if (leftExpr instanceof Expression) {
+            // This avoids literal-unwrap
+            leftValue =
+                    Expression.execute(configuration, processingContext, (Expression)leftExpr, expressionEvaluator, expContext);
+        } else{
+            leftValue = leftExpr.execute(configuration, processingContext, expContext);
+        }
+        Object rightValue;
+        if (rightExpr instanceof Expression) {
+            // This avoids literal-unwrap
+            rightValue =
+                    Expression.execute(configuration, processingContext, (Expression)rightExpr, expressionEvaluator, expContext);
+        } else{
+            rightValue = rightExpr.execute(configuration, processingContext, expContext);
+        }
 
         if (leftValue == null) {
             leftValue = "null";
@@ -77,7 +100,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         if (rightValue == null) {
             rightValue = "null";
         }
-        
+
         final BigDecimal leftNumberValue = ObjectUtils.evaluateAsNumber(leftValue);
         final BigDecimal rightNumberValue = ObjectUtils.evaluateAsNumber(rightValue);
         if (leftNumberValue != null && rightNumberValue != null) {
