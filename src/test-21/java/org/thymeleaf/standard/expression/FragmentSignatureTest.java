@@ -45,7 +45,7 @@ public class FragmentSignatureTest {
 
 
     private static void check(final String fragmentSpec, final String fragmentName, final String[] parameterNames) {
-        final FragmentSignature signature = FragmentSignature.parse(fragmentSpec);
+        final FragmentSignature signature = FragmentSignatureUtils.internalParseFragmentSignature(fragmentSpec);
         Assert.assertEquals(fragmentName, signature.getFragmentName());
         if (parameterNames == null) {
             Assert.assertNull(signature.getParameterNames());

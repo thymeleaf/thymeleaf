@@ -73,11 +73,12 @@ public class FragmentSelectionTest {
     private static void checkFragmentSelection(final String fragmentSelectionSpec,
             final String templateExpression, final String fragmentExpression, final String parametersExpression) {
 
-        final FragmentSelection fragmentSelection = FragmentSelection.parse(fragmentSelectionSpec);
+        final FragmentSelection fragmentSelection =
+                FragmentSelectionUtils.internalParseFragmentSelection(fragmentSelectionSpec);
 
         final IStandardExpression parsedTemplateExpression = fragmentSelection.getTemplateName();
         final IStandardExpression parsedFragmentExpression = fragmentSelection.getFragmentSelector();
-        final IStandardExpressionAssignationSequenceStructure parsedParameters = fragmentSelection.getParameters();
+        final AssignationSequence parsedParameters = fragmentSelection.getParameters();
 
         final String parsedTempalteExpressionStr =
                 (parsedTemplateExpression == null? null : parsedTemplateExpression.getStringRepresentation());
@@ -107,7 +108,7 @@ public class FragmentSelectionTest {
 
         final Set<String> variableNames =
                 new HashSet<String>(Arrays.asList(StringUtils.split(variableNamesSpec, ",")));
-        final boolean computedNamed = FragmentSelection.parameterNamesAreSynthetic(variableNames);
+        final boolean computedNamed = FragmentSelectionUtils.parameterNamesAreSynthetic(variableNames);
 
         Assert.assertEquals(Boolean.valueOf(synth), Boolean.valueOf(computedNamed));
 

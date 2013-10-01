@@ -27,11 +27,10 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
+import org.thymeleaf.standard.expression.Assignation;
+import org.thymeleaf.standard.expression.AssignationSequence;
+import org.thymeleaf.standard.expression.AssignationUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionAssignationSequenceStructure;
-import org.thymeleaf.standard.expression.IStandardExpressionAssignationStructure;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 
 public class AddLocalVariableToResult extends AbstractAttrProcessor {
 
@@ -58,13 +57,12 @@ public class AddLocalVariableToResult extends AbstractAttrProcessor {
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final IStandardExpressionAssignationSequenceStructure assignationSequence =
-                expressionParser.parseAssignationSequence(configuration, arguments, attributeValue, false);
+        final AssignationSequence assignationSequence =
+                AssignationUtils.parseAssignationSequence(configuration, arguments, attributeValue, false);
 
         final Map<String,Object> localVariables = new HashMap<String,Object>();
-        for (final IStandardExpressionAssignationStructure assignation : assignationSequence.getAssignations()) {
+        for (final Assignation assignation : assignationSequence.getAssignations()) {
 
             final IStandardExpression varNameExpr = assignation.getLeft();
             final IStandardExpression varValueExpr = assignation.getRight();
