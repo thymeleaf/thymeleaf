@@ -44,7 +44,7 @@ import org.thymeleaf.spring3.context.SpringWebContext;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-import org.thymeleaf.standard.expression.FragmentSelection;
+import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.fragment.StandardFragment;
 import org.thymeleaf.standard.fragment.StandardFragmentProcessor;
 import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
@@ -283,7 +283,7 @@ public class ThymeleafView
 
             if (nameFragmentParameters != null) {
 
-                if (FragmentSelection.parameterNamesAreSynthetic(nameFragmentParameters.keySet())) {
+                if (FragmentSelectionUtils.parameterNamesAreSynthetic(nameFragmentParameters.keySet())) {
                     // We cannot allow synthetic parameters because there is no way to specify them at the template
                     // engine execution!
                     throw new IllegalArgumentException(
