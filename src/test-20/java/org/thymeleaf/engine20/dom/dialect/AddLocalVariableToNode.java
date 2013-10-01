@@ -26,7 +26,7 @@ import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.Expression;
-import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.expression.StandardExpressionProcessor;
 
 public class AddLocalVariableToNode extends AbstractAttrProcessor {
 
@@ -53,14 +53,14 @@ public class AddLocalVariableToNode extends AbstractAttrProcessor {
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final AssignationSequence assignationSequence = 
-                StandardExpressions.parseAssignationSequence(arguments, attributeValue, false);
+                StandardExpressionProcessor.parseAssignationSequence(arguments, attributeValue, false);
 
         for (final Assignation assignation : assignationSequence.getAssignations()) {
             
             final String varName = assignation.getLeft().getValue();
             final Expression varValueExpr = assignation.getRight();
 
-            final Object varValue = StandardExpressions.executeExpression(arguments, varValueExpr);
+            final Object varValue = StandardExpressionProcessor.executeExpression(arguments, varValueExpr);
             
             element.setNodeLocalVariable(varName, varValue);
             

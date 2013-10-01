@@ -87,6 +87,7 @@ public class ExpressionTest extends TestCase {
         test("${loceania.name != jafrica.name}? (23 - 3) / 10 : 'Number ' + 3 + 2 + '.'", "2");
         test("!${loceania.name != jafrica.name}? (23 - 3) / 10 : 'Number ' + (3 + 2) + '.'", "Number 5.");
         test("'.' + 3 + 2", ".32");
+        test("3 + '.' + 2", "3.2");
         test("3 + 2 + '.'", "5.");
         test("'Number ' + 3 + 2 + '.'", "Number 32.");
         test("'true'? 'x' : 'y'", "x");
