@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
@@ -43,14 +40,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class StandardExpressionParser implements IStandardExpressionParser {
 
-    
-    private static final char PREPROCESS_DELIMITER = '_';
-    private static final String PREPROCESS_EVAL = "\\_\\_(.*?)\\_\\_";
-    private static final Pattern PREPROCESS_EVAL_PATTERN = Pattern.compile(PREPROCESS_EVAL, Pattern.DOTALL);
 
-    
-    private static final ExpressionCache CACHE = new ExpressionCache();
-    
     
     
     public StandardExpressionParser() {
@@ -67,7 +57,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     public Expression parseExpression(final Arguments arguments, final String input) {
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpression(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+        return (Expression) parseExpression(arguments.getConfiguration(), arguments, input, true);
     }
     
     /**
@@ -78,7 +68,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return parseExpression(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
+        return (Expression) parseExpression(configuration, processingContext, input, true);
     }
 
 
@@ -90,9 +80,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     @Deprecated
     public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseAssignationSequence(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
+        return parseAssignationSequence(arguments.getConfiguration(), arguments, input, allowParametersWithoutValue);
     }
     
     /**
@@ -100,10 +88,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     public AssignationSequence parseAssignationSequence(final Configuration configuration,
                                                         final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
-        Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseAssignationSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true, allowParametersWithoutValue);
+        return AssignationUtils.parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
     }
 
 
@@ -115,9 +100,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     @Deprecated
     public ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseExpressionSequence(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseExpressionSequence(arguments.getConfiguration(), arguments, input);
     }
     
     /**
@@ -125,10 +108,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     public ExpressionSequence parseExpressionSequence(final Configuration configuration,
                                                       final IProcessingContext processingContext, final String input) {
-        Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseExpressionSequence(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
+        return ExpressionSequenceUtils.parseExpressionSequence(configuration, processingContext, input);
     }
 
 
@@ -140,9 +120,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     @Deprecated
     public Each parseEach(final Arguments arguments, final String input) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseEach(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseEach(arguments.getConfiguration(), arguments, input);
     }
     
     /**
@@ -150,10 +128,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     public Each parseEach(final Configuration configuration,
                           final IProcessingContext processingContext, final String input) {
-        Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseEach(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
+        return EachUtils.parseEach(configuration, processingContext, input);
     }
 
 
@@ -165,9 +140,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     @Deprecated
     public FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseFragmentSelection(arguments.getConfiguration(), arguments, DOMUtils.unescapeXml(input, true), true);
+        return parseFragmentSelection(arguments.getConfiguration(), arguments, input);
     }
     
     /**
@@ -175,10 +148,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     public FragmentSelection parseFragmentSelection(
             final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return parseFragmentSelection(configuration, processingContext, DOMUtils.unescapeXml(input, true), true);
+        return FragmentSelectionUtils.parseFragmentSelection(configuration, processingContext, input);
     }
 
 
@@ -188,10 +158,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
      */
     public FragmentSignature parseFragmentSignature(
             final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        Validate.notNull(configuration, "Configuration cannot be null");
-        // Processing context CAN (and many times will, in fact) be null! - no variables can be used in signatures.
-        Validate.notNull(input, "Input cannot be null");
-        return doParseFragmentSignature(configuration, DOMUtils.unescapeXml(input, true));
+        return FragmentSignatureUtils.parseFragmentSignature(configuration, input);
     }
 
 
@@ -200,30 +167,28 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
 
-    private Expression parseExpression(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
-        
-        final String trimmedInput = input.trim();
-        
+    static IStandardExpression parseExpression(final Configuration configuration,
+               final IProcessingContext processingContext, final String input, final boolean preprocess) {
+
         final String preprocessedInput =
-            (preprocess?
-                    preprocess(configuration, processingContext, trimmedInput) :
-                    trimmedInput);
+            (preprocess? StandardExpressionPreprocessor.preprocess(configuration, processingContext, input) : input);
 
         if (configuration != null) {
-            final Expression cachedExpression = CACHE.getExpressionFromCache(configuration, preprocessedInput);
+            final IStandardExpression cachedExpression =
+                    ExpressionCache.getExpressionFromCache(configuration, preprocessedInput);
             if (cachedExpression != null) {
                 return cachedExpression;
             }
         }
         
-        final Expression expression = Expression.parse(preprocessedInput);
+        final Expression expression = Expression.parse(DOMUtils.unescapeXml(preprocessedInput.trim(), true));
         
         if (expression == null) {
             throw new TemplateProcessingException("Could not parse as expression: \"" + input + "\"");
         }
         
         if (configuration != null) {
-            CACHE.putExpressionIntoCache(configuration, preprocessedInput, expression);
+            ExpressionCache.putExpressionIntoCache(configuration, preprocessedInput, expression);
         }
         
         return expression;
@@ -232,270 +197,10 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
 
-    private AssignationSequence parseAssignationSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess, final boolean allowParametersWithoutValue) {
-        
-        final String trimmedInput = input.trim();
-        
-        final String preprocessedInput =
-            (preprocess?
-                    preprocess(configuration, processingContext, trimmedInput) :
-                    trimmedInput);
-
-        if (configuration != null) {
-            final AssignationSequence cachedAssignationSequence = CACHE.getAssignationSequenceFromCache(configuration, preprocessedInput);
-            if (cachedAssignationSequence != null) {
-                return cachedAssignationSequence;
-            }
-        }
-        
-        final AssignationSequence assignationSequence = AssignationSequence.parse(preprocessedInput, allowParametersWithoutValue);
-        
-        if (assignationSequence == null) {
-            throw new TemplateProcessingException("Could not parse as assignation sequence: \"" + input + "\"");
-        }
-        
-        if (configuration != null) {
-            CACHE.putAssignationSequenceIntoCache(configuration, preprocessedInput, assignationSequence);
-        }
-        
-        return assignationSequence;
-
-    }
-
-
-
-    private ExpressionSequence parseExpressionSequence(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
-        
-        final String trimmedInput = input.trim();
-        
-        final String preprocessedInput =
-            (preprocess?
-                    preprocess(configuration, processingContext, trimmedInput) :
-                    trimmedInput);
-
-        if (configuration != null) {
-            final ExpressionSequence cachedExpressionSequence = CACHE.getExpressionSequenceFromCache(configuration, preprocessedInput);
-            if (cachedExpressionSequence != null) {
-                return cachedExpressionSequence;
-            }
-        }
-        
-        final ExpressionSequence expressionSequence = ExpressionSequence.parse(preprocessedInput);
-        
-        if (expressionSequence == null) {
-            throw new TemplateProcessingException("Could not parse as expression sequence: \"" + input + "\"");
-        }
-        
-        if (configuration != null) {
-            CACHE.putExpressionSequenceIntoCache(configuration, preprocessedInput, expressionSequence);
-        }
-        
-        return expressionSequence;
-
-    }
-
-
-
-    private Each parseEach(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
-        
-        final String trimmedInput = input.trim();
-        
-        final String preprocessedInput =
-            (preprocess?
-                    preprocess(configuration, processingContext, trimmedInput) :
-                    trimmedInput);
-
-        if (configuration != null) {
-            final Each cachedEach = CACHE.getEachFromCache(configuration, preprocessedInput);
-            if (cachedEach != null) {
-                return cachedEach;
-            }
-        }
-        
-        final Each each = Each.parse(preprocessedInput);
-        
-        if (each == null) {
-            throw new TemplateProcessingException("Could not parse as each: \"" + input + "\"");
-        }
-        
-        if (configuration != null) {
-            CACHE.putEachIntoCache(configuration, preprocessedInput, each);
-        }
-        
-        return each;
-
-    }
-
-
-
-    private FragmentSelection parseFragmentSelection(final Configuration configuration, final IProcessingContext processingContext, final String input, final boolean preprocess) {
-        
-        final String trimmedInput = input.trim();
-        
-        final String preprocessedInput =
-            (preprocess?
-                    preprocess(configuration, processingContext, trimmedInput) :
-                    trimmedInput);
-
-        if (configuration != null) {
-            final FragmentSelection cachedFragmentSelection = CACHE.getFragmentSelectionFromCache(configuration, preprocessedInput);
-            if (cachedFragmentSelection != null) {
-                return cachedFragmentSelection;
-            }
-        }
-        
-        final FragmentSelection fragmentSelection = FragmentSelection.parse(preprocessedInput);
-        
-        if (fragmentSelection == null) {
-            throw new TemplateProcessingException("Could not parse as fragment selection: \"" + input + "\"");
-        }
-        
-        if (configuration != null) {
-            CACHE.putFragmentSelectionIntoCache(configuration, preprocessedInput, fragmentSelection);
-        }
-        
-        return fragmentSelection;
-
-    }
-
-
-
-    private FragmentSignature doParseFragmentSignature(final Configuration configuration, final String input) {
-
-        // No need to preprocess, also no need to have a context, because fragment signatures are
-        // token-only based (no expressions allowed).
-
-        if (configuration != null) {
-            final FragmentSignature cachedFragmentSignature = CACHE.getFragmentSignatureFromCache(configuration, input);
-            if (cachedFragmentSignature != null) {
-                return cachedFragmentSignature;
-            }
-        }
-
-        final FragmentSignature fragmentSignature = FragmentSignature.parse(input);
-
-        if (fragmentSignature == null) {
-            throw new TemplateProcessingException("Could not parse as fragment signature: \"" + input + "\"");
-        }
-
-        if (configuration != null) {
-            CACHE.putFragmentSignatureIntoCache(configuration, input, fragmentSignature);
-        }
-
-        return fragmentSignature;
-
-    }
 
 
 
 
-
-    private String preprocess(final Configuration configuration,
-            final IProcessingContext processingContext, final String input) {
-
-        if (input.indexOf(PREPROCESS_DELIMITER) == -1) {
-            // Fail quick
-            return input;
-        }
-        
-        final Matcher matcher = PREPROCESS_EVAL_PATTERN.matcher(input);
-        
-        if (matcher.find()) {
-
-            final StringBuilder strBuilder = new StringBuilder();
-            int curr = 0;
-            
-            do {
-                
-                final String previousText = 
-                        checkPreprocessingMarkUnescaping(input.substring(curr,matcher.start(0)));
-                final String expressionText = 
-                        checkPreprocessingMarkUnescaping(matcher.group(1));
-                        
-                strBuilder.append(previousText);
-                
-                final Expression expression = parseExpression(configuration, processingContext, expressionText, false);
-                if (expression == null) {
-                    return null;
-                }
-                
-                final Object result =
-                    expression.execute(configuration, processingContext, StandardExpressionExecutionContext.PREPROCESSING);
-                
-                strBuilder.append(result);
-                
-                curr = matcher.end(0);
-                
-            } while (matcher.find());
-            
-            final String remaining = checkPreprocessingMarkUnescaping(input.substring(curr));
-            
-            strBuilder.append(remaining);
-            
-            return strBuilder.toString().trim();
-            
-        }
-        
-        return checkPreprocessingMarkUnescaping(input);
-        
-    }
-
-    
-    
-    private static String checkPreprocessingMarkUnescaping(final String input) {
-        
-        boolean structureFound = false; // for fast failing
-        
-        byte state = 0; // 1 = \, 2 = _, 3 = \, 4 = _
-        final int inputLen = input.length();
-        for (int i = 0; i < inputLen; i++) {
-            final char c = input.charAt(i);
-            if (c == '\\' && (state == 0 || state == 2)) {
-                state++;
-                continue;
-            }
-            if (c == '_' && state == 1) {
-                state++;
-                continue;
-            } else if (c == '_' && state == 3) {
-                structureFound = true;
-                break;
-            }
-            state = 0;
-        }
-
-        if (!structureFound) {
-            // This avoids creating a new String object in the most common case (= nothing to unescape)
-            return input;
-        }
-
-
-        state = 0; // 1 = \, 2 = _, 3 = \, 4 = _
-        final StringBuilder strBuilder = new StringBuilder();
-        for (int i = 0; i < inputLen; i++) {
-            final char c = input.charAt(i);
-            if (c == '\\' && (state == 0 || state == 2)) {
-                state++;
-                strBuilder.append(c);
-            } else if (c == '_' && state == 1) {
-                state++;
-                strBuilder.append(c);
-            } else if (c == '_' && state == 3) {
-                state = 0;
-                final int builderLen = strBuilder.length(); 
-                strBuilder.delete(builderLen - 3, builderLen);
-                strBuilder.append("__");
-            } else {
-                state = 0;
-                strBuilder.append(c);
-            }
-        }
-        
-        return strBuilder.toString();
-        
-    }
-    
-    
     
     
     @Override

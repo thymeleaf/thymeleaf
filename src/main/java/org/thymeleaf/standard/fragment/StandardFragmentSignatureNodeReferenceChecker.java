@@ -24,7 +24,9 @@ import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.standard.expression.IStandardExpressionFragmentSignatureStructure;
+import org.thymeleaf.standard.expression.FragmentSelectionUtils;
+import org.thymeleaf.standard.expression.FragmentSignature;
+import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
@@ -91,9 +93,8 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
                 final String elementAttrValue =
                         attributeHolderNode.getAttributeValueFromNormalizedName(this.dialectPrefix, this.fragmentAttributeName);
                 if (elementAttrValue != null) {
-                    final IStandardExpressionFragmentSignatureStructure fragmentSignature =
-                            this.expressionParser.parseFragmentSignature(
-                                    this.configuration, null /* no context available! */, elementAttrValue);
+                    final FragmentSignature fragmentSignature =
+                            FragmentSignatureUtils.parseFragmentSignature(this.configuration, elementAttrValue);
                     if (fragmentSignature != null) {
                         final String signatureFragmentName = fragmentSignature.getFragmentName();
                         if (referenceValue.equals(signatureFragmentName)) {

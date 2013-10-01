@@ -31,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.1.0
  *
  */
-public final class ExpressionParsingState extends ArrayList<ExpressionParsingNode> {
+final class ExpressionParsingState extends ArrayList<ExpressionParsingNode> {
 
 
     private static final long serialVersionUID = 3972191269638891028L;

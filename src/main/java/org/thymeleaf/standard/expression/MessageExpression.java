@@ -60,11 +60,11 @@ public final class MessageExpression extends SimpleExpression {
 
     
     private final IStandardExpression base;
-    private final IStandardExpressionSequenceStructure parameters;
+    private final ExpressionSequence parameters;
          
     
     
-    public MessageExpression(final IStandardExpression base, final IStandardExpressionSequenceStructure parameters) {
+    public MessageExpression(final IStandardExpression base, final ExpressionSequence parameters) {
         super();
         Validate.notNull(base, "Base cannot be null");
         this.base = base;
@@ -77,7 +77,7 @@ public final class MessageExpression extends SimpleExpression {
         return this.base;
     }
     
-    public IStandardExpressionSequenceStructure getParameters() {
+    public ExpressionSequence getParameters() {
         return this.parameters;
     }
     
@@ -159,7 +159,8 @@ public final class MessageExpression extends SimpleExpression {
                             return null;
                         }
                         
-                        final ExpressionSequence parametersExprSeq = ExpressionSequence.parse(parameters);
+                        final ExpressionSequence parametersExprSeq =
+                                ExpressionSequenceUtils.internalParseExpressionSequence(parameters);
                         if (parametersExprSeq == null) {
                             return null;
                         }

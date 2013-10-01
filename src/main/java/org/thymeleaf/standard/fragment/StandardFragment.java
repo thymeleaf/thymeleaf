@@ -33,7 +33,8 @@ import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.IFragmentSpec;
-import org.thymeleaf.standard.expression.IStandardExpressionFragmentSignatureStructure;
+import org.thymeleaf.standard.expression.FragmentSignature;
+import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
@@ -232,13 +233,11 @@ public final class StandardFragment {
                             attributeHolderNode.getAttributeValueFromNormalizedName(
                                     this.dialectPrefix, this.fragmentSignatureAttributeName);
                     if (attributeValue != null) {
-                        final IStandardExpressionParser expressionParser =
-                                StandardExpressions.getExpressionParser(configuration);
-                        final IStandardExpressionFragmentSignatureStructure fragmentSignature =
-                                expressionParser.parseFragmentSignature(configuration, context, attributeValue);
+                        final FragmentSignature fragmentSignature =
+                                FragmentSignatureUtils.parseFragmentSignature(configuration, attributeValue);
                         if (fragmentSignature != null) {
                             final Map<String,Object> processedParameters =
-                                    fragmentSignature.processParameters(this.parameters);
+                                    FragmentSignatureUtils.processParameters(fragmentSignature, this.parameters);
                             applyParameters(nodes, processedParameters);
                             return nodes;
                         }

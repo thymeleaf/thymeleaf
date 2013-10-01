@@ -69,12 +69,12 @@ public final class LinkExpression extends SimpleExpression {
     
     
     private final IStandardExpression base;
-    private final IStandardExpressionAssignationSequenceStructure parameters;
+    private final AssignationSequence parameters;
     
     
     
     
-    public LinkExpression(final IStandardExpression base, final IStandardExpressionAssignationSequenceStructure parameters) {
+    public LinkExpression(final IStandardExpression base, final AssignationSequence parameters) {
         super();
         Validate.notNull(base, "Base cannot be null");
         this.base = base;
@@ -88,7 +88,7 @@ public final class LinkExpression extends SimpleExpression {
         return this.base;
     }
     
-    public IStandardExpressionAssignationSequenceStructure getParameters() {
+    public AssignationSequence getParameters() {
         return this.parameters;
     }
     
@@ -176,7 +176,7 @@ public final class LinkExpression extends SimpleExpression {
                         }
                         
                         final AssignationSequence parametersAssigSeq = 
-                                AssignationSequence.parse(
+                                AssignationUtils.internalParseAssignationSequence(
                                         parameters, true /* allow parameters without value or equals sign */);
                         if (parametersAssigSeq == null) {
                             return null;
@@ -398,10 +398,10 @@ public final class LinkExpression extends SimpleExpression {
             final Configuration configuration, final IProcessingContext processingContext, 
             final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
 
-        final IStandardExpressionAssignationSequenceStructure assignationValues = expression.getParameters();
+        final AssignationSequence assignationValues = expression.getParameters();
 
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
-        for (final IStandardExpressionAssignationStructure assignationValue : assignationValues) {
+        for (final Assignation assignationValue : assignationValues) {
             
             final IStandardExpression parameterNameExpr = assignationValue.getLeft();
             final IStandardExpression parameterValueExpr = assignationValue.getRight();

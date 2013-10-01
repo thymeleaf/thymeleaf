@@ -25,10 +25,9 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
+import org.thymeleaf.standard.expression.Each;
+import org.thymeleaf.standard.expression.EachUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionEachStructure;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -69,9 +68,8 @@ public abstract class AbstractStandardIterationAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-        final IStandardExpressionEachStructure each = expressionParser.parseEach(configuration, arguments, attributeValue);
+        final Each each = EachUtils.parseEach(configuration, arguments, attributeValue);
 
         final IStandardExpression iterVarExpr = each.getIterVar();
         final Object iterVarValue = iterVarExpr.execute(configuration, arguments);

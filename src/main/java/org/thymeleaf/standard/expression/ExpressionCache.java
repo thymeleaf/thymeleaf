@@ -41,7 +41,7 @@ final class ExpressionCache {
 
     
     
-    ExpressionCache() {
+    private ExpressionCache() {
         super();
     }
     
@@ -73,56 +73,61 @@ final class ExpressionCache {
     
     
     
-    Expression getExpressionFromCache(final Configuration configuration, final String input) {
-        return (Expression) getFromCache(configuration, input, EXPRESSION_CACHE_PREFIX);
+    static IStandardExpression getExpressionFromCache(final Configuration configuration, final String input) {
+        return (IStandardExpression) getFromCache(configuration, input, EXPRESSION_CACHE_PREFIX);
     }
-    
-    void putExpressionIntoCache(final Configuration configuration, final String input, final Expression value) {
+
+    static void putExpressionIntoCache(final Configuration configuration, final String input, final IStandardExpression value) {
         putIntoCache(configuration, input, value, EXPRESSION_CACHE_PREFIX);
     }
 
-    AssignationSequence getAssignationSequenceFromCache(final Configuration configuration, final String input) {
+
+
+    static AssignationSequence getAssignationSequenceFromCache(final Configuration configuration, final String input) {
         return (AssignationSequence) getFromCache(configuration, input, ASSIGNATION_SEQUENCE_CACHE_PREFIX);
     }
-    
-    void putAssignationSequenceIntoCache(final Configuration configuration, final String input, final AssignationSequence value) {
+
+    static void putAssignationSequenceIntoCache(final Configuration configuration, final String input, final AssignationSequence value) {
         putIntoCache(configuration, input, value, ASSIGNATION_SEQUENCE_CACHE_PREFIX);
     }
-    
-    
-    
-    ExpressionSequence getExpressionSequenceFromCache(final Configuration configuration, final String input) {
+
+
+
+    static ExpressionSequence getExpressionSequenceFromCache(final Configuration configuration, final String input) {
         return (ExpressionSequence) getFromCache(configuration, input, EXPRESSION_SEQUENCE_CACHE_PREFIX);
     }
-    
-    void putExpressionSequenceIntoCache(final Configuration configuration, final String input, final ExpressionSequence value) {
+
+    static void putExpressionSequenceIntoCache(final Configuration configuration, final String input, final ExpressionSequence value) {
         putIntoCache(configuration, input, value, EXPRESSION_SEQUENCE_CACHE_PREFIX);
     }
-    
 
-    Each getEachFromCache(final Configuration configuration, final String input) {
+
+
+    static Each getEachFromCache(final Configuration configuration, final String input) {
         return (Each) getFromCache(configuration, input, EACH_CACHE_PREFIX);
     }
-    
-    void putEachIntoCache(final Configuration configuration, final String input, final Each value) {
+
+    static void putEachIntoCache(final Configuration configuration, final String input, final Each value) {
         putIntoCache(configuration, input, value, EACH_CACHE_PREFIX);
     }
-    
 
-    FragmentSelection getFragmentSelectionFromCache(final Configuration configuration, final String input) {
+
+
+    static FragmentSelection getFragmentSelectionFromCache(final Configuration configuration, final String input) {
         return (FragmentSelection) getFromCache(configuration, input, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
-    
-    void putFragmentSelectionIntoCache(final Configuration configuration, final String input, final FragmentSelection value) {
+
+    static void putFragmentSelectionIntoCache(final Configuration configuration, final String input, final FragmentSelection value) {
         putIntoCache(configuration, input, value, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
 
 
-    FragmentSignature getFragmentSignatureFromCache(final Configuration configuration, final String input) {
+
+    static FragmentSignature getFragmentSignatureFromCache(final Configuration configuration, final String input) {
         return (FragmentSignature) getFromCache(configuration, input, FRAGMENT_SIGNATURE_CACHE_PREFIX);
     }
 
-    void putFragmentSignatureIntoCache(final Configuration configuration, final String input, final FragmentSignature value) {
+    static void putFragmentSignatureIntoCache(final Configuration configuration, final String input, final FragmentSignature value) {
         putIntoCache(configuration, input, value, FRAGMENT_SIGNATURE_CACHE_PREFIX);
     }
 

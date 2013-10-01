@@ -21,7 +21,6 @@ package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
 
-import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -33,14 +32,10 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class Assignation implements IStandardExpressionAssignationStructure, Serializable {
+public final class Assignation implements Serializable {
 
     private static final long serialVersionUID = -20278893925937213L;
     
-
-    private static final char OPERATOR = '=';
-    // Future proof, just in case in the future we add other tokens as operators
-    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
     private final IStandardExpression left;
     private final IStandardExpression right;
@@ -67,7 +62,7 @@ public final class Assignation implements IStandardExpressionAssignationStructur
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append(this.left.getStringRepresentation());
         if (this.right != null) {
-            strBuilder.append(OPERATOR);
+            strBuilder.append('=');
             if (this.right instanceof ComplexExpression) {
                 strBuilder.append('(');
                 strBuilder.append(this.right.getStringRepresentation());
@@ -86,68 +81,6 @@ public final class Assignation implements IStandardExpressionAssignationStructur
     }
   
     
-    
-    
-    static Assignation composeAssignation(
-            final ExpressionParsingState state, final int nodeIndex, final boolean allowParametersWithoutValue) {
 
-        if (state == null || nodeIndex >= state.size()) {
-            return null;
-        }
-
-        if (state.hasExpressionAt(nodeIndex)) {
-            if (!allowParametersWithoutValue) {
-                return null;
-            }
-            // could happen if we are traversing pointers recursively, so we will consider it a no-value assignation
-            return new Assignation(state.get(nodeIndex).getExpression(),null);
-        }
-
-        final String input = state.get(nodeIndex).getInput();
-
-        if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
-        }
-
-        // First, check whether we are just dealing with a pointer input
-        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
-        if (pointer != -1) {
-            return composeAssignation(state, pointer, allowParametersWithoutValue);
-        }
-
-        final int inputLen = input.length();
-        final int operatorPos = input.indexOf(OPERATOR);
-
-        final String leftInput =
-                (operatorPos == -1? input.trim() : input.substring(0,operatorPos).trim());
-        final String rightInput =
-                (operatorPos == -1 || operatorPos == (inputLen - 1) ? null : input.substring(operatorPos + 1).trim());
-
-        if (StringUtils.isEmptyOrWhitespace(leftInput)) {
-            return null;
-        }
-
-        final Expression leftExpr = ExpressionParsingUtil.parseAndCompose(state, leftInput);
-        if (leftExpr == null) {
-            return null;
-        }
-
-        final Expression rightExpr;
-        if (!StringUtils.isEmptyOrWhitespace(rightInput)) {
-            rightExpr = ExpressionParsingUtil.parseAndCompose(state, rightInput);
-            if (rightExpr == null) {
-                return null;
-            }
-        } else if (!allowParametersWithoutValue) {
-            return null;
-        } else {
-            rightExpr = null;
-        }
-
-        return new Assignation(leftExpr, rightExpr);
-
-    }
-    
-    
     
 }

@@ -20,12 +20,10 @@
 package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -37,14 +35,10 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class ExpressionSequence implements IStandardExpressionSequenceStructure, Serializable {
+public final class ExpressionSequence implements Iterable<IStandardExpression>, Serializable {
 
     private static final long serialVersionUID = -6069208208568731809L;
     
-
-    private static final char OPERATOR = ',';
-    // Future proof, just in case in the future we add other tokens as operators
-    static final String[] OPERATORS = new String[] {String.valueOf(OPERATOR)};
 
     private final List<IStandardExpression> expressions;
          
@@ -73,92 +67,19 @@ public final class ExpressionSequence implements IStandardExpressionSequenceStru
         if (this.expressions.size() > 0) {
             sb.append(this.expressions.get(0));
             for (int i = 1; i < this.expressions.size(); i++) {
-                sb.append(OPERATOR);
+                sb.append(',');
                 sb.append(this.expressions.get(i));
             }
         }
         return sb.toString();
     }
 
+
+
     @Override
     public String toString() {
         return getStringRepresentation();
     }
-    
-    
-    
-    
 
-    
-    static ExpressionSequence parse(final String input) {
-
-        if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
-        }
-
-        final ExpressionParsingState decomposition =
-                ExpressionParsingUtil.decompose(input,ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
-
-        if (decomposition == null) {
-            return null;
-        }
-
-        return composeSequence(decomposition, 0);
-
-    }
-        
-    
-
-
-    private static ExpressionSequence composeSequence(final ExpressionParsingState state, final int nodeIndex) {
-
-        if (state == null || nodeIndex >= state.size()) {
-            return null;
-        }
-
-        if (state.hasExpressionAt(nodeIndex)) {
-            // could happen if we are traversing pointers recursively, so we will consider an expression sequence
-            // with one expression only
-            final List<Expression> expressions = new ArrayList<Expression>(2);
-            expressions.add(state.get(nodeIndex).getExpression());
-            return new ExpressionSequence(expressions);
-        }
-
-        final String input = state.get(nodeIndex).getInput();
-
-        if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
-        }
-
-        // First, check whether we are just dealing with a pointer input
-        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
-        if (pointer != -1) {
-            return composeSequence(state, pointer);
-        }
-
-        final String[] inputParts = StringUtils.split(input, ",");
-
-        final List<Expression> expressions = new ArrayList<Expression>(4);
-        for (final String inputPart : inputParts) {
-            final Expression expression = ExpressionParsingUtil.parseAndCompose(state, inputPart);
-            if (expression == null) {
-                return null;
-            }
-            expressions.add(expression);
-        }
-
-        return new ExpressionSequence(expressions);
-
-    }
-
-
-
-
-    public static void main(String[] args) {
-
-        System.out.println(parse("'one',${two},'three'"));
-
-    }
-    
     
 }

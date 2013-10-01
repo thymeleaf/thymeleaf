@@ -34,20 +34,4 @@ public interface IStandardExpressionParser {
     public IStandardExpression parseExpression(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 
-    public IStandardExpressionAssignationSequenceStructure parseAssignationSequence(
-            final Configuration configuration, final IProcessingContext processingContext, final String input,
-            final boolean allowParametersWithoutValue);
-
-    public IStandardExpressionSequenceStructure parseExpressionSequence(
-            final Configuration configuration, final IProcessingContext processingContext, final String input);
-
-    public IStandardExpressionEachStructure parseEach(
-            final Configuration configuration, final IProcessingContext processingContext, final String input);
-
-    public IStandardExpressionFragmentSelectionStructure parseFragmentSelection(
-            final Configuration configuration, final IProcessingContext processingContext, final String input);
-
-    public IStandardExpressionFragmentSignatureStructure parseFragmentSignature(
-            final Configuration configuration, final IProcessingContext processingContext, final String input);
-
 }

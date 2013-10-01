@@ -21,7 +21,6 @@ package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
 
-import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -34,13 +33,10 @@ import org.thymeleaf.util.Validate;
  * @since 1.1
  *
  */
-public final class Each implements IStandardExpressionEachStructure, Serializable {
+public final class Each implements Serializable {
     
 
     private static final long serialVersionUID = -4085690403057997591L;
-
-    private static final String OPERATOR = ":";
-    private static final String STAT_SEPARATOR = ",";
 
     
     private final IStandardExpression iterVar;
@@ -48,7 +44,7 @@ public final class Each implements IStandardExpressionEachStructure, Serializabl
     private final IStandardExpression iterable;
          
          
-    private Each(final IStandardExpression iterVar, final IStandardExpression statusVar, final IStandardExpression iterable) {
+    public Each(final IStandardExpression iterVar, final IStandardExpression statusVar, final IStandardExpression iterable) {
         super();
         Validate.notNull(iterVar, "Iteration variable cannot be null");
         Validate.notNull(iterable, "Iterable cannot be null");
@@ -94,101 +90,5 @@ public final class Each implements IStandardExpressionEachStructure, Serializabl
     }
     
     
-    
-    
-    
-    static Each parse(final String input) {
-
-        if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
-        }
-
-        final ExpressionParsingState decomposition =
-                ExpressionParsingUtil.decompose(input,ExpressionParsingDecompositionConfig.DECOMPOSE_ALL_AND_UNNEST);
-
-        if (decomposition == null) {
-            return null;
-        }
-
-        return composeEach(decomposition, 0);
-
-    }
-
-
-
-
-    private static Each composeEach(final ExpressionParsingState state, final int nodeIndex) {
-
-        if (state == null || nodeIndex >= state.size()) {
-            return null;
-        }
-
-        if (state.hasExpressionAt(nodeIndex)) {
-            // shouldn't happen in this case (ExpressionSequences are not Expressions). We need a string to parse!
-            return null;
-        }
-
-        final String input = state.get(nodeIndex).getInput();
-
-        if (StringUtils.isEmptyOrWhitespace(input)) {
-            return null;
-        }
-
-        // First, check whether we are just dealing with a pointer input
-        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
-        if (pointer != -1) {
-            return composeEach(state, pointer);
-        }
-
-        final int inputLen = input.length();
-
-        final int operatorLen = OPERATOR.length();
-        final int operatorPos = input.indexOf(OPERATOR);
-        if (operatorPos == -1 || operatorPos == 0 || operatorPos >= (inputLen - operatorLen)) {
-            return null;
-        }
-
-        final String left = input.substring(0,operatorPos).trim();
-        final String iterableStr = input.substring(operatorPos + operatorLen).trim();
-
-        final int statPos = left.indexOf(STAT_SEPARATOR);
-        final String iterVarStr;
-        final String statusVarStr;
-        if (statPos == -1) {
-            iterVarStr = left;
-            statusVarStr = null;
-        } else {
-            if (statPos == 0 || statPos >= (left.length() - operatorLen)) {
-                return null;
-            }
-            iterVarStr = left.substring(0, statPos);
-            statusVarStr = left.substring(statPos + operatorLen);
-        }
-
-        final Expression iterVarExpr = ExpressionParsingUtil.parseAndCompose(state, iterVarStr);
-        if (iterVarStr == null) {
-            return null;
-        }
-
-        final Expression statusVarExpr;
-        if (statusVarStr != null) {
-            statusVarExpr = ExpressionParsingUtil.parseAndCompose(state, statusVarStr);
-            if (statusVarExpr == null) {
-                return null;
-            }
-        } else {
-            statusVarExpr = null;
-        }
-
-        final Expression iterableExpr = ExpressionParsingUtil.parseAndCompose(state, iterableStr);
-        if (iterableExpr == null) {
-            return null;
-        }
-
-        return new Each(iterVarExpr,statusVarExpr,iterableExpr);
-
-    }
-
-
 
 }

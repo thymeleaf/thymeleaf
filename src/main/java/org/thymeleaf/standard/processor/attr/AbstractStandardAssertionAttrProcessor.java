@@ -22,15 +22,13 @@ package org.thymeleaf.standard.processor.attr;
 import java.util.List;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateAssertionException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAssertionAttrProcessor;
+import org.thymeleaf.standard.expression.ExpressionSequence;
+import org.thymeleaf.standard.expression.ExpressionSequenceUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.IStandardExpressionSequenceStructure;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 
@@ -65,11 +63,8 @@ public abstract class AbstractStandardAssertionAttrProcessor
             return;
         }
 
-        final Configuration configuration = arguments.getConfiguration();
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-
-        final IStandardExpressionSequenceStructure expressionSequence =
-                expressionParser.parseExpressionSequence(arguments.getConfiguration(), arguments, attributeValue);
+        final ExpressionSequence expressionSequence =
+                ExpressionSequenceUtils.parseExpressionSequence(arguments.getConfiguration(), arguments, attributeValue);
 
         final List<IStandardExpression> expressions = expressionSequence.getExpressions();
 

@@ -29,12 +29,11 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.fragment.WholeFragmentSpec;
+import org.thymeleaf.standard.expression.Assignation;
+import org.thymeleaf.standard.expression.AssignationSequence;
+import org.thymeleaf.standard.expression.FragmentSelection;
+import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.IStandardExpressionAssignationSequenceStructure;
-import org.thymeleaf.standard.expression.IStandardExpressionAssignationStructure;
-import org.thymeleaf.standard.expression.IStandardExpressionFragmentSelectionStructure;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
 
@@ -62,10 +61,8 @@ public final class StandardFragmentProcessor {
         Validate.notEmpty(standardFragmentSpec, "Fragment Spec cannot be null");
         // Target element and attribute names can be null
 
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-
-        final IStandardExpressionFragmentSelectionStructure fragmentSelection =
-                expressionParser.parseFragmentSelection(configuration, processingContext, standardFragmentSpec);
+        final FragmentSelection fragmentSelection =
+                FragmentSelectionUtils.parseFragmentSelection(configuration, processingContext, standardFragmentSpec);
 
         final IStandardExpression templateNameExpression = fragmentSelection.getTemplateName();
         final String templateName;
@@ -132,14 +129,14 @@ public final class StandardFragmentProcessor {
 
     private static Map<String,Object> resolveFragmentParameters(
             final Configuration configuration, final IProcessingContext processingContext,
-            final IStandardExpressionAssignationSequenceStructure parameters) {
+            final AssignationSequence parameters) {
 
         if (parameters == null) {
             return null;
         }
 
         final Map<String,Object> parameterValues = new HashMap<String, Object>(parameters.size() + 2);
-        for (final IStandardExpressionAssignationStructure assignation : parameters.getAssignations()) {
+        for (final Assignation assignation : parameters.getAssignations()) {
 
             final IStandardExpression parameterNameExpr = assignation.getLeft();
             final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext);
