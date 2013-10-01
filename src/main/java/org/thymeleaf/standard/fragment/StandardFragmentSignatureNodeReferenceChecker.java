@@ -24,7 +24,6 @@ import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.standard.expression.FragmentSelectionUtils;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
