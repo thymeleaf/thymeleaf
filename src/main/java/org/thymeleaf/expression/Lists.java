@@ -20,6 +20,7 @@
 package org.thymeleaf.expression;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import org.thymeleaf.util.ListUtils;
@@ -69,7 +70,16 @@ public final class Lists {
     
     public boolean containsAll(final List<?> target, final Collection<?> elements) {
         return ListUtils.containsAll(target, elements);
-    }    
+    }
+    
+    
+    public <T extends Comparable<? super T>> List<T> sort(List<T> list) {
+        return ListUtils.sort(list);
+    }
+    
+    public <T> List<T> sort(List<T> list, Comparator<? super T> c) {
+        return ListUtils.sort(list, c);
+    }
     
     
     

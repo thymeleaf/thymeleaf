@@ -22,6 +22,7 @@ package org.thymeleaf.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -92,6 +93,53 @@ public final class ListUtils {
         return target.containsAll(elements);
     }
     
+    
+    /**
+     * Creates an new instance of the list add the sorted list to it. 
+     * @param list the list which content should be ordered.
+     * @return a new sorted list.
+     * @see Collections#sort(List).
+     */
+    public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
+        Validate.notNull(list, "Cannot execute list sort: list is null");
+        final Object[] a = list.toArray();
+        Arrays.sort(a);
+        
+        return fillNewList(a, list.getClass());
+    }
+
+    
+    /**
+     * Creates an new instance of the list add the sorted list to it. 
+     * @param list the list which content should be ordered.
+     * @param c the comparator.
+     * @return a new sorted list.
+     * @see Collections#sort(List, Comparator).
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T> List<T> sort(List<T> list, Comparator<? super T> c) {
+        Validate.notNull(list, "Cannot execute list sort: list is null");
+        final Object[] a = list.toArray();
+        Arrays.sort(a, (Comparator) c);
+        
+        return fillNewList(a, list.getClass());
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private static <T> List<T> fillNewList(
+            final Object[] a, final Class<? extends List> listType) {
+        List<T> newList;
+        try {
+            newList = listType.getConstructor().newInstance();
+        } catch (Exception e) {
+            newList = new ArrayList<T>();
+        }
+        
+        for (Object object : a) {
+            newList.add((T)object);
+        }
+        return newList;
+    }
     
     
     private ListUtils() {
