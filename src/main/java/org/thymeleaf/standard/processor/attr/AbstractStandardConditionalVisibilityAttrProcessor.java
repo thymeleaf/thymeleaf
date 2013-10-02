@@ -24,10 +24,10 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
-import org.thymeleaf.util.ObjectUtils;
 
 /**
  * 
@@ -65,7 +65,9 @@ public abstract class AbstractStandardConditionalVisibilityAttrProcessor
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object value = expression.execute(configuration, arguments);
 
-        final boolean visible = ObjectUtils.evaluateAsBoolean(value);
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final boolean visible = conversionService.convert(value, Boolean.class);
         
         if (inverse()) {
             return !visible;

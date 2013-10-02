@@ -27,7 +27,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -138,8 +137,10 @@ public final class MinusExpression extends ComplexExpression {
         if (operandValue == null) {
             operandValue = "null";
         }
-        
-        final BigDecimal operandNumberValue = ObjectUtils.evaluateAsNumber(operandValue);
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final BigDecimal operandNumberValue = conversionService.convert(operandValue, BigDecimal.class);
         if (operandNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return operandNumberValue.multiply(BigDecimal.valueOf(-1));

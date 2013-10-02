@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -198,9 +197,11 @@ public final class ConditionalExpression extends ComplexExpression {
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating conditional expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-        
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         final Object condObj = expression.getConditionExpression().execute(configuration, processingContext, expContext);
-        final boolean cond = ObjectUtils.evaluateAsBoolean(condObj);
+        final boolean cond = conversionService.convert(condObj, Boolean.class);
         
         if (cond) {
             return expression.getThenExpression().execute(configuration, processingContext, expContext);

@@ -33,9 +33,10 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ArrayUtils;
-import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.TemplateModeUtils;
 
@@ -98,8 +99,10 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                     ArrayUtils.contains(Standards.HTML_CONDITIONAL_FIXED_VALUE_ATTR_NAMES, newAttributeName)) {
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
-                
-                if (ObjectUtils.evaluateAsBoolean(rightValue)) {
+
+                final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+                if (conversionService.convert(rightValue, Boolean.class)) {
                     newAttributeValues.put(newAttributeName, newAttributeName);
                 } else {
                     newAttributeValues.put(newAttributeName, null);

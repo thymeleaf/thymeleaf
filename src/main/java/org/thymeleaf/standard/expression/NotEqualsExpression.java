@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.ObjectUtils;
 
 
 
@@ -75,10 +74,12 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
             return Boolean.valueOf(rightValue != null);
         }
         
-        Boolean result = null; 
-        
-        final BigDecimal leftNumberValue = ObjectUtils.evaluateAsNumber(leftValue); 
-        final BigDecimal rightNumberValue = ObjectUtils.evaluateAsNumber(rightValue);
+        Boolean result = null;
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) != 0);

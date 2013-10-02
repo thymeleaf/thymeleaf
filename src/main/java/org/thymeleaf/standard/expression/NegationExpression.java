@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.ObjectUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -140,8 +139,10 @@ public final class NegationExpression extends ComplexExpression {
         }
         
         Object operandValue = expression.getOperand().execute(configuration, processingContext, expContext);
-        
-        final boolean operandBooleanValue = ObjectUtils.evaluateAsBoolean(operandValue);
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final boolean operandBooleanValue = conversionService.convert(operandValue, Boolean.class);
         
         return Boolean.valueOf(!operandBooleanValue);
         

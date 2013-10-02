@@ -27,7 +27,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.ObjectUtils;
 
 
 /**
@@ -107,16 +106,18 @@ public final class AndExpression extends BinaryOperationExpression {
         }
         
         final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
-        
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         // Short circuit
-        final boolean leftBooleanValue = ObjectUtils.evaluateAsBoolean(leftValue);
+        final boolean leftBooleanValue = conversionService.convert(leftValue, Boolean.class);
         if (!leftBooleanValue) {
             return Boolean.FALSE;
         }
 
         final Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
         
-        final boolean rightBooleanValue = ObjectUtils.evaluateAsBoolean(rightValue);
+        final boolean rightBooleanValue = conversionService.convert(rightValue, Boolean.class);
         return Boolean.valueOf(rightBooleanValue);
         
     }

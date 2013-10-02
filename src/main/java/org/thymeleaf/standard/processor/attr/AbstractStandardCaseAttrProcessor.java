@@ -34,7 +34,6 @@ import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSwitchStructureAttrProcessor.SwitchStructure;
-import org.thymeleaf.util.ObjectUtils;
 
 /**
  * 
@@ -105,8 +104,7 @@ public abstract class AbstractStandardCaseAttrProcessor
 
         final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
-        if (conversionService)
-        final boolean visible = conversionService.convert(ObjectUtils.evaluateAsBoolean(value);
+        final boolean visible = conversionService.convert(value, Boolean.class);
         
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",

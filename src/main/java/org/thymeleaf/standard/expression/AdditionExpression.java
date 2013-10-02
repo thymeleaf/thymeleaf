@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.util.ObjectUtils;
 
 
 
@@ -101,8 +100,10 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = ObjectUtils.evaluateAsNumber(leftValue);
-        final BigDecimal rightNumberValue = ObjectUtils.evaluateAsNumber(rightValue);
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return leftNumberValue.add(rightNumberValue);

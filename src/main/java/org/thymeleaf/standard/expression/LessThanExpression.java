@@ -27,7 +27,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.ObjectUtils;
 
 
 
@@ -80,10 +79,12 @@ public final class LessThanExpression extends GreaterLesserExpression {
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);
 
-        Boolean result = null; 
-        
-        final BigDecimal leftNumberValue = ObjectUtils.evaluateAsNumber(leftValue); 
-        final BigDecimal rightNumberValue = ObjectUtils.evaluateAsNumber(rightValue);
+        Boolean result = null;
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == -1);
