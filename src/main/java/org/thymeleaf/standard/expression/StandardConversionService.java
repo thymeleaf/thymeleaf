@@ -68,7 +68,7 @@ public class StandardConversionService implements IStandardConversionService {
 
 
 
-    public <S, T> T convert(final S object, final Class<? super S> sourceClass, final Class<T> targetClass) {
+    public <S, T> T convert(final S object, final Class<T> targetClass) {
         Validate.notNull(targetClass, "Target class cannot be null");
         if (targetClass.equals(String.class)) {
             return (T) StandardConversionServiceUtil.convertToString(object);
