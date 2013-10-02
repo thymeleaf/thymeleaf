@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.1.0
  *
  */
-public class StandardConversionService implements IStandardConversionService {
+public final class StandardConversionService implements IStandardConversionService {
 
 
 
@@ -40,32 +40,6 @@ public class StandardConversionService implements IStandardConversionService {
         // Should only be instanced from StandardDialect
         super();
     }
-
-
-    public <S, T> boolean canConvert(final Class<S> sourceClass, final Class<T> targetClass) {
-        Validate.notNull(targetClass, "Target class cannot be null");
-        if (targetClass.equals(String.class)) {
-            return true;
-        }
-        if (targetClass.equals(Boolean.class) || targetClass.equals(boolean.class)) {
-            return true;
-        }
-        if (targetClass.equals(Number.class) || targetClass.equals(BigDecimal.class)) {
-            // Our to-number conversions only return BigDecimals, we cannot convert to any other
-            // subclasses of java.lang.Number
-            return true;
-        }
-        if (targetClass.equals(Iterable.class) || targetClass.equals(List.class)) {
-            // Our to-iterable conversions only return List, we cannot convert to any other
-            // implementations of java.lang.Iterable
-            return true;
-        }
-        if (targetClass.equals(Object[].class)) {
-            return true;
-        }
-        return false;
-    }
-
 
 
     public <S, T> T convert(final S object, final Class<T> targetClass) {

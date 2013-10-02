@@ -28,7 +28,6 @@ package org.thymeleaf.standard.expression;
  */
 public interface IStandardConversionService {
 
-    public <S,T> boolean canConvert(final Class<S> sourceClass, final Class<T> targetClass);
     public <S,T> T convert(final S object, final Class<T> targetClass);
 
 }

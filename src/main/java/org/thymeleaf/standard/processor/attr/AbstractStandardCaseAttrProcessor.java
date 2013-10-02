@@ -29,6 +29,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.EqualsExpression;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -102,7 +103,10 @@ public abstract class AbstractStandardCaseAttrProcessor
 
         final Object value = equalsExpression.execute(configuration, arguments);
 
-        final boolean visible = ObjectUtils.evaluateAsBoolean(value);
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        if (conversionService)
+        final boolean visible = conversionService.convert(ObjectUtils.evaluateAsBoolean(value);
         
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",
