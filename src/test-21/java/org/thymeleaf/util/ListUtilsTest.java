@@ -1,4 +1,4 @@
-package org.thymeleaf.expression;
+package org.thymeleaf.util;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -6,9 +6,10 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.thymeleaf.util.ListUtils;
 
-public class ListsTest {
+public class ListUtilsTest {
+
+
 
     @Test
     public void testSortListOfT() {
@@ -24,6 +25,7 @@ public class ListsTest {
         Assert.assertEquals("c", orderedList.get(2));
         assertUnorderedListIsUnchanged(unorderedList, orderedList);
     }
+
 
 
     @Test
