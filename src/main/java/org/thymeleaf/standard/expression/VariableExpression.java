@@ -101,7 +101,7 @@ public final class VariableExpression extends SimpleExpression {
     static Object executeVariable(
             final Configuration configuration, final IProcessingContext processingContext, 
             final VariableExpression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext, final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating variable expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

@@ -62,7 +62,8 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
     
     @SuppressWarnings({"unchecked","null"})
     static Object executeNotEquals(final Configuration configuration, final IProcessingContext processingContext, 
-            final NotEqualsExpression expression, final StandardExpressionExecutionContext expContext) {
+            final NotEqualsExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
         Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
@@ -76,8 +77,6 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
         
         Boolean result = null;
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
         final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
         final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
         
@@ -85,10 +84,10 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) != 0);
         } else {
             if (leftValue instanceof Character) {
-                leftValue = leftValue.toString();
+                leftValue = leftValue.toString();  // Just a character, no need to use conversionService here
             }
             if (rightValue != null && rightValue instanceof Character) {
-                rightValue = rightValue.toString();
+                rightValue = rightValue.toString();  // Just a character, no need to use conversionService here
             }
             if (rightValue != null &&
                     leftValue.getClass().equals(rightValue.getClass()) && 

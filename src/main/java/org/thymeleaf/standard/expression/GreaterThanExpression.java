@@ -27,7 +27,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.ObjectUtils;
 
 
 
@@ -62,7 +61,8 @@ public final class GreaterThanExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeGreaterThan(final Configuration configuration, final IProcessingContext processingContext, 
-            final GreaterThanExpression expression, final StandardExpressionExecutionContext expContext) {
+            final GreaterThanExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating GREATER THAN expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -80,8 +80,6 @@ public final class GreaterThanExpression extends GreaterLesserExpression {
         rightValue = LiteralValue.unwrap(rightValue);
 
         Boolean result = null;
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
         final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);

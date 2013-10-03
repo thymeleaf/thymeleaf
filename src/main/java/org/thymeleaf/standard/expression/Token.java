@@ -46,7 +46,7 @@ public abstract class Token extends SimpleExpression {
     }
     
     public String getStringRepresentation() {
-        return this.value.toString();
+        return this.value.toString(); // Tokens are fine not using the conversion service
     }
     
     

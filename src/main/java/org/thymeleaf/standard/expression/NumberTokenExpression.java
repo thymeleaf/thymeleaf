@@ -93,7 +93,8 @@ public final class NumberTokenExpression extends Token {
     static Object executeNumberToken(
             @SuppressWarnings("unused") final IProcessingContext processingContext,
             final NumberTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating number token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

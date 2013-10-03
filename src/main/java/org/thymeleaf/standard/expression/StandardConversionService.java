@@ -20,11 +20,6 @@
 package org.thymeleaf.standard.expression;
 
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.thymeleaf.util.Validate;
-
 /**
  * 
  * @author Daniel Fern&aacute;ndez
@@ -32,7 +27,7 @@ import org.thymeleaf.util.Validate;
  * @since 2.1.0
  *
  */
-public final class StandardConversionService implements IStandardConversionService {
+public final class StandardConversionService extends AbstractStandardConversionService {
 
 
 
@@ -41,28 +36,5 @@ public final class StandardConversionService implements IStandardConversionServi
         super();
     }
 
-
-    public <S, T> T convert(final S object, final Class<T> targetClass) {
-        Validate.notNull(targetClass, "Target class cannot be null");
-        if (targetClass.equals(String.class)) {
-            return (T) StandardConversionServiceUtil.convertToString(object);
-        }
-        if (targetClass.equals(Boolean.class)) {
-            return (T) Boolean.valueOf(StandardConversionServiceUtil.convertToBoolean(object));
-        }
-        if (targetClass.equals(boolean.class)) {
-            return (T) (Boolean) StandardConversionServiceUtil.convertToBoolean(object);
-        }
-        if (targetClass.equals(Number.class) || targetClass.equals(BigDecimal.class)) {
-            return (T) StandardConversionServiceUtil.convertToNumber(object);
-        }
-        if (targetClass.equals(Iterable.class) || targetClass.equals(List.class)) {
-            return (T) StandardConversionServiceUtil.convertToIterable(object);
-        }
-        if (targetClass.equals(Object[].class)) {
-            return (T) StandardConversionServiceUtil.convertToArray(object);
-        }
-        throw new IllegalArgumentException("No available conversion for target class \"" + targetClass.getName() + "\"");
-    }
 
 }

@@ -97,13 +97,15 @@ public abstract class Expression implements IStandardExpression, Serializable {
     
     static Object execute(final Configuration configuration, final IProcessingContext processingContext, 
             final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext, final IStandardConversionService conversionService) {
         
         if (expression instanceof SimpleExpression) {
-            return SimpleExpression.executeSimple(configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
+            return SimpleExpression.executeSimple(
+                    configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext, conversionService);
         }
         if (expression instanceof ComplexExpression) {
-            return ComplexExpression.executeComplex(configuration, processingContext, (ComplexExpression)expression, expContext);
+            return ComplexExpression.executeComplex(
+                    configuration, processingContext, (ComplexExpression)expression, expContext, conversionService);
         }
 
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
@@ -128,7 +130,10 @@ public abstract class Expression implements IStandardExpression, Serializable {
         final IStandardVariableExpressionEvaluator variableExpressionEvaluator =
                 StandardExpressions.getVariableExpressionEvaluator(configuration);
 
-        final Object result = execute(configuration, processingContext, this, variableExpressionEvaluator, expContext);
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
+        final Object result = execute(
+                configuration, processingContext, this, variableExpressionEvaluator, expContext, conversionService);
         return LiteralValue.unwrap(result);
 
     }

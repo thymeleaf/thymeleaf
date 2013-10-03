@@ -99,15 +99,14 @@ public final class AndExpression extends BinaryOperationExpression {
 
     
     static Object executeAnd(final Configuration configuration, final IProcessingContext processingContext, 
-            final AndExpression expression, final StandardExpressionExecutionContext expContext) {
+            final AndExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating AND expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
         final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         // Short circuit
         final boolean leftBooleanValue = conversionService.convert(leftValue, Boolean.class);

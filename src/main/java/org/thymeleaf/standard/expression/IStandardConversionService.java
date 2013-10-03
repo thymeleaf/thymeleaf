@@ -28,6 +28,6 @@ package org.thymeleaf.standard.expression;
  */
 public interface IStandardConversionService {
 
-    public <S,T> T convert(final S object, final Class<T> targetClass);
+    public <T> T convert(final Object object, final Class<T> targetClass);
 
 }

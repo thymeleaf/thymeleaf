@@ -62,7 +62,8 @@ public final class LessThanExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeLessThan(final Configuration configuration, final IProcessingContext processingContext, 
-            final LessThanExpression expression, final StandardExpressionExecutionContext expContext) {
+            final LessThanExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating LESS THAN expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -80,8 +81,6 @@ public final class LessThanExpression extends GreaterLesserExpression {
         rightValue = LiteralValue.unwrap(rightValue);
 
         Boolean result = null;
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
         final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);

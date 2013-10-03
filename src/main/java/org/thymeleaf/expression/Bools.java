@@ -24,7 +24,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.util.ObjectUtils;
+import org.thymeleaf.standard.expression.IStandardConversionService;
+import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.util.Validate;
 
 
@@ -45,11 +46,33 @@ import org.thymeleaf.util.Validate;
 public final class Bools {
     
 
+    private final IStandardConversionService conversionService;
+    private static final IStandardConversionService DEFAULT_CONVERSION_SERVICE = new StandardConversionService();
+
+
+
+    public Bools() {
+        this(null);
+    }
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Bools(final IStandardConversionService conversionService) {
+        super();
+        // Can be null, because this object can be used without the standard dialects being used
+        this.conversionService =
+                (conversionService != null? conversionService : DEFAULT_CONVERSION_SERVICE);
+    }
+
+
 
     public Boolean isTrue(final Object target) {
-        return Boolean.valueOf(ObjectUtils.evaluateAsBoolean(target));
+        return Boolean.valueOf(conversionService.convert(target, Boolean.class));
     }
-    
+
+
     public Boolean[] arrayIsTrue(final Object[] target) {
         Validate.notNull(target, "Target cannot be null");
         final Boolean[] result = new Boolean[target.length];
@@ -81,7 +104,7 @@ public final class Bools {
     
     
     public Boolean isFalse(final Object target) {
-        return Boolean.valueOf(!ObjectUtils.evaluateAsBoolean(target));
+        return Boolean.valueOf(!conversionService.convert(target, Boolean.class));
     }
     
     public Boolean[] arrayIsFalse(final Object[] target) {
@@ -180,13 +203,6 @@ public final class Bools {
         return Boolean.FALSE;
     }
 
-    
-    
-    
-    
-    
-    public Bools() {
-        super();
-    }
-    
+
+
 }

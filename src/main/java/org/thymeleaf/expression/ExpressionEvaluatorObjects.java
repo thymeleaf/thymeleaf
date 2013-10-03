@@ -25,9 +25,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.standard.expression.IStandardConversionService;
+import org.thymeleaf.standard.expression.StandardConversionService;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * <p>
@@ -78,15 +82,12 @@ public final class ExpressionEvaluatorObjects {
     public static final String MESSAGES_EVALUATION_VARIABLE_NAME = "messages";
     public static final String IDS_EVALUATION_VARIABLE_NAME = "ids";
 
-    
 
-    private static final ConcurrentHashMap<Locale,Map<String,Object>> EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE =
-            new ConcurrentHashMap<Locale, Map<String,Object>>();
-    
-    
-    
-    
-    
+
+    private static final ConcurrentHashMap<IStandardConversionService,ConcurrentHashMap<Locale,Map<String,Object>>> BASE_OBJECTS_CACHE =
+            new ConcurrentHashMap<IStandardConversionService,ConcurrentHashMap<Locale, Map<String,Object>>>(2, 1.0f, 3);
+    private static final IStandardConversionService NULL_CONVERSION_SERVICE = new StandardConversionService();
+
     
     
     
@@ -104,8 +105,41 @@ public final class ExpressionEvaluatorObjects {
     public static Map<String,Object> computeEvaluationObjects(
             final IProcessingContext processingContext) {
 
-        final Map<String,Object> variables =
-                computeEvaluationObjectsForProcessingContext(processingContext);
+
+        final IContext context = processingContext.getContext();
+
+        final IStandardConversionService conversionService =
+                (processingContext instanceof Arguments?
+                        getOptionalConversionService(((Arguments) processingContext).getConfiguration()) :
+                        null);
+
+        final Map<String,Object> variables = computeBaseObjects(conversionService, context.getLocale());
+
+        variables.put(CONTEXT_VARIABLE_NAME, context);
+        variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());
+
+        if (context instanceof IWebContext) {
+            final IWebContext webContext = (IWebContext) context;
+            // This gives access to the HttpServletRequest and HttpSession objects, if they exist
+            variables.put(
+                    HTTP_SERVLET_REQUEST_VARIABLE_NAME, webContext.getHttpServletRequest());
+            variables.put(
+                    HTTP_SESSION_VARIABLE_NAME, webContext.getHttpSession());
+        }
+
+        final Object evaluationRoot = processingContext.getExpressionEvaluationRoot();
+
+        /*
+         * #root and #vars are synonyms
+         */
+        variables.put(ROOT_VARIABLE_NAME, evaluationRoot);
+        variables.put(VARIABLES_EVALUATION_VARIABLE_NAME, evaluationRoot);
+
+        if (processingContext.hasSelectionTarget()) {
+            variables.put(SELECTION_VARIABLE_NAME, processingContext.getSelectionTarget());
+        } else {
+            variables.put(SELECTION_VARIABLE_NAME, evaluationRoot);
+        }
 
         if (processingContext instanceof Arguments) {
             
@@ -123,72 +157,39 @@ public final class ExpressionEvaluatorObjects {
         
     }
     
-    
-    private static Map<String,Object> computeEvaluationObjectsForProcessingContext(
-            final IProcessingContext processingContext) {
 
-        final Map<String,Object> variables =
-                computeEvaluationObjectsForContext(processingContext.getContext());
-        
-        final Object evaluationRoot = processingContext.getExpressionEvaluationRoot();
-        
-        /*
-         * #root and #vars are synonyms
-         */
-        variables.put(ROOT_VARIABLE_NAME, evaluationRoot);
-        variables.put(VARIABLES_EVALUATION_VARIABLE_NAME, evaluationRoot);
-        
-        if (processingContext.hasSelectionTarget()) {
-            variables.put(SELECTION_VARIABLE_NAME, processingContext.getSelectionTarget());
-        } else {
-            variables.put(SELECTION_VARIABLE_NAME, evaluationRoot);
+    
+    
+
+
+    
+    private static Map<String,Object> computeBaseObjects(final IStandardConversionService conversionService, final Locale locale) {
+
+        // ConcurrentHashMaps do not allow null keys!
+        final IStandardConversionService defaultedConversionService =
+                (conversionService != null? conversionService : NULL_CONVERSION_SERVICE);
+
+        ConcurrentHashMap<Locale,Map<String,Object>> objectsByLocale = BASE_OBJECTS_CACHE.get(defaultedConversionService);
+
+        if (objectsByLocale == null) {
+            objectsByLocale = new ConcurrentHashMap<Locale, Map<String, Object>>(5, 1.0f, 3);
+            BASE_OBJECTS_CACHE.put(defaultedConversionService, objectsByLocale);
         }
-        
-        return variables;
-        
-    }
 
-    
-    
-    
-    
-    private static Map<String,Object> computeEvaluationObjectsForContext(final IContext context) {
+        Map<String,Object> objects = objectsByLocale.get(locale);
 
-        final Map<String,Object> variables =
-                getExpressionEvaluationUtilityObjectsForLocale(context.getLocale());
-
-        variables.put(CONTEXT_VARIABLE_NAME, context);
-        variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());
-        
-        if (context instanceof IWebContext) {
-            final IWebContext webContext = (IWebContext) context;
-            // This gives access to the HttpServletRequest and HttpSession objects, if they exist
-            variables.put(
-                    HTTP_SERVLET_REQUEST_VARIABLE_NAME, webContext.getHttpServletRequest());
-            variables.put(
-                    HTTP_SESSION_VARIABLE_NAME, webContext.getHttpSession());
-        }
-        
-        return variables;
-        
-    }
-
-
-    
-    public static Map<String,Object> getExpressionEvaluationUtilityObjectsForLocale(final Locale locale) {
-        
-        Map<String,Object> objects = EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.get(locale);
         if (objects == null) {
 
             objects = new HashMap<String, Object>(30);
 
             if (locale != null) {
-                objects.put(CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(locale));
-                objects.put(DATES_EVALUATION_VARIABLE_NAME, new Dates(locale));
+                objects.put(CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(defaultedConversionService, locale));
+                objects.put(DATES_EVALUATION_VARIABLE_NAME, new Dates(defaultedConversionService, locale));
                 objects.put(NUMBERS_EVALUATION_VARIABLE_NAME, new Numbers(locale));
                 objects.put(STRINGS_EVALUATION_VARIABLE_NAME, new Strings(locale));
             }
-            objects.put(BOOLS_EVALUATION_VARIABLE_NAME, new Bools());
+
+            objects.put(BOOLS_EVALUATION_VARIABLE_NAME, new Bools(defaultedConversionService));
             objects.put(OBJECTS_EVALUATION_VARIABLE_NAME, new Objects());
             objects.put(ARRAYS_EVALUATION_VARIABLE_NAME, new Arrays());
             objects.put(LISTS_EVALUATION_VARIABLE_NAME, new Lists());
@@ -196,14 +197,25 @@ public final class ExpressionEvaluatorObjects {
             objects.put(MAPS_EVALUATION_VARIABLE_NAME, new Maps());
             objects.put(AGGREGATES_EVALUATION_VARIABLE_NAME, new Aggregates());
 
-            EXPRESSION_EVALUATION_UTILITY_OBJECTS_BY_LOCALE.put(locale, objects);
+            objectsByLocale.put(locale, objects);
 
         }
 
         return new HashMap<String, Object>(objects);
         
     }
-    
-    
-    
+
+
+
+
+    private static IStandardConversionService getOptionalConversionService(final Configuration configuration) {
+        final Object conversionService =
+                configuration.getExecutionAttributes().get(StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME);
+        if (conversionService == null || (!(conversionService instanceof IStandardConversionService))) {
+            return null;
+        }
+        return (IStandardConversionService) conversionService;
+    }
+
+
 }

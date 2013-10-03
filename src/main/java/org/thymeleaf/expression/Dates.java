@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.standard.expression.IStandardConversionService;
+import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.util.DateUtils;
 import org.thymeleaf.util.Validate;
 
@@ -47,13 +49,30 @@ import org.thymeleaf.util.Validate;
  */
 public final class Dates {
 
-    
+
+    private static final IStandardConversionService DEFAULT_CONVERSION_SERVICE = new StandardConversionService();
+
+
+    private final IStandardConversionService conversionService;
     private final Locale locale;
-    
-    
-    
+
+
+
+
     public Dates(final Locale locale) {
+        this(null, locale);
+    }
+
+    /**
+     *
+     * @since 2.1.0
+     */
+    public Dates(final IStandardConversionService conversionService, final Locale locale) {
         super();
+        Validate.notNull(locale, "Locale cannot be null");
+        // Can be null, because this object can be used without the standard dialects being used
+        this.conversionService =
+                (conversionService != null? conversionService : DEFAULT_CONVERSION_SERVICE);
         this.locale = locale;
     }
 
@@ -66,7 +85,7 @@ public final class Dates {
      * @since 1.1.2
      */
     public Date create(final Object year, final Object month, final Object day) {
-        return DateUtils.create(year, month, day, null, null, null, null, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, null, null, null, null, null, this.locale, this.conversionService).getTime();
     }
 
     
@@ -76,7 +95,7 @@ public final class Dates {
      */
     public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute) {
-        return DateUtils.create(year, month, day, hour, minute, null, null, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, hour, minute, null, null, null, this.locale, this.conversionService).getTime();
     }
 
     
@@ -86,7 +105,7 @@ public final class Dates {
      */
     public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second) {
-        return DateUtils.create(year, month, day, hour, minute, second, null, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, hour, minute, second, null, null, this.locale, this.conversionService).getTime();
     }
 
 
@@ -96,7 +115,7 @@ public final class Dates {
      */
     public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return DateUtils.create(year, month, day, hour, minute, second, millisecond, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, null, this.locale, this.conversionService).getTime();
     }
 
 

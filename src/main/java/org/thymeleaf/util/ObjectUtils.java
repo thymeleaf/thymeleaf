@@ -20,6 +20,7 @@
 package org.thymeleaf.util;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.standard.expression.StandardConversionServiceUtil;
@@ -64,7 +65,7 @@ public final class ObjectUtils {
      */
     @Deprecated
     public static BigDecimal evaluateAsNumber(final Object object) {
-        return StandardConversionServiceUtil.convertToNumber(object);
+        return StandardConversionServiceUtil.convertToBigDecimal(object);
     }
 
 
@@ -78,7 +79,7 @@ public final class ObjectUtils {
      */
     @Deprecated
     public static List<Object> convertToIterable(final Object value) {
-        return StandardConversionServiceUtil.convertToIterable(value);
+        return StandardConversionServiceUtil.convertToList(value);
     }
 
 
@@ -92,6 +93,11 @@ public final class ObjectUtils {
      */
     @Deprecated
     public static List<Object> convertToList(final Object value) {
+        if (value == null) {
+            // This mimics the old behaviour of the deprecated convertToList() method, which is not the same
+            // as the current StandardConversionServiceUtil.convertToList() method.
+            return Collections.singletonList(null);
+        }
         return StandardConversionServiceUtil.convertToList(value);
     }
 

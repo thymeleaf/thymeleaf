@@ -61,6 +61,8 @@ public final class FragmentSelectionUtils {
             return false;
         }
 
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         final AssignationSequence fragmentSelectionParameters = fragmentSelection.getParameters();
         final Set<String> variableNames = new HashSet<String>(fragmentSelectionParameters.size() + 2);
         for (final Assignation assignation : fragmentSelectionParameters.getAssignations()) {
@@ -68,7 +70,8 @@ public final class FragmentSelectionUtils {
             final IStandardExpression variableNameExpr = assignation.getLeft();
             final Object variableNameValue = variableNameExpr.execute(configuration, processingContext, expContext);
 
-            final String variableName = (variableNameValue == null? null : variableNameValue.toString());
+            final String variableName =
+                    (variableNameValue == null? null : conversionService.convert(variableNameValue, String.class));
 
             variableNames.add(variableName);
 

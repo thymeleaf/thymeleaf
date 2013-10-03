@@ -61,7 +61,8 @@ public final class BooleanTokenExpression extends Token {
     static Object executeBooleanToken(
             @SuppressWarnings("unused") final IProcessingContext processingContext,
             final BooleanTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating boolean token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

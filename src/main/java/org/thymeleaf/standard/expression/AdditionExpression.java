@@ -61,7 +61,8 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
     
     
     static Object executeAddition(final Configuration configuration, final IProcessingContext processingContext, 
-            final AdditionExpression expression, final StandardExpressionExecutionContext expContext) {
+            final AdditionExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating addition expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -80,7 +81,8 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         if (leftExpr instanceof Expression) {
             // This avoids literal-unwrap
             leftValue =
-                    Expression.execute(configuration, processingContext, (Expression)leftExpr, expressionEvaluator, expContext);
+                    Expression.execute(
+                            configuration, processingContext, (Expression)leftExpr, expressionEvaluator, expContext, conversionService);
         } else{
             leftValue = leftExpr.execute(configuration, processingContext, expContext);
         }
@@ -88,7 +90,8 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         if (rightExpr instanceof Expression) {
             // This avoids literal-unwrap
             rightValue =
-                    Expression.execute(configuration, processingContext, (Expression)rightExpr, expressionEvaluator, expContext);
+                    Expression.execute(
+                            configuration, processingContext, (Expression)rightExpr, expressionEvaluator, expContext, conversionService);
         } else{
             rightValue = rightExpr.execute(configuration, processingContext, expContext);
         }
@@ -100,8 +103,6 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             rightValue = "null";
         }
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
         final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
         final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
@@ -110,7 +111,8 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         }
         
         return new LiteralValue(
-                LiteralValue.unwrap(leftValue).toString() + (LiteralValue.unwrap(rightValue).toString()));
+                conversionService.convert(LiteralValue.unwrap(leftValue), String.class) +
+                conversionService.convert(LiteralValue.unwrap(rightValue), String.class));
         
     }
 

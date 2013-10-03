@@ -82,7 +82,7 @@ public final class StandardConversionServiceUtil {
 
 
 
-    public static BigDecimal convertToNumber(final Object object) {
+    public static BigDecimal convertToBigDecimal(final Object object) {
 
         if (object == null) {
             return null;
@@ -120,25 +120,13 @@ public final class StandardConversionServiceUtil {
 
 
 
-    public static List<Object> convertToIterable(final Object value) {
+    public static List<Object> convertToList(final Object value) {
         // Iterating on null should be the same as iterating an empty list
         // (for example, <c:forEach>)
         if (value == null) {
             return Collections.emptyList();
         }
-        return convertToList(value);
-    }
-
-
-
-    @SuppressWarnings("unchecked")
-    public static List<Object> convertToList(final Object value) {
-
         final List<Object> result = new ArrayList<Object>();
-        if (value == null) {
-            result.add(null);
-            return result;
-        }
         if (value instanceof Iterable<?>) {
             for (final Object obj : (Iterable<?>) value) {
                 result.add(obj);

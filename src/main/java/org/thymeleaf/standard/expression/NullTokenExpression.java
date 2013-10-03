@@ -66,7 +66,8 @@ public final class NullTokenExpression extends Token {
     static Object executeNullToken(
             @SuppressWarnings("unused") final IProcessingContext processingContext,
             final NullTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
+            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating null token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

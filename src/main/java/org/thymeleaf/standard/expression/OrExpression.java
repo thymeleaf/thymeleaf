@@ -99,13 +99,12 @@ public final class OrExpression extends BinaryOperationExpression {
 
     
     static Object executeOr(final Configuration configuration, final IProcessingContext processingContext, 
-            final OrExpression expression, final StandardExpressionExecutionContext expContext) {
+            final OrExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating OR expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
 

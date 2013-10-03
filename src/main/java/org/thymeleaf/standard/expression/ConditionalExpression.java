@@ -192,13 +192,12 @@ public final class ConditionalExpression extends ComplexExpression {
 
     
     static Object executeConditional(final Configuration configuration, final IProcessingContext processingContext, 
-            final ConditionalExpression expression, final StandardExpressionExecutionContext expContext) {
+            final ConditionalExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating conditional expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final Object condObj = expression.getConditionExpression().execute(configuration, processingContext, expContext);
         final boolean cond = conversionService.convert(condObj, Boolean.class);

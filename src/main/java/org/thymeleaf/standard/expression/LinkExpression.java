@@ -227,7 +227,7 @@ public final class LinkExpression extends SimpleExpression {
 
     static Object executeLink(final Configuration configuration,
             final IProcessingContext processingContext, final LinkExpression expression, 
-            final StandardExpressionExecutionContext expContext) {
+            final StandardExpressionExecutionContext expContext, final IStandardConversionService conversionService) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -236,9 +236,7 @@ public final class LinkExpression extends SimpleExpression {
         final IStandardExpression baseExpression = expression.getBase();
         Object base = baseExpression.execute(configuration, processingContext, expContext);
 
-        if (base != null && !(base instanceof String)) {
-            base = base.toString();
-        }
+        base = conversionService.convert(base, String.class);
         if (base == null || StringUtils.isEmptyOrWhitespace((String) base)) {
             base = "";
         }
@@ -255,7 +253,7 @@ public final class LinkExpression extends SimpleExpression {
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression, expContext) :
+                    resolveParameters(configuration, processingContext, expression, expContext, conversionService) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -297,9 +295,11 @@ public final class LinkExpression extends SimpleExpression {
                     parametersBuilder.append("&");
                 }
 
-                final String parameterValue =
-                    (parameterObjectValue == null? "" : parameterObjectValue.toString());
-                
+                String parameterValue = conversionService.convert(parameterObjectValue, String.class);
+                if (parameterValue == null || StringUtils.isEmptyOrWhitespace(parameterValue)) {
+                    parameterValue = "";
+                }
+
                 if (URL_PARAM_NO_VALUE.equals(parameterValue)) {
                     
                     // This is a parameter without a value and even without an "=" symbol
@@ -396,7 +396,8 @@ public final class LinkExpression extends SimpleExpression {
     
     private static Map<String,List<Object>> resolveParameters(
             final Configuration configuration, final IProcessingContext processingContext, 
-            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
+            final LinkExpression expression, final StandardExpressionExecutionContext expContext,
+            final IStandardConversionService conversionService) {
 
         final AssignationSequence assignationValues = expression.getParameters();
 
@@ -408,8 +409,7 @@ public final class LinkExpression extends SimpleExpression {
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
             final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext, expContext);
-            final String parameterName =
-                    (parameterNameValue == null? null : parameterNameValue.toString());
+            final String parameterName = conversionService.convert(parameterNameValue, String.class);
 
             if (StringUtils.isEmptyOrWhitespace(parameterName)) {
                 throw new TemplateProcessingException(
