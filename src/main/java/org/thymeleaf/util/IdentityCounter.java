@@ -20,6 +20,7 @@
 package org.thymeleaf.util;
 
 import java.io.Serializable;
+import java.util.*;
 
 
 /**
@@ -39,38 +40,21 @@ import java.io.Serializable;
  */
 public final class IdentityCounter<T> implements Serializable {
 
-    private static final long serialVersionUID = -6787140331913313991L;
+    private static final long serialVersionUID = -6965348731301112911L;
 
-    private Object[] counted;
-    private int countedSize;
-    private int countedLen;
+    private IdentityHashMap<T, Object> counted;
 
-    
     public IdentityCounter(final int expectedMaxSize) {
         super();
-        this.counted = new Object[expectedMaxSize];
-        this.countedSize = expectedMaxSize;
-        this.countedLen = 0;
+        this.counted = new IdentityHashMap<T, Object>(expectedMaxSize);
     }
 
-    
     public void count(final T object) {
-        if (this.countedLen >= this.countedSize) {
-            this.countedSize *= 2;
-            this.counted = ArrayUtils.copyOf(this.counted, this.countedSize);
-        }
-        this.counted[this.countedLen++] = object;
+        counted.put(object, null);
     }
 
-    
     public boolean isAlreadyCounted(final T object) {
-        for (int i = 0; i < this.countedLen; i++) {
-            if (this.counted[i] == object) {
-                return true;
-            }
-        }
-        return false;
+        return counted.containsKey(object);
     }
-    
-    
+
 }
