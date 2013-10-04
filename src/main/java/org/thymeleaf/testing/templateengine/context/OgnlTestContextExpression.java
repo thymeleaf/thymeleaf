@@ -39,8 +39,6 @@ import org.thymeleaf.expression.Numbers;
 import org.thymeleaf.expression.Objects;
 import org.thymeleaf.expression.Sets;
 import org.thymeleaf.expression.Strings;
-import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.util.Validate;
 
 
@@ -93,18 +91,13 @@ public final class OgnlTestContextExpression implements ITestContextExpression {
 
             objects = new HashMap<String, Object>(30);
 
-            // We will only allow the standard conversion service to be used for test context expressions
-            // Tests themselves (not their context expression) can use whichever conversion service they
-            // have registered (e.g. at a Spring application context)
-            final IStandardConversionService conversionService = new StandardConversionService();
-
             if (locale != null) {
-                objects.put(ExpressionEvaluatorObjects.CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(conversionService, locale));
-                objects.put(ExpressionEvaluatorObjects.DATES_EVALUATION_VARIABLE_NAME, new Dates(conversionService, locale));
+                objects.put(ExpressionEvaluatorObjects.CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(null, locale));
+                objects.put(ExpressionEvaluatorObjects.DATES_EVALUATION_VARIABLE_NAME, new Dates(null, locale));
                 objects.put(ExpressionEvaluatorObjects.NUMBERS_EVALUATION_VARIABLE_NAME, new Numbers(locale));
                 objects.put(ExpressionEvaluatorObjects.STRINGS_EVALUATION_VARIABLE_NAME, new Strings(locale));
             }
-            objects.put(ExpressionEvaluatorObjects.BOOLS_EVALUATION_VARIABLE_NAME, new Bools(conversionService));
+            objects.put(ExpressionEvaluatorObjects.BOOLS_EVALUATION_VARIABLE_NAME, new Bools(null));
             objects.put(ExpressionEvaluatorObjects.OBJECTS_EVALUATION_VARIABLE_NAME, new Objects());
             objects.put(ExpressionEvaluatorObjects.ARRAYS_EVALUATION_VARIABLE_NAME, new Arrays());
             objects.put(ExpressionEvaluatorObjects.LISTS_EVALUATION_VARIABLE_NAME, new Lists());
