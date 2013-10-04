@@ -28,8 +28,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.StandardConversionService;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.standard.expression.StandardConversionServiceUtil;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 
 
 /**
@@ -43,7 +44,6 @@ public final class DateUtils {
     
     
     private static final Map<DateFormatKey,DateFormat> dateFormats = new ConcurrentHashMap<DateFormatKey, DateFormat>();
-    private static final IStandardConversionService DEFAULT_CONVERSION_SERVICE = new StandardConversionService();
 
     
     
@@ -55,7 +55,7 @@ public final class DateUtils {
      * @since 1.1.2
      */
     public static Calendar create(final Object year, final Object month, final Object day) {
-        return create(year, month, day, null, null, null, null, null, null, DEFAULT_CONVERSION_SERVICE);
+        return create(null, year, month, day, null, null, null, null, null, null);
     }
 
     
@@ -65,7 +65,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
             final Object hour, final Object minute) {
-        return create(year, month, day, hour, minute, null, null, null, null, DEFAULT_CONVERSION_SERVICE);
+        return create(null, year, month, day, hour, minute, null, null, null, null);
     }
 
     
@@ -75,7 +75,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
             final Object hour, final Object minute, final Object second) {
-        return create(year, month, day, hour, minute, second, null, null, null, DEFAULT_CONVERSION_SERVICE);
+        return create(null, year, month, day, hour, minute, second, null, null, null);
     }
 
 
@@ -85,7 +85,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return create(year, month, day, hour, minute, second, millisecond, null, null, DEFAULT_CONVERSION_SERVICE);
+        return create(null, year, month, day, hour, minute, second, millisecond, null, null);
     }
 
 
@@ -96,7 +96,7 @@ public final class DateUtils {
     public static Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond,
             final Object timeZone) {
-        return create(year, month, day, hour, minute, second, millisecond, timeZone, null, DEFAULT_CONVERSION_SERVICE);
+        return create(null, year, month, day, hour, minute, second, millisecond, timeZone, null);
     }
 
 
@@ -105,9 +105,9 @@ public final class DateUtils {
      * @since 2.1.0
      */
     public static Calendar create(final Object year, final Object month, final Object day,
-                                  final Object hour, final Object minute, final Object second, final Object millisecond,
-                                  final Object timeZone, final Locale locale) {
-        return create(year, month, day, hour, minute, second, millisecond, timeZone, locale, DEFAULT_CONVERSION_SERVICE);
+            final Object hour, final Object minute, final Object second, final Object millisecond,
+            final Object timeZone, final Locale locale) {
+        return create(null, year, month, day, hour, minute, second, millisecond, timeZone, locale);
     }
 
     
@@ -115,27 +115,53 @@ public final class DateUtils {
      * 
      * @since 2.1.0
      */
-    public static Calendar create(final Object year, final Object month, final Object day, 
+    public static Calendar create(final Configuration configuration,
+            final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond,
-            final Object timeZone, final Locale locale, final IStandardConversionService conversionService) {
-
-        final IStandardConversionService converter =
-                (conversionService != null? conversionService : DEFAULT_CONVERSION_SERVICE);
+            final Object timeZone, final Locale locale) {
 
         final BigDecimal nYear =
-                (year == null? null : converter.convert(year, BigDecimal.class));
+                (year == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, year, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(year)));
         final BigDecimal nMonth =
-                (month == null? null : converter.convert(month, BigDecimal.class));
+                (month == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, month, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(month)));
         final BigDecimal nDay =
-                (day == null? null : converter.convert(day, BigDecimal.class));
+                (day == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, day, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(day)));
         final BigDecimal nHour =
-                (hour == null? null : converter.convert(hour, BigDecimal.class));
+                (hour == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, hour, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(hour)));
         final BigDecimal nMinute =
-                (minute == null? null : converter.convert(minute, BigDecimal.class));
+                (minute == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, minute, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(minute)));
         final BigDecimal nSecond =
-                (second == null? null : converter.convert(second, BigDecimal.class));
+                (second == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, second, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(second)));
         final BigDecimal nMillisecond =
-                (millisecond == null? null : converter.convert(millisecond, BigDecimal.class));
+                (millisecond == null?
+                        null :
+                        (configuration != null?
+                                StandardConversionUtil.convert(configuration, millisecond, BigDecimal.class) :
+                                StandardConversionServiceUtil.convertToBigDecimal(millisecond)));
 
         final TimeZone tzTimeZone =
                 (timeZone != null?

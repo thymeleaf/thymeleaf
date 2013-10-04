@@ -64,8 +64,7 @@ public final class MultiplicationExpression extends MultiplicationDivisionRemain
         
     
     static Object executeMultiplication(final Configuration configuration, final IProcessingContext processingContext, 
-            final MultiplicationExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final MultiplicationExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating multiplication expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -81,8 +80,8 @@ public final class MultiplicationExpression extends MultiplicationDivisionRemain
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return leftNumberValue.multiply(rightNumberValue);

@@ -60,8 +60,7 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeGreaterOrEqualTo(final Configuration configuration, final IProcessingContext processingContext, 
-            final GreaterOrEqualToExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final GreaterOrEqualToExpression expression, final StandardExpressionExecutionContext expContext) {
         
         Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
         Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
@@ -71,8 +70,8 @@ public final class GreaterOrEqualToExpression extends GreaterLesserExpression {
 
         Boolean result = null;
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) != -1);

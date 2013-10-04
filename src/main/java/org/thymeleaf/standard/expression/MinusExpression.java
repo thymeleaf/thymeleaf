@@ -126,8 +126,7 @@ public final class MinusExpression extends ComplexExpression {
     
 
     static Object executeMinus(final Configuration configuration, final IProcessingContext processingContext, 
-            final MinusExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final MinusExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating minus expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -139,7 +138,7 @@ public final class MinusExpression extends ComplexExpression {
             operandValue = "null";
         }
 
-        final BigDecimal operandNumberValue = conversionService.convert(operandValue, BigDecimal.class);
+        final BigDecimal operandNumberValue = StandardConversionUtil.convert(configuration, operandValue, BigDecimal.class);
         if (operandNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return operandNumberValue.multiply(BigDecimal.valueOf(-1));

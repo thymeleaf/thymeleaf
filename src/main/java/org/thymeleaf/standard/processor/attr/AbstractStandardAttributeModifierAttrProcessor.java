@@ -33,9 +33,8 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.TemplateModeUtils;
@@ -89,7 +88,8 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             final IStandardExpression rightExpr = assignation.getRight();
             final Object rightValue = rightExpr.execute(configuration, arguments);
 
-            final String newAttributeName = (leftValue == null? null : leftValue.toString());
+            final String newAttributeName =
+                    (leftValue == null? null : StandardConversionUtil.convert(configuration, leftValue, String.class));
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
                 throw new TemplateProcessingException(
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");
@@ -100,9 +100,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
 
-                final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
-                if (conversionService.convert(rightValue, Boolean.class)) {
+                if (StandardConversionUtil.convert(configuration, rightValue, Boolean.class)) {
                     newAttributeValues.put(newAttributeName, newAttributeName);
                 } else {
                     newAttributeValues.put(newAttributeName, null);
@@ -110,8 +108,11 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 
             } else {
                 // Attribute is a "normal" attribute, not a fixed-value conditional one
-                
-                newAttributeValues.put(newAttributeName, (rightValue == null ? "" : rightValue.toString()));
+
+                final String newValue =
+                        StandardConversionUtil.convert(configuration, rightValue, String.class);
+
+                newAttributeValues.put(newAttributeName, (newValue == null ? "" : newValue));
                 
             }
 

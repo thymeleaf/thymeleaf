@@ -66,8 +66,7 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
     
     
     static Object executeDivision(final Configuration configuration, final IProcessingContext processingContext, 
-            final DivisionExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final DivisionExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating division expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -84,8 +83,8 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
             try {
                 return leftNumberValue.divide(rightNumberValue);

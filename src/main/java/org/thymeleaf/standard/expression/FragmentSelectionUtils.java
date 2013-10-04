@@ -71,7 +71,8 @@ public final class FragmentSelectionUtils {
             final Object variableNameValue = variableNameExpr.execute(configuration, processingContext, expContext);
 
             final String variableName =
-                    (variableNameValue == null? null : conversionService.convert(variableNameValue, String.class));
+                    (variableNameValue == null?
+                            null : StandardConversionUtil.convert(configuration, variableNameValue, String.class));
 
             variableNames.add(variableName);
 

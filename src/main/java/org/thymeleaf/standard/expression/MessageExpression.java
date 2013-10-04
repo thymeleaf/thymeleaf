@@ -208,7 +208,7 @@ public final class MessageExpression extends SimpleExpression {
 
     static Object executeMessage(final Configuration configuration,
             final IProcessingContext processingContext, final MessageExpression expression, 
-            final StandardExpressionExecutionContext expContext, final IStandardConversionService conversionService) {
+            final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating message: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -226,7 +226,7 @@ public final class MessageExpression extends SimpleExpression {
         
         final IStandardExpression baseExpression = expression.getBase();
         Object messageKey = baseExpression.execute(configuration, arguments, expContext);
-        messageKey = conversionService.convert(messageKey, String.class);
+        messageKey = StandardConversionUtil.convert(configuration, messageKey, String.class);
         if (StringUtils.isEmptyOrWhitespace((String)messageKey)) {
             throw new TemplateProcessingException(
                     "Message key for message resolution must be a non-null and non-empty String");

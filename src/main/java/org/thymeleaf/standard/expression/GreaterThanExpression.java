@@ -61,8 +61,7 @@ public final class GreaterThanExpression extends GreaterLesserExpression {
     
     @SuppressWarnings("unchecked")
     static Object executeGreaterThan(final Configuration configuration, final IProcessingContext processingContext, 
-            final GreaterThanExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final GreaterThanExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating GREATER THAN expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -81,8 +80,8 @@ public final class GreaterThanExpression extends GreaterLesserExpression {
 
         Boolean result = null;
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == 1);

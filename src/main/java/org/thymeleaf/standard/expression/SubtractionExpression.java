@@ -65,8 +65,7 @@ public final class SubtractionExpression extends AdditionSubtractionExpression {
     
     
     static Object executeSubtraction(final Configuration configuration, final IProcessingContext processingContext, 
-            final SubtractionExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final SubtractionExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating subtraction expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -82,8 +81,8 @@ public final class SubtractionExpression extends AdditionSubtractionExpression {
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return leftNumberValue.subtract(rightNumberValue);

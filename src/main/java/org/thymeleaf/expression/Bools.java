@@ -24,8 +24,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.StandardConversionService;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.standard.expression.StandardConversionServiceUtil;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.util.Validate;
 
 
@@ -46,8 +47,7 @@ import org.thymeleaf.util.Validate;
 public final class Bools {
     
 
-    private final IStandardConversionService conversionService;
-    private static final IStandardConversionService DEFAULT_CONVERSION_SERVICE = new StandardConversionService();
+    private final Configuration configuration;
 
 
 
@@ -59,17 +59,19 @@ public final class Bools {
      *
      * @since 2.1.0
      */
-    public Bools(final IStandardConversionService conversionService) {
+    public Bools(final Configuration configuration) {
         super();
         // Can be null, because this object can be used without the standard dialects being used
-        this.conversionService =
-                (conversionService != null? conversionService : DEFAULT_CONVERSION_SERVICE);
+        this.configuration = configuration;
     }
 
 
 
     public Boolean isTrue(final Object target) {
-        return Boolean.valueOf(conversionService.convert(target, Boolean.class));
+        if (this.configuration == null) {
+            return Boolean.valueOf(StandardConversionServiceUtil.convertToBoolean(target));
+        }
+        return Boolean.valueOf(StandardConversionUtil.convert(this.configuration, target, Boolean.class));
     }
 
 
@@ -104,7 +106,10 @@ public final class Bools {
     
     
     public Boolean isFalse(final Object target) {
-        return Boolean.valueOf(!conversionService.convert(target, Boolean.class));
+        if (this.configuration == null) {
+            return Boolean.valueOf(!StandardConversionServiceUtil.convertToBoolean(target));
+        }
+        return Boolean.valueOf(!StandardConversionUtil.convert(this.configuration, target, Boolean.class));
     }
     
     public Boolean[] arrayIsFalse(final Object[] target) {

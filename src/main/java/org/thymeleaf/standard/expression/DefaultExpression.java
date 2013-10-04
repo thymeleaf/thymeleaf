@@ -145,8 +145,7 @@ public final class DefaultExpression extends ComplexExpression {
     
     
     static Object executeDefault(final Configuration configuration, final IProcessingContext processingContext, 
-            final DefaultExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final DefaultExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating default expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());

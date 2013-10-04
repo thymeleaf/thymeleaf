@@ -28,6 +28,7 @@ import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.EachUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -85,13 +86,15 @@ public abstract class AbstractStandardIterationAttrProcessor
         final IStandardExpression iterableExpr = each.getIterable();
         final Object iteratedValue = iterableExpr.execute(configuration, arguments);
 
-        final String iterVarName = (iterVarValue == null? null : iterVarValue.toString());
+        final String iterVarName =
+                (iterVarValue == null? null : StandardConversionUtil.convert(configuration, iterVarValue, String.class));
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {
             throw new TemplateProcessingException(
                     "Iteration variable name expression evaluated as null: \"" + iterVarExpr + "\"");
         }
 
-        final String statusVarName = (statusVarValue == null? null : statusVarValue.toString());
+        final String statusVarName =
+                (statusVarValue == null? null : StandardConversionUtil.convert(configuration, statusVarValue, String.class));
         if (statusVarExpr != null && StringUtils.isEmptyOrWhitespace(statusVarName)) {
             throw new TemplateProcessingException(
                     "Status variable name expression evaluated as null or empty: \"" + statusVarExpr + "\"");

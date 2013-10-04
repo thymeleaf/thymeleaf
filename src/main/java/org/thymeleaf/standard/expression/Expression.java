@@ -97,15 +97,15 @@ public abstract class Expression implements IStandardExpression, Serializable {
     
     static Object execute(final Configuration configuration, final IProcessingContext processingContext, 
             final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
-            final StandardExpressionExecutionContext expContext, final IStandardConversionService conversionService) {
+            final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof SimpleExpression) {
             return SimpleExpression.executeSimple(
-                    configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext, conversionService);
+                    configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof ComplexExpression) {
             return ComplexExpression.executeComplex(
-                    configuration, processingContext, (ComplexExpression)expression, expContext, conversionService);
+                    configuration, processingContext, (ComplexExpression)expression, expContext);
         }
 
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
@@ -130,10 +130,7 @@ public abstract class Expression implements IStandardExpression, Serializable {
         final IStandardVariableExpressionEvaluator variableExpressionEvaluator =
                 StandardExpressions.getVariableExpressionEvaluator(configuration);
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
-        final Object result = execute(
-                configuration, processingContext, this, variableExpressionEvaluator, expContext, conversionService);
+        final Object result = execute(configuration, processingContext, this, variableExpressionEvaluator, expContext);
         return LiteralValue.unwrap(result);
 
     }

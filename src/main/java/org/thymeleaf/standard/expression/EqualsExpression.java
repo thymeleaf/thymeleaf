@@ -61,8 +61,7 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
     
     @SuppressWarnings({"unchecked","null"})
     static Object executeEquals(final Configuration configuration, final IProcessingContext processingContext, 
-            final EqualsExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final EqualsExpression expression, final StandardExpressionExecutionContext expContext) {
 
         Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
 
@@ -77,8 +76,8 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
         
         Boolean result = null;
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == 0);

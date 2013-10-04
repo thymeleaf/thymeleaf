@@ -30,7 +30,6 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -84,9 +83,10 @@ public final class ExpressionEvaluatorObjects {
 
 
 
-    private static final ConcurrentHashMap<IStandardConversionService,ConcurrentHashMap<Locale,Map<String,Object>>> BASE_OBJECTS_CACHE =
-            new ConcurrentHashMap<IStandardConversionService,ConcurrentHashMap<Locale, Map<String,Object>>>(2, 1.0f, 3);
-    private static final IStandardConversionService NULL_CONVERSION_SERVICE = new StandardConversionService();
+    private static final ConcurrentHashMap<Configuration,ConcurrentHashMap<Locale, Map<String,Object>>> BASE_OBJECTS_CACHE =
+            new ConcurrentHashMap<Configuration,ConcurrentHashMap<Locale, Map<String,Object>>>(2, 1.0f, 3);
+    private static final ConcurrentHashMap<Locale, Map<String,Object>> NO_CONFIG_BASE_OBJECTS_CACHE =
+            new ConcurrentHashMap<Locale, Map<String,Object>>(5, 1.0f, 3);
 
     
     
@@ -108,12 +108,10 @@ public final class ExpressionEvaluatorObjects {
 
         final IContext context = processingContext.getContext();
 
-        final IStandardConversionService conversionService =
-                (processingContext instanceof Arguments?
-                        getOptionalConversionService(((Arguments) processingContext).getConfiguration()) :
-                        null);
+        final Configuration configuration =
+                (processingContext instanceof Arguments? ((Arguments) processingContext).getConfiguration() : null);
 
-        final Map<String,Object> variables = computeBaseObjects(conversionService, context.getLocale());
+        final Map<String,Object> variables = computeBaseObjects(configuration, context.getLocale());
 
         variables.put(CONTEXT_VARIABLE_NAME, context);
         variables.put(LOCALE_EVALUATION_VARIABLE_NAME, context.getLocale());
@@ -163,17 +161,15 @@ public final class ExpressionEvaluatorObjects {
 
 
     
-    private static Map<String,Object> computeBaseObjects(final IStandardConversionService conversionService, final Locale locale) {
+    private static Map<String,Object> computeBaseObjects(final Configuration configuration, final Locale locale) {
 
-        // ConcurrentHashMaps do not allow null keys!
-        final IStandardConversionService defaultedConversionService =
-                (conversionService != null? conversionService : NULL_CONVERSION_SERVICE);
 
-        ConcurrentHashMap<Locale,Map<String,Object>> objectsByLocale = BASE_OBJECTS_CACHE.get(defaultedConversionService);
+        ConcurrentHashMap<Locale,Map<String,Object>> objectsByLocale =
+                (configuration == null? NO_CONFIG_BASE_OBJECTS_CACHE : BASE_OBJECTS_CACHE.get(configuration));
 
         if (objectsByLocale == null) {
             objectsByLocale = new ConcurrentHashMap<Locale, Map<String, Object>>(5, 1.0f, 3);
-            BASE_OBJECTS_CACHE.put(defaultedConversionService, objectsByLocale);
+            BASE_OBJECTS_CACHE.put(configuration, objectsByLocale);
         }
 
         Map<String,Object> objects = objectsByLocale.get(locale);
@@ -183,13 +179,13 @@ public final class ExpressionEvaluatorObjects {
             objects = new HashMap<String, Object>(30);
 
             if (locale != null) {
-                objects.put(CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(defaultedConversionService, locale));
-                objects.put(DATES_EVALUATION_VARIABLE_NAME, new Dates(defaultedConversionService, locale));
+                objects.put(CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(configuration, locale));
+                objects.put(DATES_EVALUATION_VARIABLE_NAME, new Dates(configuration, locale));
                 objects.put(NUMBERS_EVALUATION_VARIABLE_NAME, new Numbers(locale));
                 objects.put(STRINGS_EVALUATION_VARIABLE_NAME, new Strings(locale));
             }
 
-            objects.put(BOOLS_EVALUATION_VARIABLE_NAME, new Bools(defaultedConversionService));
+            objects.put(BOOLS_EVALUATION_VARIABLE_NAME, new Bools(configuration));
             objects.put(OBJECTS_EVALUATION_VARIABLE_NAME, new Objects());
             objects.put(ARRAYS_EVALUATION_VARIABLE_NAME, new Arrays());
             objects.put(LISTS_EVALUATION_VARIABLE_NAME, new Lists());

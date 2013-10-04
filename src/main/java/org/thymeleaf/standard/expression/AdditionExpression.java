@@ -61,8 +61,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
     
     
     static Object executeAddition(final Configuration configuration, final IProcessingContext processingContext, 
-            final AdditionExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final AdditionExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating addition expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -82,7 +81,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             // This avoids literal-unwrap
             leftValue =
                     Expression.execute(
-                            configuration, processingContext, (Expression)leftExpr, expressionEvaluator, expContext, conversionService);
+                            configuration, processingContext, (Expression)leftExpr, expressionEvaluator, expContext);
         } else{
             leftValue = leftExpr.execute(configuration, processingContext, expContext);
         }
@@ -91,7 +90,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             // This avoids literal-unwrap
             rightValue =
                     Expression.execute(
-                            configuration, processingContext, (Expression)rightExpr, expressionEvaluator, expContext, conversionService);
+                            configuration, processingContext, (Expression)rightExpr, expressionEvaluator, expContext);
         } else{
             rightValue = rightExpr.execute(configuration, processingContext, expContext);
         }
@@ -103,16 +102,16 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = conversionService.convert(leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = conversionService.convert(rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return leftNumberValue.add(rightNumberValue);
         }
         
         return new LiteralValue(
-                conversionService.convert(LiteralValue.unwrap(leftValue), String.class) +
-                conversionService.convert(LiteralValue.unwrap(rightValue), String.class));
+                StandardConversionUtil.convert(configuration, LiteralValue.unwrap(leftValue), String.class) +
+                StandardConversionUtil.convert(configuration, LiteralValue.unwrap(rightValue), String.class));
         
     }
 

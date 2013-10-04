@@ -99,8 +99,7 @@ public final class OrExpression extends BinaryOperationExpression {
 
     
     static Object executeOr(final Configuration configuration, final IProcessingContext processingContext, 
-            final OrExpression expression, final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            final OrExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating OR expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
@@ -109,14 +108,14 @@ public final class OrExpression extends BinaryOperationExpression {
         final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
 
         // Short circuit
-        final boolean leftBooleanValue = conversionService.convert(leftValue, Boolean.class);
+        final boolean leftBooleanValue = StandardConversionUtil.convert(configuration, leftValue, Boolean.class);
         if (leftBooleanValue) {
             return Boolean.TRUE;
         }
 
         final Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
-        final boolean rightBooleanValue = conversionService.convert(rightValue, Boolean.class);
+        final boolean rightBooleanValue = StandardConversionUtil.convert(configuration, rightValue, Boolean.class);
         return Boolean.valueOf(rightBooleanValue);
         
     }

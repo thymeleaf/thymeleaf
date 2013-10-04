@@ -30,6 +30,7 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -74,10 +75,11 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
         final Object valueForAttributes = expression.execute(configuration, arguments);
+        final String strValueForAttributes = StandardConversionUtil.convert(configuration, valueForAttributes, String.class);
         
         final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {
-            result.put(newAttributeName, (valueForAttributes == null? "" : valueForAttributes.toString()));
+            result.put(newAttributeName, (strValueForAttributes == null? "" : strValueForAttributes));
         }
         
         return result;

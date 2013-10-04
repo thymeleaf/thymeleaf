@@ -30,8 +30,7 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.IElementNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -82,11 +81,8 @@ public abstract class AbstractIterationElementProcessor
         final String statusVar = iterationSpec.getStatusVarName();
         final Object iteratedObject = iterationSpec.getIteratedObject();
 
-
-        final IStandardConversionService conversionService =
-                StandardExpressions.getConversionService(arguments.getConfiguration());
-
-        final List<?> list = conversionService.convert(iteratedObject, List.class);
+        final List<?> list =
+                StandardConversionUtil.convert(arguments.getConfiguration(), iteratedObject, List.class);
 
         int size = list.size(); 
         int index = 0;

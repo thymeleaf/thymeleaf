@@ -26,6 +26,7 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractUnescapedTextChildModifierAttrProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
@@ -68,8 +69,10 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
 
         final Object result =
                 expression.execute(configuration, arguments, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
-        
-        return (result == null? "" : result.toString());
+
+        final String stringResult = StandardConversionUtil.convert(configuration, result, String.class);
+
+        return (stringResult == null? "" : stringResult);
         
     }
 

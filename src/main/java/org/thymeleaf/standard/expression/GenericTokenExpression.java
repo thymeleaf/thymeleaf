@@ -72,8 +72,7 @@ public final class GenericTokenExpression extends Token {
     static Object executeGenericToken(
             @SuppressWarnings("unused") final IProcessingContext processingContext,
             final GenericTokenExpression expression,
-            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext,
-            final IStandardConversionService conversionService) {
+            @SuppressWarnings("unused") final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating generic token: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
