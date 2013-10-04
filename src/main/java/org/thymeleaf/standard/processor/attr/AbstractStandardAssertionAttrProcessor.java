@@ -73,7 +73,7 @@ public abstract class AbstractStandardAssertionAttrProcessor
 
         for (final IStandardExpression expression : expressions) {
             final Object expressionResult = expression.execute(arguments.getConfiguration(), arguments);
-            final boolean expressionBooleanResult = StandardConversionUtil.convert(configuration, expressionResult, Boolean.class);
+            final boolean expressionBooleanResult = StandardConversionUtil.convert(configuration, expressionResult, boolean.class);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(expression.getStringRepresentation(),
                         arguments.getTemplateName(), element.getLineNumber());

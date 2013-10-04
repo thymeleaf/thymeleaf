@@ -100,7 +100,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
 
-                if (StandardConversionUtil.convert(configuration, rightValue, Boolean.class)) {
+                if (StandardConversionUtil.convert(configuration, rightValue, boolean.class)) {
                     newAttributeValues.put(newAttributeName, newAttributeName);
                 } else {
                     newAttributeValues.put(newAttributeName, null);

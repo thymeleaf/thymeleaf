@@ -66,7 +66,15 @@ public final class StandardConversionUtil {
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(targetClass, "Target class cannot be null");
 
-        if (object == null || isAssignable(targetClass, object.getClass())) {
+        if (object == null) {
+            // Booleans are special, and a null should always be false!
+            if (targetClass.equals(boolean.class) || targetClass.equals(Boolean.class)) {
+                return (T) Boolean.FALSE;
+            }
+            return (T) object;
+        }
+
+        if (isAssignable(targetClass, object.getClass())) {
             return (T) object;
         }
 

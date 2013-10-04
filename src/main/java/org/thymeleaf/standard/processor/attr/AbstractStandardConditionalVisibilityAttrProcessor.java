@@ -65,7 +65,7 @@ public abstract class AbstractStandardConditionalVisibilityAttrProcessor
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object value = expression.execute(configuration, arguments);
 
-        final boolean visible = StandardConversionUtil.convert(configuration, value, Boolean.class);
+        final boolean visible = StandardConversionUtil.convert(configuration, value, boolean.class);
         
         if (inverse()) {
             return !visible;
