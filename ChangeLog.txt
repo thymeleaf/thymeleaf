@@ -1,6 +1,8 @@
 2.0.19
 ======
 - Added support for URLs without query string like @{''(p1)}.
+- Fixed nekoHTML introducing too many HTML wrapper tags around markup fragments in LEGACYHTML5 mode.
+- Fixed bad replacing of inlined javascript variables in text containing '//'.
 
 
 2.0.18
