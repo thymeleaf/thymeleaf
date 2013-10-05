@@ -31,6 +31,7 @@ import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -104,7 +105,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                             expressionParser.parseExpression(configuration, arguments, match);
                     final Object result = expression.execute(configuration, arguments);
 
-                    strBuilder.append(result);
+                    strBuilder.append(StandardConversionUtil.convert(configuration, result, String.class));
                     
                 } catch (final TemplateProcessingException ignored) {
                     
