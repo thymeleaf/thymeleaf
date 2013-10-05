@@ -1,0 +1,7 @@
+%TEMPLATE_MODE LEGACYHTML5
+# ------------------------------------------------------------
+%INPUT
+<p>Something here<p>And something here too
+# ------------------------------------------------------------
+%OUTPUT
+<p>Something here</p><p>And something here too</p>
