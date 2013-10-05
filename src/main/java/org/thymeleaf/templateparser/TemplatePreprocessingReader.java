@@ -76,6 +76,9 @@ public final class TemplatePreprocessingReader extends Reader {
     private static final int[] PROTOTYPE_ONLY_COMMENT_START = convertToIndexes("<!--/*/".toCharArray());
     private static final int[] PROTOTYPE_ONLY_COMMENT_END = convertToIndexes("/*/-->".toCharArray());
 
+    private static final int[] PARSER_LEVEL_COMMENT_START = convertToIndexes("<!--/*".toCharArray());
+    private static final int[] PARSER_LEVEL_COMMENT_END = convertToIndexes("*/-->".toCharArray());
+
 
     private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
     private static final char[] NORMALIZED_DOCTYPE_PUBLIC = "PUBLIC ".toCharArray();
@@ -99,6 +102,7 @@ public final class TemplatePreprocessingReader extends Reader {
     private int overflowIndex;
     
     private boolean inComment = false;
+    private boolean inParserLevelComment = false;
     private boolean docTypeClauseRead = false;
     private boolean xmlPrologRead = false;
     private int xmlPrologRemaining = -1;
@@ -317,7 +321,7 @@ public final class TemplatePreprocessingReader extends Reader {
              * Processing it specifically before any other thing ensures the synthetic
              * root element will never be inserted before it.
              */
-            if (!this.docTypeClauseRead && !this.xmlPrologRead) {
+            if (!this.docTypeClauseRead && !this.xmlPrologRead && !this.inParserLevelComment) {
 
                 if (this.xmlPrologRemaining >= 0) {
                     // We have still some bytes remaining from the XML PROLOG, and we 
@@ -366,7 +370,7 @@ public final class TemplatePreprocessingReader extends Reader {
             /*
              * Process DOCTYPE (if needed)
              */
-            if (!this.docTypeClauseRead) {
+            if (!this.docTypeClauseRead && !this.inParserLevelComment) {
                 
                 final int matchedDocType =
                         match(DOCTYPE, 0, DOCTYPE.length, this.buffer, buffi, bufferSize);
@@ -440,7 +444,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
             // Completely ignored if inside comment
             final int matchedStartOfPrototypeOnlyComment =
-                    (this.inComment?
+                    (this.inComment || this.inParserLevelComment?
                             -2 : match(PROTOTYPE_ONLY_COMMENT_START, 0, PROTOTYPE_ONLY_COMMENT_START.length, this.buffer, buffi, bufferSize));
 
             if (matchedStartOfPrototypeOnlyComment > 0) {
@@ -455,14 +459,53 @@ public final class TemplatePreprocessingReader extends Reader {
 
             // Completely ignored if inside comment, in contrast with "normal" comment end
             final int matchedEndOfPrototypeOnlyComment =
-                    (this.inComment?
+                    (this.inComment || this.inParserLevelComment?
                             -2 : match(PROTOTYPE_ONLY_COMMENT_END, 0, PROTOTYPE_ONLY_COMMENT_END.length, this.buffer, buffi, bufferSize));
 
             if (matchedEndOfPrototypeOnlyComment > 0) {
 
                 // no changes to "cbufi", as nothing is copied into result
                 // no changes to "totalRead", as nothing is copied into result
-                buffi += matchedEndOfPrototypeOnlyComment; // We just skip all characters in comment start
+                buffi += matchedEndOfPrototypeOnlyComment; // We just skip all characters in comment end
+                continue;
+
+            }
+
+
+
+            /*
+             * ------------------
+             * CHECK FOR PARSER-LEVEL COMMENT BLOCKS
+             * ------------------
+             */
+
+            // Completely ignored if inside comment
+            final int matchedStartOfParserLevelComment =
+                    (this.inComment || this.inParserLevelComment?
+                            -2 : match(PARSER_LEVEL_COMMENT_START, 0, PARSER_LEVEL_COMMENT_START.length, this.buffer, buffi, bufferSize));
+
+            if (matchedStartOfParserLevelComment > 0) {
+
+                // no changes to "cbufi", as nothing is copied into result
+                // no changes to "totalRead", as nothing is copied into result
+                buffi += matchedStartOfParserLevelComment; // We skip all characters in comment start
+                this.inParserLevelComment = true;
+                continue;
+
+            }
+
+
+            // Completely ignored if inside comment, in contrast with "normal" comment end
+            final int matchedEndOfParserLevelComment =
+                    (this.inParserLevelComment ?
+                            match(PARSER_LEVEL_COMMENT_END, 0, PARSER_LEVEL_COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
+
+            if (matchedEndOfParserLevelComment > 0) {
+
+                // no changes to "cbufi", as nothing is copied into result
+                // no changes to "totalRead", as nothing is copied into result
+                buffi += matchedEndOfParserLevelComment; // We skip all characters in comment end
+                this.inParserLevelComment = false;
                 continue;
 
             }
@@ -476,7 +519,7 @@ public final class TemplatePreprocessingReader extends Reader {
              */
 
             final int matchedStartOfComment =
-                    (this.inComment?
+                    (this.inComment || this.inParserLevelComment?
                             -2 : match(COMMENT_START, 0, COMMENT_START.length, this.buffer, buffi, bufferSize));
 
             if (matchedStartOfComment > 0) {
@@ -495,7 +538,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
             
             final int matchedEndOfComment = 
-                    (this.inComment? 
+                    (this.inComment?
                             match(COMMENT_END, 0, COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
             
             if (matchedEndOfComment > 0) {
@@ -521,7 +564,7 @@ public final class TemplatePreprocessingReader extends Reader {
              */
 
             final int matchedEntity = 
-                (this.inComment? 
+                (this.inComment || this.inParserLevelComment?
                         -2 : match(ENTITY, 0, ENTITY.length, this.buffer, buffi, bufferSize));
             
             if (matchedEntity > 0) {
@@ -545,7 +588,7 @@ public final class TemplatePreprocessingReader extends Reader {
              * ------------------
              */
 
-            if (!Character.isWhitespace(this.buffer[buffi]) && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment) {
+            if (!Character.isWhitespace(this.buffer[buffi]) && this.addSyntheticRootElement && !this.syntheticRootElementOpeningProcessed && !this.inComment && !this.inParserLevelComment) {
                 // This block will be reached if we did not have to process a
                 // DOCTYPE clause (because the DOCTYPE would have
                 // matched the previous block). And will not be affected by any whitespaces
@@ -564,10 +607,22 @@ public final class TemplatePreprocessingReader extends Reader {
                 continue;
                 
             }
-            
-            cbuf[cbufi++] = this.buffer[buffi++];
-            totalRead++;
-            
+
+
+            /*
+             * ------------------
+             * NOTHING ELSE TO CHECK, JUST COPY OUTPUT (if not in parser-level comment)
+             * ------------------
+             */
+
+            if (!this.inParserLevelComment) {
+                cbuf[cbufi++] = this.buffer[buffi++];
+                totalRead++;
+            } else {
+                buffi++;
+            }
+
+
         }
 
         
