@@ -1,0 +1,16 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+  var a = /*[['Hello']]*/ 'One message!';
+  var b = /*[[234]]*/ 'One message!';
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+# JavaScript inlining DOES NOT apply conversion service, so we should expect
+# results to be output exclusively through the JavaScript escaping utils.
+<script>
+  var a = 'Hello';
+  var b = 234;
+</script>
+
