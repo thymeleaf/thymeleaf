@@ -3,6 +3,7 @@
 - Added support for URLs without query string like @{''(p1)}.
 - Fixed nekoHTML introducing too many HTML wrapper tags around markup fragments in LEGACYHTML5 mode.
 - Fixed bad replacing of inlined javascript variables in text containing '//'.
+- Fixed potential issues parsing UTF-8 templates including BOM (Byte Order Mark) symbols.
 
 
 2.0.18
