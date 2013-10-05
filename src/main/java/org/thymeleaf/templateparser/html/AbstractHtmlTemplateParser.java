@@ -221,11 +221,16 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
                 config.setFeature("http://xml.org/sax/features/namespaces", false);
                 config.setFeature("http://cyberneko.org/html/features/override-doctype", true);
                 config.setFeature("http://cyberneko.org/html/features/scanner/cdata-sections", true);
-                
+
+                // Avoids the inclusion of <HTML><BODY>, etc. around template fragments. Tag balancing will only
+                // be performed inside the fragments' root nodes.
+                config.setFeature("http://cyberneko.org/html/features/balance-tags/document-fragment", true);
+
                 config.setProperty("http://cyberneko.org/html/properties/doctype/pubid", ""); 
                 config.setProperty("http://cyberneko.org/html/properties/doctype/sysid", ""); 
                 config.setProperty("http://cyberneko.org/html/properties/names/elems", "match");
-                
+                config.setProperty("http://cyberneko.org/html/properties/names/attrs", "no-change");
+
                 return new org.apache.xerces.parsers.DOMParser(config);
                 
             } catch(final Exception e) {
