@@ -280,6 +280,7 @@
         <thymeleaf-extras-conditionalcomments.version>2.0.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+        <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
     </profile>
 
@@ -334,6 +335,7 @@
         <thymeleaf-extras-conditionalcomments.version>2.1.0-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+        <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
     </profile>
 
@@ -388,6 +390,7 @@
         <thymeleaf-extras-conditionalcomments.version>2.1.0-beta1</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+        <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
     </profile>
 
@@ -437,6 +440,13 @@
       <groupId>org.thymeleaf.extras</groupId>
       <artifactId>thymeleaf-extras-conditionalcomments</artifactId>
       <version>${thymeleaf-extras-conditionalcomments.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sourceforge.nekohtml</groupId>
+      <artifactId>nekohtml</artifactId>
+      <version>${nekohtml.version}</version>
       <scope>compile</scope>
     </dependency>
 
