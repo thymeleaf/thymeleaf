@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.conversion.dialect1;
+package org.thymeleaf.engine21.conversion.conversion1;
 
 import java.util.Map;
 

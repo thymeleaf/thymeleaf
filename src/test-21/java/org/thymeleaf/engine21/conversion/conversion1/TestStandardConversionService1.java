@@ -17,8 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.conversion.dialect1;
+package org.thymeleaf.engine21.conversion.conversion1;
 
+import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.standard.expression.AbstractStandardConversionService;
 
 
@@ -31,8 +33,8 @@ public class TestStandardConversionService1 extends AbstractStandardConversionSe
 
 
     @Override
-    protected String convertToString(Object object) {
-        return "[" + super.convertToString(object) + "]";
+    protected String convertToString(final Configuration configuration, final IProcessingContext processingContext, final Object object) {
+        return "[" + super.convertToString(configuration, processingContext, object) + "]";
     }
 
 }

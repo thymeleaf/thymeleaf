@@ -24,7 +24,7 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.engine21.conversion.dialect1.ConversionTestDialect1;
+import org.thymeleaf.engine21.conversion.conversion1.ConversionTestDialect1;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
