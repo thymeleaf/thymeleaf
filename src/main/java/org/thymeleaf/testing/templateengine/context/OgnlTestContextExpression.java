@@ -92,12 +92,12 @@ public final class OgnlTestContextExpression implements ITestContextExpression {
             objects = new HashMap<String, Object>(30);
 
             if (locale != null) {
-                objects.put(ExpressionEvaluatorObjects.CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(null, locale));
-                objects.put(ExpressionEvaluatorObjects.DATES_EVALUATION_VARIABLE_NAME, new Dates(null, locale));
+                objects.put(ExpressionEvaluatorObjects.CALENDARS_EVALUATION_VARIABLE_NAME, new Calendars(locale));
+                objects.put(ExpressionEvaluatorObjects.DATES_EVALUATION_VARIABLE_NAME, new Dates(locale));
                 objects.put(ExpressionEvaluatorObjects.NUMBERS_EVALUATION_VARIABLE_NAME, new Numbers(locale));
                 objects.put(ExpressionEvaluatorObjects.STRINGS_EVALUATION_VARIABLE_NAME, new Strings(locale));
             }
-            objects.put(ExpressionEvaluatorObjects.BOOLS_EVALUATION_VARIABLE_NAME, new Bools(null));
+            objects.put(ExpressionEvaluatorObjects.BOOLS_EVALUATION_VARIABLE_NAME, new Bools());
             objects.put(ExpressionEvaluatorObjects.OBJECTS_EVALUATION_VARIABLE_NAME, new Objects());
             objects.put(ExpressionEvaluatorObjects.ARRAYS_EVALUATION_VARIABLE_NAME, new Arrays());
             objects.put(ExpressionEvaluatorObjects.LISTS_EVALUATION_VARIABLE_NAME, new Lists());
