@@ -34,6 +34,7 @@ import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
+import org.thymeleaf.spring3.expression.SpringStandardConversionService;
 import org.thymeleaf.spring3.processor.attr.SpringErrorsAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputCheckboxFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputFileFieldAttrProcessor;
@@ -50,7 +51,6 @@ import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionProcessor;
@@ -469,7 +469,7 @@ public class SpringStandardDialect extends StandardDialect {
 
         final IStandardVariableExpressionEvaluator expressionEvaluator = SpelVariableExpressionEvaluator.INSTANCE;
         final IStandardExpressionParser parser = new StandardExpressionParser();
-        final IStandardConversionService conversionService = new StandardConversionService();
+        final IStandardConversionService conversionService = new SpringStandardConversionService();
 
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(5, 1.0f);
 
