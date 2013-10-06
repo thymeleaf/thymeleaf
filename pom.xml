@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>springmail</artifactId>
   <packaging>war</packaging>
-  <version>20130609</version>
+  <version>20131006</version>
   <name>Thymeleaf Examples - Spring mail</name>
   <description>Example of Thymeleaf and Spring mail integration</description>
 
