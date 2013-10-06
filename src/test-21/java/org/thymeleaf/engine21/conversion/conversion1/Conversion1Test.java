@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.conversion;
+package org.thymeleaf.engine21.conversion.conversion1;
 
 import java.util.Arrays;
 
@@ -47,7 +47,7 @@ public class Conversion1Test {
         final TestExecutor executor = new TestExecutor();
         executor.setDialects(Arrays.asList(new IDialect[]{new ConversionTestDialect1()}));
 
-        executor.execute("classpath:engine21/conversion/dialect1");
+        executor.execute("classpath:engine21/conversion/conversion1");
 
         Assert.assertTrue(executor.isAllOK());
 
