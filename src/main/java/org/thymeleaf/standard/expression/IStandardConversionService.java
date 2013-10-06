@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.standard.expression;
 
+import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
+
 /**
  * 
  * @author Daniel Fern&aacute;ndez
@@ -28,6 +31,7 @@ package org.thymeleaf.standard.expression;
  */
 public interface IStandardConversionService {
 
-    public <T> T convert(final Object object, final Class<T> targetClass);
+    public <T> T convert(final Configuration configuration, final IProcessingContext processingContext,
+                         final Object object, final Class<T> targetClass);
 
 }

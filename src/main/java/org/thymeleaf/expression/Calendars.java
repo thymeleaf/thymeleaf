@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DateUtils;
 import org.thymeleaf.util.Validate;
@@ -50,25 +49,14 @@ public final class Calendars {
 
 
 
-    private final Configuration configuration;
     private final Locale locale;
 
 
 
 
     public Calendars(final Locale locale) {
-        this(null, locale);
-    }
-
-    /**
-     *
-     * @since 2.1.0
-     */
-    public Calendars(final Configuration configuration, final Locale locale) {
         super();
         Validate.notNull(locale, "Locale cannot be null");
-        // Configuration can be null, because this object can be used without the standard dialects being used
-        this.configuration = configuration;
         this.locale = locale;
     }
 
@@ -79,7 +67,7 @@ public final class Calendars {
      * @since 1.1.2
      */
     public Calendar create(final Object year, final Object month, final Object day) {
-        return DateUtils.create(this.configuration, year, month, day, null, null, null, null, null, this.locale);
+        return DateUtils.create(year, month, day, null, null, null, null, null, this.locale);
     }
 
     
@@ -89,7 +77,7 @@ public final class Calendars {
      */
     public Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, null, null, null, this.locale);
+        return DateUtils.create(year, month, day, hour, minute, null, null, null, this.locale);
     }
 
     
@@ -99,7 +87,7 @@ public final class Calendars {
      */
     public Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, second, null, null, this.locale);
+        return DateUtils.create(year, month, day, hour, minute, second, null, null, this.locale);
     }
 
 
@@ -109,7 +97,7 @@ public final class Calendars {
      */
     public Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, second, millisecond, null, this.locale);
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, null, this.locale);
     }
 
 
@@ -118,7 +106,7 @@ public final class Calendars {
      * @since 2.1.0
      */
     public Calendar createForTimeZone(final Object year, final Object month, final Object day, final Object timeZone) {
-        return DateUtils.create(this.configuration, year, month, day, null, null, null, null, timeZone, this.locale);
+        return DateUtils.create(year, month, day, null, null, null, null, timeZone, this.locale);
     }
 
 
@@ -128,7 +116,7 @@ public final class Calendars {
      */
     public Calendar createForTimeZone(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object timeZone) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, null, null, timeZone, this.locale);
+        return DateUtils.create(year, month, day, hour, minute, null, null, timeZone, this.locale);
     }
 
 
@@ -138,7 +126,7 @@ public final class Calendars {
      */
     public Calendar createForTimeZone(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object timeZone) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, second, null, timeZone, this.locale);
+        return DateUtils.create(year, month, day, hour, minute, second, null, timeZone, this.locale);
     }
 
 
@@ -149,7 +137,7 @@ public final class Calendars {
     public Calendar createForTimeZone(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond,
             final Object timeZone) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, second, millisecond, timeZone, this.locale);
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, timeZone, this.locale);
     }
 
 

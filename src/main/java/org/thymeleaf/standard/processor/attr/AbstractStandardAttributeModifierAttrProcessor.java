@@ -89,7 +89,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             final Object rightValue = rightExpr.execute(configuration, arguments);
 
             final String newAttributeName =
-                    (leftValue == null? null : StandardConversionUtil.convert(configuration, leftValue, String.class));
+                    (leftValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, leftValue, String.class));
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
                 throw new TemplateProcessingException(
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");
@@ -100,7 +100,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
 
-                if (StandardConversionUtil.convert(configuration, rightValue, boolean.class)) {
+                if (StandardConversionUtil.convertIfNeeded(configuration, arguments, rightValue, boolean.class)) {
                     newAttributeValues.put(newAttributeName, newAttributeName);
                 } else {
                     newAttributeValues.put(newAttributeName, null);
@@ -110,7 +110,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 // Attribute is a "normal" attribute, not a fixed-value conditional one
 
                 final String newValue =
-                        StandardConversionUtil.convert(configuration, rightValue, String.class);
+                        StandardConversionUtil.convertIfNeeded(configuration, arguments, rightValue, String.class);
 
                 newAttributeValues.put(newAttributeName, (newValue == null ? "" : newValue));
                 

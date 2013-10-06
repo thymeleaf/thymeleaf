@@ -70,7 +70,7 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
         final Object result =
                 expression.execute(configuration, arguments, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
 
-        final String stringResult = StandardConversionUtil.convert(configuration, result, String.class);
+        final String stringResult = StandardConversionUtil.convertIfNeeded(configuration, arguments, result, String.class);
 
         return (stringResult == null? "" : stringResult);
         

@@ -23,6 +23,8 @@ package org.thymeleaf.standard.expression;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -42,57 +44,64 @@ public abstract class AbstractStandardConversionService implements IStandardConv
 
 
 
-    public final <T> T convert(final Object object, final Class<T> targetClass) {
+    public final <T> T convert(final Configuration configuration, final IProcessingContext processingContext,
+                               final Object object, final Class<T> targetClass) {
         Validate.notNull(targetClass, "Target class cannot be null");
         if (targetClass.equals(String.class)) {
-            return (T) convertToString(object);
+            return (T) convertToString(configuration, processingContext, object);
         }
         if (targetClass.equals(Boolean.class)) {
-            return (T) (Boolean) convertToBoolean(object);
+            return (T) (Boolean) convertToBoolean(configuration, processingContext, object);
         }
         if (targetClass.equals(boolean.class)) {
-            return (T) (Boolean) convertToBoolean(object);
+            return (T) (Boolean) convertToBoolean(configuration, processingContext, object);
         }
         if (targetClass.equals(Number.class) || targetClass.equals(BigDecimal.class)) {
-            return (T) convertToBigDecimal(object);
+            return (T) convertToBigDecimal(configuration, processingContext, object);
         }
         if (targetClass.equals(Iterable.class) || targetClass.equals(List.class)) {
-            return (T) convertToList(object);
+            return (T) convertToList(configuration, processingContext, object);
         }
         if (targetClass.equals(Object[].class)) {
-            return (T) convertToArray(object);
+            return (T) convertToArray(configuration, processingContext, object);
         }
-        return convertOther(object, targetClass);
+        return convertOther(configuration, processingContext, object, targetClass);
     }
 
 
 
-    protected String convertToString(final Object object) {
+    protected String convertToString(
+            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
         return StandardConversionServiceUtil.convertToString(object);
     }
 
 
-    protected boolean convertToBoolean(final Object object) {
+    protected boolean convertToBoolean(
+            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
         return StandardConversionServiceUtil.convertToBoolean(object);
     }
 
 
-    protected BigDecimal convertToBigDecimal(final Object object) {
+    protected BigDecimal convertToBigDecimal(
+            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
         return StandardConversionServiceUtil.convertToBigDecimal(object);
     }
 
 
-    protected List<?> convertToList(final Object object) {
+    protected List<?> convertToList(
+            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
         return StandardConversionServiceUtil.convertToList(object);
     }
 
 
-    protected Object[] convertToArray(final Object object) {
+    protected Object[] convertToArray(
+            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
         return StandardConversionServiceUtil.convertToArray(object);
     }
 
 
-    protected <T> T convertOther(final Object object, final Class<T> targetClass) {
+    protected <T> T convertOther(
+            final Configuration configuration, final IProcessingContext processingContext, final Object object, final Class<T> targetClass) {
         throw new IllegalArgumentException("No available conversion for target class \"" + targetClass.getName() + "\"");
     }
 

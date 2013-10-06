@@ -108,14 +108,16 @@ public final class AndExpression extends BinaryOperationExpression {
         final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
 
         // Short circuit
-        final boolean leftBooleanValue = StandardConversionUtil.convert(configuration, leftValue, Boolean.class);
+        final boolean leftBooleanValue =
+                StandardConversionUtil.convertIfNeeded(configuration, processingContext, leftValue, Boolean.class);
         if (!leftBooleanValue) {
             return Boolean.FALSE;
         }
 
         final Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
         
-        final boolean rightBooleanValue = StandardConversionUtil.convert(configuration, rightValue, Boolean.class);
+        final boolean rightBooleanValue =
+                StandardConversionUtil.convertIfNeeded(configuration, processingContext, rightValue, Boolean.class);
         return Boolean.valueOf(rightBooleanValue);
         
     }

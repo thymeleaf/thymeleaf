@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.DateUtils;
 import org.thymeleaf.util.Validate;
@@ -49,25 +48,14 @@ import org.thymeleaf.util.Validate;
 public final class Dates {
 
 
-    private final Configuration configuration;
     private final Locale locale;
 
 
 
 
     public Dates(final Locale locale) {
-        this(null, locale);
-    }
-
-    /**
-     *
-     * @since 2.1.0
-     */
-    public Dates(final Configuration configuration, final Locale locale) {
         super();
         Validate.notNull(locale, "Locale cannot be null");
-        // Configuration can be null, because this object can be used without the standard dialects being used
-        this.configuration = configuration;
         this.locale = locale;
     }
 
@@ -80,7 +68,7 @@ public final class Dates {
      * @since 1.1.2
      */
     public Date create(final Object year, final Object month, final Object day) {
-        return DateUtils.create(this.configuration, year, month, day, null, null, null, null, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, null, null, null, null, null, this.locale).getTime();
     }
 
     
@@ -90,7 +78,7 @@ public final class Dates {
      */
     public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, null, null, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, hour, minute, null, null, null, this.locale).getTime();
     }
 
     
@@ -100,7 +88,7 @@ public final class Dates {
      */
     public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, second, null, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, hour, minute, second, null, null, this.locale).getTime();
     }
 
 
@@ -110,7 +98,7 @@ public final class Dates {
      */
     public Date create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return DateUtils.create(this.configuration, year, month, day, hour, minute, second, millisecond, null, this.locale).getTime();
+        return DateUtils.create(year, month, day, hour, minute, second, millisecond, null, this.locale).getTime();
     }
 
 

@@ -67,7 +67,7 @@ public abstract class AbstractStandardTextChildModifierAttrProcessor
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object result = expression.execute(configuration, arguments);
 
-        final String stringResult = StandardConversionUtil.convert(configuration, result, String.class);
+        final String stringResult = StandardConversionUtil.convertIfNeeded(configuration, arguments, result, String.class);
 
         return (stringResult == null? "" : stringResult);
         

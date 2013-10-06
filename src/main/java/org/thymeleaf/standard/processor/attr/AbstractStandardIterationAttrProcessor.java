@@ -87,14 +87,14 @@ public abstract class AbstractStandardIterationAttrProcessor
         final Object iteratedValue = iterableExpr.execute(configuration, arguments);
 
         final String iterVarName =
-                (iterVarValue == null? null : StandardConversionUtil.convert(configuration, iterVarValue, String.class));
+                (iterVarValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, iterVarValue, String.class));
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {
             throw new TemplateProcessingException(
                     "Iteration variable name expression evaluated as null: \"" + iterVarExpr + "\"");
         }
 
         final String statusVarName =
-                (statusVarValue == null? null : StandardConversionUtil.convert(configuration, statusVarValue, String.class));
+                (statusVarValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, statusVarValue, String.class));
         if (statusVarExpr != null && StringUtils.isEmptyOrWhitespace(statusVarName)) {
             throw new TemplateProcessingException(
                     "Status variable name expression evaluated as null or empty: \"" + statusVarExpr + "\"");

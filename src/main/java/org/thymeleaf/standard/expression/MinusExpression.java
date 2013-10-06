@@ -138,7 +138,7 @@ public final class MinusExpression extends ComplexExpression {
             operandValue = "null";
         }
 
-        final BigDecimal operandNumberValue = StandardConversionUtil.convert(configuration, operandValue, BigDecimal.class);
+        final BigDecimal operandNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, operandValue, BigDecimal.class);
         if (operandNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return operandNumberValue.multiply(BigDecimal.valueOf(-1));

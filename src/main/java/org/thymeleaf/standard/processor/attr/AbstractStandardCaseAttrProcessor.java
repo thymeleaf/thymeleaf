@@ -102,7 +102,7 @@ public abstract class AbstractStandardCaseAttrProcessor
 
         final Object value = equalsExpression.execute(configuration, arguments);
 
-        final boolean visible = StandardConversionUtil.convert(configuration, value, boolean.class);
+        final boolean visible = StandardConversionUtil.convertIfNeeded(configuration, arguments, value, boolean.class);
         
         if (this.logger.isTraceEnabled()) {
             this.logger.trace("[THYMELEAF][{}][{}] Case expression \"{}\" in attribute \"{}\" has been evaluated as: \"{}\"",

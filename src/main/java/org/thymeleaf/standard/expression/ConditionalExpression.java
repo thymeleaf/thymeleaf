@@ -199,7 +199,7 @@ public final class ConditionalExpression extends ComplexExpression {
         }
 
         final Object condObj = expression.getConditionExpression().execute(configuration, processingContext, expContext);
-        final boolean cond = StandardConversionUtil.convert(configuration, condObj, Boolean.class);
+        final boolean cond = StandardConversionUtil.convertIfNeeded(configuration, processingContext, condObj, Boolean.class);
         
         if (cond) {
             return expression.getThenExpression().execute(configuration, processingContext, expContext);

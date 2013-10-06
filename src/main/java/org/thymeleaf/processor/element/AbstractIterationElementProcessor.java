@@ -82,7 +82,7 @@ public abstract class AbstractIterationElementProcessor
         final Object iteratedObject = iterationSpec.getIteratedObject();
 
         final List<?> list =
-                StandardConversionUtil.convert(arguments.getConfiguration(), iteratedObject, List.class);
+                StandardConversionUtil.convertIfNeeded(arguments.getConfiguration(), arguments, iteratedObject, List.class);
 
         int size = list.size(); 
         int index = 0;

@@ -93,7 +93,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             final Object rightValue = rightExpr.execute(configuration, assignationExecutionArguments);
 
             final String newVariableName =
-                    (leftValue == null? null : StandardConversionUtil.convert(configuration, leftValue, String.class));
+                    (leftValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, leftValue, String.class));
             if (StringUtils.isEmptyOrWhitespace(newVariableName)) {
                 throw new TemplateProcessingException(
                         "Variable name expression evaluated as null or empty: \"" + leftExpr + "\"");

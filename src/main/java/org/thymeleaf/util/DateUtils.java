@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.thymeleaf.Configuration;
 import org.thymeleaf.standard.expression.StandardConversionServiceUtil;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
 
 
 /**
@@ -55,7 +53,7 @@ public final class DateUtils {
      * @since 1.1.2
      */
     public static Calendar create(final Object year, final Object month, final Object day) {
-        return create(null, year, month, day, null, null, null, null, null, null);
+        return create(year, month, day, null, null, null, null, null, null);
     }
 
     
@@ -65,7 +63,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
             final Object hour, final Object minute) {
-        return create(null, year, month, day, hour, minute, null, null, null, null);
+        return create(year, month, day, hour, minute, null, null, null, null);
     }
 
     
@@ -75,7 +73,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day, 
             final Object hour, final Object minute, final Object second) {
-        return create(null, year, month, day, hour, minute, second, null, null, null);
+        return create(year, month, day, hour, minute, second, null, null, null);
     }
 
 
@@ -85,7 +83,7 @@ public final class DateUtils {
      */
     public static Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond) {
-        return create(null, year, month, day, hour, minute, second, millisecond, null, null);
+        return create(year, month, day, hour, minute, second, millisecond, null, null);
     }
 
 
@@ -96,7 +94,7 @@ public final class DateUtils {
     public static Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond,
             final Object timeZone) {
-        return create(null, year, month, day, hour, minute, second, millisecond, timeZone, null);
+        return create(year, month, day, hour, minute, second, millisecond, timeZone, null);
     }
 
 
@@ -107,61 +105,28 @@ public final class DateUtils {
     public static Calendar create(final Object year, final Object month, final Object day,
             final Object hour, final Object minute, final Object second, final Object millisecond,
             final Object timeZone, final Locale locale) {
-        return create(null, year, month, day, hour, minute, second, millisecond, timeZone, locale);
-    }
-
-    
-    /**
-     * 
-     * @since 2.1.0
-     */
-    public static Calendar create(final Configuration configuration,
-            final Object year, final Object month, final Object day,
-            final Object hour, final Object minute, final Object second, final Object millisecond,
-            final Object timeZone, final Locale locale) {
 
         final BigDecimal nYear =
                 (year == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, year, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(year)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(year));
         final BigDecimal nMonth =
                 (month == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, month, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(month)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(month));
         final BigDecimal nDay =
                 (day == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, day, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(day)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(day));
         final BigDecimal nHour =
                 (hour == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, hour, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(hour)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(hour));
         final BigDecimal nMinute =
                 (minute == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, minute, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(minute)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(minute));
         final BigDecimal nSecond =
                 (second == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, second, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(second)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(second));
         final BigDecimal nMillisecond =
                 (millisecond == null?
-                        null :
-                        (configuration != null?
-                                StandardConversionUtil.convert(configuration, millisecond, BigDecimal.class) :
-                                StandardConversionServiceUtil.convertToBigDecimal(millisecond)));
+                        null : StandardConversionServiceUtil.convertToBigDecimal(millisecond));
 
         final TimeZone tzTimeZone =
                 (timeZone != null?

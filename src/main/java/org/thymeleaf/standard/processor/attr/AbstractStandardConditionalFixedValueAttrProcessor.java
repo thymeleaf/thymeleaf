@@ -75,7 +75,7 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object value = expression.execute(configuration, arguments);
 
-        return StandardConversionUtil.convert(configuration, value, boolean.class);
+        return StandardConversionUtil.convertIfNeeded(configuration, arguments, value, boolean.class);
         
     }
 

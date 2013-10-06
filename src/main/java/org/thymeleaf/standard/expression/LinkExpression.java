@@ -236,7 +236,7 @@ public final class LinkExpression extends SimpleExpression {
         final IStandardExpression baseExpression = expression.getBase();
         Object base = baseExpression.execute(configuration, processingContext, expContext);
 
-        base = StandardConversionUtil.convert(configuration, base, String.class);
+        base = StandardConversionUtil.convertIfNeeded(configuration, processingContext, base, String.class);
         if (base == null || StringUtils.isEmptyOrWhitespace((String) base)) {
             base = "";
         }
@@ -295,7 +295,7 @@ public final class LinkExpression extends SimpleExpression {
                     parametersBuilder.append("&");
                 }
 
-                String parameterValue = StandardConversionUtil.convert(configuration, parameterObjectValue, String.class);
+                String parameterValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, parameterObjectValue, String.class);
                 if (parameterValue == null || StringUtils.isEmptyOrWhitespace(parameterValue)) {
                     parameterValue = "";
                 }
@@ -408,7 +408,7 @@ public final class LinkExpression extends SimpleExpression {
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
             final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext, expContext);
-            final String parameterName = StandardConversionUtil.convert(configuration, parameterNameValue, String.class);
+            final String parameterName = StandardConversionUtil.convertIfNeeded(configuration, processingContext, parameterNameValue, String.class);
 
             if (StringUtils.isEmptyOrWhitespace(parameterName)) {
                 throw new TemplateProcessingException(

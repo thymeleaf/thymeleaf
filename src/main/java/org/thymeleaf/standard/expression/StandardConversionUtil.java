@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Configuration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -60,8 +61,9 @@ public final class StandardConversionUtil {
 
 
 
-    public static <T> T convert(
-            final Configuration configuration, final Object object, final Class<T> targetClass) {
+    public static <T> T convertIfNeeded(
+            final Configuration configuration, final IProcessingContext processingContext,
+            final Object object, final Class<T> targetClass) {
 
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(targetClass, "Target class cannot be null");
@@ -79,7 +81,7 @@ public final class StandardConversionUtil {
         }
 
         final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-        return conversionService.convert(object, targetClass);
+        return conversionService.convert(configuration, processingContext, object, targetClass);
 
     }
 

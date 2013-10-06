@@ -24,9 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.Configuration;
 import org.thymeleaf.standard.expression.StandardConversionServiceUtil;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.util.Validate;
 
 
@@ -47,31 +45,16 @@ import org.thymeleaf.util.Validate;
 public final class Bools {
     
 
-    private final Configuration configuration;
-
 
 
     public Bools() {
-        this(null);
-    }
-
-    /**
-     *
-     * @since 2.1.0
-     */
-    public Bools(final Configuration configuration) {
         super();
-        // Can be null, because this object can be used without the standard dialects being used
-        this.configuration = configuration;
     }
 
 
 
     public Boolean isTrue(final Object target) {
-        if (this.configuration == null) {
-            return Boolean.valueOf(StandardConversionServiceUtil.convertToBoolean(target));
-        }
-        return Boolean.valueOf(StandardConversionUtil.convert(this.configuration, target, Boolean.class));
+        return Boolean.valueOf(StandardConversionServiceUtil.convertToBoolean(target));
     }
 
 
@@ -106,10 +89,7 @@ public final class Bools {
     
     
     public Boolean isFalse(final Object target) {
-        if (this.configuration == null) {
-            return Boolean.valueOf(!StandardConversionServiceUtil.convertToBoolean(target));
-        }
-        return Boolean.valueOf(!StandardConversionUtil.convert(this.configuration, target, Boolean.class));
+        return Boolean.valueOf(!StandardConversionServiceUtil.convertToBoolean(target));
     }
     
     public Boolean[] arrayIsFalse(final Object[] target) {

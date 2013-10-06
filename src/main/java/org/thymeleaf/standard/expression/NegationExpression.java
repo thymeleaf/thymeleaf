@@ -140,7 +140,8 @@ public final class NegationExpression extends ComplexExpression {
         
         Object operandValue = expression.getOperand().execute(configuration, processingContext, expContext);
 
-        final boolean operandBooleanValue = StandardConversionUtil.convert(configuration, operandValue, Boolean.class);
+        final boolean operandBooleanValue =
+                StandardConversionUtil.convertIfNeeded(configuration, processingContext, operandValue, Boolean.class);
         
         return Boolean.valueOf(!operandBooleanValue);
         

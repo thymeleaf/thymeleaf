@@ -102,16 +102,16 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, rightValue, BigDecimal.class);
         if (leftNumberValue != null && rightNumberValue != null) {
             // Addition will act as a mathematical 'plus'
             return leftNumberValue.add(rightNumberValue);
         }
         
         return new LiteralValue(
-                StandardConversionUtil.convert(configuration, LiteralValue.unwrap(leftValue), String.class) +
-                StandardConversionUtil.convert(configuration, LiteralValue.unwrap(rightValue), String.class));
+                StandardConversionUtil.convertIfNeeded(configuration, processingContext, LiteralValue.unwrap(leftValue), String.class) +
+                StandardConversionUtil.convertIfNeeded(configuration, processingContext, LiteralValue.unwrap(rightValue), String.class));
         
     }
 

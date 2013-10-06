@@ -66,7 +66,7 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object result = expression.execute(configuration, arguments);
 
-        final String newValue = StandardConversionUtil.convert(configuration, result, String.class);
+        final String newValue = StandardConversionUtil.convertIfNeeded(configuration, arguments, result, String.class);
 
         return (newValue == null? "" : newValue);
         

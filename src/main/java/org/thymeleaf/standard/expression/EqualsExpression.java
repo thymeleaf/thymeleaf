@@ -76,8 +76,8 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
         
         Boolean result = null;
 
-        final BigDecimal leftNumberValue = StandardConversionUtil.convert(configuration, leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = StandardConversionUtil.convert(configuration, rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, leftValue, BigDecimal.class);
+        final BigDecimal rightNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, rightValue, BigDecimal.class);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == 0);

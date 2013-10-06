@@ -75,7 +75,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
         final Object valueForAttributes = expression.execute(configuration, arguments);
-        final String strValueForAttributes = StandardConversionUtil.convert(configuration, valueForAttributes, String.class);
+        final String strValueForAttributes = StandardConversionUtil.convertIfNeeded(configuration, arguments, valueForAttributes, String.class);
         
         final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {
