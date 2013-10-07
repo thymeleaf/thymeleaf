@@ -20,7 +20,6 @@
 package org.thymeleaf.spring3.expression;
 
 
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.TypeConverter;
@@ -52,16 +51,37 @@ public final class SpringStandardConversionService extends AbstractStandardConve
     @Override
     protected String convertToString(final Configuration configuration, final IProcessingContext processingContext, final Object object) {
 
-        final TypeConverter typeConverter = getSpringConversionService(processingContext);
-        if (typeConverter == null) {
-            return super.convertToString(configuration, processingContext, object);
+        if (object == null) {
+            return null;
         }
         final TypeDescriptor objectTypeDescriptor = TypeDescriptor.forObject(object);
-        if (!typeConverter.canConvert(objectTypeDescriptor, TYPE_STRING)) {
+        final TypeConverter typeConverter = getSpringConversionService(processingContext);
+        if (typeConverter == null || !typeConverter.canConvert(objectTypeDescriptor, TYPE_STRING)) {
             return super.convertToString(configuration, processingContext, object);
         }
         return (String) typeConverter.convertValue(object, objectTypeDescriptor, TYPE_STRING);
+
     }
+
+
+    @Override
+    protected <T> T convertOther(final Configuration configuration, final IProcessingContext processingContext, final Object object, final Class<T> targetClass) {
+
+        if (object == null) {
+            return null;
+        }
+        final TypeDescriptor objectTypeDescriptor = TypeDescriptor.forObject(object);
+        final TypeDescriptor targetTypeDescriptor = TypeDescriptor.valueOf(targetClass);
+        final TypeConverter typeConverter = getSpringConversionService(processingContext);
+        if (typeConverter == null || !typeConverter.canConvert(objectTypeDescriptor, targetTypeDescriptor)) {
+            return super.convertOther(configuration, processingContext, object, targetClass);
+        }
+        return (T) typeConverter.convertValue(object, objectTypeDescriptor, targetTypeDescriptor);
+
+    }
+
+
+
 
 
 
