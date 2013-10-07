@@ -28,7 +28,15 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.standard.expression.AbstractStandardConversionService;
 
 /**
- * 
+ * <p>
+ *   Implementation of {@link org.thymeleaf.standard.expression.IStandardConversionService} that delegates
+ *   to Spring's type conversion system.
+ * </p>
+ * <p>
+ *   If there is a {@link org.springframework.core.convert.ConversionService} available at the application
+ *   context, it will be used for conversion.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 2.1.0
