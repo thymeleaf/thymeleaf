@@ -17,21 +17,23 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.conversion.conversion1;
+package org.thymeleaf.engine21.conversion.conversion2;
 
 import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
-public class Conversion1Test {
+public class Conversion2Test {
 
 
 
-    public Conversion1Test() {
+    public Conversion2Test() {
         super();
     }
 
@@ -43,10 +45,14 @@ public class Conversion1Test {
     @Test
     public void testConversion1() throws Exception {
 
-        final TestExecutor executor = new TestExecutor();
-        executor.setDialects(Arrays.asList(new IDialect[]{new ConversionTestDialect1()}));
+        final SpringWebProcessingContextBuilder contextBuilder = new SpringWebProcessingContextBuilder();
+        contextBuilder.setApplicationContextConfigLocation("classpath:engine21/conversion/conversion2/applicationContext.xml");
 
-        executor.execute("classpath:engine21/conversion/conversion1");
+        final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(contextBuilder);
+        executor.setDialects(Arrays.asList(new IDialect[]{new SpringStandardDialect()}));
+
+        executor.execute("classpath:engine21/conversion/conversion2");
 
         Assert.assertTrue(executor.isAllOK());
 
