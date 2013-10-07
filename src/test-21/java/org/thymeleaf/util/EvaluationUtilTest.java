@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.expression;
+package org.thymeleaf.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -32,63 +32,64 @@ import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.thymeleaf.standard.expression.LiteralValue;
 
 
-public final class StandardConversionServiceUtilTest {
+public final class EvaluationUtilTest {
 
 
 
     @Test
     public void convertToBooleanTest() {
 
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(null));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(null));
 
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Boolean.TRUE));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(Boolean.FALSE));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Boolean.TRUE));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(Boolean.FALSE));
 
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(BigDecimal.ZERO));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(BigDecimal.ONE));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(BigDecimal.TEN));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(BigDecimal.ZERO));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(BigDecimal.ONE));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(BigDecimal.TEN));
 
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(BigInteger.ZERO));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(BigInteger.ONE));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(BigInteger.TEN));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(BigInteger.ZERO));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(BigInteger.ONE));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(BigInteger.TEN));
 
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(Double.valueOf(0.0d)));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(Float.valueOf(0.0f)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Double.valueOf(0.1d)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Float.valueOf(0.1f)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Double.valueOf(-0.1d)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Float.valueOf(-0.1f)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Double.valueOf(Double.MAX_VALUE)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Float.valueOf(Float.MAX_VALUE)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Double.valueOf(Double.MIN_VALUE)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Float.valueOf(Float.MIN_VALUE)));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(Double.valueOf(0.0d)));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(Float.valueOf(0.0f)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Double.valueOf(0.1d)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Float.valueOf(0.1f)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Double.valueOf(-0.1d)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Float.valueOf(-0.1f)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Double.valueOf(Double.MAX_VALUE)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Float.valueOf(Float.MAX_VALUE)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Double.valueOf(Double.MIN_VALUE)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Float.valueOf(Float.MIN_VALUE)));
 
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(Character.valueOf((char) 0)));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Character.valueOf('x')));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Character.valueOf('0')));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(Character.valueOf('1')));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(Character.valueOf((char) 0)));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Character.valueOf('x')));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Character.valueOf('0')));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(Character.valueOf('1')));
 
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean("true"));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean("false"));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean("yes"));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean("no"));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean("on"));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean("off"));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean("sky"));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean("high above"));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean("true"));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean("false"));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean("yes"));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean("no"));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean("on"));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean("off"));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean("sky"));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean("high above"));
 
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("true")));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("false")));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("yes")));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("no")));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("on")));
-        Assert.assertFalse(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("off")));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("sky")));
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(new LiteralValue("high above")));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(new LiteralValue("true")));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(new LiteralValue("false")));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(new LiteralValue("yes")));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(new LiteralValue("no")));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(new LiteralValue("on")));
+        Assert.assertFalse(EvaluationUtil.evaluateAsBoolean(new LiteralValue("off")));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(new LiteralValue("sky")));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(new LiteralValue("high above")));
 
-        Assert.assertTrue(StandardConversionServiceUtil.convertToBoolean(StandardConversionServiceUtil.class));
+        Assert.assertTrue(EvaluationUtil.evaluateAsBoolean(EvaluationUtil.class));
 
     }
 
@@ -97,141 +98,141 @@ public final class StandardConversionServiceUtilTest {
     @Test
     public void convertToNumberTest() {
 
-        Assert.assertEquals(null, StandardConversionServiceUtil.convertToBigDecimal(null));
+        Assert.assertEquals(null, EvaluationUtil.evaluateAsNumber(null));
 
         Assert.assertEquals(
                 BigDecimal.valueOf(23.0f),
-                StandardConversionServiceUtil.convertToBigDecimal(BigDecimal.valueOf(23.0f)));
+                EvaluationUtil.evaluateAsNumber(BigDecimal.valueOf(23.0f)));
         Assert.assertEquals(
                 BigDecimal.valueOf(23.89754f),
-                StandardConversionServiceUtil.convertToBigDecimal(BigDecimal.valueOf(23.89754f)));
+                EvaluationUtil.evaluateAsNumber(BigDecimal.valueOf(23.89754f)));
         Assert.assertEquals(
                 BigDecimal.valueOf(23.89754d),
-                StandardConversionServiceUtil.convertToBigDecimal(BigDecimal.valueOf(23.89754d)));
+                EvaluationUtil.evaluateAsNumber(BigDecimal.valueOf(23.89754d)));
         Assert.assertEquals(
                 BigDecimal.ZERO,
-                StandardConversionServiceUtil.convertToBigDecimal(BigDecimal.valueOf(0)));
+                EvaluationUtil.evaluateAsNumber(BigDecimal.valueOf(0)));
         Assert.assertEquals(
                 BigDecimal.valueOf(0.0d),
-                StandardConversionServiceUtil.convertToBigDecimal(BigDecimal.valueOf(0.0d)));
+                EvaluationUtil.evaluateAsNumber(BigDecimal.valueOf(0.0d)));
         Assert.assertNotEquals(
                 BigDecimal.valueOf(23.1f),
-                StandardConversionServiceUtil.convertToBigDecimal(BigDecimal.valueOf(23.0f)));
+                EvaluationUtil.evaluateAsNumber(BigDecimal.valueOf(23.0f)));
 
         Assert.assertEquals(
                 BigDecimal.valueOf(23),
-                StandardConversionServiceUtil.convertToBigDecimal(BigInteger.valueOf(23)));
+                EvaluationUtil.evaluateAsNumber(BigInteger.valueOf(23)));
         Assert.assertEquals(
                 BigDecimal.valueOf(0),
-                StandardConversionServiceUtil.convertToBigDecimal(BigInteger.valueOf(0)));
+                EvaluationUtil.evaluateAsNumber(BigInteger.valueOf(0)));
         Assert.assertEquals(
                 BigDecimal.valueOf(-2323232),
-                StandardConversionServiceUtil.convertToBigDecimal(BigInteger.valueOf(-2323232)));
+                EvaluationUtil.evaluateAsNumber(BigInteger.valueOf(-2323232)));
 
         Assert.assertEquals(
                 BigDecimal.valueOf(-232),
-                StandardConversionServiceUtil.convertToBigDecimal(Short.valueOf("-232")));
+                EvaluationUtil.evaluateAsNumber(Short.valueOf("-232")));
         Assert.assertEquals(
                 BigDecimal.valueOf(232),
-                StandardConversionServiceUtil.convertToBigDecimal(Short.valueOf("232")));
+                EvaluationUtil.evaluateAsNumber(Short.valueOf("232")));
         Assert.assertEquals(
                 BigDecimal.valueOf(0),
-                StandardConversionServiceUtil.convertToBigDecimal(Short.valueOf("0")));
+                EvaluationUtil.evaluateAsNumber(Short.valueOf("0")));
 
         Assert.assertEquals(
                 BigDecimal.valueOf(-232232),
-                StandardConversionServiceUtil.convertToBigDecimal(Integer.valueOf("-232232")));
+                EvaluationUtil.evaluateAsNumber(Integer.valueOf("-232232")));
         Assert.assertEquals(
                 BigDecimal.valueOf(232232),
-                StandardConversionServiceUtil.convertToBigDecimal(Integer.valueOf("232232")));
+                EvaluationUtil.evaluateAsNumber(Integer.valueOf("232232")));
         Assert.assertEquals(
                 BigDecimal.valueOf(0),
-                StandardConversionServiceUtil.convertToBigDecimal(Integer.valueOf("0")));
+                EvaluationUtil.evaluateAsNumber(Integer.valueOf("0")));
 
         Assert.assertEquals(
                 BigDecimal.valueOf(-23223212121L),
-                StandardConversionServiceUtil.convertToBigDecimal(Long.valueOf("-23223212121")));
+                EvaluationUtil.evaluateAsNumber(Long.valueOf("-23223212121")));
         Assert.assertEquals(
                 BigDecimal.valueOf(23223212121L),
-                StandardConversionServiceUtil.convertToBigDecimal(Long.valueOf("23223212121")));
+                EvaluationUtil.evaluateAsNumber(Long.valueOf("23223212121")));
         Assert.assertEquals(
                 BigDecimal.valueOf(0),
-                StandardConversionServiceUtil.convertToBigDecimal(Long.valueOf("0")));
+                EvaluationUtil.evaluateAsNumber(Long.valueOf("0")));
 
         Assert.assertTrue(
                 BigDecimal.valueOf(23.0f).compareTo(
-                    StandardConversionServiceUtil.convertToBigDecimal(Float.valueOf(23.0f))) == 0);
+                    EvaluationUtil.evaluateAsNumber(Float.valueOf(23.0f))) == 0);
         {
             BigDecimal num = BigDecimal.valueOf(23.89754f);
             num = num.setScale(5, RoundingMode.HALF_UP);
-            BigDecimal result = StandardConversionServiceUtil.convertToBigDecimal(Float.valueOf(23.89754f));
+            BigDecimal result = EvaluationUtil.evaluateAsNumber(Float.valueOf(23.89754f));
             result = result.setScale(5, RoundingMode.HALF_UP);
             Assert.assertTrue(num.compareTo(result) == 0);
         }
         Assert.assertTrue(
                 BigDecimal.ZERO.compareTo(
-                    StandardConversionServiceUtil.convertToBigDecimal(Float.valueOf(0))) == 0);
+                    EvaluationUtil.evaluateAsNumber(Float.valueOf(0))) == 0);
         Assert.assertTrue(
                 BigDecimal.valueOf(0.0d).compareTo(
-                    StandardConversionServiceUtil.convertToBigDecimal(Float.valueOf(0.0f))) == 0);
+                    EvaluationUtil.evaluateAsNumber(Float.valueOf(0.0f))) == 0);
         {
             BigDecimal num = BigDecimal.valueOf(23.1f);
             num = num.setScale(1, RoundingMode.HALF_UP);
-            BigDecimal result = StandardConversionServiceUtil.convertToBigDecimal(Float.valueOf(23.0f));
+            BigDecimal result = EvaluationUtil.evaluateAsNumber(Float.valueOf(23.0f));
             result = result.setScale(1, RoundingMode.HALF_UP);
             Assert.assertTrue(num.compareTo(result) != 0);
         }
 
         Assert.assertTrue(
                 BigDecimal.valueOf(23.0d).compareTo(
-                        StandardConversionServiceUtil.convertToBigDecimal(Double.valueOf(23.0d))) == 0);
+                        EvaluationUtil.evaluateAsNumber(Double.valueOf(23.0d))) == 0);
         {
             BigDecimal num = BigDecimal.valueOf(23.89754d);
             num = num.setScale(5, RoundingMode.HALF_UP);
-            BigDecimal result = StandardConversionServiceUtil.convertToBigDecimal(Double.valueOf(23.89754d));
+            BigDecimal result = EvaluationUtil.evaluateAsNumber(Double.valueOf(23.89754d));
             result = result.setScale(5, RoundingMode.HALF_UP);
             Assert.assertTrue(num.compareTo(result) == 0);
         }
         Assert.assertTrue(
                 BigDecimal.ZERO.compareTo(
-                        StandardConversionServiceUtil.convertToBigDecimal(Double.valueOf(0))) == 0);
+                        EvaluationUtil.evaluateAsNumber(Double.valueOf(0))) == 0);
         Assert.assertTrue(
                 BigDecimal.valueOf(0.0d).compareTo(
-                        StandardConversionServiceUtil.convertToBigDecimal(Double.valueOf(0.0d))) == 0);
+                        EvaluationUtil.evaluateAsNumber(Double.valueOf(0.0d))) == 0);
         {
             BigDecimal num = BigDecimal.valueOf(23.1d);
             num = num.setScale(1, RoundingMode.HALF_UP);
-            BigDecimal result = StandardConversionServiceUtil.convertToBigDecimal(Double.valueOf(23.0d));
+            BigDecimal result = EvaluationUtil.evaluateAsNumber(Double.valueOf(23.0d));
             result = result.setScale(1, RoundingMode.HALF_UP);
             Assert.assertTrue(num.compareTo(result) != 0);
         }
 
         Assert.assertTrue(
                 BigDecimal.valueOf(23.0d).compareTo(
-                        StandardConversionServiceUtil.convertToBigDecimal("23.0")) == 0);
+                        EvaluationUtil.evaluateAsNumber("23.0")) == 0);
         {
             BigDecimal num = BigDecimal.valueOf(23.89754d);
             num = num.setScale(5, RoundingMode.HALF_UP);
-            BigDecimal result = StandardConversionServiceUtil.convertToBigDecimal("23.89754");
+            BigDecimal result = EvaluationUtil.evaluateAsNumber("23.89754");
             result = result.setScale(5, RoundingMode.HALF_UP);
             Assert.assertTrue(num.compareTo(result) == 0);
         }
         Assert.assertTrue(
                 BigDecimal.ZERO.compareTo(
-                        StandardConversionServiceUtil.convertToBigDecimal("0")) == 0);
+                        EvaluationUtil.evaluateAsNumber("0")) == 0);
         Assert.assertTrue(
                 BigDecimal.valueOf(0.0d).compareTo(
-                        StandardConversionServiceUtil.convertToBigDecimal("0.0")) == 0);
+                        EvaluationUtil.evaluateAsNumber("0.0")) == 0);
         {
             BigDecimal num = BigDecimal.valueOf(23.1d);
             num = num.setScale(1, RoundingMode.HALF_UP);
-            BigDecimal result = StandardConversionServiceUtil.convertToBigDecimal("23.0");
+            BigDecimal result = EvaluationUtil.evaluateAsNumber("23.0");
             result = result.setScale(1, RoundingMode.HALF_UP);
             Assert.assertTrue(num.compareTo(result) != 0);
         }
 
-        Assert.assertNull(StandardConversionServiceUtil.convertToBigDecimal("something"));
-        Assert.assertNull(StandardConversionServiceUtil.convertToBigDecimal(StandardConversionServiceUtil.class));
+        Assert.assertNull(EvaluationUtil.evaluateAsNumber("something"));
+        Assert.assertNull(EvaluationUtil.evaluateAsNumber(EvaluationUtil.class));
 
     }
 
@@ -243,7 +244,7 @@ public final class StandardConversionServiceUtilTest {
     public void convertToListTest() {
 
         {
-            final List<Object> result = StandardConversionServiceUtil.convertToList(null);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(null);
             Assert.assertTrue(result != null && result.size() == 0);
         }
 
@@ -255,7 +256,7 @@ public final class StandardConversionServiceUtilTest {
             list.add(Integer.valueOf(2));
             list.add(Integer.valueOf(43));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(set);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(set);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
@@ -264,17 +265,17 @@ public final class StandardConversionServiceUtilTest {
             map.put("a", Integer.valueOf(2));
             map.put("b", Integer.valueOf(43));
             final List<Object> list = new ArrayList<Object>();
-            list.add(new StandardConversionServiceUtil.MapEntry<Object,Object>("a", Integer.valueOf(2)));
-            list.add(new StandardConversionServiceUtil.MapEntry<Object,Object>("b", Integer.valueOf(43)));
+            list.add(new EvaluationUtil.MapEntry<Object,Object>("a", Integer.valueOf(2)));
+            list.add(new EvaluationUtil.MapEntry<Object,Object>("b", Integer.valueOf(43)));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(map);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(map);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final byte[] arr0 = new byte[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -285,14 +286,14 @@ public final class StandardConversionServiceUtilTest {
             list.add(Byte.valueOf((byte)23));
             list.add(Byte.valueOf((byte)-127));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final short[] arr0 = new short[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -303,14 +304,14 @@ public final class StandardConversionServiceUtilTest {
             list.add(Short.valueOf((short)23));
             list.add(Short.valueOf((short)-127));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final int[] arr0 = new int[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -321,14 +322,14 @@ public final class StandardConversionServiceUtilTest {
             list.add(Integer.valueOf(23));
             list.add(Integer.valueOf(-127));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final long[] arr0 = new long[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -339,14 +340,14 @@ public final class StandardConversionServiceUtilTest {
             list.add(Long.valueOf(23L));
             list.add(Long.valueOf(-127L));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final float[] arr0 = new float[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -357,7 +358,7 @@ public final class StandardConversionServiceUtilTest {
             list.add(Float.valueOf(23.0f));
             list.add(Float.valueOf(-127.1f));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && result.size() == list.size());
             for (int i = 0; i < result.size(); i++) {
                 Assert.assertTrue(result.get(i) != null && result.get(i) instanceof Float &&
@@ -368,7 +369,7 @@ public final class StandardConversionServiceUtilTest {
         {
             final double[] arr0 = new double[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -379,7 +380,7 @@ public final class StandardConversionServiceUtilTest {
             list.add(Double.valueOf(23.0d));
             list.add(Double.valueOf(-127.1d));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && result.size() == list.size());
             for (int i = 0; i < result.size(); i++) {
                 Assert.assertTrue(result.get(i) != null && result.get(i) instanceof Double &&
@@ -390,7 +391,7 @@ public final class StandardConversionServiceUtilTest {
         {
             final boolean[] arr0 = new boolean[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -401,14 +402,14 @@ public final class StandardConversionServiceUtilTest {
             list.add(Boolean.TRUE);
             list.add(Boolean.FALSE);
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final char[] arr0 = new char[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
@@ -421,33 +422,33 @@ public final class StandardConversionServiceUtilTest {
             list.add(Character.valueOf('x'));
             list.add(Character.valueOf((char)0));
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final Class<?>[] arr0 = new Class<?>[0];
             final List<Object> list0 = new ArrayList<Object>();
-            final List<Object> result0 = StandardConversionServiceUtil.convertToList(arr0);
+            final List<Object> result0 = EvaluationUtil.evaluateAsIterable(arr0);
             Assert.assertTrue(result0 != null && result0 instanceof List && list0.equals(result0));
 
 
             final Class<?>[] arr = new Class<?>[2];
-            arr[0] = StandardConversionServiceUtil.class;
-            arr[1] = StandardConversionServiceUtilTest.class;
+            arr[0] = EvaluationUtil.class;
+            arr[1] = EvaluationUtilTest.class;
             final List<Object> list = new ArrayList<Object>();
-            list.add(StandardConversionServiceUtil.class);
-            list.add(StandardConversionServiceUtilTest.class);
+            list.add(EvaluationUtil.class);
+            list.add(EvaluationUtilTest.class);
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(arr);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(arr);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
         {
             final List<Object> list = new ArrayList<Object>();
-            list.add(StandardConversionServiceUtil.class);
+            list.add(EvaluationUtil.class);
 
-            final List<Object> result = StandardConversionServiceUtil.convertToList(StandardConversionServiceUtil.class);
+            final List<Object> result = EvaluationUtil.evaluateAsIterable(EvaluationUtil.class);
             Assert.assertTrue(result != null && result instanceof List && list.equals(result));
         }
 
@@ -463,7 +464,7 @@ public final class StandardConversionServiceUtilTest {
     public void convertToArrayTest() {
 
         {
-            final Object[] result = StandardConversionServiceUtil.convertToArray(null);
+            final Object[] result = EvaluationUtil.evaluateAsArray(null);
             Assert.assertTrue(result != null && result.length == 1 && result[0] == null);
         }
 
@@ -475,7 +476,7 @@ public final class StandardConversionServiceUtilTest {
             array[0] = Integer.valueOf(2);
             array[1] = Integer.valueOf(43);
 
-            final Object[] result = StandardConversionServiceUtil.convertToArray(set);
+            final Object[] result = EvaluationUtil.evaluateAsArray(set);
             Assert.assertTrue(result != null && ArrayUtils.isEquals(array, result));
         }
 
@@ -484,10 +485,10 @@ public final class StandardConversionServiceUtilTest {
             map.put("a", Integer.valueOf(2));
             map.put("b", Integer.valueOf(43));
             final Object[] array = new Object[2];
-            array[0] = new StandardConversionServiceUtil.MapEntry<Object,Object>("a", Integer.valueOf(2));
-            array[1] = new StandardConversionServiceUtil.MapEntry<Object,Object>("b", Integer.valueOf(43));
+            array[0] = new EvaluationUtil.MapEntry<Object,Object>("a", Integer.valueOf(2));
+            array[1] = new EvaluationUtil.MapEntry<Object,Object>("b", Integer.valueOf(43));
 
-            final Object[] result = StandardConversionServiceUtil.convertToArray(map);
+            final Object[] result = EvaluationUtil.evaluateAsArray(map);
             Assert.assertTrue(result != null && ArrayUtils.isEquals(array, result));
         }
 
@@ -496,17 +497,17 @@ public final class StandardConversionServiceUtilTest {
             map.put("a", Integer.valueOf(2));
             map.put("b", Integer.valueOf(43));
             final Object[] array = new Object[2];
-            array[0] = new StandardConversionServiceUtil.MapEntry<Object,Object>("a", Integer.valueOf(2));
-            array[1] = new StandardConversionServiceUtil.MapEntry<Object,Object>("b", Integer.valueOf(43));
+            array[0] = new EvaluationUtil.MapEntry<Object,Object>("a", Integer.valueOf(2));
+            array[1] = new EvaluationUtil.MapEntry<Object,Object>("b", Integer.valueOf(43));
 
-            final Object[] result = StandardConversionServiceUtil.convertToArray(map);
+            final Object[] result = EvaluationUtil.evaluateAsArray(map);
             Assert.assertTrue(result != null && ArrayUtils.isEquals(array, result));
         }
 
         {
             final Boolean[] arr0 = new Boolean[0];
             final Boolean[] array0 = new Boolean[0];
-            final Object[] result0 = StandardConversionServiceUtil.convertToArray(arr0);
+            final Object[] result0 = EvaluationUtil.evaluateAsArray(arr0);
             Assert.assertTrue(result0 != null && ArrayUtils.isEquals(array0, result0));
 
 
@@ -517,16 +518,16 @@ public final class StandardConversionServiceUtilTest {
             array[0] = Boolean.TRUE;
             array[1] = Boolean.FALSE;
 
-            final Object[] result = StandardConversionServiceUtil.convertToArray(arr);
+            final Object[] result = EvaluationUtil.evaluateAsArray(arr);
             Assert.assertTrue(result != null && ArrayUtils.isEquals(array, result));
         }
 
         {
             final Object[] arr = new Object[1];
-            arr[0] = StandardConversionServiceUtil.class;
+            arr[0] = EvaluationUtil.class;
 
-            final Object[] result = StandardConversionServiceUtil.convertToArray(StandardConversionServiceUtil.class);
-            Assert.assertTrue(result != null && result.length == 1 && result[0] == StandardConversionServiceUtil.class);
+            final Object[] result = EvaluationUtil.evaluateAsArray(EvaluationUtil.class);
+            Assert.assertTrue(result != null && result.length == 1 && result[0] == EvaluationUtil.class);
         }
 
     }
