@@ -23,6 +23,15 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 
 /**
+ * <p>
+ *   Common interface for all objects in charge of parsing Thymeleaf Standard Expressions.
+ * </p>
+ * <p>
+ *   Default implementation (used by most parts of the Thymeleaf core): {@link StandardExpressionParser}.
+ * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
  *
@@ -31,6 +40,16 @@ import org.thymeleaf.context.IProcessingContext;
  */
 public interface IStandardExpressionParser {
 
+    /**
+     * <p>
+     *   Parse the specified expression.
+     * </p>
+     *
+     * @param configuration the Configuration object for the template execution environment.
+     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param input the expression to be parsed, as an input String.
+     * @return the expression object resulting from parsing the expression.
+     */
     public IStandardExpression parseExpression(
             final Configuration configuration, final IProcessingContext processingContext, final String input);
 

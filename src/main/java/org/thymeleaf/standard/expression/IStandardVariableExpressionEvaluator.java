@@ -23,14 +23,39 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 
 /**
- * 
+ * <p>
+ *   Common interface for all objects in charge of executing <i>variable expressions</i> (<tt>${...}</tt>) inside
+ *   Thymeleaf Standard Expressions.
+ * </p>
+ * <p>
+ *   The basic implementation of this interface evaluates expressions using OGNL
+ *   {@link OgnlVariableExpressionEvaluator}, but a SpringEL version also exists in the Thymeleaf + Spring
+ *   integration package.
+ * </p>
+ * <p>
+ *   Implementations of this interface should be <strong>thread-safe</strong>.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 2.0.9
  *
  */
 public interface IStandardVariableExpressionEvaluator {
-    
+
+    /**
+     * <p>
+     *   Evaluate the variable expression.
+     * </p>
+     *
+     * @param configuration the Configuration object for the template execution environment.
+     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param expression the expression to be evaluated (as a String).
+     * @param expContext the expression execution context to be applied (preprocessing, etc.)
+     * @param useSelectionAsRoot specify whether this is a <i>variable expression</i> (<tt>${...}</tt>, false) or a
+     *                           <i>selection variable expression</i> (<tt>*{...}</tt>, true).
+     * @return the result of evaluating the expression.
+     */
     public Object evaluate(
             final Configuration configuration, final IProcessingContext processingContext, 
             final String expression, final StandardExpressionExecutionContext expContext, 

@@ -24,7 +24,11 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
 /**
- * 
+ * <p>
+ *   Utility class for the easy obtention of objects relevant to the parsing and execution of Thymeleaf
+ *   Standard Expressions.
+ * </p>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 2.1.0
@@ -33,9 +37,24 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 public final class StandardExpressions {
 
 
+    /**
+     * Name used for registering the <i>Standard Variable Expression Evaluator</i> object as an
+     * <i>execution attribute</i> at the Standard Dialects.
+     */
     public static final String STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME = "StandardVariableExpressionEvaluator";
+
+    /**
+     * Name used for registering the <i>Standard Expression Parser</i> object as an
+     * <i>execution attribute</i> at the Standard Dialects.
+     */
     public static final String STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME = "StandardExpressionParser";
+
+    /**
+     * Name used for registering the <i>Standard Conversion Service</i> object as an
+     * <i>execution attribute</i> at the Standard Dialects.
+     */
     public static final String STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME = "StandardConversionService";
+
 
 
 
@@ -44,7 +63,15 @@ public final class StandardExpressions {
     }
 
 
-    
+    /**
+     * <p>
+     *   Obtain the expression parser (implementation of {@link IStandardExpressionParser}) registered by
+     *   the Standard Dialect that is being currently used.
+     * </p>
+     *
+     * @param configuration the configuration object for the current template execution environment.
+     * @return the parser object.
+     */
     public static IStandardExpressionParser getExpressionParser(final Configuration configuration) {
         final Object parser =
                 configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
@@ -62,6 +89,19 @@ public final class StandardExpressions {
 
 
 
+    /**
+     * <p>
+     *   Obtain the variable expression evaluator (implementation of {@link IStandardVariableExpressionEvaluator})
+     *   registered by the Standard Dialect that is being currently used.
+     * </p>
+     * <p>
+     *   Normally, there should be no need to obtain this object from the developers' code (only internally from
+     *   {@link IStandardExpression} implementations).
+     * </p>
+     *
+     * @param configuration the configuration object for the current template execution environment.
+     * @return the variable expression evaluator object.
+     */
     public static IStandardVariableExpressionEvaluator getVariableExpressionEvaluator(final Configuration configuration) {
         final Object expressionEvaluator =
                 configuration.getExecutionAttributes().get(STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME);
@@ -81,6 +121,15 @@ public final class StandardExpressions {
 
 
 
+    /**
+     * <p>
+     *   Obtain the conversion service (implementation of {@link IStandardConversionService}) registered by
+     *   the Standard Dialect that is being currently used.
+     * </p>
+     *
+     * @param configuration the configuration object for the current template execution environment.
+     * @return the conversion service object.
+     */
     public static IStandardConversionService getConversionService(final Configuration configuration) {
         final Object conversionService =
                 configuration.getExecutionAttributes().get(STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME);
