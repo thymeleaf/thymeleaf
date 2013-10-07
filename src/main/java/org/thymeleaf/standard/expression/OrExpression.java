@@ -27,6 +27,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.EvaluationUtil;
 
 
 /**
@@ -108,14 +109,14 @@ public final class OrExpression extends BinaryOperationExpression {
         final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
 
         // Short circuit
-        final boolean leftBooleanValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, leftValue, Boolean.class);
+        final boolean leftBooleanValue = EvaluationUtil.evaluateAsBoolean(leftValue);
         if (leftBooleanValue) {
             return Boolean.TRUE;
         }
 
         final Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
 
-        final boolean rightBooleanValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, rightValue, Boolean.class);
+        final boolean rightBooleanValue = EvaluationUtil.evaluateAsBoolean(rightValue);
         return Boolean.valueOf(rightBooleanValue);
         
     }

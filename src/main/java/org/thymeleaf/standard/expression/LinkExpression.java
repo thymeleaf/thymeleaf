@@ -232,11 +232,13 @@ public final class LinkExpression extends SimpleExpression {
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-        
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         final IStandardExpression baseExpression = expression.getBase();
         Object base = baseExpression.execute(configuration, processingContext, expContext);
 
-        base = StandardConversionUtil.convertIfNeeded(configuration, processingContext, base, String.class);
+        base = conversionService.convert(configuration, processingContext, base, String.class);
         if (base == null || StringUtils.isEmptyOrWhitespace((String) base)) {
             base = "";
         }
@@ -295,7 +297,7 @@ public final class LinkExpression extends SimpleExpression {
                     parametersBuilder.append("&");
                 }
 
-                String parameterValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, parameterObjectValue, String.class);
+                String parameterValue = conversionService.convert(configuration, processingContext, parameterObjectValue, String.class);
                 if (parameterValue == null || StringUtils.isEmptyOrWhitespace(parameterValue)) {
                     parameterValue = "";
                 }
@@ -400,6 +402,8 @@ public final class LinkExpression extends SimpleExpression {
 
         final AssignationSequence assignationValues = expression.getParameters();
 
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
             
@@ -408,7 +412,7 @@ public final class LinkExpression extends SimpleExpression {
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
             final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext, expContext);
-            final String parameterName = StandardConversionUtil.convertIfNeeded(configuration, processingContext, parameterNameValue, String.class);
+            final String parameterName = conversionService.convert(configuration, processingContext, parameterNameValue, String.class);
 
             if (StringUtils.isEmptyOrWhitespace(parameterName)) {
                 throw new TemplateProcessingException(

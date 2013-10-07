@@ -33,9 +33,11 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ArrayUtils;
+import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.TemplateModeUtils;
 
@@ -69,6 +71,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final AssignationSequence assignations =
                 AssignationUtils.parseAssignationSequence(
@@ -89,7 +92,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             final Object rightValue = rightExpr.execute(configuration, arguments);
 
             final String newAttributeName =
-                    (leftValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, leftValue, String.class));
+                    (leftValue == null? null : conversionService.convert(configuration, arguments, leftValue, String.class));
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
                 throw new TemplateProcessingException(
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");
@@ -100,7 +103,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 // Attribute is a fixed-value conditional one, like "selected", which can only
                 // appear as selected="selected" or not appear at all.
 
-                if (StandardConversionUtil.convertIfNeeded(configuration, arguments, rightValue, boolean.class)) {
+                if (EvaluationUtil.evaluateAsBoolean(rightValue)) {
                     newAttributeValues.put(newAttributeName, newAttributeName);
                 } else {
                     newAttributeValues.put(newAttributeName, null);
@@ -110,7 +113,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
                 // Attribute is a "normal" attribute, not a fixed-value conditional one
 
                 final String newValue =
-                        StandardConversionUtil.convertIfNeeded(configuration, arguments, rightValue, String.class);
+                        conversionService.convert(configuration, arguments, rightValue, String.class);
 
                 newAttributeValues.put(newAttributeName, (newValue == null ? "" : newValue));
                 

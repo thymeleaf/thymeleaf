@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.thymeleaf.standard.expression.StandardConversionServiceUtil;
-
 
 /**
  * 
@@ -108,25 +106,25 @@ public final class DateUtils {
 
         final BigDecimal nYear =
                 (year == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(year));
+                        null : EvaluationUtil.evaluateAsNumber(year));
         final BigDecimal nMonth =
                 (month == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(month));
+                        null : EvaluationUtil.evaluateAsNumber(month));
         final BigDecimal nDay =
                 (day == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(day));
+                        null : EvaluationUtil.evaluateAsNumber(day));
         final BigDecimal nHour =
                 (hour == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(hour));
+                        null : EvaluationUtil.evaluateAsNumber(hour));
         final BigDecimal nMinute =
                 (minute == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(minute));
+                        null : EvaluationUtil.evaluateAsNumber(minute));
         final BigDecimal nSecond =
                 (second == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(second));
+                        null : EvaluationUtil.evaluateAsNumber(second));
         final BigDecimal nMillisecond =
                 (millisecond == null?
-                        null : StandardConversionServiceUtil.convertToBigDecimal(millisecond));
+                        null : EvaluationUtil.evaluateAsNumber(millisecond));
 
         final TimeZone tzTimeZone =
                 (timeZone != null?

@@ -28,7 +28,7 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-
+import org.thymeleaf.util.EvaluationUtil;
 
 
 /**
@@ -83,8 +83,8 @@ public final class DivisionExpression extends MultiplicationDivisionRemainderExp
             rightValue = "null";
         }
 
-        final BigDecimal leftNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = EvaluationUtil.evaluateAsNumber(leftValue);
+        final BigDecimal rightNumberValue = EvaluationUtil.evaluateAsNumber(rightValue);
         if (leftNumberValue != null && rightNumberValue != null) {
             try {
                 return leftNumberValue.divide(rightNumberValue);

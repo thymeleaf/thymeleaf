@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
-
+import org.thymeleaf.util.EvaluationUtil;
 
 
 /**
@@ -76,8 +76,8 @@ public final class EqualsExpression extends EqualsNotEqualsExpression {
         
         Boolean result = null;
 
-        final BigDecimal leftNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, leftValue, BigDecimal.class);
-        final BigDecimal rightNumberValue = StandardConversionUtil.convertIfNeeded(configuration, processingContext, rightValue, BigDecimal.class);
+        final BigDecimal leftNumberValue = EvaluationUtil.evaluateAsNumber(leftValue);
+        final BigDecimal rightNumberValue = EvaluationUtil.evaluateAsNumber(rightValue);
         
         if (leftNumberValue != null && rightNumberValue != null) {
             result = Boolean.valueOf(leftNumberValue.compareTo(rightNumberValue) == 0);

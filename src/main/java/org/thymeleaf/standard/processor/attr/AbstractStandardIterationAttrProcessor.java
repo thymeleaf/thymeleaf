@@ -27,8 +27,9 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractIterationAttrProcessor;
 import org.thymeleaf.standard.expression.Each;
 import org.thymeleaf.standard.expression.EachUtils;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -69,6 +70,7 @@ public abstract class AbstractStandardIterationAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final Each each = EachUtils.parseEach(configuration, arguments, attributeValue);
 
@@ -87,14 +89,14 @@ public abstract class AbstractStandardIterationAttrProcessor
         final Object iteratedValue = iterableExpr.execute(configuration, arguments);
 
         final String iterVarName =
-                (iterVarValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, iterVarValue, String.class));
+                (iterVarValue == null? null : conversionService.convert(configuration, arguments, iterVarValue, String.class));
         if (StringUtils.isEmptyOrWhitespace(iterVarName)) {
             throw new TemplateProcessingException(
                     "Iteration variable name expression evaluated as null: \"" + iterVarExpr + "\"");
         }
 
         final String statusVarName =
-                (statusVarValue == null? null : StandardConversionUtil.convertIfNeeded(configuration, arguments, statusVarValue, String.class));
+                (statusVarValue == null? null : conversionService.convert(configuration, arguments, statusVarValue, String.class));
         if (statusVarExpr != null && StringUtils.isEmptyOrWhitespace(statusVarName)) {
             throw new TemplateProcessingException(
                     "Status variable name expression evaluated as null or empty: \"" + statusVarExpr + "\"");

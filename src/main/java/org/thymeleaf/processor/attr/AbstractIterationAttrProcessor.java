@@ -28,7 +28,7 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
+import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -106,8 +106,7 @@ public abstract class AbstractIterationAttrProcessor
         final String statusVar = iterationSpec.getStatusVarName();
         final Object iteratedObject = iterationSpec.getIteratedObject();
 
-        final List<?> list =
-                StandardConversionUtil.convertIfNeeded(arguments.getConfiguration(), arguments, iteratedObject, List.class);
+        final List<?> list = EvaluationUtil.evaluateAsIterable(iteratedObject);
 
         int size = list.size(); 
         int index = 0;

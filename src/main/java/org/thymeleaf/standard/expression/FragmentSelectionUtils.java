@@ -72,7 +72,7 @@ public final class FragmentSelectionUtils {
 
             final String variableName =
                     (variableNameValue == null?
-                            null : StandardConversionUtil.convertIfNeeded(configuration, processingContext, variableNameValue, String.class));
+                            null : conversionService.convert(configuration, processingContext, variableNameValue, String.class));
 
             variableNames.add(variableName);
 

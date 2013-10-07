@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.standard.expression;
+package org.thymeleaf.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.thymeleaf.standard.expression.LiteralValue;
+
 /**
  * 
  * @author Daniel Fern&aacute;ndez
@@ -33,21 +35,12 @@ import java.util.Map;
  * @since 2.1.0
  *
  */
-public final class StandardConversionServiceUtil {
+public final class EvaluationUtil {
 
 
 
 
-    public static String convertToString(final Object target) {
-        if (target == null) {
-            return null;
-        }
-        return target.toString();
-    }
-
-
-
-    public static boolean convertToBoolean(final Object condition) {
+    public static boolean evaluateAsBoolean(final Object condition) {
 
         boolean result = true;
         if (condition == null) {
@@ -82,7 +75,7 @@ public final class StandardConversionServiceUtil {
 
 
 
-    public static BigDecimal convertToBigDecimal(final Object object) {
+    public static BigDecimal evaluateAsNumber(final Object object) {
 
         if (object == null) {
             return null;
@@ -120,7 +113,7 @@ public final class StandardConversionServiceUtil {
 
 
 
-    public static List<Object> convertToList(final Object value) {
+    public static List<Object> evaluateAsIterable(final Object value) {
         // Iterating on null should be the same as iterating an empty list
         // (for example, <c:forEach>)
         if (value == null) {
@@ -186,7 +179,7 @@ public final class StandardConversionServiceUtil {
 
 
 
-    public static Object[] convertToArray(final Object value) {
+    public static Object[] evaluateAsArray(final Object value) {
 
         final List<Object> result = new ArrayList<Object>();
         if (value == null) {
@@ -213,7 +206,7 @@ public final class StandardConversionServiceUtil {
 
 
 
-    private StandardConversionServiceUtil() {
+    private EvaluationUtil() {
         super();
     }
     

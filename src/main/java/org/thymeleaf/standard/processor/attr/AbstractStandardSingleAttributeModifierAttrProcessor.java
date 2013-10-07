@@ -24,9 +24,9 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractSingleAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -62,11 +62,12 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object result = expression.execute(configuration, arguments);
 
-        final String newValue = StandardConversionUtil.convertIfNeeded(configuration, arguments, result, String.class);
+        final String newValue = conversionService.convert(configuration, arguments, result, String.class);
 
         return (newValue == null? "" : newValue);
         

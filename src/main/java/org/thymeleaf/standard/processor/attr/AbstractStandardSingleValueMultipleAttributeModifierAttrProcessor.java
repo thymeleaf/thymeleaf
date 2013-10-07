@@ -28,9 +28,9 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -68,6 +68,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         
@@ -75,7 +76,7 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
         final Object valueForAttributes = expression.execute(configuration, arguments);
-        final String strValueForAttributes = StandardConversionUtil.convertIfNeeded(configuration, arguments, valueForAttributes, String.class);
+        final String strValueForAttributes = conversionService.convert(configuration, arguments, valueForAttributes, String.class);
         
         final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {

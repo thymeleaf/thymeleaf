@@ -30,7 +30,7 @@ import org.thymeleaf.processor.attr.AbstractAssertionAttrProcessor;
 import org.thymeleaf.standard.expression.ExpressionSequence;
 import org.thymeleaf.standard.expression.ExpressionSequenceUtils;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
+import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -73,7 +73,7 @@ public abstract class AbstractStandardAssertionAttrProcessor
 
         for (final IStandardExpression expression : expressions) {
             final Object expressionResult = expression.execute(arguments.getConfiguration(), arguments);
-            final boolean expressionBooleanResult = StandardConversionUtil.convertIfNeeded(configuration, arguments, expressionResult, boolean.class);
+            final boolean expressionBooleanResult = EvaluationUtil.evaluateAsBoolean(expressionResult);
             if (!expressionBooleanResult) {
                 throw new TemplateAssertionException(expression.getStringRepresentation(),
                         arguments.getTemplateName(), element.getLineNumber());

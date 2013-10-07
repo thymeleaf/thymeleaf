@@ -223,10 +223,12 @@ public final class MessageExpression extends SimpleExpression {
         }
         
         final Arguments arguments = (Arguments) processingContext;
-        
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         final IStandardExpression baseExpression = expression.getBase();
         Object messageKey = baseExpression.execute(configuration, arguments, expContext);
-        messageKey = StandardConversionUtil.convertIfNeeded(configuration, processingContext, messageKey, String.class);
+        messageKey = conversionService.convert(configuration, processingContext, messageKey, String.class);
         if (StringUtils.isEmptyOrWhitespace((String)messageKey)) {
             throw new TemplateProcessingException(
                     "Message key for message resolution must be a non-null and non-empty String");

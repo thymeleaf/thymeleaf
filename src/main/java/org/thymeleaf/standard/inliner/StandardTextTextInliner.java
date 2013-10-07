@@ -29,9 +29,9 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -85,6 +85,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
 
             final Configuration configuration = arguments.getConfiguration();
             final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+            final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
             final StringBuilder strBuilder = new StringBuilder();
             int curr = 0;
@@ -105,7 +106,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                             expressionParser.parseExpression(configuration, arguments, match);
                     final Object result = expression.execute(configuration, arguments);
 
-                    strBuilder.append(StandardConversionUtil.convertIfNeeded(configuration, arguments, result, String.class));
+                    strBuilder.append(conversionService.convert(configuration, arguments, result, String.class));
                     
                 } catch (final TemplateProcessingException ignored) {
                     

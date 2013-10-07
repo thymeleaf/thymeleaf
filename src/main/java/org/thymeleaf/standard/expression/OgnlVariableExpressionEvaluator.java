@@ -42,6 +42,7 @@ import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.util.ClassLoaderUtils;
+import org.thymeleaf.util.EvaluationUtil;
 
 /**
  * 
@@ -247,7 +248,7 @@ public class OgnlVariableExpressionEvaluator
     static boolean fixBooleanValue(final Object value) {
         // This specifies how evaluation to boolean should be done *INSIDE* OGNL expressions, so the conversion
         // service does not really apply at this point (it will be applied later, on the Standard -not OGNL- expr.)
-        return StandardConversionServiceUtil.convertToBoolean(value);
+        return EvaluationUtil.evaluateAsBoolean(value);
     }
     
     

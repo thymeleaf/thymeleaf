@@ -26,8 +26,8 @@ import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractConditionalFixedValueAttrProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardConversionUtil;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.thymeleaf.util.EvaluationUtil;
 
 /**
  * 
@@ -75,7 +75,7 @@ public abstract class AbstractStandardConditionalFixedValueAttrProcessor
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         final Object value = expression.execute(configuration, arguments);
 
-        return StandardConversionUtil.convertIfNeeded(configuration, arguments, value, boolean.class);
+        return EvaluationUtil.evaluateAsBoolean(value);
         
     }
 

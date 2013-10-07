@@ -20,9 +20,6 @@
 package org.thymeleaf.standard.expression;
 
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
@@ -44,59 +41,37 @@ public abstract class AbstractStandardConversionService implements IStandardConv
 
 
 
+
     public final <T> T convert(final Configuration configuration, final IProcessingContext processingContext,
                                final Object object, final Class<T> targetClass) {
+
         Validate.notNull(targetClass, "Target class cannot be null");
+
+        /*
+         * CONVERSIONS TO String (will be 99% of executions)
+         */
         if (targetClass.equals(String.class)) {
+            if (object == null || object instanceof String) {
+                return (T) object;
+            }
             return (T) convertToString(configuration, processingContext, object);
         }
-        if (targetClass.equals(Boolean.class)) {
-            return (T) (Boolean) convertToBoolean(configuration, processingContext, object);
-        }
-        if (targetClass.equals(boolean.class)) {
-            return (T) (Boolean) convertToBoolean(configuration, processingContext, object);
-        }
-        if (targetClass.equals(Number.class) || targetClass.equals(BigDecimal.class)) {
-            return (T) convertToBigDecimal(configuration, processingContext, object);
-        }
-        if (targetClass.equals(Iterable.class) || targetClass.equals(List.class)) {
-            return (T) convertToList(configuration, processingContext, object);
-        }
-        if (targetClass.equals(Object[].class)) {
-            return (T) convertToArray(configuration, processingContext, object);
-        }
+
+        /*
+         * OTHER CONVERSIONS
+         */
         return convertOther(configuration, processingContext, object, targetClass);
+
     }
 
 
 
     protected String convertToString(
             final Configuration configuration, final IProcessingContext processingContext, final Object object) {
-        return StandardConversionServiceUtil.convertToString(object);
-    }
-
-
-    protected boolean convertToBoolean(
-            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
-        return StandardConversionServiceUtil.convertToBoolean(object);
-    }
-
-
-    protected BigDecimal convertToBigDecimal(
-            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
-        return StandardConversionServiceUtil.convertToBigDecimal(object);
-    }
-
-
-    protected List<?> convertToList(
-            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
-        return StandardConversionServiceUtil.convertToList(object);
-    }
-
-
-    protected Object[] convertToArray(
-            final Configuration configuration, final IProcessingContext processingContext, final Object object) {
-        return StandardConversionServiceUtil.convertToArray(object);
+        if (object == null) {
+            return null;
+        }
+        return object.toString();
     }
 
 
@@ -104,6 +79,8 @@ public abstract class AbstractStandardConversionService implements IStandardConv
             final Configuration configuration, final IProcessingContext processingContext, final Object object, final Class<T> targetClass) {
         throw new IllegalArgumentException("No available conversion for target class \"" + targetClass.getName() + "\"");
     }
+
+
 
 
 }
