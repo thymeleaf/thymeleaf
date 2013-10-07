@@ -1,0 +1,16 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+application.a = 'Some text'
+application.b = 123
+application.c = 'Hello'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#httpSession.getServletContext().getAttribute('a')}">...</p>
+<p th:text="${#httpSession.getServletContext().getAttribute('b')}">...</p>
+<p th:text="${#httpSession.getServletContext().getAttribute('c')}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Some text</p>
+<p>123</p>
+<p>Hello</p>
