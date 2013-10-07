@@ -20,7 +20,7 @@
 package org.thymeleaf.util;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.IdentityHashMap;
 
 
 /**
@@ -32,7 +32,7 @@ import java.util.*;
  *   Objects of this class are <b>not thread-safe</b>.
  * </p>
  *
- * @author Daniel Fern&aacute;ndez
+ * @author Rustam Miftakhutdinov
  *
  * @since 2.0.0
  *
@@ -42,7 +42,7 @@ public final class IdentityCounter<T> implements Serializable {
 
     private static final long serialVersionUID = -6965348731301112911L;
 
-    private IdentityHashMap<T, Object> counted;
+    private final IdentityHashMap<T, Object> counted;
 
     public IdentityCounter(final int expectedMaxSize) {
         super();
@@ -50,11 +50,11 @@ public final class IdentityCounter<T> implements Serializable {
     }
 
     public void count(final T object) {
-        counted.put(object, null);
+        this.counted.put(object, null);
     }
 
     public boolean isAlreadyCounted(final T object) {
-        return counted.containsKey(object);
+        return this.counted.containsKey(object);
     }
 
 }
