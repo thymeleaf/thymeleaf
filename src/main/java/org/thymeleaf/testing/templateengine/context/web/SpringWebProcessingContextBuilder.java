@@ -85,39 +85,58 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
 
-        
-        final List<String> bindingVariableNames = 
-                getBindingVariableNames(test, request, response, servletContext, locale, variables);
-        for (final String bindingVariableName : bindingVariableNames) {
-                
-            final Object bindingObject = variables.get(bindingVariableName);
-            final WebDataBinder dataBinder = new WebDataBinder(bindingObject, bindingVariableName);
-            
-            initBinder(bindingVariableName, bindingObject, test, dataBinder, locale, variables);
-            initBindingResult(bindingVariableName, bindingObject, test, dataBinder.getBindingResult(), locale, variables);
-            
-            final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + bindingVariableName;
-            variables.put(bindingResultName, dataBinder.getBindingResult());
-            
-        }
-        
-        final WebApplicationContext appCtx = 
+
+        /*
+         * APPLICATION CONTEXT
+         */
+        final WebApplicationContext appCtx =
                 createApplicationContext(
                         test, request, response, servletContext, locale, variables);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, appCtx);
 
-        final RequestContext requestContext = 
+        /*
+         * CONVERSION SERVICE
+         */
+        final ConversionService conversionService = getConversionService(appCtx); // can be null!
+
+        /*
+         * REQUEST CONTEXT
+         */
+        final RequestContext requestContext =
                 new RequestContext(request, response, servletContext, variables);
         variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
 
-        final ConversionService conversionService = getConversionService(appCtx); // can be null!
-
+        /*
+         * EVALUATION CONTEXT
+         */
         final ThymeleafEvaluationContext evaluationContext =
                 new ThymeleafEvaluationContext(appCtx, conversionService);
 
         variables.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
 
+        /*
+         * FORM BINDINGS
+         */
+        final List<String> bindingVariableNames =
+                getBindingVariableNames(test, request, response, servletContext, locale, variables);
+        for (final String bindingVariableName : bindingVariableNames) {
+                
+            final Object bindingObject = variables.get(bindingVariableName);
+            final WebDataBinder dataBinder = new WebDataBinder(bindingObject, bindingVariableName);
+            dataBinder.setConversionService(conversionService);
 
+            initBinder(bindingVariableName, bindingObject, test, dataBinder, locale, variables);
+            initBindingResult(bindingVariableName, bindingObject, test, dataBinder.getBindingResult(), locale, variables);
+
+            final String bindingResultName = BindingResult.MODEL_KEY_PREFIX + bindingVariableName;
+            variables.put(bindingResultName, dataBinder.getBindingResult());
+            
+        }
+
+
+        /*
+         * FURTHER SCENARIO-SPECIFIC INITIALIZATIONS
+         */
         initSpring(appCtx, test, request, response, servletContext, locale, variables);
         
     }
