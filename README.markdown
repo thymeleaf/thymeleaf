@@ -2,6 +2,9 @@
 Thymeleaf Testing Library
 =========================
 
+* auto-gen TOC:
+{:toc}
+
 -------------------------------------------------------------
 
 Status
@@ -12,7 +15,7 @@ This is an auxiliary testing library, not directly a part of the Thymeleaf core 
 Current versions: 
 
   * **Version 2.0.5** - for Thymeleaf 2.0 (requires thymeleaf 2.0.16+)
-  * **Version 2.1.0-beta1** - for Thymeleaf 2.1 (requires 2.1.0-beta1)
+  * **Version 2.1.0-beta2** - for Thymeleaf 2.1 (requires 2.1.0-beta2)
 
 
 License
@@ -24,7 +27,7 @@ This software is licensed under the [Apache License 2.0](http://www.apache.org/l
 Requirements
 ------------
 
-  *   Thymeleaf **2.0.16+** (or **2.1.0-beta1**)
+  *   Thymeleaf **2.0.16+** (or **2.1.0-beta2**)
   *   Attoparser **1.2+**
 
 
