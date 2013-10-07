@@ -1,0 +1,33 @@
+%EXTENDS ../../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+
+<p th:text="${#dates} ? 'dates exists' : 'dates does not exist'">...</p>
+<p th:text="${#calendars} ? 'calendars exists' : 'calendars does not exist'">...</p>
+<p th:text="${#numbers} ? 'numbers exists' : 'numbers does not exist'">...</p>
+<p th:text="${#strings} ? 'strings exists' : 'strings does not exist'">...</p>
+<p th:text="${#objects} ? 'objects exists' : 'objects does not exist'">...</p>
+<p th:text="${#bools} ? 'bools exists' : 'bools does not exist'">...</p>
+<p th:text="${#arrays} ? 'arrays exists' : 'arrays does not exist'">...</p>
+<p th:text="${#lists} ? 'lists exists' : 'lists does not exist'">...</p>
+<p th:text="${#sets} ? 'sets exists' : 'sets does not exist'">...</p>
+<p th:text="${#maps} ? 'maps exists' : 'maps does not exist'">...</p>
+<p th:text="${#aggregates} ? 'aggregates exists' : 'aggregates does not exist'">...</p>
+<p th:text="${#messages} ? 'messages exists' : 'messages does not exist'">...</p>
+<p th:text="${#ids} ? 'ids exists' : 'ids does not exist'">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>dates exists</p>
+<p>calendars exists</p>
+<p>numbers exists</p>
+<p>strings exists</p>
+<p>objects exists</p>
+<p>bools exists</p>
+<p>arrays exists</p>
+<p>lists exists</p>
+<p>sets exists</p>
+<p>maps exists</p>
+<p>aggregates exists</p>
+<p>messages exists</p>
+<p>ids exists</p>
+

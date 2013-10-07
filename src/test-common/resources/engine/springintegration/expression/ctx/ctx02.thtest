@@ -1,0 +1,15 @@
+%EXTENDS ../../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+a = 'Letter A'
+b = 'Letter B'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#ctx.variables} ? 'ctx.variables exists' : 'ctx.variables does not exist'">...</p>
+<p th:text="${#ctx.variables.a}">...</p>
+<p th:text="${#ctx.variables.b}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>ctx.variables exists</p>
+<p>Letter A</p>
+<p>Letter B</p>

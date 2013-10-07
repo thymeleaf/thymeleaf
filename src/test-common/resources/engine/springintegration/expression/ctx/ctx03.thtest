@@ -1,0 +1,12 @@
+%EXTENDS ../../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+class = 'This is a class text'
+# ------------------------------------------------------------
+%INPUT
+<p th:text="${#ctx.variables.class}">...</p>
+<p th:text="${class}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>class org.thymeleaf.context.WebVariablesMap</p>
+<p>class org.thymeleaf.context.VariablesMap</p>
