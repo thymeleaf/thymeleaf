@@ -12,6 +12,11 @@
         <bean class="org.thymeleaf.engine21.conversion.conversion3.CalendarFormatter"/>
       </set>
     </property>
+    <property name="converters">
+      <set>
+        <bean class="org.thymeleaf.engine21.conversion.conversion3.NumberToStringConverter"/>
+      </set>
+    </property>
   </bean>
 
 

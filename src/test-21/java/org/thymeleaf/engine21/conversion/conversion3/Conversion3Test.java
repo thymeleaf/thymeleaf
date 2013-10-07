@@ -43,7 +43,7 @@ public class Conversion3Test {
 
 
     @Test
-    public void testConversion1() throws Exception {
+    public void testConversion() throws Exception {
 
         final SpringWebProcessingContextBuilder contextBuilder = new SpringWebProcessingContextBuilder();
         contextBuilder.setApplicationContextConfigLocation("classpath:engine21/conversion/conversion3/applicationContext.xml");

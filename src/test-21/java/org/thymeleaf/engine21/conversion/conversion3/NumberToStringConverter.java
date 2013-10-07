@@ -17,40 +17,28 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.conversion.conversion1;
+package org.thymeleaf.engine21.conversion.conversion3;
 
-import java.util.Arrays;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-
-
-public class Conversion1Test {
-
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.Formatter;
 
 
-    public Conversion1Test() {
+public class NumberToStringConverter implements Converter<Number,String> {
+
+
+    public NumberToStringConverter() {
         super();
     }
 
 
 
-
-
-
-    @Test
-    public void testConversion() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.setDialects(Arrays.asList(new IDialect[]{new ConversionTestDialect1()}));
-
-        executor.execute("classpath:engine21/conversion/conversion1");
-
-        Assert.assertTrue(executor.isAllOK());
-
+    public String convert(final Number source) {
+        return "[#" + source.toString() + "]";
     }
-
-
 }
