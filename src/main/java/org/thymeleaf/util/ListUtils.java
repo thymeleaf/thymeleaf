@@ -95,10 +95,13 @@ public final class ListUtils {
     
     
     /**
-     * Creates an new instance of the list add the sorted list to it. 
+     * <p>
+     *   Creates an new instance of the list add the sorted list to it.
+     * </p>
+     *
      * @param list the list which content should be ordered.
      * @return a new sorted list.
-     * @see Collections#sort(List).
+     * @see java.util.Collections#sort(List).
      */
     public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
         Validate.notNull(list, "Cannot execute list sort: list is null");
@@ -110,11 +113,14 @@ public final class ListUtils {
 
     
     /**
-     * Creates an new instance of the list add the sorted list to it. 
+     * <p>
+     *   Creates an new instance of the list add the sorted list to it.
+     * </p>
+     *
      * @param list the list which content should be ordered.
      * @param c the comparator.
      * @return a new sorted list.
-     * @see Collections#sort(List, Comparator).
+     * @see java.util.Collections#sort(List, Comparator).
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<T> sort(List<T> list, Comparator<? super T> c) {
