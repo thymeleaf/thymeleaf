@@ -70,44 +70,70 @@
       will not be recommended until a stable <strong>2.1.0</strong> version is released.
         <br />
         <br />
-      Current beta version is: <strong>2.1.0-beta1</strong>
+      Current beta version is: <strong>2.1.0-beta2</strong>
     </p>
 	<p>
       Thymeleaf 2.1 includes a lot of new powerful features. Here they are:
 	</p>
-	<ul>
-      <li>Fragment inclusion:
-        <ul>
-          <li><a href="#stf">Same-template fragments</a></li>
-          <li><a href="#fsig">Parameterizable fragment signatures</a></li>
-        </ul>
-      </li>
-      <li>Expression improvements:
-        <ul>
-          <li><a href="#doms">More powerful DOM selector syntax</a></li>
-          <li><a href="#lsub">Literal substitutions</a></li>
-          <li><a href="#bnlit">Boolean and null literals</a></li>
-          <li><a href="#pru">Protocol-relative URLs</a></li>
-        </ul>
-      </li>
-      <li>Markup processing improvements:
-        <ul>
-          <li><a href="#plcom">Parser-level comment blocks</a></li>
-          <li><a href="#pocb">Prototype-only comment blocks</a></li>
-        </ul>
-      </li>
-      <li>New Standard Dialect features:
-        <ul>
-          <li><a href="#bloc">Synthetic <kbd>th:block</kbd> tag</a></li>
-          <li><a href="#data">Support for HTML5-friendly attribute and element names</a></li>
-          <li><a href="#assr">New <kbd>th:assert</kbd> for in-template assertions</a></li>
-          <li><a href="#repl">New <kbd>th:replace</kbd> as a synonym of <kbd>th:substituteby</kbd></a></li>
-          <li><a href="#with">Reuse variables in <kbd>th:with</kbd></a></li>
-        </ul>
-      </li>
-	</ul>
+    <ul>
+        <li><a href="#core"><strong>New Features in Thymeleaf Core</strong></a>:
+            <ul>
+              <li>Fragment inclusion:
+                <ul>
+                  <li><a href="#stf">Same-template fragments</a></li>
+                  <li><a href="#fsig">Parameterizable fragment signatures</a></li>
+                </ul>
+              </li>
+              <li>Expression improvements:
+                <ul>
+                  <li><a href="#doms">More powerful DOM selector syntax</a></li>
+                  <li><a href="#lsub">Literal substitutions</a></li>
+                  <li><a href="#bnlit">Boolean and null literals</a></li>
+                  <li><a href="#pru">Protocol-relative URLs</a></li>
+                </ul>
+              </li>
+              <li>Markup processing improvements:
+                <ul>
+                  <li><a href="#plcom">Parser-level comment blocks</a></li>
+                  <li><a href="#pocb">Prototype-only comment blocks</a></li>
+                </ul>
+              </li>
+              <li>New Standard Dialect features:
+                <ul>
+                  <li><a href="#bloc">Synthetic <kbd>th:block</kbd> tag</a></li>
+                  <li><a href="#data">Support for HTML5-friendly attribute and element names</a></li>
+                  <li><a href="#assr">New <kbd>th:assert</kbd> for in-template assertions</a></li>
+                  <li><a href="#repl">New <kbd>th:replace</kbd> as a synonym of <kbd>th:substituteby</kbd></a></li>
+                  <li><a href="#with">Reuse variables in <kbd>th:with</kbd></a></li>
+                </ul>
+              </li>
+            </ul>
+        </li>
+        <li><a href="#spring"><strong>New Features in Spring Integration</strong></a>:
+            <ul>
+                <li>Better integration with Spring features:
+                    <ul>
+                        <li><a href="#spbean">More integrated acccess to beans from expressions</a></li>
+                        <li><a href="#spconv">Integration of Spring type conversion infrastructure</a></li>
+                        <li><a href="#spres">Spring-resource based template resolver</a></li>
+                    </ul>
+                </li>
+                <li>Ease of use:
+                    <ul>
+                        <li><a href="#spfrag">Render view fragments directly from controllers</a></li>
+                    </ul>
+                </li>
+                <li>Form error handling:
+                    <ul>
+                        <li><a href="#sperr">Additional form validation error reporting options</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
 
 
+       <h1><a name="core"></a>New Features in Thymeleaf Core</h1>
 
        <h2><a name="stf"></a>Same-template fragments</h2>
 
@@ -681,6 +707,281 @@
             <div th:with="company=${user.company + ' Co.'},account=${accounts[company]}">...</div>
         ]]></script>
 
+
+
+
+        <br /><br /><br />
+
+
+
+
+        <h1><a name="spring"></a>New Features in Spring Integration</h1>
+
+
+
+        <h2><a name="spbean"></a>More integrated acccess to beans from expressions</h2>
+
+        <p>
+            Thymeleaf now allows you to access beans registered in your Spring application context in the standard
+            way defined by Spring EL, which is using the syntax <kbd>@beanName</kbd>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:text="${@authService.getUserName()}">...</div>
+        ]]></script>
+
+        <p>
+            Until now, you could access beans with the thymeleaf-specific
+            syntax <kbd>beans.beanName</kbd>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:text="${beans.authService.getUserName()}">...</div>
+        ]]></script>
+
+        <p>
+            Note that this latter syntax is now considered deprecated in favour of the standard Spring EL
+            one (<kbd>@beanName</kbd>).
+        </p>
+
+
+
+        <h2><a name="spconv"></a>Integration of Spring type conversion infrastructure</h2>
+
+        <p>
+            Spring 3 introduced a type conversion system more general than <i>Property Editors</i>: the
+            <i>Spring Type Conversion System</i> (see
+            <a href="http://docs.spring.io/spring/docs/3.2.x/spring-framework-reference/html/validation.html#core-convert"
+            target="_blank">[docs.spring.io]</a>). This system is mainly based on <i>Converters</i>
+            (X-to-Y one-way conversion) and <i>Formatters</i> (X-to-String two-way conversion), easily implemented
+            by means of their corresponding interfaces, and registered at a <i>conversion service</i> in the
+            application context.
+        </p>
+        <p>
+            Thymeleaf now seamlessly integrates with your <i>conversion service</i>. So you can now have a formatter
+            like this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            public class CalendarFormatter implements Formatter<Calendar> {
+
+                private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd");
+
+                public CalendarFormatter() {
+                    super();
+                }
+
+                public Calendar parse(String text, Locale locale) throws ParseException {
+                    synchronized (SDF) {
+                        final Date date = SDF.parse(text);
+                        final Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(date.getTime());
+                        return cal;
+                    }
+                }
+
+                public String print(Calendar object, Locale locale) {
+                    synchronized (SDF) {
+                        return SDF.format(object.getTime());
+                    }
+                }
+
+            }
+        ]]></script>
+
+        <p>
+            Registered in your application context like this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <mvc:annotation-driven conversion-service="conversionService"/>
+
+            <bean id="conversionService"
+                  class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+                <property name="formatters">
+                    <set>
+                        <bean class="mycompany.myapp.CalendarFormatter"/>
+                    </set>
+                </property>
+            </bean>
+        ]]></script>
+
+        <p>
+            Thymeleaf will automatically use it whenever it has to output text (<kbd>th:text</kbd>,
+            <kbd>th:attr</kbd>, <kbd>th:value</kbd>, etc.), so that, given a <kbd>Calendar</kbd> variable in context
+            with name <kbd>onedate</kbd>, the following:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <p th:text="${onedate}">...</p>
+            <p th:text="|The date is ${onedate}|">...</p>
+        ]]></script>
+
+        <p>
+            Results in:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <p>1492-10-12</p>
+            <p>The date is 1492-10-12</p>
+        ]]></script>
+
+
+
+        <h2><a name="spres"></a>Spring-resource based template resolver</h2>
+
+        <p>
+            Thymeleaf now includes a new <kbd>ITemplateResolver</kbd> implementation, besides the standard ones. This
+            new implementation is called
+            <kbd>org.thymeleaf.spring3.templateresolver.SpringResourceTemplateResolver</kbd>. It can be specified
+            at the application context like:
+        </p>
+
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            ...
+            <bean id="templateResolver"
+                  class="org.thymeleaf.spring3.templateresolver.SpringResourceTemplateResolver">
+                <property name="templateMode" value="HTML5" />
+                <property name="cacheable" value="true" />
+            </bean>
+
+            <bean id="templateEngine"
+                  class="org.thymeleaf.spring3.SpringTemplateEngine">
+                <property name="templateResolver" ref="templateResolver" />
+            </bean>
+            ...
+        ]]></script>
+
+        <p>
+            This new implementation delegates on Spring's own resource resolution mechanism
+            (<kbd>ApplicationContext.getResource(resourceName)</kbd>), so templates can be now selected
+            in the same ways Spring itself allows to specify resources, like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @RequestMapping("/")
+            public String index() {
+                ...
+                return "classpath:appres/templates/index.html";
+            }
+        ]]></script>
+
+
+
+        <h2><a name="spfrag"></a>Render view fragments directly from controllers</h2>
+
+        <p>
+            Thymeleaf now allows specifying template fragments whenever a view name is returned after controller
+            execution. So given the following template called <kbd>myTemplate</kbd>:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <!DOCTYPE html>
+            <html>
+              ...
+              <body>
+                ...
+                <div th:fragment="myFrag">
+                  <ul th:each="p : ${products}">
+                    <li th:text="${p.name}">One product</li>
+                  </ul>
+                </div>
+                ...
+              </body>
+            </html>
+        ]]></script>
+
+        <p>
+            A Spring MVC controller can render the <kbd>myFrag</kbd> fragment with:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @RequestMapping("/frag")
+            public String showFrag(final ModelMap model) {
+                model.addAttribute("products", this.productRepository.findAll());
+                return "myTemplate :: myFrag";
+            }
+        ]]></script>
+
+        <p>
+            This is a very useful feature for controller methods meant to be called via AJAX, which can now
+            just render the part of the HTML they really need.
+        </p>
+
+        <p>
+            Besides, the new DOM Selector syntax provides a lot of power, and there is actually no need to
+            specify <kbd>th:fragment</kbd> at all:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            ...
+            <div id="content">
+                ...
+            </div>
+            ...
+        ]]></script>
+
+        <p>
+            ...and then:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @RequestMapping("/frag")
+            public String showFrag() {
+                ...
+                return "myTemplate :: #content";
+            }
+        ]]></script>
+
+
+
+        <h2><a name="sperr"></a>Additional form validation error reporting options</h2>
+
+        <p>
+            Thymeleaf now implements a more comprehensive expression support for form validation errors (besides all the previously supported
+            artifacts):
+        </p>
+
+        <ul>
+            <li>Field errors:
+                <ul>
+                    <li>Conditional: <kbd>${#fields.hasErrors('*{fieldName}')}</kbd></li>
+                    <li>Error list: <kbd>${#fields.errors('*{fieldName}')}</kbd></li>
+                </ul>
+            </li>
+            <li>Global errors:
+                <ul>
+                    <li>Conditional: <kbd>${#fields.hasGlobalErrors()}</kbd>, <kbd>${#fields.hasErrors('global')}</kbd></li>
+                    <li>Error list: <kbd>${#fields.globalErrors()}</kbd>, <kbd>${#fields.errors('global')}</kbd></li>
+                </ul>
+            </li>
+            <li>All errors:
+                <ul>
+                    <li>Conditional: <kbd>${#fields.hasAnyErrors()}</kbd>, <kbd>${#fields.hasErrors()}</kbd>, <kbd>${#fields.hasErrors('all')}</kbd></li>
+                    <li>Error list: <kbd>${#fields.allErrors()}</kbd>, <kbd>${#fields.errors()}</kbd>, <kbd>${#fields.errors('all')}</kbd></li>
+                </ul>
+            </li>
+        </ul>
+
+        <p>
+            And now form validation errors can also be accessed outside forms themselves, by prepending the
+            form-backing bean name (and using <kbd>${...}</kbd> instead of <kbd>*{...}</kbd>):
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html"><![CDATA[
+            <div th:errors="${myForm}"></div>
+            <div th:errors="${myForm.date}"></div>
+            <div th:errors="${myForm.*}"></div>
+
+            <div th:if="${#fields.hasErrors('${myForm}')}"></div>
+            <div th:if="${#fields.hasErrors('${myForm.date}')}"></div>
+            <div th:if="${#fields.hasErrors('${myForm.*}')}"></div>
+
+            <form th:object="${myForm}">
+                ...
+            </form>
+        ]]></script>
 
    </div>
    
