@@ -340,6 +340,61 @@
     </profile>
 
     <profile>
+      <id>2.0.19</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+              <execution>
+                <id>add-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/test-20/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>add-test-resource</id>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>add-test-resource</goal>
+                </goals>
+                <configuration>
+                  <resources>
+                    <resource>
+                      <directory>${project.basedir}/src/test-20/resources/</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <thymeleaf.version>2.0.19</thymeleaf.version>
+        <thymeleaf-testing.version>2.0.5</thymeleaf-testing.version>
+        <thymeleaf-extras-springsecurity3.version>2.0.1</thymeleaf-extras-springsecurity3.version>
+        <thymeleaf-extras-tiles2.version>2.0.0</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.0.0</thymeleaf-extras-conditionalcomments.version>
+        <springframework.version>3.0.7.RELEASE</springframework.version>
+        <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+        <nekohtml.version>1.9.15</nekohtml.version>
+      </properties>
+    </profile>
+
+    <profile>
       <id>2.1.0-beta1</id>
       <build>
         <plugins>
@@ -388,6 +443,61 @@
         <thymeleaf-extras-springsecurity3.version>2.1.0-beta1</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.0-beta1</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.0-beta1</thymeleaf-extras-conditionalcomments.version>
+        <springframework.version>3.0.7.RELEASE</springframework.version>
+        <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
+        <nekohtml.version>1.9.15</nekohtml.version>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>2.1.0-beta2</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+              <execution>
+                <id>add-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/test-21/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>add-test-resource</id>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>add-test-resource</goal>
+                </goals>
+                <configuration>
+                  <resources>
+                    <resource>
+                      <directory>${project.basedir}/src/test-21/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <thymeleaf.version>2.1.0-beta2</thymeleaf.version>
+        <thymeleaf-testing.version>2.1.0-beta2</thymeleaf-testing.version>
+        <thymeleaf-extras-springsecurity3.version>2.1.0-beta2</thymeleaf-extras-springsecurity3.version>
+        <thymeleaf-extras-tiles2.version>2.1.0-beta2</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.1.0-beta2</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
