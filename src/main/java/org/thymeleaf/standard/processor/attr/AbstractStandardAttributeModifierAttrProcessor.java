@@ -33,9 +33,7 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.ArrayUtils;
 import org.thymeleaf.util.EvaluationUtil;
 import org.thymeleaf.util.StringUtils;
@@ -71,7 +69,6 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final AssignationSequence assignations =
                 AssignationUtils.parseAssignationSequence(
@@ -91,8 +88,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             final IStandardExpression rightExpr = assignation.getRight();
             final Object rightValue = rightExpr.execute(configuration, arguments);
 
-            final String newAttributeName =
-                    (leftValue == null? null : conversionService.convert(configuration, arguments, leftValue, String.class));
+            final String newAttributeName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newAttributeName)) {
                 throw new TemplateProcessingException(
                         "Attribute name expression evaluated as null or empty: \"" + leftExpr + "\"");
@@ -112,10 +108,7 @@ public abstract class AbstractStandardAttributeModifierAttrProcessor
             } else {
                 // Attribute is a "normal" attribute, not a fixed-value conditional one
 
-                final String newValue =
-                        conversionService.convert(configuration, arguments, rightValue, String.class);
-
-                newAttributeValues.put(newAttributeName, (newValue == null ? "" : newValue));
+                newAttributeValues.put(newAttributeName, (rightValue == null ? "" : rightValue.toString()));
                 
             }
 

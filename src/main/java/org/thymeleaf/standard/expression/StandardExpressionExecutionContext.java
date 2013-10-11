@@ -39,22 +39,29 @@ package org.thymeleaf.standard.expression;
  */
 public final class StandardExpressionExecutionContext {
 
-    public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false);
-    public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true);
-    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION = new StandardExpressionExecutionContext(true);
+    public static final StandardExpressionExecutionContext PREPROCESSING = new StandardExpressionExecutionContext(true, false);
+    public static final StandardExpressionExecutionContext NORMAL = new StandardExpressionExecutionContext(false, false);
+    public static final StandardExpressionExecutionContext NORMAL_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(false, true);
+    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION = new StandardExpressionExecutionContext(true, false);
+    public static final StandardExpressionExecutionContext UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION = new StandardExpressionExecutionContext(true, true);
 
     private final boolean forbidRequestParameters;
+    private final boolean performTypeConversion;
     
     
-    
-    public StandardExpressionExecutionContext(final boolean forbidRequestParameters) {
+    public StandardExpressionExecutionContext(final boolean forbidRequestParameters, final boolean performTypeConversion) {
         super();
         this.forbidRequestParameters = forbidRequestParameters;
+        this.performTypeConversion = performTypeConversion;
     }
     
     
     public boolean getForbidRequestParameters() {
         return this.forbidRequestParameters;
+    }
+
+    public boolean getPerformTypeConversion() {
+        return this.performTypeConversion;
     }
     
 }

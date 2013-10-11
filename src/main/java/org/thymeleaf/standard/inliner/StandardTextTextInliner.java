@@ -106,7 +106,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                             expressionParser.parseExpression(configuration, arguments, match);
                     final Object result = expression.execute(configuration, arguments);
 
-                    strBuilder.append(conversionService.convert(configuration, arguments, result, String.class));
+                    strBuilder.append(result);
                     
                 } catch (final TemplateProcessingException ignored) {
                     

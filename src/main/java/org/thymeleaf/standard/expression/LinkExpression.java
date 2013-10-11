@@ -233,12 +233,13 @@ public final class LinkExpression extends SimpleExpression {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
         final IStandardExpression baseExpression = expression.getBase();
         Object base = baseExpression.execute(configuration, processingContext, expContext);
 
-        base = conversionService.convert(configuration, processingContext, base, String.class);
+        base = LiteralValue.unwrap(base);
+        if (base != null && !(base instanceof String)) {
+            base = base.toString();
+        }
         if (base == null || StringUtils.isEmptyOrWhitespace((String) base)) {
             base = "";
         }
@@ -297,10 +298,7 @@ public final class LinkExpression extends SimpleExpression {
                     parametersBuilder.append("&");
                 }
 
-                String parameterValue = conversionService.convert(configuration, processingContext, parameterObjectValue, String.class);
-                if (parameterValue == null || StringUtils.isEmptyOrWhitespace(parameterValue)) {
-                    parameterValue = "";
-                }
+                final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
 
                 if (URL_PARAM_NO_VALUE.equals(parameterValue)) {
                     
@@ -402,8 +400,6 @@ public final class LinkExpression extends SimpleExpression {
 
         final AssignationSequence assignationValues = expression.getParameters();
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
         final Map<String,List<Object>> parameters = new LinkedHashMap<String,List<Object>>(assignationValues.size() + 1, 1.0f);
         for (final Assignation assignationValue : assignationValues) {
             
@@ -412,7 +408,7 @@ public final class LinkExpression extends SimpleExpression {
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
             final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext, expContext);
-            final String parameterName = conversionService.convert(configuration, processingContext, parameterNameValue, String.class);
+            final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
 
             if (StringUtils.isEmptyOrWhitespace(parameterName)) {
                 throw new TemplateProcessingException(

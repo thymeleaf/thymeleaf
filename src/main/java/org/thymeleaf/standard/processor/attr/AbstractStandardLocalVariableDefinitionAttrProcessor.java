@@ -32,9 +32,7 @@ import org.thymeleaf.processor.attr.AbstractLocalVariableDefinitionAttrProcessor
 import org.thymeleaf.standard.expression.Assignation;
 import org.thymeleaf.standard.expression.AssignationSequence;
 import org.thymeleaf.standard.expression.AssignationUtils;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.StringUtils;
 
 /**
@@ -70,7 +68,6 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
 
         final Configuration configuration = arguments.getConfiguration();
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final AssignationSequence assignations =
                 AssignationUtils.parseAssignationSequence(
@@ -91,8 +88,7 @@ public abstract class AbstractStandardLocalVariableDefinitionAttrProcessor
             final IStandardExpression rightExpr = assignation.getRight();
             final Object rightValue = rightExpr.execute(configuration, assignationExecutionArguments);
 
-            final String newVariableName =
-                    (leftValue == null? null : conversionService.convert(configuration, arguments, leftValue, String.class));
+            final String newVariableName = (leftValue == null? null : leftValue.toString());
             if (StringUtils.isEmptyOrWhitespace(newVariableName)) {
                 throw new TemplateProcessingException(
                         "Variable name expression evaluated as null or empty: \"" + leftExpr + "\"");
