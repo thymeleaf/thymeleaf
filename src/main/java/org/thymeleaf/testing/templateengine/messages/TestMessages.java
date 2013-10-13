@@ -73,15 +73,15 @@ public class TestMessages implements ITestMessages {
         
         Validate.notNull(key, "Message key cannot be null");
         
-        String message = doComputeMessage(locale, key, messageParameters);
+        String message = doComputeMessage(locale, locale, key, messageParameters);
         if (message == null) {
-            message = doComputeMessage(getLocaleWithLanguageCountry(locale), key, messageParameters);
+            message = doComputeMessage(getLocaleWithLanguageCountry(locale), locale, key, messageParameters);
         }
         if (message == null) {
-            message = doComputeMessage(getLocaleWithLanguage(locale), key, messageParameters);
+            message = doComputeMessage(getLocaleWithLanguage(locale), locale, key, messageParameters);
         }
         if (message == null) {
-            message = doComputeMessage(null, key, messageParameters);
+            message = doComputeMessage(null, locale, key, messageParameters);
         }
         
         if (message == null) {
@@ -93,11 +93,11 @@ public class TestMessages implements ITestMessages {
     }
     
     
-    private String doComputeMessage(final Locale locale, final String key, final Object[] messageParameters) {
+    private String doComputeMessage(final Locale messagesLocale, final Locale processingLocale, final String key, final Object[] messageParameters) {
         
         Validate.notNull(key, "Message key cannot be null");
         
-        final ITestMessagesForLocale messagesForLocale = this.messagesByLocale.get(locale);
+        final ITestMessagesForLocale messagesForLocale = this.messagesByLocale.get(messagesLocale);
         if (messagesForLocale == null) {
             return null;
         }
@@ -108,7 +108,7 @@ public class TestMessages implements ITestMessages {
             return null;
         }
         
-        final MessageFormat messageFormat = new MessageFormat(messageValue, locale);
+        final MessageFormat messageFormat = new MessageFormat(messageValue, processingLocale);
         return messageFormat.format((messageParameters != null? messageParameters : EMPTY_MESSAGE_PARAMETERS));
         
     }
