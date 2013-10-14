@@ -1,0 +1,36 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<p th:text="@{/something(onepar=2314)}">...</p>
+<p th:text="@{/something(onepar=${2314})}">...</p>
+<p th:text="@{/something(onepar=${{2314}})}">...</p>
+<p th:text="@{|/something/2314|}">...</p>
+<p th:text="@{|/something/${2314}|}">...</p>
+<p th:text="@{|/something/${{2314}}|}">...</p>
+<p th:text="2 + @{|/something/${2314}|}">...</p>
+<p th:text="2 + @{|/something/${{2314}}|}">...</p>
+<p th:text="@{/something(onepar=(2314 + 'a'))}">...</p>
+<p th:text="@{/something(onepar=${(2314 + 'a')})}">...</p>
+<p th:text="@{/something(onepar=${{(2314 + 'a')}})}">...</p>
+<p th:text="@{/something(onepar=${{(2314 + 2)}})}">...</p>
+<p th:text="@{('/something' + 2314)(onepar=2314)}">...</p>
+<p th:text="@{('/something' + ${2314})(onepar=${2314})}">...</p>
+<p th:text="@{('/something' + ${{2314}})(onepar=${{2314}})}">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>/testing/something?onepar=2314</p>
+<p>/testing/something?onepar=2314</p>
+<p>/testing/something?onepar=%5B2314%5D</p>
+<p>/testing/something/2314</p>
+<p>/testing/something/2314</p>
+<p>/testing/something/[2314]</p>
+<p>2/testing/something/2314</p>
+<p>2/testing/something/[2314]</p>
+<p>/testing/something?onepar=2314a</p>
+<p>/testing/something?onepar=2314a</p>
+<p>/testing/something?onepar=2314a</p>
+<p>/testing/something?onepar=%5B2316%5D</p>
+<p>/testing/something2314?onepar=2314</p>
+<p>/testing/something2314?onepar=2314</p>
+<p>/testing/something[2314]?onepar=%5B2314%5D</p>
+

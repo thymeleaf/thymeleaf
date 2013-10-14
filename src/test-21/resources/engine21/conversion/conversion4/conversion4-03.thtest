@@ -4,6 +4,13 @@
 bool = true
 # ------------------------------------------------------------
 %INPUT
+<p th:text="${{'Hello'}} + ${{''}}">...</p>
+<p th:text="${{'Hello'}} + ${{2}}">...</p>
+<p th:text="|${{'Hello'}} ${{2}}|">...</p>
+<p th:text="|${{'Hello'}} ${{bool}}|">...</p>
+<p th:text="|${{'Hello'}} false|">...</p>
+<p th:text="false">...</p>
+
 <p th:text="${'Hello'} + ${''}">...</p>
 <p th:text="${'Hello'} + ${2}">...</p>
 <p th:text="|${'Hello'} ${2}|">...</p>
@@ -17,5 +24,11 @@ bool = true
 <p>Hello [2]</p>
 <p>Hello [true]</p>
 <p>Hello false</p>
-<p>[false]</p>
+<p>false</p>
 
+<p>Hello</p>
+<p>Hello2</p>
+<p>Hello 2</p>
+<p>Hello true</p>
+<p>Hello false</p>
+<p>false</p>

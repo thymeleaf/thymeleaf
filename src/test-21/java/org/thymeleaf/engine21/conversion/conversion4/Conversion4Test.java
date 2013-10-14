@@ -17,27 +17,40 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine21.conversion.conversion2;
+package org.thymeleaf.engine21.conversion.conversion4;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Arrays;
 
-import org.springframework.core.convert.converter.Converter;
-
-
-public class CalendarToStringConverter implements Converter<Calendar,String> {
-
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM/dd");
+import org.junit.Assert;
+import org.junit.Test;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
-    public CalendarToStringConverter() {
+public class Conversion4Test {
+
+
+
+    public Conversion4Test() {
         super();
     }
 
 
-    public String convert(final Calendar source) {
-        synchronized (SDF) {
-            return SDF.format(source.getTime());
-        }
+
+
+
+
+    @Test
+    public void testConversion() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.setDialects(Arrays.asList(new IDialect[]{new ConversionTestDialect4()}));
+
+        executor.execute("classpath:engine21/conversion/conversion4");
+
+        Assert.assertTrue(executor.isAllOK());
+
     }
+
+
 }

@@ -9,7 +9,7 @@
         class="org.springframework.context.support.ConversionServiceFactoryBean">
     <property name="converters">
       <set>
-        <bean class="org.thymeleaf.engine21.conversion.conversion2.CalendarToStringConverter"/>
+        <bean class="org.thymeleaf.engine21.conversion.conversion2.DateToStringConverter"/>
       </set>
     </property>
   </bean>

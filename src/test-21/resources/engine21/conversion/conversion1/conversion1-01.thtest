@@ -1,8 +1,10 @@
-%TEMPLATE_MODE HTML5
+%EXTENDS conversion1.common
 # ------------------------------------------------------------
 %INPUT
-<p th:text="${'Hello'}">...</p>
+<p th:object="${obj}" th:text="*{valstr}">...</p>
+<p th:object="${obj}" th:text="*{valnum}">...</p>
 # ------------------------------------------------------------
 %OUTPUT
 <p>Hello</p>
+<p>[1234]</p>
 

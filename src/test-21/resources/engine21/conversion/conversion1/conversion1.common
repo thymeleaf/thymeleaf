@@ -1,0 +1,5 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+obj = #{ 'valnum' : 1234, 'valstr' : 'Hello' }
+
