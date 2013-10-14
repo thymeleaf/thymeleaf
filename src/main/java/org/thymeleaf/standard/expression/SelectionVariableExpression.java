@@ -82,7 +82,15 @@ public final class SelectionVariableExpression extends SimpleExpression {
         if (!matcher.matches()) {
             return null;
         }
-        return new SelectionVariableExpression(matcher.group(1));
+        final String expression = matcher.group(1);
+        final int expressionLen = expression.length();
+        if (expressionLen > 2 &&
+                expression.charAt(0) == SimpleExpression.EXPRESSION_START_CHAR &&
+                expression.charAt(expressionLen - 1) == SimpleExpression.EXPRESSION_END_CHAR) {
+            // Double or single brackets are equivalent in selection expressions
+            return new SelectionVariableExpression(expression.substring(1, expressionLen - 1));
+        }
+        return new SelectionVariableExpression(expression);
     }
 
     
@@ -103,8 +111,10 @@ public final class SelectionVariableExpression extends SimpleExpression {
             throw new TemplateProcessingException(
                     "Variable expression is null, which is not allowed");
         }
-        
-        return expressionEvaluator.evaluate(configuration, processingContext, exp, expContext, true);
+
+        final StandardExpressionExecutionContext evalExpContext = expContext.withTypeConversion();
+
+        return expressionEvaluator.evaluate(configuration, processingContext, exp, evalExpContext, true);
         
     }
     

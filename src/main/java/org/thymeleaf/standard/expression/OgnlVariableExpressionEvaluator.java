@@ -110,8 +110,17 @@ public class OgnlVariableExpressionEvaluator
                             processingContext.getExpressionEvaluationRoot());
 
             setVariableRestrictions(expContext, evaluationRoot, contextVariables);
-            
-            return Ognl.getValue(expressionTree, contextVariables, evaluationRoot);
+
+            final Object result = Ognl.getValue(expressionTree, contextVariables, evaluationRoot);
+
+            if (!expContext.getPerformTypeConversion()) {
+                return result;
+            }
+
+            final IStandardConversionService conversionService =
+                    StandardExpressions.getConversionService(configuration);
+
+            return conversionService.convert(configuration, processingContext, result, String.class);
             
         } catch (final OgnlException e) {
             throw new TemplateProcessingException(

@@ -142,15 +142,13 @@ public final class VariableExpression extends SimpleExpression {
                     "Variable expression is null, which is not allowed");
         }
 
+        final StandardExpressionExecutionContext evalExpContext =
+            (expression.getConvertToString()? expContext.withTypeConversion() : expContext.withoutTypeConversion());
+
         final Object result =
-                expressionEvaluator.evaluate(configuration, processingContext, exp, expContext, false);
+                expressionEvaluator.evaluate(configuration, processingContext, exp, evalExpContext, false);
 
-        if (!expression.getConvertToString()) {
-            return result;
-        }
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-        return conversionService.convert(configuration, processingContext, result, String.class);
+        return result;
 
     }
     
