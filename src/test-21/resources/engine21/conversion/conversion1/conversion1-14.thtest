@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+bool = true
+# ------------------------------------------------------------
+%INPUT
+<p th:attr="src=2,value=2,placeholder=2,width=2">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+# Even if some of these use conversion (value, placeholder), attr doesn't
+<p src="2" value="2" placeholder="2" width="2">...</p>

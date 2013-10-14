@@ -9,10 +9,11 @@
 </p>
 # ------------------------------------------------------------
 %OUTPUT
+# Conversion service should NOT be applied in inlining
 <p>
   This is hello
 </p>
 <p>
-  This is [43]
+  This is 43
 </p>
 

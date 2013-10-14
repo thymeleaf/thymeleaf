@@ -1,0 +1,25 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+bool = true
+# ------------------------------------------------------------
+%INPUT
+<p th:label="${'Hello'}">...</p>
+<p th:label="${'Hello'} + ${''}">...</p>
+<p th:label="${'Hello'} + ${2}">...</p>
+<p th:label="|${'Hello'} ${2}|">...</p>
+<p th:label="|${'Hello'} ${bool}|">...</p>
+<p th:label="|${'Hello'} false|">...</p>
+<p th:label="false">...</p>
+<p th:label="2314">...</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p label="Hello">...</p>
+<p label="Hello">...</p>
+<p label="Hello[2]">...</p>
+<p label="Hello [2]">...</p>
+<p label="Hello [true]">...</p>
+<p label="Hello false">...</p>
+<p label="[false]">...</p>
+<p label="[2314]">...</p>
+
