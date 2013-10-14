@@ -39,8 +39,10 @@ import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.StandardVariableRestrictions;
 
 /**
@@ -83,7 +85,8 @@ public class SpelVariableExpressionEvaluator
 
         try {
     
-            final Map<String,Object> contextVariables = 
+
+            final Map<String,Object> contextVariables =
                     computeExpressionObjects(configuration, processingContext);
 
             EvaluationContext baseEvaluationContext =
@@ -106,9 +109,19 @@ public class SpelVariableExpressionEvaluator
                             processingContext.getExpressionEvaluationRoot());
             
             setVariableRestrictions(expContext, evaluationRoot, contextVariables);
-            
-            return exp.getValue(evaluationContext, evaluationRoot);
-            
+
+            final Object result = exp.getValue(evaluationContext, evaluationRoot);
+
+            if (!expContext.getPerformTypeConversion()) {
+                return result;
+            }
+
+            final IStandardConversionService conversionService =
+                    StandardExpressions.getConversionService(configuration);
+
+            return conversionService.convert(configuration, processingContext, result, String.class);
+
+
         } catch (final TemplateProcessingException e) {
             throw e;
         } catch(final Exception e) {
