@@ -59,26 +59,48 @@ public final class VariableExpression extends SimpleExpression {
     
     
     private final String expression;
+    private final boolean convertToString;
     
     
     
     public VariableExpression(final String expression) {
+        this(expression, false);
+    }
+
+
+    /**
+     * @since 2.1.0
+     */
+    public VariableExpression(final String expression, final boolean convertToString) {
         super();
         Validate.notNull(expression, "Expression cannot be null");
         this.expression = expression;
+        this.convertToString = convertToString;
     }
-    
-    
+
+
+
     public String getExpression() {
         return this.expression;
     }
-    
+
+
+    /**
+     * @since 2.1.0
+     */
+    public boolean getConvertToString() {
+        return this.convertToString;
+    }
+
+
     
     @Override
     public String getStringRepresentation() {
         return String.valueOf(SELECTOR) + 
-               String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) + 
-               this.expression + 
+               String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) +
+               (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) : "") +
+               this.expression +
+               (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_END_CHAR) : "") +
                String.valueOf(SimpleExpression.EXPRESSION_END_CHAR);
     }
     
@@ -89,7 +111,14 @@ public final class VariableExpression extends SimpleExpression {
         if (!matcher.matches()) {
             return null;
         }
-        return new VariableExpression(matcher.group(1));
+        final String expression = matcher.group(1);
+        final int expressionLen = expression.length();
+        if (expressionLen > 2 &&
+                expression.charAt(0) == SimpleExpression.EXPRESSION_START_CHAR &&
+                expression.charAt(expressionLen - 1) == SimpleExpression.EXPRESSION_END_CHAR) {
+            return new VariableExpression(expression.substring(1, expressionLen - 1), true);
+        }
+        return new VariableExpression(expression, false);
     }
     
 
@@ -112,9 +141,17 @@ public final class VariableExpression extends SimpleExpression {
             throw new TemplateProcessingException(
                     "Variable expression is null, which is not allowed");
         }
-        
-        return expressionEvaluator.evaluate(configuration, processingContext, exp, expContext, false);
-        
+
+        final Object result =
+                expressionEvaluator.evaluate(configuration, processingContext, exp, expContext, false);
+
+        if (!expression.getConvertToString()) {
+            return result;
+        }
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+        return conversionService.convert(configuration, processingContext, result, String.class);
+
     }
     
     
