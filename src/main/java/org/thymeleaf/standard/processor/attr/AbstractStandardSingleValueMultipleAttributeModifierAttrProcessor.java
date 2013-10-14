@@ -28,10 +28,8 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -75,29 +73,11 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
         final Set<String> newAttributeNames = 
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
-        if (!applyConversion(arguments, element, attributeName)) {
-
-            final Object valueForAttributes = expression.execute(configuration, arguments);
-
-            final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
-            for (final String newAttributeName : newAttributeNames) {
-                result.put(newAttributeName, (valueForAttributes == null? "" : valueForAttributes.toString()));
-            }
-
-            return result;
-
-        }
-
-        final Object valueForAttributes =
-                expression.execute(configuration, arguments, StandardExpressionExecutionContext.NORMAL_WITH_TYPE_CONVERSION);
-
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+        final Object valueForAttributes = expression.execute(configuration, arguments);
 
         final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {
-            final String convertedValue =
-                    (valueForAttributes == null? null : conversionService.convert(configuration, arguments, valueForAttributes, String.class));
-            result.put(newAttributeName, (convertedValue == null? "" : convertedValue));
+            result.put(newAttributeName, (valueForAttributes == null? "" : valueForAttributes.toString()));
         }
 
         return result;
@@ -115,12 +95,6 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
     @Override
     protected boolean recomputeProcessorsAfterExecution(final Arguments arguments,
             final Element element, final String attributeName) {
-        return false;
-    }
-
-
-
-    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
         return false;
     }
 

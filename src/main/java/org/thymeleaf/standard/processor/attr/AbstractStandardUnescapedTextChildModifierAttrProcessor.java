@@ -24,7 +24,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
 import org.thymeleaf.processor.attr.AbstractUnescapedTextChildModifierAttrProcessor;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
@@ -67,26 +66,11 @@ public abstract class AbstractStandardUnescapedTextChildModifierAttrProcessor
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
 
-        if (!applyConversion(arguments, element, attributeName)) {
-            final Object result =
-                    expression.execute(configuration, arguments, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
-            return (result == null? "" : result.toString());
-        }
-
         final Object result =
-                expression.execute(configuration, arguments, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION);
+                expression.execute(configuration, arguments, StandardExpressionExecutionContext.UNESCAPED_EXPRESSION);
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-        final String convertedResult =
-                (result == null? null : conversionService.convert(configuration, arguments, result, String.class));
+        return (result == null? "" : result.toString());
 
-        return (convertedResult == null? "" : convertedResult);
-
-    }
-
-
-    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
-        return false;
     }
 
 

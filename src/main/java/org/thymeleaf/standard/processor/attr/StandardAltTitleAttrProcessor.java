@@ -82,11 +82,4 @@ public final class StandardAltTitleAttrProcessor
     }
 
 
-
-    @Override
-    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
-        return true;
-    }
-
-
 }

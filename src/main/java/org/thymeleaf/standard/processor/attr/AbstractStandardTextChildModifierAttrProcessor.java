@@ -23,10 +23,8 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.IAttributeNameProcessorMatcher;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -67,25 +65,10 @@ public abstract class AbstractStandardTextChildModifierAttrProcessor
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
 
-        if (!applyConversion(arguments, element, attributeName)) {
-            final Object result = expression.execute(configuration, arguments);
-            return (result == null? "" : result.toString());
-        }
+        final Object result = expression.execute(configuration, arguments);
 
-        final Object result =
-                expression.execute(configuration, arguments, StandardExpressionExecutionContext.NORMAL_WITH_TYPE_CONVERSION);
+        return (result == null? "" : result.toString());
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-        final String convertedResult =
-                (result == null? null : conversionService.convert(configuration, arguments, result, String.class));
-
-        return (convertedResult == null? "" : convertedResult);
-
-    }
-
-
-    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
-        return false;
     }
 
     

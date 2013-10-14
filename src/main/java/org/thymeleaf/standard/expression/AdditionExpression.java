@@ -109,14 +109,6 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
             return leftNumberValue.add(rightNumberValue);
         }
 
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
-
-        if (expContext.getPerformTypeConversion()) {
-            return new LiteralValue(
-                    conversionService.convert(configuration, processingContext, LiteralValue.unwrap(leftValue), String.class) +
-                    conversionService.convert(configuration, processingContext, LiteralValue.unwrap(rightValue), String.class));
-        }
-
         return new LiteralValue(LiteralValue.unwrap(leftValue).toString() + (LiteralValue.unwrap(rightValue).toString()));
 
     }

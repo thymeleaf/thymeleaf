@@ -41,7 +41,8 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
                 "href",
                 "name",
                 "src",
-                "type"
+                "type",
+                "value"
         };
     
     
