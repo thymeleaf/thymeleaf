@@ -27,6 +27,7 @@ import org.thymeleaf.processor.attr.AbstractSingleAttributeModifierAttrProcessor
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -62,15 +63,23 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
-        final Object result = expression.execute(configuration, arguments);
 
-        final String newValue = conversionService.convert(configuration, arguments, result, String.class);
+        if (!applyConversion(arguments, element, attributeName)) {
+            final Object result = expression.execute(configuration, arguments);
+            return (result == null? "" : result.toString());
+        }
 
-        return (newValue == null? "" : newValue);
-        
+        final Object result =
+                expression.execute(configuration, arguments, StandardExpressionExecutionContext.NORMAL_WITH_TYPE_CONVERSION);
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+        final String convertedResult =
+                (result == null? null : conversionService.convert(configuration, arguments, result, String.class));
+
+        return (convertedResult == null? "" : convertedResult);
+
     }
 
 
@@ -83,6 +92,11 @@ public abstract class AbstractStandardSingleAttributeModifierAttrProcessor
     }
 
 
+
+
+    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
+        return false;
+    }
 
 
     

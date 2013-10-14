@@ -31,6 +31,7 @@ import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
@@ -68,23 +69,39 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
 
         final Configuration configuration = arguments.getConfiguration();
         final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
         final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
         
         final Set<String> newAttributeNames = 
                 getModifiedAttributeNames(arguments, element, attributeName, attributeValue, expression);
 
-        final Object valueForAttributes = expression.execute(configuration, arguments);
-        final String strValueForAttributes = conversionService.convert(configuration, arguments, valueForAttributes, String.class);
-        
+        if (!applyConversion(arguments, element, attributeName)) {
+
+            final Object valueForAttributes = expression.execute(configuration, arguments);
+
+            final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
+            for (final String newAttributeName : newAttributeNames) {
+                result.put(newAttributeName, (valueForAttributes == null? "" : valueForAttributes.toString()));
+            }
+
+            return result;
+
+        }
+
+        final Object valueForAttributes =
+                expression.execute(configuration, arguments, StandardExpressionExecutionContext.NORMAL_WITH_TYPE_CONVERSION);
+
+        final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
+
         final Map<String,String> result = new HashMap<String,String>(newAttributeNames.size() + 1, 1.0f);
         for (final String newAttributeName : newAttributeNames) {
-            result.put(newAttributeName, (strValueForAttributes == null? "" : strValueForAttributes));
+            final String convertedValue =
+                    (valueForAttributes == null? null : conversionService.convert(configuration, arguments, valueForAttributes, String.class));
+            result.put(newAttributeName, (convertedValue == null? "" : convertedValue));
         }
-        
+
         return result;
-        
+
     }
 
 
@@ -101,6 +118,11 @@ public abstract class AbstractStandardSingleValueMultipleAttributeModifierAttrPr
         return false;
     }
 
+
+
+    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
+        return false;
+    }
 
     
 }

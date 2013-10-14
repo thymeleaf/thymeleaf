@@ -54,8 +54,7 @@ public final class StandardExpressionExecutionContext {
         this.forbidRequestParameters = forbidRequestParameters;
         this.performTypeConversion = performTypeConversion;
     }
-    
-    
+
     public boolean getForbidRequestParameters() {
         return this.forbidRequestParameters;
     }
@@ -63,5 +62,19 @@ public final class StandardExpressionExecutionContext {
     public boolean getPerformTypeConversion() {
         return this.performTypeConversion;
     }
-    
+
+    public StandardExpressionExecutionContext getWithoutTypeConversion() {
+        if (this == NORMAL_WITH_TYPE_CONVERSION) {
+            return NORMAL;
+        }
+        if (this == UNESCAPED_EXPRESSION_WITH_TYPE_CONVERSION) {
+            return UNESCAPED_EXPRESSION;
+        }
+        if (!this.performTypeConversion) {
+            return this;
+        }
+        return new StandardExpressionExecutionContext(this.forbidRequestParameters, false);
+    }
+
+
 }

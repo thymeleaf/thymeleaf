@@ -30,42 +30,41 @@ import org.thymeleaf.dom.Element;
  * @since 1.0
  *
  */
-public final class StandardSingleNonRemovableAttributeModifierAttrProcessor 
+public final class StandardSingleRemovableConvertedAttributeModifierAttrProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
     public static final int ATTR_PRECEDENCE = 1000;
-    
-    public static final String[] ATTR_NAMES = 
-        new String[] {
-                "action",
-                "href",
-                "name",
-                "src",
-                "type"
-        };
-    
-    
-    public static final StandardSingleNonRemovableAttributeModifierAttrProcessor[] PROCESSORS;
-    
 
-    
+    public static final String[] ATTR_NAMES =
+        new String[] {
+                "alt",
+                "label",
+                "placeholder",
+                "title"
+        };
+
+
+    public static final StandardSingleRemovableConvertedAttributeModifierAttrProcessor[] PROCESSORS;
+
+
+
     static {
-        
-        PROCESSORS = new StandardSingleNonRemovableAttributeModifierAttrProcessor[ATTR_NAMES.length];
+
+        PROCESSORS = new StandardSingleRemovableConvertedAttributeModifierAttrProcessor[ATTR_NAMES.length];
         for (int i = 0; i < PROCESSORS.length; i++) {
-            PROCESSORS[i] = new StandardSingleNonRemovableAttributeModifierAttrProcessor(ATTR_NAMES[i]);
+            PROCESSORS[i] = new StandardSingleRemovableConvertedAttributeModifierAttrProcessor(ATTR_NAMES[i]);
         }
-        
+
     }
 
-    
-    
-    
-    public StandardSingleNonRemovableAttributeModifierAttrProcessor(final String attributeName) {
+
+
+
+    public StandardSingleRemovableConvertedAttributeModifierAttrProcessor(final String attributeName) {
         super(attributeName);
     }
-    
 
+    
     
     @Override
     public int getPrecedence() {
@@ -92,9 +91,15 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
     @Override
     protected boolean removeAttributeIfEmpty(
             final Arguments arguments, final Element element, final String attributeName, final String newAttributeName) {
-        return false;
+        return true;
     }
 
 
-    
+
+    @Override
+    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
+        return true;
+    }
+
+
 }

@@ -20,6 +20,8 @@
 package org.thymeleaf.standard.processor.attr;
 
 
+import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Element;
 
 /**
  * 
@@ -28,7 +30,8 @@ package org.thymeleaf.standard.processor.attr;
  * @since 1.0
  *
  */
-public final class StandardTextAttrProcessor 
+public final class
+        StandardTextAttrProcessor
         extends AbstractStandardTextChildModifierAttrProcessor {
 
     public static final int ATTR_PRECEDENCE = 1300;
@@ -49,5 +52,11 @@ public final class StandardTextAttrProcessor
     }
 
 
-    
+
+    @Override
+    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
+        return true;
+    }
+
+
 }

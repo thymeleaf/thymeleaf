@@ -59,28 +59,28 @@ public abstract class SimpleExpression extends Expression {
             return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expContext);
+            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expContext.getWithoutTypeConversion());
         }
         if (expression instanceof TextLiteralExpression) {
-            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression, expContext);
+            return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression, expContext.getWithoutTypeConversion());
         }
         if (expression instanceof NumberTokenExpression) {
-            return NumberTokenExpression.executeNumberToken(processingContext, (NumberTokenExpression) expression, expContext);
+            return NumberTokenExpression.executeNumberToken(processingContext, (NumberTokenExpression) expression, expContext.getWithoutTypeConversion());
         }
         if (expression instanceof BooleanTokenExpression) {
-            return BooleanTokenExpression.executeBooleanToken(processingContext, (BooleanTokenExpression) expression, expContext);
+            return BooleanTokenExpression.executeBooleanToken(processingContext, (BooleanTokenExpression) expression, expContext.getWithoutTypeConversion());
         }
         if (expression instanceof NullTokenExpression) {
-            return NullTokenExpression.executeNullToken(processingContext, (NullTokenExpression) expression, expContext);
+            return NullTokenExpression.executeNullToken(processingContext, (NullTokenExpression) expression, expContext.getWithoutTypeConversion());
         }
         if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expContext);
+            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expContext.getWithoutTypeConversion());
         }
         if (expression instanceof SelectionVariableExpression) {
             return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof GenericTokenExpression) {
-            return GenericTokenExpression.executeGenericToken(processingContext, (GenericTokenExpression) expression, expContext);
+            return GenericTokenExpression.executeGenericToken(processingContext, (GenericTokenExpression) expression, expContext.getWithoutTypeConversion());
         }
 
         throw new TemplateProcessingException("Unrecognized simple expression: " + expression.getClass().getName());

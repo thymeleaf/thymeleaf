@@ -20,6 +20,8 @@
 package org.thymeleaf.standard.processor.attr;
 
 
+import org.thymeleaf.Arguments;
+import org.thymeleaf.dom.Element;
 
 /**
  * 
@@ -46,6 +48,13 @@ public final class StandardUtextAttrProcessor
     @Override
     public int getPrecedence() {
         return ATTR_PRECEDENCE;
+    }
+
+
+
+    @Override
+    protected boolean applyConversion(final Arguments arguments, final Element element, final String attributeName) {
+        return true;
     }
 
 

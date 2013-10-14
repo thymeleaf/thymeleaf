@@ -29,7 +29,6 @@ import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.dom.AbstractTextNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -85,7 +84,6 @@ public class StandardTextTextInliner implements IStandardTextInliner {
 
             final Configuration configuration = arguments.getConfiguration();
             final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-            final IStandardConversionService conversionService = StandardExpressions.getConversionService(configuration);
 
             final StringBuilder strBuilder = new StringBuilder();
             int curr = 0;
