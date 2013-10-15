@@ -19,38 +19,30 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
+import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import org.springframework.format.Formatter;
 
 
-public class CalendarFormatter implements Formatter<Calendar> {
-
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM(dd)");
+public class LongFormatter implements Formatter<Long> {
 
 
-    public CalendarFormatter() {
+    public LongFormatter() {
         super();
     }
 
 
 
-    public Calendar parse(String text, Locale locale) throws ParseException {
-        synchronized (SDF) {
-            final Date date = SDF.parse(text);
-            final Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(date.getTime());
-            return cal;
-        }
+    public Long parse(final String text, final Locale locale) throws ParseException {
+        final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+        return Long.valueOf(numberFormat.parse(text).longValue());
     }
 
-    public String print(Calendar object, Locale locale) {
-        synchronized (SDF) {
-            return SDF.format(object.getTime());
-        }
+    public String print(final Long object, final Locale locale) {
+        final NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+        return numberFormat.format(object.longValue());
     }
+
 }

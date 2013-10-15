@@ -1,17 +1,69 @@
 %TEMPLATE_MODE HTML5
 # ------------------------------------------------------------
 %CONTEXT
-oneobj = new org.thymeleaf.engine21.conversion.conversion2.Conversion2Object(#dates.create(1492,10,12))
+notboundobj = new org.thymeleaf.engine21.conversion.conversion2.Conversion2Object(#dates.create(1492,10,12))
+boundobj = new org.thymeleaf.engine21.conversion.conversion2.Conversion2Object(#dates.create(1492,10,12))
+binding = 'boundobj'
 # ------------------------------------------------------------
 %INPUT
-<p th:object="${oneobj}" th:text="*{onedate}">...</p>
-<p th:object="${oneobj}" th:text="|The date is *{onedate}|">...</p>
-<p th:object="${oneobj}" th:text="*{{onedate}}">...</p>
-<p th:object="${oneobj}" th:text="|The date is *{{onedate}}|">...</p>
+<p th:object="${notboundobj}" th:text="*{onedate}">...</p>
+<p th:object="${notboundobj}" th:text="|The date is *{onedate}|">...</p>
+<p th:object="${notboundobj}" th:text="*{{onedate}}">...</p>
+<p th:object="${notboundobj}" th:text="|The date is *{{onedate}}|">...</p>
+
+<p th:text="${notboundobj.onedate}">...</p>
+<p th:text="|The date is ${notboundobj.onedate}|">...</p>
+<p th:text="${{notboundobj.onedate}}">...</p>
+<p th:text="|The date is ${{notboundobj.onedate}}|">...</p>
+
+<p th:text="*{notboundobj.onedate}">...</p>
+<p th:text="|The date is *{notboundobj.onedate}|">...</p>
+<p th:text="*{{notboundobj.onedate}}">...</p>
+<p th:text="|The date is *{{notboundobj.onedate}}|">...</p>
+
+<p th:object="${boundobj}" th:text="*{onedate}">...</p>
+<p th:object="${boundobj}" th:text="|The date is *{onedate}|">...</p>
+<p th:object="${boundobj}" th:text="*{{onedate}}">...</p>
+<p th:object="${boundobj}" th:text="|The date is *{{onedate}}|">...</p>
+
+<p th:text="${boundobj.onedate}">...</p>
+<p th:text="|The date is ${boundobj.onedate}|">...</p>
+<p th:text="${{boundobj.onedate}}">...</p>
+<p th:text="|The date is ${{boundobj.onedate}}|">...</p>
+
+<p th:text="*{boundobj.onedate}">...</p>
+<p th:text="|The date is *{boundobj.onedate}|">...</p>
+<p th:text="*{{boundobj.onedate}}">...</p>
+<p th:text="|The date is *{{boundobj.onedate}}|">...</p>
 # ------------------------------------------------------------
 %OUTPUT
+<p>Fri Oct 12 00:00:00 CET 1492</p>
+<p>The date is Fri Oct 12 00:00:00 CET 1492</p>
 <p>1492-10/12</p>
 <p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 CET 1492</p>
+<p>The date is Fri Oct 12 00:00:00 CET 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 CET 1492</p>
+<p>The date is Fri Oct 12 00:00:00 CET 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 CET 1492</p>
+<p>The date is Fri Oct 12 00:00:00 CET 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 CET 1492</p>
+<p>The date is Fri Oct 12 00:00:00 CET 1492</p>
+<p>1492-10/12</p>
+<p>The date is 1492-10/12</p>
+
+<p>Fri Oct 12 00:00:00 CET 1492</p>
+<p>The date is Fri Oct 12 00:00:00 CET 1492</p>
 <p>1492-10/12</p>
 <p>The date is 1492-10/12</p>
 

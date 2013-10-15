@@ -6,10 +6,10 @@ binding = 'obj'
 # ------------------------------------------------------------
 %INPUT
 <form th:object="${obj}">
-  <input type="text" th:field="*{id}" />
-  <input type="text" th:field="*{age}" />
-  <input type="text" th:field="*{name}" />
-  <input type="text" th:field="*{date}" />
+  <input type="text" th:field="*{{id}}" />
+  <input type="text" th:field="*{{age}}" />
+  <input type="text" th:field="*{{name}}" />
+  <input type="text" th:field="*{{date}}" />
 </form>
 # ------------------------------------------------------------
 %OUTPUT

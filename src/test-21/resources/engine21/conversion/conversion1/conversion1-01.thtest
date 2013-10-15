@@ -3,8 +3,12 @@
 %INPUT
 <p th:object="${obj}" th:text="*{valstr}">...</p>
 <p th:object="${obj}" th:text="*{valnum}">...</p>
+<p th:object="${obj}" th:text="*{{valstr}}">...</p>
+<p th:object="${obj}" th:text="*{{valnum}}">...</p>
 # ------------------------------------------------------------
 %OUTPUT
+<p>Hello</p>
+<p>1234</p>
 <p>Hello</p>
 <p>[1234]</p>
 

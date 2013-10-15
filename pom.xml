@@ -637,7 +637,15 @@
       <version>2.2</version>
       <scope>compile</scope>
     </dependency>
-    
+
+    <!-- Needed by Spring's @DateTimeFormat annotation in engine21.conversion3.conversion -->
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.3</version>
+      <scope>compile</scope>
+    </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

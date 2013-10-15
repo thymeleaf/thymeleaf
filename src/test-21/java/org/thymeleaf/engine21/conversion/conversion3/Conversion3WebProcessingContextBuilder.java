@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 
- *   Copyright (c) 2011-2013, The THYMELEAF team (http://www.thymeleaf.org)
+ *   Copyright (c) 2011-2012, The THYMELEAF team (http://www.thymeleaf.org)
  * 
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -19,41 +19,33 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
-import java.util.Arrays;
+import java.util.Locale;
+import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.springframework.validation.DataBinder;
 import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
-import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
-public class Conversion3Test {
+public class Conversion3WebProcessingContextBuilder extends SpringWebProcessingContextBuilder {
 
 
 
-    public Conversion3Test() {
+    public Conversion3WebProcessingContextBuilder() {
         super();
+        setApplicationContextConfigLocation("classpath:engine21/conversion/conversion3/applicationContext.xml");
     }
 
-
-
-
-
-
-    @Test
-    public void testConversion() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.setProcessingContextBuilder(new Conversion3WebProcessingContextBuilder());
-        executor.setDialects(Arrays.asList(new IDialect[]{new SpringStandardDialect()}));
-
-        executor.execute("classpath:engine21/conversion/conversion3");
-
-        Assert.assertTrue(executor.isAllOK());
+    
+    @Override
+    protected void initBinder(
+            final String bindingVariableName, final Object bindingObject,
+            final ITest test, final DataBinder dataBinder, final Locale locale, 
+            final Map<String,Object> variables) {
+        
+        dataBinder.registerCustomEditor(Integer.class, new IntegerPropertyEditor());
 
     }
 
-
+    
 }

@@ -19,26 +19,55 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
-import org.springframework.core.convert.converter.Converter;
-import org.springframework.format.Formatter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
-public class NumberToStringConverter implements Converter<Number,String> {
+public class Conversion3Object {
+
+    private Long id = null;
+    private Integer age = null;
+    private String name = null;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date date = null;
 
 
-    public NumberToStringConverter() {
+    public Conversion3Object() {
         super();
     }
 
 
-
-    public String convert(final Number source) {
-        return "[#" + source.toString() + "]";
+    public Long getId() {
+        return this.id;
     }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Integer getAge() {
+        return this.age;
+    }
+
+    public void setAge(final Integer age) {
+        this.age = age;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public Date getDate() {
+        return this.date;
+    }
+
+    public void setDate(final Date date) {
+        this.date = date;
+    }
+
 }
