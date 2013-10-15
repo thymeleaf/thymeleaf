@@ -28,6 +28,8 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.web.servlet.support.BindStatus;
+import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.cache.ICache;
@@ -39,6 +41,7 @@ import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressionExecutionContext;
@@ -84,7 +87,20 @@ public class SpelVariableExpressionEvaluator
         }
 
         try {
-    
+
+
+            if (useSelectionAsRoot && expContext.getPerformTypeConversion()) {
+                // This is a *{{...}} expression, so we should use binding info (if available) for formatting.
+
+                final BindStatus bindStatus =
+                        FieldUtils.getBindStatus(configuration, processingContext, "*{" + spelExpression + "}", false);
+
+                if (bindStatus != null) {
+                    // The expression goes against a bound object! Let Spring do its magic for displaying it...
+                    return ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
+                }
+
+            }
 
             final Map<String,Object> contextVariables =
                     computeExpressionObjects(configuration, processingContext);

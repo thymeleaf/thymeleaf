@@ -123,7 +123,15 @@ public final class FieldUtils {
 
         final BindStatus bindStatus = 
             FieldUtils.getBindStatus(configuration, processingContext, fieldExpression, true);
-        
+
+        if (bindStatus == null) {
+            throw new TemplateProcessingException(
+                    "A BindStatus couldn't be obtained for expression '" + fieldExpression + "'. Maybe a RequestContext has " +
+                            "not been registered, or there is no available binding for the object the expression references " +
+                            "(e.g. if this expression selects a field inside a form, the form-backing bean might not have been " +
+                            "referenced at the <form> tag with a 'th:object' attribute)");
+        }
+
         final String[] errorCodes = bindStatus.getErrorMessages();
         return Arrays.asList(errorCodes);
         
@@ -157,7 +165,13 @@ public final class FieldUtils {
             final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
         final BindStatus bindStatus =
                 FieldUtils.getBindStatus(configuration, processingContext, expression, allowAllFields);
-
+        if (bindStatus == null) {
+            throw new TemplateProcessingException(
+                    "A BindStatus couldn't be obtained for expression '" + expression + "'. Maybe a RequestContext has " +
+                    "not been registered, or there is no available binding for the object the expression references " +
+                    "(e.g. if this expression selects a field inside a form, the form-backing bean might not have been " +
+                    "referenced at the <form> tag with a 'th:object' attribute)");
+        }
         return bindStatus.isError();
     }
     
@@ -171,11 +185,13 @@ public final class FieldUtils {
     
     public static BindStatus getBindStatus(final Configuration configuration, 
             final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
-        
+
+        // This method will return null if no binding is found!
+
         final RequestContext requestContext =
             (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
-            throw new TemplateProcessingException("A request context has not been created");
+            return null;
         }
 
         String bindExpression = expression;
@@ -194,9 +210,19 @@ public final class FieldUtils {
         
         final String completeExpression = 
             FieldUtils.validateAndGetValueExpression(processingContext, expressionObj);
-        
-        return new BindStatus(requestContext, completeExpression, false);
-        
+
+        if (completeExpression == null) {
+            return null;
+        }
+
+        if (isBound(requestContext, completeExpression)) {
+            // Creating an instance of BindStatus for an unbound object results in an exception,
+            // so we avoid it by checking first.
+            return new BindStatus(requestContext, completeExpression, false);
+        }
+
+        return null;
+
     }
 
     
@@ -211,25 +237,38 @@ public final class FieldUtils {
         
         if (expression instanceof SelectionVariableExpression) {
 
-            final VariableExpression formCommandValue = 
-                (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
-            if (formCommandValue == null) {
-                throw new TemplateProcessingException(
-                        "Cannot process field expression " + expression + " as no form model object has " +
-                        "been established in the \"form\" tag");
-            }
-            
-            final String formCommandExpression = formCommandValue.getExpression();
-            final String expressionContent = ((SelectionVariableExpression)expression).getExpression();
-
-            if (GLOBAL_EXPRESSION.equals(expressionContent)) {
-                return formCommandExpression;
-            }
-            if (ALL_EXPRESSION.equals(expressionContent) || ALL_FIELDS.equals(expressionContent)) {
-                return formCommandExpression + '.' + ALL_FIELDS;
+            VariableExpression boundObjectValue =
+                    (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
+            if (boundObjectValue == null) {
+                // Try the deprecated name, to avoid legacy issues
+                boundObjectValue =
+                        (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
             }
 
-            return formCommandExpression + '.' + expressionContent;
+            final String boundObjectExpression =
+                    (boundObjectValue == null? null : boundObjectValue.getExpression());
+            final String selectionExpression = ((SelectionVariableExpression)expression).getExpression();
+
+            if (GLOBAL_EXPRESSION.equals(selectionExpression)) {
+                // Should return null if no object previously bound: nothing to apply 'global' on!
+                if (boundObjectExpression == null) {
+                    return null;
+                }
+                return boundObjectExpression;
+            }
+            if (ALL_EXPRESSION.equals(selectionExpression) || ALL_FIELDS.equals(selectionExpression)) {
+                // Should return null if no object previously bound: nothing to apply '*' on!
+                if (boundObjectExpression == null) {
+                    return null;
+                }
+                return boundObjectExpression + '.' + ALL_FIELDS;
+            }
+
+            if (boundObjectExpression == null) {
+                return selectionExpression;
+            }
+
+            return boundObjectExpression + '.' + selectionExpression;
             
         } else if (expression instanceof VariableExpression) {
 
@@ -242,40 +281,23 @@ public final class FieldUtils {
                 "*{...} are allowed in field specifications");
         
     }
-    
-    
-    
-    private static String validateAndGetValueExpressionForAllFields(
-            final IProcessingContext processingContext) {
 
-        final VariableExpression formCommandValue = 
-            (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
-        if (formCommandValue == null) {
-            throw new TemplateProcessingException(
-                    "Cannot process expression for all fields \"" + ALL_FIELDS + "\" as no form model object has " +
-                    "been established in the \"form\" tag");
-        }
-        final String formCommandExpression = formCommandValue.getExpression();
-        return formCommandExpression + '.' + ALL_FIELDS;
-        
-    }
-    
-    private static String validateAndGetValueExpressionForGlobal(
-            final IProcessingContext processingContext) {
 
-        final VariableExpression formCommandValue = 
-            (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
-        if (formCommandValue == null) {
-            throw new TemplateProcessingException(
-                    "Cannot process expression for  \"" + GLOBAL_EXPRESSION + "\" as no form model object has " +
-                    "been established in the \"form\" tag");
-        }
-        final String formCommandExpression = formCommandValue.getExpression();
-        return formCommandExpression;
-        
+
+
+    private static boolean isBound(final RequestContext requestContext, final String expression) {
+
+        int dotPos = expression.indexOf('.');
+        // The bound bean name is everything befo: re the first dot (or everything, if no dot present)
+        final String beanName =
+                (dotPos == -1? expression : expression.substring(0, dotPos));
+
+        // The getErrors() method is not extremely efficient, but it has a cache map, so it should be fine
+        return (requestContext.getErrors(beanName, false) != null);
+
     }
-    
-    
+
+
 
     
     private FieldUtils() {

@@ -68,44 +68,17 @@ public final class SpringObjectAttrProcessor
     @Override
     protected void validateSelectionValue(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final IStandardExpression expression) {
-        
-        if ("form".equals(element.getNormalizedName())) {
-            
-            if (expression != null && expression instanceof VariableExpression) {
 
-                final String varExp = ((VariableExpression)expression).getExpression();
-                if (varExp.indexOf('.') >= 0 || varExp.indexOf('[') >= 0 || varExp.indexOf(']') >= 0) {
-                    throw new TemplateProcessingException(
-                            "The expression used as a form " +
-                            "model is " + expression + ", which is not allowed by " +
-                            "Spring MVC. Target selection expressions used for forms in Spring have to be " +
-                            "just context variable names. Nested calls (like \"user.name\") and " +
-                            "indexed accesses (like \"user['name']\") are forbidden.");
-                }
-                return;
-                
-            }
-            
+        if (expression == null || !(expression instanceof VariableExpression)) {
+
             throw new TemplateProcessingException(
-                    "The expression used as a form " +
-                    "model is " + expression + ", which is not valid: " +
-                    "only variable expressions are allowed as Spring " +
-                    "MVC form model objects.");
-            
+                    "The expression used for object selection is " + expression + ", which is not valid: " +
+                    "only variable expressions (${...}) are allowed in '" +  attributeName + "' attributes in " +
+                    "Spring-enabled environments.");
+
         }
 
-        /*
-         * Check we are not already inside a form (no th:object attrs allowed there!)
-         */
-        final VariableExpression formCommandValue = 
-            (VariableExpression) arguments.getLocalVariable(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE);
-        
-        if (formCommandValue != null) {
-            throw new TemplateProcessingException(
-                    "A selection expression " + expression + " has been specified inside a Spring MVC " +
-                    "form, but this is not allowed. Selection expressions cannot be nested inside forms.");
-        }
-        
+
     }
 
     
@@ -116,24 +89,25 @@ public final class SpringObjectAttrProcessor
     protected Map<String, Object> getAdditionalLocalVariables(
             final Arguments arguments, final Element element, final String attributeName) {
 
-        final Map<String,Object> additionalLocalVariables = new HashMap<String, Object>();
-        additionalLocalVariables.putAll(
-                super.getAdditionalLocalVariables(arguments, element, attributeName));
-        
-        if ("form".equals(element.getNormalizedName())) {
+        final Map<String, Object> previousAdditionalLocalVariables =
+                super.getAdditionalLocalVariables(arguments, element, attributeName);
 
-            final String attributeValue = element.getAttributeValue(attributeName);
+        final Map<String,Object> additionalLocalVariables =
+                new HashMap<String, Object>(previousAdditionalLocalVariables.size() + 3);
+        additionalLocalVariables.putAll(previousAdditionalLocalVariables);
 
-            final Configuration configuration = arguments.getConfiguration();
-            final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final String attributeValue = element.getAttributeValue(attributeName);
 
-            final VariableExpression varExpression =
-                (VariableExpression) expressionParser.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
+        final Configuration configuration = arguments.getConfiguration();
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
 
-            additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);
-            
-        }
-        
+        final VariableExpression varExpression =
+            (VariableExpression) expressionParser.parseExpression(arguments.getConfiguration(), arguments, attributeValue);
+
+        additionalLocalVariables.put(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION, varExpression);
+        // Added also with the deprecated name, for backwards compatibility
+        additionalLocalVariables.put(SpringContextVariableNames.SPRING_FORM_COMMAND_VALUE, varExpression);
+
         return additionalLocalVariables;
         
     }

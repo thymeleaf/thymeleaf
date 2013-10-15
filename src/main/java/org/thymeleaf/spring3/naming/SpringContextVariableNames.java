@@ -31,10 +31,16 @@ public class SpringContextVariableNames {
     
     
     public static final String SPRING_REQUEST_CONTEXT = "springRequestContext";
-    public static final String SPRING_FORM_COMMAND_VALUE = "springFormCommandValue";
+    public static final String SPRING_BOUND_OBJECT_EXPRESSION = "springBoundObjectExpression";
     public static final String SPRING_FIELD_BIND_STATUS = "springFieldBindStatus";
-    
-    
+
+    /**
+     * @deprecated Deprecated in 2.1.0. Use {@link #SPRING_BOUND_OBJECT_EXPRESSION} instead. Will be removed in 3.0
+     */
+    @Deprecated
+    public static final String SPRING_FORM_COMMAND_VALUE = "springFormCommandValue";
+
+
     
     private SpringContextVariableNames() {
         super();
