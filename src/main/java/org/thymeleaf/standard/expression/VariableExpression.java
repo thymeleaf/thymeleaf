@@ -116,6 +116,7 @@ public final class VariableExpression extends SimpleExpression {
         if (expressionLen > 2 &&
                 expression.charAt(0) == SimpleExpression.EXPRESSION_START_CHAR &&
                 expression.charAt(expressionLen - 1) == SimpleExpression.EXPRESSION_END_CHAR) {
+            // Double brackets = enable to-String conversion
             return new VariableExpression(expression.substring(1, expressionLen - 1), true);
         }
         return new VariableExpression(expression, false);
@@ -145,10 +146,7 @@ public final class VariableExpression extends SimpleExpression {
         final StandardExpressionExecutionContext evalExpContext =
             (expression.getConvertToString()? expContext.withTypeConversion() : expContext.withoutTypeConversion());
 
-        final Object result =
-                expressionEvaluator.evaluate(configuration, processingContext, exp, evalExpContext, false);
-
-        return result;
+        return expressionEvaluator.evaluate(configuration, processingContext, exp, evalExpContext, false);
 
     }
     

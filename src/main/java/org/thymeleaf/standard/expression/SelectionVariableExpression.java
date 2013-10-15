@@ -53,26 +53,49 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     
     private final String expression;
-    
+    private final boolean convertToString;
+
     
     
     public SelectionVariableExpression(final String expression) {
+        this(expression, false);
+    }
+
+
+    /**
+     * @since 2.1.0
+     */
+    public SelectionVariableExpression(final String expression, final boolean convertToString) {
         super();
         Validate.notNull(expression, "Expression cannot be null");
         this.expression = expression;
+        this.convertToString = convertToString;
     }
-    
+
+
     
     public String getExpression() {
         return this.expression;
     }
 
+
+    /**
+     * @since 2.1.0
+     */
+    public boolean getConvertToString() {
+        return this.convertToString;
+    }
+
+
+
     @Override
     public String getStringRepresentation() {
-        return String.valueOf(SelectionVariableExpression.SELECTOR) + 
-        String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) + 
-        this.expression + 
-        String.valueOf(SimpleExpression.EXPRESSION_END_CHAR);
+        return String.valueOf(SELECTOR) +
+               String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) +
+               (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_START_CHAR) : "") +
+               this.expression +
+               (this.convertToString? String.valueOf(SimpleExpression.EXPRESSION_END_CHAR) : "") +
+               String.valueOf(SimpleExpression.EXPRESSION_END_CHAR);
     }
     
     
@@ -87,10 +110,10 @@ public final class SelectionVariableExpression extends SimpleExpression {
         if (expressionLen > 2 &&
                 expression.charAt(0) == SimpleExpression.EXPRESSION_START_CHAR &&
                 expression.charAt(expressionLen - 1) == SimpleExpression.EXPRESSION_END_CHAR) {
-            // Double or single brackets are equivalent in selection expressions
-            return new SelectionVariableExpression(expression.substring(1, expressionLen - 1));
+            // Double brackets = enable to-String conversion
+            return new SelectionVariableExpression(expression.substring(1, expressionLen - 1), true);
         }
-        return new SelectionVariableExpression(expression);
+        return new SelectionVariableExpression(expression, false);
     }
 
     
@@ -112,7 +135,8 @@ public final class SelectionVariableExpression extends SimpleExpression {
                     "Variable expression is null, which is not allowed");
         }
 
-        final StandardExpressionExecutionContext evalExpContext = expContext.withTypeConversion();
+        final StandardExpressionExecutionContext evalExpContext =
+                (expression.getConvertToString()? expContext.withTypeConversion() : expContext.withoutTypeConversion());
 
         return expressionEvaluator.evaluate(configuration, processingContext, exp, evalExpContext, true);
         
