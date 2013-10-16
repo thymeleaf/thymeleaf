@@ -6,8 +6,8 @@
 <a data-th-href="@{/url0/url1(param1='one and two')}">go</a>
 <a data-th-href="@{/url0/url1(param1='one=two')}">go</a>
 <a data-th-href="@{/url0/url1(param='one',param='two')}">go</a>
-<a data-th-href="@{/url0/url1(param='one',name=${user.name})}">go</a>
-<a data-th-href="@{/url0/url1(name=#{name_is(${user.name})})}">go</a>
+<a data-th-href="@{/url0/url1(param='one',name=${user['name']})}">go</a>
+<a data-th-href="@{/url0/url1(name=#{name_is(${user['name']})})}">go</a>
 # ------------------------------------------------------------
 %OUTPUT
 <a href="/testing/url0/url1">go</a>

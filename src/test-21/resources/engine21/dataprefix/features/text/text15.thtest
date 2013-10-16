@@ -4,25 +4,25 @@
 <p data-th-text="#{salute}">
   Some text
 </p>
-<p data-th-text="#{salute(${user.firstName})}">
+<p data-th-text="#{salute(${user['firstName']})}">
   Some text
 </p>
-<p data-th-text="#{salute(*{user.firstName})}">
+<p data-th-text="#{salute(*{user['firstName']})}">
   Some text
 </p>
-<p data-th-text="#{salute((*{user.firstName} + ' Jr.'))}">
+<p data-th-text="#{salute((*{user['firstName']} + ' Jr.'))}">
   Some text
 </p>
 <p data-th-utext="#{salute}">
   Some text
 </p>
-<p data-th-utext="#{salute(${user.firstName})}">
+<p data-th-utext="#{salute(${user['firstName']})}">
   Some text
 </p>
-<p data-th-utext="#{salute(*{user.firstName})}">
+<p data-th-utext="#{salute(*{user['firstName']})}">
   Some text
 </p>
-<p data-th-utext="#{salute((*{user.firstName} + ' Jr.'))}">
+<p data-th-utext="#{salute((*{user['firstName']} + ' Jr.'))}">
   Some text
 </p>
 # ------------------------------------------------------------

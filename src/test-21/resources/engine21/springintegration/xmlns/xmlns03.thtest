@@ -1,0 +1,15 @@
+%TEMPLATE_MODE VALIDXHTML
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-3.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title th:unknown="oh!">Hello!</title>
+  </head>
+  <body>
+    <p th:unknown="oh!">Something!</p>
+  </body>
+</html>
+# ------------------------------------------------------------
+%EXCEPTION org.xml.sax.SAXParseException
+%EXCEPTION_MESSAGE_PATTERN Attribute "th:unknown" must be declared for element type "title".

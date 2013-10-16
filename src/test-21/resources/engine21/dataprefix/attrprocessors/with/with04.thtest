@@ -1,14 +1,13 @@
-%EXTENDS ../springintegration.common
+%TEMPLATE_MODE HTML5
 # ------------------------------------------------------------
 %CONTEXT
-binding = 'formBean01'
+
+user = #{ 'name': 'Jack Melon',\
+           'role': 'finance' }
 # ------------------------------------------------------------
 %INPUT
-<form th:object="${formBean01}">
-   <input th:field="*{name}" />
-</form>
+<div data-th-with="a=${user}"><p data-th-text="${a['name']}">...</p></div>
 # ------------------------------------------------------------
 %OUTPUT
-<form>
-   <input id="name" name="name" value="Mark Lettuce" />
-</form>
+<div><p>Jack Melon</p></div>
+

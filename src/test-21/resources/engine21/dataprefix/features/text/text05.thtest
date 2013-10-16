@@ -1,10 +1,10 @@
 %EXTENDS ../html5.01.common
 # ------------------------------------------------------------
 %INPUT
-<p data-th-text="${user.name}">
+<p data-th-text="${user['name']}">
   Some text
 </p>
-<p data-th-utext="${user.name}">
+<p data-th-utext="${user['name']}">
   Some text
 </p>
 # ------------------------------------------------------------

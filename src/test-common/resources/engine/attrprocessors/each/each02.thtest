@@ -23,14 +23,14 @@ products = { product1, product2, product3, product4 }
     <td th:text="${productStat.index}">index</td>
     <td th:text="${productStat.count}">count</td>
     <td th:text="${productStat.size}">size</td>
-    <td th:text="${productStat.current.name}">name</td>
-    <td th:text="${productStat.current.price}">price</td>
+    <td th:text="${productStat.current['name']}">name</td>
+    <td th:text="${productStat.current['price']}">price</td>
     <td th:text="${productStat.even} ? 'T' : 'F'">even</td>
     <td th:text="${productStat.odd} ? 'T' : 'F'">odd</td>
     <td th:text="${productStat.first} ? 'T' : 'F'">first</td>
     <td th:text="${productStat.last} ? 'T' : 'F'">last</td>
-    <td th:text="${product.name}">name</td>
-    <td th:text="${product.price}">price</td>
+    <td th:text="${product['name']}">name</td>
+    <td th:text="${product['price']}">price</td>
   </tr>
 </table>
 # ------------------------------------------------------------

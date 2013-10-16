@@ -20,8 +20,8 @@ products = { product1, product2, product3, product4 }
 %INPUT
 <table>
   <tr th:each="product : ${products}">
-    <td th:text="${product.name}">name</td>
-    <td th:text="${product.price}">price</td>
+    <td th:text="${product['name']}">name</td>
+    <td th:text="${product['price']}">price</td>
   </tr>
 </table>
 # ------------------------------------------------------------

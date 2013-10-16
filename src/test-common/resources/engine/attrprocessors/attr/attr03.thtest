@@ -6,7 +6,7 @@ product = #{ 'name': 'Lettuce',\
 identifier = 32
 # ------------------------------------------------------------
 %INPUT
-<span th:attr="class='separate',id=(${identifier} + 1),title=${product.name}">..</span>
+<span th:attr="class='separate',id=(${identifier} + 1),title=${product['name']}">..</span>
 # ------------------------------------------------------------
 %OUTPUT
 <span class="separate" id="33" title="Lettuce">..</span>

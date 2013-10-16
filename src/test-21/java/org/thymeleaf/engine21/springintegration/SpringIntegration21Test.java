@@ -27,6 +27,7 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine21.springintegration.context.ErrorsSpringIntegrationWebProcessingContextBuilder;
 import org.thymeleaf.engine21.springintegration.context.SpringIntegrationWebProcessingContextBuilder;
 import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
@@ -82,5 +83,21 @@ public class SpringIntegration21Test {
 
     }
 
-    
+
+    @Test
+    public void testXmlNs() throws Exception {
+
+        final SpringWebProcessingContextBuilder contextBuilder = new SpringWebProcessingContextBuilder();
+        contextBuilder.setApplicationContextConfigLocation(null);
+
+        final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(contextBuilder);
+        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.execute("classpath:engine21/springintegration/xmlns");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
 }

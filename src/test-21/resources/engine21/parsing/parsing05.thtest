@@ -9,8 +9,8 @@ caps = {cap1, cap2, cap3}
 %INPUT
 <table>
   <tr th:each="c : ${caps}">
-    <td th:text="${c.city}">City</td>
-    <!--/* --><td th:text="${c.country}">Country</td><!-- */-->
+    <td th:text="${c['city']}">City</td>
+    <!--/* --><td th:text="${c['country']}">Country</td><!-- */-->
   </tr>
   <!--/*-->
   <tr>
