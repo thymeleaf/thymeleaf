@@ -24,16 +24,16 @@ import java.util.Date;
 
 public class Conversion2Object {
 
-    private final Date onedate;
+    private final Conversion2Date onedate;
 
 
     public Conversion2Object(final Date onedate) {
         super();
-        this.onedate = onedate;
+        this.onedate = new Conversion2Date(onedate);
     }
 
 
-    public Date getOnedate() {
+    public Conversion2Date getOnedate() {
         return onedate;
     }
 

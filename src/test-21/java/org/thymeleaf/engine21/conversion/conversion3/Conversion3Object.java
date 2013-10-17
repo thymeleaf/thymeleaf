@@ -30,7 +30,7 @@ public class Conversion3Object {
     private Integer age = null;
     private String name = null;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date date = null;
+    private Conversion3Date date = null;
 
 
     public Conversion3Object() {
@@ -62,12 +62,12 @@ public class Conversion3Object {
         this.name = name;
     }
 
-    public Date getDate() {
+    public Conversion3Date getDate() {
         return this.date;
     }
 
     public void setDate(final Date date) {
-        this.date = date;
+        this.date = new Conversion3Date(date);
     }
 
 }
