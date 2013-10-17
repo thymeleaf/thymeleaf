@@ -97,7 +97,7 @@ public class ThymeleafViewResolver
     private int order = Integer.MAX_VALUE;
 
 
-    private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>();
+    private final Map<String, Object> staticVariables = new LinkedHashMap<String, Object>(10);
     private String contentType = null;
     private String characterEncoding = null;
     
@@ -129,7 +129,7 @@ public class ThymeleafViewResolver
      * @since 2.0.9
      * 
      */
-    public void setViewClass(Class<? extends AbstractThymeleafView> viewClass) {
+    public void setViewClass(final Class<? extends AbstractThymeleafView> viewClass) {
         if (viewClass == null || !AbstractThymeleafView.class.isAssignableFrom(viewClass)) {
             throw new IllegalArgumentException(
                     "Given view class [" + (viewClass != null ? viewClass.getName() : null) +
@@ -250,7 +250,7 @@ public class ThymeleafViewResolver
      */
     public void setStaticVariables(final Map<String, ?> variables) {
         if (variables != null) {
-            for (Map.Entry<String, ?> entry : variables.entrySet()) {
+            for (final Map.Entry<String, ?> entry : variables.entrySet()) {
                 addStaticVariable(entry.getKey(), entry.getValue());
             }
         }

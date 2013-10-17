@@ -94,7 +94,7 @@ public final class SpringStandardConversionService extends AbstractStandardConve
 
 
 
-    private static final TypeConverter getSpringConversionService(final IProcessingContext processingContext) {
+    private static TypeConverter getSpringConversionService(final IProcessingContext processingContext) {
 
         final EvaluationContext evaluationContext =
                 (EvaluationContext) processingContext.getContext().getVariables().

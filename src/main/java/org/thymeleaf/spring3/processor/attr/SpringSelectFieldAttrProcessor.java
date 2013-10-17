@@ -64,7 +64,7 @@ public final class SpringSelectFieldAttrProcessor
         
         final String id = computeId(arguments, element, name, false);
 
-        boolean multiple = element.hasAttribute("multiple");
+        final boolean multiple = element.hasAttribute("multiple");
         
         final NestableNode parent = element.getParent();
         
@@ -114,7 +114,7 @@ public final class SpringSelectFieldAttrProcessor
 
                 childTag.setProcessable(true);
                 
-                if (childTagName != null && childTagName.equals("option")) {
+                if ("option".equals(childTagName)) {
                     
                     if (childTag.hasAttribute(selectAttrName)) { // has attribute
                         
@@ -135,7 +135,7 @@ public final class SpringSelectFieldAttrProcessor
                         childTag.setRecomputeProcessorsImmediately(true);
                     }
                     
-                } else if (childTagName != null && childTagName.equals("optgroup")) {
+                } else if ("optgroup".equals(childTagName)) {
 
                     processOptionChildren(childTag, selectAttrName, selectAttrValue);
                     

@@ -255,7 +255,7 @@ public class ThymeleafView
 
         final String templateName;
         final IFragmentSpec nameFragmentSpec;
-        if (viewTemplateName.indexOf("::") == -1) {
+        if (!viewTemplateName.contains("::")) {
             // No fragment specified at the template name
 
             templateName = viewTemplateName;

@@ -31,13 +31,19 @@ import java.beans.PropertyEditor;
 public final class ValueFormatterWrapper {
 
 
-    public static String getDisplayString(Object value, boolean htmlEscape) {
+    public static String getDisplayString(final Object value, final boolean htmlEscape) {
         return ValueFormatter.getDisplayString(value, htmlEscape);
     }
 
 
-    public static String getDisplayString(Object value, PropertyEditor propertyEditor, boolean htmlEscape) {
+    public static String getDisplayString(final Object value, final PropertyEditor propertyEditor, final boolean htmlEscape) {
         return ValueFormatter.getDisplayString(value, propertyEditor, htmlEscape);
     }
+
+
+    private ValueFormatterWrapper() {
+        super();
+    }
+
 
 }

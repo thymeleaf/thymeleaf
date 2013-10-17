@@ -190,8 +190,7 @@ public abstract class AbstractThymeleafView
      *   Many times, character encoding is specified as a part of the <i>content
      *   type</i> using the {@link #setContentType(String)} method, but this is not mandatory,
      *   and it could be that only the MIME type is specified that way, thus allowing
-     *   to set the character encoding using the {@link #setCharacterEncoding(String)}
-     *   counterpart of this getter method.
+     *   to set the character encoding using this method.
      * </p>
      * 
      * @param characterEncoding the character encoding to be used (e.g. <tt>UTF-8</tt>, 
@@ -356,7 +355,7 @@ public abstract class AbstractThymeleafView
      */
     public void addStaticVariable(final String name, final Object value) {
         if (this.staticVariables == null) {
-            this.staticVariables = new HashMap<String, Object>();
+            this.staticVariables = new HashMap<String, Object>(3, 1.0f);
         }
         this.staticVariables.put(name, value);
     }
@@ -384,7 +383,7 @@ public abstract class AbstractThymeleafView
     public void setStaticVariables(final Map<String, ?> variables) {
         if (variables != null) {
             if (this.staticVariables == null) {
-                this.staticVariables = new HashMap<String, Object>();
+                this.staticVariables = new HashMap<String, Object>(3, 1.0f);
             }
             this.staticVariables.putAll(variables);
         }

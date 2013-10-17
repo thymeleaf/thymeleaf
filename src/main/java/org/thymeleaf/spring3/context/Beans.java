@@ -102,13 +102,13 @@ public class Beans implements Map<String,Object> {
 
 
 
-    public void putAll(final Map<? extends String, ? extends Object> m) {
+    public void putAll(final Map<? extends String, ?> m) {
         throw new UnsupportedOperationException("Method \"putAll\" not supported in Beans object");
     }
 
 
 
-    public Object remove(Object key) {
+    public Object remove(final Object key) {
         throw new UnsupportedOperationException("Method \"remove\" not supported in Beans object");
     }
 

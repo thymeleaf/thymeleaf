@@ -323,7 +323,7 @@ public class SpringStandardDialect extends StandardDialect {
     
     
     static {
-        final Set<IDocTypeResolutionEntry> newDocTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> newDocTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>(18, 1.0f);
         newDocTypeResolutionEntries.add(XHTML1_STRICT_THYMELEAFSPRING3_1_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAFSPRING3_1_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAFSPRING3_1_DOC_TYPE_RESOLUTION_ENTRY);
@@ -356,7 +356,7 @@ public class SpringStandardDialect extends StandardDialect {
     
     @Override
     public Set<IDocTypeTranslation> getDocTypeTranslations() {
-        final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>();
+        final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>(8, 1.0f);
         docTypeTranslations.addAll(SPRING3_DOC_TYPE_TRANSLATIONS);
         final Set<IDocTypeTranslation> additionalDocTypeTranslations = getAdditionalDocTypeTranslations();
         if (additionalDocTypeTranslations != null) {
@@ -375,7 +375,7 @@ public class SpringStandardDialect extends StandardDialect {
     
     @Override
     public Set<IDocTypeResolutionEntry> getSpecificDocTypeResolutionEntries() {
-        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>();
+        final Set<IDocTypeResolutionEntry> docTypeResolutionEntries = new LinkedHashSet<IDocTypeResolutionEntry>(10, 1.0f);
         docTypeResolutionEntries.addAll(SPRING3_DOC_TYPE_RESOLUTION_ENTRIES);
         final Set<IDocTypeResolutionEntry> additionalDocTypeResolutionEntries = getAdditionalDocTypeResolutionEntries();
         if (additionalDocTypeResolutionEntries != null) {
@@ -431,7 +431,7 @@ public class SpringStandardDialect extends StandardDialect {
          */
         
         final Set<IProcessor> standardProcessors = StandardDialect.createStandardProcessorsSet();
-        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>(40);
         
         for (final IProcessor standardProcessor : standardProcessors) {
             // There are several processors we need to remove from the Standard Dialect set

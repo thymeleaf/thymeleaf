@@ -43,7 +43,7 @@ public class Themes {
      * Constructor, obtains the current theme and locale from the processing
      * context for code lookups later.
      * 
-     * @param processingContext
+     * @param processingContext the processing context being used
      */
     public Themes(final IProcessingContext processingContext) {
 
@@ -64,6 +64,6 @@ public class Themes {
      */
     public String code(final String code) {
 
-        return theme.getMessageSource().getMessage(code, null, "", locale);
+        return this.theme.getMessageSource().getMessage(code, null, "", this.locale);
     }
 }

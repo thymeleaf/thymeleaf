@@ -73,7 +73,7 @@ public final class SpringNonCacheableMessageResolver
 
     
     @Override
-    protected final void initializeSpecific() {
+    protected void initializeSpecific() {
         
         /*
          * Check the application context has been set.
@@ -86,13 +86,7 @@ public final class SpringNonCacheableMessageResolver
                     "if you instance it directly, set the MessageSource manually using its "+
                     "corresponding setter method.");
         }
-        initializeSpringSpecific();
-        
-    }
 
-    
-    protected void initializeSpringSpecific() {
-        // Nothing to be executed here. Meant for extension
     }
 
 
@@ -106,7 +100,7 @@ public final class SpringNonCacheableMessageResolver
      * 
      * @return the message source
      */
-    public final MessageSource getMessageSource() {
+    public MessageSource getMessageSource() {
         checkInitialized();
         return this.messageSource;
     }
@@ -119,7 +113,7 @@ public final class SpringNonCacheableMessageResolver
      * 
      * @return the message source
      */
-    protected final MessageSource unsafeGetMessageSource() {
+    protected MessageSource unsafeGetMessageSource() {
         return this.messageSource;
     }
 

@@ -57,10 +57,13 @@ public class AjaxThymeleafViewResolver
     
 
     private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
-    
 
-    
-    
+
+
+    public AjaxThymeleafViewResolver() {
+        super();
+    }
+
 
     /**
      * <p>
@@ -115,7 +118,7 @@ public class AjaxThymeleafViewResolver
             vrlogger.trace(
                     "[THYMELEAF] View {} is a redirect. An AJAX-enabled RedirectView implementation will " +
             		"be handling the request.", viewName);
-            String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
+            final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
             return new AjaxRedirectView(
                     this.ajaxHandler, redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
         }
@@ -147,13 +150,14 @@ public class AjaxThymeleafViewResolver
 
         private AjaxHandler ajaxHandler = new SpringJavascriptAjaxHandler();
 
-        public AjaxRedirectView(final AjaxHandler ajaxHandler, final String redirectUrl, 
+        AjaxRedirectView(final AjaxHandler ajaxHandler, final String redirectUrl,
                 final boolean redirectContextRelative, final boolean redirectHttp10Compatible) {
             super(redirectUrl, redirectContextRelative, redirectHttp10Compatible);
             this.ajaxHandler = ajaxHandler;
         }
 
-        protected void sendRedirect(final HttpServletRequest request, final HttpServletResponse response, 
+        @Override
+        protected void sendRedirect(final HttpServletRequest request, final HttpServletResponse response,
                 final String targetUrl, final boolean http10Compatible) 
                 throws IOException {
             

@@ -270,7 +270,8 @@ public final class FieldUtils {
 
             return boundObjectExpression + '.' + selectionExpression;
             
-        } else if (expression instanceof VariableExpression) {
+        }
+        if (expression instanceof VariableExpression) {
 
             return ((VariableExpression)expression).getExpression();
 
@@ -287,7 +288,7 @@ public final class FieldUtils {
 
     private static boolean isBound(final RequestContext requestContext, final String expression) {
 
-        int dotPos = expression.indexOf('.');
+        final int dotPos = expression.indexOf('.');
         // The bound bean name is everything befo: re the first dot (or everything, if no dot present)
         final String beanName =
                 (dotPos == -1? expression : expression.substring(0, dotPos));

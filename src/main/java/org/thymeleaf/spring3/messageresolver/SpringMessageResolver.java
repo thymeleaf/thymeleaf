@@ -53,7 +53,7 @@ import org.thymeleaf.util.Validate;
  * @since 1.0
  *
  */
-public final class SpringMessageResolver 
+public final class SpringMessageResolver
         extends AbstractMessageResolver 
         implements MessageSourceAware {
     
@@ -86,14 +86,9 @@ public final class SpringMessageResolver
                     "if you instance it directly, set the MessageSource manually using its "+
                     "corresponding setter method.");
         }
-        initializeSpringSpecific();
-        
+
     }
 
-    
-    protected void initializeSpringSpecific() {
-        // Nothing to be executed here. Meant for extension
-    }
 
 
 
@@ -131,7 +126,7 @@ public final class SpringMessageResolver
      * 
      * @param messageSource the message source
      */
-    public void setMessageSource(final MessageSource messageSource) {
+    public final void setMessageSource(final MessageSource messageSource) {
         checkNotInitialized();
         this.messageSource = messageSource;
     }

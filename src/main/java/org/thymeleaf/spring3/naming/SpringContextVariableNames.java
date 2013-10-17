@@ -27,7 +27,7 @@ package org.thymeleaf.spring3.naming;
  * @since 1.0
  *
  */
-public class SpringContextVariableNames {
+public final class SpringContextVariableNames {
     
     
     public static final String SPRING_REQUEST_CONTEXT = "springRequestContext";

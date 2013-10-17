@@ -40,7 +40,7 @@ class BeansPropertyAccessor extends ReflectivePropertyAccessor {
     public static final BeansPropertyAccessor INSTANCE = new BeansPropertyAccessor();
                                   
     
-    public BeansPropertyAccessor() {
+    BeansPropertyAccessor() {
         super();
     }
 

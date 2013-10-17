@@ -30,8 +30,12 @@ import org.springframework.web.servlet.support.BindStatus;
  */
 public final class SelectedValueComparatorWrapper {
 
-    public static boolean isSelected(BindStatus bindStatus, Object candidateValue) {
+    public static boolean isSelected(final BindStatus bindStatus, final Object candidateValue) {
         return SelectedValueComparator.isSelected(bindStatus, candidateValue);
+    }
+
+    private SelectedValueComparatorWrapper() {
+        super();
     }
 
 }

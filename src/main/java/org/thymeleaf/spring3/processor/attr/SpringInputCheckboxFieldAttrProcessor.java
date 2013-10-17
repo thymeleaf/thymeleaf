@@ -79,7 +79,7 @@ public final class SpringInputCheckboxFieldAttrProcessor
             if (boundValue instanceof String) {
                 boundValue = Boolean.valueOf((String) boundValue);
             }
-            Boolean booleanValue = (boundValue != null ? (Boolean) boundValue : Boolean.FALSE);
+            final Boolean booleanValue = (boundValue != null ? (Boolean) boundValue : Boolean.FALSE);
             value = "true";
             checked = booleanValue.booleanValue();
             

@@ -61,10 +61,7 @@ public final class VariablesMapPropertyAccessor extends ReflectivePropertyAccess
     @Override
     public boolean canRead(final EvaluationContext context, final Object target, final String name)
             throws AccessException {
-        if (target == null) {
-            return false;
-        }
-        return true;
+        return target != null;
     }
 
     
@@ -92,10 +89,7 @@ public final class VariablesMapPropertyAccessor extends ReflectivePropertyAccess
     public boolean canWrite(
             final EvaluationContext context, final Object target, final String name) 
             throws AccessException {
-        if (target == null) {
-            return false;
-        }
-        return true;
+        return target != null;
     }
 
     

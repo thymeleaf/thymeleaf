@@ -56,21 +56,21 @@ public abstract class AbstractSpringFieldAttrProcessor
     
     protected static final String INPUT_TYPE_ATTR_NAME = "type";
 
-    
-    
 
-    
-    public AbstractSpringFieldAttrProcessor(
+
+
+
+    protected AbstractSpringFieldAttrProcessor(
             final String attributeName, final String hostTagName) {
         this(attributeName, hostTagName, null);
     }
-    
-    public AbstractSpringFieldAttrProcessor(
+
+    protected AbstractSpringFieldAttrProcessor(
             final String attributeName, final String hostTagName, final String hostFilterAttributeName, final String hostFilterAttributeValue) {
         super(new AttributeNameProcessorMatcher(attributeName, hostTagName, hostFilterAttributeName, hostFilterAttributeValue));
     }
-    
-    public AbstractSpringFieldAttrProcessor(
+
+    protected AbstractSpringFieldAttrProcessor(
             final String attributeName, final String hostTagName, final Map<String,String> hostTagAttributes) {
         super(new AttributeNameProcessorMatcher(attributeName, hostTagName, hostTagAttributes));
     }
@@ -120,8 +120,7 @@ public abstract class AbstractSpringFieldAttrProcessor
         
         String id = element.getAttributeValue("id");
         if (!org.thymeleaf.util.StringUtils.isEmptyOrWhitespace(id)) {
-            String idString = id.toString();
-            return (StringUtils.hasText(idString) ? idString : null);
+            return (StringUtils.hasText(id) ? id : null);
         }
 
         id = FieldUtils.idFromName(name);

@@ -117,7 +117,7 @@ public final class SpringMethodAttrProcessor
     /**
      * Determine if the HTTP method is supported by browsers (i.e. GET or POST).
      */
-    protected final boolean isMethodBrowserSupported(final String method) {
+    protected boolean isMethodBrowserSupported(final String method) {
         return ("get".equalsIgnoreCase(method) || "post".equalsIgnoreCase(method));
     }
 

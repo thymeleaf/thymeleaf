@@ -79,7 +79,7 @@ public final class SpringErrorsAttrProcessor
         
         if (bindStatus.isError()) {
             
-            final Map<String,Object> localVariables = new HashMap<String,Object>();
+            final Map<String,Object> localVariables = new HashMap<String,Object>(2, 1.0f);
             localVariables.put(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, bindStatus);
             
             final StringBuilder strBuilder = new StringBuilder();
