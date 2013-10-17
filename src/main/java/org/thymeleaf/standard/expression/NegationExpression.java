@@ -85,7 +85,7 @@ public final class NegationExpression extends ComplexExpression {
     
     
     public static ExpressionParsingState composeNegationExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
 
         // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
@@ -138,8 +138,8 @@ public final class NegationExpression extends ComplexExpression {
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating negation expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
-        
-        Object operandValue = expression.getOperand().execute(configuration, processingContext, expContext);
+
+        final Object operandValue = expression.getOperand().execute(configuration, processingContext, expContext);
 
         final boolean operandBooleanValue = EvaluationUtil.evaluateAsBoolean(operandValue);
         

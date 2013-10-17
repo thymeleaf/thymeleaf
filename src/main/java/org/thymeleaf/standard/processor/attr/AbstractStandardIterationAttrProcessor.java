@@ -40,15 +40,15 @@ import org.thymeleaf.util.StringUtils;
 public abstract class AbstractStandardIterationAttrProcessor 
         extends AbstractIterationAttrProcessor {
 
-    
-    
 
-    
-    public AbstractStandardIterationAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+    protected AbstractStandardIterationAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardIterationAttrProcessor(final String attributeName) {
+    protected AbstractStandardIterationAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

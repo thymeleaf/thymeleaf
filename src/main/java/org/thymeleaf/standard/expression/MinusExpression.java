@@ -87,7 +87,7 @@ public final class MinusExpression extends ComplexExpression {
     
     
     public static ExpressionParsingState composeMinusExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
 
         // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
@@ -101,7 +101,7 @@ public final class MinusExpression extends ComplexExpression {
         final String trimmedInput = input.trim();
         
         // Trying to fail quickly...
-        int operatorPos = trimmedInput.lastIndexOf(OPERATOR);
+        final int operatorPos = trimmedInput.lastIndexOf(OPERATOR);
         if (operatorPos == -1) { 
             return state;
         }

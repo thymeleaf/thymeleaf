@@ -54,8 +54,8 @@ public abstract class MultiplicationDivisionRemainderExpression extends BinaryOp
                     MultiplicationExpression.class, DivisionExpression.class, DivisionExpression.class,
                     RemainderExpression.class, RemainderExpression.class };
 
-    private static Method LEFT_ALLOWED_METHOD;
-    private static Method RIGHT_ALLOWED_METHOD;
+    private static final Method LEFT_ALLOWED_METHOD;
+    private static final Method RIGHT_ALLOWED_METHOD;
 
 
 
@@ -93,7 +93,7 @@ public abstract class MultiplicationDivisionRemainderExpression extends BinaryOp
     
     
     static ExpressionParsingState composeMultiplicationDivisionRemainderExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
         
         return composeBinaryOperationExpression(
                 state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);

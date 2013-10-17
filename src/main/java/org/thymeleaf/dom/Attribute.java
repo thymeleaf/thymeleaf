@@ -381,7 +381,7 @@ public final class Attribute implements Serializable {
         String prefix = prefixesByAttributeName.get(attributeName);
         if (prefix != null) {
             // cache hit!
-            if (prefix.equals("")) {
+            if (prefix.length() == 0) {
                 // ConcurrentHashMap objects do not allow null values. So we use "" as a substitute.
                 return null;
             }
@@ -405,7 +405,7 @@ public final class Attribute implements Serializable {
 
         prefixesByAttributeName.put(attributeName, prefix);
 
-        if (prefix.equals("")) {
+        if (prefix.length() == 0) {
             return null;
         }
         return prefix;

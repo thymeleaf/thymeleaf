@@ -118,7 +118,7 @@ public final class ExpressionSequenceUtils {
         }
 
         // First, check whether we are just dealing with a pointer input
-        int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
+        final int pointer = ExpressionParsingUtil.parseAsSimpleIndexPlaceholder(input);
         if (pointer != -1) {
             return composeSequence(state, pointer);
         }

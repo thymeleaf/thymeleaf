@@ -38,14 +38,14 @@ import org.thymeleaf.processor.IElementNameProcessorMatcher;
  */
 public abstract class AbstractUnescapedTextChildModifierElementProcessor 
         extends AbstractMarkupSubstitutionElementProcessor {
-    
-    
 
-    public AbstractUnescapedTextChildModifierElementProcessor(final String elementName) {
+
+
+    protected AbstractUnescapedTextChildModifierElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractUnescapedTextChildModifierElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractUnescapedTextChildModifierElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

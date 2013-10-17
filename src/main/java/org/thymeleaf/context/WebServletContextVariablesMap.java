@@ -120,8 +120,8 @@ class WebServletContextVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public void putAll(final Map<? extends String, ? extends Object> m) {
-        for (final Map.Entry<? extends String, ? extends Object> mEntry : m.entrySet()) {
+    public void putAll(final Map<? extends String, ?> m) {
+        for (final Map.Entry<? extends String, ?> mEntry : m.entrySet()) {
             this.servletContext.setAttribute(mEntry.getKey(), mEntry.getValue());
         }
     }

@@ -97,7 +97,7 @@ public final class DefaultExpression extends ComplexExpression {
     
     
     static ExpressionParsingState composeDefaultExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
 
         // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
@@ -109,7 +109,7 @@ public final class DefaultExpression extends ComplexExpression {
         }
 
         // Trying to fail quickly...
-        int defaultOperatorPos = input.indexOf(OPERATOR);
+        final int defaultOperatorPos = input.indexOf(OPERATOR);
         if (defaultOperatorPos == -1) {
             return state;
         }

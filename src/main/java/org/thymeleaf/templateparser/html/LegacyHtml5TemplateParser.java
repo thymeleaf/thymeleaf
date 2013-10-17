@@ -41,7 +41,7 @@ public final class LegacyHtml5TemplateParser extends AbstractHtmlTemplateParser 
     private static final String FRAGMENT_WRAP_END = "</div></body></html>";
     
     
-    public LegacyHtml5TemplateParser(final String templateModeName, int poolSize) {
+    public LegacyHtml5TemplateParser(final String templateModeName, final int poolSize) {
         super(templateModeName, poolSize);
     }
 

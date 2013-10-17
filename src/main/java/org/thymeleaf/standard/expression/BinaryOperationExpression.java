@@ -89,7 +89,7 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
     
     
     protected static ExpressionParsingState composeBinaryOperationExpression(
-            final ExpressionParsingState state, int nodeIndex, final String[] operators,
+            final ExpressionParsingState state, final int nodeIndex, final String[] operators,
             final boolean[] leniencies, final Class<? extends BinaryOperationExpression>[] operationClasses,
             final Method leftAllowedMethod, final Method rightAllowedMethod) {
 
@@ -161,7 +161,7 @@ public abstract class BinaryOperationExpression extends ComplexExpression {
     
     
     private static ExpressionParsingState doComposeBinaryOperationExpression(
-            final ExpressionParsingState state, int nodeIndex, final String operator,
+            final ExpressionParsingState state, final int nodeIndex, final String operator,
             final Class<? extends BinaryOperationExpression> operationClass,
             final Method leftAllowedMethod, final Method rightAllowedMethod,
             final String input, final int operatorPos) {

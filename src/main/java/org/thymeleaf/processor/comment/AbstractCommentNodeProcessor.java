@@ -43,11 +43,11 @@ public abstract class AbstractCommentNodeProcessor extends AbstractProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
-    private final ICommentNodeProcessorMatcher matcher; 
-    
-    
+    private final ICommentNodeProcessorMatcher matcher;
 
-    public AbstractCommentNodeProcessor(final ICommentNodeProcessorMatcher matcher) {
+
+
+    protected AbstractCommentNodeProcessor(final ICommentNodeProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }

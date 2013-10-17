@@ -87,7 +87,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
     
     private final WebRequestParamsVariablesMap requestParamsVariablesMap;
-    private WebSessionVariablesMap sessionVariablesMap;
+    private final WebSessionVariablesMap sessionVariablesMap;
     private final WebServletContextVariablesMap servletContextVariablesMap;
     
     
@@ -95,7 +95,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
 
     WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext,
-                    final Map<? extends String, ? extends Object> m) {
+                    final Map<? extends String, ?> m) {
 
         super((m == null? 4 : m.size() + 4), 1.0f);
 
@@ -208,8 +208,8 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public void putAll(final Map<? extends String, ? extends Object> m) {
-        for (final Map.Entry<? extends String, ? extends Object> mEntry : m.entrySet()) {
+    public void putAll(final Map<? extends String, ?> m) {
+        for (final Map.Entry<? extends String, ?> mEntry : m.entrySet()) {
             put(mEntry.getKey(), mEntry.getValue());
         }
     }

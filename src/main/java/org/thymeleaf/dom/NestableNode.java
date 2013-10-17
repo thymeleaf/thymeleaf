@@ -210,8 +210,7 @@ public abstract class NestableNode extends Node {
                 }
 
                 if (this.childrenLen >= this.children.length) {
-                    final Node[] newChildren = ArrayUtils.copyOf(this.children, this.children.length * 2);
-                    this.children = newChildren;
+                    this.children = ArrayUtils.copyOf(this.children, this.children.length * 2);
                 }
                 this.children[this.childrenLen++] = newChild;
                 
@@ -274,8 +273,7 @@ public abstract class NestableNode extends Node {
             } else {
 
                 if (this.childrenLen >= this.children.length) {
-                    final Node[] newChildren = ArrayUtils.copyOf(this.children, this.children.length * 2);
-                    this.children = newChildren;
+                    this.children = ArrayUtils.copyOf(this.children, this.children.length * 2);
                 }
 
                 System.arraycopy(this.children, index, this.children, index + 1, (this.childrenLen - index));
@@ -578,7 +576,7 @@ public abstract class NestableNode extends Node {
 
 
     @Override
-    public void setProcessCommentNodes(boolean processCommentNodes) {
+    public void setProcessCommentNodes(final boolean processCommentNodes) {
         super.setProcessCommentNodes(processCommentNodes);
         if (this.childrenLen > 0) {
             for (int i = 0; i < this.childrenLen; i++) {

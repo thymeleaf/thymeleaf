@@ -56,7 +56,7 @@ public abstract class AbstractTextNode extends Node {
             }
         } catch (Exception e) {
             throw new TemplateProcessingException(
-                    "Error creating text node for content \"" + new String(content) + "\"", e);
+                    "Error creating text node for content \"" + content + "\"", e);
         }
     }
     
@@ -69,7 +69,7 @@ public abstract class AbstractTextNode extends Node {
      * @return the textual content of this node.
      */
     public String getContent() {
-        return new String(this.content);
+        return this.content;
     }
 
 

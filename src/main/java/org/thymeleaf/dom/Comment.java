@@ -72,7 +72,7 @@ public final class Comment extends Node {
      * @return the textual content of this node.
      */
     public String getContent() {
-        return new String(this.content);
+        return this.content;
     }
 
 

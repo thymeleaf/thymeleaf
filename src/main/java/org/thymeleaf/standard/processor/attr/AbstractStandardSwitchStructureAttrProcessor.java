@@ -42,14 +42,14 @@ public abstract class AbstractStandardSwitchStructureAttrProcessor
         extends AbstractLocalVariableDefinitionAttrProcessor {
     
     public static final String SWITCH_VARIABLE_NAME = "[%SWITCH_EXPR%]";
-    
 
-    
-    public AbstractStandardSwitchStructureAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+    protected AbstractStandardSwitchStructureAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardSwitchStructureAttrProcessor(final String attributeName) {
+    protected AbstractStandardSwitchStructureAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

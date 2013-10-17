@@ -108,10 +108,8 @@ public class DialectAwareProcessingContext extends AbstractDialectAwareProcessin
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final DialectAwareProcessingContext newContext = 
-                new DialectAwareProcessingContext(getContext(), mergeNewLocalVariables(newVariables), 
+        return new DialectAwareProcessingContext(getContext(), mergeNewLocalVariables(newVariables),
                         getSelectionTarget(), hasSelectionTarget(), getExpressionEnhancingDialects());
-        return newContext;
     }
     
 

@@ -73,11 +73,11 @@ public final class Lists {
     }
     
     
-    public <T extends Comparable<? super T>> List<T> sort(List<T> list) {
+    public <T extends Comparable<? super T>> List<T> sort(final List<T> list) {
         return ListUtils.sort(list);
     }
     
-    public <T> List<T> sort(List<T> list, Comparator<? super T> c) {
+    public <T> List<T> sort(final List<T> list, final Comparator<? super T> c) {
         return ListUtils.sort(list, c);
     }
     

@@ -116,7 +116,7 @@ public final class ConditionalExpression extends ComplexExpression {
     
     
     static ExpressionParsingState composeConditionalExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
 
         // Returning "state" means "try next in chain" or "success"
         // Returning "null" means parsing error
@@ -128,7 +128,7 @@ public final class ConditionalExpression extends ComplexExpression {
         }
 
         // Trying to fail quickly...
-        int condSuffixPos = input.indexOf(CONDITION_SUFFIX_CHAR);
+        final int condSuffixPos = input.indexOf(CONDITION_SUFFIX_CHAR);
         if (condSuffixPos == -1) {
             return state;
         }
@@ -140,8 +140,8 @@ public final class ConditionalExpression extends ComplexExpression {
             // There are two "?" symbols
             return null;
         }
-        
-        int thenElseSepPos = remainder.indexOf(CONDITION_THENELSE_SEPARATOR_CHAR);
+
+        final int thenElseSepPos = remainder.indexOf(CONDITION_THENELSE_SEPARATOR_CHAR);
         if (remainder.lastIndexOf(CONDITION_THENELSE_SEPARATOR_CHAR) != thenElseSepPos) {
             // There are two ":" symbols
             return null;

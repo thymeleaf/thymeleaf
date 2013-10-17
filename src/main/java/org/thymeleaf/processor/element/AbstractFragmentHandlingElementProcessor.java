@@ -37,13 +37,13 @@ import org.thymeleaf.processor.ProcessorResult;
 public abstract class AbstractFragmentHandlingElementProcessor 
         extends AbstractElementProcessor {
 
-    
 
-    public AbstractFragmentHandlingElementProcessor(final String elementName) {
+
+    protected AbstractFragmentHandlingElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractFragmentHandlingElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractFragmentHandlingElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

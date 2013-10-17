@@ -124,7 +124,7 @@ final class LiteralSubstitutionUtil {
                 // We are closing an expression
 
                 if (strBuilder != null) {
-                    strBuilder.append(c);
+                    strBuilder.append(SimpleExpression.EXPRESSION_END_CHAR);
                 }
 
                 expLevel = 0;
@@ -134,7 +134,7 @@ final class LiteralSubstitutionUtil {
                 // We are in an expression. This is needed for correct nesting/unnesting of expressions
 
                 if (strBuilder != null) {
-                    strBuilder.append(c);
+                    strBuilder.append(SimpleExpression.EXPRESSION_START_CHAR);
                 }
                 expLevel++;
 
@@ -142,7 +142,7 @@ final class LiteralSubstitutionUtil {
                 // We are in an expression. This is needed for correct nesting/unnesting of expressions
 
                 if (strBuilder != null) {
-                    strBuilder.append(c);
+                    strBuilder.append(SimpleExpression.EXPRESSION_END_CHAR);
                 }
                 expLevel--;
 

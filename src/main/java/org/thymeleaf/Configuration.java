@@ -719,15 +719,14 @@ public final class Configuration {
                     final DocTypeIdentifier docTypeResolutionEntryPublicID = docTypeResolutionEntry.getPublicID();
                     final DocTypeIdentifier docTypeResolutionEntrySystemID = docTypeResolutionEntry.getSystemID();
                     
-                    boolean publicIDMatches = false;
-                    boolean systemIDMatches = false;
-                    
+                    final boolean publicIDMatches;
                     if (dialectDocTypeResolutionEntryPublicID == null) {
                         publicIDMatches = (docTypeResolutionEntryPublicID == null);
                     } else {
                         publicIDMatches = (docTypeResolutionEntryPublicID != null && docTypeResolutionEntryPublicID.equals(dialectDocTypeResolutionEntryPublicID));
                     }
-                    
+
+                    final boolean systemIDMatches;
                     if (dialectDocTypeResolutionEntrySystemID == null) {
                         systemIDMatches = (docTypeResolutionEntrySystemID == null);
                     } else {
@@ -795,15 +794,14 @@ public final class Configuration {
                     
                     if (sourcePublicIDMatches && sourceSystemIDMatches) {
 
-                        boolean targetPublicIDMatches = false;
-                        boolean targetSystemIDMatches = false;
-                        
+                        final boolean targetPublicIDMatches;
                         if (dialectDocTypeTranslationTargetPublicID == null) {
                             targetPublicIDMatches = (docTypeTranslationTargetPublicID == null);
                         } else {
                             targetPublicIDMatches = (docTypeTranslationTargetPublicID != null && docTypeTranslationTargetPublicID.equals(dialectDocTypeTranslationTargetPublicID));
                         }
-                        
+
+                        final boolean targetSystemIDMatches;
                         if (dialectDocTypeTranslationTargetSystemID == null) {
                             targetSystemIDMatches = (docTypeTranslationTargetSystemID == null);
                         } else {

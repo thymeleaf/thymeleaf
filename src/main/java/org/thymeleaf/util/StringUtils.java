@@ -94,7 +94,7 @@ public final class StringUtils {
     /**
      * @since 2.0.16
      */
-    public static Boolean equals(final Object first, Object second) {
+    public static Boolean equals(final Object first, final Object second) {
 
         if (first == null && second == null) {
             return Boolean.TRUE;
@@ -109,7 +109,7 @@ public final class StringUtils {
     /**
      * @since 2.0.16
      */
-    public static Boolean equalsIgnoreCase(final Object first, Object second) {
+    public static Boolean equalsIgnoreCase(final Object first, final Object second) {
         if (first == null && second == null) {
             return Boolean.TRUE;
         }
@@ -291,7 +291,7 @@ public final class StringUtils {
         }
 
         final StringBuilder sb = new StringBuilder();
-        for (Object value : values) {
+        for (final Object value : values) {
             if (value == null) {
                 sb.append(nullValue);
             } else {
@@ -491,7 +491,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        StringBuilder result = new StringBuilder(target.toString());
+        final StringBuilder result = new StringBuilder(target.toString());
         if (result.length() > 0) {
             result.setCharAt(0, Character.toTitleCase(result.charAt(0)));
         }
@@ -516,7 +516,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        StringBuilder result = new StringBuilder(target.toString());
+        final StringBuilder result = new StringBuilder(target.toString());
 
         if (result.length() > 0) {
             result.setCharAt(0, Character.toLowerCase(result.charAt(0)));
@@ -527,7 +527,7 @@ public final class StringUtils {
 
 
 
-    private static int findNextWord(final char[] buffer, int idx, final char[] delimiterChars) {
+    private static int findNextWord(final char[] buffer, final int idx, final char[] delimiterChars) {
 
         final int len = buffer.length;
 
@@ -538,7 +538,7 @@ public final class StringUtils {
         boolean foundDelimiters = (idx == 0);
         int i = idx;
         while (i < len) {
-            char ch = buffer[i];
+            final char ch = buffer[i];
             final boolean isDelimiter =
                     (delimiterChars == null ?
                             (Character.isWhitespace(ch)) :
@@ -599,8 +599,8 @@ public final class StringUtils {
             return null;
         }
 
-        char[] buffer = target.toString().toCharArray();
-        char[] delimiterChars =
+        final char[] buffer = target.toString().toCharArray();
+        final char[] delimiterChars =
                 (delimiters == null ? null : delimiters.toString().toCharArray());
         if (delimiterChars != null) {
             // needed in order to use binarySearch
@@ -752,7 +752,7 @@ public final class StringUtils {
         final int textLen = text.length();
         for (int i = 0; i < textLen; i++) {
 
-            char c = text.charAt(i);
+            final char c = text.charAt(i);
 
             //noinspection MagicNumber
             if (c >= 32 && c <= 0x7f) {

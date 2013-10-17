@@ -137,7 +137,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         final CacheEntry<V> entry = new CacheEntry<V>(value, this.useSoftReferences);
         
         // newSize will be -1 if traceExecution is false
-        int newSize = this.dataContainer.put(key, entry);
+        final int newSize = this.dataContainer.put(key, entry);
         
         if (this.traceExecution) {
             this.logger.trace(

@@ -34,17 +34,17 @@ import org.thymeleaf.processor.ProcessorResult;
  */
 public abstract class AbstractRemovalElementProcessor 
         extends AbstractElementProcessor {
-    
-    
 
-    
-    
 
-    public AbstractRemovalElementProcessor(final String elementName) {
+
+
+
+
+    protected AbstractRemovalElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractRemovalElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractRemovalElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

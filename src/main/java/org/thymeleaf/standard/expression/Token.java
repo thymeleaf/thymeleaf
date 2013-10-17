@@ -185,17 +185,14 @@ public abstract class Token extends SimpleExpression {
         if (c >= '\uFDF0' && c <= '\uFFFD') {
             return true;
         }
-        if (c >= '\uFDF0' && c <= '\uFFFD') {
-            return true;
-        }
-        return false;
+        return (c >= '\uFDF0' && c <= '\uFFFD');
     }
 
 
 
 
 
-    public static class TokenParsingTracer {
+    public static final class TokenParsingTracer {
 
         public static final char TOKEN_SUBSTITUTE = '#';
 

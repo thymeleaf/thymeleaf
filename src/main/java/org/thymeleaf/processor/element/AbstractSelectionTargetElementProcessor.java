@@ -39,15 +39,15 @@ import org.thymeleaf.processor.ProcessorResult;
  */
 public abstract class AbstractSelectionTargetElementProcessor 
         extends AbstractElementProcessor {
-    
-    
-    
 
-    public AbstractSelectionTargetElementProcessor(final String elementName) {
+
+
+
+    protected AbstractSelectionTargetElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractSelectionTargetElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractSelectionTargetElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

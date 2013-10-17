@@ -93,7 +93,7 @@ public final class GroupNode extends NestableAttributeHolderNode {
      * @param cloneProcessors whether the precomputed list of processors should be cloned too or not.
      * @return the cloned element.
      */
-    public final GroupNode cloneElementNodeWithNewName(final NestableNode newParent, final String newElementName, final boolean cloneProcessors) {
+    public GroupNode cloneElementNodeWithNewName(final NestableNode newParent, final String newElementName, final boolean cloneProcessors) {
         final GroupNode clonedElement = new GroupNode(newElementName);
         cloneNodeInternals(clonedElement, newParent, cloneProcessors);
         return clonedElement;

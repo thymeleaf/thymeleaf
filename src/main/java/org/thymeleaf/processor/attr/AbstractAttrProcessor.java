@@ -48,11 +48,11 @@ public abstract class AbstractAttrProcessor extends AbstractProcessor {
     private final IAttributeNameProcessorMatcher matcher; 
     
     
-    public AbstractAttrProcessor(final String attributeName) {
+    protected AbstractAttrProcessor(final String attributeName) {
         this(new AttributeNameProcessorMatcher(attributeName));
     }
-    
-    public AbstractAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+    protected AbstractAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super();
         this.matcher = matcher;
     }

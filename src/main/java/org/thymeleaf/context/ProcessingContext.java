@@ -88,10 +88,9 @@ public class ProcessingContext extends AbstractProcessingContext {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final ProcessingContext newContext = 
-                new ProcessingContext(getContext(), mergeNewLocalVariables(newVariables), 
-                        getSelectionTarget(), hasSelectionTarget());
-        return newContext;
+        return new ProcessingContext(
+                    getContext(), mergeNewLocalVariables(newVariables),
+                    getSelectionTarget(), hasSelectionTarget());
     }
     
 

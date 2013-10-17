@@ -103,7 +103,7 @@ public final class ListUtils {
      * @return a new sorted list.
      * @see java.util.Collections#sort(List).
      */
-    public static <T extends Comparable<? super T>> List<T> sort(List<T> list) {
+    public static <T extends Comparable<? super T>> List<T> sort(final List<T> list) {
         Validate.notNull(list, "Cannot execute list sort: list is null");
         final Object[] a = list.toArray();
         Arrays.sort(a);
@@ -123,7 +123,7 @@ public final class ListUtils {
      * @see java.util.Collections#sort(List, Comparator).
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> List<T> sort(List<T> list, Comparator<? super T> c) {
+    public static <T> List<T> sort(final List<T> list, final Comparator<? super T> c) {
         Validate.notNull(list, "Cannot execute list sort: list is null");
         final Object[] a = list.toArray();
         Arrays.sort(a, (Comparator) c);
@@ -137,11 +137,11 @@ public final class ListUtils {
         List<T> newList;
         try {
             newList = listType.getConstructor().newInstance();
-        } catch (Exception e) {
-            newList = new ArrayList<T>();
+        } catch (final Exception e) {
+            newList = new ArrayList<T>(a.length + 2);
         }
         
-        for (Object object : a) {
+        for (final Object object : a) {
             newList.add((T)object);
         }
         return newList;

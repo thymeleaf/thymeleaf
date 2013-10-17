@@ -97,7 +97,7 @@ public final class SetUtils {
     
     
     public static <X> Set<X> singletonSet(final X element) {
-        final Set<X> set = new HashSet<X>();
+        final Set<X> set = new HashSet<X>(2, 1.0f);
         set.add(element);
         return Collections.unmodifiableSet(set);
     }

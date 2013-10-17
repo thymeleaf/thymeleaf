@@ -179,7 +179,7 @@ public final class TemplatePreprocessingReader extends Reader {
     
 
     @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
+    public int read(final char[] cbuf, final int off, final int len) throws IOException {
 
         if (readerLogger.isTraceEnabled()) {
             readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] CALLING read(char[], {}, {})", 
@@ -309,7 +309,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
         int totalRead = 0;
         int cbufi = off;
-        int last = off + len;
+        final int last = off + len;
         
         int buffi = 0;
         while (cbufi < last && buffi < bufferSize) {
@@ -742,7 +742,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
 
     @Override
-    public long skip(long n) throws IOException {
+    public long skip(final long n) throws IOException {
         throw new IOException("Skip not supported in reader");
     }
 
@@ -751,10 +751,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
     @Override
     public boolean ready() throws IOException {
-        if (this.bufferedReader.ready()) {
-            return true;
-        }
-        return this.overflowIndex > 0;
+        return this.bufferedReader.ready() || this.overflowIndex > 0;
     }
 
 
@@ -769,7 +766,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
 
     @Override
-    public void mark(int readAheadLimit) throws IOException {
+    public void mark(final int readAheadLimit) throws IOException {
         throw new IOException("Mark not supported in reader");
     }
 
@@ -952,7 +949,7 @@ public final class TemplatePreprocessingReader extends Reader {
 
     
     
-    private static char[] normalizeDocTypeClause(final char[] buffer, int offset, int len) {
+    private static char[] normalizeDocTypeClause(final char[] buffer, final int offset, final int len) {
         
         try {
             
@@ -966,7 +963,7 @@ public final class TemplatePreprocessingReader extends Reader {
                 if (c == '\"') {
                     // Once we find a quote symbol, we stop worrying about normalizing and just copy verbatim
                     afterQuote = true;
-                    result[i - offset] = c;
+                    result[i - offset] = '\"';
                 } else if (!afterQuote && (c == 'P' || c == 'p')) {
                     final char c2 = buffer[i + 1];
                     if (c2 == 'U' || c2 == 'u') {

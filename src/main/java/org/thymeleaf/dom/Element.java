@@ -502,7 +502,7 @@ public final class Element extends NestableAttributeHolderNode {
         String prefix = prefixesByElementName.get(elementName);
         if (prefix != null) {
             // cache hit!
-            if (prefix.equals("")) {
+            if (prefix.length() == 0) {
                 // ConcurrentHashMap objects do not allow null values. So we use "" as a substitute.
                 return null;
             }
@@ -526,7 +526,7 @@ public final class Element extends NestableAttributeHolderNode {
 
         prefixesByElementName.put(elementName, prefix);
 
-        if (prefix.equals("")) {
+        if (prefix.length() == 0) {
             return null;
         }
         return prefix;

@@ -61,7 +61,7 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     public static final String DOM_SELECTOR_EXPRESSION_PREFIX = "{dom_selector}";
     
     private final String selectorExpression;
-    private DOMSelector.INodeReferenceChecker referenceChecker;
+    private final DOMSelector.INodeReferenceChecker referenceChecker;
 
 
 

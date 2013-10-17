@@ -48,10 +48,10 @@ import org.thymeleaf.util.TemplateModeUtils;
  */
 public abstract class AbstractStandardAttributeModifierAttrProcessor 
         extends AbstractAttributeModifierAttrProcessor {
-    
 
-    
-    public AbstractStandardAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+    protected AbstractStandardAttributeModifierAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 

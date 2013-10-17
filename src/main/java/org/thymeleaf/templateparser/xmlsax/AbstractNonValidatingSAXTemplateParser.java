@@ -411,7 +411,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
 
             this.cdataMode = false;
             if(this.cdataBufferLen > 0) {
-                Node cdata = 
+                final Node cdata =
                         new CDATASection(new String(this.cdataBuffer, 0, this.cdataBufferLen), false);
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(cdata);

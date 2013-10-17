@@ -342,7 +342,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      */
     public Integer getPreviousIDSeq(final String id) {
         Validate.notNull(id, "ID cannot be null");
-        Integer count = this.idCounts.get(id);
+        final Integer count = this.idCounts.get(id);
         if (count == null) {
             throw new TemplateProcessingException(
                     "Cannot obtain previous ID count for ID \"" + id + "\"");
@@ -365,13 +365,11 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-        final Arguments arguments = 
-                new Arguments(this.templateEngine, 
+        return new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
                         this.idCounts, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
-        return arguments;
     }
 
     
@@ -386,13 +384,11 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * @since 2.0.9
      */
     public Arguments setSelectionTarget(final Object newSelectionTarget) {
-        final Arguments arguments = 
-                new Arguments(this.templateEngine,
+        return new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, getLocalVariables(), 
                         this.idCounts, newSelectionTarget, true,
                         getExpressionEnhancingDialects());
-        return arguments;
     }
     
     
@@ -408,18 +404,14 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * @since 2.0.9
      */
     public Arguments addLocalVariablesAndSelectionTarget(final Map<String,Object> newVariables, final Object selectionTarget) {
-        final Arguments arguments = 
-                new Arguments(this.templateEngine,
+        return new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
                         this.idCounts, selectionTarget, true,
                         getExpressionEnhancingDialects());
-        return arguments;
     }
 
 
-
-    
     
     
 }

@@ -45,15 +45,15 @@ public abstract class AbstractIterationElementProcessor
 
     
     public static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
-    
 
-    
 
-    public AbstractIterationElementProcessor(final String elementName) {
+
+
+    protected AbstractIterationElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractIterationElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractIterationElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 
@@ -83,7 +83,7 @@ public abstract class AbstractIterationElementProcessor
 
         final List<?> list = EvaluationUtil.evaluateAsIterable(iteratedObject);
 
-        int size = list.size(); 
+        final int size = list.size();
         int index = 0;
         for (final Object obj : list) {
             

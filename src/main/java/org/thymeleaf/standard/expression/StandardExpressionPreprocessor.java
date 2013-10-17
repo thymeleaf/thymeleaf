@@ -119,7 +119,8 @@ final class StandardExpressionPreprocessor {
             if (c == '_' && state == 1) {
                 state++;
                 continue;
-            } else if (c == '_' && state == 3) {
+            }
+            if (c == '_' && state == 3) {
                 structureFound = true;
                 break;
             }
@@ -138,10 +139,10 @@ final class StandardExpressionPreprocessor {
             final char c = input.charAt(i);
             if (c == '\\' && (state == 0 || state == 2)) {
                 state++;
-                strBuilder.append(c);
+                strBuilder.append('\\');
             } else if (c == '_' && state == 1) {
                 state++;
-                strBuilder.append(c);
+                strBuilder.append('_');
             } else if (c == '_' && state == 3) {
                 state = 0;
                 final int builderLen = strBuilder.length(); 

@@ -36,15 +36,15 @@ import org.thymeleaf.processor.ProcessorResult;
  */
 public abstract class AbstractLocalVariableDefinitionElementProcessor 
         extends AbstractElementProcessor {
-    
-    
-    
 
-    public AbstractLocalVariableDefinitionElementProcessor(final String elementName) {
+
+
+
+    protected AbstractLocalVariableDefinitionElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractLocalVariableDefinitionElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractLocalVariableDefinitionElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

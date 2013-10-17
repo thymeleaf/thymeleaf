@@ -691,15 +691,15 @@ public final class DOMSelector implements Serializable {
 
             return true;
 
-        } else if (node instanceof AbstractTextNode) {
+        }
+        if (node instanceof AbstractTextNode) {
             if (referenceChecker != null) {
                 return this.text && referenceChecker.checkReference(node, this.selectorPath);
             }
             return this.text;
-        } else {
-            if (referenceChecker != null) {
-                return referenceChecker.checkReference(node, this.selectorPath);
-            }
+        }
+        if (referenceChecker != null) {
+            return referenceChecker.checkReference(node, this.selectorPath);
         }
 
         return false;
@@ -727,7 +727,8 @@ public final class DOMSelector implements Serializable {
                 return operator == AttributeCondition.Operator.EQUALS;
             }
             return operator == AttributeCondition.Operator.NOT_EQUALS;
-        } else if (attributeValue == null) {
+        }
+        if (attributeValue == null) {
             return operator == AttributeCondition.Operator.NOT_EQUALS;
         }
 
@@ -748,10 +749,10 @@ public final class DOMSelector implements Serializable {
 
         // Attribute IS multivalued
 
-        if ((operator.equals(AttributeCondition.Operator.EQUALS) || operator.equals(AttributeCondition.Operator.NOT_EQUALS))
+        if ((operator == AttributeCondition.Operator.EQUALS || operator == AttributeCondition.Operator.NOT_EQUALS)
                 && !nodeAttributeValue.contains(attributeValue)) {
             // If it is equals/not equals, value must appear as a whole (not a prefix, suffix). If not, we can return.
-            return operator.equals(AttributeCondition.Operator.NOT_EQUALS);
+            return operator == AttributeCondition.Operator.NOT_EQUALS;
         }
 
         final StringTokenizer nodeAttrValueTokenizer = new StringTokenizer(nodeAttributeValue, ", ");
@@ -885,16 +886,16 @@ public final class DOMSelector implements Serializable {
                     if (operatorStr == null) {
                         return null;
                     }
-                    if (operatorStr.equals("=")) {
+                    if ("=".equals(operatorStr)) {
                         return EQUALS;
                     }
-                    if (operatorStr.equals("!=")) {
+                    if ("!=".equals(operatorStr)) {
                         return NOT_EQUALS;
                     }
-                    if (operatorStr.equals("^=")) {
+                    if ("^=".equals(operatorStr)) {
                         return STARTS_WITH;
                     }
-                    if (operatorStr.equals("$=")) {
+                    if ("$=".equals(operatorStr)) {
                         return ENDS_WITH;
                     }
                     return null;
@@ -966,7 +967,7 @@ public final class DOMSelector implements Serializable {
     }
 
 
-    public static abstract class AbstractNodeReferenceChecker implements INodeReferenceChecker {
+    public abstract static class AbstractNodeReferenceChecker implements INodeReferenceChecker {
 
         protected AbstractNodeReferenceChecker() {
             super();

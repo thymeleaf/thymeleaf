@@ -255,10 +255,7 @@ public abstract class Node implements Serializable {
      */
     public final boolean hasNodeProperty(final String name) {
         Validate.notNull(name, "Property name cannot be null");
-        if (this.nodeProperties == null) {
-            return false;
-        }
-        return this.nodeProperties.containsKey(name);
+        return this.nodeProperties != null && this.nodeProperties.containsKey(name);
     }
     
 
@@ -973,7 +970,7 @@ public abstract class Node implements Serializable {
                             (node.nodeLocalVariables == null? -1 : node.nodeLocalVariables.contentsHash()); 
                     
                     // Execute processor
-                    ProcessorResult processorResult = 
+                    final ProcessorResult processorResult =
                             processor.getProcessor().process(executionArguments, processor.getContext(), node);
 
                     // Obtain a "hash snapshot" of the node local variables map after

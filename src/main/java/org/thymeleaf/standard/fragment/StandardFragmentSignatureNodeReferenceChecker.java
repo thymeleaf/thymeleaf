@@ -26,8 +26,6 @@ import org.thymeleaf.dom.NestableAttributeHolderNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.standard.expression.FragmentSignature;
 import org.thymeleaf.standard.expression.FragmentSignatureUtils;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
 
@@ -51,7 +49,6 @@ import org.thymeleaf.util.Validate;
 public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSelector.AbstractNodeReferenceChecker {
 
     private final Configuration configuration;
-    private final IStandardExpressionParser expressionParser;
     private final String dialectPrefix;
     private final String fragmentAttributeName;
 
@@ -62,7 +59,6 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
         Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(fragmentAttributeName, "Fragment attribute name cannot be null");
         this.configuration = configuration;
-        this.expressionParser = StandardExpressions.getExpressionParser(this.configuration);
         this.dialectPrefix = dialectPrefix;
         this.fragmentAttributeName = Attribute.normalizeAttributeName(fragmentAttributeName);
     }

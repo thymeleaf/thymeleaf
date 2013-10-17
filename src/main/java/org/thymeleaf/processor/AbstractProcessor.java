@@ -220,11 +220,9 @@ public abstract class AbstractProcessor implements IProcessor {
             }
             throw e;
         } catch (final Exception e) {
-            final TemplateProcessingException exception =
-                    new TemplateProcessingException(
+            throw new TemplateProcessingException(
                             "Error during execution of processor '" + this.getClass().getName() + "'", 
                             node.getDocumentName(), node.getLineNumber(), e);
-            throw exception;
         }
         
     }

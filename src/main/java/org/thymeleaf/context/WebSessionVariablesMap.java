@@ -82,10 +82,7 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     @Override
     public boolean isEmpty() {
         final HttpSession session = this.request.getSession(false);
-        if (session == null) {
-            return true;
-        }
-        return !session.getAttributeNames().hasMoreElements();
+        return session == null || !session.getAttributeNames().hasMoreElements();
     }
 
     
@@ -140,13 +137,13 @@ class WebSessionVariablesMap extends VariablesMap<String,Object> {
     
     
     @Override
-    public void putAll(final Map<? extends String, ? extends Object> m) {
+    public void putAll(final Map<? extends String, ?> m) {
         final HttpSession session = this.request.getSession(false);
         if (session == null) {
             throw new IllegalStateException(
                     "Cannot put attributes into session: no HTTP session exists!");
         }
-        for (final Map.Entry<? extends String, ? extends Object> mEntry : m.entrySet()) {
+        for (final Map.Entry<? extends String, ?> mEntry : m.entrySet()) {
             session.setAttribute(mEntry.getKey(), mEntry.getValue());
         }
     }

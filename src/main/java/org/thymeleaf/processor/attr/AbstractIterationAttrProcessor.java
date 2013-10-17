@@ -72,7 +72,7 @@ public abstract class AbstractIterationAttrProcessor
         // Find out if there's some whitespace to duplicate so as to preserve the
         // 'look' of the HTML code when completed
         Node previousNode = null;
-        for (Node child: parentNode.getChildren()) {
+        for (final Node child: parentNode.getChildren()) {
             if (child == element) {
                 break;
             }
@@ -81,7 +81,7 @@ public abstract class AbstractIterationAttrProcessor
         boolean preserveWhitespace = false;
         String whitespace = null;
         if (previousNode != null && previousNode instanceof Text) {
-            String content = ((Text)previousNode).getContent();
+            final String content = ((Text)previousNode).getContent();
             if (content.trim().length() == 0) {
                 preserveWhitespace = true;
                 whitespace = content;
@@ -108,7 +108,7 @@ public abstract class AbstractIterationAttrProcessor
 
         final List<?> list = EvaluationUtil.evaluateAsIterable(iteratedObject);
 
-        int size = list.size(); 
+        final int size = list.size();
         int index = 0;
         for (final Object obj : list) {
             

@@ -584,10 +584,7 @@ public final class DOMUtils {
         
         try {
             
-            final Document document =
-              parser.parseTemplate(configuration, "input", source);
-            
-            return document;
+            return parser.parseTemplate(configuration, "input", source);
             
         } catch (final Exception e) {
             throw new TemplateInputException(

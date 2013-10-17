@@ -58,7 +58,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
     private final NekoBasedHtmlParser parser;
 
 
-    protected AbstractHtmlTemplateParser(final String templateModeName, int poolSize) {
+    protected AbstractHtmlTemplateParser(final String templateModeName, final int poolSize) {
         
         super();
 
@@ -133,7 +133,7 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
         private boolean canResetParsers = true;
 
         
-        private NekoBasedHtmlParser(int poolSize) {
+        private NekoBasedHtmlParser(final int poolSize) {
             super();
             this.pool = new ResourcePool<Object>(new HtmlTemplateParserFactory(), poolSize);
         }

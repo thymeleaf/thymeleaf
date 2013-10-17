@@ -303,7 +303,7 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
      */
     public final Map<String,Attribute> getAttributeMap() {
         if (this.attributesLen > 0) {
-            final Map<String,Attribute> attributeMap = new LinkedHashMap<String, Attribute>();
+            final Map<String,Attribute> attributeMap = new LinkedHashMap<String, Attribute>(this.attributesLen + 1, 1.0f);
             for (int i = 0; i < this.attributesLen; i++) {
                 attributeMap.put(this.attributeNormalizedNames[i], this.attributes[i]);
             }

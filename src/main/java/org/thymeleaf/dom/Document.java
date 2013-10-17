@@ -70,7 +70,7 @@ public final class Document extends NestableNode {
         return this.docType != null;
     }
 
-    public void setDocType(DocType docType) {
+    public void setDocType(final DocType docType) {
     	this.docType = docType;
     }
 
@@ -103,7 +103,7 @@ public final class Document extends NestableNode {
 
     
     @Override
-    Node createClonedInstance(final NestableNode newParent, boolean cloneProcessors) {
+    Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
         return new Document(this.docType);
     }
     

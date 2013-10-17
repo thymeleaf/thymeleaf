@@ -94,7 +94,7 @@ public final class CharArrayWrapperSequence implements CharSequence, Cloneable {
 
     
     
-    public CharSequence subSequence(final int start, int end) {
+    public CharSequence subSequence(final int start, final int end) {
         if (start < 0 || start >= this.len) {
             throw new ArrayIndexOutOfBoundsException(start);
         }

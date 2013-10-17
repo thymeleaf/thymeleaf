@@ -42,7 +42,7 @@ import org.thymeleaf.processor.IProcessor;
 public abstract class AbstractDialect implements IDialect {
 
 
-    public AbstractDialect() {
+    protected AbstractDialect() {
         super();
     }
     

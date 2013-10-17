@@ -51,8 +51,8 @@ public final class OrExpression extends BinaryOperationExpression {
     private static final Class<? extends BinaryOperationExpression>[] OPERATOR_CLASSES = 
         (Class<? extends BinaryOperationExpression>[]) new Class<?>[] { OrExpression.class };
 
-    private static Method LEFT_ALLOWED_METHOD;
-    private static Method RIGHT_ALLOWED_METHOD;
+    private static final Method LEFT_ALLOWED_METHOD;
+    private static final Method RIGHT_ALLOWED_METHOD;
 
 
     static {
@@ -90,7 +90,7 @@ public final class OrExpression extends BinaryOperationExpression {
     
     
     static ExpressionParsingState composeOrExpression(
-            final ExpressionParsingState state, int inputIndex) {
+            final ExpressionParsingState state, final int inputIndex) {
         return composeBinaryOperationExpression(
                 state, inputIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }

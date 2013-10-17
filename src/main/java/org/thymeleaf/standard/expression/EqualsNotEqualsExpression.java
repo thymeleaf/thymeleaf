@@ -51,8 +51,8 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
             (Class<? extends BinaryOperationExpression>[]) new Class<?>[] {
                     EqualsExpression.class, NotEqualsExpression.class, EqualsExpression.class, NotEqualsExpression.class, NotEqualsExpression.class };
 
-    private static Method LEFT_ALLOWED_METHOD;
-    private static Method RIGHT_ALLOWED_METHOD;
+    private static final Method LEFT_ALLOWED_METHOD;
+    private static final Method RIGHT_ALLOWED_METHOD;
 
 
     static {
@@ -85,7 +85,7 @@ public abstract class EqualsNotEqualsExpression extends BinaryOperationExpressio
     
     
     protected static ExpressionParsingState composeEqualsNotEqualsExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
         return composeBinaryOperationExpression(
                 state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }

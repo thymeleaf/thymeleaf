@@ -33,16 +33,16 @@ import org.thymeleaf.processor.ProcessorResult;
  */
 public abstract class AbstractNoOpElementProcessor 
         extends AbstractElementProcessor {
-    
-    
-    
-    
 
-    public AbstractNoOpElementProcessor(final String elementName) {
+
+
+
+
+    protected AbstractNoOpElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractNoOpElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractNoOpElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

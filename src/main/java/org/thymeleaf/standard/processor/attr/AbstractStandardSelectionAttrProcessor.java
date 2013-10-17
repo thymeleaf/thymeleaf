@@ -38,16 +38,16 @@ import org.thymeleaf.standard.expression.StandardExpressions;
 public abstract class AbstractStandardSelectionAttrProcessor 
         extends AbstractSelectionTargetAttrProcessor {
 
-    
-    
-    
 
-    
-    public AbstractStandardSelectionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+
+
+
+
+    protected AbstractStandardSelectionAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         super(matcher);
     }
 
-    public AbstractStandardSelectionAttrProcessor(final String attributeName) {
+    protected AbstractStandardSelectionAttrProcessor(final String attributeName) {
         super(attributeName);
     }
 

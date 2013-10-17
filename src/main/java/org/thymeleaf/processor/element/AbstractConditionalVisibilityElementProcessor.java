@@ -35,15 +35,15 @@ import org.thymeleaf.processor.ProcessorResult;
 public abstract class AbstractConditionalVisibilityElementProcessor 
         extends AbstractElementProcessor {
 
-    
-    
-    
 
-    public AbstractConditionalVisibilityElementProcessor(final String elementName) {
+
+
+
+    protected AbstractConditionalVisibilityElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractConditionalVisibilityElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractConditionalVisibilityElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

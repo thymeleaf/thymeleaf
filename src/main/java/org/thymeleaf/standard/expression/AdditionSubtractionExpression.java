@@ -47,8 +47,8 @@ public abstract class AdditionSubtractionExpression extends BinaryOperationExpre
             (Class<? extends BinaryOperationExpression>[]) new Class<?>[] {
                     AdditionExpression.class, SubtractionExpression.class };
 
-    private static Method LEFT_ALLOWED_METHOD;
-    private static Method RIGHT_ALLOWED_METHOD;
+    private static final Method LEFT_ALLOWED_METHOD;
+    private static final Method RIGHT_ALLOWED_METHOD;
 
 
     static {
@@ -79,7 +79,7 @@ public abstract class AdditionSubtractionExpression extends BinaryOperationExpre
 
 
     static ExpressionParsingState composeAdditionSubtractionExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
         return composeBinaryOperationExpression(
                 state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }

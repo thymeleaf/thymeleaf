@@ -232,9 +232,11 @@ public final class DateUtils {
 
         if (tzTimeZone != null && locale != null) {
             return Calendar.getInstance(tzTimeZone, locale);
-        } else if (tzTimeZone != null) {
+        }
+        if (tzTimeZone != null) {
             return Calendar.getInstance(tzTimeZone);
-        } else if (locale != null) {
+        }
+        if (locale != null) {
             return Calendar.getInstance(locale);
         }
         return Calendar.getInstance();

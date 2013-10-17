@@ -62,9 +62,9 @@ public abstract class AbstractTemplateResolver
     
 
     private volatile boolean initialized;
-    
-                   
-    public AbstractTemplateResolver() {
+
+
+    protected AbstractTemplateResolver() {
         super();
         this.initialized = false;
     }

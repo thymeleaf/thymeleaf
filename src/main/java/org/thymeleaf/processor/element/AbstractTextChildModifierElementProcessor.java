@@ -37,14 +37,14 @@ import org.thymeleaf.processor.IElementNameProcessorMatcher;
  */
 public abstract class AbstractTextChildModifierElementProcessor 
         extends AbstractMarkupSubstitutionElementProcessor {
-    
-    
 
-    public AbstractTextChildModifierElementProcessor(final String elementName) {
+
+
+    protected AbstractTextChildModifierElementProcessor(final String elementName) {
         super(elementName);
     }
-    
-    public AbstractTextChildModifierElementProcessor(final IElementNameProcessorMatcher matcher) {
+
+    protected AbstractTextChildModifierElementProcessor(final IElementNameProcessorMatcher matcher) {
         super(matcher);
     }
 

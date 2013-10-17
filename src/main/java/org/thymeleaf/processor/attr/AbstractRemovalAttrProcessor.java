@@ -46,14 +46,14 @@ public abstract class AbstractRemovalAttrProcessor
     private final String removeAll; 
     private final String removeAllButFirst; 
     private final String removeElement; 
-    private final String removeBody; 
-    
-    
-    
-    
-    
-    
-    public AbstractRemovalAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
+    private final String removeBody;
+
+
+
+
+
+
+    protected AbstractRemovalAttrProcessor(final IAttributeNameProcessorMatcher matcher) {
         
         super(matcher);
         

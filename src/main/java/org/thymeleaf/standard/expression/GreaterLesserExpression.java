@@ -60,8 +60,8 @@ public abstract class GreaterLesserExpression extends BinaryOperationExpression 
             GreaterThanExpression.class, GreaterOrEqualToExpression.class,
             LessThanExpression.class, LessOrEqualToExpression.class};
 
-    private static Method LEFT_ALLOWED_METHOD;
-    private static Method RIGHT_ALLOWED_METHOD;
+    private static final Method LEFT_ALLOWED_METHOD;
+    private static final Method RIGHT_ALLOWED_METHOD;
 
 
     static {
@@ -93,7 +93,7 @@ public abstract class GreaterLesserExpression extends BinaryOperationExpression 
     
     
     protected static ExpressionParsingState composeGreaterLesserExpression(
-            final ExpressionParsingState state, int nodeIndex) {
+            final ExpressionParsingState state, final int nodeIndex) {
         return composeBinaryOperationExpression(
                 state, nodeIndex, OPERATORS, LENIENCIES, OPERATOR_CLASSES, LEFT_ALLOWED_METHOD, RIGHT_ALLOWED_METHOD);
     }

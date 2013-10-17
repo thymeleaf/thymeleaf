@@ -173,10 +173,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     public boolean hasLocalVariable(final String variableName) {
-        if (this.localVariables == null) {
-            return false;
-        }
-        return this.localVariables.containsKey(variableName);
+        return this.localVariables != null && this.localVariables.containsKey(variableName);
     }
     
     

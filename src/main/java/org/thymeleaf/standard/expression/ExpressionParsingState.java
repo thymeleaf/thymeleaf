@@ -37,7 +37,7 @@ final class ExpressionParsingState extends ArrayList<ExpressionParsingNode> {
     private static final long serialVersionUID = 3972191269638891028L;
     
 
-    public ExpressionParsingState() {
+    ExpressionParsingState() {
         super();
     }
 

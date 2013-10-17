@@ -46,8 +46,8 @@ import org.thymeleaf.util.Validate;
 public final class PatternSpec {
 
     
-    private final LinkedHashSet<String> patternStrs = new LinkedHashSet<String>();
-    private final LinkedHashSet<Pattern> patterns = new LinkedHashSet<Pattern>();
+    private final LinkedHashSet<String> patternStrs = new LinkedHashSet<String>(3);
+    private final LinkedHashSet<Pattern> patterns = new LinkedHashSet<Pattern>(3);
 
     private volatile boolean initialized;
     

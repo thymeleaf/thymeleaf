@@ -113,7 +113,7 @@ final class ExpressionParsingUtil {
         }
 
         final StringBuilder decomposedInput = new StringBuilder();
-        StringBuilder currentFragment = new StringBuilder();
+        final StringBuilder currentFragment = new StringBuilder();
         int currentIndex = 1;
 
         int expLevel = 0;
@@ -204,7 +204,7 @@ final class ExpressionParsingUtil {
             } else if (expLevel == 1 && c == SimpleExpression.EXPRESSION_END_CHAR) {
                 // We are closing an expression
 
-                currentFragment.append(c);
+                currentFragment.append(SimpleExpression.EXPRESSION_END_CHAR);
 
                 final char expSelectorChar = currentFragment.charAt(0);
 
@@ -255,13 +255,13 @@ final class ExpressionParsingUtil {
                 // We are in an expression. This is needed for correct nesting/unnesting of expressions
 
                 expLevel++;
-                currentFragment.append(c);
+                currentFragment.append(SimpleExpression.EXPRESSION_START_CHAR);
 
             } else if (expLevel > 1 && c == SimpleExpression.EXPRESSION_END_CHAR) {
                 // We are in an expression. This is needed for correct nesting/unnesting of expressions
 
                 expLevel--;
-                currentFragment.append(c);
+                currentFragment.append(SimpleExpression.EXPRESSION_END_CHAR);
 
             } else if (expLevel > 0) {
                 // We are in an expression and not closing it, so just add the char
@@ -437,7 +437,7 @@ final class ExpressionParsingUtil {
         final String input = state.get(nodeIndex).getInput();
 
         final StringBuilder decomposedString = new StringBuilder();
-        StringBuilder currentFragment = new StringBuilder();
+        final StringBuilder currentFragment = new StringBuilder();
         int currentIndex = state.size();
         final List<Integer> nestedInputs = new ArrayList<Integer>(6);
 

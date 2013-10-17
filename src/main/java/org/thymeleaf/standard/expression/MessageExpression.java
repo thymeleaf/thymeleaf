@@ -238,8 +238,8 @@ public final class MessageExpression extends SimpleExpression {
 
         final Object[] messageParameters = 
             new Object[(expression.hasParameters()? expression.getParameters().size() : 0)];
-        int parIndex = 0;
         if (expression.hasParameters()) {
+            int parIndex = 0;
             for (final IStandardExpression parameter  : expression.getParameters()) {
                 final Object result = parameter.execute(configuration, arguments, expContext);
                 messageParameters[parIndex++] = LiteralValue.unwrap(result);
