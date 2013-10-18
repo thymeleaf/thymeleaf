@@ -384,20 +384,10 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     
 
     
-    private static boolean isParamVariableName(final String name) {
-        return PARAM_VARIABLE_NAME.equals(name);
-    }
-    
-    private static boolean isSessionVariableName(final String name) {
-        return SESSION_VARIABLE_NAME.equals(name);
-    }
-    
-    private static boolean isApplicationVariableName(final String name) {
-        return APPLICATION_VARIABLE_NAME.equals(name);
-    }
-    
     private static boolean isReservedVariableName(final String name) {
-        return isParamVariableName(name) || isSessionVariableName(name) || isApplicationVariableName(name);
+        return PARAM_VARIABLE_NAME.equals(name) ||
+               SESSION_VARIABLE_NAME.equals(name) ||
+               APPLICATION_VARIABLE_NAME.equals(name);
     }
 
 
