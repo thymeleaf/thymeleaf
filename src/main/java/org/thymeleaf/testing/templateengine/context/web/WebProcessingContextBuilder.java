@@ -259,7 +259,7 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
     
     
     private static final ServletContext createServletContext(final Map<String,Object> attributes) {
-        
+
         final ServletContext servletContext = Mockito.mock(ServletContext.class);
         
         Mockito.when(servletContext.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(attributes));
