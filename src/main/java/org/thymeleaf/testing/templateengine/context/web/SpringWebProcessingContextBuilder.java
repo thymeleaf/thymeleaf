@@ -56,17 +56,26 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
     
     public final static String DEFAULT_APPLICATION_CONTEXT_CONFIG_LOCATION = "classpath:applicationContext.xml";
 
-    
+
     private String applicationContextConfigLocation = DEFAULT_APPLICATION_CONTEXT_CONFIG_LOCATION;
+
+    private boolean shareAppContextForAllTests = false;
+    private String sharedContextConfigLocation = null;
+    private WebApplicationContext sharedApplicationContext = null;
     
-    
+
+
+
+
+
     public SpringWebProcessingContextBuilder() {
         super();
     }
 
-    
-    
-    
+
+
+
+
     public String getApplicationContextConfigLocation() {
         return this.applicationContextConfigLocation;
     }
@@ -75,6 +84,16 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
         this.applicationContextConfigLocation = applicationContextConfigLocation;
     }
 
+
+
+
+    public boolean getShareAppContextForAllTests() {
+        return shareAppContextForAllTests;
+    }
+
+    public void setShareAppContextForAllTests(final boolean shareAppContextForAllTests) {
+        this.shareAppContextForAllTests = shareAppContextForAllTests;
+    }
 
 
 
@@ -225,8 +244,29 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
             final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
             final Locale locale, final Map<String,Object> variables) {
 
+        final String nullSafeConfigLocation =
+                this.applicationContextConfigLocation == null? "null" : this.applicationContextConfigLocation;
+
+        if (this.shareAppContextForAllTests) {
+            if (this.sharedContextConfigLocation != null) {
+                if (!this.sharedContextConfigLocation.equals(nullSafeConfigLocation)) {
+                    throw new RuntimeException(
+                            "Invalid configuration for context builder. Builder is configured to share Spring " +
+                            "application context across executions, but more than one different context config " +
+                            "locations are being used, so this option cannot be used.");
+                }
+                return this.sharedApplicationContext;
+            }
+        }
+
+
         if (this.applicationContextConfigLocation == null) {
-            return createEmptyStaticApplicationContext(servletContext);
+            final WebApplicationContext appCtx = createEmptyStaticApplicationContext(servletContext);
+            if (this.shareAppContextForAllTests) {
+                this.sharedContextConfigLocation = nullSafeConfigLocation;
+                this.sharedApplicationContext = appCtx;
+            }
+            return appCtx;
         }
         
         final XmlWebApplicationContext appCtx = new XmlWebApplicationContext();
@@ -245,6 +285,11 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
                         "your ProcessingContext builder to null.", e);
             }
             throw e;
+        }
+
+        if (this.shareAppContextForAllTests) {
+            this.sharedContextConfigLocation = nullSafeConfigLocation;
+            this.sharedApplicationContext = appCtx;
         }
 
         return appCtx;
