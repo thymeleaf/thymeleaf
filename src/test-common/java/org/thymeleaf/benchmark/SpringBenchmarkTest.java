@@ -19,15 +19,20 @@
  */
 package org.thymeleaf.benchmark;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.thymeleaf.dialect.IDialect;
+import org.thymeleaf.spring3.dialect.SpringStandardDialect;
+import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 
 
-public class BenchmarkTest {
+public class SpringBenchmarkTest {
 
 
-    public BenchmarkTest() {
+    public SpringBenchmarkTest() {
         super();
     }
     
@@ -35,15 +40,22 @@ public class BenchmarkTest {
     
     
     @Test
-    public void testBenchmark() throws Exception {
+    public void testSpringBenchmark() throws Exception {
+
+        final SpringWebProcessingContextBuilder contextBuilder = new SpringWebProcessingContextBuilder();
+        contextBuilder.setApplicationContextConfigLocation(null);
+        contextBuilder.setShareAppContextForAllTests(true);
 
         final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(contextBuilder);
+        executor.setDialects(Arrays.asList(new IDialect[]{new SpringStandardDialect()}));
         executor.setReporter(new BenchmarkTestReporter());
         executor.execute("classpath:benchmark/benchmark.thindex");
 
         Assert.assertTrue(executor.isAllOK());
         
     }
+
 
 
     
