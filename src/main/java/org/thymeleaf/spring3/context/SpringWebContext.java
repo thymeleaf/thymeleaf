@@ -100,7 +100,7 @@ public class SpringWebContext
         }
 
         final Map<String,Object> newVariables;
-        synchronized (variableMapPrototypes) {
+        synchronized (variableMapPrototype) {
             newVariables = (Map<String, Object>) variableMapPrototype.clone();
         }
 
