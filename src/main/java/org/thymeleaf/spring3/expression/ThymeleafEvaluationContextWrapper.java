@@ -55,7 +55,7 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
 
     private final EvaluationContext delegate;
     private final List<PropertyAccessor> propertyAccessors;
-    private final Map<String,Object> additionalVariables;
+    private Map<String,Object> additionalVariables;
 
 
 
@@ -81,7 +81,7 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
             this.propertyAccessors.add(BeansPropertyAccessor.INSTANCE);
         }
 
-        this.additionalVariables = new HashMap<String,Object>(additionalVariables);
+        this.additionalVariables = additionalVariables;
 
     }
 
@@ -123,13 +123,18 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
     }
 
     public void setVariable(final String name, final Object value) {
+        if (this.additionalVariables == null) {
+            this.additionalVariables = new HashMap<String, Object>(5, 1.0f);
+        }
         this.additionalVariables.put(name, value);
     }
 
     public Object lookupVariable(final String name) {
-        final Object result = this.additionalVariables.get(name);
-        if (result != null) {
-            return result;
+        if (this.additionalVariables != null && this.additionalVariables.containsKey(name)) {
+            final Object result = this.additionalVariables.get(name);
+            if (result != null) {
+                return result;
+            }
         }
         // fail back to delegate
         return this.delegate.lookupVariable(name);
