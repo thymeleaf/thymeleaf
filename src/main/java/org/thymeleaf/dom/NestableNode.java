@@ -632,7 +632,7 @@ public abstract class NestableNode extends Node {
     
     @Override
     final void doAdditionalProcess(final Arguments arguments) {
-        if (!isDetached() && this.childrenLen > 0) {
+        if (this.childrenLen > 0) {
             final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(this.childrenLen);
             while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed)) { /* Nothing to be done here */ }
         }
