@@ -69,11 +69,11 @@ public abstract class AdditionSubtractionExpression extends BinaryOperationExpre
 
 
     static boolean isRightAllowed(final IStandardExpression right) {
-        return right != null && !(right instanceof Token && !(right instanceof NumberTokenExpression));
+        return right != null && !(right instanceof Token && !(right instanceof NumberTokenExpression || right instanceof GenericTokenExpression));
     }
 
     static boolean isLeftAllowed(final IStandardExpression left) {
-        return left != null && !(left instanceof Token && !(left instanceof NumberTokenExpression));
+        return left != null && !(left instanceof Token && !(left instanceof NumberTokenExpression || left instanceof GenericTokenExpression));
     }
 
 
