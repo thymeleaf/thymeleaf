@@ -1,0 +1,14 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+cond = true
+# ------------------------------------------------------------
+%INPUT
+<div th:text="all">Some text</div>
+<div th:text="tag">Some text</div>
+<div th:text="${cond} ? do_it : dont">Some text</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>all</div>
+<div>tag</div>
+<div>do_it</div>

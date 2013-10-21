@@ -1,0 +1,9 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div th:text="thisisatoken">Some text</div>
+<div th:text="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[].-_">Some text</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>thisisatoken</div>
+<div>0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ[].-_</div>
