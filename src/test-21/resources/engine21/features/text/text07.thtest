@@ -1,0 +1,17 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div th:text="'one' lt 'two'">Some text</div>
+<div th:text="'two' gt 'three'">Some text</div>
+<div th:text="'two' lt 'three'">Some text</div>
+<div th:text="one lt two">Some text</div>
+<div th:text="two gt three">Some text</div>
+<div th:text="two lt three">Some text</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>true</div>
+<div>true</div>
+<div>false</div>
+<div>true</div>
+<div>true</div>
+<div>false</div>

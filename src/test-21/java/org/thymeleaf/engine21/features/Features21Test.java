@@ -70,4 +70,14 @@ public class Features21Test {
 
 
 
+    @Test
+    public void testText07() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/features/text/text07.thtest");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
 }

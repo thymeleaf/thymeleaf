@@ -1,0 +1,13 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<div th:text="do + it">Some text</div>
+<div th:text="do + it + now">Some text</div>
+<div th:text="do + ' it ' + now">Some text</div>
+<div th:text="60 + now">Some text</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>doit</div>
+<div>doitnow</div>
+<div>do it now</div>
+<div>60now</div>
