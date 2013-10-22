@@ -35,14 +35,16 @@ import org.thymeleaf.util.Validate;
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0
+ * @deprecated Deprecated in 2.1.0, in favour of {@link AbstractMarkupRemovalAttrProcessor}. Will be removed in 3.0.
  *
  */
+@Deprecated
 public abstract class AbstractRemovalAttrProcessor 
         extends AbstractAttrProcessor {
     
     
-    
-    
+
+
     private final String removeAll; 
     private final String removeAllButFirst; 
     private final String removeElement; 

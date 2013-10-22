@@ -19,7 +19,14 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-import org.thymeleaf.processor.attr.AbstractRemovalAttrProcessor;
+import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.dom.Element;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.processor.attr.AbstractMarkupRemovalAttrProcessor;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  * 
@@ -29,16 +36,22 @@ import org.thymeleaf.processor.attr.AbstractRemovalAttrProcessor;
  *
  */
 public final class StandardRemoveAttrProcessor
-        extends AbstractRemovalAttrProcessor {
+        extends AbstractMarkupRemovalAttrProcessor {
 
     public static final int ATTR_PRECEDENCE = 1600;
     public static final String ATTR_NAME = "remove";
+
 
     public static final String VALUE_ALL = "all";
     public static final String VALUE_ALL_BUT_FIRST = "all-but-first";
     public static final String VALUE_TAG = "tag";
     public static final String VALUE_BODY = "body";
-    
+
+    /**
+     * @since 2.1.0
+     */
+    public static final String VALUE_NONE = "none";
+
     
 
     
@@ -52,37 +65,47 @@ public final class StandardRemoveAttrProcessor
     public int getPrecedence() {
         return ATTR_PRECEDENCE;
     }
-    
-
-
-
-    @Override
-    protected String getRemoveAllAttrValue() {
-        return VALUE_ALL;
-    }
-
-
-    
-    @Override
-    protected String getRemoveAllButFirstAttrValue() {
-        return VALUE_ALL_BUT_FIRST;
-    }
-
 
 
     @Override
-    protected String getRemoveBodyAttrValue() {
-        return VALUE_BODY;
+    protected RemovalType getRemovalType(final Arguments arguments, final Element element, final String attributeName) {
+
+
+        final String attributeValue = element.getAttributeValue(attributeName);
+
+        final Configuration configuration = arguments.getConfiguration();
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+
+        final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+
+        final Object result = expression.execute(configuration, arguments);
+
+        if (result == null) {
+            return RemovalType.NONE;
+        }
+
+        final String resultStr = result.toString();
+
+        if (VALUE_ALL.equalsIgnoreCase(resultStr)) {
+            return RemovalType.ALL;
+        }
+        if (VALUE_NONE.equalsIgnoreCase(resultStr)) {
+            return RemovalType.NONE;
+        }
+        if (VALUE_TAG.equalsIgnoreCase(resultStr)) {
+            return RemovalType.ELEMENT;
+        }
+        if (VALUE_ALL_BUT_FIRST.equalsIgnoreCase(resultStr)) {
+            return RemovalType.ALLBUTFIRST;
+        }
+        if (VALUE_BODY.equalsIgnoreCase(resultStr)) {
+            return RemovalType.BODY;
+        }
+
+        throw new TemplateProcessingException(
+                "Invalid value specified for \"" + attributeName + "\": only 'all', 'tag', 'body', 'none' " +
+                "and 'all-but-first' are allowed, but \"" + attributeValue + "\" was specified.");
+
     }
 
-
-
-    @Override
-    protected String getRemoveElementAttrValue() {
-        return VALUE_TAG;
-    }
-    
-
-
-    
 }
