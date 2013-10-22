@@ -35,6 +35,7 @@ import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
 import org.thymeleaf.spring3.expression.SpringStandardConversionService;
+import org.thymeleaf.spring3.processor.attr.SpringErrorClassAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringErrorsAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputCheckboxFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputFileFieldAttrProcessor;
@@ -69,11 +70,11 @@ import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeMod
  * </p>
  * <ul>
  *   <li>The language used for evaluation of expressions is <b>Spring Expression Language</b> instead of OGNL.</li>
- *   <li>Expressions can use an object called <tt>#beans</tt> to access beans in the Application
- *       Context: <tt>${beans.myBean.doSomething()}</tt>.</li>
+ *   <li>Expressions can use beans in the Spring Application Context like: <tt>${@myBean.doSomething()}</tt>.</li>
  *   <li>New attributes for form processing:
  *     <ul>
  *       <li><tt>th:field</tt> for binding form fields to attributes in form-backing beans.</li>
+ *       <li><tt>th:errorclass</tt> for establishing a specific CSS class to a form field if errors exist for it.</li>
  *       <li><tt>th:errors</tt> for showing form validation errors.</li>
  *       <li>Modification to <tt>th:object</tt> for using it as a form-back bean selection mechanism.</li>
  *     </ul>
@@ -453,7 +454,8 @@ public class SpringStandardDialect extends StandardDialect {
         processors.addAll(Arrays.asList(SpringSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.add(new SpringOptionFieldAttrProcessor());
         processors.add(new SpringTextareaFieldAttrProcessor());
-        
+        processors.add(new SpringErrorClassAttrProcessor());
+
         return processors;
         
     }
