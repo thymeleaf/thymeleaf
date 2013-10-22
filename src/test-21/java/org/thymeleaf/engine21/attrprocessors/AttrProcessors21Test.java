@@ -102,4 +102,15 @@ public class AttrProcessors21Test {
     }
 
 
+    @Test
+    public void testRemove() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine21/attrprocessors/remove");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
+
 }
