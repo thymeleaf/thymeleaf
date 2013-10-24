@@ -87,8 +87,9 @@
               <li>Expression improvements:
                 <ul>
                   <li><a href="#doms">More powerful DOM selector syntax</a></li>
-                  <li><a href="#lsub">Literal substitutions</a></li>
+                  <li><a href="#littok">Literal tokens</a></li>
                   <li><a href="#bnlit">Boolean and null literals</a></li>
+                  <li><a href="#lsub">Literal substitutions</a></li>
                   <li><a href="#pru">Protocol-relative URLs</a></li>
                 </ul>
               </li>
@@ -100,6 +101,7 @@
               </li>
               <li>New Standard Dialect features:
                 <ul>
+                  <li><a href="#remove">Improved <kbd>th:remove</kbd> attribute</a></li>
                   <li><a href="#bloc">Synthetic <kbd>th:block</kbd> tag</a></li>
                   <li><a href="#data">Support for HTML5-friendly attribute and element names</a></li>
                   <li><a href="#assr">New <kbd>th:assert</kbd> for in-template assertions</a></li>
@@ -125,6 +127,7 @@
                 </li>
                 <li>Form error handling:
                     <ul>
+                        <li><a href="#errcl">New <kbd>th:errorclass</kbd> for adding CSS class to form fields in error</a></li>
                         <li><a href="#sperr">Additional form validation error reporting options</a></li>
                     </ul>
                 </li>
@@ -355,6 +358,69 @@
 
 
 
+
+        <h2><a name="littok"></a>Literal tokens</h2>
+
+
+        <p>
+            Thymeleaf 2.1 allows for a little bit of simplification in Standard Expressions (i.e. outside
+            OGNL or SpringEL variable expressions), thanks to the
+            introduction of <em>literal tokens</em>.
+        </p>
+        <p>
+            These tokens work exactly the same as literals (<kbd>'...'</kbd>), but they
+            only allow letters (<kbd>A-Z</kbd> and <kbd>a-z</kbd>), numbers (<kbd>0-9</kbd>), brackets
+            (<kbd>[</kbd> and <kbd>]</kbd>), dots (<kbd>.</kbd>), hyphens (<kbd>-</kbd>) and underscores
+            (<kbd>_</kbd>). So no whitespaces, no commas, etc.
+        </p>
+        <p>
+            The nice part? tokens don't need any quotes surrounding them. So we can now do this:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:class="content">...</div>
+        ]]></script>
+
+        <p>
+            ...instead of:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:class="'content'">...</div>
+        ]]></script>
+
+
+        <h2><a name="bnlit"></a>Boolean and null tokens</h2>
+
+
+        <p>
+            Boolean and null tokens can now be used (they are <em>reserved tokens</em>). The following is now valid:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${user.isAdmin()} == false"> ...
+        ]]></script>
+
+        <p>
+            Note the difference with what was allowed in 2.0, when the only way to do this was to specify the
+            <kbd>false</kbd> token inside the OGNL/SpringEL expression and therefore let these expression engines
+            evaluate it (not thymeleaf).
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${user.isAdmin() == false}"> ...
+        ]]></script>
+
+        <p>
+            The <kbd>null</kbd> token also works as expected:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <div th:if="${variable.something} == null"> ...
+        ]]></script>
+
+
+
         <h2><a name="lsub"></a>Literal substitutions</h2>
 
 
@@ -391,38 +457,6 @@
             substitutions. No other literals (<kbd>'...'</kbd>), boolean/numeric tokens, conditional expressions etc.
             are.
         </p>
-
-
-
-        <h2><a name="bnlit"></a>Boolean and null literals</h2>
-
-
-        <p>
-            Thymeleaf 2.1 allows the specification of boolean literals in expressions (i.e. outside OGNL or SpringEL
-            variable expressions). So this is now valid:
-        </p>
-
-        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
-            <div th:if="${user.isAdmin()} == false"> ...
-        ]]></script>
-
-        <p>
-            Note the difference with what was allowed in 2.0, when the only way to do this was to specify the
-            <kbd>false</kbd> literal inside the OGNL/SpringEL expression and therefore let these expression engines
-            evaluate it (not thymeleaf).
-        </p>
-
-        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
-            <div th:if="${user.isAdmin() == false}"> ...
-        ]]></script>
-
-        <p>
-            The <kbd>null</kbd> literal has also been added:
-        </p>
-
-        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
-            <div th:if="${variable.something} == null"> ...
-        ]]></script>
 
 
 
@@ -490,7 +524,7 @@
         ]]></script>
 
         <p>
-            Note that this feature is <em>dialect-independent</em>. So it will be available for you even if you don't
+            Note that this feature is <em>dialect-independent</em>. So it will be available for us even if we don't
             use the Standard Dialects.
         </p>
 
@@ -535,6 +569,47 @@
 
         <p>
             As with parser-level comment blocks, note that this feature is also <em>dialect-independent</em>.
+        </p>
+
+
+
+
+        <h2><a name="remove"></a>Improved <kbd>th:remove</kbd> attribute</h2>
+
+
+        <p>
+            The <kbd>th:remove</kbd> attribute can take now any Thymeleaf Standard Expression, as long as it returns
+            one of the following String values:
+        </p>
+
+        <ul>
+            <li><kbd>all</kbd></li>
+            <li><kbd>tag</kbd></li>
+            <li><kbd>body</kbd></li>
+            <li><kbd>all-but-first</kbd></li>
+            <li><kbd>none</kbd></li>
+        </ul>
+
+        <p>
+            This means removals could now be conditional, like:
+        </p>
+
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <a href="/something" th:remove="${condition}? tag : none">Link text not to be removed</a>
+        ]]></script>
+
+        <p>
+            Also note that <kbd>th:remove</kbd> could consider <kbd>null</kbd> a synonym to <kbd>none</kbd>, so that the
+            following works exactly as the example above:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <a href="/something" th:remove="${condition}? tag">Link text not to be removed</a>
+        ]]></script>
+
+        <p>
+            If <kbd>${condition}</kbd> is false, null will be returned, and thus no removal will be performed.
         </p>
 
 
@@ -600,7 +675,7 @@
 
 
         <p>
-            Thymeleaf 2.1 adds a completely new syntax you can use to apply processors to your templates, more
+            Thymeleaf 2.1 adds a completely new syntax we can use to apply processors to our templates, more
             <em>HTML5-friendly</em>.
         </p>
 
@@ -616,12 +691,12 @@
         <p>
             The <kbd>data-{prefix}-{name}</kbd> syntax is the standard way to write <em>custom attributes</em> in
             HTML5, without requiring developers to use any namespaced names like <kbd>th:*</kbd>. Thymeleaf 2.1 makes
-            this syntax automatically available to all your dialects (not only the Standard ones).
+            this syntax automatically available to all our dialects (not only the Standard ones).
         </p>
 
         <p>
             There is also a new syntax to specify custom tags: <kbd>{prefix}-{name}</kbd>, which follows the
-            <em>W3C Custom Elements</em> specification (a part of the larger <em>W3C Web Components</em> spec). You
+            <em>W3C Custom Elements</em> specification (a part of the larger <em>W3C Web Components</em> spec). We
             can use this, for example, for the new <kbd>th:block</kbd> element (or also <kbd>th-block</kbd>):
         </p>
 
@@ -722,7 +797,7 @@
         <h2><a name="spbean"></a>More integrated acccess to beans from expressions</h2>
 
         <p>
-            Thymeleaf now allows you to access beans registered in your Spring application context in the standard
+            Thymeleaf now allows us to access beans registered in our Spring application context in the standard
             way defined by Spring EL, which is using the syntax <kbd>@beanName</kbd>:
         </p>
 
@@ -731,7 +806,7 @@
         ]]></script>
 
         <p>
-            Until now, you could access beans with the thymeleaf-specific
+            Until now, we could access beans with the thymeleaf-specific
             syntax <kbd>beans.beanName</kbd>:
         </p>
 
@@ -758,8 +833,16 @@
             application context.
         </p>
         <p>
-            Thymeleaf now seamlessly integrates with your <i>conversion service</i>. So you can now have a formatter
-            like this:
+            Thymeleaf now seamlessly integrates with our <i>conversion service</i> thanks to the introduction of
+            double-bracket expressions, which apply conversion on their result:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <p th:text="${{val}}">...</p>
+        ]]></script>
+
+        <p>
+            So we can now have a formatter like this:
         </p>
 
         <script type="syntaxhighlighter" class="brush:java"><![CDATA[
@@ -790,7 +873,7 @@
         ]]></script>
 
         <p>
-            Registered in your application context like this:
+            Registered in our application context like this:
         </p>
 
         <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -807,14 +890,13 @@
         ]]></script>
 
         <p>
-            Thymeleaf will automatically use it whenever it has to output text (<kbd>th:text</kbd>,
-            <kbd>th:attr</kbd>, <kbd>th:value</kbd>, etc.), so that, given a <kbd>Calendar</kbd> variable in context
-            with name <kbd>onedate</kbd>, the following:
+            Thymeleaf will allow us to use our formatter whenever we need it. So given a
+            <kbd>Calendar</kbd> variable in context with name <kbd>onedate</kbd>, the following:
         </p>
 
         <script type="syntaxhighlighter" class="brush:html"><![CDATA[
-            <p th:text="${onedate}">...</p>
-            <p th:text="|The date is ${onedate}|">...</p>
+            <p th:text="${{onedate}}">...</p>
+            <p th:text="|The date is ${{onedate}}|">...</p>
         ]]></script>
 
         <p>
@@ -825,6 +907,67 @@
             <p>1492-10-12</p>
             <p>The date is 1492-10-12</p>
         ]]></script>
+
+
+
+        <h4>Conversion in Spring forms</h4>
+
+        <p>
+            Besides, whenever the converted (double-bracketed) expression refers to a Spring-bound object
+            (e.g. a form-backing bean) thymeleaf will not only apply the conversion service but also the
+            property editors and also any formatting annotations. So given:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <form th:object="${obj}">
+                <p>Date: <span th:text="*{{date}}">somedate</span></p>
+            </form>
+        ]]></script>
+
+        <p>
+        If that date field in <kbd>${obj}</kbd> has an annotation like:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:java"><![CDATA[
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            private Date date;
+        ]]></script>
+
+
+        <p>
+            The result will be:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <form>
+                <p>Date: <span>1492-10-12</span></p>
+            </form>
+        ]]></script>
+
+
+
+        <h4>The <kbd>#conversions</kbd> utility object</h4>
+
+
+        <p>
+            Besides this double-bracket syntax, a new expression utility object has been added,
+            allowing the manual execution of the conversion service whenever needed:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <p th:text="${'Val: ' + #conversions.convert(val,'String')}">...</p>
+        ]]></script>
+
+        <p>
+            Syntax for this utility object:
+        </p>
+
+        <ul>
+            <li><kbd>#conversions.convert(Object,Class)</kbd>: converts the object to the specified class.</li>
+            <li><kbd>#conversions.convert(Object,String)</kbd>: same as above, but specifying the target class
+                as a String (note the <kbd>java.lang.</kbd> package can be ommitted).</li>
+        </ul>
+
 
 
 
@@ -936,6 +1079,60 @@
 
 
 
+
+        <h2><a name="errcl"></a>New <kbd>th:errorclass</kbd> for adding CSS class to form fields in error</h2>
+
+        <p>
+            Until now, whenever we wanted to apply a specific CSS class to an input field in a form when
+            there were errors for that field, we needed to use the <kbd>th:class</kbd> or <kbd>th:classappend</kbd>
+            attributes like this:
+        </p>
+
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}"
+                   th:class="${#fields.hasErrors('age')}? 'error'" />
+        ]]></script>
+
+        <p>
+            In Thymeleaf 2.1, in order to simplify this structure, a new <kbd>th:errorclass</kbd> attribute
+            processor has been introduced. This processor will read the name of the field from the <kbd>name</kbd>
+            or <kbd>th:field</kbd> attribute in the same tag, and apply the specified class if such field has errors.
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}" th:errorclass="'error'" />
+        ]]></script>
+
+        <p>
+            Note the <kbd>'error'</kbd> literal is in fact a token, so no single quotes are really needed:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}" th:errorclass="error" />
+        ]]></script>
+
+        <p>
+            The result is much more concise. Note also that <kbd>th:errorclass</kbd> works like
+            <kbd>th:classappend</kbd>, not <kbd>th:class</kbd>. So the specified class will in fact be
+            <em>appended</em> to any existing ones. So:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" th:field="*{age}"
+                   class="input" th:errorclass="error" />
+        ]]></script>
+
+        <p>
+            Will result, if the age field has errors, in:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+            <input type="text" id="age" name="age" value="23" class="input error" />
+        ]]></script>
+
+
+
         <h2><a name="sperr"></a>Additional form validation error reporting options</h2>
 
         <p>
@@ -982,6 +1179,8 @@
                 ...
             </form>
         ]]></script>
+
+
 
    </div>
    
