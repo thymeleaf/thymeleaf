@@ -17,7 +17,11 @@
 -->
 
 <dialect xmlns="http://www.thymeleaf.org/extras/dialect"
-	prefix="th" namespace-uri="http://www.thymeleaf.org"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.thymeleaf.org/extras/dialect
+	                    http://www.thymeleaf.org/xsd/thymeleaf-extras-dialect-2.1.xsd"
+	prefix="th"
+	namespace-uri="http://www.thymeleaf.org"
 	class="org.thymeleaf.standard.StandardDialect">
 
 
