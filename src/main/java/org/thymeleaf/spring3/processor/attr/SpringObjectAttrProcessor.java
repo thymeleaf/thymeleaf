@@ -35,11 +35,10 @@ import org.thymeleaf.standard.processor.attr.AbstractStandardSelectionAttrProces
 
 
 /**
+ * Specifies an object to use on a &lt;form&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class SpringObjectAttrProcessor 
         extends AbstractStandardSelectionAttrProcessor {

@@ -35,14 +35,12 @@ import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.util.DOMUtils;
 
-
-
 /**
+ * Works in a similar way to <b>#fields.errors()</b>, but lists all errors for
+ * the given field name, separated by a &lt;br/&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class SpringErrorsAttrProcessor 
         extends AbstractAttrProcessor {

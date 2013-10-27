@@ -29,13 +29,13 @@ import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 import org.thymeleaf.util.StringUtils;
 
-
 /**
+ * Adds the given class to the field on which this attribute is applied, if that
+ * field contains errors.  It's similar to a combination of <tt>th:classappend</tt>
+ * with a <tt>${#fields.hasErrors()}</tt> expression.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 2.1.0
- *
  */
 public final class SpringErrorClassAttrProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {

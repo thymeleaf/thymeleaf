@@ -24,28 +24,36 @@
 	<!-- Introduced processors -->
 	<!-- ===================== -->
 
-	<attribute-processor name="field">
+	<attribute-processor
+		name="field"
+		class="org.thymeleaf.spring3.processor.attr.AbstractSpringFieldAttrProcessor">
 		<documentation
-			reference="Thymeleaf + Spring 3 section 6 on Creating a Form">
-			<![CDATA[
-			Binds an input property with the value in the form's backing bean.<br/>
-			<br/>
-			Values for th:field attributes must be selection expressions (*{...}),
-			as they will be evaluated on the form backing bean and not on the context
-			variables (model attributes in Spring MVC jargon).
-			]]>
-		</documentation>
-		<restrictions tags="input option select textarea"/>
+			reference="Thymeleaf + Spring 3 section 6 on Creating a Form"/>
+		<restrictions
+			tags="input option select textarea"/>
 	</attribute-processor>
 
-	<attribute-processor name="errors">
-		<documentation see-also="fields.errors"
-			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages">
-			<![CDATA[
-			Works in a similar way to <b>#fields.errors()</b>, but lists all errors
-			for the given field name, separated by a &lt;br/&gt;
-			]]>
-		</documentation>
+	<attribute-processor
+		name="errorclass"
+		class="org.thymeleaf.spring3.processor.attr.SpringErrorClassAttrProcessor">
+		<documentation
+			see-also="fields.hasErrors"
+			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="errors"
+		class="org.thymeleaf.spring3.processor.attr.SpringErrorsAttrProcessor">
+		<documentation
+			see-also="fields.errors"
+			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="object"
+		class="org.thymeleaf.spring3.processor.attr.SpringObjectAttrProcessor">
+		<documentation
+			reference="Thymeleaf + Spring 3 section 6 on Creating a Form"/>
 	</attribute-processor>
 
 
@@ -69,7 +77,7 @@
 	<!-- Spring field attribute processors -->
 	<!-- ================================= -->
 
-	<attribute-processor name="method"/>
+	<attribute-processor name="method" class="org.thymeleaf.spring3.processor.attr.SpringMethodAttrProcessor"/>
 
 
 	<!-- Additional expression objects -->

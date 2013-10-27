@@ -32,14 +32,15 @@ import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
 
-
-
 /**
+ * Binds an input property with the value in the form's backing bean.
+ * <p>
+ * Values for <tt>th:field</tt> attributes must be selection expressions
+ * <tt>(*{...})</tt>, as they will be evaluated on the form backing bean and not
+ * on the context variables (model attributes in Spring MVC jargon).
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public abstract class AbstractSpringFieldAttrProcessor 
         extends AbstractAttrProcessor {
