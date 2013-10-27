@@ -19,14 +19,12 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
-
 /**
+ * The opposite of <b>th:if</b>, evaluates an expression that, if false, will
+ * cause this element and it's children to be rendered.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardUnlessAttrProcessor 
         extends AbstractStandardConditionalVisibilityAttrProcessor {

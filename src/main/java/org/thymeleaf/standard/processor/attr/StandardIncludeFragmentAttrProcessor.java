@@ -23,11 +23,16 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
+ * Specifies another template and the fragment within that other template to
+ * include at this point, eg:
+ * <p>
+ * &lt;div th:include="templateName :: fragmentName"&gt;&lt;div&gt;
+ * <p>
+ * The above will find the template named templateName, and add the fragment
+ * named fragmentName as a child of this element.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 2.0.9
- *
  */
 public class StandardIncludeFragmentAttrProcessor 
         extends AbstractStandardFragmentHandlingAttrProcessor {

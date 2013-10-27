@@ -19,14 +19,18 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
-
 /**
+ * Create one or more local variables scoped to this tag, that can then be
+ * referred to by other expressions.  Takes a comma-separated list of
+ * localname/expression pairs, eg:
+ * <p>
+ * &lt;div th:with="firstPer=${persons[0]},secondPer=${persons[1]}"&gt;<br/>
+ * &nbsp; &lt;p th:text="${firstPer.name}"&gt;First person name&lt;p&gt;<br/>
+ * &nbsp; &lt;p th:text="${secondPer.name}"&gt;Second person name&lt;p&gt;<br/>
+ * &lt;/div&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardWithAttrProcessor 
         extends AbstractStandardLocalVariableDefinitionAttrProcessor {

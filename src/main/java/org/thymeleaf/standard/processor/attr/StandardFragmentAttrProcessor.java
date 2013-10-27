@@ -22,11 +22,11 @@ package org.thymeleaf.standard.processor.attr;
 import org.thymeleaf.processor.attr.AbstractNoOpAttrProcessor;
 
 /**
+ * Gives a name to sections of your template that are available for inclusion by
+ * the <b>th:include</b> and <b>th:substituteby</b> processors.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardFragmentAttrProcessor 
         extends AbstractNoOpAttrProcessor {

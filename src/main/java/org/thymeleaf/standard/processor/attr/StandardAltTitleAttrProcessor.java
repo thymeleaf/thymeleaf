@@ -28,11 +28,10 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.standard.expression.IStandardExpression;
 
 /**
+ * Sets both the <b>alt</b> and <b>title</b> attributes.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardAltTitleAttrProcessor 
         extends AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor {

@@ -24,11 +24,12 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.element.AbstractNoOpElementProcessor;
 
 /**
+ * An attribute container that allows template developers to specify whichever
+ * attributes they want, executes them, and then simply dissapears without a
+ * trace.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 2.1.0
- *
  */
 public final class StandardBlockElementProcessor
         extends AbstractNoOpElementProcessor {

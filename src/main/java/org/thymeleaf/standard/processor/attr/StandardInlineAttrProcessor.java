@@ -19,14 +19,22 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
-
 /**
+ * Lets you use expressions directly in your template.
+ * <p>
+ * If this attribute's value is <b>text</b>, then you can use the [[...]] syntax
+ * to put expressions within your text without having to use the <tt>th:text</tt>
+ * attribute processor, eg:
+ * <p>
+ * &lt;p th:inline="text"&gt;Hello [[${session.user.name}]]!&lt;p&gt;
+ * <p>
+ * If this attribute's value is <b>javascript</b> or <b>dart</b>, and used in a
+ * &lt;script&gt; tag, then you can insert expressions directly into your
+ * JavaScript/Dart code with the <tt>/*[[...]]*&#47;</tt>, <tt>/*[+...+]*&#47;</tt>,
+ * and <tt>/*[-...-]*&#47;</tt> syntaxes.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardInlineAttrProcessor 
         extends AbstractStandardTextInlinerAttrProcessor {

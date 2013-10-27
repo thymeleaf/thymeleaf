@@ -28,11 +28,10 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.standard.expression.IStandardExpression;
 
 /**
+ * Sets both the <b>lang</b> and <b>xml:lang</b> attributes.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardLangXmlLangAttrProcessor 
         extends AbstractStandardSingleValueMultipleAttributeModifierAttrProcessor {

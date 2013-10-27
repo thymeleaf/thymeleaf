@@ -23,11 +23,10 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
+ * Sets the <b>xml:lang</b> attribute to the result of the expression.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardXmlLangAttrProcessor 
         extends AbstractStandardSingleAttributeModifierAttrProcessor {

@@ -23,11 +23,12 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
+ * Similar to <b>th:include</b>, but instead of adding the specified template
+ * fragment as a child of this element, it will replace this element with the
+ * template fragment.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 2.1.0
- *
  */
 public class StandardReplaceFragmentAttrProcessor
         extends AbstractStandardFragmentHandlingAttrProcessor {

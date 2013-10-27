@@ -24,307 +24,199 @@
 	<!-- Introduced Thymeleaf attribute processors -->
 	<!-- ========================================= -->
 
-	<attribute-processor name="alt-title">
-		<documentation><![CDATA[
-			Sets both the <b>alt</b> and <b>title</b> attributes.
-		]]></documentation>
-	</attribute-processor>
+	<attribute-processor
+		name="alt-title"
+		class="org.thymeleaf.standard.processor.attr.StandardAltTitleAttrProcessor"/>
 
-	<attribute-processor name="attr">
+	<attribute-processor
+		name="assert"
+		class="org.thymeleaf.standard.processor.attr.StandardAssertAttrProcessor"/>
+
+	<attribute-processor
+		name="attr"
+		class="org.thymeleaf.standard.processor.attr.StandardAttrAttrProcessor">
 		<documentation
 			see-also="attrappend attrprepend"
-			reference="Using Thymeleaf section 5 on Setting Attribute Values">
-			<![CDATA[
-			Sets the value of any attribute/s.  Takes a list of comma-separated
-			attribute/expression pairs, eg:<br/>
-			<br/>
-			&lt;img src="../../images/gtvglogo.png" th:attr="src=@{/images/gtvglogo.png},title=#{logo},alt=#{logo}" /&gt;<br/>
-			<br/>
-			The above will set the src, title, and alt attributes to the results
-			of each of their respective expressions.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 5 on Setting Attribute Values"/>
 	</attribute-processor>
 
-	<attribute-processor name="attrappend">
+	<attribute-processor
+		name="attrappend"
+		class="org.thymeleaf.standard.processor.attr.StandardAttrappendAttrProcessor">
 		<documentation
 			see-also="attr attrprepend classappend"
-			reference="Using Thymeleaf section 5.4 on Appending And Prepending">
-			<![CDATA[
-			Appends the result of an expression to any attribute/s, eg:<br/>
-			<br/>
-			&lt;input type="button" value="Do it!" class="btn" th:attrappend="class=${' ' + cssStyle}" /&gt;<br/>
-			<br/>
-			If you process this template with the cssStyle variable set to "warning", you will get:<br/>
-			<br/>
-			&lt;input type="button" value="Do it!" class="btn warning" /&gt;
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
 	</attribute-processor>
 
-	<attribute-processor name="attrprepend">
+	<attribute-processor
+		name="attrprepend"
+		class="org.thymeleaf.standard.processor.attr.StandardAttrprependAttrProcessor">
 		<documentation
 			see-also="attr attrappend"
-			reference="Using Thymeleaf section 5.4 on Appending And Prepending">
-			<![CDATA[
-			Prepends the result of an expression to any attribute/s, eg:<br/>
-			<br/>
-			&lt;input type="button" value="Do it!" class="btn" th:attrappend="class=${cssStyle + ' '}" /&gt;<br/>
-			<br/>
-			If you process this template with the cssStyle variable set to "warning", you will get:<br/>
-			<br/>
-			&lt;input type="button" value="Do it!" class="warning btn" /&gt;
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
 	</attribute-processor>
 
-	<attribute-processor name="case">
+	<attribute-processor
+		name="case"
+		class="org.thymeleaf.standard.processor.attr.StandardCaseAttrProcessor">
 		<documentation
 			see-also="switch"
-			reference="Using Thymeleaf section 7.2 on Switch Statements">
-			<![CDATA[
-			Used together with the <b>th:switch</b> attribute processor, identifies
-			an element to be rendered if its expression matches the result of the
-			th:switch expression.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 7.2 on Switch Statements"/>
 	</attribute-processor>
 
-	<attribute-processor name="classappend">
+	<attribute-processor
+		name="classappend"
+		class="org.thymeleaf.standard.processor.attr.StandardClassappendAttrProcessor">
 		<documentation
 			see-also="attrappend class"
-			reference="Using Thymeleaf section 5.4 on Appending And Prepending">
-			<![CDATA[
-			Appends the result of an expression to the <b>class</b> attribute, eg:<br/>
-			<br/>
-			&lt;div class="item" th:classappend="${myObject.type == 'special'} ? 'special' : 'normal'" /&gt;<br/>
-			<br/>
-			Depending on the result of the expression, the class attribute will
-			become either "item special" or "item normal".
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
 	</attribute-processor>
 
-	<attribute-processor name="each">
+	<attribute-processor
+		name="each"
+		class="org.thymeleaf.standard.processor.attr.StandardEachAttrProcessor">
 		<documentation
-			reference="Using Thymeleaf section 6.2 on Keeping Iteration Status">
-			<![CDATA[
-			Iterates through a collection of objects, repeating each of the child
-			elements for every object in that collection, eg:<br/>
-			<br/>
-			&lt;tr th:each="prod : ${prods}"&gt;<br/>
-			&nbsp; &lt;td th:text="${prod.name}"&gt;Product name&lt;/td&gt;<br/>
-			&nbsp; &lt;td th:text="${prod.price}"&gt;Product price&lt;/td&gt;<br/>
-			&lt;/tr&gt;<br/>
-			<br/>
-			That "prod : ${prods}" attribute value you see above means "for each
-			element in the result of evaluating ${prods}, repeat this fragment of
-			template setting that element into a variable called prod".<br/>
-			<br/>
-			A collection can be any java.util.Iterable, a java.util.Map (iteration
-			variables will be a java.util.Map.Entry), or an array.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 6.2 on Keeping Iteration Status"/>
 	</attribute-processor>
 
-	<attribute-processor name="fragment">
+	<attribute-processor
+		name="fragment"
+		class="org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor">
 		<documentation
 			see-also="include substituteby"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments">
-			<![CDATA[
-			Gives a name to sections of your template that are available for inclusion
-			by the <b>th:include</b> and <b>th:substituteby</b> processors.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
 	</attribute-processor>
 
-	<attribute-processor name="object">
+	<attribute-processor
+		name="object"
+		class="org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor">
 		<documentation
 			see-also="with"
-			reference="Using Thymeleaf section 4.3 on the asterisk syntax">
-			<![CDATA[
-			Selects an object so that its methods and properties can be accessed
-			using the shortcut *{...} syntax, eg:<br/>
-			<br/>
-			&lt;div th:object="${session.user}"&gt;<br/>
-			&nbsp; &lt;span th:text="*{firstName}"&gt;First name&lt;/span&gt;<br/>
-			&nbsp; &lt;span th:text="*{lastName}"&gt;Last name&lt;/span&gt;<br/>
-			&lt;/div&gt;
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 4.3 on the asterisk syntax"/>
 	</attribute-processor>
 
-	<attribute-processor name="if">
-		<documentation see-also="unless"
-			reference="Using Thymeleaf section 7.1 on Simple Conditionals">
-			<![CDATA[
-			Evaluates an expression that, if true, will cause this element and it's
-			children to be rendered.  If the expression is false, then this element
-			and it's children will be removed.
-			]]>
-		</documentation>
-	</attribute-processor>
-
-	<attribute-processor name="inline">
+	<attribute-processor
+		name="if"
+		class="org.thymeleaf.standard.processor.attr.StandardIfAttrProcessor">
 		<documentation
-			reference="Using Thymeleaf section 11 on Inlining">
-			<![CDATA[
-			Lets you use expressions directly in your template.<br/>
-			<br/>
-			If this attribute's value is <b>text</b>, then you can use the [[...]]
-			syntax to put expressions within your text without having to use the
-			th:text attribute processor, eg:<br/>
-			&lt;p th:inline="text"&gt;Hello [[${session.user.name}]]!&lt;p&gt;<br/>
-			<br/>
-			If this attribute's value is <b>javascript</b> or <b>dart</b>, and used
-			in a &lt;script&gt; tag, then you can insert expressions directly into
-			your JavaScript/Dart code with the /*[[...]]*/, /*[+...+]*/, and /*[-...-]*/
-			syntaxes.
-			]]>
-		</documentation>
-		<restrictions values="text javascript dart"/>
+			see-also="unless"
+			reference="Using Thymeleaf section 7.1 on Simple Conditionals"/>
 	</attribute-processor>
 
-	<attribute-processor name="unless">
-		<documentation see-also="if"
-			reference="Using Thymeleaf section 7.1 on Simple Conditionals">
-			<![CDATA[
-			The opposite of <b>th:if</b>, evaluates an expression that, if false,
-			will cause this element and it's children to be rendered.
-			]]>
-		</documentation>
-	</attribute-processor>
-
-	<attribute-processor name="include">
+	<attribute-processor
+		name="inline"
+		class="org.thymeleaf.standard.processor.attr.StandardInlineAttrProcessor">
 		<documentation
-			see-also="substituteby fragment"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments"><![CDATA[
-			Specifies another template and the fragment within that other template
-			to include at this point, eg:<br/>
-			<br/>
-			&lt;div th:include="templateName :: fragmentName"&gt;&lt;div&gt;<br/>
-			<br/>
-			The above will find the template named templateName, and add the fragment
-			named fragmentName as a child of this element.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 11 on Inlining"/>
+		<restrictions
+			values="text javascript dart"/>
 	</attribute-processor>
 
-	<attribute-processor name="lang-xmllang">
-		<documentation><![CDATA[
-			Sets both the <b>lang</b> and <b>xml:lang</b> attributes.
-		]]></documentation>
-	</attribute-processor>
-
-	<attribute-processor name="remove">
+	<attribute-processor
+		name="unless"
+		class="org.thymeleaf.standard.processor.attr.StandardUnlessAttrProcessor">
 		<documentation
-			reference="Using Thymeleaf section 8.2 on Removing Template Fragments">
-			<![CDATA[
-			Removes a piece of this template from the final result.<br/>
-			<br/>
-			If this attribute's value is <b>all</b>, both the containing tag and
-			it's children will be removed.  If the value is <b>body</b>, only the
-			tag's children will be removed.  If the value is <b>tag</b>, the containing
-			tag will be removed, but not it's children.  If the value is <b>all-but-first</b>,
-			then all but the first child of the containing tag will be removed.
-			]]>
-		</documentation>
-		<restrictions values="all body tag all-but-first"/>
+			see-also="if"
+			reference="Using Thymeleaf section 7.1 on Simple Conditionals"/>
 	</attribute-processor>
 
-	<attribute-processor name="substituteby">
+	<attribute-processor
+		name="include"
+		class="org.thymeleaf.standard.processor.attr.StandardIncludeFragmentAttrProcessor">
+		<documentation
+			see-also="replace substituteby fragment"
+			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="lang-xmllang"
+		class="org.thymeleaf.standard.processor.attr.StandardLangXmlLangAttrProcessor"/>
+
+	<attribute-processor
+		name="remove"
+		class="org.thymeleaf.standard.processor.attr.StandardRemoveAttrProcessor">
+		<documentation
+			reference="Using Thymeleaf section 8.2 on Removing Template Fragments"/>
+		<restrictions
+			values="all body tag all-but-first"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="replace"
+		class="org.thymeleaf.standard.processor.attr.StandardReplaceFragmentAttrProcessor">
 		<documentation
 			see-also="include fragment"
-			reference="Using Thymeleaf section 8.1 on Including Template Fragments">
-			<![CDATA[
-			Similar to <b>th:include</b>, but instead of adding the specified template
-			fragment as a child of this element, it will replace this element with
-			the template fragment.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
 	</attribute-processor>
 
-	<attribute-processor name="switch">
+	<attribute-processor
+		name="substituteby"
+		class="org.thymeleaf.standard.processor.attr.StandardSubstituteByFragmentAttrProcessor">
+		<documentation
+			see-also="include fragment"
+			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
+	</attribute-processor>
+
+	<attribute-processor
+		name="switch"
+		class="org.thymeleaf.standard.processor.attr.StandardSwitchAttrProcessor">
 		<documentation
 			see-also="case if"
-			reference="Using Thymeleaf section section 7.2 on Switch Statements">
-			<![CDATA[
-			Selects a child element for rendering if the child's <b>th:case</b>
-			expression is an exact match of this processor's expression, eg:<br/>
-			<br/>
-			&lt;div th:switch="${user.role}"&gt;<br/>
-			&nbsp; &lt;p th:case="'admin'"&gt;User is an administrator&lt;/p&gt;<br/>
-			&nbsp; &lt;p th:case="#{roles.manager}"&gt;User is a manager&lt;/p&gt;<br/>
-			&lt;/div&gt;<br/>
-			<br/>
-			Note that as soon as one th:case attribute is evaluated as true, every
-			other th:case attribute in the same switch context is evaluated as false.
-			<br/>
-			The default option is specified as th:case="*"
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section section 7.2 on Switch Statements"/>
 	</attribute-processor>
 
-	<attribute-processor name="text">
+	<attribute-processor
+		name="text"
+		class="org.thymeleaf.standard.processor.attr.StandardTextAttrProcessor">
 		<documentation
 			see-also="utext"
-			reference="Using Thymeleaf section 3 on Using Texts">
-			<![CDATA[
-			Replaces the text content of this tag with the result of an expression.
-			Performs escaping of any special characters so that the text is valid
-			HTML/XML text.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 3 on Using Texts"/>
 	</attribute-processor>
 
-	<attribute-processor name="utext">
+	<attribute-processor
+		name="utext"
+		class="org.thymeleaf.standard.processor.attr.StandardUtextAttrProcessor">
 		<documentation
 			see-also="text"
-			reference="Using Thymeleaf section 3.2 on Unescaped Text">
-			<![CDATA[
-			Does the same as <b>th:text</b> except that it doesn't perform any escaping
-			of special characters.  Useful if the replacement text has HTML/XML
-			characters that you want added to the rendered page.
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 3.2 on Unescaped Text"/>
 	</attribute-processor>
 
-	<attribute-processor name="with">
+	<attribute-processor
+		name="with"
+		class="org.thymeleaf.standard.processor.attr.StandardWithAttrProcessor">
 		<documentation
 			see-also="object"
-			reference="Using Thymeleaf section 9 on Local Variables">
-			<![CDATA[
-			Create one or more local variables scoped to this tag, that can then
-			be referred to by other expressions.  Takes a comma-separated list of
-			localname/expression pairs, eg:<br/>
-			<br/>
-			&lt;div th:with="firstPer=${persons[0]},secondPer=${persons[1]}"&gt;<br/>
-			&nbsp; &lt;p th:text="${firstPer.name}"&gt;First person name&lt;p&gt;<br/>
-			&nbsp; &lt;p th:text="${secondPer.name}"&gt;Second person name&lt;p&gt;<br/>
-			&lt;/div&gt;
-			]]>
-		</documentation>
+			reference="Using Thymeleaf section 9 on Local Variables"/>
 	</attribute-processor>
 
-	<attribute-processor name="xmlbase">
-		<documentation see-also="xmllang xmlspace"><![CDATA[
-			Sets the <b>xml:base</b> attribute to the result of the expression.
-		]]></documentation>
+	<attribute-processor
+		name="xmlbase"
+		class="org.thymeleaf.standard.processor.attr.StandardXmlBaseAttrProcessor">
+		<documentation
+			see-also="xmllang xmlspace"/>
 	</attribute-processor>
 
-	<attribute-processor name="xmllang">
-		<documentation see-also="xmlbase xmlspace"><![CDATA[
-			Sets the <b>xml:lang</b> attribute to the result of the expression.
-		]]></documentation>
+	<attribute-processor
+		name="xmllang"
+		class="org.thymeleaf.standard.processor.attr.StandardXmlLangAttrProcessor">
+		<documentation
+			see-also="xmlbase xmlspace"/>
 	</attribute-processor>
 
-	<attribute-processor name="xmlspace">
-		<documentation see-also="xmlbase xmllang"><![CDATA[
-			Sets the <b>xml:space</b> attribute to the result of the expression.
-		]]></documentation>
+	<attribute-processor
+		name="xmlspace"
+		class="org.thymeleaf.standard.processor.attr.StandardXmlSpaceAttrProcessor">
+		<documentation
+			see-also="xmlbase xmllang"/>
 	</attribute-processor>
 
-	<!-- Text inling processor??? -->
+	<!-- Text inline processor??? -->
+
+
+	<!-- Introduced Thymeleaf element processors -->
+	<!-- ======================================= -->
+
+	<element-processor name="block" class="org.thymeleaf.standard.processor.element.StandardBlockElementProcessor"/>
 
 
 	<!-- Fixed value processors -->

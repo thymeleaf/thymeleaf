@@ -29,11 +29,16 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
+ * Removes a piece of this template from the final result.
+ * <p>
+ * If this attribute's value is <b>all</b>, both the containing tag and it's
+ * children will be removed.  If the value is <b>body</b>, only the tag's
+ * children will be removed.  If the value is <b>tag</b>, the containing tag
+ * will be removed, but not it's children.  If the value is <b>all-but-first</b>,
+ * then all but the first child of the containing tag will be removed.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardRemoveAttrProcessor
         extends AbstractMarkupRemovalAttrProcessor {

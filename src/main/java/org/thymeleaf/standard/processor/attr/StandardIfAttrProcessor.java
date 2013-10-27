@@ -19,14 +19,13 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
-
 /**
+ * Evaluates an expression that, if true, will cause this element and it's
+ * children to be rendered.  If the expression is false, then this element and
+ * it's children will be removed.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardIfAttrProcessor 
         extends AbstractStandardConditionalVisibilityAttrProcessor {

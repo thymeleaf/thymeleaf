@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
 /**
+ * Does the same as <b>th:text</b> except that it doesn't perform any escaping
+ * of special characters.  Useful if the replacement text has HTML/XML
+ * characters that you want added to the rendered page.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardUtextAttrProcessor 
         extends AbstractStandardUnescapedTextChildModifierAttrProcessor {
