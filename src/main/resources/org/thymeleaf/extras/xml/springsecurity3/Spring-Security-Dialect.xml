@@ -17,7 +17,12 @@
 -->
 
 <dialect xmlns="http://www.thymeleaf.org/extras/dialect"
-	prefix="sec" namespace-uri="http://www.thymeleaf.org/extras/spring-security" namespace-strict="false"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.thymeleaf.org/extras/dialect
+	                    http://www.thymeleaf.org/xsd/thymeleaf-extras-dialect-2.1.xsd"
+	prefix="sec"
+	namespace-uri="http://www.thymeleaf.org/extras/spring-security"
+	namespace-strict="false"
 	class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect">
 
 	<attribute-processor
