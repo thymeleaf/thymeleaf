@@ -22,13 +22,17 @@ package org.thymeleaf.standard.processor.attr;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
-
 /**
+ * Sets the value of any attribute/s.  Takes a list of comma-separated
+ * attribute/expression pairs, eg:
+ * <p>
+ * &lt;img src="../../images/gtvglogo.png" th:attr="src=@{/images/gtvglogo.png},title=#{logo},alt=#{logo}" /&gt;
+ * <p>
+ * The above will set the <tt>src</tt>, <tt>title</tt>, and <tt>alt</tt>
+ * attributes to the results of each of their respective expressions.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardAttrAttrProcessor 
         extends AbstractStandardAttributeModifierAttrProcessor {

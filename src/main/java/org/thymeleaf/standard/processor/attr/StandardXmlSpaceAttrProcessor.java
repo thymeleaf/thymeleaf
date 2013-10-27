@@ -23,11 +23,10 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
+ * Sets the <b>xml:space</b> attribute to the result of the expression.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardXmlSpaceAttrProcessor 
         extends AbstractStandardSingleAttributeModifierAttrProcessor {

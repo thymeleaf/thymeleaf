@@ -22,13 +22,17 @@ package org.thymeleaf.standard.processor.attr;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
-
 /**
+ * Prepends the result of an expression to any attribute/s, eg:
+ * <p>
+ * &lt;input type="button" value="Do it!" class="btn" th:attrappend="class=${cssStyle + ' '}" /&gt;
+ * <p>
+ * If you process this template with the <tt>cssStyle</tt> variable set to "warning", you will get:
+ * <p>
+ * &lt;input type="button" value="Do it!" class="warning btn" /&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardAttrprependAttrProcessor 
         extends AbstractStandardAttributeModifierAttrProcessor {

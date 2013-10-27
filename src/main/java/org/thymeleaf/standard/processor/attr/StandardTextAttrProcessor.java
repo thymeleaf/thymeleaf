@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
 /**
+ * Replaces the text content of this tag with the result of an expression.
+ * Performs escaping of any special characters so that the text is valid
+ * HTML/XML text.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class
         StandardTextAttrProcessor

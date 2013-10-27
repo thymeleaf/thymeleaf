@@ -20,6 +20,8 @@
 package org.thymeleaf.standard.processor.attr;
 
 /**
+ * A comma-separated list of expressions which should be evaluated and produce
+ * <tt>true</tt> for every evaluation, raising an exception if not. 
  * 
  * @author Daniel Fern&aacute;ndez
  * 

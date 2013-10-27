@@ -19,14 +19,13 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
-
 /**
+ * Used together with the <b>th:switch</b> attribute processor, identifies an
+ * element to be rendered if its expression matches the result of the
+ * <tt>th:switch</tt> expression.
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 2.0.0
- *
  */
 public final class StandardCaseAttrProcessor 
         extends AbstractStandardCaseAttrProcessor {

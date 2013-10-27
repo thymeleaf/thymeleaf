@@ -23,11 +23,15 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 
 /**
+ * Appends the result of an expression to the <b>class</b> attribute, eg:
+ * <p>
+ * &lt;div class="item" th:classappend="${myObject.type == 'special'} ? 'special' : 'normal'" /&gt;
+ * <p>
+ * Depending on the result of the expression, the class attribute will become
+ * either "item special" or "item normal".
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardClassappendAttrProcessor 
         extends AbstractStandardSingleAttributeModifierAttrProcessor {

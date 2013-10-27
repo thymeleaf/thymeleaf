@@ -19,14 +19,17 @@
  */
 package org.thymeleaf.standard.processor.attr;
 
-
-
 /**
+ * Selects an object so that its methods and properties can be accessed using
+ * the shortcut *{...} syntax, eg:
+ * <p>
+ * &lt;div th:object="${session.user}"&gt;<br/>
+ * &nbsp; &lt;span th:text="*{firstName}"&gt;First name&lt;/span&gt;<br/>
+ * &nbsp; &lt;span th:text="*{lastName}"&gt;Last name&lt;/span&gt;<br/>
+ * &lt;/div&gt;
  * 
  * @author Daniel Fern&aacute;ndez
- * 
  * @since 1.0
- *
  */
 public final class StandardObjectAttrProcessor 
         extends AbstractStandardSelectionAttrProcessor {
