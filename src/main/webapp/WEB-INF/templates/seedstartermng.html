@@ -123,9 +123,7 @@
                     </select>
                   </td>
                   <td>
-                    <input type="text" 
-                           th:field="*{rows[__${rowStat.index}__].seedsPerCell}" 
-                           th:class="${#fields.hasErrors('rows[__${rowStat.index}__].seedsPerCell')}? 'fieldError'" />
+                    <input type="text" th:field="*{rows[__${rowStat.index}__].seedsPerCell}" th:errorclass="fieldError" />
                   </td>
                   <td>
                     <button type="submit" name="removeRow" th:value="${rowStat.index}" th:text="#{seedstarter.row.remove}">Remove row</button>
