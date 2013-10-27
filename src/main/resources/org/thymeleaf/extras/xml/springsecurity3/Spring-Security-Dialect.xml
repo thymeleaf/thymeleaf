@@ -20,38 +20,31 @@
 	prefix="sec" namespace-uri="http://www.thymeleaf.org/extras/spring-security" namespace-strict="false"
 	class="org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect">
 
-	<attribute-processor name="authentication">
-		<documentation reference="Thymeleaf Spring Security 3 integration module readme">
-			<![CDATA[
-			Outputs a property of the authentication object, similar to the Spring
-			Security &lt;sec:authentication/&gt; JSP tag.
-			]]>
-		</documentation>
+	<attribute-processor
+		name="authentication"
+		class="org.thymeleaf.extras.springsecurity3.dialect.processor.AuthenticationAttrProcessor">
+		<documentation
+			reference="Thymeleaf Spring Security 3 integration module readme"/>
 	</attribute-processor>
 
-	<attribute-processor name="authorize">
-		<documentation reference="Thymeleaf Spring Security 3 integration module readme">
-			<![CDATA[
-			Renders the element children (*tag content*) if the authenticated user
-			is authorized to see it according to the specified <i>Spring Security
-			expression</i>.
-			]]>
-		</documentation>
+	<attribute-processor
+		name="authorize"
+		class="org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAttrProcessor">
+		<documentation
+			reference="Thymeleaf Spring Security 3 integration module readme"/>
 	</attribute-processor>
 
-	<attribute-processor name="authorize-acl">
-		<documentation reference="Thymeleaf Spring Security 3 integration module readme">
-			<![CDATA[
-			Takes the form sec:authorize-acl="object :: permissions", renders the
-			element children (*tag content*) if the authenticated user has the specified
-			permissions on the specified domain object, according to Spring Source's
-			Access Control List system.
-			]]>
-		</documentation>
+	<attribute-processor
+		name="authorize-acl"
+		class="org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeAclAttrProcessor">
+		<documentation
+			reference="Thymeleaf Spring Security 3 integration module readme"/>
 	</attribute-processor>
 
-	<attribute-processor name="authorize-expr">
-		<documentation reference="Thymeleaf Spring Security 3 integration module readme">
+	<attribute-processor
+		name="authorize-expr">
+		<documentation
+			reference="Thymeleaf Spring Security 3 integration module readme">
 			<![CDATA[
 			An alias for <b>sec:authorize</b>, renders the element children (*tag
 			content*) if the authenticated user is authorized to see it according
@@ -60,17 +53,15 @@
 		</documentation>
 	</attribute-processor>
 
-	<attribute-processor name="authorize-url">
-		<documentation reference="Thymeleaf Spring Security 3 integration module readme">
-			<![CDATA[
-			Renders the element children (*tag content*) if the authenticated user
-			is authorized to see the specified URL.
-			]]>
-		</documentation>
+	<attribute-processor
+		name="authorize-url"
+		class="org.thymeleaf.extras.springsecurity3.dialect.processor.AuthorizeUrlAttrProcessor">
+		<documentation
+			reference="Thymeleaf Spring Security 3 integration module readme"/>
 	</attribute-processor>
 
 
-	<utility-object-ref name="authentication" class="org.springframework.security.core.Authentication"/>
-	<utility-object-ref name="authorization" class="org.thymeleaf.extras.springsecurity3.auth.Authorization"/>
+	<expression-object name="authentication" class="org.springframework.security.core.Authentication"/>
+	<expression-object name="authorization"  class="org.thymeleaf.extras.springsecurity3.auth.Authorization"/>
 
 </dialect>

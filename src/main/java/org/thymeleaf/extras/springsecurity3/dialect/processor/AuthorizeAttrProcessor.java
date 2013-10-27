@@ -32,12 +32,12 @@ import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 
-
-
 /**
+ * Renders the element children (*tag content*) if the authenticated user is
+ * authorized to see it according to the specified <i>Spring Security
+ * expression</i>.
  * 
  * @author Daniel Fern&aacute;ndez
- *
  */
 public class AuthorizeAttrProcessor
         extends AbstractConditionalVisibilityAttrProcessor {

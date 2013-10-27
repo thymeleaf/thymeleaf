@@ -25,12 +25,11 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
 
-
-
 /**
+ * Outputs a property of the authentication object, similar to the Spring
+ * Security &lt;sec:authentication/&gt; JSP tag.
  * 
  * @author Daniel Fern&aacute;ndez
- *
  */
 public class AuthenticationAttrProcessor
         extends AbstractTextChildModifierAttrProcessor {

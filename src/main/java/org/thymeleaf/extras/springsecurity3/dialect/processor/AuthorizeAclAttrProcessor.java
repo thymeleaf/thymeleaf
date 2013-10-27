@@ -39,12 +39,13 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.TextLiteralExpression;
 
-
-
 /**
+ * Takes the form sec:authorize-acl="object :: permissions", renders the element
+ * children (*tag content*) if the authenticated user has the specified
+ * permissions on the specified domain object, according to Spring Source's
+ * Access Control List system.
  * 
  * @author Daniel Fern&aacute;ndez
- *
  */
 public class AuthorizeAclAttrProcessor
         extends AbstractConditionalVisibilityAttrProcessor {
