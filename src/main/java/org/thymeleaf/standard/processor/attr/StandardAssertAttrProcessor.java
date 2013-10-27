@@ -24,7 +24,9 @@ package org.thymeleaf.standard.processor.attr;
  * <tt>true</tt> for every evaluation, raising an exception if not. 
  * 
  * @author Daniel Fern&aacute;ndez
- * @since 2.1
+ * 
+ * @since 2.1.0
+ *
  */
 public final class StandardAssertAttrProcessor
         extends AbstractStandardAssertionAttrProcessor {
