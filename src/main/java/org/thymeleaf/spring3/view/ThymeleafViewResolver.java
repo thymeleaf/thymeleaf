@@ -654,10 +654,14 @@ public class ThymeleafViewResolver
         }
 
         view.setTemplateEngine(getTemplateEngine());
-        view.setTemplateName(viewName);
         view.setStaticVariables(getStaticVariables());
-        
-        
+
+
+        // We give view beans the opportunity to specify the template name to be used
+        if (view.getTemplateName() == null) {
+            view.setTemplateName(viewName);
+        }
+
         if (!view.isContentTypeSet() && getContentType() != null) {
             view.setContentType(getContentType());
         }
