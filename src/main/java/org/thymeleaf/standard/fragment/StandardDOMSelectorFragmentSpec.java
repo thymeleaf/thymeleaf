@@ -17,51 +17,53 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.fragment;
+package org.thymeleaf.standard.fragment;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.DOMSelector;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.fragment.DOMSelectorFragmentSpec;
+import org.thymeleaf.fragment.IFragmentSpec;
+import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
 import org.thymeleaf.util.Validate;
-
-
 
 
 /**
  * <p>
- *  Implementation of the {@link IFragmentSpec} interface that extracts fragments
- *  of DOM trees using a {@link DOMSelector} object.
+ *  Implementation of the {@link org.thymeleaf.fragment.IFragmentSpec} interface that extracts fragments
+ *  of DOM trees using a {@link org.thymeleaf.dom.DOMSelector} object and applying a
+ *  {@link StandardFragmentSignatureNodeReferenceChecker} reference checker for looking for
+ *  <tt>th:fragment</tt>-based references.
  * </p>
  * <p>
  *  The DOM selector instances used by these fragment specs are stored at the
- *  <i>expression cache</i> (see {@link ICacheManager#getExpressionCache()}) using
- *  as key {@link #DOM_SELECTOR_EXPRESSION_PREFIX} + <tt>selectorExpression</tt>.
+ *  <i>expression cache</i> (see {@link org.thymeleaf.cache.ICacheManager#getExpressionCache()}) using
+ *  as key {@link org.thymeleaf.fragment.DOMSelectorFragmentSpec#DOM_SELECTOR_EXPRESSION_PREFIX} + <tt>selectorExpression</tt>.
  * </p>
  * <p>
  *   Objects of this class are <b>thread-safe</b>.
  * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 2.0.9
+ *
+ * @since 2.1.0
  *
  */
-public final class DOMSelectorFragmentSpec implements IFragmentSpec {
+public final class StandardDOMSelectorFragmentSpec implements IFragmentSpec {
 
-    /**
-     * <p>
-     *   Prefix to be used for keys when storing selector expressions at the
-     *   <i>expression cache</i>.
-     * </p>
-     */
-    public static final String DOM_SELECTOR_EXPRESSION_PREFIX = "{dom_selector}";
-    
+    private static final ConcurrentHashMap<Configuration,DOMSelector.INodeReferenceChecker> REFERENCE_CHECKERS_BY_CONFIGURATION =
+            new ConcurrentHashMap<Configuration, DOMSelector.INodeReferenceChecker>(3);
+
     private final String selectorExpression;
-    private final DOMSelector.INodeReferenceChecker referenceChecker;
     private final String domSelectorCacheKey;
 
 
@@ -69,40 +71,20 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     /**
      * <p>
      *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally.
+     *   {@link org.thymeleaf.dom.DOMSelector} object to be created internally.
      * </p>
      *
      * @param selectorExpression the expression to be used for the DOM selector.
-     */
-    public DOMSelectorFragmentSpec(final String selectorExpression) {
-        this(selectorExpression, null);
-    }
-
-
-    /**
-     * <p>
-     *   Creates a new instance, specifying the expression to be used for a
-     *   {@link DOMSelector} object to be created internally, and also the reference checker to be used.
-     * </p>
-     * <p>
-     *   This constructor allows the specification of an {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}
-     *   that will be applied during the executing of the contained {@link DOMSelector} object.
-     * </p>
-     *
-     * @param selectorExpression the expression to be used for the DOM selector.
-     * @param referenceChecker the reference checker to be used. Might be null.
      *
      * @since 2.1.0
      */
-    public DOMSelectorFragmentSpec(
-            final String selectorExpression, final DOMSelector.INodeReferenceChecker referenceChecker) {
+    public StandardDOMSelectorFragmentSpec(final String selectorExpression) {
 
         super();
 
         Validate.notEmpty(selectorExpression, "DOM selector expression cannot be null or empty");
 
         this.selectorExpression = selectorExpression;
-        this.referenceChecker = referenceChecker;
         this.domSelectorCacheKey = generateDOMSelectorCacheKey(this.selectorExpression);
 
     }
@@ -112,21 +94,6 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
     public String getSelectorExpression() {
         return this.selectorExpression;
-    }
-
-
-    /**
-     * <p>
-     *   Returns the reference checker (implementation of {@link org.thymeleaf.dom.DOMSelector.INodeReferenceChecker}
-     *   being used for executing the contained DOM Selector. Might be null if no reference checker is to be used.
-     * </p>
-     *
-     * @return the reference checker to be used, or null if none.
-     *
-     * @since 2.1.0
-     */
-    public DOMSelector.INodeReferenceChecker getReferenceChecker() {
-        return this.referenceChecker;
     }
 
 
@@ -151,8 +118,10 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
                 expressionCache.put(this.domSelectorCacheKey, selector);
             }
         }
-        
-        final List<Node> extraction = selector.select(nodes, this.referenceChecker);
+
+        final DOMSelector.INodeReferenceChecker referenceChecker = getReferenceChecker(configuration);
+
+        final List<Node> extraction = selector.select(nodes, referenceChecker);
         if (extraction == null || extraction.size() == 0) {
             return null;
         }
@@ -169,12 +138,8 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
     @Override
     public String toString() {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append("(DOMSELECTOR: ");
+        strBuilder.append("(STANDARDDOMSELECTOR: ");
         strBuilder.append(this.selectorExpression);
-        if (this.referenceChecker != null) {
-            strBuilder.append(" | ");
-            strBuilder.append(this.referenceChecker.getClass().getName());
-        }
         strBuilder.append(")");
         return strBuilder.toString();
     }
@@ -183,10 +148,50 @@ public final class DOMSelectorFragmentSpec implements IFragmentSpec {
 
     private static String generateDOMSelectorCacheKey(final String selectorExpression) {
         final StringBuilder strBuilder = new StringBuilder();
-        strBuilder.append(DOM_SELECTOR_EXPRESSION_PREFIX);
+        strBuilder.append(DOMSelectorFragmentSpec.DOM_SELECTOR_EXPRESSION_PREFIX);
         strBuilder.append(selectorExpression);
         return strBuilder.toString();
     }
+
+
+
+    private static DOMSelector.INodeReferenceChecker getReferenceChecker(final Configuration configuration) {
+
+        final DOMSelector.INodeReferenceChecker referenceChecker =
+                REFERENCE_CHECKERS_BY_CONFIGURATION.get(configuration);
+        if (referenceChecker != null) {
+            return referenceChecker;
+        }
+
+        final String dialectPrefix = getStandardDialectPrefix(configuration);
+
+        final StandardFragmentSignatureNodeReferenceChecker newReferenceChecker =
+                new StandardFragmentSignatureNodeReferenceChecker(
+                        configuration, dialectPrefix, StandardFragmentAttrProcessor.ATTR_NAME);
+
+        REFERENCE_CHECKERS_BY_CONFIGURATION.put(configuration, newReferenceChecker);
+
+        return newReferenceChecker;
+
+    }
+
+
+
+    private static String getStandardDialectPrefix(final Configuration configuration) {
+
+        for (final Map.Entry<String,IDialect> dialectByPrefix : configuration.getDialects().entrySet()) {
+            final IDialect dialect = dialectByPrefix.getValue();
+            if (StandardDialect.class.isAssignableFrom(dialect.getClass())) {
+                return dialectByPrefix.getKey();
+            }
+        }
+
+        throw new ConfigurationException(
+                "A Thymeleaf Standard Dialect has not been found in the current configuration, but it is " +
+                "required in order to use " + StandardDOMSelectorFragmentSpec.class.getName());
+
+    }
+
 
 }
 

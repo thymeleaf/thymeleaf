@@ -956,17 +956,47 @@ public final class DOMSelector implements Serializable {
     }
 
 
-   
-
-
-
+    /**
+     * <p>
+     *     Common interface for objects in charge of resolving references in DOM Selector
+     *     expressions.
+     * </p>
+     * <p>
+     *     These objects will be used in DOM Selectors for determining how references (like <tt>%something</tt>)
+     *     will be resolved. The most common reference checker implementation is
+     *     {@link org.thymeleaf.standard.fragment.StandardFragmentSignatureNodeReferenceChecker}, typically used
+     *     for looking for <tt>th:fragment</tt> attributes in templates.
+     * </p>
+     *
+     * @author Daniel Fern&aacute;ndez
+     *
+     * @since 2.1.0
+     */
     public static interface INodeReferenceChecker {
 
+        /**
+         * <p>
+         *     Check whether the node passed as argument matches the specified reference value.
+         * </p>
+         *
+         * @param node the node to be checked.
+         * @param referenceValue the reference value expected to check.
+         * @return true if the node matches the reference value, false if not.
+         */
         public boolean checkReference(final Node node, final String referenceValue);
 
     }
 
 
+    /**
+     * <p>
+     *     Common abstract implementation of {@link INodeReferenceChecker}.
+     * </p>
+     *
+     * @author Daniel Fern&aacute;ndez
+     *
+     * @since 2.1.0
+     */
     public abstract static class AbstractNodeReferenceChecker implements INodeReferenceChecker {
 
         protected AbstractNodeReferenceChecker() {
@@ -976,6 +1006,19 @@ public final class DOMSelector implements Serializable {
     }
 
 
+    /**
+     * <p>
+     *     Implementation of {@link INodeReferenceChecker} that aggregates two other reference
+     *     checker objects.
+     * </p>
+     * <p>
+     *     First, <tt>one</tt> is checked and, if false is returned, <tt>two</tt> is checked.
+     * </p>
+     *
+     * @author Daniel Fern&aacute;ndez
+     *
+     * @since 2.1.0
+     */
     public static final class AggregatingNodeReferenceChecker extends AbstractNodeReferenceChecker {
 
         private final INodeReferenceChecker one;
