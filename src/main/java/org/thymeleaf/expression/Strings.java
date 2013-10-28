@@ -1917,8 +1917,23 @@ public final class Strings {
         }
         return result;
     }
-    
-    
-    
-    
+
+
+    /**
+     * <p>
+     * Builds a random String using characters 0..9 and A..Z.
+     * </p>
+     *
+     * @param count length of the generated String
+     *
+     * @return a random String
+     *
+     * @since 2.1.0
+     *
+     */
+    public String randomAlphanumeric(final int count) {
+        return StringUtils.randomAlphanumeric(count);
+    }
+
+
 }
