@@ -22,7 +22,7 @@
   <!-- **************************************************************** -->
   <!--  SPRING ANNOTATION PROCESSING                                    -->
   <!-- **************************************************************** -->
-  <mvc:annotation-driven />
+  <mvc:annotation-driven conversion-service="conversionService" />
   <context:component-scan base-package="thymeleafexamples.stsm" />
 
 
@@ -32,6 +32,20 @@
   <!-- **************************************************************** -->
   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
     <property name="basename" value="Messages" />
+  </bean>
+
+
+  <!-- **************************************************************** -->
+  <!--  CONVERSION SERVICE                                              -->
+  <!--  Standard Spring formatting-enabled implementation               -->
+  <!-- **************************************************************** -->
+  <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+    <property name="formatters">
+      <set>
+        <bean class="thymeleafexamples.stsm.web.conversion.VarietyFormatter" />
+        <bean class="thymeleafexamples.stsm.web.conversion.DateFormatter" />
+      </set>
+    </property>
   </bean>
 
 
