@@ -1306,6 +1306,7 @@ several semantically related columns together.
   th:readonly        CDATA  #IMPLIED
   th:rel             CDATA  #IMPLIED
   th:remove          CDATA  #IMPLIED
+  th:replace         CDATA  #IMPLIED
   th:rev             CDATA  #IMPLIED
   th:rows            CDATA  #IMPLIED
   th:rowspan         CDATA  #IMPLIED
@@ -1340,6 +1341,11 @@ several semantically related columns together.
   th:xmlbase         CDATA  #IMPLIED
   th:xmllang         CDATA  #IMPLIED
   th:xmlspace        CDATA  #IMPLIED"
+  >
+
+<!ELEMENT th:block  %Flow;>   <!-- th:block should allow approx the same as <div> -->
+<!ATTLIST th:block
+  %allthymeleafattrs;
   >
 
 <!ATTLIST a

@@ -173,15 +173,24 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     public static final DocTypeIdentifier XHTML11_THYMELEAF2_SYSTEMID = 
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-2.dtd");
 
-    public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF3_SYSTEMID = 
+    public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF3_SYSTEMID =
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-3.dtd");
-    public static final DocTypeIdentifier XHTML1_TRANSITIONAL_THYMELEAF3_SYSTEMID = 
+    public static final DocTypeIdentifier XHTML1_TRANSITIONAL_THYMELEAF3_SYSTEMID =
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-3.dtd");
-    public static final DocTypeIdentifier XHTML1_FRAMESET_THYMELEAF3_SYSTEMID = 
+    public static final DocTypeIdentifier XHTML1_FRAMESET_THYMELEAF3_SYSTEMID =
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-3.dtd");
-    public static final DocTypeIdentifier XHTML11_THYMELEAF3_SYSTEMID = 
+    public static final DocTypeIdentifier XHTML11_THYMELEAF3_SYSTEMID =
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-3.dtd");
-    
+
+    public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAF4_SYSTEMID =
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd");
+    public static final DocTypeIdentifier XHTML1_TRANSITIONAL_THYMELEAF4_SYSTEMID =
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-4.dtd");
+    public static final DocTypeIdentifier XHTML1_FRAMESET_THYMELEAF4_SYSTEMID =
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-4.dtd");
+    public static final DocTypeIdentifier XHTML11_THYMELEAF4_SYSTEMID =
+        DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-4.dtd");
+
     
     public static final IDocTypeResolutionEntry XHTML1_STRICT_THYMELEAF_1_DOC_TYPE_RESOLUTION_ENTRY =
         new ClassLoaderDocTypeResolutionEntry(
@@ -258,7 +267,33 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                 DocTypeIdentifier.NONE, // PUBLICID
                 XHTML11_THYMELEAF3_SYSTEMID, // SYSTEMID
                 "org/thymeleaf/dtd/thymeleaf/xhtml11-thymeleaf-3.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE 
-    
+
+
+
+    public static final IDocTypeResolutionEntry XHTML1_STRICT_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_STRICT_THYMELEAF4_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml1-strict-thymeleaf-4.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE
+
+    public static final IDocTypeResolutionEntry XHTML1_TRANSITIONAL_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_TRANSITIONAL_THYMELEAF4_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml1-transitional-thymeleaf-4.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE
+
+    public static final IDocTypeResolutionEntry XHTML1_FRAMESET_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML1_FRAMESET_THYMELEAF4_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml1-frameset-thymeleaf-4.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE
+
+    public static final IDocTypeResolutionEntry XHTML11_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY =
+        new ClassLoaderDocTypeResolutionEntry(
+                DocTypeIdentifier.NONE, // PUBLICID
+                XHTML11_THYMELEAF4_SYSTEMID, // SYSTEMID
+                "org/thymeleaf/dtd/thymeleaf/xhtml11-thymeleaf-4.dtd"); // CLASS-LOADER-RESOLVABLE RESOURCE
+
 
     
     public static final Set<IDocTypeResolutionEntry> DOC_TYPE_RESOLUTION_ENTRIES;
@@ -354,6 +389,36 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                 Standards.XHTML_11_SYSTEMID);
 
 
+
+    public static final IDocTypeTranslation XHTML1_STRICT_THYMELEAF_4_DOC_TYPE_TRANSLATION =
+            new DocTypeTranslation(
+                    DocTypeIdentifier.NONE, // PUBLICID
+                    XHTML1_STRICT_THYMELEAF4_SYSTEMID, // SYSTEMID
+                    Standards.XHTML_1_STRICT_PUBLICID,
+                    Standards.XHTML_1_STRICT_SYSTEMID);
+
+    public static final IDocTypeTranslation XHTML1_TRANSITIONAL_THYMELEAF_4_DOC_TYPE_TRANSLATION =
+            new DocTypeTranslation(
+                    DocTypeIdentifier.NONE, // PUBLICID
+                    XHTML1_TRANSITIONAL_THYMELEAF4_SYSTEMID, // SYSTEMID
+                    Standards.XHTML_1_TRANSITIONAL_PUBLICID,
+                    Standards.XHTML_1_TRANSITIONAL_SYSTEMID);
+
+    public static final IDocTypeTranslation XHTML1_FRAMESET_THYMELEAF_4_DOC_TYPE_TRANSLATION =
+            new DocTypeTranslation(
+                    DocTypeIdentifier.NONE, // PUBLICID
+                    XHTML1_FRAMESET_THYMELEAF4_SYSTEMID, // SYSTEMID
+                    Standards.XHTML_1_FRAMESET_PUBLICID,
+                    Standards.XHTML_1_FRAMESET_SYSTEMID);
+
+    public static final IDocTypeTranslation XHTML11_THYMELEAF_4_DOC_TYPE_TRANSLATION =
+            new DocTypeTranslation(
+                    DocTypeIdentifier.NONE, // PUBLICID
+                    XHTML11_THYMELEAF4_SYSTEMID, // SYSTEMID
+                    Standards.XHTML_11_PUBLICID,
+                    Standards.XHTML_11_SYSTEMID);
+
+
     
     public static final Set<IDocTypeTranslation> DOC_TYPE_TRANSLATIONS =
         Collections.unmodifiableSet(
@@ -370,7 +435,11 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
                                 XHTML1_STRICT_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
                                 XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
                                 XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_TRANSLATION, 
-                                XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION
+                                XHTML11_THYMELEAF_3_DOC_TYPE_TRANSLATION,
+                                XHTML1_STRICT_THYMELEAF_4_DOC_TYPE_TRANSLATION,
+                                XHTML1_TRANSITIONAL_THYMELEAF_4_DOC_TYPE_TRANSLATION,
+                                XHTML1_FRAMESET_THYMELEAF_4_DOC_TYPE_TRANSLATION,
+                                XHTML11_THYMELEAF_4_DOC_TYPE_TRANSLATION
                                 })));
 
 
@@ -397,6 +466,10 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
         newDocTypeResolutionEntries.add(XHTML11_THYMELEAF_3_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_STRICT_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_TRANSITIONAL_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML1_FRAMESET_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY);
+        newDocTypeResolutionEntries.add(XHTML11_THYMELEAF_4_DOC_TYPE_RESOLUTION_ENTRY);
         DOC_TYPE_RESOLUTION_ENTRIES = Collections.unmodifiableSet(newDocTypeResolutionEntries);
         
     }
