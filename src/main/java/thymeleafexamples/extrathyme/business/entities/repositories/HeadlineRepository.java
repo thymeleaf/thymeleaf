@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
-
 import thymeleafexamples.extrathyme.business.entities.Headline;
 
 
