@@ -34,21 +34,31 @@
         </thead>
         <tbody>
           <tr th:each="t : ${teams}" score:classforposition="${tStat.count}">
-            <td th:text="${t.name + ' (' + t.code + ')'}">The Winners (TWN)</td>
+            <td th:text="|${t.name} (${t.code})|">The Winners (TWN)</td>
             <td th:text="${t.won}" class="matches">1</td>
             <td th:text="${t.drawn}" class="matches">0</td>
             <td th:text="${t.lost}" class="matches">0</td>
             <td th:text="${t.points}" class="points">3</td>
             <td score:remarkforposition="${tStat.count}">Great winner!</td>
           </tr>
-          <tr th:remove="all">
-            <td>The Losers (TLS)</td>
+          <!--/*-->
+          <tr>
+            <td>The First Losers (TFL)</td>
+            <td class="matches">0</td>
+            <td class="matches">1</td>
+            <td class="matches">0</td>
+            <td class="points">1</td>
+            <td>Little loser!</td>
+          </tr>
+          <tr>
+            <td>The Last Losers (TLL)</td>
             <td class="matches">0</td>
             <td class="matches">0</td>
             <td class="matches">1</td>
             <td class="points">0</td>
             <td>Big loooooser</td>
           </tr>
+          <!--*/-->
         </tbody>
       </table>
       

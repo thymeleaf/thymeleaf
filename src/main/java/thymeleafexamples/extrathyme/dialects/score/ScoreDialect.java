@@ -37,15 +37,6 @@ public class ScoreDialect extends AbstractDialect {
     }
 
     /*
-     * Non-lenient: if a tag or attribute with its prefix ('score') appears on
-     * the template and there is no tag/attribute processor 
-     * associated with it, an exception is thrown.
-     */
-    public boolean isLenient() {
-        return false;
-    }
-    
-    /*
      * Two attribute processors are declared: 'classforposition' and
      * 'remarkforposition'. Also one element processor: the 'headlines'
      * tag.

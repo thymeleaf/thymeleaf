@@ -23,10 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.attr.AbstractAttributeModifierAttrProcessor;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import thymeleafexamples.extrathyme.business.entities.Remark;
 import thymeleafexamples.extrathyme.business.util.RemarkUtil;
 
@@ -52,18 +54,30 @@ public class ClassForPositionAttrProcessor
             final Arguments arguments, final Element element,
             final String attributeName) {
 
+        final Configuration configuration = arguments.getConfiguration();
+
         /*
          * Obtain the attribute value
          */
         final String attributeValue = element.getAttributeValue(attributeName);
-        
+
         /*
-         * Process (parse and execute) the attribute value, specified as a
-         * Thymeleaf Standard Expression.
+         * Obtain the Thymeleaf Standard Expression parser
+         */
+        final IStandardExpressionParser parser =
+                StandardExpressions.getExpressionParser(configuration);
+
+        /*
+         * Parse the attribute value as a Thymeleaf Standard Expression
+         */
+        final IStandardExpression expression =
+                parser.parseExpression(configuration, arguments, attributeValue);
+
+        /*
+         * Execute the expression just parsed
          */
         final Integer position =
-            (Integer) StandardExpressionProcessor.processExpression(
-                    arguments, attributeValue);
+                (Integer) expression.execute(configuration, arguments);
 
         /*
          * Obtain the remark corresponding to this position in the league table.
