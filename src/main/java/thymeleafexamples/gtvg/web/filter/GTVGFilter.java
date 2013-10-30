@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
-
 import thymeleafexamples.gtvg.business.entities.User;
 import thymeleafexamples.gtvg.web.application.GTVGApplication;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;

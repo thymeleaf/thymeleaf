@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
 import thymeleafexamples.gtvg.web.controller.HomeController;
 import thymeleafexamples.gtvg.web.controller.IGTVGController;
 import thymeleafexamples.gtvg.web.controller.OrderDetailsController;

@@ -27,7 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.WebContext;
-
 import thymeleafexamples.gtvg.business.entities.Product;
 import thymeleafexamples.gtvg.business.services.ProductService;
 
