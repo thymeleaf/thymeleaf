@@ -234,30 +234,50 @@
     <h3>Literals and operations</h3>
     
     <p>
-      Some operations are also available, as well as text and numeric literals:
+      A good bunch of types of literals and operations are available:
     </p>
+
     <ul>
-      <li>Literals: <kbd>'Development'</kbd>, <kbd>2</kbd>, <kbd>12.1</kbd>,...</li>
-      <li>String concatenation: <kbd>+</kbd>
-        <ul>
-          <li>Example: <kbd>'Value is ' + ${myVar}</kbd></li>
-        </ul>
-      </li>
-      <li>Arithmetic operations: <kbd>+</kbd>, <kbd>-</kbd>, <kbd>*</kbd>, <kbd>/</kbd>, <kbd>%</kbd>
-        <ul>
-          <li>Example: <kbd>${listStat.count} + 1</kbd></li>
-        </ul>
-      </li>
-      <li>Comparisons: <kbd>==</kbd>, <kbd>!=</kbd>, <kbd>&lt;</kbd>, <kbd>&lt;=</kbd>, <kbd>&gt;</kbd>, <kbd>&gt;=</kbd>
-        <ul>
-          <li>Example: <kbd>(${event.number} % 2) == 0</kbd></li>
-        </ul>
-      </li>
-      <li>Boolean operators: <kbd>and</kbd>, <kbd>or</kbd>
-        <ul>
-          <li>Example: <kbd>${user.isAdmin()} and ${server.name == 'dev021'}</kbd></li>
-        </ul>
-      </li>
+        <li>Literals:
+            <ul>
+                <li>Text literals: <kbd>'one text'</kbd>, <kbd>'Another one!'</kbd>,...</li>
+                <li>Number literals: <kbd>0</kbd>, <kbd>34</kbd>, <kbd>3.0</kbd>, <kbd>12.3</kbd>,...</li>
+                <li>Boolean literals: <kbd>true</kbd>, <kbd>false</kbd></li>
+                <li>Null literal: <kbd>null</kbd></li>
+                <li>Literal tokens: <kbd>one</kbd>, <kbd>sometext</kbd>, <kbd>main</kbd>,...</li>
+            </ul>
+        </li>
+        <li>Text operations:
+            <ul>
+                <li>String concatenation: <kbd>+</kbd></li>
+                <li>Literal substitutions: <kbd>|The name is ${name}|</kbd></li>
+            </ul>
+        </li>
+        <li>Arithmetic operations:
+            <ul>
+                <li>Binary operators: <kbd>+</kbd>, <kbd>-</kbd>, <kbd>*</kbd>, <kbd>/</kbd>, <kbd>%</kbd></li>
+                <li>Minus sign (unary operator): <kbd>-</kbd></li>
+            </ul>
+        </li>
+        <li>Boolean operations:
+            <ul>
+                <li>Binary operators: <kbd>and</kbd>, <kbd>or</kbd></li>
+                <li>Boolean negation (unary operator): <kbd>!</kbd>, <kbd>not</kbd></li>
+            </ul>
+        </li>
+        <li>Comparisons and equality:
+            <ul>
+                <li>Comparators: <kbd>&gt;</kbd>, <kbd>&lt;</kbd>, <kbd>&gt;=</kbd>, <kbd>&lt;=</kbd> (<kbd>gt</kbd>, <kbd>lt</kbd>, <kbd>ge</kbd>, <kbd>le</kbd>)</li>
+                <li>Equality operators: <kbd>==</kbd>, <kbd>!=</kbd> (<kbd>eq</kbd>, <kbd>ne</kbd>)</li>
+            </ul>
+        </li>
+        <li>Conditional operators:
+            <ul>
+                <li>If-then: <kbd>(if) ? (then)</kbd></li>
+                <li>If-then-else: <kbd>(if) ? (then) : (else)</kbd></li>
+                <li>Default: <kbd>(value) ?: (defaultvalue)</kbd></li>
+            </ul>
+        </li>
     </ul>
 
     <h3>Expression preprocessing</h3>
