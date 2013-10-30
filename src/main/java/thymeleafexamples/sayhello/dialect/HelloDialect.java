@@ -41,16 +41,6 @@ public class HelloDialect extends AbstractDialect {
 
     
     /*
-     * Non-lenient: if a tag starting with 'hello:' is
-     * found but no processor exists in this dialect for it,
-     * throw an exception. 
-     */
-    public boolean isLenient() {
-        return false;
-    }
-
-    
-    /*
      * The processors.
      */
     @Override
