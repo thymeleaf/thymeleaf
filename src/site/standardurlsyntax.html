@@ -169,6 +169,28 @@
 
 
 
+     <h2>Protocol-relative URLs</h2>
+
+     <p>
+         <i>Protocol-relative</i> URLs are in fact absolute URLs which will keep the protocol
+         (HTTP, HTTPS) being used for displaying the current page. They are typically used for including
+         external resources like styles, scripts, etc.:
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         &lt;script th:src="@{//scriptserver.example.net/myscript.js}">...&lt;/script>
+     ]]></script>
+
+     <p>
+         ...which will render unmodified, as:
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         &lt;script src="//scriptserver.example.net/myscript.js">...&lt;/script>
+     ]]></script>
+
+
+
 
      <h2>Adding parameters</h2>
 
