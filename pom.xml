@@ -25,7 +25,7 @@
   <groupId>thymeleafexamples</groupId>
   <artifactId>sayhello</artifactId>
   <packaging>war</packaging>
-  <version>20131006</version>
+  <version>20131104</version>
   <name>Thymeleaf Examples - Say Hello!</name>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
