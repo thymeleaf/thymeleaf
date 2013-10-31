@@ -24,8 +24,11 @@ import java.util.Locale;
 
 import org.springframework.ui.context.Theme;
 import org.springframework.web.servlet.support.RequestContext;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
+import org.thymeleaf.util.Validate;
 
 /**
  * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>
@@ -48,10 +51,11 @@ public class Themes {
     public Themes(final IProcessingContext processingContext) {
 
         super();
-        final RequestContext requestContext = (RequestContext)processingContext.getContext().getVariables()
+        final IContext context = processingContext.getContext();
+        this.locale = context.getLocale();
+        final RequestContext requestContext = (RequestContext) processingContext.getContext().getVariables()
         		.get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
-        this.theme  = requestContext.getTheme();
-        this.locale = requestContext.getLocale();
+        this.theme = requestContext != null ? requestContext.getTheme() : null;
     }
 
     /**
@@ -63,7 +67,10 @@ public class Themes {
      * 		   empty string if the code could not be resolved.
      */
     public String code(final String code) {
-
+        if (this.theme == null) {
+            throw new TemplateProcessingException("Theme cannot be resolved because RequestContext was not found. "
+                + "Are you using a Context object without a RequestContext variable?");
+        }
         return this.theme.getMessageSource().getMessage(code, null, "", this.locale);
     }
 }
