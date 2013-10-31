@@ -188,9 +188,8 @@
       <li>etc...</li>
     </ul>
     <p>
-      In order to achieve this, we will need to make use of the special 
-      <kbd>StandardExpressionProcessor</kbd> utility class, which contains the required
-      logic to process these <i>standard expressions</i>:
+      In order to achieve this, we will make use of the <em>Standard Expression Parser</em>, which will
+      parse the attribute value into an executable <em>expression</em> object:
     </p>
     
     <script type="syntaxhighlighter" class="brush:java"><![CDATA[
@@ -213,10 +212,21 @@
             @Override
             protected String getText(final Arguments arguments, final Element element,
                         final String attributeName) {
-                final String planet =
-                    (String) StandardExpressionProcessor.processExpression(
-                                arguments, element.getAttributeValue(attributeName));
+
+                final Configuration configuration = arguments.getConfiguration();
+
+                final IStandardExpressionParser parser =
+                        StandardExpressions.getExpressionParser(configuration);
+
+                final String attributeValue = element.getAttributeValue(attributeName);
+
+                final IStandardExpression expression =
+                        parser.parseExpression(configuration, arguments, attributeValue);
+
+                final String planet = (String) expression.execute(configuration, arguments);
+
                 return "Hello, planet " + planet;
+
             }
 
         }
@@ -319,9 +329,18 @@
         protected String getText(final Arguments arguments, final Element element,
                         final String attributeName) {
 
-            final String planet =
-                    (String) StandardExpressionProcessor.processExpression(
-                            arguments, element.getAttributeValue(attributeName));
+
+            final Configuration configuration = arguments.getConfiguration();
+
+            final IStandardExpressionParser parser =
+                    StandardExpressions.getExpressionParser(configuration);
+
+            final String attributeValue = element.getAttributeValue(attributeName);
+
+            final IStandardExpression expression =
+                    parser.parseExpression(configuration, arguments, attributeValue);
+
+            final String planet = (String) expression.execute(configuration, arguments);
 
             //
             // This 'getMessage(...)' method will first try to resolve the

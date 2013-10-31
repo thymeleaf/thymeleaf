@@ -210,16 +210,6 @@
 
 
             //
-            // Non-lenient: if a tag starting with 'hello:' is
-            // found but no processor exists in this dialect for it,
-            // throw an exception.
-            //
-            public boolean isLenient() {
-                return false;
-            }
-
-
-            //
             // The processors.
             //
             @Override
@@ -236,7 +226,7 @@
       We didn't need any of those because our dialect
       is meant to be used together with the SpringStandard dialect, which already includes
       a useful set of all those things (although we could have defined them here also if for some reason we wanted 
-      to be more exhaustive). All our dialect does is specify a prefix (<kbd>hello</kbd>), a <i>leniency</i>,
+      to be more exhaustive). All our dialect does is specify a prefix (<kbd>hello</kbd>)
       and our <i>"sayto"</i> attribute processor.
     </p>
     
