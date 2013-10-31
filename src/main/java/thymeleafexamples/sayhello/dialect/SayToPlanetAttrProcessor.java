@@ -20,9 +20,12 @@
 package thymeleafexamples.sayhello.dialect;
 
 import org.thymeleaf.Arguments;
+import org.thymeleaf.Configuration;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
+import org.thymeleaf.standard.expression.IStandardExpression;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 public class SayToPlanetAttrProcessor 
         extends AbstractTextChildModifierAttrProcessor {
@@ -47,10 +50,21 @@ public class SayToPlanetAttrProcessor
     @Override
     protected String getText(final Arguments arguments, final Element element, 
             final String attributeName) {
-        
-        final String planet =
-            (String) StandardExpressionProcessor.processExpression(
-                    arguments, element.getAttributeValue(attributeName));
+
+        /*
+         * In order to evaluate the attribute value as a Thymeleaf Standard Expression,
+         * we first obtain the parser, then use it for parsing the attribute value into
+         * an expression object, and finally execute this expression object.
+         */
+        final Configuration configuration = arguments.getConfiguration();
+
+        final IStandardExpressionParser parser =
+                StandardExpressions.getExpressionParser(configuration);
+
+        final IStandardExpression expression =
+                parser.parseExpression(configuration, arguments, element.getAttributeValue(attributeName));
+
+        final String planet = (String) expression.execute(configuration, arguments);
 
         /*
          * This 'getMessage(...)' method will first try to resolve the
