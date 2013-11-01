@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.springintegration.model;
+package org.thymeleaf.engine21.springintegration.model;
 
 public class FormBean03 {
 

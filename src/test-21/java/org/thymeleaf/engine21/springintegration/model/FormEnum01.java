@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.springintegration.model;
+package org.thymeleaf.engine21.springintegration.model;
 
 public enum FormEnum01 {
     ONE,
