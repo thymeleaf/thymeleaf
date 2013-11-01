@@ -44,15 +44,5 @@ public class DOMSelectorTest {
         
     }
 
-    @Test
-    public void testDOMSelector14() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.execute("classpath:engine/domselector/domselector14.thtest");
-
-        Assert.assertTrue(executor.isAllOK());
-
-    }
-
     
 }
