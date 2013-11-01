@@ -16,7 +16,5 @@ binding = 'formBean03'
 # ------------------------------------------------------------
 %OUTPUT
 <form action="/url">
-   <input type="radio" id="choice1" name="choice" value="ONE" />
-   <input type="radio" id="choice2" name="choice" value="TWO" checked="checked" />
-   <input type="radio" id="choice3" name="choice" value="THREE" />
+   <input type="radio" id="choice1" name="choice" value="ONE" /><input type="radio" id="choice2" name="choice" value="TWO" checked="checked" /><input type="radio" id="choice3" name="choice" value="THREE" />
 </form>
