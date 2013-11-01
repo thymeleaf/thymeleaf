@@ -92,13 +92,21 @@ public class SpelVariableExpressionEvaluator
             if (expContext.getPerformTypeConversion()) {
                 // This is a *{{...}} expression, so we should use binding info (if available) for formatting.
 
-                final BindStatus bindStatus =
-                        FieldUtils.getBindStatusFromParsedExpression(
-                                configuration, processingContext, useSelectionAsRoot, spelExpression);
+                if (useSelectionAsRoot || !isLocalVariableOverriding(processingContext, spelExpression)) {
+                    // The "local variable override" check avoid scenarios where a locally defined variable
+                    // (e.g. the iterated variable in a th:each) has the same name as a bound object (e.g. a
+                    // form-backing bean). If this was not detected, the bound object value would be always used
+                    // instead of the local variable's
 
-                if (bindStatus != null) {
-                    // The expression goes against a bound object! Let Spring do its magic for displaying it...
-                    return ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
+                    final BindStatus bindStatus =
+                            FieldUtils.getBindStatusFromParsedExpression(
+                                    configuration, processingContext, useSelectionAsRoot, spelExpression);
+
+                    if (bindStatus != null) {
+                        // The expression goes against a bound object! Let Spring do its magic for displaying it...
+                        return ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
+                    }
+
                 }
 
             }
@@ -230,7 +238,22 @@ public class SpelVariableExpressionEvaluator
         
     }
     
-    
+
+
+    private static boolean isLocalVariableOverriding(final IProcessingContext processingContext, final String expression) {
+        if (!processingContext.hasLocalVariables()) {
+            return false;
+        }
+        final int dotPos = expression.indexOf('.');
+        if (dotPos == -1) {
+            return false;
+        }
+        final String expressionFirstComponent = expression.substring(0,dotPos);
+        return processingContext.hasLocalVariable(expressionFirstComponent);
+    }
+
+
+
 
     @Override
     public String toString() {
