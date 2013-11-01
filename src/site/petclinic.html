@@ -293,9 +293,9 @@
             <title>PetClinic :: a Spring Framework demonstration</title>
 
             <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap.min.css"
-                  th:href="@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}" rel="stylesheet"/>
+                  th:href="@{/webjars/bootstrap/2.3.0/css/bootstrap.min.css}" rel="stylesheet" />
             <link href="../../../resources/css/petclinic.css"
-                  th:href="@{/resources/css/petclinic.css}" rel="stylesheet"/>
+                  th:href="@{/resources/css/petclinic.css}" rel="stylesheet" />
 
             <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"
                     th:src="@{/webjars/jquery/1.9.0/jquery.js}">&lt;/script>
@@ -304,7 +304,7 @@
 
             <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/smoothness/jquery-ui.css"
                   th:href="@{/webjars/jquery-ui/1.9.2/css/smoothness/jquery-ui-1.9.2.custom.css}"
-                  rel="stylesheet"></link>
+                  rel="stylesheet" />
 
         </head>
 
@@ -444,15 +444,15 @@
             <tr th:each="owner : ${selections}">
                 <td>
                     <a href="ownerDetails.html"
-                       th:href="@{'/owners/' + ${owner.id}}"
-                       th:text="${owner.firstName + ' ' + owner.lastName}">Mary Smith</a>
+                       th:href="@{|/owners/${owner.id}|}"
+                       th:text="|${owner.firstName} ${owner.lastName}|">Mary Smith</a>
                 </td>
                 <td th:text="${owner.address}">45, Oxford Street</td>
                 <td th:text="${owner.city}">Cambridge</td>
                 <td th:text="${owner.telephone}">555-555-555</td>
                 <td>
                     <span th:each="pet : ${owner.pets}" th:text="${pet.name}" th:remove="tag">
-                       Rob
+                       Rob&nbsp;
                     </span>
                 </td>
             </tr>
