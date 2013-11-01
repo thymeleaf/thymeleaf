@@ -1,0 +1,22 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+# Initialize the bean and set its "choice" property to TWO
+formBean03 = new org.thymeleaf.engine.springintegration.model.FormBean03()
+formBean03.choice = @org.thymeleaf.engine.springintegration.model.FormEnum01@TWO
+# Create a variable with all the possible enum values (ONE, TWO, TREE)
+enumValues = @org.thymeleaf.engine.springintegration.model.FormEnum01@values()
+# Specify the Spring form binding object
+binding = 'formBean03'
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean03}" th:action="'/url'">
+   <input type="radio" th:field="*{choice}" th:each="val : ${enumValues}" th:value="${val}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/url">
+   <input type="radio" id="choice1" name="choice" value="ONE" />
+   <input type="radio" id="choice2" name="choice" value="TWO" checked="checked" />
+   <input type="radio" id="choice3" name="choice" value="THREE" />
+</form>
