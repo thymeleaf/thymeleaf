@@ -2,5 +2,13 @@
 # ------------------------------------------------------------
 %FRAGMENT //li/b
 # ------------------------------------------------------------
+%INPUT
+<ul>
+  <li>Greetings:
+    <ul>
+      <li><b>hi</b></li>
+    </ul>
+  </li>
+</ul>
 %OUTPUT
-<b>Java template engine for XML, XHTML and HTML5</b><b>dialects</b><b>XML</b><b>XHTML 1.0 and 1.1</b><b>HTML5</b><b>internationalization</b><b>parsed template cache</b>
+<b>hi</b>
