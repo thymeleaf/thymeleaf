@@ -639,7 +639,13 @@ public final class DOMSelector implements Serializable {
             
             final NestableNode nestableNode = (NestableNode) node;
             if (nestableNode.hasChildren()) {
-                return this.next.checkChildrenSelection(selectedNodes, node, referenceChecker);
+                if (this.next.checkChildrenSelection(selectedNodes, node, referenceChecker)) {
+                    // This step of the selector matched, and we will try to match the next ones.
+                    return true;
+                }
+                // This step matched, but not the next ones. So we might try again matching this same step
+                // (not the "next" one) with our children
+                return checkChildrenSelection(selectedNodes, node, referenceChecker);
             }
             
         }
