@@ -1,0 +1,15 @@
+%EXTENDS conversion3.common
+# ------------------------------------------------------------
+%CONTEXT
+obj = conversion3Obj1
+binding = 'obj'
+objs = { conversion3Obj2 }
+# ------------------------------------------------------------
+%INPUT
+<p th:each=" obj : ${objs}" th:text="${{obj.date}}">A date, which should be from 1990</p>
+<p th:text="${{obj.date}}">A date, which should be from 2006</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>Mon Apr 30 00:00:00 1990</p>
+<p>2006-05-23</p>
+
