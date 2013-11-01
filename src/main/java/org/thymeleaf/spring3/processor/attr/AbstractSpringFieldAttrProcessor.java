@@ -95,7 +95,7 @@ public abstract class AbstractSpringFieldAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(arguments, attributeValue, false);
+            FieldUtils.getBindStatus(arguments.getConfiguration(), arguments, attributeValue);
         
         final Map<String,Object> localVariables =
                 Collections.singletonMap(SpringContextVariableNames.SPRING_FIELD_BIND_STATUS, (Object)bindStatus);

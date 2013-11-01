@@ -73,7 +73,7 @@ public final class SpringErrorsAttrProcessor
         final String attributeValue = element.getAttributeValue(attributeName);
         
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(arguments, attributeValue, true);
+            FieldUtils.getBindStatus(arguments.getConfiguration(), arguments, attributeValue);
         
         if (bindStatus.isError()) {
             

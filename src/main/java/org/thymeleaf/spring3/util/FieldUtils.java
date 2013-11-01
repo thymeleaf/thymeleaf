@@ -35,7 +35,7 @@ import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.SelectionVariableExpression;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.expression.VariableExpression;
-
+import org.thymeleaf.util.Validate;
 
 
 /**
@@ -76,53 +76,51 @@ public final class FieldUtils {
             final IProcessingContext processingContext, final String field) {
 
 	
-        return checkErrors(configuration, processingContext, convertToFieldExpression(field), true);
+        return checkErrors(configuration, processingContext, convertToFieldExpression(field));
         
     }
     
     public static boolean hasAnyErrors(final Configuration configuration, 
             final IProcessingContext processingContext) {
 
-        return checkErrors(configuration, processingContext, ALL_EXPRESSION, true);
+        return checkErrors(configuration, processingContext, ALL_EXPRESSION);
         
     }
     
     public static boolean hasGlobalErrors(final Configuration configuration, 
             final IProcessingContext processingContext) {
         
-        return checkErrors(configuration, processingContext, GLOBAL_EXPRESSION, true);
+        return checkErrors(configuration, processingContext, GLOBAL_EXPRESSION);
         
     }
     
     
 
     public static List<String> errors(final Arguments arguments, final String field) {
-        return errors(arguments.getConfiguration(), arguments, field);
+        return computeErrors(arguments.getConfiguration(), arguments, field);
     }
 
     public static List<String> errors(final Configuration configuration,
             final IProcessingContext processingContext, final String field) {
-
-        return errors(configuration, processingContext, convertToFieldExpression(field), true);
+        return computeErrors(configuration, processingContext, convertToFieldExpression(field));
     }
     
     public static List<String> errors(final Configuration configuration,
             final IProcessingContext processingContext) {
-        return errors(configuration, processingContext, ALL_EXPRESSION, true);
-        
+        return computeErrors(configuration, processingContext, ALL_EXPRESSION);
     }
     
     public static List<String> globalErrors(final Configuration configuration,
             final IProcessingContext processingContext) {
 
-        return errors(configuration, processingContext, GLOBAL_EXPRESSION, true);
+        return computeErrors(configuration, processingContext, GLOBAL_EXPRESSION);
     }
     
-    private static List<String> errors(final Configuration configuration, 
-            final IProcessingContext processingContext, final String fieldExpression, final boolean allowAllFields) {
+    private static List<String> computeErrors(final Configuration configuration,
+            final IProcessingContext processingContext, final String fieldExpression) {
 
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(configuration, processingContext, fieldExpression, true);
+            FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
 
         if (bindStatus == null) {
             throw new TemplateProcessingException(
@@ -162,9 +160,9 @@ public final class FieldUtils {
 
 
     private static boolean checkErrors(final Configuration configuration, 
-            final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
+            final IProcessingContext processingContext, final String expression) {
         final BindStatus bindStatus =
-                FieldUtils.getBindStatus(configuration, processingContext, expression, allowAllFields);
+                FieldUtils.getBindStatus(configuration, processingContext, expression);
         if (bindStatus == null) {
             throw new TemplateProcessingException(
                     "A BindStatus couldn't be obtained for expression '" + expression + "'. Maybe a RequestContext has " +
@@ -174,17 +172,84 @@ public final class FieldUtils {
         }
         return bindStatus.isError();
     }
-    
 
 
+    /**
+     * @deprecated Deprecated in 2.1.0.
+     *             Use {@link #getBindStatusFromParsedExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, boolean, String)}
+     *             or {@link #getBindStatus(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}
+     *             instead. Will be removed in 3.0.
+     */
+    @Deprecated
     public static BindStatus getBindStatus(
             final Arguments arguments, final String expression, final boolean allowAllFields) {
-        return getBindStatus(arguments.getConfiguration(), arguments, expression, allowAllFields);
+        return getBindStatus(arguments.getConfiguration(), arguments, expression);
     }
-    
-    
-    public static BindStatus getBindStatus(final Configuration configuration, 
+
+
+    /**
+     * @deprecated Deprecated in 2.1.0.
+     *             Use {@link #getBindStatusFromParsedExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, boolean, String)}
+     *             or {@link #getBindStatus(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}
+     *             instead. Will be removed in 3.0.
+     */
+    @Deprecated
+    public static BindStatus getBindStatus(final Configuration configuration,
             final IProcessingContext processingContext, final String expression, final boolean allowAllFields) {
+        return getBindStatus(configuration, processingContext, expression);
+    }
+
+
+
+    public static BindStatus getBindStatus(final Configuration configuration,
+            final IProcessingContext processingContext, final String expression) {
+
+        Validate.notNull(expression, "Expression cannot be null");
+
+        if (GLOBAL_EXPRESSION.equals(expression) || ALL_EXPRESSION.equals(expression) || ALL_FIELDS.equals(expression)) {
+            // If "global", "all" or "*" are used without prefix, they must be inside a form, so we add *{...}
+            return getBindStatus(configuration, processingContext, "*{" + expression + "}");
+        }
+
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpression expressionObj =
+                expressionParser.parseExpression(configuration, processingContext, expression);
+
+        if (expressionObj == null) {
+            throw new TemplateProcessingException(
+                    "Expression \"" + expression + "\" is not valid: cannot perform Spring bind");
+        }
+
+        if (expressionObj instanceof SelectionVariableExpression) {
+            final String bindExpression = ((SelectionVariableExpression)expressionObj).getExpression();
+            return getBindStatusFromParsedExpression(configuration, processingContext, true, bindExpression);
+        }
+
+        if (expressionObj instanceof VariableExpression) {
+            final String bindExpression = ((VariableExpression)expressionObj).getExpression();
+            return getBindStatusFromParsedExpression(configuration, processingContext, false, bindExpression);
+        }
+
+        throw new TemplateProcessingException(
+                "Expression \"" + expression + "\" is not valid: only variable expressions ${...} or " +
+                "selection expressions *{...} are allowed in Spring field bindings");
+
+    }
+
+
+
+    /**
+     * @since 2.1.0
+     */
+    public static BindStatus getBindStatusFromParsedExpression(
+            final Configuration configuration, final IProcessingContext processingContext,
+            final boolean useSelectionAsRoot, final String expression) {
+
+        /*
+         * This version of the getBindStatus method should only be called after parsing, and therefore the
+         * passed expression must be a fragment of the already parsed expression. Note this is important because
+         * this method performs no preprocessing on the expression!
+         */
 
         // This method will return null if no binding is found!
 
@@ -194,22 +259,8 @@ public final class FieldUtils {
             return null;
         }
 
-        String bindExpression = expression;
-
-        if(allowAllFields) {
-            if (GLOBAL_EXPRESSION.equals(bindExpression) || ALL_EXPRESSION.equals(bindExpression) || ALL_FIELDS.equals(bindExpression)) {
-        	    // If "global", "all" or "*" are used without prefix, they must be inside a form, so we add *{...}
-                bindExpression = "*{" + bindExpression + "}";
-            }
-        }
-
-
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
-        final IStandardExpression expressionObj =
-                expressionParser.parseExpression(configuration, processingContext, bindExpression);
-        
-        final String completeExpression = 
-            FieldUtils.validateAndGetValueExpression(processingContext, expressionObj);
+        final String completeExpression =
+            FieldUtils.validateAndGetValueExpression(processingContext, useSelectionAsRoot, expression);
 
         if (completeExpression == null) {
             return null;
@@ -229,13 +280,13 @@ public final class FieldUtils {
     
     
     private static String validateAndGetValueExpression(
-            final IProcessingContext processingContext, final IStandardExpression expression) {
+            final IProcessingContext processingContext, final boolean useSelectionAsRoot, final String expression) {
 
         /*
          * Only asterisk syntax (selection variable expressions) are allowed here.
          */
         
-        if (expression instanceof SelectionVariableExpression) {
+        if (useSelectionAsRoot) {
 
             VariableExpression boundObjectValue =
                     (VariableExpression) processingContext.getLocalVariable(SpringContextVariableNames.SPRING_BOUND_OBJECT_EXPRESSION);
@@ -247,16 +298,15 @@ public final class FieldUtils {
 
             final String boundObjectExpression =
                     (boundObjectValue == null? null : boundObjectValue.getExpression());
-            final String selectionExpression = ((SelectionVariableExpression)expression).getExpression();
 
-            if (GLOBAL_EXPRESSION.equals(selectionExpression)) {
+            if (GLOBAL_EXPRESSION.equals(expression)) {
                 // Should return null if no object previously bound: nothing to apply 'global' on!
                 if (boundObjectExpression == null) {
                     return null;
                 }
                 return boundObjectExpression;
             }
-            if (ALL_EXPRESSION.equals(selectionExpression) || ALL_FIELDS.equals(selectionExpression)) {
+            if (ALL_EXPRESSION.equals(expression) || ALL_FIELDS.equals(expression)) {
                 // Should return null if no object previously bound: nothing to apply '*' on!
                 if (boundObjectExpression == null) {
                     return null;
@@ -265,22 +315,15 @@ public final class FieldUtils {
             }
 
             if (boundObjectExpression == null) {
-                return selectionExpression;
+                return expression;
             }
 
-            return boundObjectExpression + '.' + selectionExpression;
+            return boundObjectExpression + '.' + expression;
             
         }
-        if (expression instanceof VariableExpression) {
 
-            return ((VariableExpression)expression).getExpression();
+        return expression;
 
-        }
-        
-        throw new TemplateProcessingException(
-                "Expression \"" + expression + "\" is not valid: only selection variable expressions " +
-                "*{...} are allowed in field specifications");
-        
     }
 
 

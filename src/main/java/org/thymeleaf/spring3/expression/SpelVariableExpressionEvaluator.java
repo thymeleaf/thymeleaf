@@ -89,11 +89,12 @@ public class SpelVariableExpressionEvaluator
         try {
 
 
-            if (useSelectionAsRoot && expContext.getPerformTypeConversion()) {
+            if (expContext.getPerformTypeConversion()) {
                 // This is a *{{...}} expression, so we should use binding info (if available) for formatting.
 
                 final BindStatus bindStatus =
-                        FieldUtils.getBindStatus(configuration, processingContext, "*{" + spelExpression + "}", false);
+                        FieldUtils.getBindStatusFromParsedExpression(
+                                configuration, processingContext, useSelectionAsRoot, spelExpression);
 
                 if (bindStatus != null) {
                     // The expression goes against a bound object! Let Spring do its magic for displaying it...
