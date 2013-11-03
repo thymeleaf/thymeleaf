@@ -445,8 +445,11 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
 
     
     
+    private IStandardVariableExpressionEvaluator variableExpressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
+    private IStandardExpressionParser expressionParser = new StandardExpressionParser();
+    private IStandardConversionService conversionService = new StandardConversionService();
     private Set<IProcessor> additionalProcessors = null;
-    
+
 
     
     
@@ -482,23 +485,150 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     public StandardDialect() {
         super();
     }
-    
-    
 
-    
+
+
+
     public String getPrefix() {
         return PREFIX;
     }
-    
-    
-    public boolean isLenient() {
-        return LENIENT;
+
+
+    /**
+     * <p>
+     *   Returns the variable expression evaluator (implementation of {@link IStandardVariableExpressionEvaluator})
+     *   that is configured to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
+     * </p>
+     * <p>
+     *   This will be {@link OgnlVariableExpressionEvaluator} by default. When using the Spring Standard
+     *   Dialect, this will be a SpringEL-based implementation.
+     * </p>
+     *
+     * @return the Standard Variable Expression Evaluator object.
+     * @since 2.1.0
+     */
+    public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
+        return this.variableExpressionEvaluator;
+    }
+
+
+    /**
+     * <p>
+     *   Sets the variable expression evaluator (implementation of {@link IStandardVariableExpressionEvaluator})
+     *   that should be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
+     * </p>
+     * <p>
+     *   This will be {@link OgnlVariableExpressionEvaluator#INSTANCE} by default. When using the Spring Standard
+     *   Dialect, this will be a SpringEL-based implementation.
+     * </p>
+     * <p>
+     *   This method has no effect once the Template Engine has been initialized.
+     * </p>
+     * <p>
+     *   Objects set here should be <b>thread-safe</b>.
+     * </p>
+     *
+     * @param variableExpressionEvaluator the new Standard Variable Expression Evaluator object. Cannot be null.
+     * @since 2.1.0
+     */
+    public void setVariableExpressionEvaluator(final IStandardVariableExpressionEvaluator variableExpressionEvaluator) {
+        Validate.notNull(variableExpressionEvaluator, "Standard Variable Expression Evaluator cannot be null");
+        this.variableExpressionEvaluator = variableExpressionEvaluator;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the Thymeleaf Standard Expression parser (implementation of {@link IStandardExpressionParser})
+     *   that is configured to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardExpressionParser} by default.
+     * </p>
+     *
+     * @return the Standard Expression Parser object.
+     * @since 2.1.0
+     */
+    public IStandardExpressionParser getExpressionParser() {
+        return this.expressionParser;
+    }
+
+
+    /**
+     * <p>
+     *   Sets the Thymeleaf Standard Expression parser (implementation of {@link IStandardExpressionParser})
+     *   that should be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardExpressionParser} by default.
+     * </p>
+     * <p>
+     *   This method has no effect once the Template Engine has been initialized.
+     * </p>
+     * <p>
+     *   Objects set here should be <b>thread-safe</b>.
+     * </p>
+     *
+     * @param expressionParser the Standard Expression Parser object to be used. Cannot be null.
+     * @since 2.1.0
+     */
+    public void setExpressionParser(final IStandardExpressionParser expressionParser) {
+        Validate.notNull(expressionParser, "Standard Expression Parser cannot be null");
+        this.expressionParser = expressionParser;
+    }
+
+
+    /**
+     * <p>
+     *   Returns the Standard Conversion Service (implementation of {@link IStandardConversionService})
+     *   that is configured to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardConversionService} by default. In Spring environments, this will default
+     *   to an implementation delegating on Spring's own ConversionService implementation.
+     * </p>
+     *
+     * @return the Standard Conversion Service object.
+     * @since 2.1.0
+     */
+    public IStandardConversionService getConversionService() {
+        return this.conversionService;
+    }
+
+
+    /**
+     * <p>
+     *   Sets the Standard Conversion Service (implementation of {@link IStandardConversionService})
+     *   that should to be used at this instance of the Standard Dialect.
+     * </p>
+     * <p>
+     *   This will be {@link StandardConversionService} by default. In Spring environments, this will default
+     *   to an implementation delegating on Spring's own ConversionService implementation.
+     * </p>
+     * <p>
+     *   This method has no effect once the Template Engine has been initialized.
+     * </p>
+     * <p>
+     *   Objects set here should be <b>thread-safe</b>.
+     * </p>
+     *
+     * @param conversionService the Standard ConversionService object to be used. Cannot be null.
+     * @since 2.1.0
+     */
+    public void setConversionService(final IStandardConversionService conversionService) {
+        Validate.notNull(conversionService, "Standard Conversion Service cannot be null");
+        this.conversionService = conversionService;
     }
 
 
 
-    
-    
+
     @Override
     public Set<IDocTypeTranslation> getDocTypeTranslations() {
         final Set<IDocTypeTranslation> docTypeTranslations = new LinkedHashSet<IDocTypeTranslation>(8, 1.0f);
@@ -596,23 +726,19 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
     @Override
     public Map<String, Object> getExecutionAttributes() {
 
-        final IStandardVariableExpressionEvaluator expressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
-        final IStandardExpressionParser parser = new StandardExpressionParser();
-        final IStandardConversionService conversionService = new StandardConversionService();
-
         final Map<String,Object> executionAttributes = new HashMap<String, Object>(5, 1.0f);
         executionAttributes.put(
-                StandardExpressions.STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME, expressionEvaluator);
+                StandardExpressions.STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME, getVariableExpressionEvaluator());
         executionAttributes.put(
-                StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
+                StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, getExpressionParser());
         executionAttributes.put(
-                StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, conversionService);
+                StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, getConversionService());
 
         /*
          * StandardExpressionExecutor is deprecated, but we add it as an execution attribute for backwards
          * compatibility. Will be removed in 3.0.
          */
-        final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
+        final StandardExpressionExecutor executor = new StandardExpressionExecutor(getVariableExpressionEvaluator());
         executionAttributes.put(
                 StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
 

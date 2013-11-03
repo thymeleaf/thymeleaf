@@ -66,8 +66,13 @@ import org.thymeleaf.util.Validate;
  *
  */
 public final class Configuration {
-    
 
+
+    /**
+     * @deprecated Deprecated in 2.1.0. Create a new instance of the StandardDialect using its constructors instead.
+     *             Will be removed in 3.0
+     */
+    @Deprecated
     public static final IDialect STANDARD_THYMELEAF_DIALECT = new StandardDialect();
 
     private static final TemplateResolverComparator TEMPLATE_RESOLVER_COMPARATOR = new TemplateResolverComparator();
@@ -104,10 +109,12 @@ public final class Configuration {
     public Configuration() {
         
         super();
-        
+
+        final StandardDialect standardDialect = new StandardDialect();
+
         this.dialectConfigurations = new LinkedHashSet<DialectConfiguration>(4);
         this.dialectConfigurations.add(
-                new DialectConfiguration(STANDARD_THYMELEAF_DIALECT.getPrefix(), STANDARD_THYMELEAF_DIALECT));
+                new DialectConfiguration(standardDialect.getPrefix(), standardDialect));
         this.initialized = false;
         
     }
