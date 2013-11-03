@@ -4,11 +4,13 @@
 - New feature: Same-template fragments
 - New feature: Parameterizable fragment signatures
 - New feature: More powerful DOM selector syntax
-- New feature: Literal substitutions
+- New feature: Literal tokens
 - New feature: Boolean and null literals
+- New feature: Literal substitutions
 - New feature: Protocol-relative URLs
 - New feature: Parser-level comment blocks
 - New feature: Prototype-only comment blocks
+- New feature: Improved th:remove attribute
 - New feature: Synthetic th:block tag
 - New feature: Support for HTML5-friendly attribute and element names
 - New feature: New th:assert for in-template assertions
