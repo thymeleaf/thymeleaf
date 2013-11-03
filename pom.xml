@@ -458,7 +458,7 @@
     </profile>
 
     <profile>
-      <id>2.1.0-beta2</id>
+      <id>2.1.0</id>
       <build>
         <plugins>
           <plugin>
@@ -501,11 +501,11 @@
         </plugins>
       </build>
       <properties>
-        <thymeleaf.version>2.1.0-beta2</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.0-beta2</thymeleaf-testing.version>
-        <thymeleaf-extras-springsecurity3.version>2.1.0-beta2</thymeleaf-extras-springsecurity3.version>
-        <thymeleaf-extras-tiles2.version>2.1.0-beta2</thymeleaf-extras-tiles2.version>
-        <thymeleaf-extras-conditionalcomments.version>2.1.0-beta2</thymeleaf-extras-conditionalcomments.version>
+        <thymeleaf.version>2.1.0.RELEASE</thymeleaf.version>
+        <thymeleaf-testing.version>2.1.0.RELEASE</thymeleaf-testing.version>
+        <thymeleaf-extras-springsecurity3.version>2.1.0.RELEASE</thymeleaf-extras-springsecurity3.version>
+        <thymeleaf-extras-tiles2.version>2.1.0.RELEASE</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.1.0.RELEASE</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.0.7.RELEASE</springframework.version>
         <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
