@@ -21,9 +21,7 @@ package org.thymeleaf.spring3.dialect;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.Standards;
@@ -49,13 +47,6 @@ import org.thymeleaf.spring3.processor.attr.SpringSelectFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringSingleRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringTextareaFieldAttrProcessor;
 import org.thymeleaf.standard.StandardDialect;
-import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.StandardExpressionExecutor;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressionProcessor;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
 
@@ -421,6 +412,8 @@ public class SpringStandardDialect extends StandardDialect {
     
     public SpringStandardDialect() {
         super();
+        super.setVariableExpressionEvaluator(SpelVariableExpressionEvaluator.INSTANCE);
+        super.setConversionService(new SpringStandardConversionService());
     }
 
     
@@ -532,41 +525,6 @@ public class SpringStandardDialect extends StandardDialect {
         return processors;
         
     }
-    
 
-
-    
-    
-
-    
-    @Override
-    public Map<String, Object> getExecutionAttributes() {
-
-        final IStandardVariableExpressionEvaluator expressionEvaluator = SpelVariableExpressionEvaluator.INSTANCE;
-        final IStandardExpressionParser parser = new StandardExpressionParser();
-        final IStandardConversionService conversionService = new SpringStandardConversionService();
-
-        final Map<String,Object> executionAttributes = new HashMap<String, Object>(5, 1.0f);
-
-        executionAttributes.put(
-                StandardExpressions.STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME, expressionEvaluator);
-        executionAttributes.put(
-                StandardExpressions.STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME, parser);
-        executionAttributes.put(
-                StandardExpressions.STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME, conversionService);
-
-        /*
-         * StandardExpressionExecutor is deprecated, but we add it as an execution attribute for backwards
-         * compatibility. Will be removed in 3.0.
-         */
-        final StandardExpressionExecutor executor = new StandardExpressionExecutor(expressionEvaluator);
-        executionAttributes.put(
-                StandardExpressionProcessor.STANDARD_EXPRESSION_EXECUTOR_ATTRIBUTE_NAME, executor);
-
-        return executionAttributes;
-        
-    }
-    
-    
 
 }
