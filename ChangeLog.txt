@@ -1,3 +1,14 @@
+2.1.0 (from 2.0.19)
+===================
+(See What's New in Thymeleaf 2.1 at http://www.thymeleaf.org/whatsnew21.html)
+- New Feature: More integrated acccess to beans from expressions
+- New Feature: Integration of Spring type conversion infrastructure
+- New Feature: Spring-resource based template resolver
+- New Feature: Render view fragments directly from controllers
+- New Feature: New th:errorclass for adding CSS class to form fields in error
+- New Feature: Additional form validation error reporting options
+- New Feature: Transparent integration with Spring's RequestDataValueProcessor
+
 2.0.19
 ======
 - Applied annotation-based autowiring to custom Thymeleaf View classes even when they were not declared as a bean
