@@ -32,7 +32,7 @@ import org.thymeleaf.dom.Element;
 public final class StandardValueAttrProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
-    public static final int ATTR_PRECEDENCE = 1000;
+    public static final int ATTR_PRECEDENCE = 1010;
     public static final String ATTR_NAME = "value";
 
 
