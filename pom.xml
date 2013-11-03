@@ -104,7 +104,7 @@
   
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>3.0.7.RELEASE</springframework.version>
+    <springframework.version>3.1.0.RELEASE</springframework.version>
     <springwebflow.version>2.3.1.RELEASE</springwebflow.version>
   </properties>
 
@@ -241,6 +241,7 @@
       <artifactId>spring-beans</artifactId>
       <version>${springframework.version}</version>
       <scope>provided</scope>
+      <optional>true</optional>
     </dependency>
     
     <dependency>
