@@ -104,7 +104,7 @@
   
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.1.0-SNAPSHOT</thymeleaf.version>
+    <thymeleaf.version>2.1.0.RELEASE</thymeleaf.version>
     <attoparser.version>1.2</attoparser.version>
     <servletapi.version>2.5</servletapi.version>
     <mockito.version>1.9.5</mockito.version>
@@ -227,13 +227,13 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>2.1.0.RELEASE</version>
+      <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
-      <version>2.1.0.RELEASE</version>
+      <version>${thymeleaf.version}</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
