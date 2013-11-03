@@ -26,6 +26,7 @@ public class FormBean01 {
     private Integer id = null;
     private String name = null;
     private Date date = null;
+    private boolean valid = false;
     
     
     public FormBean01() {
@@ -60,6 +61,13 @@ public class FormBean01 {
         this.date = date;
     }
 
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(final boolean valid) {
+        this.valid = valid;
+    }
 
     @Override
     public String toString() {

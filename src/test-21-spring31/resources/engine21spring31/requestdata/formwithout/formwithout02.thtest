@@ -4,7 +4,7 @@
 binding = 'formBean01'
 # ------------------------------------------------------------
 %INPUT
-<form th:action="@{/doit}" th:object="${formBean01}" th:method="post">
+<form th:action="@{/doit}" th:object="${formBean01}" th:method="delete">
    <input type="text" th:field="*{name}" />
    <input type="hidden" th:field="*{name}" />
    <input type="email" th:field="*{name}" />
@@ -25,7 +25,7 @@ binding = 'formBean01'
 </form>
 # ------------------------------------------------------------
 %OUTPUT
-<form action="/testing/doit" method="post">
+<form action="/testing/doit" method="post"><input type="hidden" name="_method" value="delete" />
    <input type="text" id="name" name="name" value="Mark Lettuce" />
    <input type="hidden" id="name" name="name" value="Mark Lettuce" />
    <input type="email" id="name" name="name" value="Mark Lettuce" />

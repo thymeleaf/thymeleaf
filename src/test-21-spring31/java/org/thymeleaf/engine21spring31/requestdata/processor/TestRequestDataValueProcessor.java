@@ -32,11 +32,11 @@ public class TestRequestDataValueProcessor implements RequestDataValueProcessor 
 
 
     public String processAction(HttpServletRequest request, String action) {
-        return action;
+        return "[" + action + "]";
     }
 
     public String processFormFieldValue(HttpServletRequest request, String name, String value, String type) {
-        return value;
+        return "(" + value + ")";
     }
 
     public Map<String, String> getExtraHiddenFields(HttpServletRequest request) {
@@ -47,6 +47,6 @@ public class TestRequestDataValueProcessor implements RequestDataValueProcessor 
     }
 
     public String processUrl(HttpServletRequest request, String url) {
-        return url;
+        return "{" + url + "}";
     }
 }
