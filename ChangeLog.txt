@@ -1,3 +1,9 @@
+2.0.20
+======
+- Fixed NPE at the Themes utility class when using the SpringStandardDialect with a WebContext implementation
+  (not SpringWebContext)
+
+
 2.0.19
 ======
 - Applied annotation-based autowiring to custom Thymeleaf View classes even when they were not declared as a bean
