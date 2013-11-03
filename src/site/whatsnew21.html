@@ -131,6 +131,11 @@
                         <li><a href="#sperr">Additional form validation error reporting options</a></li>
                     </ul>
                 </li>
+                <li>Security:
+                    <ul>
+                        <li><a href="#reqdata">Transparent integration with Spring's <kbd>RequestDataValueProcessor</kbd></a></li>
+                    </ul>
+                </li>
             </ul>
         </li>
     </ul>
@@ -1179,6 +1184,66 @@
                 ...
             </form>
         ]]></script>
+
+
+
+        <h2><a name="reqdata"></a>Transparent integration with Spring's <kbd>RequestDataValueProcessor</kbd></h2>
+
+        <p>
+            Thymeleaf now seamlessly integrates with Spring's <kbd>RequestDataValueProcessor</kbd> interface. This
+            interface allows the interception of link URLs, form URLs and form field values before they are written
+            to the markup result, as well as transparently adding hidden form fields that enable security features
+            like e.g. protection agains CSRF <em>(Cross-Site Request Forgery)</em>.
+        </p>
+        <p>
+            See the <a target="_blank"
+            href="http://docs.spring.io/spring/docs/3.1.4.RELEASE/javadoc-api/org/springframework/web/servlet/support/RequestDataValueProcessor.html">interface
+            definition here</a>, and also <a target="_blank"
+            href="http://blog.eyallupu.com/2012/04/csrf-defense-in-spring-mvc-31.html">this article</a> as
+            an example of its use for CSRF.
+        </p>
+        <p>
+            An implementation of <kbd>RequestDataValueProcessor</kbd> can be easily configured at the Application Context:
+        </p>
+
+        <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+            <?xml version="1.0" encoding="UTF-8"?>
+            <beans xmlns="http://www.springframework.org/schema/beans"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+                ...
+
+                <bean name="requestDataValueProcessor"
+                      class="net.example.requestdata.processor.MyRequestDataValueProcessor" />
+
+            </beans>
+        ]]></script>
+
+        <p>
+            ...and Thymeleaf uses it this way:
+        </p>
+
+        <ul>
+            <li><kbd>th:href</kbd> and <kbd>th:src</kbd> call <kbd>RequestDataValueProcessor.processUrl(...)</kbd> before
+                rendering the URL.</li>
+            <li><kbd>th:action</kbd> calls <kbd>RequestDataValueProcessor.processAction(...)</kbd> before rendering
+                the form's <kbd>action</kbd> attribute, and additionally it detects when this attribute is being
+                applied on a <kbd>&lt;form&gt;</kbd> tag &mdash;which should be the only place, anyway&mdash;, and in such
+                case calls <kbd>RequestDataValueProcessor.getExtraHiddenFields(...)</kbd> and adds the returned
+                hidden fields just before the closing <kbd>&lt;/form&gt;</kbd> tag.</li>
+            <li><kbd>th:value</kbd> calls <kbd>RequestDataValueProcessor.processFormFieldValue(...)</kbd> for
+                rendering the value it refers to, unless there is a <kbd>th:field</kbd> present in the same
+                tag (in which case <kbd>th:field</kbd> will take care).</li>
+            <li><kbd>th:field</kbd> calls <kbd>RequestDataValueProcessor.processFormFieldValue(...)</kbd> for
+                rendering the value of the field it applies to (or the tag body if it is a
+                <kbd>&lt;textarea&gt;</kbd>).</li>
+        </ul>
+
+        <p>
+            Note this feature will only be available for Spring versions 3.1 and newer.
+        </p>
 
 
 
