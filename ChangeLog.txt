@@ -1,3 +1,21 @@
+2.1.0 (from 2.0.19)
+===================
+(See What's New in Thymeleaf 2.1 at http://www.thymeleaf.org/whatsnew21.html)
+- New feature: Same-template fragments
+- New feature: Parameterizable fragment signatures
+- New feature: More powerful DOM selector syntax
+- New feature: Literal substitutions
+- New feature: Boolean and null literals
+- New feature: Protocol-relative URLs
+- New feature: Parser-level comment blocks
+- New feature: Prototype-only comment blocks
+- New feature: Synthetic th:block tag
+- New feature: Support for HTML5-friendly attribute and element names
+- New feature: New th:assert for in-template assertions
+- New feature: New th:replace as a synonym of th:substituteby
+- New feature: Reuse variables in th:with
+
+
 2.0.19
 ======
 - Added support for URLs without query string like @{''(p1)}.
