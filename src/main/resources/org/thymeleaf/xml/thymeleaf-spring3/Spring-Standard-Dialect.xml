@@ -62,6 +62,30 @@
 	</attribute-processor>
 
 
+	<!-- URL and form-specific attribute processors -->
+	<!-- ========================================== -->
+
+	<attribute-processor
+		name="action"
+		class="org.thymeleaf.spring3.processor.attr.SpringActionAttrProcessor"/>
+
+	<attribute-processor
+		name="href"
+		class="org.thymeleaf.spring3.processor.attr.SpringHrefAttrProcessor"/>
+
+	<attribute-processor
+		name="method"
+		class="org.thymeleaf.spring3.processor.attr.SpringMethodAttrProcessor"/>
+
+	<attribute-processor
+		name="src"
+		class="org.thymeleaf.spring3.processor.attr.SpringSrcAttrProcessor"/>
+
+	<attribute-processor
+		name="value"
+		class="org.thymeleaf.spring3.processor.attr.SpringValueAttrProcessor"/>
+
+
 	<!-- General field attribute processors -->
 	<!-- ================================== -->
 
@@ -77,12 +101,6 @@
 	<attribute-processor name="time"/>
 	<attribute-processor name="url"/>
 	<attribute-processor name="week"/>
-
-
-	<!-- Spring field attribute processors -->
-	<!-- ================================= -->
-
-	<attribute-processor name="method" class="org.thymeleaf.spring3.processor.attr.SpringMethodAttrProcessor"/>
 
 
 	<!-- Additional expression objects -->
