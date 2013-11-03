@@ -363,11 +363,49 @@ public final class DOMSelector implements Serializable {
      */
     public List<Node> select(final List<Node> nodes, final INodeReferenceChecker referenceChecker) {
         Validate.notEmpty(nodes, "Nodes to be searched cannot be null or empty");
-        final List<Node> selected = new ArrayList<Node>(10);
-        for (final Node node : nodes) {
-            doCheckNodeSelection(selected, node, referenceChecker);
+
+        if (nodes.size() == 1 && nodes.get(0) instanceof Document) {
+            final List<Node> selected = new ArrayList<Node>(10);
+            for (final Node node : nodes) {
+                doCheckNodeSelection(selected, node, referenceChecker);
+            }
+            return selected;
         }
-        return selected;
+
+        final List<List<Node>> selected = new ArrayList<List<Node>>(10);
+
+        for (final Node node : nodes) {
+            final List<Node> childSelectedNodes = new ArrayList<Node>(10);
+            if (doCheckNodeSelection(childSelectedNodes, node, referenceChecker)) {
+                selected.add(childSelectedNodes);
+            }
+        }
+
+        if (selected.size() == 0) {
+            return Collections.emptyList();
+        }
+
+        final List<Node> selectedNodes = new ArrayList<Node>(10);
+
+        if (this.index == null) {
+            for (final List<Node> selectedNodesForChild : selected) {
+                selectedNodes.addAll(selectedNodesForChild);
+            }
+            return selectedNodes;
+        }
+
+        // There is an index
+
+        if (this.index.intValue() == -1) {
+            selectedNodes.addAll(selected.get(selected.size() - 1));
+            return selectedNodes;
+        }
+        if (this.index.intValue() >= selected.size()) {
+            return Collections.emptyList();
+        }
+        selectedNodes.addAll(selected.get(this.index.intValue()));
+        return selectedNodes;
+
     }
 
 
