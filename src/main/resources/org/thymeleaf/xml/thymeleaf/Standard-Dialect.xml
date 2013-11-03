@@ -220,7 +220,32 @@
 	<!-- Introduced Thymeleaf element processors -->
 	<!-- ======================================= -->
 
-	<element-processor name="block" class="org.thymeleaf.standard.processor.element.StandardBlockElementProcessor"/>
+	<element-processor name="block"
+		class="org.thymeleaf.standard.processor.element.StandardBlockElementProcessor"/>
+
+
+	<!-- URL and form-specific attribute processors -->
+	<!-- ========================================== -->
+
+	<attribute-processor
+		name="action"
+		class="org.thymeleaf.standard.processor.attr.StandardActionAttrProcessor"/>
+
+	<attribute-processor
+		name="href"
+		class="org.thymeleaf.standard.processor.attr.StandardHrefAttrProcessor"/>
+
+	<attribute-processor
+		name="method"
+		class="org.thymeleaf.standard.processor.attr.StandardMethodAttrProcessor"/>
+
+	<attribute-processor
+		name="src"
+		class="org.thymeleaf.standard.processor.attr.StandardSrcAttrProcessor"/>
+
+	<attribute-processor
+		name="value"
+		class="org.thymeleaf.standard.processor.attr.StandardValueAttrProcessor"/>
 
 
 	<!-- Fixed value processors -->
@@ -328,12 +353,8 @@
 	<!-- Non-removable attribute processors -->
 	<!-- ================================== -->
 
-	<attribute-processor name="action"/>
-	<attribute-processor name="href"/>
 	<attribute-processor name="name"/>
-	<attribute-processor name="src"/>
 	<attribute-processor name="type"/>
-	<attribute-processor name="value"/>
 
 
 	<!-- Removable attribute processors -->
@@ -414,7 +435,6 @@
 	<attribute-processor name="max"/>
 	<attribute-processor name="maxlength"/>
 	<attribute-processor name="media"/>
-	<attribute-processor name="method"/>
 	<attribute-processor name="min"/>
 	<attribute-processor name="optimum"/>
 	<attribute-processor name="pattern"/>
