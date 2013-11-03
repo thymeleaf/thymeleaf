@@ -41,20 +41,35 @@ public class RequestData21Spring31Test {
     
     
     @Test
-    public void testForm() throws Exception {
+    public void testFormWith() throws Exception {
 
         final SpringWebProcessingContextBuilder contextBuilder = new SpringWebProcessingContextBuilder();
-        contextBuilder.setApplicationContextConfigLocation("classpath:engine21spring31/requestdata/applicationContext.xml");
+        contextBuilder.setApplicationContextConfigLocation("classpath:engine21spring31/requestdata/applicationContext-with.xml");
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(contextBuilder);
         executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
-        executor.execute("classpath:engine21spring31/requestdata/form");
+        executor.execute("classpath:engine21spring31/requestdata/formwith");
         
         Assert.assertTrue(executor.isAllOK());
 
     }
 
+
+    @Test
+    public void testFormWithout() throws Exception {
+
+        final SpringWebProcessingContextBuilder contextBuilder = new SpringWebProcessingContextBuilder();
+        contextBuilder.setApplicationContextConfigLocation("classpath:engine21spring31/requestdata/applicationContext-without.xml");
+
+        final TestExecutor executor = new TestExecutor();
+        executor.setProcessingContextBuilder(contextBuilder);
+        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.execute("classpath:engine21spring31/requestdata/formwithout");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
 
 
 }
