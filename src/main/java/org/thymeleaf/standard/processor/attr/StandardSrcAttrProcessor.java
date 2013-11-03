@@ -20,46 +20,26 @@
 package org.thymeleaf.standard.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 2.1.0
  *
  */
-public final class StandardSingleNonRemovableAttributeModifierAttrProcessor 
+public final class StandardSrcAttrProcessor
         extends AbstractStandardSingleAttributeModifierAttrProcessor {
 
     public static final int ATTR_PRECEDENCE = 1000;
-    
-    public static final String[] ATTR_NAMES = 
-        new String[] {
-                "name",
-                "type"
-        };
-    
-    
-    public static final StandardSingleNonRemovableAttributeModifierAttrProcessor[] PROCESSORS;
-    
+    public static final String ATTR_NAME = "src";
 
-    
-    static {
-        
-        PROCESSORS = new StandardSingleNonRemovableAttributeModifierAttrProcessor[ATTR_NAMES.length];
-        for (int i = 0; i < PROCESSORS.length; i++) {
-            PROCESSORS[i] = new StandardSingleNonRemovableAttributeModifierAttrProcessor(ATTR_NAMES[i]);
-        }
-        
-    }
 
-    
-    
-    
-    public StandardSingleNonRemovableAttributeModifierAttrProcessor(final String attributeName) {
-        super(attributeName);
+
+
+    public StandardSrcAttrProcessor() {
+        super(ATTR_NAME);
     }
     
 
@@ -74,7 +54,7 @@ public final class StandardSingleNonRemovableAttributeModifierAttrProcessor
     @Override
     protected String getTargetAttributeName(
             final Arguments arguments, final Element element, final String attributeName) {
-        return Attribute.getUnprefixedAttributeName(attributeName);
+        return ATTR_NAME;
     }
 
     

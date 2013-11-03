@@ -100,7 +100,6 @@ public final class StandardSingleRemovableAttributeModifierAttrProcessor
                 "max",
                 "maxlength",
                 "media",
-                "method",
                 "min",
                 "optimum",
                 "pattern",
