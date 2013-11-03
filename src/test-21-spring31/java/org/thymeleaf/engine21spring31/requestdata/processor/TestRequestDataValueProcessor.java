@@ -36,7 +36,7 @@ public class TestRequestDataValueProcessor implements RequestDataValueProcessor 
     }
 
     public String processFormFieldValue(HttpServletRequest request, String name, String value, String type) {
-        return "(" + value + ")";
+        return "(" + value + "," + name + "," + type + ")";
     }
 
     public Map<String, String> getExtraHiddenFields(HttpServletRequest request) {
