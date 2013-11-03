@@ -34,6 +34,14 @@ import org.thymeleaf.util.ClassLoaderUtils;
 
 
 /**
+ * <p>
+ *   Utility class used for applying the <kbd>org.springframework.web.servlet.support.RequestDataValueProcessor</kbd>
+ *   interface to URLs and forms output by Thymeleaf.
+ * </p>
+ * <p>
+ *   Given this Spring interface only exists since Spring 3.1, application is conditional and only performed
+ *   if Spring version in classpath is 3.1 or newer.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  *
