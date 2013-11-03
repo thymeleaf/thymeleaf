@@ -735,12 +735,10 @@ public final class DOMSelector implements Serializable {
         }
         if (node instanceof AbstractTextNode) {
             if (referenceChecker != null) {
-                return this.text && referenceChecker.checkReference(node, this.selectorPath);
+                return this.text &&
+                       (this.selectorPathReferenceModifier == null || referenceChecker.checkReference(node, this.selectorPathReferenceModifier));
             }
             return this.text;
-        }
-        if (referenceChecker != null) {
-            return referenceChecker.checkReference(node, this.selectorPath);
         }
 
         return false;

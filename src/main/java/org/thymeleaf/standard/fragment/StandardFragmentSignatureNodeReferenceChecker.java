@@ -80,6 +80,10 @@ public final class StandardFragmentSignatureNodeReferenceChecker extends DOMSele
 
     public boolean checkReference(final Node node, final String referenceValue) {
 
+        if (referenceValue == null) {
+            return true;
+        }
+
         if (node instanceof NestableAttributeHolderNode) {
 
             final NestableAttributeHolderNode attributeHolderNode = (NestableAttributeHolderNode) node;

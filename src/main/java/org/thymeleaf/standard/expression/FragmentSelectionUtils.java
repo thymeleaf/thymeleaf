@@ -267,7 +267,11 @@ public final class FragmentSelectionUtils {
             if (c == '(') {
                 parenLevel--;
                 if (parenLevel == 0) {
-                    // We have closed a parenthesis at level 0, this is what we were looking for.
+                    // We have closed a parenthesis at level 0, this might be what we were looking for.
+                    if (i == (inputLen - 2)) {
+                        // These are not real parameters, but "()", which might be a "text()" node selector.
+                        return -1;
+                    }
                     return i;
                 }
             } else if (c == ')') {
