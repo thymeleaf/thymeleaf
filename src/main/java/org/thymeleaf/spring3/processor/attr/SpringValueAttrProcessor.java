@@ -22,7 +22,7 @@ package org.thymeleaf.spring3.processor.attr;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 

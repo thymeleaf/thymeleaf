@@ -29,7 +29,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
 
 /**

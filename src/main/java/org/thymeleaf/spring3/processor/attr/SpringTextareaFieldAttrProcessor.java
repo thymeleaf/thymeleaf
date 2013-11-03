@@ -27,7 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
 
 /**

@@ -25,7 +25,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
-import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
+import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
 
 
 /**
