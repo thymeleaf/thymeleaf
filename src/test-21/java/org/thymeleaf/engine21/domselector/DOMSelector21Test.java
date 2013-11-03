@@ -43,6 +43,5 @@ public class DOMSelector21Test {
         Assert.assertTrue(executor.isAllOK());
         
     }
-    
-    
+
 }

@@ -1,0 +1,13 @@
+%EXTENDS domselector.common
+# ------------------------------------------------------------
+%INPUT[frag]
+<h1>Hello!</h1>
+# ------------------------------------------------------------
+%INPUT
+<div><span th:replace="frag::/h1/text()">...</span></div>
+<div><span th:include="frag::/h1/text()">...</span></div>
+# ------------------------------------------------------------
+%OUTPUT
+<div>Hello!</div>
+# Weird, but a text node has no contents, so this is right!
+<div><span></span></div>
