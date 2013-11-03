@@ -30,7 +30,7 @@ import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -82,11 +82,16 @@ public final class SpringSelectFieldAttrProcessor
         
 
         if (multiple) {
-            
+
+            final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final Element hiddenElement = new Element("input");
             hiddenElement.setAttribute("type", "hidden");
-            hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
-            hiddenElement.setAttribute("value", "1");
+            hiddenElement.setAttribute("name", hiddenName);
+            hiddenElement.setAttribute(
+                    "value",
+                    RequestDataValueProcessorUtils.processFormFieldValue(
+                            arguments.getConfiguration(), arguments, hiddenName, "1", "hidden"));
+
             hiddenElement.setAllNodeLocalVariables(localVariables);
             
             parent.insertAfter(inputElement, hiddenElement);

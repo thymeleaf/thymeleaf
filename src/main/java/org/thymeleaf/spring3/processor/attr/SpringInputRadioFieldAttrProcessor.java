@@ -27,7 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -78,7 +78,11 @@ public final class SpringInputRadioFieldAttrProcessor
         
         element.setAttribute("id", id);
         element.setAttribute("name", name);
-        element.setAttribute("value", value);
+        element.setAttribute(
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, name, value, "radio"));
+
         if (checked) {
             element.setAttribute("checked", "checked");
         } else {

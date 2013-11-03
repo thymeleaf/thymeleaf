@@ -27,7 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -56,6 +56,9 @@ public final class SpringOptionFieldAttrProcessor
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
 
+        String name = bindStatus.getExpression();
+        name = (name == null? "" : name);
+
         final String value = element.getAttributeValue("value");
         if (value == null) {
             throw new TemplateProcessingException(
@@ -66,6 +69,11 @@ public final class SpringOptionFieldAttrProcessor
             SelectedValueComparatorWrapper.isSelected(bindStatus, value);
 
         element.setAttribute("value", value);
+        element.setAttribute(
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, name, value, "option"));
+
         if (selected) {
             element.setAttribute("selected", "selected");
         } else {

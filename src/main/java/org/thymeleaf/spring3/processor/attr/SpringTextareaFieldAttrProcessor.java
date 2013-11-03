@@ -27,7 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -62,11 +62,15 @@ public final class SpringTextareaFieldAttrProcessor
         final String id = computeId(arguments, element, name, false);
         
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
-        
+
+        final String processedValue =
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, name, value, "textarea");
+
         element.setAttribute("id", id);
         element.setAttribute("name", name);
         
-        final Text text = new Text(value == null? "" : value);
+        final Text text = new Text(processedValue == null? "" : processedValue);
 
         element.clearChildren();
         element.addChild(text);

@@ -19,8 +19,11 @@
  */
 package org.thymeleaf.spring3.processor.attr;
 
+import java.util.Map;
+
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 
@@ -59,6 +62,18 @@ public final class SpringActionAttrProcessor
         return ATTR_NAME;
     }
 
+
+
+    @Override
+    protected String getTargetAttributeValue(
+            final Arguments arguments, final Element element, final String attributeName) {
+        final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
+        final String httpMethod = element.getAttributeValueFromNormalizedName("method");
+        return RequestDataValueProcessorUtils.processAction(
+                arguments.getConfiguration(), arguments, attributeValue, httpMethod);
+    }
+
+
     
     @Override
     protected ModificationType getModificationType(
@@ -74,5 +89,38 @@ public final class SpringActionAttrProcessor
         return false;
     }
 
-    
+
+
+
+
+    @Override
+    protected void doAdditionalProcess(
+            final Arguments arguments, final Element element, final String attributeName) {
+
+        if ("form".equals(element.getNormalizedName())) {
+
+            final Map<String,String> extraHiddenFields =
+                    RequestDataValueProcessorUtils.getExtraHiddenFields(arguments.getConfiguration(), arguments);
+
+            if (extraHiddenFields != null && extraHiddenFields.size() > 0) {
+
+                for (final Map.Entry<String,String> extraHiddenField : extraHiddenFields.entrySet()) {
+
+                    final Element extraHiddenElement = new Element("input");
+                    extraHiddenElement.setAttribute("type", "hidden");
+                    extraHiddenElement.setAttribute("name", extraHiddenField.getKey());
+                    extraHiddenElement.setAttribute("value", extraHiddenField.getValue()); // no need to re-apply the processor here
+
+                    element.insertChild(element.numChildren(), extraHiddenElement);
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+
 }

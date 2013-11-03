@@ -29,7 +29,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -103,18 +103,26 @@ public final class SpringInputCheckboxFieldAttrProcessor
         
         inputElement.setAttribute("id", id);
         inputElement.setAttribute("name", name);
-        inputElement.setAttribute("value", value);
+        inputElement.setAttribute(
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, name, value, "checkbox"));
         if (checked) {
             inputElement.setAttribute("checked", "checked");
         } else {
             inputElement.removeAttribute("checked");
         }
         inputElement.setAllNodeLocalVariables(localVariables);
-        
+
+        final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
+        final String hiddenValue = "on";
         final Element hiddenElement = new Element("input");
         hiddenElement.setAttribute("type", "hidden");
-        hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
-        hiddenElement.setAttribute("value", "on");
+        hiddenElement.setAttribute("name", hiddenName);
+        hiddenElement.setAttribute(
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, hiddenName, hiddenValue, "hidden"));
         hiddenElement.setAllNodeLocalVariables(localVariables);
 
         parent.insertBefore(element, inputElement);

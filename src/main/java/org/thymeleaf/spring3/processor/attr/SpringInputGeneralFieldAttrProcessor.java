@@ -26,7 +26,7 @@ import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -111,14 +111,21 @@ public final class SpringInputGeneralFieldAttrProcessor
         name = (name == null? "" : name);
         
         final String id = computeId(arguments, element, name, false);
-        
+
+        // Thanks to precedence, this should have already been computed
+        final String type = element.getAttributeValueFromNormalizedName("type");
+
         // No escaping needed as attribute values are always escaped by default
         final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
         
         element.setAttribute("id", id);
         element.setAttribute("name", name);
         
-        element.setAttribute("value", value);
+        element.setAttribute(
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, name, value, type));
+
         element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         

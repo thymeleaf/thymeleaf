@@ -20,8 +20,8 @@
 package org.thymeleaf.spring3.processor.attr;
 
 import org.thymeleaf.Arguments;
-import org.thymeleaf.dom.Attribute;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 
@@ -57,7 +57,7 @@ public final class SpringMethodAttrProcessor
     @Override
     protected String getTargetAttributeName(
             final Arguments arguments, final Element element, final String attributeName) {
-        return Attribute.getUnprefixedAttributeName(attributeName);
+        return ATTR_NAME;
     }
 
     
@@ -95,11 +95,17 @@ public final class SpringMethodAttrProcessor
                 // has been specified, then Spring MVC allows us to specify it
                 // using a hidden input with name '_method' and set 'post' for the
                 // <form> tag.
-                
+
+                final String type = "hidden";
+                final String name = "_method";
+                final String value =
+                        RequestDataValueProcessorUtils.processFormFieldValue(
+                                arguments.getConfiguration(), arguments, name, method, type);
+
                 final Element hiddenMethodElement = new Element("input");
-                hiddenMethodElement.setAttribute("type", "hidden");
-                hiddenMethodElement.setAttribute("name", "_method");
-                hiddenMethodElement.setAttribute("value", method);
+                hiddenMethodElement.setAttribute("type", type);
+                hiddenMethodElement.setAttribute("name", name);
+                hiddenMethodElement.setAttribute("value", value);
 
                 element.insertChild(0, hiddenMethodElement);
                 

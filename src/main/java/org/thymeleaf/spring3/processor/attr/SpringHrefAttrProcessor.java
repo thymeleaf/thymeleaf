@@ -21,6 +21,7 @@ package org.thymeleaf.spring3.processor.attr;
 
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 import org.thymeleaf.standard.processor.attr.AbstractStandardSingleAttributeModifierAttrProcessor;
 
 
@@ -58,6 +59,17 @@ public final class SpringHrefAttrProcessor
             final Arguments arguments, final Element element, final String attributeName) {
         return ATTR_NAME;
     }
+
+
+
+    @Override
+    protected String getTargetAttributeValue(
+            final Arguments arguments, final Element element, final String attributeName) {
+        final String attributeValue = super.getTargetAttributeValue(arguments, element, attributeName);
+        return RequestDataValueProcessorUtils.processUrl(arguments.getConfiguration(), arguments, attributeValue);
+    }
+
+
 
     
     @Override

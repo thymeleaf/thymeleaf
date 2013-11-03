@@ -25,7 +25,7 @@ import org.springframework.web.servlet.support.BindStatus;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
-
+import org.thymeleaf.spring3.util.RequestDataValueProcessorUtils;
 
 
 /**
@@ -71,7 +71,11 @@ public final class SpringInputPasswordFieldAttrProcessor
         element.setAttribute("id", id);
         element.setAttribute("name", name);
         
-        element.setAttribute("value", "");
+        element.setAttribute(
+                "value",
+                RequestDataValueProcessorUtils.processFormFieldValue(
+                        arguments.getConfiguration(), arguments, name, "", "password"));
+
         element.removeAttribute(attributeName);
         
         return ProcessorResult.setLocalVariables(localVariables);         
