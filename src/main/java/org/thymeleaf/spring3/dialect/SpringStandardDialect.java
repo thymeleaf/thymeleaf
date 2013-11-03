@@ -33,8 +33,10 @@ import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
 import org.thymeleaf.spring3.expression.SpringStandardConversionService;
+import org.thymeleaf.spring3.processor.attr.SpringActionAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringErrorClassAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringErrorsAttrProcessor;
+import org.thymeleaf.spring3.processor.attr.SpringHrefAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputCheckboxFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputFileFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringInputGeneralFieldAttrProcessor;
@@ -44,11 +46,16 @@ import org.thymeleaf.spring3.processor.attr.SpringMethodAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringObjectAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringOptionFieldAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringSelectFieldAttrProcessor;
-import org.thymeleaf.spring3.processor.attr.SpringSingleRemovableAttributeModifierAttrProcessor;
+import org.thymeleaf.spring3.processor.attr.SpringSrcAttrProcessor;
 import org.thymeleaf.spring3.processor.attr.SpringTextareaFieldAttrProcessor;
+import org.thymeleaf.spring3.processor.attr.SpringValueAttrProcessor;
 import org.thymeleaf.standard.StandardDialect;
+import org.thymeleaf.standard.processor.attr.StandardActionAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardHrefAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardMethodAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardObjectAttrProcessor;
-import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardSrcAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardValueAttrProcessor;
 
 /**
  * <p>
@@ -503,11 +510,21 @@ public class SpringStandardDialect extends StandardDialect {
         for (final IProcessor standardProcessor : standardProcessors) {
             // There are several processors we need to remove from the Standard Dialect set
             if (!(standardProcessor instanceof StandardObjectAttrProcessor) &&
-                !(standardProcessor instanceof StandardSingleRemovableAttributeModifierAttrProcessor)) {
+                !(standardProcessor instanceof StandardActionAttrProcessor) &&
+                !(standardProcessor instanceof StandardHrefAttrProcessor) &&
+                !(standardProcessor instanceof StandardMethodAttrProcessor) &&
+                !(standardProcessor instanceof StandardSrcAttrProcessor) &&
+
+                !(standardProcessor instanceof StandardValueAttrProcessor)) {
                 processors.add(standardProcessor);
             }
         }
-        
+
+        processors.add(new SpringActionAttrProcessor());
+        processors.add(new SpringHrefAttrProcessor());
+        processors.add(new SpringMethodAttrProcessor());
+        processors.add(new SpringSrcAttrProcessor());
+        processors.add(new SpringValueAttrProcessor());
         processors.add(new SpringObjectAttrProcessor());
         processors.add(new SpringErrorsAttrProcessor());
         processors.addAll(Arrays.asList(SpringInputGeneralFieldAttrProcessor.PROCESSORS));
@@ -515,9 +532,7 @@ public class SpringStandardDialect extends StandardDialect {
         processors.add(new SpringInputCheckboxFieldAttrProcessor());
         processors.add(new SpringInputRadioFieldAttrProcessor());
         processors.add(new SpringInputFileFieldAttrProcessor());
-        processors.add(new SpringMethodAttrProcessor());
         processors.add(new SpringSelectFieldAttrProcessor());
-        processors.addAll(Arrays.asList(SpringSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.add(new SpringOptionFieldAttrProcessor());
         processors.add(new SpringTextareaFieldAttrProcessor());
         processors.add(new SpringErrorClassAttrProcessor());

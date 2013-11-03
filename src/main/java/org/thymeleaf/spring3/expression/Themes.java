@@ -28,7 +28,6 @@ import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
-import org.thymeleaf.util.Validate;
 
 /**
  * A utility object, accessed in Thymeleaf templates by the <tt>#themes</tt>
