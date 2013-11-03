@@ -25,6 +25,13 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
+ * <p>
+ *   Base abstract class meant to be extended by most implementations of the {@link IStandardConversionService}
+ *   interface.
+ * </p>
+ * <p>
+ *   This abstract class separates the to-String conversions (the most common) and the rest of them.
+ * </p>
  * 
  * @author Daniel Fern&aacute;ndez
  * 
