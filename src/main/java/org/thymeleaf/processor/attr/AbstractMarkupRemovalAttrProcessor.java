@@ -71,6 +71,7 @@ public abstract class AbstractMarkupRemovalAttrProcessor
         switch (removalType) {
 
             case NONE:
+                element.removeAttribute(attributeName);
                 return ProcessorResult.OK;
 
             case ALL:
