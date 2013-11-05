@@ -1,0 +1,15 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+# No binding performed on purpose. This is to check that no exceptions
+# arise in such case and binding is done on the fly.
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean01}">
+  <input type="date" th:pattern="#{date.format}" th:field="*{date}"/>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+  <input type="date" pattern="yyyy-MM-dd" id="date" name="date" value="1492-10-12" />
+</form>

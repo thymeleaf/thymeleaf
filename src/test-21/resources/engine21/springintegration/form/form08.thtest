@@ -1,0 +1,15 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+# No binding performed on purpose. This is to check that no exceptions
+# arise in such case and binding is done on the fly.
+# ------------------------------------------------------------
+%INPUT
+<form th:object="${formBean01}">
+   <input type="text" th:field="*{name}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form>
+   <input type="text" id="name" name="name" value="Mark Lettuce" />
+</form>
