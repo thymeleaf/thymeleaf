@@ -1,3 +1,8 @@
+2.1.1
+=====
+- Fixed th:remove attribute not being removed from output when expression evaluated as 'none'.
+
+
 2.1.0 (from 2.0.19)
 ===================
 (See What's New in Thymeleaf 2.1 at http://www.thymeleaf.org/whatsnew21.html)
