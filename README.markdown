@@ -4,15 +4,15 @@ Thymeleaf Testing Library
 
 -------------------------------------------------------------
 
+**[Please make sure to select the branch corresponding to the version of Thymeleaf you are using]**
+
+
 Status
 ------
 
 This is an auxiliary testing library, not directly a part of the Thymeleaf core but part of the project, developed and supported by the [Thymeleaf Team](http://www.thymeleaf.org/team.html).
 
-Current versions: 
-
-  * **Version 2.1.0.RELEASE** - for Thymeleaf 2.1 (requires 2.1.0+)
-  * **Version 2.0.6** - for Thymeleaf 2.0 (requires thymeleaf 2.0.16+)
+Current version: **2.1.1.RELEASE** - for Thymeleaf 2.1 (requires 2.1.0+)
 
 
 License
