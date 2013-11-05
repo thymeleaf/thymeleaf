@@ -120,15 +120,7 @@ public final class FieldUtils {
             final IProcessingContext processingContext, final String fieldExpression) {
 
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(configuration, processingContext, true, fieldExpression);
-
-        if (bindStatus == null) {
-            throw new TemplateProcessingException(
-                    "A BindStatus couldn't be obtained for expression '" + fieldExpression + "'. Maybe a RequestContext has " +
-                            "not been registered, or there is no available binding for the object the expression references " +
-                            "(e.g. if this expression selects a field inside a form, the form-backing bean might not have been " +
-                            "referenced at the <form> tag with a 'th:object' attribute)");
-        }
+            FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
 
         final String[] errorCodes = bindStatus.getErrorMessages();
         return Arrays.asList(errorCodes);
@@ -162,14 +154,7 @@ public final class FieldUtils {
     private static boolean checkErrors(final Configuration configuration, 
             final IProcessingContext processingContext, final String expression) {
         final BindStatus bindStatus =
-                FieldUtils.getBindStatus(configuration, processingContext, true, expression);
-        if (bindStatus == null) {
-            throw new TemplateProcessingException(
-                    "A BindStatus couldn't be obtained for expression '" + expression + "'. Maybe a RequestContext has " +
-                    "not been registered, or there is no available binding for the object the expression references " +
-                    "(e.g. if this expression selects a field inside a form, the form-backing bean might not have been " +
-                    "referenced at the <form> tag with a 'th:object' attribute)");
-        }
+                FieldUtils.getBindStatus(configuration, processingContext, expression);
         return bindStatus.isError();
     }
 
@@ -295,7 +280,7 @@ public final class FieldUtils {
         }
 
 
-        if (isBound(requestContext, completeExpression)) {
+        if (isBound(requestContext, expression, completeExpression)) {
             // Creating an instance of BindStatus for an unbound object results in an exception,
             // so we avoid it by checking first.
             return new BindStatus(requestContext, completeExpression, false);
@@ -358,12 +343,16 @@ public final class FieldUtils {
 
 
 
-    private static boolean isBound(final RequestContext requestContext, final String expression) {
+    private static boolean isBound(
+            final RequestContext requestContext, final String expression, final String completeExpression) {
 
-        final int dotPos = expression.indexOf('.');
-        // The bound bean name is everything befo: re the first dot (or everything, if no dot present)
-        final String beanName =
-                (dotPos == -1? expression : expression.substring(0, dotPos));
+        final int dotPos = completeExpression.indexOf('.');
+        if (dotPos == -1) { // Spring only allows second-level binding for conversions! ("x.y", not "x")
+            return false;
+        }
+
+        // The bound bean name is everything before the first dot (or everything, if no dot present)
+        final String beanName = completeExpression.substring(0, dotPos);
 
         // The getErrors() method is not extremely efficient, but it has a cache map, so it should be fine
         return (requestContext.getErrors(beanName, false) != null);
