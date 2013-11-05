@@ -1,8 +1,5 @@
 %EXTENDS ../requestdata.common
 # ------------------------------------------------------------
-%CONTEXT
-binding = 'formBean01'
-# ------------------------------------------------------------
 %INPUT
 <form th:action="@{/doit}" th:object="${formBean01}" th:method="post">
    <input type="text" th:field="*{name}" />

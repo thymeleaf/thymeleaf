@@ -1,8 +1,5 @@
 %EXTENDS ../requestdata.common
 # ------------------------------------------------------------
-%CONTEXT
-binding = 'formBean01'
-# ------------------------------------------------------------
 %INPUT
 <link th:class="@{this/url}">...</link>
 <link th:class="@{/this/url}">...</link>

@@ -2,8 +2,6 @@
 # ------------------------------------------------------------
 %CONTEXT
 
-binding = {'formBean01_01', 'formBean01_02' }
-
 bindingError01 = #{ 'binding' : 'formBean01_01',\
                     'field' : 'name',\
                     'message' : 'Name has to be < than \\'aa\\''}

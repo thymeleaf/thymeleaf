@@ -20,8 +20,6 @@ allSeedStarters = seedStarterRepository.findAll()
 seedStarter = new org.thymeleaf.engine21.stsm.model.SeedStarter()
 seedStarter.datePlanted = #dates.create(2013,5,3)
 
-binding = 'seedStarter'
-
 # ------------------------------------------------------------
 %MESSAGES
 title.application=Spring Thyme Seed-Starter Manager

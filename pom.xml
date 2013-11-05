@@ -274,7 +274,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.0.20-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.0.7-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.0.8-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.0.2-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.0.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.0.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -329,7 +329,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.1-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.1-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.2-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.1-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -392,7 +392,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.1-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.1-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.2-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.1-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -447,7 +447,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.0.19</thymeleaf.version>
-        <thymeleaf-testing.version>2.0.6</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.0.7</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.0.1</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.0.0</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.0.0</thymeleaf-extras-conditionalcomments.version>
@@ -502,7 +502,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.0.RELEASE</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.0.RELEASE</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.1.RELEASE</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.0.RELEASE</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.0.RELEASE</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.0.RELEASE</thymeleaf-extras-conditionalcomments.version>

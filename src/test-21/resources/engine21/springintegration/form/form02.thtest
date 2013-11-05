@@ -1,8 +1,5 @@
 %EXTENDS ../springintegration.common
 # ------------------------------------------------------------
-%CONTEXT
-binding = 'formBean01'
-# ------------------------------------------------------------
 %INPUT
 <form th:object="${formBean01}">
    <input th:field="*{name}" />

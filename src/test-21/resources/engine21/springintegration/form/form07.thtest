@@ -7,7 +7,6 @@ formBean03.choice = @org.thymeleaf.engine21.springintegration.model.FormEnum01@T
 # Create a variable with all the possible enum values (ONE, TWO, TREE)
 enumValues = @org.thymeleaf.engine21.springintegration.model.FormEnum01@values()
 # Specify the Spring form binding object
-binding = 'formBean03'
 # ------------------------------------------------------------
 %INPUT
 <form th:object="${formBean03}" th:action="'/url'">
