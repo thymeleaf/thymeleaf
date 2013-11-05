@@ -495,26 +495,13 @@ springPCBuilder.setApplicationContextConfigLocation("classpath:springConfig/spri
 
 ### Model binding ###
 
-If we want to test a page including bindings like, for example, a form with a *form-backing bean* (or *command*), we can specify the context variables on which we desire to create bindings by means of the specification of the `binding` variable:
+If we want to test a page including bound model objects like, for example, a *form-backing bean* (or *command*), we just have to declare and initialize it:
 
 ```properties
 %CONTEXT
 user = new my.company.User()
 user.name = 'John'
 user.surname = 'Apricot'
-# We will create a binding for the 'user' variable
-binding = 'user'
-# Could be multivalued:
-# binding = {'user','configuration'}
-```
-
-We could directly use the `model` variable name. This would be equivalent to the previous context definition:
-
-```properties
-%CONTEXT
-model = new my.company.User()
-model.name = 'John'
-model.surname = 'Apricot'
 ```
 
 
