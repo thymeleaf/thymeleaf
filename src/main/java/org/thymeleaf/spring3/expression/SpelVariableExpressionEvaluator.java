@@ -100,7 +100,7 @@ public class SpelVariableExpressionEvaluator
 
                     final BindStatus bindStatus =
                             FieldUtils.getBindStatusFromParsedExpression(
-                                    configuration, processingContext, useSelectionAsRoot, spelExpression);
+                                    configuration, processingContext, true, useSelectionAsRoot, spelExpression);
 
                     if (bindStatus != null) {
                         // The expression goes against a bound object! Let Spring do its magic for displaying it...

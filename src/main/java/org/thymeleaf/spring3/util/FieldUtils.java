@@ -120,7 +120,7 @@ public final class FieldUtils {
             final IProcessingContext processingContext, final String fieldExpression) {
 
         final BindStatus bindStatus = 
-            FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
+            FieldUtils.getBindStatus(configuration, processingContext, true, fieldExpression);
 
         if (bindStatus == null) {
             throw new TemplateProcessingException(
@@ -162,7 +162,7 @@ public final class FieldUtils {
     private static boolean checkErrors(final Configuration configuration, 
             final IProcessingContext processingContext, final String expression) {
         final BindStatus bindStatus =
-                FieldUtils.getBindStatus(configuration, processingContext, expression);
+                FieldUtils.getBindStatus(configuration, processingContext, true, expression);
         if (bindStatus == null) {
             throw new TemplateProcessingException(
                     "A BindStatus couldn't be obtained for expression '" + expression + "'. Maybe a RequestContext has " +
@@ -202,7 +202,16 @@ public final class FieldUtils {
 
 
     public static BindStatus getBindStatus(final Configuration configuration,
-            final IProcessingContext processingContext, final String expression) {
+           final IProcessingContext processingContext, final String expression) {
+        return getBindStatus(configuration, processingContext, false, expression);
+    }
+
+
+    /**
+     * @since 2.1.1
+     */
+    public static BindStatus getBindStatus(final Configuration configuration,
+            final IProcessingContext processingContext, final boolean optional, final String expression) {
 
         Validate.notNull(expression, "Expression cannot be null");
 
@@ -222,12 +231,12 @@ public final class FieldUtils {
 
         if (expressionObj instanceof SelectionVariableExpression) {
             final String bindExpression = ((SelectionVariableExpression)expressionObj).getExpression();
-            return getBindStatusFromParsedExpression(configuration, processingContext, true, bindExpression);
+            return getBindStatusFromParsedExpression(configuration, processingContext, optional, true, bindExpression);
         }
 
         if (expressionObj instanceof VariableExpression) {
             final String bindExpression = ((VariableExpression)expressionObj).getExpression();
-            return getBindStatusFromParsedExpression(configuration, processingContext, false, bindExpression);
+            return getBindStatusFromParsedExpression(configuration, processingContext, optional, false, bindExpression);
         }
 
         throw new TemplateProcessingException(
@@ -245,26 +254,46 @@ public final class FieldUtils {
             final Configuration configuration, final IProcessingContext processingContext,
             final boolean useSelectionAsRoot, final String expression) {
 
+        return getBindStatusFromParsedExpression(
+                configuration, processingContext, false, useSelectionAsRoot, expression);
+
+    }
+
+
+
+    /**
+     * @since 2.1.1
+     */
+    public static BindStatus getBindStatusFromParsedExpression(
+            final Configuration configuration, final IProcessingContext processingContext,
+            final boolean optional, final boolean useSelectionAsRoot, final String expression) {
+
         /*
          * This version of the getBindStatus method should only be called after parsing, and therefore the
          * passed expression must be a fragment of the already parsed expression. Note this is important because
          * this method performs no preprocessing on the expression!
          */
 
-        // This method will return null if no binding is found!
+        // This method will return null if no binding is found and optional == true
 
         final RequestContext requestContext =
-            (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+                (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
         if (requestContext == null) {
             return null;
         }
 
         final String completeExpression =
-            FieldUtils.validateAndGetValueExpression(processingContext, useSelectionAsRoot, expression);
+                FieldUtils.validateAndGetValueExpression(processingContext, useSelectionAsRoot, expression);
 
         if (completeExpression == null) {
             return null;
         }
+
+
+        if (!optional) {
+            return new BindStatus(requestContext, completeExpression, false);
+        }
+
 
         if (isBound(requestContext, completeExpression)) {
             // Creating an instance of BindStatus for an unbound object results in an exception,
