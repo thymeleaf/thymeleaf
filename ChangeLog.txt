@@ -1,3 +1,9 @@
+2.1.1
+=====
+- Fixed incorrect Spring object binding of single-level (no x.y field) expressions, resulting in
+  ConversionService not being applied on certain scenarios.
+
+
 2.1.0 (from 2.0.19)
 ===================
 (See What's New in Thymeleaf 2.1 at http://www.thymeleaf.org/whatsnew21.html)
@@ -8,6 +14,7 @@
 - New Feature: New th:errorclass for adding CSS class to form fields in error
 - New Feature: Additional form validation error reporting options
 - New Feature: Transparent integration with Spring's RequestDataValueProcessor
+
 
 2.0.19
 ======
