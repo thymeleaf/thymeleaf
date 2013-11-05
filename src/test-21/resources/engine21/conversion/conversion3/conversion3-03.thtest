@@ -3,7 +3,6 @@
 %CONTEXT
 obj = conversion3Obj1
 obj2 = conversion3Obj2
-binding = {'obj','obj2' }
 # ------------------------------------------------------------
 %INPUT
 <p>The date of this object is <span th:text="*{obj.date}">somedate</span></p>

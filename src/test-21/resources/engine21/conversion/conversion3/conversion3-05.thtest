@@ -4,7 +4,6 @@
 onelong = @Long@valueOf(123456789)
 obj = conversion3Obj1
 obj2 = conversion3Obj2
-binding = 'obj'
 # ------------------------------------------------------------
 %INPUT
 <p th:text="${onelong}">A number here, unformatted</p>
@@ -28,7 +27,7 @@ binding = 'obj'
 <p>The date of this object is <span>Tue May 23 00:00:00 2006</span></p>
 <p>The date of the second, not bound object is <span>Mon Apr 30 00:00:00 1990</span></p>
 <p>The formatted date of this object is <span>2006-05-23</span></p>
-<p>The formatted date of the second, not bound object is <span>Mon Apr 30 00:00:00 1990</span></p>
+<p>The formatted date of the second, not bound object is <span>1990-04-30</span></p>
 <form>
   <p>The date of this object is <span>Tue May 23 00:00:00 2006</span></p>
   <p>The formatted date of this object is <span>2006-05-23</span></p>

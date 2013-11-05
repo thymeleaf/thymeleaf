@@ -22,6 +22,11 @@
         <bean class="org.thymeleaf.engine21.conversion.conversion3.LongFormatter"/>
       </set>
     </property>
+    <property name="converters">
+      <set>
+        <bean class="org.thymeleaf.engine21.conversion.conversion3.Conversion3Object2Converter"/>
+      </set>
+    </property>
   </bean>
 
 
