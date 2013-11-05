@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-testing</artifactId>
   <packaging>jar</packaging>
-  <version>2.1.1.RELEASE</version>
+  <version>2.1.2-SNAPSHOT</version>
   <name>thymeleaf-testing</name>
   <url>http://www.thymeleaf.org</url>
 
