@@ -218,7 +218,16 @@ public abstract class NestableNode extends Node {
             }
             
             newChild.parent = this;
-        
+
+            if (getProcessTextNodes()) {
+                // If we are already processing text nodes, we must make sure the new child also does
+                newChild.setProcessTextNodes(getProcessTextNodes());
+            }
+            if (getProcessCommentNodes()) {
+                // If we are already processing comment nodes, we must make sure the new child also does
+                newChild.setProcessCommentNodes(getProcessCommentNodes());
+            }
+
         }
         
     }
@@ -285,7 +294,16 @@ public abstract class NestableNode extends Node {
             }
             
             newChild.parent = this;
-        
+
+            if (getProcessTextNodes()) {
+                // If we are already processing text nodes, we must make sure the new child also does
+                newChild.setProcessTextNodes(getProcessTextNodes());
+            }
+            if (getProcessCommentNodes()) {
+                // If we are already processing comment nodes, we must make sure the new child also does
+                newChild.setProcessCommentNodes(getProcessCommentNodes());
+            }
+
         }
         
     }
