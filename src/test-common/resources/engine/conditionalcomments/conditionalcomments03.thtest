@@ -1,0 +1,19 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT[frag]
+<link th:fragment="css" th:remove="tag">
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/something}" />
+    <!--[if lt IE 7]>
+    <link rel="stylesheet" type="text/css" media="screen" th:href="@{/something}" />
+    <![endif]-->
+</link>
+# ------------------------------------------------------------
+%INPUT
+<div th:replace="frag :: css">
+</div>
+# ------------------------------------------------------------
+%OUTPUT
+    <link rel="stylesheet" type="text/css" media="screen" href="/testing/something" />
+    <!--[if lt IE 7]>
+    <link rel="stylesheet" type="text/css" media="screen" href="/testing/something" />
+    <![endif]-->
