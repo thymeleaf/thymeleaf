@@ -85,6 +85,7 @@
           <li><a href="#can-use-HTML5-XML">How can I use Thymeleaf for HTML5 if it is an XML-based technology?</a></li>
           <li><a href="#DOM-parsing-memory">Thymeleaf uses DOM-style parsing of XML. How does that affect memory usage?</a></li>
           <li><a href="#use-snapshot">How can I use a SNAPSHOT release of Thymeleaf?</a></li>
+          <li><a href="#testing">How is thymeleaf tested?</a></li>
         </ul>
       </li>
     </ul>
@@ -162,22 +163,52 @@
     <h3><a id="how-can-i-contribute">How can I contribute to Thymeleaf?</a></h3>
 
     <p>
-        In many ways:
+        The first and most useful way to contribute to the project is by helping other users
+        at the <a href="http://forum.thymeleaf.org">forum</a> (or at other popular places like
+        <a href="http://stackoverflow.com/questions/tagged/thymeleaf">StackOverflow</a>,
+        for instance). Building a better community is always priority number one.
+    </p>
+    <p>
+        You can also help Thymeleaf by promoting it: write on your blog, tweet, talk about it
+        at your local JUG, or even simply discuss its advantages at your company/work and among your colleague
+        developers. Help spread the word. Do you think your grandma might be interested? Tell her! :-)
+    </p>
+    <p>
+        If you are already doing your best at helping users and promoting, and still you feel that you could do more,
+        there are a couple of things that are always useful:
     </p>
     <ul>
-        <li>You can write in the <a href="http://forum.thymeleaf.org">User
-            Forum</a> (or directly to the <a href="team.html">Team</a>) with your
-            ideas for improving Thymeleaf.</li>
-        <li>You can contribute some code, write a patch for a new feature
-            or behaviour (please, tell the project admins first about your idea so
-            that effort can be adequately coordinated).</li>
-        <li>You can write articles, reviews, blog posts, etc. about Thymeleaf, showing
-            how it works or how it integrates with other technologies.</li>
-        <li>You can promote Thymeleaf in your company/work and among your colleague developers.</li>
+        <li>
+            Help testing. No amount of testing is enough testing, and your experience as a user is extremely
+            valuable for building useful tests that Thymeleaf's developers might never think of.
+            Thymeleaf has its own <a href="http://github.com/thymeleaf/thymeleaf-testing">testing library</a> and
+            its own <a href="http://github.com/thymeleaf/thymeleaf-tests">repository for
+            tests</a>, and there's always room for contributions there. If you want suggestions about
+            what to test, we can guide you towards the areas that might better benefit from your help.
+        </li>
+        <li>
+            Help documenting. There's an "Articles" section at the <a href="documentation.html">documentation page</a>
+            that always welcomes new articles, especially if they include a nice example application. Your name will
+            be displayed as author at the article, so that you can add it to your resume ;), but of course
+            we will ask you for a high level of quality and a good knowledge of the English language. We keep a list
+            of topic suggestions <a href="http://github.com/thymeleaf/thymeleaf.github.com/issues">here</a>, but you
+            can always propose your own to the Team.
+        </li>
     </ul>
     <p>
-        If you want to contribute some code to Thymeleaf, please read first the
-        page on <a href="contributing.html">Contributing to Thymeleaf</a>.
+        What else? Well, of course you can bring your own ideas! You can write in the <a href="http://forum.thymeleaf.org">User
+        Forum</a>, create a <a href="http://github.com/thymeleaf/thymeleaf.github.com/issues">GitHub issue</a> or
+        just send an email directly to the <a href="team.html">Team</a>. We will be happy to review and discuss your
+        ideas with you.
+        Please don't just upload a Pull Request with your favourite feature without previous discussion with the team
+        &mdash; Thymeleaf is a complex project and requires a certain level of organization, and we might not be able
+        to accept your code even if you put a lot of effort on it (or even if your idea is good!).
+    </p>
+    <p>
+        Finally, please note that <b>all artifact contributions to Thymelef (code, documentation...) are regulated
+        by certain <a href="https://github.com/thymeleaf/thymeleaf-dist/blob/master/CONTRIBUTING.markdown">Terms
+        and Conditions</a></b>. Before accepting any patches, articles, etc. from you we will require you to
+        explicitly agree on this terms (an email or a github comment will do).
     </p>
 
 
@@ -356,7 +387,25 @@
             <scope>compile</scope>
         </dependency>
     ]]></script>
-    
+
+
+    <h3><a id="testing">How is thymeleaf tested?</a></h3>
+
+    <p>
+        Thymeleaf has its own testing framework, called <kbd>thymeleaf-testing</kbd>. This testing
+        framework not only allows the Thymeleaf Team to easily test the library, but also allows users
+        to test the view layer of their applications. You can explore it at
+        <a href="http://github.com/thymeleaf/thymeleaf-testing">GitHub</a>.
+    </p>
+    <p>
+        Making use of this testing framework, Thymeleaf maintains another GitHub repository completely devoted
+        to tests. Tests, tests, and more tests. It's the <kbd>thymeleaf-tests</kbd> repository that you can find
+        <a href="http://github.com/thymeleaf/thymeleaf-tests">here</a>.
+    </p>
+    <p>
+        Just to give you some data, as of November 2013 the <kbd>thymeleaf-tests</kbd> repository contained more
+        than 1,200 test files, adding up to more than 37,000 lines of testing code.
+    </p>
     
    </div>
    
