@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf-spring3</artifactId>
   <packaging>jar</packaging>
-  <version>2.1.1-SNAPSHOT</version>
+  <version>2.1.1.RELEASE</version>
   <name>thymeleaf-spring3</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -224,7 +224,7 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>${project.version}</version>
+      <version>2.1.1.RELEASE</version>
       <scope>compile</scope>
     </dependency>
     
