@@ -1,6 +1,8 @@
 2.0.20
 ======
 - Fixed DOM Selectors not correctly performing index operations on root nodes.
+- Fixed flags for processing text and comment nodes not being correctly propagated to children
+  when they were added.
 
 
 2.0.19
