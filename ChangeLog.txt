@@ -1,6 +1,8 @@
 2.1.1
 =====
 - Fixed th:remove attribute not being removed from output when expression evaluated as 'none'.
+- Fixed flags for processing text and comment nodes not being correctly propagated to children
+  when they were added.
 
 
 2.1.0 (from 2.0.19)
