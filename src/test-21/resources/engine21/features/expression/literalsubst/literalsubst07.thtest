@@ -1,0 +1,15 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%CONTEXT
+msg = 'Hello!'
+# ------------------------------------------------------------
+%INPUT
+<span th:text="'|' + ${msg} + '|'">...</span>
+<span th:text="'\'|\\' + ${msg} + '|'">...</span>
+<span th:attr="data-validator-message=${msg}+'|'+${msg}">...</span>
+# ------------------------------------------------------------
+%OUTPUT
+<span>|Hello!|</span>
+<span>&#39;|\\Hello!|</span>
+<span data-validator-message="Hello!|Hello!">...</span>
+
