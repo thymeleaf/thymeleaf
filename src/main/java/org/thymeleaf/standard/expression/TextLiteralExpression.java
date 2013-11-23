@@ -131,7 +131,7 @@ public final class TextLiteralExpression extends SimpleExpression {
 
 
 
-    static boolean isDelimiterEscaping(final String input, final int pos) {
+    static boolean isDelimiterEscaped(final String input, final int pos) {
         // Only an odd number of \'s will indicate escaping
         if (pos == 0 || input.charAt(pos - 1) != '\\') {
             return false;

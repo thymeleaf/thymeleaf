@@ -147,7 +147,7 @@ final class ExpressionParsingUtil {
 
             final char c = input.charAt(i);
 
-            if (inNothing && c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaping(input, i)) {
+            if (inNothing && c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaped(input, i)) {
                 // We are opening a literal
 
                 finishCurrentFragment(decomposedInput, currentFragment);
@@ -157,7 +157,7 @@ final class ExpressionParsingUtil {
                 inLiteral = true;
                 inNothing = false;
 
-            } else if (inLiteral && c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaping(input, i)) {
+            } else if (inLiteral && c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaped(input, i)) {
                 // We are closing a literal
 
                 currentFragment.append(c);

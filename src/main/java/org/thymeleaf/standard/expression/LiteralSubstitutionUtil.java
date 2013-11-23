@@ -71,6 +71,7 @@ final class LiteralSubstitutionUtil {
         boolean inLiteralSubstitutionInsertion = false;
 
         int expLevel = 0;
+        boolean inLiteral = false;
         boolean inNothing = true;
 
         final int inputLen = input.length();
@@ -148,6 +149,27 @@ final class LiteralSubstitutionUtil {
 
             } else if (expLevel > 0) {
                 // We are in an expression and not closing it, so just add the char
+
+                if (strBuilder != null) {
+                    strBuilder.append(c);
+                }
+
+            } else if (inNothing && !inLiteralSubstitution &&
+                       c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaped(input, i)) {
+                // We enter a first-level text literal. We should not process any |'s inside
+
+                inNothing = false;
+                inLiteral = true;
+
+                if (strBuilder != null) {
+                    strBuilder.append(c);
+                }
+
+            } else if (inLiteral && !inLiteralSubstitution &&
+                       c == TextLiteralExpression.DELIMITER && !TextLiteralExpression.isDelimiterEscaped(input, i)) {
+
+                inLiteral = false;
+                inNothing = true;
 
                 if (strBuilder != null) {
                     strBuilder.append(c);
