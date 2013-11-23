@@ -1,3 +1,8 @@
+2.1.2
+=====
+- Fixed pipe character (|) causing expression parsing exceptions when used inside text literals.
+
+
 2.1.1
 =====
 - Fixed th:remove attribute not being removed from output when expression evaluated as 'none'.
