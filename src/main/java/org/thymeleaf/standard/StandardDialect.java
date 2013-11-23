@@ -449,8 +449,11 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
 
 
     
-    
-    private IStandardVariableExpressionEvaluator variableExpressionEvaluator = OgnlVariableExpressionEvaluator.INSTANCE;
+
+    // We will avoid setting this variableExpressionEvaluator variable to "OgnlVariableExprtessionEvalutator.INSTANCE"
+    // in order to not cause this OGNL-related class to initialize, therefore introducing a forced dependency on OGNL
+    // to Spring users (who don't need OGNL at all).
+    private IStandardVariableExpressionEvaluator variableExpressionEvaluator = null;
     private IStandardExpressionParser expressionParser = new StandardExpressionParser();
     private IStandardConversionService conversionService = new StandardConversionService();
     private Set<IProcessor> additionalProcessors = null;
@@ -516,6 +519,9 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
      * @since 2.1.0
      */
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
+        if (this.variableExpressionEvaluator == null) {
+            return OgnlVariableExpressionEvaluator.INSTANCE;
+        }
         return this.variableExpressionEvaluator;
     }
 
