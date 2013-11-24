@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.context;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,22 +54,11 @@ public class VariablesMap<K,V> extends HashMap<K,V> {
 
         try {
 
-            final Class<?> ognlRuntimeClass = Class.forName("ognl.OgnlRuntime");
-            final Class<?> ognlPropertyAccessorClass = Class.forName("ognl.PropertyAccessor");
-            final Class<?> newPropertyAccessorClass =
-                    Class.forName(VariablesMap.class.getPackage().getName() + ".OGNLVariablesMapPropertyAccessor");
-            final Method setPropertyAccessorMethod =
-                    ognlRuntimeClass.getMethod("setPropertyAccessor",Class.class, ognlPropertyAccessorClass);
-            final Object newPropertyAccessor = newPropertyAccessorClass.newInstance();
-            setPropertyAccessorMethod.invoke(null, VariablesMap.class, newPropertyAccessor);
+            Class.forName("ognl.OgnlRuntime");
+            OGNLVariablesMapPropertyAccessor.initialize();
 
         } catch (final ClassNotFoundException ignored) {
             // Nothing bad. We simply don't have OGNL in our classpath. We're probably using Spring.
-        } catch (final NoSuchMethodException e) {
-            // We will not ignore this: we have OGNL, but probably not the right version.
-            throw new TemplateProcessingException(
-                    "Class ognl.OgnlRuntime does not have method 'setPropertyAccessor'. " +
-                    "Maybe OGNL version is too old/new?", e);
         } catch (final Exception e) {
             // We will not ignore this: there's a problem creating an instance of the new property accessor!
             throw new TemplateProcessingException("Exception while configuring OGNL variables map property accessor", e);

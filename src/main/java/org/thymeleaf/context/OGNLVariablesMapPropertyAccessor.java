@@ -1,3 +1,4 @@
+
 /*
  * =============================================================================
  *
@@ -23,6 +24,8 @@ import java.util.Map;
 
 import ognl.MapPropertyAccessor;
 import ognl.OgnlException;
+import ognl.OgnlRuntime;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  * Extension of {@code MapPropertyAccessor} that handles getting of size
@@ -67,5 +70,21 @@ final class OGNLVariablesMapPropertyAccessor extends MapPropertyAccessor {
         return result;
 
     }
+
+
+    static void initialize() {
+
+        try {
+
+            final OGNLVariablesMapPropertyAccessor accessor = new OGNLVariablesMapPropertyAccessor();
+            OgnlRuntime.setPropertyAccessor(VariablesMap.class, accessor);
+
+        } catch (final Exception e) {
+            // We will not ignore this: there's a problem creating an instance of the new property accessor!
+            throw new TemplateProcessingException("Exception while configuring OGNL variables map property accessor", e);
+        }
+
+    }
+
 
 }
