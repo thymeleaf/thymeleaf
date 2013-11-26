@@ -21,6 +21,8 @@ package org.thymeleaf.spring3.requestdata;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IContext;
@@ -52,20 +54,24 @@ public final class RequestDataValueProcessorUtils {
 
     private static final boolean canApply;
     private static final boolean isSpring31AtLeast;
+    private static final boolean isSpring40AtLeast;
 
     private static final String SPRING31_DELEGATE_CLASS =
             "org.thymeleaf.spring3.requestdata.RequestDataValueProcessor31Delegate";
     private static final IRequestDataValueProcessorDelegate spring31Delegate;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestDataValueProcessorUtils.class);
+
 
     static {
 
         isSpring31AtLeast = SpringVersionUtils.isSpring31AtLeast();
+        isSpring40AtLeast = SpringVersionUtils.isSpring40AtLeast();
         canApply = isSpring31AtLeast;
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
 
-        if (isSpring31AtLeast) {
+        if (isSpring31AtLeast && !isSpring40AtLeast) {
             try {
                 final Class<?> implClass = Class.forName(SPRING31_DELEGATE_CLASS, true, classLoader);
                 spring31Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
@@ -75,6 +81,13 @@ public final class RequestDataValueProcessorUtils {
                         "delegate of class \"" + SPRING31_DELEGATE_CLASS + "\"", e);
             }
         } else {
+            if (isSpring40AtLeast) {
+                LOGGER.warn(
+                        "[THYMELEAF] You seem to be using the thymeleaf-spring3 module with Spring version 4.x. " +
+                        "Even though most features should work OK, support for CSRF protection on websites will be " +
+                        "disabled due to incompatibilities between the different versions of the " +
+                        "RequestDataValueProcessor interface in versions 3.x and 4.x.");
+            }
             spring31Delegate = null;
         }
 

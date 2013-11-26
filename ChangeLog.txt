@@ -1,3 +1,9 @@
+2.1.2
+=====
+- Disabled integration with RequestDataValueProcessor when Spring version is >= 4.x in order to
+  avoid exceptions (due to interface changes between spring 3.2 and 4.0).
+
+
 2.1.1
 =====
 - Fixed incorrect Spring object binding of single-level (no x.y field) expressions, resulting in
