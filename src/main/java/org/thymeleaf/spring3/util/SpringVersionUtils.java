@@ -75,7 +75,7 @@ public final class SpringVersionUtils {
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
         try {
-            Class.forName("org.springframework.web.socket.WebSocketHandler", false, classLoader);
+            Class.forName("org.springframework.core.io.PathResource", false, classLoader);
             return true;
         } catch (final Exception e) {
             return false;
