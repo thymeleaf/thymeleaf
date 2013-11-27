@@ -2,6 +2,8 @@
 ======
 - Fixed NPE at the Themes utility class when using the SpringStandardDialect with a WebContext implementation
   (not SpringWebContext)
+- Fixed marker hidden inputs being added for checkboxes and multiple selects even when they are
+  disabled (provoking undesired deletion of attribute values).
 
 
 2.0.19

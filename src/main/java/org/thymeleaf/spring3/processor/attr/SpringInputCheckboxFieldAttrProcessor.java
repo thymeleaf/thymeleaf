@@ -110,19 +110,33 @@ public final class SpringInputCheckboxFieldAttrProcessor
             inputElement.removeAttribute("checked");
         }
         inputElement.setAllNodeLocalVariables(localVariables);
-        
-        final Element hiddenElement = new Element("input");
-        hiddenElement.setAttribute("type", "hidden");
-        hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
-        hiddenElement.setAttribute("value", "on");
-        hiddenElement.setAllNodeLocalVariables(localVariables);
 
         parent.insertBefore(element, inputElement);
-        parent.insertBefore(element, hiddenElement);
+
+
+        if (!isDisabled(inputElement)) {
+
+            final Element hiddenElement = new Element("input");
+            hiddenElement.setAttribute("type", "hidden");
+            hiddenElement.setAttribute("name", WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name);
+            hiddenElement.setAttribute("value", "on");
+            hiddenElement.setAllNodeLocalVariables(localVariables);
+
+            parent.insertBefore(element, hiddenElement);
+
+        }
+
+
         parent.removeChild(element);
         
         return ProcessorResult.OK;         
         
+    }
+
+
+    private static final boolean isDisabled(final Element inputElement) {
+        // Disabled = attribute "disabled" exists
+        return inputElement.hasNormalizedAttribute("disabled");
     }
 
     
