@@ -27,3 +27,6 @@ formBean01 = formBean01_01
 
 formBean02 = new org.thymeleaf.engine.springintegration.model.FormBean02()
 formBean02.bean01Ids = { formBean01_02.id, formBean01_03.id }
+
+
+formBean03_01 = new org.thymeleaf.engine.springintegration.model.FormBean03()
