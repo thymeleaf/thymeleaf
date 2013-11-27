@@ -2,12 +2,12 @@
 # ------------------------------------------------------------
 %INPUT
 <form th:object="${formBean03_01}" th:action="'/url'">
-   <input type="checkbox" th:field="*{nullBool}" th:disabled="true" />
-   <input type="checkbox" th:field="*{notNullTrue}" th:disabled="true" />
-   <input type="checkbox" th:field="*{notNullFalse}" th:disabled="true" />
-   <input type="checkbox" th:field="*{nullBool}" th:disabled="false" />
-   <input type="checkbox" th:field="*{notNullTrue}" th:disabled="false" />
-   <input type="checkbox" th:field="*{notNullFalse}" th:disabled="false" />
+   <input type="checkbox" th:field="*{nullBool}" th:disabled="${true}" />
+   <input type="checkbox" th:field="*{notNullTrue}" th:disabled="${true}" />
+   <input type="checkbox" th:field="*{notNullFalse}" th:disabled="${true}" />
+   <input type="checkbox" th:field="*{nullBool}" th:disabled="${false}" />
+   <input type="checkbox" th:field="*{notNullTrue}" th:disabled="${false}" />
+   <input type="checkbox" th:field="*{notNullFalse}" th:disabled="${false}" />
 </form>
 # ------------------------------------------------------------
 %OUTPUT
