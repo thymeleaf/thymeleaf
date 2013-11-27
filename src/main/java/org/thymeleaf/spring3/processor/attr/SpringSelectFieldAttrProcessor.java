@@ -81,7 +81,7 @@ public final class SpringSelectFieldAttrProcessor
         parent.removeChild(element);
         
 
-        if (multiple) {
+        if (multiple && !isDisabled(inputElement)) {
 
             final String hiddenName = WebDataBinder.DEFAULT_FIELD_MARKER_PREFIX + name;
             final Element hiddenElement = new Element("input");
@@ -151,6 +151,12 @@ public final class SpringSelectFieldAttrProcessor
         }
         
     }
-    
+
+
+    private static final boolean isDisabled(final Element inputElement) {
+        // Disabled = attribute "disabled" exists
+        return inputElement.hasNormalizedAttribute("disabled");
+    }
+
 
 }
