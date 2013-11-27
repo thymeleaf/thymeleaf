@@ -67,7 +67,7 @@ public final class RequestDataValueProcessorUtils {
 
         isSpring31AtLeast = SpringVersionUtils.isSpring31AtLeast();
         isSpring40AtLeast = SpringVersionUtils.isSpring40AtLeast();
-        canApply = isSpring31AtLeast;
+        canApply = isSpring31AtLeast && !isSpring40AtLeast;
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
 
@@ -111,7 +111,7 @@ public final class RequestDataValueProcessorUtils {
             return action;
         }
 
-        if (isSpring31AtLeast) {
+        if (spring31Delegate != null) {
             return spring31Delegate.processAction(
                     requestContext, ((IWebContext)context).getHttpServletRequest(), action, httpMethod);
         }
@@ -139,7 +139,7 @@ public final class RequestDataValueProcessorUtils {
             return value;
         }
 
-        if (isSpring31AtLeast) {
+        if (spring31Delegate != null) {
             return spring31Delegate.processFormFieldValue(
                     requestContext, ((IWebContext)context).getHttpServletRequest(), name, value, type);
         }
@@ -166,7 +166,7 @@ public final class RequestDataValueProcessorUtils {
             return null;
         }
 
-        if (isSpring31AtLeast) {
+        if (spring31Delegate != null) {
             return spring31Delegate.getExtraHiddenFields(
                     requestContext, ((IWebContext)context).getHttpServletRequest());
         }
@@ -193,7 +193,7 @@ public final class RequestDataValueProcessorUtils {
             return url;
         }
 
-        if (isSpring31AtLeast) {
+        if (spring31Delegate != null) {
             return spring31Delegate.processUrl(
                     requestContext, ((IWebContext)context).getHttpServletRequest(), url);
         }
