@@ -19,10 +19,15 @@
  */
 package org.thymeleaf.spring3.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.servlet.support.BindStatus;
 import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.Arguments;
@@ -112,7 +117,6 @@ public final class FieldUtils {
     
     public static List<String> globalErrors(final Configuration configuration,
             final IProcessingContext processingContext) {
-
         return computeErrors(configuration, processingContext, GLOBAL_EXPRESSION);
     }
     
@@ -121,11 +125,76 @@ public final class FieldUtils {
 
         final BindStatus bindStatus = 
             FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
+        if (bindStatus == null) {
+            return Collections.EMPTY_LIST;
+        }
 
         final String[] errorCodes = bindStatus.getErrorMessages();
         return Arrays.asList(errorCodes);
         
     }
+
+
+    /**
+     * @since 2.1.2
+     */
+    public static List<DetailedError> detailedErrors(
+            final Configuration configuration, final IProcessingContext processingContext) {
+        return computeDetailedErrors(configuration, processingContext, ALL_EXPRESSION, true, true);
+    }
+
+
+    /**
+     * @since 2.1.2
+     */
+    private static List<DetailedError> computeDetailedErrors(
+            final Configuration configuration, final IProcessingContext processingContext, final String fieldExpression,
+            final boolean includeGlobalErrors, final boolean includeFieldErrors) {
+
+        final BindStatus bindStatus =
+                FieldUtils.getBindStatus(configuration, processingContext, fieldExpression);
+        if (bindStatus == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        final Errors errors = bindStatus.getErrors();
+        if (errors == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        final RequestContext requestContext =
+                (RequestContext) processingContext.getContext().getVariables().get(SpringContextVariableNames.SPRING_REQUEST_CONTEXT);
+        if (requestContext == null) {
+            return Collections.EMPTY_LIST;
+        }
+
+        final List<DetailedError> errorObjects = new ArrayList<DetailedError>(errors.getErrorCount() + 2);
+
+
+        if (includeGlobalErrors) {
+            final List<ObjectError> globalErrors = errors.getGlobalErrors();
+            for (final ObjectError globalError : globalErrors) {
+                final String message = requestContext.getMessage(globalError, false);
+                final DetailedError errorObject =
+                        new DetailedError(globalError.getCode(), globalError.getArguments(), message);
+                errorObjects.add(errorObject);
+            }
+        }
+
+        if (includeFieldErrors) {
+            final List<FieldError> fieldErrors = errors.getFieldErrors();
+            for (final FieldError fieldError : fieldErrors) {
+                final String message = requestContext.getMessage(fieldError, false);
+                final DetailedError errorObject =
+                        new DetailedError(fieldError.getField(), fieldError.getCode(), fieldError.getArguments(), message);
+                errorObjects.add(errorObject);
+            }
+        }
+
+        return errorObjects;
+
+    }
+
 
 
     public static String idFromName(final String fieldName) {

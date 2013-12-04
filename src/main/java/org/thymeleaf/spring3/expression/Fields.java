@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.spring3.util.DetailedError;
 import org.thymeleaf.spring3.util.FieldUtils;
 
 
@@ -94,7 +95,16 @@ public final class Fields {
     public String idFromName(final String fieldName) {
         return FieldUtils.idFromName(fieldName);
     }
-    
+
+
+
+    /**
+     * @since 2.1.2
+     */
+    public List<DetailedError> detailedErrors() {
+        return FieldUtils.detailedErrors(this.configuration, this.processingContext);
+    }
+
 
     
     public Fields(final Configuration configuration, final IProcessingContext processingContext) {
