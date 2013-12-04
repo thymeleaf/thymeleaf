@@ -1,0 +1,27 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%CONTEXT
+
+bindingError01 = #{ 'binding' : 'formBean01_01',\
+                    'field' : 'name',\
+                    'message' : 'Name has to be < than \\'aa\\''}
+bindingError02 = #{ 'binding' : 'formBean01_01',\
+                    'field' : null,\
+                    'message' : 'Name has to be >= than \\'ab\\''}
+                    
+bindingErrors = { bindingError01, bindingError02 }
+# ------------------------------------------------------------
+%INPUT
+<form action="#" th:action="@{/process}" th:object="${formBean01_01}" method="post">
+  <ul>
+    <li th:each="e : ${#fields.detailedErrors()}"><span th:text="${e.fieldName}">...</span><span th:if="${e.global}">*</span></li>
+  </ul>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/process" method="post">
+  <ul>
+    <li><span>[global]</span><span>*</span></li>
+    <li><span>name</span></li>
+  </ul>
+</form>
