@@ -125,10 +125,14 @@ public abstract class Token extends SimpleExpression {
                 // let's scan forward, looking for a token char that is not a number
 
                 for (int i = pos + 1; i < contextLen; i++) {
+                    final char cc = context.charAt(i);
+                    if (cc == '-') {
+                        // We need to avoid cycles (which would happen if we call "isTokenChar" again)
+                        return true;
+                    }
                     if (!isTokenChar(context,i)) {
                         break;
                     }
-                    final char cc = context.charAt(i);
                     if (!((cc >= '0' && cc <= '9') || cc == '.')) {
                         // It is a token, but not a digit or ., so the dash is not an operator, it is a token char
                         return true;
