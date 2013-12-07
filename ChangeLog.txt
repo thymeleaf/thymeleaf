@@ -4,6 +4,8 @@
 - Fixed required dependency on OGNL in Spring environments being re-introduced in 2.1 due to
   reference to OgnlVariableExpressionEvaluator in StandardDialect's initialization.
 - Fixed StackOverflowError when parsing expression tokens with the '--' string.
+- Fixed local variables for fragment arguments being completely replaced on NestableNode.extractChild(...),
+  causing e.g. th:replace to not apply fragment arguments correctly in double-nested fragments.
 
 
 2.1.1

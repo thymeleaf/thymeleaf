@@ -505,7 +505,7 @@ public abstract class NestableNode extends Node {
                         unsafeRemoveChild(i);
                         for (int j = 0; j < nestableChild.childrenLen; j++) {
                             insertChild(i + j, nestableChild.children[j]);
-                            nestableChild.children[j].setAllNodeLocalVariables(nestableChildNodeLocalVariables);
+                            nestableChild.children[j].addAllNonExistingNodeLocalVariables(nestableChildNodeLocalVariables);
                         }
                         return;
                     }

@@ -751,7 +751,7 @@ public abstract class Node implements Serializable {
         this.nodeLocalVariables.put(name,  value);
     }
 
-    
+
     /**
      * <p>
      *   Sets several <i>node local variables</i> at once.
@@ -763,7 +763,7 @@ public abstract class Node implements Serializable {
      *   of its children.
      * </p>
      * <p>
-     *   For example, the <tt>thing</tt> variable in 
+     *   For example, the <tt>thing</tt> variable in
      *   <tt>&lt;div th:each="thing : ${things}"&gt;...&lt;div&gt;</tt>
      *   is a <i>node local variable</i> that will only exist inside the &lt;div&gt; element
      *   and that will be made available to any expressions executed within those limits.
@@ -774,7 +774,7 @@ public abstract class Node implements Serializable {
      *   context and are only meant for internally carrying around metainformation about the
      *   DOM nodes.
      * </p>
-     * 
+     *
      * @param variables the variables to be set
      */
     public final void setAllNodeLocalVariables(final Map<String,Object> variables) {
@@ -793,6 +793,49 @@ public abstract class Node implements Serializable {
             this.nodeLocalVariables.putAll(variables);
         } else { 
             this.nodeLocalVariables = null;
+        }
+    }
+
+
+    /**
+     * <p>
+     *   Adds to a node a series of local variables, but only if those variables didn't exist
+     *   before (no overwriting of variables).
+     * </p>
+     * <p>
+     *   <i>Node local variables</i> are variables that are set locally to a specific
+     *   node, and that will be added to the evaluation context of any
+     *   expressions --for example: OGNL or Spring EL-- executed on that node or any
+     *   of its children.
+     * </p>
+     * <p>
+     *   For example, the <tt>thing</tt> variable in
+     *   <tt>&lt;div th:each="thing : ${things}"&gt;...&lt;div&gt;</tt>
+     *   is a <i>node local variable</i> that will only exist inside the &lt;div&gt; element
+     *   and that will be made available to any expressions executed within those limits.
+     * </p>
+     * <p>
+     *   Note that there is an important difference between <i>node local variables</i>
+     *   and <i>node properties</i>, as the latter are never added to the expression evaluation
+     *   context and are only meant for internally carrying around metainformation about the
+     *   DOM nodes.
+     * </p>
+     *
+     * @param variables the variables to be set
+     * @since 2.1.2
+     */
+    public final void addAllNonExistingNodeLocalVariables(final Map<String,Object> variables) {
+        if (variables != null) {
+            if (this.nodeLocalVariables == null) {
+                this.nodeLocalVariables = new NodeLocalVariablesMap();
+                this.nodeLocalVariables.putAll(variables);
+            } else {
+                for (final Map.Entry<String,Object> variablesEntry : variables.entrySet()) {
+                    if (!this.nodeLocalVariables.containsKey(variablesEntry.getKey())) {
+                        this.nodeLocalVariables.put(variablesEntry.getKey(), variablesEntry.getValue());
+                    }
+                }
+            }
         }
     }
 
