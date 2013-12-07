@@ -3,6 +3,7 @@
 - Fixed pipe character (|) causing expression parsing exceptions when used inside text literals.
 - Fixed required dependency on OGNL in Spring environments being re-introduced in 2.1 due to
   reference to OgnlVariableExpressionEvaluator in StandardDialect's initialization.
+- Fixed StackOverflowError when parsing expression tokens with the '--' string.
 
 
 2.1.1
