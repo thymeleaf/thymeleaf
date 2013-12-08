@@ -458,7 +458,7 @@
     </profile>
 
     <profile>
-      <id>2.1.1</id>
+      <id>2.1.2</id>
       <build>
         <plugins>
           <plugin>
@@ -501,7 +501,7 @@
         </plugins>
       </build>
       <properties>
-        <thymeleaf.version>2.1.1.RELEASE</thymeleaf.version>
+        <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
         <thymeleaf-testing.version>2.1.1.RELEASE</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.0.RELEASE</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.0.RELEASE</thymeleaf-extras-tiles2.version>
