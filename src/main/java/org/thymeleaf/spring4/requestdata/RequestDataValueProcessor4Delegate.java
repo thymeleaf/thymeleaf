@@ -34,11 +34,11 @@ import org.springframework.web.servlet.support.RequestDataValueProcessor;
  * @since 2.1.0
  *
  */
-final class RequestDataValueProcessor31Delegate implements IRequestDataValueProcessorDelegate {
+final class RequestDataValueProcessor4Delegate implements IRequestDataValueProcessorDelegate {
 
 
 
-    public RequestDataValueProcessor31Delegate() {
+    public RequestDataValueProcessor4Delegate() {
         super();
     }
 
@@ -54,7 +54,7 @@ final class RequestDataValueProcessor31Delegate implements IRequestDataValueProc
         }
 
         // The "httpMethod" argument is ignored as of 3.1 and 3.2, but will be used in Spring 4.0
-        return processor.processAction(request, action);
+        return processor.processAction(request, action, httpMethod);
 
     }
 
