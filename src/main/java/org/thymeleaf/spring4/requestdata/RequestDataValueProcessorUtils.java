@@ -41,8 +41,8 @@ import org.thymeleaf.util.ClassLoaderUtils;
  *   interface to URLs and forms output by Thymeleaf.
  * </p>
  * <p>
- *   Given this Spring interface only exists since Spring 3.1, application is conditional and only performed
- *   if Spring version in classpath is 3.1 or newer.
+ *   This Spring interface only exists since Spring 3.1, but was modified in Spring 4. This class will only
+ *   apply this value processor if the version of Spring is 4 or newer.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -56,9 +56,9 @@ public final class RequestDataValueProcessorUtils {
     private static final boolean isSpring31AtLeast;
     private static final boolean isSpring40AtLeast;
 
-    private static final String SPRING31_DELEGATE_CLASS =
-            "org.thymeleaf.spring3.requestdata.RequestDataValueProcessor31Delegate";
-    private static final IRequestDataValueProcessorDelegate spring31Delegate;
+    private static final String SPRING4_DELEGATE_CLASS =
+            "org.thymeleaf.spring4.requestdata.RequestDataValueProcessor4Delegate";
+    private static final IRequestDataValueProcessorDelegate spring4Delegate;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestDataValueProcessorUtils.class);
 
@@ -67,28 +67,26 @@ public final class RequestDataValueProcessorUtils {
 
         isSpring31AtLeast = SpringVersionUtils.isSpring31AtLeast();
         isSpring40AtLeast = SpringVersionUtils.isSpring40AtLeast();
-        canApply = isSpring31AtLeast && !isSpring40AtLeast;
+        canApply = isSpring40AtLeast;
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
 
-        if (isSpring31AtLeast && !isSpring40AtLeast) {
+        if (isSpring40AtLeast) {
             try {
-                final Class<?> implClass = Class.forName(SPRING31_DELEGATE_CLASS, true, classLoader);
-                spring31Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
+                final Class<?> implClass = Class.forName(SPRING4_DELEGATE_CLASS, true, classLoader);
+                spring4Delegate = (IRequestDataValueProcessorDelegate) implClass.newInstance();
             } catch (final Exception e) {
                 throw new ConfigurationException(
-                        "Environment has been detected to be at least Spring 3.1, but thymeleaf could not initialize a " +
-                        "delegate of class \"" + SPRING31_DELEGATE_CLASS + "\"", e);
+                        "Environment has been detected to be at least Spring 4, but thymeleaf could not initialize a " +
+                        "delegate of class \"" + SPRING4_DELEGATE_CLASS + "\"", e);
             }
         } else {
-            if (isSpring40AtLeast) {
-                LOGGER.warn(
-                        "[THYMELEAF] You seem to be using the thymeleaf-spring3 module with Spring version 4.x. " +
-                        "Even though most features should work OK, support for CSRF protection on websites will be " +
-                        "disabled due to incompatibilities between the different versions of the " +
-                        "RequestDataValueProcessor interface in versions 3.x and 4.x.");
-            }
-            spring31Delegate = null;
+            LOGGER.warn(
+                    "[THYMELEAF] You seem to be using the thymeleaf-spring4 module with Spring version 3.x. " +
+                    "Even though most features should work OK, support for CSRF protection on websites will be " +
+                    "disabled due to incompatibilities between the different versions of the " +
+                    "RequestDataValueProcessor interface in versions 4.x and 3.x.");
+            spring4Delegate = null;
         }
 
     }
@@ -111,8 +109,8 @@ public final class RequestDataValueProcessorUtils {
             return action;
         }
 
-        if (spring31Delegate != null) {
-            return spring31Delegate.processAction(
+        if (spring4Delegate != null) {
+            return spring4Delegate.processAction(
                     requestContext, ((IWebContext)context).getHttpServletRequest(), action, httpMethod);
         }
 
@@ -139,8 +137,8 @@ public final class RequestDataValueProcessorUtils {
             return value;
         }
 
-        if (spring31Delegate != null) {
-            return spring31Delegate.processFormFieldValue(
+        if (spring4Delegate != null) {
+            return spring4Delegate.processFormFieldValue(
                     requestContext, ((IWebContext)context).getHttpServletRequest(), name, value, type);
         }
 
@@ -166,8 +164,8 @@ public final class RequestDataValueProcessorUtils {
             return null;
         }
 
-        if (spring31Delegate != null) {
-            return spring31Delegate.getExtraHiddenFields(
+        if (spring4Delegate != null) {
+            return spring4Delegate.getExtraHiddenFields(
                     requestContext, ((IWebContext)context).getHttpServletRequest());
         }
 
@@ -193,8 +191,8 @@ public final class RequestDataValueProcessorUtils {
             return url;
         }
 
-        if (spring31Delegate != null) {
-            return spring31Delegate.processUrl(
+        if (spring4Delegate != null) {
+            return spring4Delegate.processUrl(
                     requestContext, ((IWebContext)context).getHttpServletRequest(), url);
         }
 
