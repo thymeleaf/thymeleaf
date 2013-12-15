@@ -67,7 +67,7 @@ public final class RequestDataValueProcessorUtils {
 
         isSpring31AtLeast = SpringVersionUtils.isSpring31AtLeast();
         isSpring40AtLeast = SpringVersionUtils.isSpring40AtLeast();
-        canApply = isSpring31AtLeast && !isSpring40AtLeast;
+        canApply = isSpring40AtLeast;
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(RequestDataValueProcessorUtils.class);
 
