@@ -1,5 +1,5 @@
 
- thymeleaf-spring3
+ thymeleaf-spring4
  -----------------
  
  To learn more and download latest version:

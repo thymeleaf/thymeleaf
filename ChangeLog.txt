@@ -1,9 +1,10 @@
-2.1.2
-=====
+2.1.2 (created thymeleaf-spring4 package from thymeleaf-spring3)
+================================================================
 - Disabled integration with RequestDataValueProcessor when Spring version is >= 4.x in order to
   avoid exceptions (due to interface changes between spring 3.2 and 4.0).
 - Fixed marker hidden inputs being added for checkboxes and multiple selects even when they are
   disabled (provoking undesired deletion of attribute values).
+- Renamed all artifacts from org.thymeleaf.spring3 package to org.thymeleaf.spring4
 
 
 2.1.1
