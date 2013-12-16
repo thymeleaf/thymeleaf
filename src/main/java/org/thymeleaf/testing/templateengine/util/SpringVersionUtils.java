@@ -25,7 +25,7 @@ import org.thymeleaf.util.ClassLoaderUtils;
  * 
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.1.2
+ * @since 2.0.8
  *
  */
 public final class SpringVersionUtils {
