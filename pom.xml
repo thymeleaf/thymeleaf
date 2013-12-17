@@ -328,8 +328,8 @@
         </plugins>
       </build>
       <properties>
-        <thymeleaf.version>2.1.2-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.2-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf.version>2.1.3-SNAPSHOT</thymeleaf.version>
+        <thymeleaf-testing.version>2.1.3-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.1-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -391,12 +391,75 @@
         </plugins>
       </build>
       <properties>
-        <thymeleaf.version>2.1.2-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.2-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf.version>2.1.3-SNAPSHOT</thymeleaf.version>
+        <thymeleaf-testing.version>2.1.3-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.1-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
         <springframework.version>3.1.0.RELEASE</springframework.version>
+        <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
+        <nekohtml.version>1.9.15</nekohtml.version>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>2.1-spring4</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>1.8</version>
+            <executions>
+              <execution>
+                <id>add-test-source</id>
+                <phase>generate-test-sources</phase>
+                <goals>
+                  <goal>add-test-source</goal>
+                </goals>
+                <configuration>
+                  <sources>
+                    <source>src/test-21/java</source>
+                    <source>src/test-21-spring4/java</source>
+                  </sources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>add-test-resource</id>
+                <phase>generate-test-resources</phase>
+                <goals>
+                  <goal>add-test-resource</goal>
+                </goals>
+                <configuration>
+                  <resources>
+                    <resource>
+                      <directory>${project.basedir}/src/test-21/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
+                      <directory>${project.basedir}/src/test-21-spring4/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <thymeleaf.version>2.1.3-SNAPSHOT</thymeleaf.version>
+        <thymeleaf-testing.version>2.1.3-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-extras-springsecurity3.version>2.1.1-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
+        <thymeleaf-extras-tiles2.version>2.1.1-SNAPSHOT</thymeleaf-extras-tiles2.version>
+        <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
+        <springframework.version>4.0.0.RELEASE</springframework.version>
         <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
@@ -502,7 +565,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.1.RELEASE</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.2.RELEASE</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.0.RELEASE</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.0.RELEASE</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.0.RELEASE</thymeleaf-extras-conditionalcomments.version>
@@ -525,14 +588,21 @@
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-spring3</artifactId>
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
-    
+
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf-spring4</artifactId>
+      <version>${thymeleaf.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf-testing</artifactId>
@@ -597,6 +667,12 @@
       <artifactId>spring-aspects</artifactId>
       <version>${springframework.version}</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.aspectj</groupId>
+          <artifactId>aspectjweaver</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>

@@ -1,0 +1,23 @@
+%EXTENDS ../requestdata.common
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{this/url}">...</a>
+<a th:href="@{/this/url}">...</a>
+<a th:href="@{http://this/url}">...</a>
+<form th:action="@{/doit}" th:object="${formBean01}" th:method="post">
+   <a th:href="@{this/url}">...</a>
+   <a th:href="@{/this/url}">...</a>
+   <a th:href="@{http://this/url}">...</a>
+   <input type="text" th:field="*{name}" />
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="{this/url}">...</a>
+<a href="{/testing/this/url}">...</a>
+<a href="{http://this/url}">...</a>
+<form action="[/testing/doit,post]" method="post">
+   <a href="{this/url}">...</a>
+   <a href="{/testing/this/url}">...</a>
+   <a href="{http://this/url}">...</a>
+   <input type="text" id="name" name="name" value="(Mark Lettuce,name,text)" />
+<input type="hidden" name="extra-field1" value="The value of the First Extra field" /><input type="hidden" name="extra-field2" value="The value of the Second Extra field" /></form>

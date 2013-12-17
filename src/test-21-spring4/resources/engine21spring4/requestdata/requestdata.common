@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# -----------------------------------------------------------
+%CONTEXT
+
+formBean01_01 = new org.thymeleaf.engine21spring4.requestdata.model.FormBean01()
+formBean01_01.id = 1
+formBean01_01.name = 'Mark Lettuce'
+formBean01_01.date = #dates.create(1492,10,12)
+formBean01_01.valid = true
+
+formBean01 = formBean01_01

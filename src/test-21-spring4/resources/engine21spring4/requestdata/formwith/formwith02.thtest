@@ -1,0 +1,43 @@
+%EXTENDS ../requestdata.common
+# ------------------------------------------------------------
+%INPUT
+<form th:action="@{/doit}" th:object="${formBean01}" th:method="delete">
+   <input type="text" th:field="*{name}" />
+   <input type="hidden" th:field="*{name}" />
+   <input type="email" th:field="*{name}" />
+   <textarea th:field="*{name}">...</textarea>
+   <input type="checkbox" th:field="*{valid}" />
+   <input type="radio" th:field="*{valid}" th:value="true" />
+   <input type="radio" th:field="*{valid}" th:value="false" />
+   <input type="radio" th:field="*{valid}" value="true" />
+   <input type="radio" th:field="*{valid}" value="false" />
+   <select th:field="*{valid}">
+     <option th:value="true">Yes</option>
+     <option th:value="false">No</option>
+   </select>
+   <select th:field="*{valid}">
+     <option value="true">Yes</option>
+     <option value="false">No</option>
+   </select>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="[/testing/doit,post]" method="post"><input type="hidden" name="_method" value="(delete,_method,hidden)" />
+   <input type="text" id="name" name="name" value="(Mark Lettuce,name,text)" />
+   <input type="hidden" id="name" name="name" value="(Mark Lettuce,name,hidden)" />
+   <input type="email" id="name" name="name" value="(Mark Lettuce,name,email)" />
+   <textarea id="name" name="name">(Mark Lettuce,name,textarea)</textarea>
+   <input type="checkbox" id="valid1" name="valid" checked="checked" value="(true,valid,checkbox)" /><input type="hidden" name="_valid" value="(on,_valid,hidden)" />
+   <input type="radio" id="valid2" name="valid" checked="checked" value="(true,valid,radio)" />
+   <input type="radio" id="valid3" name="valid" value="(false,valid,radio)" />
+   <input type="radio" id="valid4" name="valid" checked="checked" value="(true,valid,radio)" />
+   <input type="radio" id="valid5" name="valid" value="(false,valid,radio)" />
+   <select id="valid" name="valid">
+     <option value="(true,valid,option)" selected="selected">Yes</option>
+     <option value="(false,valid,option)">No</option>
+   </select>
+   <select id="valid" name="valid">
+     <option value="(true,valid,option)" selected="selected">Yes</option>
+     <option value="(false,valid,option)">No</option>
+   </select>
+<input type="hidden" name="extra-field1" value="The value of the First Extra field" /><input type="hidden" name="extra-field2" value="The value of the Second Extra field" /></form>

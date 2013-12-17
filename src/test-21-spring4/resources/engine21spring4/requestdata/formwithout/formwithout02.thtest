@@ -1,0 +1,43 @@
+%EXTENDS ../requestdata.common
+# ------------------------------------------------------------
+%INPUT
+<form th:action="@{/doit}" th:object="${formBean01}" th:method="delete">
+   <input type="text" th:field="*{name}" />
+   <input type="hidden" th:field="*{name}" />
+   <input type="email" th:field="*{name}" />
+   <textarea th:field="*{name}">...</textarea>
+   <input type="checkbox" th:field="*{valid}" />
+   <input type="radio" th:field="*{valid}" th:value="true" />
+   <input type="radio" th:field="*{valid}" th:value="false" />
+   <input type="radio" th:field="*{valid}" value="true" />
+   <input type="radio" th:field="*{valid}" value="false" />
+   <select th:field="*{valid}">
+     <option th:value="true">Yes</option>
+     <option th:value="false">No</option>
+   </select>
+   <select th:field="*{valid}">
+     <option value="true">Yes</option>
+     <option value="false">No</option>
+   </select>
+</form>
+# ------------------------------------------------------------
+%OUTPUT
+<form action="/testing/doit" method="post"><input type="hidden" name="_method" value="delete" />
+   <input type="text" id="name" name="name" value="Mark Lettuce" />
+   <input type="hidden" id="name" name="name" value="Mark Lettuce" />
+   <input type="email" id="name" name="name" value="Mark Lettuce" />
+   <textarea id="name" name="name">Mark Lettuce</textarea>
+   <input type="checkbox" id="valid1" name="valid" checked="checked" value="true" /><input type="hidden" name="_valid" value="on" />
+   <input type="radio" id="valid2" name="valid" checked="checked" value="true" />
+   <input type="radio" id="valid3" name="valid" value="false" />
+   <input type="radio" id="valid4" name="valid" checked="checked" value="true" />
+   <input type="radio" id="valid5" name="valid" value="false" />
+   <select id="valid" name="valid">
+     <option value="true" selected="selected">Yes</option>
+     <option value="false">No</option>
+   </select>
+   <select id="valid" name="valid">
+     <option value="true" selected="selected">Yes</option>
+     <option value="false">No</option>
+   </select>
+</form>
