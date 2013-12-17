@@ -19,18 +19,15 @@
  */
 package org.thymeleaf.engine.springintegration;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.springintegration.context.ErrorsSpringIntegrationWebProcessingContextBuilder;
 import org.thymeleaf.engine.springintegration.context.SpringIntegrationWebProcessingContextBuilder;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.tests.util.SpringSpecificVersionUtils;
 
-
-
+import java.util.Arrays;
 
 
 public class SpringIntegrationTest {
@@ -48,7 +45,7 @@ public class SpringIntegrationTest {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new SpringIntegrationWebProcessingContextBuilder());
-        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
         executor.execute("classpath:engine/springintegration/form");
         
         Assert.assertTrue(executor.isAllOK());
@@ -62,7 +59,7 @@ public class SpringIntegrationTest {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new ErrorsSpringIntegrationWebProcessingContextBuilder());
-        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
         executor.execute("classpath:engine/springintegration/errors");
 
         Assert.assertTrue(executor.isAllOK());
@@ -77,7 +74,7 @@ public class SpringIntegrationTest {
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(
                 new SpringIntegrationWebProcessingContextBuilder("classpath:engine/springintegration/applicationContext-beans.xml"));
-        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
         executor.execute("classpath:engine/springintegration/beans");
 
         Assert.assertTrue(executor.isAllOK());
@@ -91,7 +88,7 @@ public class SpringIntegrationTest {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new SpringIntegrationWebProcessingContextBuilder());
-        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
         executor.execute("classpath:engine/springintegration/expression");
 
         Assert.assertTrue(executor.isAllOK());

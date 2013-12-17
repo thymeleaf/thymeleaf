@@ -1,0 +1,17 @@
+%TEMPLATE_MODE XHTML
+# ------------------------------------------------------------
+%INPUT
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring4-3.dtd">
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <p th:unknown="oh!">Something!</p>
+  </body>
+</html>
+# ------------------------------------------------------------
+%OUTPUT
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <body>
+    <p th:unknown="oh!">Something!</p>
+  </body>
+</html>

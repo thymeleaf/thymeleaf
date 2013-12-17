@@ -19,14 +19,14 @@
  */
 package org.thymeleaf.engine21spring4.requestdata;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.spring4.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+
+import java.util.Arrays;
 
 
 public class RequestData21Spring4Test {

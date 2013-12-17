@@ -19,10 +19,10 @@
  */
 package org.thymeleaf.engine21.conversion.conversion2;
 
+import org.springframework.core.convert.converter.Converter;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.springframework.core.convert.converter.Converter;
 
 
 public class DateToStringConverter implements Converter<Date,String> {

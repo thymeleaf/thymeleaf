@@ -229,8 +229,9 @@
 
   <profiles>
 
+
     <profile>
-      <id>2.0</id>
+      <id>2.0-spring3</id>
       <build>
         <plugins>
           <plugin>
@@ -246,7 +247,9 @@
                 </goals>
                 <configuration>
                   <sources>
+                    <source>src/test-common-spring3/java</source>
                     <source>src/test-20/java</source>
+                    <source>src/test-20-spring3/java</source>
                   </sources>
                 </configuration>
               </execution>
@@ -259,7 +262,21 @@
                 <configuration>
                   <resources>
                     <resource>
+                      <directory>${project.basedir}/src/test-common-spring3/resources/</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
                       <directory>${project.basedir}/src/test-20/resources/</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
+                      <directory>${project.basedir}/src/test-20-spring3/resources/</directory>
                       <targetPath>${project.build.testOutputDirectory}</targetPath>
                       <includes>
                         <include>**/*</include>
@@ -282,10 +299,19 @@
         <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
+      <dependencies>
+          <dependency>
+              <groupId>org.thymeleaf</groupId>
+              <artifactId>thymeleaf-spring3</artifactId>
+              <version>${thymeleaf.version}</version>
+              <scope>compile</scope>
+          </dependency>
+      </dependencies>
     </profile>
 
+
     <profile>
-      <id>2.1</id>
+      <id>2.1-spring3</id>
       <build>
         <plugins>
           <plugin>
@@ -301,7 +327,9 @@
                 </goals>
                 <configuration>
                   <sources>
+                    <source>src/test-common-spring3/java</source>
                     <source>src/test-21/java</source>
+                    <source>src/test-21-spring3/java</source>
                   </sources>
                 </configuration>
               </execution>
@@ -314,7 +342,21 @@
                 <configuration>
                   <resources>
                     <resource>
+                      <directory>${project.basedir}/src/test-common-spring3/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
                       <directory>${project.basedir}/src/test-21/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
+                      <directory>${project.basedir}/src/test-21-spring3/resources</directory>
                       <targetPath>${project.build.testOutputDirectory}</targetPath>
                       <includes>
                         <include>**/*</include>
@@ -337,7 +379,16 @@
         <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.thymeleaf</groupId>
+          <artifactId>thymeleaf-spring3</artifactId>
+          <version>${thymeleaf.version}</version>
+          <scope>compile</scope>
+        </dependency>
+      </dependencies>
     </profile>
+
 
     <profile>
       <id>2.1-spring31</id>
@@ -356,7 +407,9 @@
                 </goals>
                 <configuration>
                   <sources>
+                    <source>src/test-common-spring3/java</source>
                     <source>src/test-21/java</source>
+                    <source>src/test-21-spring3/java</source>
                     <source>src/test-21-spring31/java</source>
                   </sources>
                 </configuration>
@@ -370,7 +423,21 @@
                 <configuration>
                   <resources>
                     <resource>
+                      <directory>${project.basedir}/src/test-common-spring3/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
                       <directory>${project.basedir}/src/test-21/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
+                    <resource>
+                      <directory>${project.basedir}/src/test-21-spring3/resources</directory>
                       <targetPath>${project.build.testOutputDirectory}</targetPath>
                       <includes>
                         <include>**/*</include>
@@ -400,7 +467,16 @@
         <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.thymeleaf</groupId>
+          <artifactId>thymeleaf-spring3</artifactId>
+          <version>${thymeleaf.version}</version>
+          <scope>compile</scope>
+        </dependency>
+      </dependencies>
     </profile>
+
 
     <profile>
       <id>2.1-spring4</id>
@@ -419,6 +495,7 @@
                 </goals>
                 <configuration>
                   <sources>
+                    <source>src/test-common-spring4/java</source>
                     <source>src/test-21/java</source>
                     <source>src/test-21-spring4/java</source>
                   </sources>
@@ -432,6 +509,13 @@
                 </goals>
                 <configuration>
                   <resources>
+                    <resource>
+                      <directory>${project.basedir}/src/test-common-spring4/resources</directory>
+                      <targetPath>${project.build.testOutputDirectory}</targetPath>
+                      <includes>
+                        <include>**/*</include>
+                      </includes>
+                    </resource>
                     <resource>
                       <directory>${project.basedir}/src/test-21/resources</directory>
                       <targetPath>${project.build.testOutputDirectory}</targetPath>
@@ -463,116 +547,14 @@
         <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
         <nekohtml.version>1.9.15</nekohtml.version>
       </properties>
-    </profile>
-
-    <profile>
-      <id>2.0.19</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>1.8</version>
-            <executions>
-              <execution>
-                <id>add-test-source</id>
-                <phase>generate-test-sources</phase>
-                <goals>
-                  <goal>add-test-source</goal>
-                </goals>
-                <configuration>
-                  <sources>
-                    <source>src/test-20/java</source>
-                  </sources>
-                </configuration>
-              </execution>
-              <execution>
-                <id>add-test-resource</id>
-                <phase>generate-test-resources</phase>
-                <goals>
-                  <goal>add-test-resource</goal>
-                </goals>
-                <configuration>
-                  <resources>
-                    <resource>
-                      <directory>${project.basedir}/src/test-20/resources/</directory>
-                      <targetPath>${project.build.testOutputDirectory}</targetPath>
-                      <includes>
-                        <include>**/*</include>
-                      </includes>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-      <properties>
-        <thymeleaf.version>2.0.19</thymeleaf.version>
-        <thymeleaf-testing.version>2.0.7</thymeleaf-testing.version>
-        <thymeleaf-extras-springsecurity3.version>2.0.1</thymeleaf-extras-springsecurity3.version>
-        <thymeleaf-extras-tiles2.version>2.0.0</thymeleaf-extras-tiles2.version>
-        <thymeleaf-extras-conditionalcomments.version>2.0.0</thymeleaf-extras-conditionalcomments.version>
-        <springframework.version>3.0.7.RELEASE</springframework.version>
-        <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
-        <nekohtml.version>1.9.15</nekohtml.version>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>2.1.2</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>build-helper-maven-plugin</artifactId>
-            <version>1.8</version>
-            <executions>
-              <execution>
-                <id>add-test-source</id>
-                <phase>generate-test-sources</phase>
-                <goals>
-                  <goal>add-test-source</goal>
-                </goals>
-                <configuration>
-                  <sources>
-                    <source>src/test-21/java</source>
-                  </sources>
-                </configuration>
-              </execution>
-              <execution>
-                <id>add-test-resource</id>
-                <phase>generate-test-resources</phase>
-                <goals>
-                  <goal>add-test-resource</goal>
-                </goals>
-                <configuration>
-                  <resources>
-                    <resource>
-                      <directory>${project.basedir}/src/test-21/resources</directory>
-                      <targetPath>${project.build.testOutputDirectory}</targetPath>
-                      <includes>
-                        <include>**/*</include>
-                      </includes>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-      <properties>
-        <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.2.RELEASE</thymeleaf-testing.version>
-        <thymeleaf-extras-springsecurity3.version>2.1.0.RELEASE</thymeleaf-extras-springsecurity3.version>
-        <thymeleaf-extras-tiles2.version>2.1.0.RELEASE</thymeleaf-extras-tiles2.version>
-        <thymeleaf-extras-conditionalcomments.version>2.1.0.RELEASE</thymeleaf-extras-conditionalcomments.version>
-        <springframework.version>3.0.7.RELEASE</springframework.version>
-        <springsecurity.version>3.1.4.RELEASE</springsecurity.version>
-        <nekohtml.version>1.9.15</nekohtml.version>
-      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.thymeleaf</groupId>
+          <artifactId>thymeleaf-spring4</artifactId>
+          <version>${thymeleaf.version}</version>
+          <scope>compile</scope>
+        </dependency>
+      </dependencies>
     </profile>
 
   </profiles>
@@ -585,20 +567,6 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>${thymeleaf.version}</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring3</artifactId>
-      <version>${thymeleaf.version}</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring4</artifactId>
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>

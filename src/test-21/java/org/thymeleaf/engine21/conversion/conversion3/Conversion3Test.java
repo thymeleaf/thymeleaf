@@ -19,14 +19,13 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
-import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.tests.util.SpringSpecificVersionUtils;
+
+import java.util.Arrays;
 
 
 public class Conversion3Test {
@@ -47,7 +46,7 @@ public class Conversion3Test {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(new Conversion3WebProcessingContextBuilder());
-        executor.setDialects(Arrays.asList(new IDialect[]{new SpringStandardDialect()}));
+        executor.setDialects(Arrays.asList(new IDialect[]{SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
 
         executor.execute("classpath:engine21/conversion/conversion3");
 

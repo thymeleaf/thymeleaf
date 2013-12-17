@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.util.StringUtils;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class FragmentSelectionTest {

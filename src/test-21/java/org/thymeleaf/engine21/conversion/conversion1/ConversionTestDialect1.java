@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.engine21.conversion.conversion1;
 
-import java.util.Map;
-
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressions;
+
+import java.util.Map;
 
 
 public class ConversionTestDialect1 extends StandardDialect {

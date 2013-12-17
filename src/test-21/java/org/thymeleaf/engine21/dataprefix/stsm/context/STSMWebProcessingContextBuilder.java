@@ -19,12 +19,6 @@
  */
 package org.thymeleaf.engine21.dataprefix.stsm.context;
 
-import java.beans.PropertyEditorSupport;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.DataBinder;
 import org.thymeleaf.engine21.dataprefix.stsm.model.Variety;
@@ -33,6 +27,12 @@ import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingConte
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.testable.ITest;
+
+import java.beans.PropertyEditorSupport;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class STSMWebProcessingContextBuilder extends SpringWebProcessingContextBuilder {

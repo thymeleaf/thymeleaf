@@ -19,12 +19,12 @@
  */
 package org.thymeleaf.engine21.stsm.conversion;
 
+import org.springframework.format.Formatter;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-
-import org.springframework.format.Formatter;
 
 
 public class DateFormatter implements Formatter<Date> {

@@ -25,12 +25,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.springsecurity3.dialect.SpringSecurityDialect;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.context.web.SpringSecurityWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-
-
-
+import org.thymeleaf.tests.util.SpringSpecificVersionUtils;
 
 
 public class SpringSecurityTest {
@@ -54,7 +51,7 @@ public class SpringSecurityTest {
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(processingContextBuilder);
         executor.setDialects(
-                Arrays.asList(new IDialect[] { new SpringStandardDialect(), new SpringSecurityDialect()}));
+                Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance(), new SpringSecurityDialect()}));
         executor.execute("classpath:engine/springsecurity");
         
         Assert.assertTrue(executor.isAllOK());

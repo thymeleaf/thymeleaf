@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.engine21.stsm.model.repository;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.stereotype.Repository;
 import org.thymeleaf.engine21.stsm.model.SeedStarter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Repository

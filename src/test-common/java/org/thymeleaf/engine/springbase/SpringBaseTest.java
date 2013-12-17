@@ -19,15 +19,15 @@
  */
 package org.thymeleaf.engine.springbase;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.conditionalcomments.dialect.ConditionalCommentsDialect;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+import org.thymeleaf.tests.util.SpringSpecificVersionUtils;
+
+import java.util.Arrays;
 
 
 public class SpringBaseTest {
@@ -48,7 +48,7 @@ public class SpringBaseTest {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(contextBuilder);
-        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect()}));
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
         executor.execute("classpath:engine/springbase/springbase.thindex");
 
         Assert.assertTrue(executor.isAllOK());
@@ -65,7 +65,7 @@ public class SpringBaseTest {
 
         final TestExecutor executor = new TestExecutor();
         executor.setProcessingContextBuilder(contextBuilder);
-        executor.setDialects(Arrays.asList(new IDialect[] { new SpringStandardDialect(), new ConditionalCommentsDialect() }));
+        executor.setDialects(Arrays.asList(new IDialect[] { SpringSpecificVersionUtils.createSpringStandardDialectInstance(), new ConditionalCommentsDialect() }));
         executor.execute("classpath:engine/springbase/springbaseconditionalcomments.thindex");
 
         Assert.assertTrue(executor.isAllOK());

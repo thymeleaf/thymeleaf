@@ -19,12 +19,12 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
-import java.util.Locale;
-import java.util.Map;
-
 import org.springframework.validation.DataBinder;
 import org.thymeleaf.testing.templateengine.context.web.SpringWebProcessingContextBuilder;
 import org.thymeleaf.testing.templateengine.testable.ITest;
+
+import java.util.Locale;
+import java.util.Map;
 
 
 public class Conversion3WebProcessingContextBuilder extends SpringWebProcessingContextBuilder {

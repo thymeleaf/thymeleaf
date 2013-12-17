@@ -19,14 +19,13 @@
  */
 package org.thymeleaf.engine21.conversion.conversion5;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine21.conversion.conversion3.Conversion3WebProcessingContextBuilder;
-import org.thymeleaf.spring3.dialect.SpringStandardDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
+
+import java.util.Arrays;
 
 
 public class Conversion5Test {

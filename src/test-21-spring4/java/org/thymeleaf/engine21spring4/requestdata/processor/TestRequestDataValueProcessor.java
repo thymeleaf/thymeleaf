@@ -19,12 +19,11 @@
  */
 package org.thymeleaf.engine21spring4.requestdata.processor;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.springframework.web.servlet.support.RequestDataValueProcessor;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.web.servlet.support.RequestDataValueProcessor;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class TestRequestDataValueProcessor implements RequestDataValueProcessor {
