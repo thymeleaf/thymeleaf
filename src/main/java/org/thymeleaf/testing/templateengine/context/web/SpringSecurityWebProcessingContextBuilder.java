@@ -129,8 +129,7 @@ public class SpringSecurityWebProcessingContextBuilder extends SpringWebProcessi
      * </p>
      * 
      * @param applicationContext the application context, already initialized
-     * @param testContext the {@link ITestContext} object
-     * @param testMessages the {@link ITestMessages} object
+     * @param test the {@link ITest} object
      * @param request the HTTP request object
      * @param response the HTTP response object
      * @param servletContext the ServletContext object
