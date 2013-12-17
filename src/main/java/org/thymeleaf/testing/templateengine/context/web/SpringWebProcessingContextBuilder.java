@@ -44,9 +44,6 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.context.IWebContext;
-import org.thymeleaf.spring3.context.SpringWebContext;
-import org.thymeleaf.spring3.expression.ThymeleafEvaluationContext;
-import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.testable.ITest;
 
@@ -131,16 +128,15 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
          */
         final RequestContext requestContext =
                 new RequestContext(request, response, servletContext, variables);
-        variables.put(SpringContextVariableNames.SPRING_REQUEST_CONTEXT, requestContext);
         variables.put(AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE, requestContext);
 
-        /*
-         * EVALUATION CONTEXT
-         */
-        final ThymeleafEvaluationContext evaluationContext =
-                new ThymeleafEvaluationContext(appCtx, conversionService);
 
-        variables.put(ThymeleafEvaluationContext.THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME, evaluationContext);
+        /*
+         * SPRING-VERSION-SPECIFIC INITIALIZATIONS
+         */
+        SpringVersionSpecificContextInitialization.
+                versionSpecificAdditionalVariableProcessing(appCtx, conversionService, variables);
+
 
         /*
          * INITIALIZE VARIABLE BINDINGS (Add BindingResults when needed)
@@ -164,7 +160,8 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
 
         final ApplicationContext appCtx =
                 (ApplicationContext) servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-        return new SpringWebContext(request, response, servletContext, locale, variables, appCtx);
+        return SpringVersionSpecificContextInitialization.
+                versionSpecificCreateContextInstance(appCtx, request, response, servletContext, locale, variables);
 
     }
 

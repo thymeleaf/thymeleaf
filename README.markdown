@@ -12,7 +12,7 @@ Status
 
 This is an auxiliary testing library, not directly a part of the Thymeleaf core but part of the project, developed and supported by the [Thymeleaf Team](http://www.thymeleaf.org/team.html).
 
-Current version: **2.1.1.RELEASE** - for Thymeleaf 2.1 (requires 2.1.0+)
+Current version: **2.1.2.RELEASE** - for Thymeleaf 2.1 (requires 2.1.2+)
 
 
 License
@@ -24,7 +24,7 @@ This software is licensed under the [Apache License 2.0](http://www.apache.org/l
 Requirements
 ------------
 
-  *   Thymeleaf **2.1.0+**
+  *   Thymeleaf **2.1.2+**
   *   Attoparser **1.2+**
 
 
