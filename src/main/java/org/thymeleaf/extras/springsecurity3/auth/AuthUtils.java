@@ -50,8 +50,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
-import org.thymeleaf.spring3.expression.ThymeleafEvaluationContextWrapper;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
@@ -212,12 +210,9 @@ public final class AuthUtils {
             final IStandardVariableExpressionEvaluator expressionEvaluator =
                     StandardExpressions.getVariableExpressionEvaluator(arguments.getConfiguration());
 
-            final SpelVariableExpressionEvaluator spelExprEval =
-                    ((expressionEvaluator != null && expressionEvaluator instanceof SpelVariableExpressionEvaluator)?
-                            (SpelVariableExpressionEvaluator) expressionEvaluator :
-                            SpelVariableExpressionEvaluator.INSTANCE);
-            contextVariables = spelExprEval.computeExpressionObjects(arguments.getConfiguration(), arguments);
-            
+            contextVariables =
+                    SpringVersionSpecificUtils.computeExpressionObjectsFromExpressionEvaluator(arguments, expressionEvaluator);
+
         }
         
         if (contextVariables == null) {
@@ -233,8 +228,8 @@ public final class AuthUtils {
         
         
         // We add Thymeleaf's wrapper on top of the SpringSecurity basic evaluation context
-        final ThymeleafEvaluationContextWrapper wrappedEvaluationContext =
-                new ThymeleafEvaluationContextWrapper(evaluationContext, contextVariables);
+        final EvaluationContext wrappedEvaluationContext =
+                SpringVersionSpecificUtils.wrapEvaluationContext(evaluationContext, contextVariables);
 
         
         if (ExpressionUtils.evaluateAsBoolean(expressionObject, wrappedEvaluationContext)) {
