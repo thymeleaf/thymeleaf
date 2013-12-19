@@ -1,3 +1,13 @@
+2.1.1
+=====
+- Generalized code depending on thymeleaf-spring3 so that thymeleaf-spring4 is also supported.
+
+
+2.1.0
+=====
+- Adapted to Thymeleaf 2.1 infrastructure.
+
+
 2.0.1
 =====
 - Removed required runtime dependency on springsecurity-acl so that applications aren't required to add this jar to
