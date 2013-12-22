@@ -22,10 +22,10 @@
   
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.thymeleaf</groupId>
-  <artifactId>thymeleaf-spring3</artifactId>
+  <artifactId>thymeleaf-spring4</artifactId>
   <packaging>jar</packaging>
   <version>2.0.20-SNAPSHOT</version>
-  <name>thymeleaf-spring3</name>
+  <name>thymeleaf-spring4</name>
   <url>http://www.thymeleaf.org</url>
 
   <description>XML/XHTML/HTML5 template engine for Java</description>
@@ -44,9 +44,9 @@
   </organization>
   
   <scm>
-    <url>scm:git:git@github.com:thymeleaf/thymeleaf-spring3.git</url>
-    <connection>scm:git:git@github.com:thymeleaf/thymeleaf-spring3.git</connection>
-    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-spring3.git</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleaf-spring4.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleaf-spring4.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-spring4.git</developerConnection>
   </scm>
 
   <developers>
@@ -104,7 +104,7 @@
   
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>3.0.7.RELEASE</springframework.version>
+    <springframework.version>4.0.0.RELEASE</springframework.version>
     <springwebflow.version>2.3.1.RELEASE</springwebflow.version>
   </properties>
 

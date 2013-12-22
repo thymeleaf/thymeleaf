@@ -8,7 +8,7 @@
 
      <dependency>
        <groupId>org.thymeleaf</groupId>
-       <artifactId>thymeleaf-spring3</artifactId>
+       <artifactId>thymeleaf-spring4</artifactId>
        <version>{version}</version>
        <scope>compile</scope>
      </dependency>
