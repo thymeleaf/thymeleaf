@@ -4,6 +4,8 @@ Thymeleaf - Spring Security 3 integration module
 
 ------------------------------------------------------------------------------
 
+**[Please make sure to select the branch corresponding to the version of Thymeleaf you are using]**
+
 Status
 ------
 
@@ -14,7 +16,6 @@ Thymeleaf team.
 Current versions: 
 
   * **Version 2.1.1.RELEASE** - for Thymeleaf 2.1 (requires 2.1.2+)
-  * **Version 2.0.1** - for Thymeleaf 2.0 (requires 2.0.15+)
 
 
 License
@@ -28,6 +29,7 @@ Requirements
 ------------
 
   *   Thymeleaf **2.1.2+**
+  *   Spring Framework version **3.0.x**, **3.1.x**, **3.2.x**, **4.0.x**
   *   Spring Security version **3.0.x**, **3.1.1+**, **3.2.x**
   *   Web environment (Spring Security integration cannot work offline)
 
