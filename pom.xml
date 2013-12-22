@@ -74,10 +74,10 @@
 
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>3.1.2.RELEASE</springframework.version>
-    <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
-    <thymeleaf.version>2.1.0.RELEASE</thymeleaf.version>
-    <thymeleafspringsecurity3.version>2.1.0.RELEASE</thymeleafspringsecurity3.version>
+    <springframework.version>4.0.0.RELEASE</springframework.version>
+    <springsecurity.version>3.2.0.RELEASE</springsecurity.version>
+    <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
+    <thymeleafspringsecurity3.version>2.1.1.RELEASE</thymeleafspringsecurity3.version>
     </properties>
 
   <build>
@@ -170,7 +170,7 @@
     </dependency>
     <dependency>
       <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf-spring3</artifactId>
+      <artifactId>thymeleaf-spring4</artifactId>
       <version>${thymeleaf.version}</version>
       <scope>compile</scope>
     </dependency>
