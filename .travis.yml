@@ -8,6 +8,7 @@ jdk:
 env:
   matrix:
     - PROFILE=2.0-spring3
+    - PROFILE=2.0-spring4
     - PROFILE=2.1-spring3
     - PROFILE=2.1-spring31
     - PROFILE=2.1-spring4
