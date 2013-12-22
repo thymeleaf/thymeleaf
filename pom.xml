@@ -44,9 +44,9 @@
   </organization>
   
   <scm>
-    <url>scm:git:git@github.com:thymeleaf/thymeleaf-spring.git</url>
-    <connection>scm:git:git@github.com:thymeleaf/thymeleaf-spring.git</connection>
-    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-spring.git</developerConnection>
+    <url>scm:git:git@github.com:thymeleaf/thymeleaf-spring4.git</url>
+    <connection>scm:git:git@github.com:thymeleaf/thymeleaf-spring4.git</connection>
+    <developerConnection>scm:git:git@github.com:thymeleaf/thymeleaf-spring4.git</developerConnection>
   </scm>
 
   <developers>
