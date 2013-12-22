@@ -39,7 +39,6 @@ import org.thymeleaf.testing.templateengine.standard.test.data.StandardTestField
 import org.thymeleaf.testing.templateengine.testable.ITest;
 import org.thymeleaf.testing.templateengine.testable.ITestable;
 import org.thymeleaf.testing.templateengine.testable.Test;
-import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 

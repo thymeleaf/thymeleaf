@@ -25,7 +25,6 @@ import java.util.Map;
 
 import ognl.Ognl;
 import ognl.OgnlException;
-
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.util.Validate;
