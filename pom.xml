@@ -104,7 +104,7 @@
   
   <properties>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <thymeleaf.version>2.0.20-SNAPSHOT</thymeleaf.version>
+    <thymeleaf.version>2.0.20</thymeleaf.version>
     <attoparser.version>1.2</attoparser.version>
     <servletapi.version>2.5</servletapi.version>
     <mockito.version>1.9.5</mockito.version>
