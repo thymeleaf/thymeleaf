@@ -39,17 +39,17 @@
 
 <!ENTITY % HTMLlat1 PUBLIC
    "-//W3C//ENTITIES Latin 1 for XHTML//EN"
-   "xhtml-lat1.ent">
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent">
 %HTMLlat1;
 
 <!ENTITY % HTMLsymbol PUBLIC
    "-//W3C//ENTITIES Symbols for XHTML//EN"
-   "xhtml-symbol.ent">
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent">
 %HTMLsymbol;
 
 <!ENTITY % HTMLspecial PUBLIC
    "-//W3C//ENTITIES Special for XHTML//EN"
-   "xhtml-special.ent">
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent">
 %HTMLspecial;
 
 <!--================== Imported Names ====================================-->
