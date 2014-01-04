@@ -3,7 +3,7 @@
 <!-- file: xhtml11-thymeleaf-1.dtd
 -->
 <!-- Modified XHTML 1.1 DTD for Thymeleaf 
-     v2 (>= thymeleaf-spring3 v1.1.0)
+     v3 (>= thymeleaf-spring3 v2.0.0)
      
      This file is a copy of the original W3C XHTML 1.1 DTD including all
      the tags provided by Thymeleaf's Standard Dialect.
