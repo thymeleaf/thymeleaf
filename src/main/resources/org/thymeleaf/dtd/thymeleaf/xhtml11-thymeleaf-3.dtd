@@ -2,7 +2,7 @@
 <!-- XHTML 1.1 DTD  ........................................................ -->
 <!-- file: xhtml11-thymeleaf-2.dtd
 -->
-<!-- Modified XHTML 1.1 DTD for Thymeleaf, v2 (>= Thymeleaf v1.1.0)
+<!-- Modified XHTML 1.1 DTD for Thymeleaf, v3 (>= Thymeleaf v2.0.0)
      
      This file is a copy of the original W3C XHTML 1.1 DTD including all
      the tags provided by Thymeleaf's Standard Dialect.
