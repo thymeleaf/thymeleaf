@@ -47,7 +47,6 @@ public final class DetailedError {
             final String fieldName, final String code, final Object[] arguments, final String message) {
 	    super();
         Validate.notNull(fieldName, "Field name cannot be null");
-        Validate.notNull(code, "Code cannot be null");
         Validate.notNull(message, "Message cannot be null");
         this.fieldName = fieldName;
         this.code = code;
