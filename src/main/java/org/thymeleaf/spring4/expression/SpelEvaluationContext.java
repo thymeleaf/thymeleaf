@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ConstructorResolver;
 import org.springframework.expression.EvaluationContext;
@@ -57,15 +58,19 @@ public final class SpelEvaluationContext implements EvaluationContext {
 
     private static final List<PropertyAccessor> DEFAULT_PLUS_THYMELEAF_PROPERTY_ACCESSORS;
 
+    public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
+
     private final EvaluationContext delegate;
     private final Map<String,Object> variables;
     private final List<PropertyAccessor> propertyAccessors;
+
     
     static {
 
         final List<PropertyAccessor> accessors = new ArrayList<PropertyAccessor>(4);
         accessors.add(VariablesMapPropertyAccessor.INSTANCE);
         accessors.add(BeansPropertyAccessor.INSTANCE);
+        accessors.add(MAP_ACCESSOR_INSTANCE);
         THYMELEAF_PROPERTY_ACCESSORS = Collections.unmodifiableList(accessors);
 
         final List<PropertyAccessor> defaultPlusThymeleafPropertyAccessors = new ArrayList<PropertyAccessor>(6);
