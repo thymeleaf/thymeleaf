@@ -21,6 +21,7 @@ package org.thymeleaf.spring4.expression;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.expression.BeanFactoryResolver;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.expression.spel.support.StandardTypeConverter;
@@ -57,6 +58,7 @@ public final class ThymeleafEvaluationContext extends StandardEvaluationContext 
 
     public static final String THYMELEAF_EVALUATION_CONTEXT_CONTEXT_VARIABLE_NAME = "thymeleafEvaluationContext";
 
+    public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
     public ThymeleafEvaluationContext(final BeanFactory beanFactory, final ConversionService conversionService) {
         
@@ -72,6 +74,7 @@ public final class ThymeleafEvaluationContext extends StandardEvaluationContext 
 
         this.addPropertyAccessor(VariablesMapPropertyAccessor.INSTANCE);
         this.addPropertyAccessor(BeansPropertyAccessor.INSTANCE);
+        this.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
 
     }
 
