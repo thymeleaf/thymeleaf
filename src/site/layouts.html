@@ -75,7 +75,7 @@
      <h1>Thymeleaf Page Layouts</h1>
 
      <p id="author">
-       <i>By Rafa&#322; Borowiec &lt;rafal.borowiec AT gmail.com&gt;</i>
+       <i>By Rafa&#322; Borowiec &mdash; <a href="http://blog.codeleak.pl">http://blog.codeleak.pl</a></i>
      </p>
 
 
@@ -98,7 +98,7 @@
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
          <body>
-           <div th:include="footer :: copy"></div>
+           <div th:include="footer :: copy">...</div>
          </body>
     ]]></script>
 
@@ -109,7 +109,7 @@
          applications can become a bit cumbersome.
      </p>
 
-     <h3>Hierarchical-style layotus</h3>
+     <h3>Hierarchical-style layouts</h3>
 
      <p>
          In hierarchical style, the templates are usually created with a parent-child relation, from the more
@@ -149,11 +149,15 @@
 
      <p>
          Thymeleaf can include parts of other pages as fragments (whereas JSP only includes complete pages)
-         using <kbd>th:include</kbd> (will include the contents of the fragment into its host tag) or `th:replace` (will actually substitute the host tag by the fragment's). This allows the grouping of fragments into one or several pages. Look at the example. The `home/homeNotSignedIn.html` template is rendered when the anonymous user enters the home page of our application.
+         using <kbd>th:include</kbd> (will include the contents of the fragment into its host tag) or
+         <kbd>th:replace</kbd> (will actually substitute the host tag by the fragment's). This allows
+         the grouping of fragments into one or several pages. Look at the example. The
+         <kbd>home/homeNotSignedIn.html</kbd> template is rendered when the anonymous user enters the home page
+         of our application.
      </p>
 
      <p>
-         <kbd>/main/java/thymeleafexamples/layouts/home/HomeController.java</kbd>
+         Class <kbd>thymeleafexamples.layouts.home.HomeController</kbd>
      </p>
 
      <script type="syntaxhighlighter" class="brush:java"><![CDATA[
@@ -169,7 +173,7 @@
      ]]></script>
 
      <p>
-         <kbd>home/homeNotSignedIn.html</kbd>
+         Template <kbd>home/homeNotSignedIn.html</kbd>
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -252,7 +256,7 @@
      </p>
 
      <p>
-         <kbd>fragments/header.html</kbd>
+         Template <kbd>fragments/header.html</kbd>
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -263,20 +267,44 @@
           </head>
           <body>
             <div class="navbar navbar-inverse navbar-fixed-top" th:fragment="header">
-              ...
+              <div class="container">
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="#">My project</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                  <ul class="nav navbar-nav">
+                    <li class="active"><a href="#" th:href="@{/}">Home</a></li>
+                    <li><a href="#" th:href="@{/message}">Messages</a></li>
+                    <li><a href="#" th:href="@{/task}">Tasks</a></li>
+                  </ul>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li th:if="${#authorization.expression('!isAuthenticated()')}">
+                      <a href="/signin" th:href="@{/signin}">Sign in</a>
+                    </li>
+                    <li th:if="${#authorization.expression('isAuthenticated()')}">
+                      <a href="/logout" th:href="@{/logout}">Logout</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </body>
         </html>
      ]]></script>
 
      <p>
-         You can open the file directly in a browser:
+         ...which we can open directly in a browser:
      </p>
 
      <img src="images/layouts_header.png" alt="Footer page"/>
 
      <p>
-         <kbd>fragments/footer.html</kbd>
+         And template <kbd>fragments/footer.html</kbd>
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -287,7 +315,7 @@
            </head>
            <body>
              <div th:fragment="footer">
-               ...
+               &copy; 2013 Footer
              </div>
            </body>
          </html>
@@ -296,11 +324,11 @@
 
      <p>
          Note how that the referenced fragments are specified with <kbd>th:fragment</kbd> attributes. This way
-         we can defined multiple fragments in one template file, as it was mentioned earlier.
+         we can define multiple fragments in one template file, as it was mentioned earlier.
      </p>
 
      <p>
-         What is important here, is that all the templates are still natural templates and can be viewed in a
+         What is important here, is that all the templates can still be natural templates and can be viewed in a
          browser without a running server.
      </p>
 
@@ -309,13 +337,13 @@
 
      <p>
          In Thymeleaf, fragments don't need to be explicitly specified using <kbd>th:fragment</kbd> at the
-         page they are extracted from. Thymeleaf can select any fragment of any page as a fragment (even a
+         page they are extracted from. Thymeleaf can select an arbitrary section of a page as a fragment (even a
          page living on an external server) by means of its DOM Selector syntax, similar to XPath expressions
          and CSS selectors.
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml;gutter:false"><![CDATA[
-        <div th:include="http://www.thymeleaf.org :: p.notice" />
+        <div th:include="http://www.thymeleaf.org :: p.notice" >...</div>
      ]]></script>
 
      <p>
@@ -369,10 +397,10 @@
            <body>
              <!-- /*  Multiple fragments may be defined in one file */-->
              <div th:fragment="footer">
-               Content of a regular footer goes here
+               &copy; 2013 Footer
              </div>
              <div th:fragment="footer-admin">
-               Content of an admin footer goes here
+               &copy; 2013 Admin Footer
              </div>
            </body>
          </html>
@@ -480,7 +508,7 @@
      ]]></script>
 
      <p>
-         The fragment is defined in <kbd>/WEB-INF/views/signup/signup.html</kbd>:
+         The fragment is defined in <kbd>signup/signup.html</kbd>:
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -501,7 +529,7 @@
      <p>
          The above fragment is loaded when a new user wants to signup from a home page. The modal dialog
          will be shown upon clicking <kbd>Signup</kbd> button and the content will be loaded via AJAX call (see
-         <kbd>/WEB-INF/views/home/homeNotSignedIn.html</kbd>).
+         <kbd>home/homeNotSignedIn.html</kbd>).
      </p>
 
 
@@ -519,7 +547,7 @@
          <a target="_blank" href="http://www.thymeleaf.org/petclinic.html">Bringing Thymeleaf and Natural
              Templates to the Spring PetClinic</a> article in <kbd>And what about the Natural Templates thing?</kbd>
          chapter. The example can be found on
-         <a href="https://github.com/thymeleaf/thymeleafexamples-petclinic/blob/thymeleafexamples-petclinic-20131104/src/main/webapp/WEB-INF/thymeleaf/owners/ownersList.html">GitHub</a>.
+         <a target="_blank" href="https://github.com/thymeleaf/thymeleafexamples-petclinic/blob/thymeleafexamples-petclinic-20131104/src/main/webapp/WEB-INF/thymeleaf/owners/ownersList.html">GitHub</a>.
      </p>
 
 
@@ -533,7 +561,7 @@
 
      <p>
          However, there is a way to see the real fragments included into our pages while prototyping. This
-         can be done using <a href="http://www.thymeleaf.org/ecosystem.html#thymol">Thymol</a>, an unofficial
+         can be done using <a target="_blank" href="http://www.thymeleaf.org/ecosystem.html#thymol">Thymol</a>, an unofficial
          JavaScript library that is an implementation of Thymeleaf's standard fragment inclusion functionality,
          providing static support for some Thymeleaf  attributes like <kbd>th:include</kbd> or
          <kbd>th:replace</kbd>, conditional display with <kbd>th:if</kbd>/<kbd>th:unless</kbd>, etc.
@@ -541,13 +569,12 @@
 
      <p>
          As Thymol's author states:
+         <em>
+           Thymol was created in order to provide a more accurate static representation of Thymeleaf's dynamic
+           templating capabilities by offering support for Thymeleaf attributes through a statically accessible
+           javascript library
+         </em>
      </p>
-
-     <p><em>
-         Thymol was created in order to provide a more accurate static representation of Thymeleaf's dynamic
-         templating capabilities by offering support for Thymeleaf attributes through a statically accessible
-         javascript library
-     </em></p>
 
      <p>
          Thymol documentation and examples can be found on the official project site here:
@@ -559,10 +586,10 @@
      <h2>Thymeleaf Tiles Integration</h2>
 
      <p>
-         The <a href="https://github.com/thymeleaf/thymeleaf-extras-tiles2">Apache Tiles 2 Dialect</a> was created
+         The <a target="_blank" href="https://github.com/thymeleaf/thymeleaf-extras-tiles2">Apache Tiles 2 Dialect</a> was created
          in order to provide a more comfortable migration path to all those developers who are currently using
-         Apache Tiles 2 with JSP. <a href="http://tiles.apache.org/">Tiles</a> is one of the most used Java
-         templating framework, and a lot of JSP users are used to thinking in terms of Tiles when it comes
+         Apache Tiles 2 with JSP. <a target="_blank" href="http://tiles.apache.org/">Tiles</a> is one of the most used Java
+         templating frameworks, and a lot of JSP users are used to thinking in terms of Tiles when it comes
          to layout.
      </p>
 
@@ -585,6 +612,7 @@
            <artifactId>thymeleaf-extras-tiles2</artifactId>
            <version>2.1.1.RELEASE</version>
          </dependency>
+         <!-- Only if you use Spring (can be -spring3 if using that version) -->
          <dependency>
            <groupId>org.thymeleaf.extras</groupId>
            <artifactId>thymeleaf-extras-tiles2-spring4</artifactId>
@@ -714,7 +742,7 @@
      <p>
          In the above example, the <kbd>message/*</kbd> views will use a <kbd>message/layout.html</kbd>. In the
          layout file we use two Tiles attributes that will be evaluated to <kbd>message/{1} :: title</kbd> and
-         </kbd>message/{1} :: content</kbd> fragments accordingly.
+         <kbd>message/{1} :: content</kbd> fragments accordingly.
      </p>
 
      <p>
@@ -875,7 +903,7 @@
      ]]></script>
 
      <p>
-         You can open the file directly in a browser:
+         We can open the file directly in a browser:
      </p>
 
      <img src="images/layouts_layoutlayoutdialect.png" alt="Layout page"/>
