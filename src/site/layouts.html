@@ -1077,7 +1077,7 @@
             ...
           </head>
           <body>
-            <div th:raplace="fragments/header :: header">Header</div>
+            <div th:replace="fragments/header :: header">Header</div>
             <div th:replace="${view} :: content">Page Content</div>
             <div th:replace="fragments/footer :: footer">Footer</div>
           </body>
@@ -1103,8 +1103,54 @@
      </p>
 
 
-     <p>
 
+     <h2>Future Plans</h2>
+
+     <p>
+         And finally, what's the future of Thymeleaf layouts? There are some really interesting things planned:
+     </p>
+
+
+     <h3>Fragment-as-a-parameter inclusion</h3>
+
+     <p>
+         Current Thymeleaf fragments allow passing arguments, but these arguments are normally just small
+         pieces of text. It is not really comfortable to pass a complete HTML, as it is possible with
+         hierarchical layout systems (including the Layout Dialect).
+     </p>
+
+     <p>
+         In the future, it will be possible to select and pass entire subtrees of markup as arguments.
+         See <a target="_blank" href="https://github.com/thymeleaf/thymeleaf/issues/180">this ticket</a> for more details.
+     </p>
+
+     <h3>Decoupled templates</h3>
+
+     <p>
+         In order to make the communication between UI designers and developers easier, Thymeleaf will offer
+         In order to make the communication between UI designers and developers easier, Thymeleaf will offer
+         the possibility to separate HTML markup and Thymeleaf processors into separate files as an option.
+         See <a target="_blank" href="https://github.com/thymeleaf/thymeleaf/issues/47">this ticket</a> for more details.
+     </p>
+
+     <h3>Tiles 3 support</h3>
+
+     <p>
+         The Apache Tiles integration module currently only supports Tiles 2 integration. Tiles 3, although
+         seems to be very alike Tiles 2, has a different architecture and therefore a separate module will
+         be created in the future.
+     </p>
+
+
+     <h2>Summary</h2>
+
+     <p>
+         In this article, we described many ways of achieving the same: <strong>layouts</strong>. You can build
+         layouts using Thymeleaf Standard Layout System that is based on include-style approach. You can use
+         Apache Tiles with Tiles Dialect, if you are either migrating from Tiles or if Tiles is your choice.
+         You also have powerful Layout Dialect, that uses decorator pattern for working with layout files.
+         Finally, you can easily create your own solution. Hopefully, this article gives you some more insights
+         on the topic and you will find your preferred approach depending on your needs.
      </p>
 
    </div>
