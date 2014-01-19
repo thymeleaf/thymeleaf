@@ -16,6 +16,11 @@
               display: block;
               margin-left: auto;
               margin-right: auto;
+              -moz-box-sizing: border-box;
+              box-sizing: border-box;
+              max-width: 100%;
+              padding-left: 40px;
+              padding-right: 40px;
           }
       </style>
 
@@ -78,9 +83,22 @@
        <i>By Rafa&#322; Borowiec &mdash; <a href="http://blog.codeleak.pl">http://blog.codeleak.pl</a></i>
      </p>
 
+     <p>
+         <strong>TABLE OF CONTENTS</strong>
+     </p>
+
+     <ol>
+         <li><a href="#intro">Introduction</a></li>
+         <li><a href="#exampleapp">Example Application</a></li>
+         <li><a href="#standard">Thymeleaf Standard Layout System</a></li>
+         <li><a href="#tiles">Thymeleaf Tiles Integration</a></li>
+         <li><a href="#layoutdialect">Thymeleaf Layout Dialect</a></li>
+         <li><a href="#other">Other Layout Options</a></li>
+         <li><a href="#future">Future Plans</a></li>
+     </ol>
 
 
-     <h2>Introduction</h2>
+     <h2 id="intro">Introduction</h2>
 
      <p>
          Usually websites share common page components like the header, footer, menu and possibly many more.
@@ -127,7 +145,7 @@
 
 
 
-     <h2>Example Application</h2>
+     <h2 id="exampleapp">Example Application</h2>
 
      <p>
          All the samples and code fragments presented in this article are available on GitHub at
@@ -137,7 +155,7 @@
 
 
 
-     <h2>Thymeleaf Standard Layout System</h2>
+     <h2 id="standard">Thymeleaf Standard Layout System</h2>
 
      <p>
          Thymeleaf Standard Layout System offers page fragment inclusion that is similar to <em>JSP includes</em>,
@@ -583,7 +601,7 @@
 
 
 
-     <h2>Thymeleaf Tiles Integration</h2>
+     <h2 id="tiles">Thymeleaf Tiles Integration</h2>
 
      <p>
          The <a target="_blank" href="https://github.com/thymeleaf/thymeleaf-extras-tiles2">Apache Tiles 2 Dialect</a> was created
@@ -816,7 +834,7 @@
 
 
 
-     <h2>Thymeleaf Layout Dialect</h2>
+     <h2 id="layoutdialect">Thymeleaf Layout Dialect</h2>
 
      <p>
          <a target="_blank"
@@ -987,7 +1005,7 @@
 
      <p>
          This is an example of a reusable alert fragment using <kbd>layout:fragment</kbd>
-         (<kbd>/WEB-INF/views/task/alert.html</kbd>):
+         (<kbd>task/alert.html</kbd>):
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -1009,7 +1027,7 @@
      ]]></script>
 
      <p>
-         The calling of the above fragment may look as follows (<kbd>/WEB-INF/views/task/list.html</kbd>):
+         The calling of the above fragment may look as follows (<kbd>task/list.html</kbd>):
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
@@ -1054,7 +1072,7 @@
 
 
 
-     <h2>Other Layout Options</h2>
+     <h2 id="other">Other Layout Options</h2>
 
      <p>
          For some of the developers neither of the solutions presented before is sufficient. Thymeleaf
@@ -1132,7 +1150,7 @@
 
 
 
-     <h2>Future Plans</h2>
+     <h2 id="future">Future Plans</h2>
 
      <p>
          And finally, what's the future of Thymeleaf layouts? There are some really interesting things planned:
@@ -1155,7 +1173,6 @@
      <h3>Decoupled templates</h3>
 
      <p>
-         In order to make the communication between UI designers and developers easier, Thymeleaf will offer
          In order to make the communication between UI designers and developers easier, Thymeleaf will offer
          the possibility to separate HTML markup and Thymeleaf processors into separate files as an option.
          See <a target="_blank" href="https://github.com/thymeleaf/thymeleaf/issues/47">this ticket</a> for more details.
