@@ -836,25 +836,39 @@
      <h3>Creating a layout</h3>
 
      <p>
-         The layout file is defined in <kbd>/WEB-INF/view/task/layout.html</kbd>:
+         The layout file is defined in <kbd>/WEB-INF/views/task/layout.html</kbd>:
      </p>
 
      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
          <!DOCTYPE html>
          <html>
            <head>
-             <!-- /*  Each token will be replaced by their respective titles in the resulting page. */ -->
+             <!--/*  Each token will be replaced by their respective titles in the resulting page. */-->
              <title layout:title-pattern="$DECORATOR_TITLE - $CONTENT_TITLE">Task List</title>
              ...
            </head>
            <body>
-             <!-- /* Standard layout can be mixed with Layout Dialect */ -->
-             <div th:replace="fragments/header :: header">&nbsp;</div>
+             <!--/* Standard layout can be mixed with Layout Dialect */-->
+             <div th:replace="fragments/header :: header">
+               ...
+             </div>
              <div class="container">
                <div layout:fragment="content">
-                 <p>Page content goes here</p>
+                 <!-- ============================================================================ -->
+                 <!-- This content is only used for static prototyping purposes (natural templates)-->
+                 <!-- and is therefore entirely optional, as this markup fragment will be included -->
+                 <!-- from "fragments/header.html" at runtime.                                     -->
+                 <!-- ============================================================================ -->
+                 <h1>Static content for prototyping purposes only</h1>
+                 <p>
+                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                   Praesent scelerisque neque neque, ac elementum quam dignissim interdum.
+                   Phasellus et placerat elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                   Praesent scelerisque neque neque, ac elementum quam dignissim interdum.
+                   Phasellus et placerat elit.
+                 </p>
                </div>
-               <div th:replace="fragments/footer :: footer">&nbsp;</div>
+               <div th:replace="fragments/footer :: footer">&copy; 2014 The Static Templates</div>
              </div>
            </body>
          </html>
@@ -931,6 +945,163 @@
          same way as with Tiles Dialect, you simply need to add some prototyping-only markup around the
          fragments being included in your templates and that's it!
      </p>
+
+
+     <h3>Include style approach with Layout Dialect</h3>
+
+     <p>
+         Layout Dialect supports not only hierarchical approach &mdash; it also provides a way to use it
+         in an include-style way (<kbd>layout:include</kbd>). Comparing with standard Thymeleaf includes, with
+         Layout Dialect you can pass HTML elements to the included page. Useful if you have some HTML that you
+         want to reuse, but whose contents are too complex to pass by means of parameterized inclusion in
+         standard Thymeleaf dialect.
+     </p>
+
+     <p>
+         This is an example of a reusable alert fragment using <kbd>layout:fragment</kbd>
+         (<kbd>/WEB-INF/views/task/alert.html</kbd>):
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+         <!DOCTYPE html>
+         <html>
+           <body>
+             <th:block layout:fragment="alert">
+               <div class="alert alert-dismissable" th:classappend="'alert-' + ${type}">
+                 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                 <h4 th:text="${header}">Alert header</h4>
+                 <!--/* 'layout:fragment' attribute defines a replaceable content section */-->
+                 <th:block layout:fragment="alert-content">
+                   <p>Default alert content</p>
+                 </th:block>
+               </div>
+             </th:block>
+           </body>
+         </html>
+     ]]></script>
+
+     <p>
+         The calling of the above fragment may look as follows (<kbd>/WEB-INF/views/task/list.html</kbd>):
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+         <div layout:include="task/alert :: alert" th:with="type='info', header='Info'" th:remove="tag">
+           <!--/* Implements alert content fragment with simple content */-->
+           <th:block layout:fragment="alert-content">
+             <p><em>This is a simple list of tasks!</em></p>
+           </th:block>
+         </div>
+     ]]></script>
+
+     <p>
+         Or:
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+         <div layout:include="task/alert :: alert" th:with="type='danger', header='Oh snap!'" th:remove="tag">
+           <!--/* Implements alert content fragment with full-blown HTML content */-->
+           <th:block layout:fragment="alert-content">
+             <p>Some text</p>
+             <p>
+               <button type="button" class="btn btn-danger">Take this action</button>
+               <button type="button" class="btn btn-default">Or do this</button>
+             </p>
+           </th:block>
+         </div>
+     ]]></script>
+
+     <p>
+         In this case, the entire <kbd>alert-content</kbd> of <kbd>task/alert</kbd>
+         (<kbd>/WEB-INF/views/task/alert.html</kbd>) template will be replaced by custom HTML above.
+     </p>
+
+
+     <h3>References</h3>
+
+     <p>
+         Please check out the Layout Dialect documentation that describes this topic very thoroughly. You
+         will definitively find some more advanced examples than in this article. You can find the
+         documentation here: <a target="_blank" href="https://github.com/ultraq/thymeleaf-layout-dialect">Layout Dialect</a>.
+     </p>
+
+
+
+     <h2>Other Layout Options</h2>
+
+     <p>
+         For some of the developers neither of the solutions presented before is sufficient. Thymeleaf
+         Standard Layout System is not enough and using external libraries is not an option. In that case,
+         the custom solution may be the way to go.
+     </p>
+
+
+     <h3>Thymeleaf Custom Layout</h3>
+
+     <p>
+         One of such a solutions is well described in this blog post:
+         <a target="_blank"
+            href="http://blog.codeleak.pl/2013/11/thymeleaf-template-layouts-in-spring.html">Thymeleaf
+         template layouts in Spring MVC application with no extensions</a>. The idea of this solution is
+         really simple. Let's visualize that with an example:
+     </p>
+
+     <p>
+         Example view file (1):
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+         <!DOCTYPE html>
+         <html>
+           <head>
+             ...
+           </head>
+           <body>
+             <div class="container" th:fragment="content">
+               <p>
+                 Hello <span th:text="${#authentication.name}">User</span>!
+                 Welcome to the Spring MVC Quickstart application!
+               </p>
+             </div>
+           </body>
+         </html>
+     ]]></script>
+
+     <p>
+         And the layout file (2):
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+        <!DOCTYPE html>
+        <html>
+          <head>
+            ...
+          </head>
+          <body>
+            <div th:raplace="fragments/header :: header">Header</div>
+            <div th:replace="${view} :: content">Page Content</div>
+            <div th:replace="fragments/footer :: footer">Footer</div>
+          </body>
+        </html>
+     ]]></script>
+
+     <p>
+         What will happen?
+     </p>
+
+     <ul>
+         <li>Controllers return view names, that translate to single Thymeleaf view file (1)</li>
+         <li>Before rendering the view, the original <kbd>viewName</kbd> attribute in <kbd>ModelAndView</kbd>
+             object is replaced with with the name of the layout view and the original <kbd>viewName</kbd> becomes
+             an attribute in <kbd>ModelAndView</kbd>.</li>
+         <li>The layout view (2) contains several include elements:
+             <kbd>&lt;div th:replace="${view} :: content"&gt;Page Content&lt;/div&gt;</kbd></li>
+         <li>The actual view file contains fragments, <em>pulled</em> by the template which embeds the actual view</li>
+     </ul>
+
+     <p>
+         The project can be found on <a target="_blank" href="https://github.com/kolorobot/thymeleaf-custom-layout">GitHub</a>.
+     </p>
+
 
      <p>
 
