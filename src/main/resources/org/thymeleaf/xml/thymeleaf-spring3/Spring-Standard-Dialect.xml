@@ -106,25 +106,7 @@
 	<!-- Additional expression objects -->
 	<!-- ============================= -->
 
-	<expression-object-method name="fields.errors">
-		<documentation see-also="errors"
-			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages">
-			<![CDATA[
-			Returns a list of error messages for the given field name.
-			]]>
-		</documentation>
-	</expression-object-method>
-
-	<expression-object-method name="fields.hasErrors">
-		<documentation
-			reference="Thymeleaf + Spring 3 section 7 on Validation and Error Messages">
-			<![CDATA[
-			Returns whether any validation errors exist for the field name in the
-			given expression.
-			]]>
-		</documentation>
-	</expression-object-method>
-
+	<expression-object name="fields" class="org.thymeleaf.spring4.expression.Fields"/>
 	<expression-object name="themes" class="org.thymeleaf.spring3.expression.Themes"/>
 
 </dialect>
