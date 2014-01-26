@@ -106,7 +106,7 @@
 	<!-- Additional expression objects -->
 	<!-- ============================= -->
 
-	<expression-object name="fields" class="org.thymeleaf.spring4.expression.Fields"/>
+	<expression-object name="fields" class="org.thymeleaf.spring3.expression.Fields"/>
 	<expression-object name="themes" class="org.thymeleaf.spring3.expression.Themes"/>
 
 </dialect>
