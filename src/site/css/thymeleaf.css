@@ -21,6 +21,11 @@ body {
   margin: 0px auto; 
   padding: 0px 0px;
 }
+@media screen and (max-width: 760px) {
+    #page {
+        width: 100%;
+    }
+}
 
 
 
@@ -78,6 +83,11 @@ body {
 }
 #header a {
   border: 0px;
+}
+@media screen and (max-width: 760px) {
+    #header .logo {
+        width: 100%;
+    }
 }
 
 
@@ -194,6 +204,12 @@ h4 {
   text-align:right;
   margin-bottom: 50px;
 }
+@media screen and (max-width: 760px) {
+    h1, h2, h3, h4 {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+}
 
 
 /* ---------------------- */
@@ -249,6 +265,16 @@ p, ul, ol {
   margin: 20px 40px;
   text-align: justify;
 }
+@media screen and (max-width: 760px) {
+    p, ul, ol {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+    ul, ol {
+        padding-left: 20px;
+    }
+}
+
 div.syntaxhighlighter {
   /*
    * Tweaks for the SyntaxHighlighter styles.
@@ -268,6 +294,13 @@ div.syntaxhighlighter {
    */
   padding: 10px 10px !important;
 }
+@media screen and (max-width: 760px) {
+    div.syntaxhighlighter {
+        margin-left: 4px !important;
+        margin-right: 4px !important;
+    }
+}
+
 li {
   margin-top: 5px;
 }
@@ -307,7 +340,6 @@ div.widetable {
   background-color: #f0f0f0;
   padding: 5px 10px;
 }
-
 div.semiwidetable {
     text-align: center;
     margin: 0px 60px 0px 80px;
@@ -325,6 +357,12 @@ div.semiwidetable {
     border-collapse: collapse;
     background-color: #f0f0f0;
     padding: 5px 10px;
+}
+@media screen and (max-width: 760px) {
+    div.widetable, div.semiwidetable {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
 }
 
 .caption {
