@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.spel.standard.SpelExpression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
@@ -56,18 +57,20 @@ public class SpelExpressionEvaluator
     
     
     public static final String FIELDS_EVALUATION_VARIABLE_NAME = "fields";
-    
-    
+
+    public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
+
     private static final Logger logger = LoggerFactory.getLogger(SpelExpressionEvaluator.class);
 
     private static final SpelExpressionParser PARSER = new SpelExpressionParser();
     private static final StandardEvaluationContext DEFAULT_EVALUATION_CONTEXT;
-    
-    
+
+
     static {
         DEFAULT_EVALUATION_CONTEXT = new StandardEvaluationContext();
         DEFAULT_EVALUATION_CONTEXT.addPropertyAccessor(VariablesMapPropertyAccessor.INSTANCE);
         DEFAULT_EVALUATION_CONTEXT.addPropertyAccessor(BeansPropertyAccessor.INSTANCE);
+        DEFAULT_EVALUATION_CONTEXT.addPropertyAccessor(MAP_ACCESSOR_INSTANCE);
     }
     
     
