@@ -1,0 +1,34 @@
+In order to prepare a release, this steps have to be taken:
+
+1. In settings.xml, these entries must exist:
+
+  <profiles>
+    <profile>
+      <id>releases</id>
+      <properties>
+        <gpg.keyname>[KEYNAME (EMAIL)]</gpg.keyname>
+        <gpg.passphrase>[GPG PASSPHRASE]</gpg.passphrase>
+      </properties>
+    </profile>
+  </profiles>
+  <servers>
+    <server>
+      <id>sonatype-nexus-snapshots</id>
+      <username>[USER IN SONATYPE NEXUS]</username>
+      <password>[PASSWORD IN SONATYPE NEXUS]</password>
+    </server>
+  </servers>
+
+2. Ensure all SVN URLs in pom.xml are using "https". A "502 Bad Gateway" error will be received if not.
+
+3. Deploy SNAPSHOT artifact to Sonatype NEXUS with "mvn deploy", and check in Nexus web interface.
+
+4. Execute a test "no modification" run of the release:prepare goal: "mvn -Preleases release:prepare -DdryRun=true -Dusername=[SVNUSER] -Dpassword=[SVNPASS]"
+
+5. Execute a real run of the release:prepare goal: "mvn -Preleases release:prepare -Dusername=[SVNUSER] -Dpassword=[SVNPASS]"
+
+6. Upload the release: "mvn -Preleases release:perform -Dusername=[SVNUSER] -Dpassword=[SVNPASS]"
+
+7. Follow instructions for Nexus at: http://nexus.sonatype.org/oss-repository-hosting.html
+
+
