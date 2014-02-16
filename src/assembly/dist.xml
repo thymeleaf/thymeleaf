@@ -18,14 +18,14 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring3/target/checkout/target/apidocs/</directory>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring3/target/checkout/thymeleaf-spring3/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-spring3/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring4/target/checkout/target/apidocs/</directory>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring4/target/checkout/thymeleaf-spring4/target/apidocs/</directory>
       <outputDirectory>/apidocs/thymeleaf-spring4/</outputDirectory>
       <includes>
         <include>**/*</include>
@@ -41,7 +41,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring3/target/checkout/target/</directory>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring3/target/checkout/thymeleaf-spring3/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-spring3-${project.version}.jar</include>
@@ -50,7 +50,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/../thymeleaf-spring4/target/checkout/target/</directory>
+      <directory>${basedir}/../thymeleaf-spring/thymeleaf-spring4/target/checkout/thymeleaf-spring4/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
         <include>thymeleaf-spring4-${project.version}.jar</include>
