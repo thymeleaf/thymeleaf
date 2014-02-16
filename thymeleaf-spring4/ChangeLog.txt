@@ -1,0 +1,249 @@
+2.1.3
+=====
+- Added MapAccessor to ThymeleafEvaluationContext in order to allow dot syntax accessing map
+  context variables in expressions: ${oneMap.oneKey}
+
+
+2.1.2 (created thymeleaf-spring4 package from thymeleaf-spring3)
+================================================================
+- Disabled integration with RequestDataValueProcessor when Spring version is >= 4.x in order to
+  avoid exceptions (due to interface changes between spring 3.2 and 4.0).
+- Fixed marker hidden inputs being added for checkboxes and multiple selects even when they are
+  disabled (provoking undesired deletion of attribute values).
+- Renamed all artifacts from org.thymeleaf.spring3 package to org.thymeleaf.spring4
+
+
+2.1.1
+=====
+- Fixed incorrect Spring object binding of single-level (no x.y field) expressions, resulting in
+  ConversionService not being applied on certain scenarios.
+
+
+2.1.0 (from 2.0.19)
+===================
+(See What's New in Thymeleaf 2.1 at http://www.thymeleaf.org/whatsnew21.html)
+- New Feature: More integrated acccess to beans from expressions
+- New Feature: Integration of Spring type conversion infrastructure
+- New Feature: Spring-resource based template resolver
+- New Feature: Render view fragments directly from controllers
+- New Feature: New th:errorclass for adding CSS class to form fields in error
+- New Feature: Additional form validation error reporting options
+- New Feature: Transparent integration with Spring's RequestDataValueProcessor
+
+
+2.0.19
+======
+- Applied annotation-based autowiring to custom Thymeleaf View classes even when they were not declared as a bean
+  at the application context.
+- Implemented size() and isEmpty() in "beans" map in context variables.
+
+
+2.0.18
+======
+- (No changes)
+
+
+2.0.17
+======
+- Added a "#themes.code('key')" expression object which looks up and returns the value of
+  'key' in the current Spring theme's properties file.  This is the equivalent of Spring's
+  <spring:theme code='key'> JSP tag.
+- Fixed <input> tags with no "type" attribute not being treated as type="text" (which they should).
+- Fixed form error messages output with th:errors not being escaped and provoking a parsing error
+  if they contained <, >, &, etc.
+
+
+2.0.16
+======
+- Automatically add @PathVariable's to model when using Spring 3.1 or newer. 
+- Forbidden the inclusion of request parameter variables ('param.*') in preprocessing expressions
+  and th:utext attribute values.
+
+
+2.0.15
+======
+- Made "beans" context variable not override a variable with the same name, if such variable comes
+  from the model.
+- Fixed: Added "SpringTemplateEngine.setTemplateEngineMessageSource(...)" for letting users really 
+  specify a MessageSource to be used by thymeleaf overriding the one automatically set by Spring.
+
+
+2.0.14
+======
+- Refactored SpelEvaluationContext to act as a decorator (requirement for thymeleaf-extras-springsecurity3).
+
+
+2.0.13
+======
+- (No changes)
+
+
+2.0.12
+======
+- Fixed "viewClass" property in ThymeleafViewResolver requiring an implementation of
+  ThymeleafView instead of AbstractThymeleafView.
+- Added AjaxEnabledView interface for views that include an "ajaxHandler" property.
+
+
+2.0.11
+======
+- Add "getFragmentSpec()" / "setFragmentSpec(IFragmentSpec)" methods to ThymeleafView in order to 
+  allow the processing of "partial" views (only the template fragments selected by the IFragmentSpec 
+  will be processed and rendered).
+- Add AJAX-enabled AjaxThymeleafViewResolver and AjaxThymeleafView, making use of an AjaxHandler 
+  instance from Spring JS (part of Spring Webflow).
+- Add AJAX-enabled FlowAjaxThymeleafView, for Spring WebFlow integration.
+
+
+2.0.10
+======
+- (No changes)
+
+
+2.0.9
+=====
+- Added RequestContext variable to Model as AbstractTemplateView.SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE
+  besides thymeleaf's own SpringContextVariableNames.SPRING_REQUEST_CONTEXT for better compatibility
+  with other view-layer technologies.
+- Added an HttpServletResponse parameter to SpringWebContext constructors in order to be able to access
+  response from processors.
+- Refactored SpringEL expression evaluation.
+- Added "viewClass" property to ThymeleafViewResolver.
+
+
+2.0.8
+=====
+- (No changes)
+
+
+2.0.7
+=====
+- (No changes)
+
+
+2.0.6
+=====
+- (No changes)
+
+
+2.0.5
+=====
+- Modified ViewResolver so that view beans are only configured using an existing bean as prototype
+  if this bean is of type ThymeleafView.
+- Made ThymeleafView return the default content type in getContentType() even if setContentType()
+  has not been called before. This allows compatibility with the ContentNegotiatingViewResolver
+  view resolver appeared in Spring 3.0.
+- Improved javadoc for ThymeleafViewResolver and ThymeleafView.
+
+
+2.0.4
+=====
+- (No changes)
+
+
+2.0.3
+=====
+- Modified behaviour of th:method in <form> tags so that it controls whether the selected method
+  is supported by browsers (get, post) or not. If not, it creates a hidden input field inside the
+  form (named '_method') with the original value and sets the method to 'post'. This mirrors the
+  behaviour of Spring's FormTag class (Spring taglib's "<form:form>" tag).
+- Added "excludedViewNames" property to ThymeleafViewResolver so that a set of patterns of views
+  that will not be resolved by this ViewResolver can be specified. This will act as an 'exclusions'
+  filter for what is specified at the "viewNames" property.
+
+
+2.0.2
+=====
+- (No changes)
+
+
+2.0.1
+=====
+- Fixed incorrect exception messages.
+
+
+2.0.0
+=====
+- Created version "3" of the standard DTDs for XHTML template validation, including the
+  new th:switch and th:case attributes. 
+- Adapted processors to the new DOM/IProcessor infrastructure.
+
+
+1.1.4
+=====
+- Solved bug regarding evaluation of the same SpEL expression two times over two objects
+  of different classes. Spring AST infrastructure was caching PropertyAccessors and this
+  caused ClassCastExceptions. This error appeared on 1.1.3 because of the introduction of
+  SpEL expression caching.
+  
+
+1.1.3
+=====
+- Modified SpringWebContext constructors so that they require now the ServletContex 
+  object. This enables Thymeleaf to operate without depending at all
+  on creating an HTTP session object for the user executing the template.
+- Created cache for SpEL evaluation and optimized use of SpEL contexts.
+
+
+1.1.2
+=====
+- Fixed: potential case-sensitivity problem in select tags.
+- Fixed: bad initialization of th:field on option tags contained within <optgroup>
+
+
+1.1.1
+=====
+- Fixed: avoid non-minimizable tags like <script>, <textarea>, <div>, etc. to be
+  minimized (appear as <script />, <textarea />, div /> without an end tag).
+
+
+1.1.0
+=====
+- Deprecated IValueProcessor interface and related all infrastructure. 
+- Created new versions (v2) of the set of thymeleaf-spring3-specific XHTML DTDs, including 
+  the new "th:substituteby" attribute:
+    * http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-transitional-thymeleaf-spring3-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml1-frameset-thymeleaf-spring3-2.dtd
+    * http://www.thymeleaf.org/dtd/xhtml11-thymeleaf-spring3-2.dtd
+
+
+1.0.1
+=====
+- (No changes)
+
+
+1.0.0
+=====
+- Added "getApplicationContext()" method to SpringWebContext in order to being able to
+  obtain the Application Context from attribute/tag processors.
+- Renamed SpringThymeleafTemplateEngine to SpringTemplateEngine
+- Renamed SpringThymeleafDialect to SpringStandardDialect
+
+
+1.0.0-beta5
+===========
+- (No changes)
+
+
+1.0.0-beta4
+===========
+- (No changes)
+
+
+1.0.0-beta3
+===========
+- Adapted Spring Thymeleaf Template Engine to MULTI-DIALECT support.
+- Improved JAVADOC documentation. 
+
+
+1.0.0-beta2
+===========
+- Solved bug regarding template character encodings.
+- Added setCharacterEncoding() method to ThymeleafViewResolver and ThymeleafView
+- Correctly honored template locale in ThymeleafView
+
+
+1.0.0-beta1
+===========
+- First release of thymeleaf-spring3
