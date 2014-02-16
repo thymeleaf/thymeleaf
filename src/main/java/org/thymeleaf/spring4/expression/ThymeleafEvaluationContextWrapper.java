@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.expression.MapAccessor;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ConstructorResolver;
 import org.springframework.expression.EvaluationContext;
@@ -57,7 +58,7 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
     private final List<PropertyAccessor> propertyAccessors;
     private Map<String,Object> additionalVariables;
 
-
+    public static final MapAccessor MAP_ACCESSOR_INSTANCE = new MapAccessor();
 
     public ThymeleafEvaluationContextWrapper(final EvaluationContext delegate) {
         this(delegate, null);
@@ -79,6 +80,7 @@ public final class ThymeleafEvaluationContextWrapper implements EvaluationContex
             this.propertyAccessors.addAll(this.delegate.getPropertyAccessors());
             this.propertyAccessors.add(VariablesMapPropertyAccessor.INSTANCE);
             this.propertyAccessors.add(BeansPropertyAccessor.INSTANCE);
+            this.propertyAccessors.add(MAP_ACCESSOR_INSTANCE);
         }
 
         this.additionalVariables = additionalVariables;
