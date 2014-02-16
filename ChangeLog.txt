@@ -1,3 +1,9 @@
+2.0.21
+======
+- Added MapAccessor to ThymeleafEvaluationContext in order to allow dot syntax accessing map
+  context variables in expressions: ${oneMap.oneKey}
+
+
 2.0.20
 ======
 - Fixed NPE at the Themes utility class when using the SpringStandardDialect with a WebContext implementation
