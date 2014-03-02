@@ -4,4 +4,4 @@
 <a th:href="@{/order/details('one parameter'='one value')}">go</a>
 # ------------------------------------------------------------
 %OUTPUT
-<a href="/order/details?one+parameter=one+value">go</a>
+<a href="/testing/order/details?one+parameter=one+value">go</a>
