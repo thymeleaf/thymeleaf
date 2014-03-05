@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -41,6 +39,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
+import org.thymeleaf.util.UrlUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -298,21 +297,12 @@ public final class LinkExpression extends SimpleExpression {
                     parametersBuilder.append("&");
                 }
 
+                parametersBuilder.append(UrlUtils.encodeQueryParam(parameterName));
+
                 final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
 
-                if (URL_PARAM_NO_VALUE.equals(parameterValue)) {
-                    
-                    // This is a parameter without a value and even without an "=" symbol
-                    parametersBuilder.append(parameterName);
-                    
-                } else {
-                
-                    try {
-                        parametersBuilder.append(parameterName).append("=").append(URLEncoder.encode(parameterValue, "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                        throw new TemplateProcessingException("Exception while processing link parameters", e);
-                    }
-                    
+                if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
+                    parametersBuilder.append("=").append(UrlUtils.encodeQueryParam(parameterValue));
                 }
                 
             }
