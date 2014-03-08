@@ -222,10 +222,10 @@ public class ExpressionTest extends TestCase {
         test("@{~/xx/yy}", "/xx/yy");
         test("@{~/xx/yy(p1)}", "/xx/yy?p1");
         test("@{~/xx/yy(p1, p2=${pamerica.name})}", "/xx/yy?p1&amp;p2=Petronila+America");
-        test("@{~/xx/yy(a[0]=${pamerica.name},a[1]=${pamerica.name})}", "/xx/yy?a[0]=Petronila+America&amp;a[1]=Petronila+America");
+        test("@{~/xx/yy(a[0]=${pamerica.name},a[1]=${pamerica.name})}", "/xx/yy?a%5B0%5D=Petronila+America&amp;a%5B1%5D=Petronila+America");
         test("@{~/xx/yy(login=${logins})}", "/xx/yy?login=loceania&amp;login=meurope&amp;login=jafrica&amp;login=pamerica");
         test("@{~/xx/yy(login=${loginsArray})}", "/xx/yy?login=loceania&amp;login=meurope&amp;login=jafrica&amp;login=pamerica");
-        test("@{~/xx/yy(a[0]=${pamerica.name},a[0]=${pamerica.name})}", "/xx/yy?a[0]=Petronila+America&amp;a[0]=Petronila+America");
+        test("@{~/xx/yy(a[0]=${pamerica.name},a[0]=${pamerica.name})}", "/xx/yy?a%5B0%5D=Petronila+America&amp;a%5B0%5D=Petronila+America");
         test("${size}", "Size is 5");
         test("${'x' + size}", "xSize is 5");
         test("${size + 'y'}", "Size is 5y");

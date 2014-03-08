@@ -9,4 +9,4 @@ base_url = '//www.thymeleaf.org/documentation.html'
 # ------------------------------------------------------------
 %OUTPUT
 <a href="//www.thymeleaf.org">go</a>
-<a href="//www.thymeleaf.org/documentation.html?a[0]=b">go</a>
+<a href="//www.thymeleaf.org/documentation.html?a%5B0%5D=b">go</a>

@@ -4,4 +4,4 @@
 <a data-th-href="@{/url(a[0]='b',b31='c')}">go</a>
 # ------------------------------------------------------------
 %OUTPUT
-<a href="/testing/url?a[0]=b&amp;b31=c">go</a>
+<a href="/testing/url?a%5B0%5D=b&amp;b31=c">go</a>
