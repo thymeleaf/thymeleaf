@@ -143,11 +143,11 @@ public final class LinkExpression extends SimpleExpression {
                         inLiteral = !inLiteral;
                     }
                 
-                } else if (c == PARAMS_END_CHAR) {
+                } else if (!inLiteral && c == PARAMS_END_CHAR) {
                     
                     nestParLevel++;
                         
-                } else if (c == PARAMS_START_CHAR) {
+                } else if (!inLiteral && c == PARAMS_START_CHAR) {
                     
                     nestParLevel--;
                     
