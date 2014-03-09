@@ -59,6 +59,16 @@ public class FeaturesTest {
         
     }
 
+    @Test
+    public void testLink12() throws Exception {
+
+        final TestExecutor executor = new TestExecutor();
+        executor.execute("classpath:engine/features/link/link12.thtest");
+
+        Assert.assertTrue(executor.isAllOK());
+
+    }
+
 
     @Test
     public void testUtil() throws Exception {
