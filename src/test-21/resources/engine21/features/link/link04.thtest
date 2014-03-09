@@ -1,0 +1,7 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<a th:href="@{/order/details('one )parameter'='one(( value')}">go</a>
+# ------------------------------------------------------------
+%OUTPUT
+<a href="/testing/order/details?one+%29parameter=one%28%28+value">go</a>
