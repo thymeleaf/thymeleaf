@@ -19,11 +19,14 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,12 +63,15 @@ public final class LinkExpression extends SimpleExpression {
     static final char SELECTOR = '@';
     private static final char PARAMS_START_CHAR = '(';
     private static final char PARAMS_END_CHAR = ')';
-    
+    private static final char URL_TEMPLATE_DELIMITER_PREFIX = '{';
+    private static final char URL_TEMPLATE_DELIMITER_SUFFIX = '}';
+
     private static final Pattern LINK_PATTERN = 
         Pattern.compile("^\\s*\\@\\{(.+?)\\}\\s*$", Pattern.DOTALL);
     
     private static final String URL_PARAM_NO_VALUE = "%%%__NO_VALUE__%%%";
-    
+
+
     
     private final IStandardExpression base;
     private final AssignationSequence parameters;
@@ -271,7 +277,9 @@ public final class LinkExpression extends SimpleExpression {
             urlFragment = linkBase.substring(hashPosition);
             linkBase = linkBase.substring(0, hashPosition);
         }
-        
+
+        linkBase = replaceTemplateParamsInBase(linkBase, parameters);
+
         /*
          * Check for the existence of a question mark symbol in the link base itself
          */
@@ -488,7 +496,101 @@ public final class LinkExpression extends SimpleExpression {
         }
         
     }
-    
+
+
+
+
+    static String replaceTemplateParamsInBase(final String linkBase, final Map<String,List<Object>> parameters) {
+
+        /*
+         * Before trying to perform any matching operations for variable templates, we try to determine
+         * whether they would be really needed. If no '{' char is found in linkBase, then it is just returned
+         * back unchanged.
+         */
+        final int linkBaseLen = linkBase.length();
+        boolean templateFound = false;
+        for (int i = 0; i < linkBaseLen; i++) {
+            final char c = linkBase.charAt(i);
+            if (c == URL_TEMPLATE_DELIMITER_PREFIX) {
+                templateFound = true;
+                break;
+            }
+        }
+        if (!templateFound) {
+            return linkBase;
+        }
+
+        /*
+         * Search {templateVar} in linkBase, and replace with value.
+         * Parameters can be multivalued, in which case they will be comma-separated.
+         * Parameter values will be URL-path-encoded. If there is a '?' char, only parameter values before this
+         * char will be URL-path-encoded, whereas parameters after it will be URL-query-encoded.
+         */
+
+        final int questionMarkPosition = linkBase.indexOf('?');
+
+        String basePath;
+        String baseQuery;
+        if (questionMarkPosition == -1) {
+            basePath = linkBase;
+            baseQuery = null;
+        } else {
+            basePath = linkBase.substring(0, questionMarkPosition);
+            baseQuery = linkBase.substring(questionMarkPosition);
+        }
+
+        final Set<String> usedParams = new HashSet<String>(5);
+        for (final Map.Entry<String,List<Object>> param : parameters.entrySet()) {
+
+            final String paramName = param.getKey();
+            final List<Object> paramValues = param.getValue();
+            final String template = URL_TEMPLATE_DELIMITER_PREFIX + paramName + URL_TEMPLATE_DELIMITER_SUFFIX;
+
+            if (basePath.contains(template)) {
+
+                usedParams.add(paramName);
+                final StringBuilder strBuilder = new StringBuilder();
+                for (final Object parameterObjectValue : paramValues) {
+                    final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
+                    if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
+                        if (strBuilder.length() > 0) {
+                            strBuilder.append(',');
+                        }
+                        strBuilder.append(parameterValue);
+                    }
+                }
+                basePath = basePath.replace(template, UrlUtils.encodePath(strBuilder.toString()));
+
+            } else if (baseQuery != null && baseQuery.contains(template)) {
+
+                usedParams.add(paramName);
+                final StringBuilder strBuilder = new StringBuilder();
+                for (final Object parameterObjectValue : paramValues) {
+                    final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
+                    if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
+                        if (strBuilder.length() > 0) {
+                            strBuilder.append(',');
+                        }
+                        strBuilder.append(parameterValue);
+                    }
+                }
+                baseQuery = baseQuery.replace(template, UrlUtils.encodeQueryParam(strBuilder.toString()));
+
+            }
+
+        }
+
+        /*
+         * Once parameters are applied as templates, we remove them from the parameters map so that they are not
+         * additionally added to the query string.
+         */
+        for (final String usedParam : usedParams) {
+            parameters.remove(usedParam);
+        }
+
+        return basePath + (baseQuery != null? baseQuery : "");
+
+    }
 
     
 }
