@@ -1936,4 +1936,115 @@ public final class Strings {
     }
 
 
+    /**
+     * <p>
+     * Checks if target text is empty and uses either target, 
+     * or if the target is empty uses {@code defaultValue}.
+     * </p>
+     * 
+     * @param target value that to be checked if is null or empty
+     * If non-String objects, toString() will be called.
+     * @param defaultValue value to use if target is empty
+     * If non-String objects, toString() will be called.
+     * 
+     * @return either target, or if the target is empty {@code defaultValue}
+     * 
+     * @since 2.1.3
+     */
+    public String defaultString(final Object target, final Object defaultValue) {
+    	Validate.notNull(defaultValue, "Default value cannot be null");
+    	
+    	if (target == null) {
+    		return defaultValue.toString();
+    	}
+    	
+    	String targetString = target.toString();
+    	if (StringUtils.isEmpty(targetString)) {
+    		return defaultValue.toString();
+    	}
+    	return targetString;
+    }
+
+    /**
+     * <p>
+     * Checks if each target element is empty and uses either target element, 
+     * or if the target element is empty uses {@code defaultValue}.
+     * </p>
+     * 
+     * @param target the array of values that to be checked if is null or empty
+     * If non-String objects, toString() will be called.
+     * @param defaultValue value to return if target is empty
+     * If non-String objects, toString() will be called.
+     * 
+     * @return a String[] with the result of {@link #defaultString(Object, Object)}
+     * for each element of the target.
+     * 
+     * @since 2.1.3
+     */
+    public String[] arrayDefaultString(final Object[] target, final Object defaultValue) {
+        if (target == null) {
+            return null;
+        }
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = defaultString(target[i], defaultValue);
+        }
+        return result;
+    }
+
+    /**
+     * <p>
+     * Checks if each target element is empty and uses either target element, 
+     * or if the target element is empty uses {@code defaultValue}.
+     * </p>
+     * 
+     * @param target the list of values that to be checked if is null or empty
+     * If non-String objects, toString() will be called.
+     * @param defaultValue value to return if target is empty
+     * If non-String objects, toString() will be called.
+     * 
+     * @return a {@code List<String>} with the result of 
+     * {@link #defaultString(Object, Object)} for each element of the target.
+     * 
+     * @since 2.1.3
+     */
+    public List<String> listDefaultString(final List<?> target, final Object defaultValue) {
+        if (target == null) {
+            return null;
+        }
+        final List<String> result = new ArrayList<String>(target.size() + 2);
+        for (final Object element : target) {
+            result.add(defaultString(element, defaultValue));
+        }
+        return result;
+    }
+
+    /**
+     * <p>
+     * Checks if each target element is empty and uses either target element, 
+     * or if the target element is empty uses {@code defaultValue}.
+     * </p>
+     * 
+     * @param target the set of values that to be checked if is null or empty
+     * If non-String objects, toString() will be called.
+     * @param defaultValue value to return if target is empty
+     * If non-String objects, toString() will be called.
+     * 
+     * @return a {@code Set<String>} with the result of 
+     * {@link #defaultString(Object, Object)} for each element of the target.
+     * 
+     * @since 2.1.3
+     */
+    public Set<String> setDefaultString(final Set<?> target, final Object defaultValue) {
+        if (target == null) {
+            return null;
+        }
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
+        for (final Object element : target) {
+            result.add(defaultString(element, defaultValue));
+        }
+        return result;
+    }
+
+
 }
