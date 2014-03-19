@@ -1949,14 +1949,20 @@ public final class Strings {
      * 
      * @return either target, or if the target is empty {@code defaultValue}
      * 
-     * @since 2.1.0
+     * @since 2.1.3
      */
     public String defaultString(final Object target, final Object defaultValue) {
     	Validate.notNull(defaultValue, "Default value cannot be null");
-    	if (StringUtils.isEmpty(target.toString())) {
-    		return new String(defaultValue.toString());
+    	
+    	if (target == null) {
+    		return defaultValue.toString();
     	}
-    	return new String(target.toString());
+    	
+    	String targetString = target.toString();
+    	if (StringUtils.isEmpty(targetString)) {
+    		return defaultValue.toString();
+    	}
+    	return targetString;
     }
 
     /**
@@ -1973,7 +1979,7 @@ public final class Strings {
      * @return a String[] with the result of {@link #defaultString(Object, Object)}
      * for each element of the target.
      * 
-     * @since 2.1.0
+     * @since 2.1.3
      */
     public String[] arrayDefaultString(final Object[] target, final Object defaultValue) {
         if (target == null) {
@@ -2000,7 +2006,7 @@ public final class Strings {
      * @return a {@code List<String>} with the result of 
      * {@link #defaultString(Object, Object)} for each element of the target.
      * 
-     * @since 2.1.0
+     * @since 2.1.3
      */
     public List<String> listDefaultString(final List<?> target, final Object defaultValue) {
         if (target == null) {
@@ -2027,7 +2033,7 @@ public final class Strings {
      * @return a {@code Set<String>} with the result of 
      * {@link #defaultString(Object, Object)} for each element of the target.
      * 
-     * @since 2.1.0
+     * @since 2.1.3
      */
     public Set<String> setDefaultString(final Set<?> target, final Object defaultValue) {
         if (target == null) {
