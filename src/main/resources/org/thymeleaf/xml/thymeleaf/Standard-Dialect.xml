@@ -153,6 +153,14 @@
 			reference="Using Thymeleaf section 8.1 on Including Template Fragments"/>
 	</attribute-processor>
 
+    <attribute-processor
+        name="styleappend"
+        class="org.thymeleaf.standard.processor.attr.StandardStyleappendAttrProcessor">
+        <documentation
+            see-also="attrappend style"
+            reference="Using Thymeleaf section 5.4 on Appending And Prepending"/>
+    </attribute-processor>
+    
 	<attribute-processor
 		name="substituteby"
 		class="org.thymeleaf.standard.processor.attr.StandardSubstituteByFragmentAttrProcessor">

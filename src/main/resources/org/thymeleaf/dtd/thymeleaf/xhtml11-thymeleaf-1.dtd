@@ -415,6 +415,7 @@
   th:standby         CDATA  #IMPLIED
   th:start           CDATA  #IMPLIED
   th:style           CDATA  #IMPLIED
+  th:styleappend     CDATA  #IMPLIED
   th:summary         CDATA  #IMPLIED
   th:tabindex        CDATA  #IMPLIED
   th:target          CDATA  #IMPLIED
