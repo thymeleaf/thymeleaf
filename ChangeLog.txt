@@ -3,6 +3,10 @@
 - Added support for variable templates in Link Expressions: @{/order/details/{id}/{action}(id=3,action='show_all')}
 - Added new th:styleappend attribute for adding content to the existing 'style' attribute value in a tag.
 - Added #strings.defaultString(str,default) as an alias for ${str == null || str.isEmpty()} ? ${str} : ${default}
+- Fixed parameter names not being URL-encoded in Link Expressions: @{/order/details('one parameter'='one value')}
+- Fixed parentheses inside literals in link parameters break Link Expression parsing.
+- Fixed XHTML 1.1 DTDs not being valid (DTD parsing error).
+- Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
 
 
 2.1.2
