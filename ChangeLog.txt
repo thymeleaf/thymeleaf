@@ -1,3 +1,10 @@
+2.0.21
+======
+- Fixed parameter names not being URL-encoded in Link Expressions: @{/order/details('one parameter'='one value')}
+- Fixed XHTML 1.1 DTDs not being valid (DTD parsing error).
+- Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
+
+
 2.0.20
 ======
 - Fixed DOM Selectors not correctly performing index operations on root nodes.
