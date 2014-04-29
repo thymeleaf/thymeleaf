@@ -1,7 +1,6 @@
 classpath:engine/attrprocessors/appendprepend/attrappend01.thtest
 classpath:engine/attrprocessors/appendprepend/attrprepend01.thtest
 classpath:engine/attrprocessors/appendprepend/classappend01.thtest
-classpath:engine/attrprocessors/appendprepend/styleappend01.thtest
 classpath:engine/attrprocessors/attr/attr01.thtest
 classpath:engine/attrprocessors/attr/attr02.thtest
 classpath:engine/attrprocessors/attr/attr03.thtest
