@@ -205,6 +205,40 @@
         <version>2.1</version>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+         <instructions>
+           <Import-Package>
+               javax.servlet.*;version="[2.5,4)";resolution:=optional,
+               javassist.*;version="[3.16.1.GA,4)";resolution:=optional,
+               ognl.*;version="[3.0.6,4)";resolution:=optional,
+               *
+           </Import-Package>
+         </instructions>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
 
     </plugins>
     
