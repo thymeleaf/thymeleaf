@@ -143,6 +143,7 @@
   th:standby         CDATA  #IMPLIED
   th:start           CDATA  #IMPLIED
   th:style           CDATA  #IMPLIED
+  th:styleappend     CDATA  #IMPLIED
   th:substituteby    CDATA  #IMPLIED
   th:summary         CDATA  #IMPLIED
   th:switch          CDATA  #IMPLIED
