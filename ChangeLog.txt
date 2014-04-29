@@ -1,5 +1,6 @@
 2.1.3
 =====
+- Added support for variable templates in Link Expressions: @{/order/details/{id}/{action}(id=3,action='show_all')}
 - Added new th:styleappend attribute for adding content to the existing 'style' attribute value in a tag.
 - Added #strings.defaultString(str,default) as an alias for ${str == null || str.isEmpty()} ? ${str} : ${default}
 
