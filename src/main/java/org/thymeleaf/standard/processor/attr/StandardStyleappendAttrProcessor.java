@@ -13,7 +13,7 @@ import org.thymeleaf.dom.Element;
  * either "margin: 0; color: green;" or "margin: 0; color: black;".
  * 
  * @author Michal Kreuzman
- * @since @since 2.1.3
+ * @since 2.1.3
  */
 public final class StandardStyleappendAttrProcessor 
 		extends AbstractStandardSingleAttributeModifierAttrProcessor {
