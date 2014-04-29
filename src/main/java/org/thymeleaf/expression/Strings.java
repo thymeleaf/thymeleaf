@@ -1959,7 +1959,7 @@ public final class Strings {
     	}
     	
     	String targetString = target.toString();
-    	if (StringUtils.isEmpty(targetString)) {
+    	if (StringUtils.isEmptyOrWhitespace(targetString)) {
     		return defaultValue.toString();
     	}
     	return targetString;
