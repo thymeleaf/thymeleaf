@@ -1,0 +1,3 @@
+Karmathome is an accommodation social network born in 2014. Free and safe, based on the experience of sharing holiday accommodation between friends and friends of friends.
+
+Karmathome uses Thymeleaf for its user presentation cover so as to attain a perfect integration with the technological stack used in its view, that is, Spring MVC, HTML5, JQuery and Bootstrap. Thymeleaf allows us to create the perfect mockup/model and its subsequent integration in the project in a fast and simple way.
