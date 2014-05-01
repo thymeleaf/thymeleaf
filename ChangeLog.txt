@@ -8,6 +8,7 @@
 - Fixed XHTML 1.1 DTDs not being valid (DTD parsing error).
 - Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
 - Fixed arithmetic exception in #aggregates.avg() if result has a non-terminating decimal expansion.
+- Fixed JavaScript inlining not closing expressions properly when they appear between parentheses.
 
 
 2.1.2
