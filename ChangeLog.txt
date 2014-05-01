@@ -3,6 +3,7 @@
 - Fixed parameter names not being URL-encoded in Link Expressions: @{/order/details('one parameter'='one value')}
 - Fixed XHTML 1.1 DTDs not being valid (DTD parsing error).
 - Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
+- Fixed arithmetic exception in #aggregates.avg() if result has a non-terminating decimal expansion.
 
 
 2.0.20
