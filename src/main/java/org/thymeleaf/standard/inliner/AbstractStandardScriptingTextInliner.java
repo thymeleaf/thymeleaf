@@ -236,7 +236,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 arrayLevel--;
             }
             if (literalDelimiter == 0 && arrayLevel == 0 && objectLevel == 0) {
-                if (c == ';' || c == ',') {
+                if (c == ';' || c == ',' || c == ')') {
                     return lineRemainder.substring(i);
                 }
                 if (c == '/' && ((i+1) < len)) {
