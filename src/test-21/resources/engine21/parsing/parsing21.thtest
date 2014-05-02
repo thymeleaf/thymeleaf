@@ -1,0 +1,11 @@
+%TEMPLATE_MODE HTML5
+# ------------------------------------------------------------
+%INPUT
+<script type="text/template">
+    <span th:text="Executed">Not executed</span>
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script type="text/template">
+    <span>Executed</span>
+</script>
