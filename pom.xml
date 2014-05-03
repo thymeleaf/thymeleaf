@@ -291,7 +291,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.0.21-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.0.9-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.0.10-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.0.3-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.0.2-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.0.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -376,7 +376,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.0.21-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.0.9-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.0.10-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.0.3-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.0.2-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.0.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -462,7 +462,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.3-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.3-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.4-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.2-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.2-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -556,7 +556,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.3-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.3-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.4-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.2-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.2-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
@@ -642,7 +642,7 @@
       </build>
       <properties>
         <thymeleaf.version>2.1.3-SNAPSHOT</thymeleaf.version>
-        <thymeleaf-testing.version>2.1.3-SNAPSHOT</thymeleaf-testing.version>
+        <thymeleaf-testing.version>2.1.4-SNAPSHOT</thymeleaf-testing.version>
         <thymeleaf-extras-springsecurity3.version>2.1.2-SNAPSHOT</thymeleaf-extras-springsecurity3.version>
         <thymeleaf-extras-tiles2.version>2.1.2-SNAPSHOT</thymeleaf-extras-tiles2.version>
         <thymeleaf-extras-conditionalcomments.version>2.1.1-SNAPSHOT</thymeleaf-extras-conditionalcomments.version>
