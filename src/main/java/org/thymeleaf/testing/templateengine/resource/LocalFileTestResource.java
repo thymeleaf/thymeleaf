@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.util.EscapeUtils;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 import org.thymeleaf.util.Validate;
 
@@ -69,7 +70,8 @@ public class LocalFileTestResource
     public String readAsText() {
         try {
             final InputStream is = new FileInputStream(this.resourceFile);
-            return ResourceUtils.read(is, this.characterEncoding);
+            final String text = ResourceUtils.read(is, this.characterEncoding);
+            return EscapeUtils.unescapeUnicode(text);
         } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Exception e) {
