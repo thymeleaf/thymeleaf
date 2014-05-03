@@ -11,7 +11,7 @@ Status
 
 This is an auxiliary testing library, not directly a part of the Thymeleaf core but part of the project, developed and supported by the [Thymeleaf Team](http://www.thymeleaf.org/team.html).
 
-Current version: **2.0.8** - for Thymeleaf 2.0 (requires thymeleaf 2.0.20+)
+Current version: **2.0.9** - for Thymeleaf 2.0 (requires thymeleaf 2.0.20+)
 
 
 License
