@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.util.EscapeUtils;
 import org.thymeleaf.testing.templateengine.util.ResourceUtils;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
@@ -76,7 +77,8 @@ public final class ClassPathFileTestResource
     public String readAsText() {
         try {
             final InputStream is = this.resourceURL.openStream();
-            return ResourceUtils.read(is, this.characterEncoding);
+            final String text = ResourceUtils.read(is, this.characterEncoding);
+            return EscapeUtils.unescapeUnicode(text);
         } catch (final TestEngineExecutionException e) {
             throw e;
         } catch (final Exception e) {

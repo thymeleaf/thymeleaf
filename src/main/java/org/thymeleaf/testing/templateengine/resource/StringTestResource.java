@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.testing.templateengine.resource;
 
+import org.thymeleaf.testing.templateengine.util.EscapeUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -46,7 +47,7 @@ public class StringTestResource
     }
     
     public String readAsText() {
-        return this.str;
+        return EscapeUtils.unescapeUnicode(this.str);
     }
     
 }
