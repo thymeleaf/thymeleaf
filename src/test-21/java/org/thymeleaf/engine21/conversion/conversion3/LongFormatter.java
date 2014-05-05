@@ -19,11 +19,11 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
-import org.springframework.format.Formatter;
-
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
+
+import org.springframework.format.Formatter;
 
 
 public class LongFormatter implements Formatter<Long> {

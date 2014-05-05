@@ -1,0 +1,74 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+one = 'one!'
+# ------------------------------------------------------------
+%INPUT
+<div th:attrappend="style=${one}">...</div>
+<div th:attrappend="style='hello'">...</div>
+<div th:attrappend="style=${null}">...</div>
+<div th:attrappend="style=''">...</div>
+
+<div style="old" th:attrappend="style=${one}">...</div>
+<div style="old" th:attrappend="style='hello'">...</div>
+<div style="old" th:attrappend="style=${null}">...</div>
+<div style="old" th:attrappend="style=''">...</div>
+
+<div style="" th:attrappend="style=${one}">...</div>
+<div style="" th:attrappend="style='hello'">...</div>
+<div style="" th:attrappend="style=${null}">...</div>
+<div style="" th:attrappend="style=''">...</div>
+
+# ------------------------------------------------------------
+%OUTPUT
+<div style="one!">...</div>
+<div style="hello">...</div>
+<div>...</div>
+<div>...</div>
+
+<div style="oldone!">...</div>
+<div style="oldhello">...</div>
+<div style="old">...</div>
+<div style="old">...</div>
+
+<div style="one!">...</div>
+<div style="hello">...</div>
+<div style="">...</div>
+<div style="">...</div>
+
+
+
+
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+text01 = '4&lt;&nbsp;6'
+text02 = '4<\u00A06'
+text03 = '4<&nbsp;6'
+# ------------------------------------------------------------
+%MESSAGES
+text01 = '4&lt;&nbsp;6'
+text02 = '4<\u00A06'
+text03 = '4<&nbsp;6'
+# ------------------------------------------------------------
+%INPUT
+<div abbr="a&aacute;a" th:attrappend="abbr='\u00E1\u00E2\u00E3\u00E4\uD840\uDC00'">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=${text01}">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=${text02}">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=${text03}">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=#{text01}">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=#{text02}">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=#{text03}">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr='4&lt;&nbsp;6'">...</div>
+<div abbr="a&aacute;a" th:attrappend="abbr=${'4&lt;&nbsp;6'}">...</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div abbr="a\u00E1a\u00E1\u00E2\u00E3\u00E4\uD840\uDC00">...</div>
+<div abbr="a\u00E1a4&amp;lt;&amp;nbsp;6">...</div>
+<div abbr="a\u00E1a4&lt;\u00A06">...</div>
+<div abbr="a\u00E1a4&lt;&amp;nbsp;6">...</div>
+<div abbr="a\u00E1a4&amp;lt;&amp;nbsp;6">...</div>
+<div abbr="a\u00E1a4&lt;\u00A06">...</div>
+<div abbr="a\u00E1a4&lt;&amp;nbsp;6">...</div>
+<div abbr="a\u00E1a4&lt;\u00A06">...</div>
+<div abbr="a\u00E1a4&lt;\u00A06">...</div>

@@ -1,0 +1,37 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+product1 = #{ 'name': 'Lettuce',\
+              'price': 12.0 }
+product2 = #{ 'name': 'Apricot',\
+              'price': 8.0 }
+products = { product1, product2 }
+# ------------------------------------------------------------
+%INPUT
+<table>
+  <tr th:each="product : ${products}" th:include="&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#32;&colon;&colon;&#32;&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#84;&#101;&#109;&#112;&#108;&#97;&#116;&#101;"
+      th:object="${product}" th:with="&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#78;&#97;&#109;&#101;&equals;&ast;&lbrace;&#110;&#97;&#109;&#101;&rbrace;&comma;&#32;&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#80;&#114;&#105;&#99;&#101;&equals;&ast;&lbrace;&#112;&#114;&#105;&#99;&#101;&rbrace;" />
+</table>
+# ------------------------------------------------------------
+%INPUT[product]
+<tr th:fragment="&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#84;&#101;&#109;&#112;&#108;&#97;&#116;&#101;">
+    <td th:text="&dollar;&lbrace;&#112;&#114;&#111;&#100;&#117;&#99;&#116;&#78;&#97;&#109;&#101;&rbrace;">product name</td>
+    <td th:text="${productPrice}">product price</td>
+    <td class="&rarr;&lt;">&rarr;&lt;</td>
+</tr>
+# ------------------------------------------------------------
+%OUTPUT
+<table>
+  <tr>
+    <td>Lettuce</td>
+    <td>12.0</td>
+    <td class="&rarr;&lt;">&rarr;&lt;</td>
+  </tr>
+  <tr>
+    <td>Apricot</td>
+    <td>8.0</td>
+    <td class="&rarr;&lt;">&rarr;&lt;</td>
+  </tr>
+</table>
+
+

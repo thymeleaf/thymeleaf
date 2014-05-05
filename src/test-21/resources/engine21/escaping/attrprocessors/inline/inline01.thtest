@@ -1,0 +1,16 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+foo = 'fooo&aacute;&lt;!'
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript"> 
+    var foo1 = /*[[${foo}]]*/ 'hello!';
+    var foo2 = '&aacute;&lt;';
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script> 
+    var foo1 = 'fooo&aacute;&lt;!';
+    var foo2 = '&aacute;&lt;';
+</script>

@@ -1,0 +1,35 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+text01 = '4&lt;&nbsp;6'
+text02 = '4<\u00A06'
+text03 = '4<&nbsp;6'
+# ------------------------------------------------------------
+%MESSAGES
+text01 = '4&lt;&nbsp;6'
+text02 = '4<\u00A06'
+text03 = '4<&nbsp;6'
+# ------------------------------------------------------------
+%INPUT
+<div th:codebase="'\u00E1\u00E2\u00E3\u00E4\uD840\uDC00'">...</div>
+<div th:codebase="${text01}">...</div>
+<div th:codebase="${text02}">...</div>
+<div th:codebase="${text03}">...</div>
+<div th:codebase="#{text01}">...</div>
+<div th:codebase="#{text02}">...</div>
+<div th:codebase="#{text03}">...</div>
+<div th:codebase="'4&lt;&nbsp;6'">...</div>
+<div th:codebase="${'4&lt;&nbsp;6'}">...</div>
+<div codebase="4&lt;&nbsp;&#23;6">...</div>
+# ------------------------------------------------------------
+%OUTPUT
+<div codebase="\u00E1\u00E2\u00E3\u00E4\uD840\uDC00">...</div>
+<div codebase="4&amp;lt;&amp;nbsp;6">...</div>
+<div codebase="4&lt;\u00A06">...</div>
+<div codebase="4&lt;&amp;nbsp;6">...</div>
+<div codebase="4&amp;lt;&amp;nbsp;6">...</div>
+<div codebase="4&lt;\u00A06">...</div>
+<div codebase="4&lt;&amp;nbsp;6">...</div>
+<div codebase="4&lt;\u00A06">...</div>
+<div codebase="4&lt;\u00A06">...</div>
+<div codebase="4&lt;&nbsp;&#23;6">...</div>

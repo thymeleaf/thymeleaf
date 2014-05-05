@@ -19,9 +19,9 @@
  */
 package org.thymeleaf.engine21.conversion.conversion3;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 public class Conversion3Object {

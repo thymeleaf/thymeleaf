@@ -19,14 +19,14 @@
  */
 package org.thymeleaf.standard.expression;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Assert;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.ProcessingContext;
-
-import java.util.Map;
 
 /**
  * 

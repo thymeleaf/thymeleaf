@@ -19,12 +19,12 @@
  */
 package org.thymeleaf.engine21.conversion.conversion4;
 
+import java.util.Arrays;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
-
-import java.util.Arrays;
 
 
 public class Conversion4Test {

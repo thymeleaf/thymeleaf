@@ -19,11 +19,6 @@
  */
 package org.thymeleaf.util;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.thymeleaf.standard.expression.LiteralValue;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -33,6 +28,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.junit.Assert;
+import org.junit.Test;
+import org.thymeleaf.standard.expression.LiteralValue;
 
 
 public final class EvaluationUtilTest {

@@ -1,0 +1,17 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+someVar = 'fooo&aacute;&lt;!'
+# ------------------------------------------------------------
+%INPUT
+<p>before</p>
+<data th:inline="&#116;&#101;&#120;&#116;" th:remove="tag">
+  <span>&rarr;[[&dollar;&lbrace;&#115;&#111;&#109;&#101;&#86;&#97;&#114;&rbrace;]]&rarr;</span>
+</data>
+<p>after</p>
+# ------------------------------------------------------------
+%OUTPUT
+<p>before</p>
+  <span>&rarr;fooo&amp;aacute;&amp;lt;!&rarr;</span>
+<p>after</p>
+

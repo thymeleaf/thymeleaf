@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.engine21.springintegration.context;
 
-import org.springframework.validation.BindingResult;
-import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
-import org.thymeleaf.testing.templateengine.testable.ITest;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.springframework.validation.BindingResult;
+import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
+import org.thymeleaf.testing.templateengine.testable.ITest;
 
 
 public class ErrorsSpringIntegrationWebProcessingContextBuilder

@@ -1,0 +1,5 @@
+%TEMPLATE_MODE HTML5
+# -----------------------------------------------------------
+%CONTEXT
+
+formBean01_01 = new org.thymeleaf.engine21.escaping.model.FormBean01()
