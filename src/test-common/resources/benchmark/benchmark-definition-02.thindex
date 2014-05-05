@@ -30,8 +30,6 @@ classpath:engine/features/expression/expression35.thtest
 classpath:engine/features/expression/expression36.thtest
 classpath:engine/features/expression/expression37.thtest
 classpath:engine/features/expression/strings/strings01.thtest
-classpath:engine/features/link/link01.thtest
-classpath:engine/features/link/link06.thtest
 classpath:engine/features/messages/messages01.thtest
 classpath:engine/features/messages/messages02.thtest
 classpath:engine/features/messages/messages03.thtest
