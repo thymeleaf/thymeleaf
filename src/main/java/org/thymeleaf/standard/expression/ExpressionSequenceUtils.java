@@ -25,7 +25,6 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -61,7 +60,7 @@ public final class ExpressionSequenceUtils {
         }
 
         final ExpressionSequence expressionSequence =
-                internalParseExpressionSequence(DOMUtils.unescapeXml(preprocessedInput.trim(), true));
+                internalParseExpressionSequence(preprocessedInput.trim());
 
         if (expressionSequence == null) {
             throw new TemplateProcessingException("Could not parse as expression sequence: \"" + input + "\"");

@@ -49,7 +49,6 @@ import org.thymeleaf.templateparser.ErrorHandler;
 import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateparser.TemplatePreprocessingReader;
 import org.thymeleaf.util.ArrayUtils;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.ResourcePool;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -412,7 +411,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             this.cdataMode = false;
             if(this.cdataBufferLen > 0) {
                 final Node cdata =
-                        new CDATASection(new String(this.cdataBuffer, 0, this.cdataBufferLen), false);
+                        new CDATASection(new String(this.cdataBuffer, 0, this.cdataBufferLen), null, null, true);
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(cdata);
                 } else {
@@ -545,9 +544,9 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             for (int i = 0; i < attributes.getLength(); i++) {
                 element.setAttribute(
                         attributes.getQName(i),
-                        DOMUtils.unescapeXml(
-                                TemplatePreprocessingReader.removeEntitySubstitutions(attributes.getValue(i)),
-                                true));
+                        false,
+                        TemplatePreprocessingReader.removeEntitySubstitutions(attributes.getValue(i)),
+                        true);
             }
             
             this.elementStack.push(element);
@@ -631,7 +630,7 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
             if (this.textBufferLen > 0) {
 
                 final Node textNode = 
-                        new Text(new String(this.textBuffer, 0, this.textBufferLen), false);
+                        new Text(new String(this.textBuffer, 0, this.textBufferLen), null, null, true);
                 
                 if (this.elementStack.isEmpty()) {
                     this.rootNodes.add(textNode);

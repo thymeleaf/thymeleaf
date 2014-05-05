@@ -71,10 +71,11 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     public final void inline(final Arguments arguments, final AbstractTextNode text) {
         
-        final String content = text.getContent();
+        final String content = text.getOriginalContent();
         final String javascriptContent =
             processScriptingInline(content, arguments);
-        text.setContent(javascriptContent);
+        // We set content as "escaped" in order to avoid further escaping
+        text.setContent(javascriptContent, true);
         
     }
 

@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;

@@ -156,9 +156,9 @@ public final class StandardDOMTranslator {
             final org.w3c.dom.Attr attr = (org.w3c.dom.Attr) attributes.item(i);
             element.setAttribute(
                     attr.getName(),
-                    DOMUtils.unescapeXml(
-                            TemplatePreprocessingReader.removeEntitySubstitutions(attr.getValue()),
-                            true));
+                    false,
+                    TemplatePreprocessingReader.removeEntitySubstitutions(attr.getValue()),
+                    true);
         }
         
         final org.w3c.dom.NodeList children = domNode.getChildNodes();
@@ -209,7 +209,7 @@ public final class StandardDOMTranslator {
     
     public static CDATASection translateCDATASection(final org.w3c.dom.CDATASection domNode, final NestableNode parentNode, final String documentName) {
         final CDATASection cdata = 
-                new CDATASection(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
+                new CDATASection(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), documentName, null, true);
         cdata.setParent(parentNode);
         return cdata;
     }
@@ -219,7 +219,7 @@ public final class StandardDOMTranslator {
     public static Text translateText(final org.w3c.dom.Text domNode, final NestableNode parentNode, final String documentName) {
         
         final Text text = 
-                new Text(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), false, documentName);
+                new Text(TemplatePreprocessingReader.removeEntitySubstitutions(domNode.getData()), documentName, null, true);
         text.setParent(parentNode);
         return text;
         

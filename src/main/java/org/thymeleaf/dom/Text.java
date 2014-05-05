@@ -26,12 +26,7 @@ package org.thymeleaf.dom;
  * <p>
  *   A Text node in a Thymeleaf DOM tree.
  * </p>
- * <p>
- *   When building an instance of this class, setting the <tt>escapeXml</tt> flag to true
- *   will apply an escaping operation to the specified contents by means of calling
- *   {@link org.thymeleaf.util.DOMUtils#escapeXml(char[], boolean)}.
- * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 2.0.0
@@ -45,20 +40,58 @@ public final class Text extends AbstractTextNode {
 
 
     public Text(final String content) {
-        this(content, true, null, null);
+        this(content, null, null, false);
     }
 
-    
+
+    /**
+     * @since 2.1.3
+     */
+    public Text(final String content, final String documentName) {
+        this(content, documentName, null, false);
+    }
+
+
+    /**
+     * @since 2.1.3
+     */
+    public Text(final String content, final String documentName, final Integer lineNumber) {
+        this(content, documentName, lineNumber, false);
+    }
+
+
+    /**
+     * @since 2.1.3
+     */
+    public Text(final String content, final String documentName, final Integer lineNumber, final boolean contentIsEscaped) {
+        super(content, documentName, lineNumber, contentIsEscaped);
+    }
+
+
+
+
+    /**
+     * @deprecated Deprecated in 2.1.3. Will be removed in 3.0. Text and CDATA nodes do not perform XML-escaping anymore.
+     */
+    @Deprecated
     public Text(final String content, final boolean escapeXml) {
         this(content, escapeXml, null, null);
     }
 
-    
+
+    /**
+     * @deprecated Deprecated in 2.1.3. Will be removed in 3.0. Text and CDATA nodes do not perform XML-escaping anymore.
+     */
+    @Deprecated
     public Text(final String content, final boolean escapeXml, final String documentName) {
         this(content, escapeXml, documentName, null);
     }
 
-    
+
+    /**
+     * @deprecated Deprecated in 2.1.3. Will be removed in 3.0. Text and CDATA nodes do not perform XML-escaping anymore.
+     */
+    @Deprecated
     public Text(final String content, final boolean escapeXml, final String documentName, final Integer lineNumber) {
         super(content, escapeXml, documentName, lineNumber);
     }
@@ -67,8 +100,7 @@ public final class Text extends AbstractTextNode {
 
     @Override
     Node createClonedInstance(final NestableNode newParent, final boolean cloneProcessors) {
-        // escapeXML is false because there's no reason to escape content again (if it already has been)
-        return new Text(this.content, false);
+        return new Text(this.content, this.getDocumentName(), this.getLineNumber(), this.contentIsEscaped);
     }
     
 

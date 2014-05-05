@@ -27,7 +27,6 @@ import java.util.Set;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -101,7 +100,7 @@ public final class FragmentSelectionUtils {
         }
 
         final FragmentSelection fragmentSelection =
-                FragmentSelectionUtils.internalParseFragmentSelection(DOMUtils.unescapeXml(preprocessedInput.trim(), true));
+                FragmentSelectionUtils.internalParseFragmentSelection(preprocessedInput.trim());
 
         if (fragmentSelection == null) {
             throw new TemplateProcessingException("Could not parse as fragment selection: \"" + input + "\"");

@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
-
+import org.unbescape.html.HtmlEscape;
 
 
 /**
@@ -53,26 +53,40 @@ public final class Attribute implements Serializable {
     private final String normalizedName;
 
     private final boolean onlyName;
+
+    private final boolean valueIsEscaped;
     private final String value;
 
 
     public Attribute(final String name, final boolean onlyName, final String value) {
-        
+        this(name, onlyName, value, false);
+    }
+
+
+    /**
+     * @since 2.1.3
+     */
+    public Attribute(final String name, final boolean onlyName, final String value, final boolean valueIsEscaped) {
+
         super();
-        
+
         Validate.notNull(name, "Attribute name cannot be null");
-        
+
         this.originalName = name;
         this.normalizedName = normalizeAttributeName(name);
 
         // The "onlyName" flag determines whether the attribute was specified
         // only with its name (without an equals sign or a value).
-        // For "this.onlyName" to be honored by template writers, value should be null. 
+        // For "this.onlyName" to be honored by template writers, value should be null.
         // If not, onlyName is ignored.
         this.onlyName = onlyName;
-        
+
+        // This allows the Attribute class to cover both the case when attribute objects are created from parsers,
+        // and therefore direct from templates and escaped, and also the case when attribute objects are created
+        // from processors, which will specify unescaped values.
+        this.valueIsEscaped = valueIsEscaped;
         this.value = value;
-        
+
     }
 
 
@@ -81,12 +95,17 @@ public final class Attribute implements Serializable {
      * recompute prefix, etc when an attribute is simply changed value.
      */
     private Attribute(final String originalName, final String normalizedName,
-                      final boolean onlyName, final String value) {
+                      final boolean onlyName, final String value, final boolean valueIsEscaped) {
+
         super();
+
         this.originalName = originalName;
         this.normalizedName = normalizedName;
         this.onlyName = onlyName;
+
+        this.valueIsEscaped = valueIsEscaped;
         this.value = value;
+
     }
 
 
@@ -207,9 +226,43 @@ public final class Attribute implements Serializable {
      * @return the value of the attribute.
      */
     public String getValue() {
+        if (this.valueIsEscaped) {
+            return HtmlEscape.unescapeHtml(this.value);
+        }
         return this.value;
     }
-    
+
+
+
+    /**
+     * <p>
+     *   Returns the escaped value of the attribute.
+     * </p>
+     *
+     * @return the value of the attribute.
+     * @since 2.1.3
+     */
+    public String getEscapedValue() {
+        if (this.valueIsEscaped) {
+            return this.value;
+        }
+        return HtmlEscape.escapeHtml4Xml(this.value);
+    }
+
+
+
+    /**
+     * <p>
+     *   Returns the original value (escaped or not) of the attribute.
+     * </p>
+     *
+     * @return the value of the attribute.
+     * @since 2.1.3
+     */
+    public String getOriginalValue() {
+        return this.value;
+    }
+
 
     /**
      * <p>
@@ -250,10 +303,10 @@ public final class Attribute implements Serializable {
 
 
 
-    Attribute cloneForValue(final boolean onlyName, final String value) {
+    Attribute cloneForValue(final boolean onlyName, final String value, final boolean valueIsEscaped) {
         return new Attribute(
                 this.originalName, this.normalizedName,
-                onlyName, value);
+                onlyName, value, valueIsEscaped);
     }
 
 

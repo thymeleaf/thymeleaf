@@ -326,6 +326,22 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
         setAttribute(name, false, value);
     }
 
+
+
+    /**
+     * <p>
+     *   Establishes a new value for an element attribute. If the attribute already
+     *   exists, its value is substituted by the one specified.
+     * </p>
+     *
+     * @param name the name of the attribute.
+     * @param onlyName whether this attribute has a value or not (is only a name).
+     * @param value the value of the attribute.
+     */
+    public final void setAttribute(final String name, final boolean onlyName, final String value) {
+        setAttribute(name, onlyName, value, false);
+    }
+
     
     
     /**
@@ -337,8 +353,11 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
      * @param name the name of the attribute.
      * @param onlyName whether this attribute has a value or not (is only a name). 
      * @param value the value of the attribute.
+     * @param valueIsEscaped whether the value being set for the attribute is already escaped (e.g. direct from template
+     *                       parsing) or not.
+     * @since 2.1.3
      */
-    public final void setAttribute(final String name, final boolean onlyName, final String value) {
+    public final void setAttribute(final String name, final boolean onlyName, final String value, final boolean valueIsEscaped) {
         
         Validate.notNull(name, "Attribute name cannot be null");
 
@@ -348,14 +367,14 @@ public abstract class NestableAttributeHolderNode extends NestableNode {
             for (int i = 0; i < this.attributesLen; i++) {
                 // First, we will check if attribute already exists
                 if (this.attributeNormalizedNames[i].equals(attributeNormalizedName)) {
-                    this.attributes[i] = this.attributes[i].cloneForValue(onlyName, value);
+                    this.attributes[i] = this.attributes[i].cloneForValue(onlyName, value, valueIsEscaped);
                     return;
                 }
             }
         }
 
         // Attribute does not already exist, so we cannot take advantage from cloning it (with a different value)
-        final Attribute attribute = new Attribute(name, onlyName, value);
+        final Attribute attribute = new Attribute(name, onlyName, value, valueIsEscaped);
 
         if (this.attributesLen == 0) {
             
