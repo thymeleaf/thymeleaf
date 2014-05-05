@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.spring3.processor.attr;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,12 +27,11 @@ import org.springframework.web.servlet.tags.form.ValueFormatterWrapper;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Macro;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.processor.attr.AbstractAttrProcessor;
 import org.thymeleaf.spring3.naming.SpringContextVariableNames;
 import org.thymeleaf.spring3.util.FieldUtils;
-import org.thymeleaf.util.DOMUtils;
+import org.unbescape.html.HtmlEscape;
 
 /**
  * Works in a similar way to <b>#fields.errors()</b>, but lists all errors for
@@ -89,12 +87,7 @@ public final class SpringErrorsAttrProcessor
                 }
                 final String displayString = 
                         ValueFormatterWrapper.getDisplayString(errorMsgs[i], false);
-                try {
-                    strBuilder.append(DOMUtils.escapeXml(displayString, true));
-                } catch (final IOException e) {
-                    throw new TemplateProcessingException(
-                            "Exception while trying to escape Spring error message", e);
-                }
+                strBuilder.append(HtmlEscape.escapeHtml4Xml(displayString));
             }
             
             // Remove previous element children
