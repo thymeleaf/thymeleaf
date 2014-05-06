@@ -19,15 +19,15 @@
  */
 package org.thymeleaf.util;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import org.unbescape.html.HtmlEscape;
+import org.unbescape.java.JavaEscape;
+import org.unbescape.javascript.JavaScriptEscape;
 
 
 /**
@@ -635,11 +635,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        try {
-            return DOMUtils.escapeXml(target.toString(), false);
-        } catch (final IOException e) {
-            throw new RuntimeException("Error while XML-escaping text", e);
-        }
+        return HtmlEscape.escapeHtml4Xml(target.toString());
     }
 
 
@@ -657,13 +653,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        try {
-            final StringWriter sw = new StringWriter();
-            escapeJavaAny((String) target, true, sw);
-            return sw.toString();
-        } catch (final IOException e) {
-            throw new RuntimeException("Error while JavaScript-escaping text", e);
-        }
+        return JavaScriptEscape.escapeJavaScript(target.toString());
     }
 
 
@@ -681,13 +671,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        try {
-            final StringWriter sw = new StringWriter();
-            escapeJavaAny((String) target, false, sw);
-            return sw.toString();
-        } catch (final IOException e) {
-            throw new RuntimeException("Error while Java-escaping text", e);
-        }
+        return JavaEscape.escapeJava(target.toString());
     }
 
 
@@ -705,13 +689,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        try {
-            final StringWriter sw = new StringWriter();
-            unescapeJavaAny((String) target, sw);
-            return sw.toString();
-        } catch (final IOException e) {
-            throw new RuntimeException("Error while JavaScript-unescaping text", e);
-        }
+        return JavaScriptEscape.unescapeJavaScript(target.toString());
     }
 
 
@@ -729,235 +707,7 @@ public final class StringUtils {
         if (target == null) {
             return null;
         }
-        try {
-            final StringWriter sw = new StringWriter();
-            unescapeJavaAny((String) target, sw);
-            return sw.toString();
-        } catch (final IOException e) {
-            throw new RuntimeException("Error while Java-unescaping text", e);
-        }
-    }
-
-
-
-    private static void escapeJavaAny(final String text, final boolean javaScript, final Writer writer)
-            throws IOException {
-
-        Validate.notNull(writer, "Writer cannot be null");
-
-        if (text == null) {
-            return;
-        }
-
-        final int textLen = text.length();
-        for (int i = 0; i < textLen; i++) {
-
-            final char c = text.charAt(i);
-
-            //noinspection MagicNumber
-            if (c >= 32 && c <= 0x7f) {
-
-                switch (c) {
-                    case '\\':
-                        writer.write('\\');
-                        writer.write('\\');
-                        break;
-                    case '"':
-                        writer.write('\\');
-                        writer.write('"');
-                        break;
-                    case '\'':
-                        if (javaScript) {
-                            writer.write('\\');
-                        }
-                        writer.write('\'');
-                        break;
-                    case '/':
-                        if (javaScript) {
-                            if (i > 0 && text.charAt(i - 1) == '<') {
-                                writer.write('\\');
-                            }
-                        }
-                        writer.write('/');
-                        break;
-                    case '>':
-                        if (javaScript && i > 1) {
-                            // Make sure we escape "]]>" just in case we are inside a
-                            // CDATA Section.
-                            if (text.charAt(i - 1) == ']' && text.charAt(i - 2) == ']') {
-                                writer.write('\\');
-                            }
-                        }
-                        writer.write('>');
-                        break;
-                    default:
-                        // no need to escape: numbers, letters, ASCII symbols...
-                        writer.write(c);
-                        break;
-                }
-
-            } else {
-
-                switch (c) {
-                    case '\b':
-                        writer.write('\\');
-                        writer.write('b');
-                        break;
-                    case '\f':
-                        writer.write('\\');
-                        writer.write('f');
-                        break;
-                    case '\n':
-                        writer.write('\\');
-                        writer.write('n');
-                        break;
-                    case '\r':
-                        writer.write('\\');
-                        writer.write('r');
-                        break;
-                    case '\t':
-                        writer.write('\\');
-                        writer.write('t');
-                        break;
-                    default:
-                        // Just escape it as unicode
-                        writer.write(unicodeEscape(c));
-                        break;
-                }
-
-
-            }
-
-        }
-
-    }
-
-
-
-    @SuppressWarnings("MagicNumber")
-    private static String unicodeEscape(final char c) {
-
-        final String hex =
-                Integer.toHexString(c).toUpperCase(Locale.ENGLISH);
-
-        if (c > 0xfff) {
-            return "\\u" + hex;
-        }
-        if (c > 0xff) {
-            return "\\u0" + hex;
-        }
-        if (c > 0xf) {
-            return "\\u00" + hex;
-        }
-        return "\\u000" + hex;
-
-    }
-
-
-
-    private static void unescapeJavaAny(final String text, final Writer writer)
-            throws IOException {
-
-
-        Validate.notNull(writer, "Writer cannot be null");
-
-        if (text == null) {
-            return;
-        }
-
-        final char[] unicodeSpec = new char[4];
-        int unicodeOff = -1;
-
-        boolean lastWasEscape = false;
-
-        final int textLen = text.length();
-        for (int i = 0; i < textLen; i++) {
-
-            final char c = text.charAt(i);
-
-            if (unicodeOff >= 0) {
-
-                unicodeSpec[unicodeOff++] = c;
-
-                if (unicodeOff > 3) {
-                    // Unicode spec is complete
-
-                    try {
-                        //noinspection MagicNumber
-                        writer.write((char) Integer.parseInt(new String(unicodeSpec), 16));
-                    } catch (final NumberFormatException e) {
-                        throw new RuntimeException(
-                                "Unable to parse unicode value: " + new String(unicodeSpec), e);
-                    }
-
-                    unicodeOff = -1;
-
-                }
-
-            } else if (lastWasEscape) {
-                // We read a \ character, so this is an escaped char
-
-                switch (c) {
-
-                    case '\\':
-                        writer.write('\\');
-                        break;
-                    case '\"':
-                        writer.write('"');
-                        break;
-                    case '\'':
-                        writer.write('\'');
-                        break;
-                    case 'b':
-                        writer.write('\b');
-                        break;
-                    case 'f':
-                        writer.write('\f');
-                        break;
-                    case 'n':
-                        writer.write('\n');
-                        break;
-                    case 'r':
-                        writer.write('\r');
-                        break;
-                    case 't':
-                        writer.write('\t');
-                        break;
-                    case 'u':
-                        // we are in fact reading a unicode char
-                        unicodeOff = 0;
-                        break;
-                    default:
-                        // it is any other kind of escaped char, probably one that didn't
-                        // really need to be escaped (e.g. brackets or similar). Just output it.
-                        writer.write(c);
-                        break;
-
-                }
-
-                lastWasEscape = false;
-
-            } else if (c == '\\') {
-
-                lastWasEscape = true;
-
-            } else {
-
-                writer.write(c);
-                lastWasEscape = false;
-
-            }
-
-        }
-
-        if (unicodeOff >= 0) {
-            writer.write('\\');
-            writer.write('u');
-            writer.write(unicodeSpec, 0, unicodeOff);
-        } else if (lastWasEscape) {
-            writer.write('\\');
-        }
-
+        return JavaEscape.unescapeJava(target.toString());
     }
 
 
