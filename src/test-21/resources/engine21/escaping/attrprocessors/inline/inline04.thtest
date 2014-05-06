@@ -1,0 +1,17 @@
+%EXTENDS ../../escaping.common
+# ------------------------------------------------------------
+%CONTEXT
+foo1 = 'An A with accent is: \\'\u00E1\\''
+foo2 = 'An A with accent and company is: \\'\u00E1A\\''
+# ------------------------------------------------------------
+%INPUT
+<script th:inline="javascript">
+    var foo1 = /*[[${foo1}]]*/ 'hello!';
+    var foo2 = /*[[${foo2}]]*/ 'hello!';
+</script>
+# ------------------------------------------------------------
+%OUTPUT
+<script> 
+    var foo1 = 'An A with accent is: \'\xE1\'';
+    var foo2 = 'An A with accent and company is: \'\xE1A\'';
+</script>
