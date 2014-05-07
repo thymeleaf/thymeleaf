@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine21.springintegration.context.ErrorsSpringIntegrationWebProcessingContextBuilder;
 import org.thymeleaf.engine21.springintegration.context.SpringIntegrationWebProcessingContextBuilder;
-import org.thymeleaf.engine21.springintegration.model.BeansBenchmarkTestReporter;
 import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.tests.util.SpringSpecificVersionUtils;
 
@@ -84,24 +83,6 @@ public class SpringIntegration21Test {
     }
 
 
-
-    @Test
-    public void testBeansBenchmark() throws Exception {
-
-        final TestExecutor executor = new TestExecutor();
-        executor.setProcessingContextBuilder(
-                new org.thymeleaf.engine.springintegration.context.SpringIntegrationWebProcessingContextBuilder(
-                        "classpath:engine21/springintegration/applicationContext-beans.xml"));
-        executor.setDialects(Arrays.asList(new IDialect[]{SpringSpecificVersionUtils.createSpringStandardDialectInstance()}));
-
-        executor.setReporter(new BeansBenchmarkTestReporter());
-
-        executor.execute("classpath:engine21/springintegration/beans/beans-benchmark.thindex");
-
-
-        Assert.assertTrue(executor.isAllOK());
-
-    }
 
 
 }
