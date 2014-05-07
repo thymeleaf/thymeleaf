@@ -1,0 +1,29 @@
+%EXTENDS ../springintegration.common
+# ------------------------------------------------------------
+%INPUT
+<body th:with="domainValues=${beans.domainValues}">
+  <ul>
+    <li th:each="domainValue : ${domainValues}" th:text="${domainValue.value}">...</li>
+  </ul>
+</body>
+# ------------------------------------------------------------
+%OUTPUT
+<body>
+  <ul>
+    <li>ONE1</li>
+    <li>TWO2</li>
+    <li>THREE3</li>
+    <li>FOUR4</li>
+    <li>FIVE5</li>
+    <li>SIX6</li>
+    <li>SEVEN7</li>
+    <li>EIGHT8</li>
+    <li>NINE9</li>
+    <li>TEN10</li>
+    <li>ELEVEN11</li>
+    <li>TWELVE12</li>
+    <li>THIRTEEN13</li>
+    <li>FOURTEEN14</li>
+    <li>FIFTEEN15</li>
+  </ul>
+</body>
