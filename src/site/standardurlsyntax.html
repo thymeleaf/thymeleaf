@@ -65,7 +65,7 @@
 
      <p>
        The Thymeleaf standard dialects &mdash;called <i>Standard</i> and <i>SpringStandard</i>&mdash; offer a way to easily create 
-       URLs in your web application so that they include any required <i>URL preparation</i> artifacts. This is done by means of the 
+       URLs in your web applications so that they include any required <i>URL preparation</i> artifacts. This is done by means of the
        so-called <i>&#8220;at&#8221; syntax</i> of the <i>standard expressions</i>: <kbd>@{...}</kbd>
      </p>
 
@@ -83,7 +83,8 @@
      ]]></script>
 
      <p>
-       They are not modified at all:
+       They are not modified at all (unless you have an <em>URL Rewriting</em> filter
+       configured at your server):
      </p>
 
      <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
@@ -119,30 +120,6 @@
 
 
 
-     <h3>URL Rewriting</h3>
-
-     <p>
-       Rewriting <i>context-relative</i> URLs means to:
-     </p>
-     
-     <ul>
-       <li>
-         Automatically add the context name to context-relative URLs, as already seen.
-       </li>
-       <li>
-         Automatically detect whether the user has cookies enabled or not, and
-         add the <kbd>;jsessionid=...</kbd> fragment to the URL if not &mdash;or if it is the 
-         first request and cookie configuration is still unknown.
-       </li>
-     </ul>
-
-     <p>
-       All of this is automatically done when outputting this kind of URLs, because thymeleaf will
-       apply the standard application server's <kbd>response.encodeURL(url)</kbd> mechanism before outputting any URL.
-     </p>
-
-
-
      <h2>Server-relative URLs</h2>
 
      <p>
@@ -163,10 +140,6 @@
      <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
          <a href="/billing-app/showDetails.htm">
      ]]></script>
-     
-     <p>
-       <i>(Note that server-relative URLs are only available since Thymeleaf 2.0.5)</i>
-     </p>
 
 
 
@@ -228,6 +201,24 @@
          <a href="/order/details?id=3&action=show_all">
      ]]></script>
 
+     <p>
+       You can also include parameters in the form of <em>path variables</em> similarly
+       to <em>normal</em> parameters but specifying a placeholder inside your URL's path:
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a th:href="@{/order/{id}/details(id=3,action='show_all')}">
+     ]]></script>
+
+     <p>
+         Which would output as:
+     </p>
+
+     <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
+         <a href="/order/3/details?action=show_all">
+     ]]></script>
+
+
 
      <h2>URL fragment identifiers</h2>
 
@@ -247,9 +238,40 @@
      <script type="syntaxhighlighter" class="brush:html;gutter:false"><![CDATA[
          <a href="/home?action=show#all_info">
      ]]></script>
-     
+
+
+
+     <h2>URL Rewriting</h2>
+
      <p>
-       <i>(Note that fragment identifiers in parameterized URLs are only supported since Thymeleaf 2.0.7)</i>
+       Thymeleaf allows you to configure <em>URL rewriting filters</em> in your applications,
+       and it does so by calling the <kbd>response.encodeURL(...)</kbd> method in the
+       <kbd>javax.servlet.http.HttpServletResponse</kbd> class of the Servlet API for every URL
+       generated from a thymeleaf template.
+     </p>
+     <p>
+       This is the standard way of supporting URL rewriting operations in Java web applications,
+       and allows URLs to:
+     </p>
+
+     <ul>
+         <li>
+             Automatically detect whether the user has cookies enabled or not, and
+             add the <kbd>;jsessionid=...</kbd> fragment to the URL if not &mdash;or if it is the
+             first request and cookie configuration is still unknown.
+         </li>
+         <li>
+             Automaticallty apply proxy configuration to URLs when needed.
+         </li>
+         <li>
+             Make use (if configured so) of different CDN (Content Delivery Network) setups,
+             in order to link to content distributed among several servers.
+         </li>
+     </ul>
+
+     <p>
+         A very common (and recommended) technology for URL rewriting is
+         <a href="http://tuckey.org/urlrewrite/" target="_blank">URLRewriteFilter</a>.
      </p>
 
 
