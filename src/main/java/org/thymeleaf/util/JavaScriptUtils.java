@@ -25,6 +25,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -155,6 +156,10 @@ public final class JavaScriptUtils {
             printBoolean(output, (Boolean) object);
             return;
         }
+        if (object instanceof java.sql.Date) {
+            printDate(output, (java.sql.Date) object);
+            return;
+        }
         if (object.getClass().isArray()) {
             printArray(output, object);
             return;
@@ -164,7 +169,7 @@ public final class JavaScriptUtils {
             return;
         }
         if (object instanceof Map<?,?>) {
-            printMap(output, (Map<?,?>) object);
+            printMap(output, (Map<?, ?>) object);
             return;
         }
         if (object.getClass().isEnum()) {
@@ -194,6 +199,11 @@ public final class JavaScriptUtils {
 
     private static void printBoolean(final StringBuilder output, final Boolean bool) {
         output.append(bool.toString());
+    }
+
+
+    private static void printDate(final StringBuilder output, final java.sql.Date date) {
+        output.append(new Date(date.getTime()).toString());
     }
 
 
