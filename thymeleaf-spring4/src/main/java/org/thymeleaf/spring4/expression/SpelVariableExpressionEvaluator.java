@@ -90,7 +90,7 @@ public class SpelVariableExpressionEvaluator
 
 
             if (expContext.getPerformTypeConversion()) {
-                // This is a *{{...}} expression, so we should use binding info (if available) for formatting.
+                // This is a {{...}} expression, so we should use binding info (if available) for formatting.
 
                 if (useSelectionAsRoot || !isLocalVariableOverriding(processingContext, spelExpression)) {
                     // The "local variable override" check avoid scenarios where a locally defined variable
@@ -135,15 +135,23 @@ public class SpelVariableExpressionEvaluator
             
             setVariableRestrictions(expContext, evaluationRoot, contextVariables);
 
-            final Object result = exp.getValue(evaluationContext, evaluationRoot);
-
             if (!expContext.getPerformTypeConversion()) {
-                return result;
+                return exp.getValue(evaluationContext, evaluationRoot);
             }
 
             final IStandardConversionService conversionService =
                     StandardExpressions.getConversionService(configuration);
 
+            if (conversionService instanceof SpringStandardConversionService) {
+                // The conversion service is a mere bridge with the Spring ConversionService, therefore
+                // this makes use of the complete Spring type conversion infrastructure, without needing
+                // to manually execute the conversion.
+                return exp.getValue(evaluationContext, evaluationRoot, String.class);
+            }
+
+            // We need type conversion, but conversion service is not a mere bridge to the Spring one,
+            // so we need manual execution.
+            final Object result = exp.getValue(evaluationContext, evaluationRoot);
             return conversionService.convert(configuration, processingContext, result, String.class);
 
 
