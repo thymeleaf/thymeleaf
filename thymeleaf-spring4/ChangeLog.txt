@@ -2,6 +2,8 @@
 =====
 - Added MapAccessor to ThymeleafEvaluationContext in order to allow dot syntax accessing map
   context variables in expressions: ${oneMap.oneKey}
+- Enhanced delegation of the execution of Spring EL expressions into Spring's own infrastructure
+  fixing, among other scenarios, the correct conversion of iterated objects.
 
 
 2.1.2 (created thymeleaf-spring4 package from thymeleaf-spring3)
