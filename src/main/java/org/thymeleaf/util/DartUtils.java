@@ -156,8 +156,8 @@ public final class DartUtils {
             printBoolean(output, (Boolean) object);
             return;
         }
-        if (object instanceof java.sql.Date) {
-            printDate(output, (java.sql.Date) object);
+        if (object instanceof Date) {
+            printDate(output, (Date) object);
             return;
         }
         if (object.getClass().isArray()) {
@@ -202,8 +202,8 @@ public final class DartUtils {
     }
 
 
-    private static void printDate(final StringBuilder output, final java.sql.Date date) {
-        output.append(new Date(date.getTime()).toString());
+    private static void printDate(final StringBuilder output, final Date date) {
+        output.append((date instanceof java.sql.Date ? new Date(date.getTime()) : date).toString());
     }
 
 
