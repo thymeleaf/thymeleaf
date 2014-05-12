@@ -1,5 +1,6 @@
 2.0.21
 ======
+- Improved representation of java.util.Date and java.sql.Date objects in JavaScript inlining operations.
 - Fixed parameter names not being URL-encoded in Link Expressions: @{/order/details('one parameter'='one value')}
 - Fixed XHTML 1.1 DTDs not being valid (DTD parsing error).
 - Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
