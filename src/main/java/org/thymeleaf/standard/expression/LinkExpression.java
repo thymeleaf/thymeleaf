@@ -233,6 +233,20 @@ public final class LinkExpression extends SimpleExpression {
             final IProcessingContext processingContext, final LinkExpression expression, 
             final StandardExpressionExecutionContext expContext) {
 
+        /*
+         *  DEVELOPMENT NOTE: Reasons why Spring's RequestDataValueProcessor#processUrl(...) is not applied here
+         *                    instead of at th:href and th:src.
+         *
+         *      1. Reduce complexity, as Dialects would need to add one more execution attribute for a wrapper
+         *         able to apply such post-processor.
+         *      2. Avoid link expressions in "th:action" be applied "processUrl(...)" and then "processAction(...)",
+         *         which would break compatiliby with Spring's FormTag class.
+         *         - The only way to avoid this would be to mess around with StandardExpressionExecutionContexts,
+         *           which would mean much more complexity.
+         *      3. Avoid that URLs that are not link expressions (or not only) but are anyway expressed with th:href
+         *         or th:src end up not being processed.
+         */
+
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating link: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
