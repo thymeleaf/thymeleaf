@@ -2,7 +2,7 @@
 =====
 - Added support for variable templates in Link Expressions: @{/order/details/{id}/{action}(id=3,action='show_all')}
 - Added new th:styleappend attribute for adding content to the existing 'style' attribute value in a tag.
-- Added #strings.defaultString(str,default) as an alias for ${str == null || str.isEmpty()} ? ${str} : ${default}
+- Added #strings.defaultString(str,default) as an alias for ${str == null || str.isEmpty()} ? ${default} : ${str}
 - Improved representation of java.util.Date and java.sql.Date objects in JavaScript inlining operations.
 - Fixed several escaping issues by implementing a new markup escape/unescape mechanism based on the Unbescape
   library [ http://www.unbescape.org ]. Deprecated old escaping artifacts in the DOMUtils class.
