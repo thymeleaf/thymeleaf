@@ -621,8 +621,59 @@ public final class Calendars {
         }
         return result;
     }
-    
-    
-    
-    
+
+
+
+    /**
+     *
+     * @since 2.1.4
+     */
+    public String formatISO(final Calendar target) {
+        try {
+            return DateUtils.formatISO(target);
+        } catch (final Exception e) {
+            throw new TemplateProcessingException("Error formatting calendar as ISO8601", e);
+        }
+    }
+
+    /**
+     *
+     * @since 2.1.4
+     */
+    public String[] arrayFormatISO(final Object[] target) {
+        Validate.notNull(target, "Target cannot be null");
+        final String[] result = new String[target.length];
+        for (int i = 0; i < target.length; i++) {
+            result[i] = formatISO((Calendar) target[i]);
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @since 2.1.4
+     */
+    public List<String> listFormatISO(final List<? extends Calendar> target) {
+        Validate.notNull(target, "Target cannot be null");
+        final List<String> result = new ArrayList<String>(target.size() + 2);
+        for (final Calendar element : target) {
+            result.add(formatISO(element));
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @since 2.1.4
+     */
+    public Set<String> setFormatISO(final Set<? extends Calendar> target) {
+        Validate.notNull(target, "Target cannot be null");
+        final Set<String> result = new LinkedHashSet<String>(target.size() + 2);
+        for (final Calendar element : target) {
+            result.add(formatISO(element));
+        }
+        return result;
+    }
+
+
 }
