@@ -486,3 +486,47 @@ ul.ecosystem-item-content li.ecosystem-item-links ul li {
   margin-left: 0px;
   margin-right: 15px;
 }
+
+
+
+.ecosystemTable {
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+.ecosystemTable table tr.official-item td {
+  background-color: #ffffff;
+}
+.ecosystemTable table tr.official-item td.title {
+  padding-top: 14px;
+  padding-bottom: 10px;
+  font-size: 20px;
+  font-weight: bold;
+  background-image: url('../images/thymeleaflogotiny.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 25px;
+  vertical-align: middle;
+  border-bottom: 1px solid #000;
+}
+.ecosystemTable table tr.official-item td.title a {
+  border-bottom: 0px;
+}
+.ecosystemTable table tr.official-item td.text {
+  padding-bottom: 20px;
+  vertical-align: top;
+  text-align: left;
+  padding-left: 0px;
+  padding-right: 0px;
+/*  font-style: italic;*/
+  font-size: 13px;
+}
+.ecosystemTable table tr.official-item td.text p {
+  margin: 15px 0px;
+}
+.ecosystemTable table tr.official-item td.text ul {
+  margin: 10px 20px;
+  padding-left: 15px;
+}
+.ecosystemTable table tr.official-item td.text div.screenshot {
+    text-align: center;
+}

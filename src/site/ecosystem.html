@@ -61,13 +61,211 @@
 
 
     <p>
-        The Thymeleaf ecosystem is composed of <em>official extensions</em>, created by the Thymeleaf Team and officially
-        supported as a part of the project, and also <em>unofficial extensions</em>, linked from this page but developed
-        and maintained by Thymeleaf users outside of the Thymeleaf Project and distributed under their own license and
-        support terms.
+        The <strong>Thymeleaf ecosystem</strong> is composed of <em>official tools and extensions</em>, created by the 
+        Thymeleaf Team and officially supported as a part of the project, and also <em>unofficial tools and extensions</em>, 
+        linked from this page but developed and maintained by Thymeleaf users outside of the Thymeleaf Project and 
+        distributed under their own license and support terms.
     </p>
 
-    <h2>Official Extensions</h2>
+    <h2>Official Tools &amp; Extensions</h2>
+
+    <p>
+        The artifacts listed in this section are auxiliary libraries, tools or integration modules that are not
+        directly a part of the Thymeleaf core but are part of the project, <em>developed and supported by
+        the <a href="team.html">Thymeleaf Team</a></em>.
+    </p>
+
+    <div class="semiwidetable ecosystemTable">
+        <table>
+          <tbody>
+
+              <tr class="official-item">
+                  <td colspan="2" class="title"><a href="https://github.com/thymeleaf/thymeleaf-testing" target="_blank">Thymeleaf Testing library</a></td>
+              </tr>
+              <tr class="official-item">
+                  <td class="text">
+                      <p>
+                          The Thymeleaf Testing library allows the creation of automated tests for Thymeleaf
+                          applications and extensions in a very easy and declarative way. Amont its features:
+                      </p>
+                      <ul>
+                          <li>Works as an independent library, <strong>callable from multiple testing frameworks</strong> like e.g. JUnit.</li>
+                          <li><strong>Tests only the view layer</strong>: template processing and its result.</li>
+                          <li>Includes <strong>benchmarking</strong> facilities: all tests are timed, times are aggregated.</li>
+                          <li>Highly extensible and configurable.</li>
+                          <li>Versatile testing artifacts: test sequences, iteration, concurrent execution...</li>
+                          <li>Based on interfaces. Out-of-the-box standard test resolution allows:
+                            <ul>
+                              <li>Easy specification of tests as simple text files, sequences as folders.</li>
+                              <li>Advanced test configuration.</li>
+                              <li>Test inheritance.</li>
+                              <li>Lenient result matching, ignoring excess unneeded whitespace etc.</li>
+                            </ul>
+                          </li>
+                          <li><strong>Spring Framework</strong> and <strong>Spring Security</strong> integration.</li>
+                      </ul>
+
+                      <p>
+                          Test specifications can be as simple as this:
+                      </p>
+
+                      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+%TEMPLATE_MODE HTML5
+# ------------ separator comment -----------
+%CONTEXT
+onevar = 'Goodbye,'
+# ------------------------------------------
+%MESSAGES
+one.msg = Crisis
+# ------------------------------------------
+%INPUT
+<!DOCTYPE html>
+<html>
+  <body>
+      <span th:text="${onevar}">Hello,</span>
+      <span th:text="#{one.msg}">World!</span>
+  </body>
+</html>
+# ------------------------------------------
+%OUTPUT
+<!DOCTYPE html>
+<html>
+  <body>
+      <span>Goodbye,</span>
+      <span>Crisis</span>
+  </body>
+</html>
+]]></script>
+
+                      <p>
+                          More at the project site: <a href="https://github.com/thymeleaf/thymeleaf-testing" target="_blank">https://github.com/thymeleaf/thymeleaf-testing</a>
+                      </p>
+
+                  </td>
+              </tr>
+
+
+
+              <tr class="official-item">
+                  <td colspan="2" class="title"><a href="https://github.com/thymeleaf/thymeleaf-extras-eclipse-plugin" target="_blank">Thymeleaf Eclipse IDE plugin</a></td>
+              </tr>
+              <tr class="official-item">
+                  <td class="text">
+                      <p>
+                          A plugin for the Eclipse IDE to add <strong>content</strong> assist features for the Thymeleaf standard
+                          dialect processors and expression utility objects, using the Eclipse Web Tools Platform HTML source editor.
+                      </p>
+
+                      <div class="screenshot">
+                          <img src="images/ecosystem_official_image_eclipse_plugin.png" width="800" height="400" />
+                      </div>
+
+                      <p>
+                          More at the project site: <a href="https://github.com/thymeleaf/thymeleaf-extras-eclipse-plugin" target="_blank">https://github.com/thymeleaf/thymeleaf-extras-eclipse-plugin</a>
+                      </p>
+
+                  </td>
+              </tr>
+
+
+
+
+              <tr class="official-item">
+                  <td colspan="2" class="title"><a href="https://github.com/thymeleaf/thymeleaf-extras-tiles2" target="_blank">Thymeleaf + Apache Tiles 2</a></td>
+              </tr>
+              <tr class="official-item">
+                  <td class="text">
+                      <p>
+                          The Thymeleaf Extras Tiles 2 library is a dialect that allows using Apache Tiles 2
+                          as the layout method of our Thymeleaf-based application. Features:
+                      </p>
+                      <ul>
+                          <li>(Optional) <strong>Spring MVC 3</strong> integration</li>
+                          <li>(Optional) <strong>Spring Web Flow 2.3</strong> integration, with AJAX fragment rendering support.</li>
+                          <li>Use Thymeleaf in your <strong>Tiles definitions</strong>:
+                              <ul>
+                                  <li>Use Thymeleaf templates.</li>
+                                  <li>Include Thymeleaf templates (or fragments of templates) as attributes.</li>
+                                  <li>Compatible with Tiles definition wildcards (Tiles 2.2.2+).</li>
+                                  <li>Thymeleaf template/attribute definitions can include selectors (similar to th:include/th:replace):
+                                      <ul>
+                                          <li>By fragment name: <kbd>"template :: fragment"</kbd></li>
+                                          <li>By DOM selector: <kbd>"template :: div#content"</kbd></li>
+                                          <li>Can include Standard Expressions: <kbd>"${templateName} :: ${conf.fragName}"</kbd></li>
+                                      </ul>
+                                  </li>
+                              </ul>
+                          </li>
+                          <li>New <kbd>tiles</kbd> <strong>dialect</strong>:
+                              <ul>
+                                  <li><kbd>tiles:include</kbd> / <kbd>tiles:replace</kbd> for including Tiles attributes.</li>
+                                  <li><kbd>tiles:fragment</kbd> for signaling fragments to be included as attributes.</li>
+                                  <li><kbd>tiles:string</kbd> for inserting String-type Tiles attributes.</li>
+                              </ul>
+                          </li>
+                          <li>Enable <strong>Natural templating</strong> in your Tiles markup fragments:
+                              <ul>
+                                  <li>It allows you to use only specific parts of your templates as <em>Tiles attributes</em>.</li>
+                                  <li>You can add markup and styling surrounding those specific parts for static prototyping purposes.</li>
+                              </ul>
+                          </li>
+                          <li><strong>Mix JSPs and Thymeleaf templates</strong> in the same definition, for better legacy integration / migration.
+                              <ul>
+                                  <li>Thymeleaf fragment templates see variables defined in higher-level containing layout templates.</li>
+                                  <li>JSP fragments see variables defined in higher-level containing JSP/Thymeleaf templates. And viceversa.</li>
+                              </ul>
+                          </li>
+                      </ul>
+
+                      <p>
+                          With this library, Tiles definitions can specify Thymeleaf templates, or even only fragments
+                          of them (in the usual <kbd>th:include</kbd> notation):
+                      </p>
+
+                      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+    <tiles-definitions>
+      ...
+      <definition name="main" template="basic_layout">
+        <put-attribute name="content">
+          <definition template="basic_contentlayout :: content">
+            <put-attribute name="text" value="main :: text" />
+          </definition>
+        </put-attribute>
+        <put-attribute name="side" value="${config.sideColumnTemplate}" />
+      </definition>
+      ...
+    </tiles-definitions>
+]]></script>
+
+                      <p>
+                          ...and templates can call Tiles to include other parts of the layout:
+                      </p>
+
+                      <script type="syntaxhighlighter" class="brush:xml"><![CDATA[
+    <html xmlns:th="http://www.thymeleaf.org" xmlns:tiles="http://www.thymeleaf.org">
+      ...
+      <body>
+        ...
+        <div tiles:include="side">
+           some prototyping markup over here...
+        </div>
+        ...
+      </body>
+    </html>
+]]></script>
+
+                      <p>
+                          More at the project site: <a href="https://github.com/thymeleaf/thymeleaf-extras-tiles2" target="_blank">https://github.com/thymeleaf/thymeleaf-thymeleaf-extras-tiles2</a>
+                      </p>
+
+                  </td>
+              </tr>
+
+
+          </tbody>
+        </table>
+    </div>
+
 
     <ul>
 
