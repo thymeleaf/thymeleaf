@@ -453,66 +453,103 @@ div.semiwidetable {
 /* ---------------------- */
 /* ECOSYSTEM PAGE         */
 /* ---------------------- */
-.ecosystem-item {
-  margin-bottom: 30px;
+ul.ecosystem-item-enumeration {
+  margin: 20px 30px;
+  padding: 0px 0px;
 }
-.ecosystem-item-name {
-  font-weight: bold;
-}
-.ecosystem-item .ecosystem-item-status {
-    font-size: 12px;
-    color: #999;
-    font-style: italic;
-    padding-left: 4px;
-}
-ul.ecosystem-item-content {
+ul.ecosystem-item-enumeration li.ecosystem-item {
   list-style: none;
+  margin: 5px 5px;
+  padding: 10px 10px;
 }
-ul.ecosystem-item-content li.ecosystem-item-links, ul.ecosystem-item-content li.ecosystem-item-links a {
+ul.ecosystem-item-enumeration li.ecosystem-item:not(:last-child) {
+  border-bottom: 1px dashed #c0c0c0;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-name {
+  font-weight: bold;
+  color: #444;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-name::before {
+  content: "\25AA  "
+}
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-status {
   font-size: 12px;
   color: #999;
+  font-style: italic;
+  padding-left: 4px;
 }
-ul.ecosystem-item-content li.ecosystem-item-links a {
-  font-weight: bold;
-}
-ul.ecosystem-item-content li.ecosystem-item-links ul {
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content {
+  padding-top: 5px;
   list-style: none;
-  padding-left: 0px;
-  margin-left: 0px;
 }
-ul.ecosystem-item-content li.ecosystem-item-links ul li {
-  display: inline;
-  padding-left: 0px;
-  margin-left: 0px;
-  margin-right: 15px;
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content p {
+  margin: 10px 0px 10px 30px;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content .ecosystem-item-links {
+  margin-top: 5px;
+  font-size: 13px;
+  font-style: normal;
+  color: #666;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content .ecosystem-item-links a {
+  color: #666;
+  text-decoration: none;
+  border: 0px;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content .ecosystem-item-links a:hover {
+  border-bottom: 1px dotted #352726;
+}
+
+ul.ecosystem-item-enumeration li.ecosystem-item.featured {
+  border: 1px dotted #AAA;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  background-color: #F8F8F8;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item.featured .ecosystem-item-name {
+  font-size: 18px;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item.featured .ecosystem-item-name::before {
+  content: "\25BA  "
+}
+ul.ecosystem-item-enumeration li.ecosystem-item.featured .ecosystem-item-content {
+  padding-top: 12px;
+}
+ul.ecosystem-item-enumeration li.ecosystem-item.featured .ecosystem-item-content .ecosystem-item-links {
+  margin-top: 15px;
+  border-top: 1px dotted #D0D0D0;
 }
 
 
-
-.ecosystemTable {
-  margin-top: 50px;
-  margin-bottom: 50px;
+.ecosystemOfficialTable {
+  margin: 50px 40px;
 }
-.ecosystemTable table tr.official-item td {
+.ecosystemOfficialTable table {
+  width: 100%;
+}
+.ecosystemOfficialTable table tr.official-item td {
   background-color: #ffffff;
 }
-.ecosystemTable table tr.official-item td.title {
+.ecosystemOfficialTable table tr.official-item td.title {
   padding-top: 14px;
   padding-bottom: 10px;
-  font-size: 20px;
+  color: #444;
+  font-size: 18px;
   font-weight: bold;
   background-image: url('../images/thymeleaflogotiny.png');
   background-repeat: no-repeat;
   background-position: left center;
   padding-left: 25px;
   vertical-align: middle;
-  border-bottom: 1px solid #000;
+  border-bottom: 1px dashed #000;
 }
-.ecosystemTable table tr.official-item td.title a {
+.ecosystemOfficialTable table tr.official-item td.title a {
+  color: inherit;
   border-bottom: 0px;
 }
-.ecosystemTable table tr.official-item td.text {
-  padding-bottom: 20px;
+.ecosystemOfficialTable table tr.official-item td.text {
+  padding-bottom: 40px;
   vertical-align: top;
   text-align: left;
   padding-left: 0px;
@@ -520,13 +557,13 @@ ul.ecosystem-item-content li.ecosystem-item-links ul li {
 /*  font-style: italic;*/
   font-size: 13px;
 }
-.ecosystemTable table tr.official-item td.text p {
+.ecosystemOfficialTable table tr.official-item td.text p {
   margin: 15px 0px;
 }
-.ecosystemTable table tr.official-item td.text ul {
+.ecosystemOfficialTable table tr.official-item td.text ul {
   margin: 10px 20px;
   padding-left: 15px;
 }
-.ecosystemTable table tr.official-item td.text div.screenshot {
-    text-align: center;
+.ecosystemOfficialTable table tr.official-item td.text div.screenshot {
+  text-align: center;
 }
