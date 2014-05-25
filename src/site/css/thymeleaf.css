@@ -483,10 +483,10 @@ ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content {
   list-style: none;
 }
 ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content p {
-  margin: 10px 0px 10px 30px;
+  margin: 10px 20px 10px 30px;
 }
 ul.ecosystem-item-enumeration li.ecosystem-item .ecosystem-item-content .ecosystem-item-links {
-  margin-top: 5px;
+  margin-top: 8px;
   font-size: 13px;
   font-style: normal;
   color: #666;
@@ -518,7 +518,6 @@ ul.ecosystem-item-enumeration li.ecosystem-item.featured .ecosystem-item-content
 }
 ul.ecosystem-item-enumeration li.ecosystem-item.featured .ecosystem-item-content .ecosystem-item-links {
   margin-top: 15px;
-  border-top: 1px dotted #D0D0D0;
 }
 
 
