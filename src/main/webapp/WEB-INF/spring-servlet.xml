@@ -51,7 +51,7 @@
   </bean>
     
   <bean id="templateEngine"
-        class="org.thymeleaf.spring3.SpringTemplateEngine">
+        class="org.thymeleaf.spring4.SpringTemplateEngine">
     <property name="templateResolver" ref="templateResolver" />
     <property name="additionalDialects">
       <set>
@@ -60,7 +60,7 @@
     </property>
   </bean>
    
-  <bean class="org.thymeleaf.spring3.view.ThymeleafViewResolver">
+  <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
     <property name="templateEngine" ref="templateEngine" />
   </bean>    
    

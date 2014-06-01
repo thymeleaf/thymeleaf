@@ -30,7 +30,7 @@ import org.thymeleaf.dom.Element;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.processor.element.AbstractMarkupSubstitutionElementProcessor;
-import org.thymeleaf.spring3.context.SpringWebContext;
+import org.thymeleaf.spring4.context.SpringWebContext;
 import thymeleafexamples.extrathyme.business.entities.Headline;
 import thymeleafexamples.extrathyme.business.entities.repositories.HeadlineRepository;
 
