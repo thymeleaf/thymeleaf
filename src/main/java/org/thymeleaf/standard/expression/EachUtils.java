@@ -22,7 +22,6 @@ package org.thymeleaf.standard.expression;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -61,7 +60,7 @@ public final class EachUtils {
             }
         }
 
-        final Each each = internalParseEach(DOMUtils.unescapeXml(preprocessedInput.trim(), true));
+        final Each each = internalParseEach(preprocessedInput.trim());
 
         if (each == null) {
             throw new TemplateProcessingException("Could not parse as each: \"" + input + "\"");

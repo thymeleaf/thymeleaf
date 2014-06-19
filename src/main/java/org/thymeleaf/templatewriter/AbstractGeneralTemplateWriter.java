@@ -35,7 +35,6 @@ import org.thymeleaf.dom.GroupNode;
 import org.thymeleaf.dom.Macro;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -212,12 +211,12 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
                     writer.write(' ');
                     writer.write(attribute.getOriginalName());
                     
-                    final String attrValue = attribute.getValue();
+                    final String attrValue = attribute.getEscapedValue();
                     if (!(attrValue == null && attribute.isOnlyName())) {
                         writer.write('=');
                         writer.write('\"');
                         if (attrValue != null) {
-                            writer.write(DOMUtils.escapeXml(attrValue, true));                        
+                            writer.write(attrValue);
                         }
                         writer.write('\"');
                     }
@@ -305,7 +304,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     protected void writeCDATASection(final Arguments arguments, final Writer writer, final CDATASection cdataSection) 
             throws IOException {
         writer.write(CDATA_PREFIX);
-        writer.write(cdataSection.getContent());
+        writer.write(cdataSection.getEscapedContent());
         writer.write(CDATA_SUFFIX);
     }
 
@@ -324,7 +323,7 @@ public abstract class AbstractGeneralTemplateWriter implements ITemplateWriter {
     @SuppressWarnings("unused")
     protected void writeText(final Arguments arguments, final Writer writer, final Text text) 
             throws IOException {
-        writer.write(text.getContent());
+        writer.write(text.getEscapedContent());
     }
 
     

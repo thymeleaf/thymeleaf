@@ -67,6 +67,7 @@ import org.thymeleaf.standard.processor.attr.StandardReplaceFragmentAttrProcesso
 import org.thymeleaf.standard.processor.attr.StandardSingleNonRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSingleRemovableAttributeModifierAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSrcAttrProcessor;
+import org.thymeleaf.standard.processor.attr.StandardStyleappendAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSubstituteByFragmentAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardSwitchAttrProcessor;
 import org.thymeleaf.standard.processor.attr.StandardTextAttrProcessor;
@@ -111,6 +112,7 @@ import org.thymeleaf.util.Validate;
  *           <li>{@link StandardReplaceFragmentAttrProcessor}</li>
  *           <li>{@link StandardSingleNonRemovableAttributeModifierAttrProcessor}</li>
  *           <li>{@link StandardSingleRemovableAttributeModifierAttrProcessor}</li>
+ *           <li>{@link StandardStyleappendAttrProcessor}</li>
  *           <li>{@link StandardSubstituteByFragmentAttrProcessor}</li>
  *           <li>{@link StandardSwitchAttrProcessor}</li>
  *           <li>{@link StandardTextAttrProcessor}</li>
@@ -802,6 +804,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
         processors.add(new StandardReplaceFragmentAttrProcessor());
         processors.addAll(Arrays.asList(StandardSingleNonRemovableAttributeModifierAttrProcessor.PROCESSORS));
         processors.addAll(Arrays.asList(StandardSingleRemovableAttributeModifierAttrProcessor.PROCESSORS));
+        processors.add(new StandardStyleappendAttrProcessor());
         processors.add(new StandardSubstituteByFragmentAttrProcessor());
         processors.add(new StandardSrcAttrProcessor());
         processors.add(new StandardSwitchAttrProcessor());

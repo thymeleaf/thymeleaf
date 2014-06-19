@@ -21,6 +21,7 @@ package org.thymeleaf.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 
 /**
@@ -234,7 +235,15 @@ public final class AggregateUtils {
         if (size == 0) {
             return null;
         }
-        return total.divide(BigDecimal.valueOf(size));
+        final BigDecimal divisor = BigDecimal.valueOf(size);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     
@@ -256,7 +265,15 @@ public final class AggregateUtils {
         for (final Object element : target) {
             total = total.add(toBigDecimal((Number)element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
 
     
@@ -277,7 +294,15 @@ public final class AggregateUtils {
         for (final byte element : target) {
             total = total.add(toBigDecimal(element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     
@@ -298,7 +323,15 @@ public final class AggregateUtils {
         for (final short element : target) {
             total = total.add(toBigDecimal(element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     
@@ -319,7 +352,15 @@ public final class AggregateUtils {
         for (final int element : target) {
             total = total.add(toBigDecimal(element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     
@@ -340,7 +381,15 @@ public final class AggregateUtils {
         for (final long element : target) {
             total = total.add(toBigDecimal(element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     
@@ -361,7 +410,15 @@ public final class AggregateUtils {
         for (final float element : target) {
             total = total.add(toBigDecimal(element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     
@@ -382,7 +439,15 @@ public final class AggregateUtils {
         for (final double element : target) {
             total = total.add(toBigDecimal(element));
         }
-        return total.divide(BigDecimal.valueOf(target.length));
+        final BigDecimal divisor = BigDecimal.valueOf(target.length);
+        try {
+            return total.divide(divisor);
+        } catch (final ArithmeticException e) {
+            // We will get an arithmetic exception if: 1. Divisor is zero, which is impossible; or 2. Division
+            // returns a number with a non-terminating decimal expansion. In the latter case, we will set the
+            // scale manually.
+            return total.divide(divisor, Math.max(total.scale(), 10), RoundingMode.HALF_UP);
+        }
     }
     
     

@@ -24,7 +24,7 @@
   <groupId>org.thymeleaf</groupId>
   <artifactId>thymeleaf</artifactId>
   <packaging>jar</packaging>
-  <version>2.1.3-SNAPSHOT</version>
+  <version>2.1.4-SNAPSHOT</version>
   <name>thymeleaf</name>
   <url>http://www.thymeleaf.org</url>
 
@@ -285,7 +285,14 @@
       <version>3.16.1-GA</version>
       <scope>compile</scope>
     </dependency>
-  
+
+    <dependency>
+      <groupId>org.unbescape</groupId>
+      <artifactId>unbescape</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -313,7 +320,7 @@
       <version>2.0.1</version>
       <scope>test</scope>
     </dependency>
-        
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>

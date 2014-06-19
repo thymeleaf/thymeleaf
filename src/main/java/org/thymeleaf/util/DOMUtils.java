@@ -165,10 +165,13 @@ public final class DOMUtils {
     }
 
 
-
-
-
-
+    /**
+     * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
+     *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
+     *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
+     *             Will be removed in 3.0.
+     */
+    @Deprecated
     public static char[] escapeXml(final char[] ch, final boolean escapeQuotes) throws IOException {
         
         if (ch == null) {
@@ -186,8 +189,15 @@ public final class DOMUtils {
         return ch;
         
     }
-    
-    
+
+
+    /**
+     * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
+     *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
+     *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
+     *             Will be removed in 3.0.
+     */
+    @Deprecated
     public static String escapeXml(final String str, final boolean escapeQuotes) throws IOException {
         
         if (str == null) {
@@ -207,17 +217,31 @@ public final class DOMUtils {
         return str;
         
     }
-    
-    
 
+
+
+    /**
+     * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
+     *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
+     *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
+     *             Will be removed in 3.0.
+     */
+    @Deprecated
     public static void writeXmlEscaped(final String buffer, final Writer writer, final boolean escapeQuotes) throws IOException {
         if (buffer == null) {
             return;
         }
         writeXmlEscaped(buffer.toCharArray(), writer, escapeQuotes);
     }
-        
-    
+
+
+    /**
+     * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
+     *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
+     *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
+     *             Will be removed in 3.0.
+     */
+    @Deprecated
     public static void writeXmlEscaped(final char[] buffer, final Writer writer, final boolean escapeQuotes) throws IOException {
         
         if (buffer == null || buffer.length == 0) {
@@ -297,9 +321,16 @@ public final class DOMUtils {
         }
         return false;
     }
-    
-    
-    
+
+
+
+    /**
+     * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain unescaped
+     *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
+     *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
+     *             Will be removed in 3.0.
+     */
+    @Deprecated
     public static String unescapeXml(final String str, final boolean unescapeQuotes) {
         
         if (str == null) {

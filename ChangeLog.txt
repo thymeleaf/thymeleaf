@@ -1,3 +1,19 @@
+2.1.3
+=====
+- Added support for variable templates in Link Expressions: @{/order/details/{id}/{action}(id=3,action='show_all')}
+- Added new th:styleappend attribute for adding content to the existing 'style' attribute value in a tag.
+- Added #strings.defaultString(str,default) as an alias for ${str == null || str.isEmpty()} ? ${default} : ${str}
+- Improved representation of java.util.Date and java.sql.Date objects in JavaScript inlining operations.
+- Fixed several escaping issues by implementing a new markup escape/unescape mechanism based on the Unbescape
+  library [ http://www.unbescape.org ]. Deprecated old escaping artifacts in the DOMUtils class.
+- Fixed parameter names not being URL-encoded in Link Expressions: @{/order/details('one parameter'='one value')}
+- Fixed parentheses inside literals in link parameters break Link Expression parsing.
+- Fixed XHTML 1.1 DTDs not being valid (DTD parsing error).
+- Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
+- Fixed arithmetic exception in #aggregates.avg() if result has a non-terminating decimal expansion.
+- Fixed JavaScript inlining not closing expressions properly when they appear between parentheses.
+
+
 2.1.2
 =====
 - Fixed pipe character (|) causing expression parsing exceptions when used inside text literals.

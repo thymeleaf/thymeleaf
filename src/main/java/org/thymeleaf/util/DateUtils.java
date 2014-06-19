@@ -41,6 +41,17 @@ public final class DateUtils {
     
     private static final Map<DateFormatKey,DateFormat> dateFormats = new ConcurrentHashMap<DateFormatKey, DateFormat>();
 
+    /*
+     * This SimpleDateFormat defines an almost-ISO8601 formatter.
+     *
+     * The correct ISO8601 format would be "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", but the "X" pattern (which outputs the
+     * timezone as "+02:00" or "Z" instead of "+0200") was not added until Java SE 7. So the use of this
+     * SimpleDateFormat object requires additional post-processing.
+     *
+     * Note SimpleDateFormat objects are NOT thread-safe, so use of this object must be synchronized.
+     */
+    private static final SimpleDateFormat ISO8601_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZ");
+
     
     
     
@@ -434,11 +445,51 @@ public final class DateUtils {
         }
         
     }
-    
-    
-    
-    
-    
+
+
+
+
+
+    /**
+     *
+     * @since 2.1.4
+     */
+    public static String formatISO(final Object target) {
+
+        Validate.notNull(target, "Cannot apply format on null");
+
+        final java.util.Date targetDate;
+        if (target instanceof Calendar) {
+            targetDate = ((Calendar)target).getTime();
+        } else if (target instanceof java.util.Date) {
+            targetDate = (java.util.Date)target;
+        } else {
+            throw new IllegalArgumentException(
+                    "Cannot format object of class \"" + target.getClass().getName() + "\" as a date");
+        }
+
+        final String formatted;
+        synchronized (ISO8601_DATE_FORMAT) {
+            formatted = ISO8601_DATE_FORMAT.format(targetDate);
+        }
+
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append(formatted, 0, 23);
+
+        final String formattedTimeZone = formatted.substring(23);
+        if (formattedTimeZone.equals("+0000")) {
+            strBuilder.append("Z");
+        } else {
+            strBuilder.append(formattedTimeZone,0,3);
+            strBuilder.append(':');
+            strBuilder.append(formattedTimeZone,3,5);
+        }
+
+        return strBuilder.toString();
+
+    }
+
+
     
     private DateUtils() {
         super();

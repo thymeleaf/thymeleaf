@@ -23,7 +23,6 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -181,7 +180,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
             }
         }
         
-        final Expression expression = Expression.parse(DOMUtils.unescapeXml(preprocessedInput.trim(), true));
+        final Expression expression = Expression.parse(preprocessedInput.trim());
         
         if (expression == null) {
             throw new TemplateProcessingException("Could not parse as expression: \"" + input + "\"");

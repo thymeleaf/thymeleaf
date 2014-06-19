@@ -24,7 +24,9 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -155,6 +157,14 @@ public final class DartUtils {
             printBoolean(output, (Boolean) object);
             return;
         }
+        if (object instanceof Date) {
+            printDate(output, (Date) object);
+            return;
+        }
+        if (object instanceof Calendar) {
+            printDate(output, ((Calendar) object).getTime());
+            return;
+        }
         if (object.getClass().isArray()) {
             printArray(output, object);
             return;
@@ -194,6 +204,13 @@ public final class DartUtils {
 
     private static void printBoolean(final StringBuilder output, final Boolean bool) {
         output.append(bool.toString());
+    }
+
+
+    private static void printDate(final StringBuilder output, final Date date) {
+        output.append('\'');
+        output.append(DateUtils.formatISO(date));
+        output.append('\'');
     }
 
 

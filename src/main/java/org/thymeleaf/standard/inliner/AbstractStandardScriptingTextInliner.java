@@ -71,10 +71,11 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
     
     public final void inline(final Arguments arguments, final AbstractTextNode text) {
         
-        final String content = text.getContent();
+        final String content = text.getOriginalContent();
         final String javascriptContent =
             processScriptingInline(content, arguments);
-        text.setContent(javascriptContent);
+        // We set content as "escaped" in order to avoid further escaping
+        text.setContent(javascriptContent, true);
         
     }
 
@@ -236,7 +237,7 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 arrayLevel--;
             }
             if (literalDelimiter == 0 && arrayLevel == 0 && objectLevel == 0) {
-                if (c == ';' || c == ',') {
+                if (c == ';' || c == ',' || c == ')') {
                     return lineRemainder.substring(i);
                 }
                 if (c == '/' && ((i+1) < len)) {

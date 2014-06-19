@@ -1319,6 +1319,7 @@ several semantically related columns together.
   th:standby         CDATA  #IMPLIED
   th:start           CDATA  #IMPLIED
   th:style           CDATA  #IMPLIED
+  th:styleappend     CDATA  #IMPLIED
   th:substituteby    CDATA  #IMPLIED
   th:summary         CDATA  #IMPLIED
   th:tabindex        CDATA  #IMPLIED

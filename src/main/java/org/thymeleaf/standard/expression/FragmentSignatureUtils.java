@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.thymeleaf.Configuration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -69,7 +68,7 @@ public final class FragmentSignatureUtils {
         }
 
         final FragmentSignature fragmentSignature =
-                FragmentSignatureUtils.internalParseFragmentSignature(DOMUtils.unescapeXml(input.trim(), true));
+                FragmentSignatureUtils.internalParseFragmentSignature(input.trim());
 
         if (fragmentSignature == null) {
             throw new TemplateProcessingException("Could not parse as fragment signature: \"" + input + "\"");

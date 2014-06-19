@@ -32,6 +32,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
+import org.unbescape.html.HtmlEscape;
 
 /**
  * 
@@ -63,10 +64,10 @@ public class StandardTextTextInliner implements IStandardTextInliner {
     
 
     public void inline(final Arguments arguments, final AbstractTextNode text) {
-        final String content = text.getContent();
+        final String content = text.getOriginalContent();
         final String textContent =
             processTextInline(content, arguments);
-        text.setContent(textContent);
+        text.setContent(textContent, true);
     }
     
     
@@ -92,7 +93,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                 
                 strBuilder.append(input.substring(curr,matcher.start(0)));
                 
-                final String match = matcher.group(1);
+                final String match = HtmlEscape.unescapeHtml(matcher.group(1));
                 
                 if (logger.isTraceEnabled()) {
                     logger.trace("[THYMELEAF][{}] Applying text inline evaluation on \"{}\"", TemplateEngine.threadIndex(), match);
@@ -104,7 +105,7 @@ public class StandardTextTextInliner implements IStandardTextInliner {
                             expressionParser.parseExpression(configuration, arguments, match);
                     final Object result = expression.execute(configuration, arguments);
 
-                    strBuilder.append(result);
+                    strBuilder.append(HtmlEscape.escapeHtml4Xml(String.valueOf(result)));
                     
                 } catch (final TemplateProcessingException ignored) {
                     

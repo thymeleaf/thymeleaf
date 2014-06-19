@@ -25,7 +25,6 @@ import java.util.List;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.util.DOMUtils;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -62,7 +61,7 @@ public final class AssignationUtils {
         }
 
         final AssignationSequence assignationSequence =
-                internalParseAssignationSequence(DOMUtils.unescapeXml(preprocessedInput.trim(), true), allowParametersWithoutValue);
+                internalParseAssignationSequence(preprocessedInput.trim(), allowParametersWithoutValue);
 
         if (assignationSequence == null) {
             throw new TemplateProcessingException("Could not parse as assignation sequence: \"" + input + "\"");
