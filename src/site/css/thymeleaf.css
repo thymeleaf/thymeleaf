@@ -202,7 +202,7 @@ h4 {
 #author {
   font-size: 13px;
   text-align:right;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 @media screen and (max-width: 760px) {
     h1, h2, h3, h4 {
