@@ -28,29 +28,20 @@ import org.thymeleaf.testing.templateengine.engine.TestExecutor;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.testing.templateengine.messages.ITestMessages;
 import org.thymeleaf.testing.templateengine.testable.ITest;
-import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
 
-
-
-
-
-
 public class TestEngineMessageResolver extends AbstractMessageResolver {
-    
-                   
+
     public TestEngineMessageResolver() {
         super();
     }
 
-    
-    
     public MessageResolution resolveMessage(
             final Arguments arguments, final String key, final Object[] messageParameters) {
 
         checkInitialized();
-        
+
         Validate.notNull(arguments, "Arguments cannot be null");
         Validate.notNull(key, "Key cannot be null");
 
@@ -65,15 +56,11 @@ public class TestEngineMessageResolver extends AbstractMessageResolver {
         }
 
         String message = messages.computeMessage(locale, key, messageParameters);
-        
+
         if (message == null) {
-            message = MessageResolutionUtils.getAbsentMessageRepresentation(key, locale);
+            return null;
         }
-        
+
         return new MessageResolution(message);
-        
     }
-    
-    
-    
 }
