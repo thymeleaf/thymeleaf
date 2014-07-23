@@ -41,9 +41,8 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
-import org.thymeleaf.util.UrlUtils;
 import org.thymeleaf.util.Validate;
-
+import org.unbescape.uri.UriEscape;
 
 
 /**
@@ -318,12 +317,12 @@ public final class LinkExpression extends SimpleExpression {
                     parametersBuilder.append("&");
                 }
 
-                parametersBuilder.append(UrlUtils.encodeQueryParam(parameterName));
+                parametersBuilder.append(UriEscape.escapeUriQueryParam(parameterName));
 
                 final String parameterValue = (parameterObjectValue == null? "" : parameterObjectValue.toString());
 
                 if (!URL_PARAM_NO_VALUE.equals(parameterValue)) {
-                    parametersBuilder.append("=").append(UrlUtils.encodeQueryParam(parameterValue));
+                    parametersBuilder.append("=").append(UriEscape.escapeUriQueryParam(parameterValue));
                 }
                 
             }
@@ -572,7 +571,7 @@ public final class LinkExpression extends SimpleExpression {
                         strBuilder.append(parameterValue);
                     }
                 }
-                basePath = basePath.replace(template, UrlUtils.encodePath(strBuilder.toString()));
+                basePath = basePath.replace(template, UriEscape.escapeUriPath(strBuilder.toString()));
 
             } else if (baseQuery != null && baseQuery.contains(template)) {
 
@@ -587,7 +586,7 @@ public final class LinkExpression extends SimpleExpression {
                         strBuilder.append(parameterValue);
                     }
                 }
-                baseQuery = baseQuery.replace(template, UrlUtils.encodeQueryParam(strBuilder.toString()));
+                baseQuery = baseQuery.replace(template, UriEscape.escapeUriQueryParam(strBuilder.toString()));
 
             }
 
