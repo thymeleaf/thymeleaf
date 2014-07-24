@@ -31,7 +31,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.3
+ * @since 2.0.21
  *
  */
 public final class UrlUtils {
