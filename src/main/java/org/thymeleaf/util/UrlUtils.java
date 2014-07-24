@@ -20,7 +20,6 @@
 package org.thymeleaf.util;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -50,6 +49,17 @@ public final class UrlUtils {
             @Override
             public boolean isAllowed(final char c) {
                 return isPchar(c);
+            }
+        },
+
+        QUERY_PARAM {
+            @Override
+            public boolean isAllowed(final char c) {
+                // We specify these symbols separately because some of them are considered 'pchar'
+                if ('=' == c || '&' == c || '+' == c || '#' == c) {
+                    return false;
+                }
+                return isPchar(c) || '/' == c || '?' == c;
             }
         };
 
@@ -131,12 +141,7 @@ public final class UrlUtils {
         if (queryParam.length() == 0) {
             return queryParam;
         }
-        try {
-            return URLEncoder.encode(queryParam, "UTF-8");
-        } catch (final UnsupportedEncodingException e) {
-            // This should never happen as 'UTF-8' will always exist.
-            throw new TemplateProcessingException("Exception while processing URL encoding", e);
-        }
+        return encodeString(queryParam, EncodeType.QUERY_PARAM);
     }
 
 

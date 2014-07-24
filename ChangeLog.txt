@@ -6,6 +6,8 @@
 - Fixed bad relative URLs in XHTML 1.0 Frameset DTDs.
 - Fixed arithmetic exception in #aggregates.avg() if result has a non-terminating decimal expansion.
 - Fixed JavaScript inlining not closing expressions properly when they appear between parentheses.
+- Modified rules for escaping/encoding URL query parameters. Replaced use of java.net.URLEncoder with
+  more standard mechanism, compatible with Spring's UriUtils and Unbescape's UriEscape.
 
 
 2.0.20
