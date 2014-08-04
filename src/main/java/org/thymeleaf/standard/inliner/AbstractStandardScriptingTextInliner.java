@@ -278,21 +278,20 @@ public abstract class AbstractStandardScriptingTextInliner implements IStandardT
                 if (this.logger.isTraceEnabled()) {
                     this.logger.trace("[THYMELEAF][{}] Applying javascript variable inline evaluation on \"{}\"", TemplateEngine.threadIndex(), match);
                 }
-                
-                
-                try {
 
-                    final IStandardExpression expression =
-                            expressionParser.parseExpression(configuration, arguments, match);
-                    final Object result = expression.execute(configuration, arguments);
-                    
-                    strBuilder.append(formatEvaluationResult(result));
-                    
+
+                IStandardExpression expression = null;
+                try {
+                    expression = expressionParser.parseExpression(configuration, arguments, match);
                 } catch (final TemplateProcessingException ignored) {
-                    
                     // If it is not a standard expression, just output it as original
                     strBuilder.append(SCRIPT_INLINE_PREFIX).append(match).append(SCRIPT_INLINE_SUFFIX);
-                    
+                }
+
+                if (expression != null) {
+                    // If an exception raises during execution, we should let it through
+                    final Object result = expression.execute(configuration, arguments);
+                    strBuilder.append(formatEvaluationResult(result));
                 }
                 
                 curr = matcher.end(0);

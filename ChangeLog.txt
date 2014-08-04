@@ -3,6 +3,7 @@
 - Fixed bad output of java.util.Date and java.sql.Date in JavaScript inlining. Now all objects of classes
   java.util.Calendar, java.util.Date and java.sql.Date are inlined as ISO8601 date string literals
   (e.g. '2013-01-01T14:30:00.000+02:00').
+- Fixed expression execution exceptions being silently ignored in javascript/dart inlining.
 
 
 2.1.3
