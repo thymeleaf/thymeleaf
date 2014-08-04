@@ -375,13 +375,16 @@ div.semiwidetable {
 
 
 
-/* ---------------------- */
-/* TEAM TABLE             */
-/* ---------------------- */
-#teamTable th {
+/* -------------------------- */
+/* TEAM AND CONTRIBUTOR TABLE */
+/* -------------------------- */
+
+#teamTable th,
+#contributorTable th {
   font-size: 12px; 
 } 
-#teamTable td {
+#teamTable td,
+#contributorTable td {
   font-size: 12px; 
 }
 
