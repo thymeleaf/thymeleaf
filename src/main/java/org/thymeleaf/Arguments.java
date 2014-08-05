@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.context.AbstractDialectAwareProcessingContext;
+import org.thymeleaf.context.AbstractProcessingContext;
 import org.thymeleaf.dialect.IExpressionEnhancingDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -364,6 +365,13 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
     public Arguments addLocalVariables(final Map<String,Object> newVariables) {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
+        }
+        if (newVariables.containsKey(AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME)) {
+            // If we don't to this, it might be that along with the new variables we are also setting a new
+            // selection target and we never notice because "getSelectionTarget()" would be still retrieving
+            // the old one and setting it again.
+            return addLocalVariablesAndSelectionTarget(
+                    newVariables, newVariables.get(AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME));
         }
         return new Arguments(this.templateEngine,
                         this.templateProcessingParameters, this.templateResolution, 
