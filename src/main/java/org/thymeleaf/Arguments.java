@@ -464,10 +464,6 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
         if (newVariables == null || newVariables.isEmpty()) {
             return this;
         }
-<<<<<<< HEAD
-        final Arguments arguments = 
-                new Arguments(this.templateEngine, 
-=======
         if (newVariables.containsKey(AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME)) {
             // If we don't to this, it might be that along with the new variables we are also setting a new
             // selection target and we never notice because "getSelectionTarget()" would be still retrieving
@@ -476,12 +472,10 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
                     newVariables, newVariables.get(AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME));
         }
         return new Arguments(this.templateEngine,
->>>>>>> 178b642... Fixes #303. Second-level th:object was being ignored when the host tag was removed.
                         this.templateProcessingParameters, this.templateResolution, 
                         this.templateRepository, this.document, mergeNewLocalVariables(newVariables), 
                         this.idCounts, this.processTextNodes, this.processCommentNodes, getSelectionTarget(), hasSelectionTarget(),
                         getExpressionEnhancingDialects());
-        return arguments;
     }
 
     
