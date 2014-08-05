@@ -8,6 +8,7 @@
 - Fixed JavaScript inlining not closing expressions properly when they appear between parentheses.
 - Modified rules for escaping/encoding URL query parameters. Replaced use of java.net.URLEncoder with
   more standard mechanism, compatible with Spring's UriUtils and Unbescape's UriEscape.
+- Fixed second-level th:object being ignored when combined with th:remove="tag".
 
 
 2.0.20
