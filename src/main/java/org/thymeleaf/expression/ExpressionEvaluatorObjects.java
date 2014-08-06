@@ -70,6 +70,11 @@ public final class ExpressionEvaluatorObjects {
      */
     public static final String CONVERSIONS_EVALUATION_VARIABLE_NAME = "conversions";
 
+    /**
+     * @since 2.1.4
+     */
+    public static final String URIS_EVALUATION_VARIABLE_NAME = "uris";
+
     public static final String CALENDARS_EVALUATION_VARIABLE_NAME = "calendars";
     public static final String DATES_EVALUATION_VARIABLE_NAME = "dates";
     public static final String BOOLS_EVALUATION_VARIABLE_NAME = "bools";
@@ -189,6 +194,7 @@ public final class ExpressionEvaluatorObjects {
             objects.put(SETS_EVALUATION_VARIABLE_NAME, new Sets());
             objects.put(MAPS_EVALUATION_VARIABLE_NAME, new Maps());
             objects.put(AGGREGATES_EVALUATION_VARIABLE_NAME, new Aggregates());
+            objects.put(URIS_EVALUATION_VARIABLE_NAME, new Uris());
 
             BASE_OBJECTS_BY_LOCALE_CACHE.put(locale, objects);
 

@@ -1,5 +1,8 @@
 2.1.4
 =====
+- Added new "#uris" expression utility object for performing escape operations for URI/URLs (paths,
+  path segments, query parameters and fragment identifiers).
+- Modified URI/URL escaping artifacts: now they are based on the Unbescape library [ http://www.unbescape.org ].
 - Fixed bad output of java.util.Date and java.sql.Date in JavaScript inlining. Now all objects of classes
   java.util.Calendar, java.util.Date and java.sql.Date are inlined as ISO8601 date string literals
   (e.g. '2013-01-01T14:30:00.000+02:00').
