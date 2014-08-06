@@ -21,6 +21,7 @@ package org.thymeleaf.cache;
 
 import java.lang.ref.SoftReference;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -203,6 +204,21 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         
     }
 
+
+    /**
+     * <p>
+     *   Returns all the keys contained in this cache. Note this method might return keys for entries
+     *   that are already invalid, so the result of calling {@link #get(Object)} for these keys might
+     *   be <kbd>null</kbd>.
+     * </p>
+     *
+     * @return the complete set of cache keys. Might include keys for already-invalid (non-cleaned) entries.
+     * @since 2.1.4
+     */
+    public Set<K> keySet() {
+        return this.dataContainer.keySet();
+    }
+
     
 
     public void clear() {
@@ -337,6 +353,11 @@ public final class StandardCache<K, V> implements ICache<K,V> {
         public CacheEntry<V> get(final Object key) {
             // FIFO is not used for this --> better performance, but no LRU (only insertion order will apply)
             return this.container.get(key);
+        }
+
+
+        public Set<K> keySet() {
+            return this.container.keySet();
         }
 
 
