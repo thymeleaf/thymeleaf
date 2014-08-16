@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.thymeleaf.templateparser.StandardTemplateParser;
 import org.thymeleaf.templateparser.html.LegacyHtml5TemplateParser;
 import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
 import org.thymeleaf.templateparser.xmlsax.XhtmlValidatingSAXTemplateParser;
@@ -98,7 +99,7 @@ public final class StandardTemplateModeHandlers {
                 new XhtmlHtml5TemplateWriter());
         HTML5 = new TemplateModeHandler(
                 "HTML5", 
-                new XhtmlAndHtml5NonValidatingSAXTemplateParser(poolSize),
+                new StandardTemplateParser(),
                 new XhtmlHtml5TemplateWriter());
         LEGACYHTML5 = new TemplateModeHandler(
                 "LEGACYHTML5", 
