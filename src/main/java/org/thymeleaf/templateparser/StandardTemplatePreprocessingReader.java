@@ -45,8 +45,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
     private static final int BUFFER_BLOCK_SIZE = 1024;
     private static final int OVERFLOW_BLOCK_SIZE = 2048;
 
-    public static final char CHAR_ENTITY_START_SUBSTITUTE = '\uFFF8';
-
 
     private static final char CHAR_OPTIONAL_WHITESPACE_WILDCARD = '\u0358';
     private static final char CHAR_WHITESPACE_WILDCARD = '\u0359';
@@ -67,7 +65,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
 
     private static final int[] COMMENT_START = convertToIndexes("<!--".toCharArray());
     private static final int[] COMMENT_END = convertToIndexes("-->".toCharArray());
-    private static final int[] ENTITY = convertToIndexes(('&' + String.valueOf(CHAR_ALPHANUMERIC_WILDCARD) + ';').toCharArray());
     private static final int[] DOCTYPE =
             convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
     private static final int[] XML_PROLOG =
@@ -83,9 +80,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
     private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
     private static final char[] NORMALIZED_DOCTYPE_PUBLIC = "PUBLIC ".toCharArray();
     private static final char[] NORMALIZED_DOCTYPE_SYSTEM = "SYSTEM ".toCharArray();
-
-
-    private static final char[] ENTITY_START_SUBSTITUTE_CHAR_ARRAY = new char[] { CHAR_ENTITY_START_SUBSTITUTE };
 
 
     private final Reader innerReader;
@@ -487,31 +481,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
                 cbufi += copied;
                 totalRead += copied;
                 buffi += matchedEndOfComment;
-                continue;
-                
-            }
-
-
-
-            /*
-             * ------------------
-             * CHECK FOR ENTITIES(& sign will be replaced in order to avoid parser behaviours)
-             * ------------------
-             */
-
-            final int matchedEntity = 
-                (this.inComment || this.inParserLevelComment?
-                        -2 : match(ENTITY, 0, ENTITY.length, this.buffer, buffi, bufferSize));
-            
-            if (matchedEntity > 0) {
-                
-                final int copied =
-                    copyToResult(
-                            ENTITY_START_SUBSTITUTE_CHAR_ARRAY, 0, ENTITY_START_SUBSTITUTE_CHAR_ARRAY.length, 
-                            cbuf, cbufi, last);
-                cbufi += copied;
-                totalRead += copied;
-                buffi += 1; // Only one character is substituted (&)
                 continue;
                 
             }
@@ -923,47 +892,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
         return this.docTypeClause;
     }
 
-    
-    
-    
-    public static String removeEntitySubstitutions(final String text) {
-
-        if (text == null) {
-            return null;
-        }
-        final int textLen = text.length();
-        for (int i = 0; i < textLen; i++) {
-            if (text.charAt(i) == StandardTemplatePreprocessingReader.CHAR_ENTITY_START_SUBSTITUTE) {
-                final char[] textCharArray = text.toCharArray();
-                for (int j = 0; j < textLen; j++) {
-                    if (textCharArray[j] == StandardTemplatePreprocessingReader.CHAR_ENTITY_START_SUBSTITUTE) {
-                        textCharArray[j] = '&';
-                    }
-                }
-                return new String(textCharArray);
-            }
-        }
-        return text;
-        
-    }
-        
-
-    
-    
-    public static void removeEntitySubstitutions(final char[] text, final int off, final int len) {
-
-        if (text == null) {
-            return;
-        }
-        final int finalPos = off + len;
-        for (int i = off; i < finalPos; i++) {
-            if (text[i] == StandardTemplatePreprocessingReader.CHAR_ENTITY_START_SUBSTITUTE) {
-                text[i] = '&';
-            }
-        }
-        
-    }
-    
     
     
     /**

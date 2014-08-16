@@ -409,9 +409,6 @@ public class StandardTemplateParser implements ITemplateParser {
             super.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
             final String content = new String(buffer, contentOffset, contentLen);
-
-            StandardTemplatePreprocessingReader.removeEntitySubstitutions(buffer, 0, contentLen);
-            
             final Node cdata = new CDATASection(content, null, null, true);
 
             if (this.elementStack.isEmpty()) {
@@ -442,10 +439,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
             super.handleText(buffer, offset, len, line, col);
 
-            StandardTemplatePreprocessingReader.removeEntitySubstitutions(buffer, offset, len);
-
             final String content = new String(buffer, offset, len);
-
             final Node textNode = new Text(content, null, null, true);
             
             if (this.elementStack.isEmpty()) {
@@ -517,9 +511,6 @@ public class StandardTemplateParser implements ITemplateParser {
                     valueLine, valueCol);
             
             final String attributeName = new String(buffer, nameOffset, nameLen);
-            
-            // This operates directly on the buffer but it's alright (no real need to duplicate it)
-            StandardTemplatePreprocessingReader.removeEntitySubstitutions(buffer, valueContentOffset, valueContentLen);
             final String attributeValue = new String(buffer, valueContentOffset, valueContentLen);
             
             this.currentElement.setAttribute(
