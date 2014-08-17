@@ -210,6 +210,17 @@
     
   </build>
 
+  <properties>
+    <servletapi.version>2.5</servletapi.version>
+    <ognl.version>3.0.6</ognl.version>
+    <attoparser.version>1.4.1-SNAPSHOT</attoparser.version>
+    <unbescape.version>1.1.0.RELEASE</unbescape.version>
+    <nekohtml.version>1.9.15</nekohtml.version>
+    <javassist.version>3.16.1-GA</javassist.version>
+    <slf4j.version>1.6.1</slf4j.version>
+  </properties>
+
+
   <dependencies>
     
     <!-- * nekoHTML is an OPTIONAL dependency *        -->
@@ -218,7 +229,7 @@
     <dependency>
       <groupId>net.sourceforge.nekohtml</groupId>
       <artifactId>nekohtml</artifactId>
-      <version>1.9.15</version>
+      <version>${nekohtml.version}</version>
       <scope>compile</scope>
       <optional>true</optional>
     </dependency>
@@ -227,7 +238,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <version>${servletapi.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -235,7 +246,7 @@
     <dependency>
         <groupId>ognl</groupId>
         <artifactId>ognl</artifactId>
-        <version>3.0.6</version>
+        <version>${ognl.version}</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
@@ -248,28 +259,28 @@
     <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
-      <version>3.16.1-GA</version>
+      <version>${javassist.version}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.attoparser</groupId>
       <artifactId>attoparser</artifactId>
-      <version>1.4.1-SNAPSHOT</version>
+      <version>${attoparser.version}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.unbescape</groupId>
       <artifactId>unbescape</artifactId>
-      <version>1.1.0.RELEASE</version>
+      <version>${unbescape.version}</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
+      <version>${slf4j.version}</version>
       <scope>compile</scope>
     </dependency>
     
