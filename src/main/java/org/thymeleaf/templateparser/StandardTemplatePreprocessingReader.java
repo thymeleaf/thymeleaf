@@ -67,8 +67,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
     private static final int[] COMMENT_END = convertToIndexes("-->".toCharArray());
     private static final int[] DOCTYPE =
             convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
-    private static final int[] XML_PROLOG =
-            convertToIndexes(("<?xml" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + "?>").toCharArray());
 
     private static final int[] PROTOTYPE_ONLY_COMMENT_START = convertToIndexes("<!--/*/".toCharArray());
     private static final int[] PROTOTYPE_ONLY_COMMENT_END = convertToIndexes("/*/-->".toCharArray());
@@ -92,9 +90,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
     private boolean inComment = false;
     private boolean inParserLevelComment = false;
     private boolean docTypeClauseRead = false;
-    private boolean xmlPrologRead = false;
-    private int xmlPrologRemaining = -1;
-    private int rootElementClosingOffset = 0;
 
     private boolean noMoreToRead = false;
 
@@ -270,58 +265,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
         while (cbufi < last && buffi < bufferSize) {
 
 
-            /*
-             * Process XML_PROLOG (if needed)
-             * 
-             * Processing it specifically before any other thing ensures the synthetic
-             * root element will never be inserted before it.
-             */
-            if (!this.docTypeClauseRead && !this.xmlPrologRead && !this.inParserLevelComment) {
-
-                if (this.xmlPrologRemaining >= 0) {
-                    // We have still some bytes remaining from the XML PROLOG, and we 
-                    // don't want the reader to mistake them for text and input the synthetic
-                    // root element right now
-                    
-                    if (readerLogger.isTraceEnabled()) {
-                        readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Writing remaining byte from incompletely output XML PROLOG: {}", 
-                                new Object[] {TemplateEngine.threadIndex(), String.valueOf(this.buffer[buffi])});
-                    }
-                    
-                    cbuf[cbufi++] = this.buffer[buffi++];
-                    totalRead++;
-                    this.xmlPrologRemaining--;
-                    continue;
-        
-                }
-                
-                final int matchedXmlProlog =
-                        match(XML_PROLOG, 0, XML_PROLOG.length, this.buffer, buffi, bufferSize);
-                
-                if (matchedXmlProlog > 0) {
-
-                    this.xmlPrologRemaining = matchedXmlProlog;
-                    
-                    final int copied =
-                        copyToResult(
-                                this.buffer, buffi, matchedXmlProlog, 
-                                cbuf, cbufi, last);
-
-                    this.xmlPrologRemaining -= copied;
-                    if (this.xmlPrologRemaining <= 0) {
-                        this.xmlPrologRead = true;
-                    }
-
-                    cbufi += copied;
-                    totalRead += copied;
-                    buffi += matchedXmlProlog;
-                    continue;
-                    
-                }
-                
-            }
-
-            
             /*
              * Process DOCTYPE (if needed)
              */
