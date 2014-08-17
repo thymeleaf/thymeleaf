@@ -117,7 +117,7 @@ public class StandardTemplateParser implements ITemplateParser {
         
         parser.parse(reader, handler);
         
-        final String docTypeClause = reader.getDocTypeClause();
+        final String docTypeClause = handler.getDocTypeClause();
         final String docTypeRootElementName = handler.getDocTypeRootElementName();
         final String docTypePublicId = handler.getDocTypePublicId();
         final String docTypeSystemId = handler.getDocTypeSystemId();
@@ -209,7 +209,8 @@ public class StandardTemplateParser implements ITemplateParser {
         private Element currentElement = null;
 
         private List<Node> rootNodes = null;
-        
+
+        private String docTypeClause = null;
         private String docTypeRootElementName = null;
         private String docTypePublicId = null;
         private String docTypeSystemId = null;
@@ -231,7 +232,10 @@ public class StandardTemplateParser implements ITemplateParser {
         }
 
 
-        
+        public String getDocTypeClause() {
+            return this.docTypeClause;
+        }
+
         public String getDocTypeRootElementName() {
             return this.docTypeRootElementName;
         }
@@ -385,6 +389,8 @@ public class StandardTemplateParser implements ITemplateParser {
             if (systemIdLen > 0) {
                 this.docTypeSystemId = new String(buffer, systemIdOffset, systemIdLen);
             }
+
+            this.docTypeClause = new String(buffer, outerOffset, outerLen);
             
         }
 

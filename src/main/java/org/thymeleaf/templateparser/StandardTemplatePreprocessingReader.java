@@ -65,19 +65,12 @@ public final class StandardTemplatePreprocessingReader extends Reader {
 
     private static final int[] COMMENT_START = convertToIndexes("<!--".toCharArray());
     private static final int[] COMMENT_END = convertToIndexes("-->".toCharArray());
-    private static final int[] DOCTYPE =
-            convertToIndexes(("<!DOCTYPE" + String.valueOf(CHAR_WHITESPACE_WILDCARD)  + String.valueOf(CHAR_ANY_WILDCARD) + ">").toCharArray());
 
     private static final int[] PROTOTYPE_ONLY_COMMENT_START = convertToIndexes("<!--/*/".toCharArray());
     private static final int[] PROTOTYPE_ONLY_COMMENT_END = convertToIndexes("/*/-->".toCharArray());
 
     private static final int[] PARSER_LEVEL_COMMENT_START = convertToIndexes("<!--/*".toCharArray());
     private static final int[] PARSER_LEVEL_COMMENT_END = convertToIndexes("*/-->".toCharArray());
-
-
-    private static final char[] NORMALIZED_DOCTYPE_PREFIX = "<!DOCTYPE ".toCharArray();
-    private static final char[] NORMALIZED_DOCTYPE_PUBLIC = "PUBLIC ".toCharArray();
-    private static final char[] NORMALIZED_DOCTYPE_SYSTEM = "SYSTEM ".toCharArray();
 
 
     private final Reader innerReader;
@@ -89,11 +82,8 @@ public final class StandardTemplatePreprocessingReader extends Reader {
 
     private boolean inComment = false;
     private boolean inParserLevelComment = false;
-    private boolean docTypeClauseRead = false;
 
     private boolean noMoreToRead = false;
-
-    private String docTypeClause = null;
 
 
 
@@ -264,42 +254,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
         int buffi = 0;
         while (cbufi < last && buffi < bufferSize) {
 
-
-            /*
-             * Process DOCTYPE (if needed)
-             */
-            if (!this.docTypeClauseRead && !this.inParserLevelComment) {
-                
-                final int matchedDocType =
-                        match(DOCTYPE, 0, DOCTYPE.length, this.buffer, buffi, bufferSize);
-                
-                if (matchedDocType > 0) {
-                    
-                    this.docTypeClause = new String(this.buffer, buffi, matchedDocType);
-                    this.docTypeClauseRead = true;
-                    
-                    final char[] normalizedDocType =
-                            normalizeDocTypeClause(this.buffer, buffi, matchedDocType);
-                    
-                    if (readerLogger.isTraceEnabled()) {
-                        readerLogger.trace("[THYMELEAF][TEMPLATEPREPROCESSINGREADER][{}] Normalized DOCTYPE clause: {}", 
-                                new Object[] {TemplateEngine.threadIndex(), new String(normalizedDocType)});
-                    }
-
-                    final int copied =
-                            copyToResult(
-                                    normalizedDocType, 0, normalizedDocType.length,
-                                    cbuf, cbufi, last);
-
-                    
-                    cbufi += copied;
-                    totalRead += copied;
-                    buffi += matchedDocType;
-                    continue;
-                    
-                }
-                
-            }
 
             /*
              * ------------------
@@ -749,82 +703,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
         // Was matching OK, but then we hit the end of the buffer...
         return 0;
         
-    }
-
-
-    
-    
-    private static char[] normalizeDocTypeClause(final char[] buffer, final int offset, final int len) {
-        
-        try {
-            
-            boolean afterQuote = false;
-            
-            final char[] result = new char[len];
-            System.arraycopy(NORMALIZED_DOCTYPE_PREFIX, 0, result, 0, NORMALIZED_DOCTYPE_PREFIX.length);
-            
-            for (int i = (offset + NORMALIZED_DOCTYPE_PREFIX.length); i < (offset + len); i++) {
-                final char c = buffer[i];
-                if (c == '\"') {
-                    // Once we find a quote symbol, we stop worrying about normalizing and just copy verbatim
-                    afterQuote = true;
-                    result[i - offset] = '\"';
-                } else if (!afterQuote && (c == 'P' || c == 'p')) {
-                    final char c2 = buffer[i + 1];
-                    if (c2 == 'U' || c2 == 'u') {
-                        final char c3 = buffer[i + 2];
-                        final char c4 = buffer[i + 3];
-                        final char c5 = buffer[i + 4];
-                        final char c6 = buffer[i + 5];
-                        final char c7 = buffer[i + 6];
-                        if ((c3 == 'B' || c3 == 'b') && 
-                            (c4 == 'L' || c4 == 'l') &&
-                            (c5 == 'I' || c5 == 'i') &&
-                            (c6 == 'C' || c6 == 'c') &&
-                            (c7 == ' ' || c7 == '\t')) {
-                            System.arraycopy(NORMALIZED_DOCTYPE_PUBLIC, 0, result, (i - offset), NORMALIZED_DOCTYPE_PUBLIC.length);
-                            i += NORMALIZED_DOCTYPE_PUBLIC.length - 1;
-                            continue;
-                        }
-                    }
-                    result[i - offset] = c;
-                } else if (!afterQuote && (c == 'S' || c == 's')) {
-                    final char c2 = buffer[i + 1];
-                    if (c2 == 'Y' || c2 == 'y') {
-                        final char c3 = buffer[i + 2];
-                        final char c4 = buffer[i + 3];
-                        final char c5 = buffer[i + 4];
-                        final char c6 = buffer[i + 5];
-                        final char c7 = buffer[i + 6];
-                        if ((c3 == 'S' || c3 == 's') && 
-                            (c4 == 'T' || c4 == 't') &&
-                            (c5 == 'E' || c5 == 'e') &&
-                            (c6 == 'M' || c6 == 'm') &&
-                            (c7 == ' ' || c7 == '\t')) {
-                            System.arraycopy(NORMALIZED_DOCTYPE_SYSTEM, 0, result, (i - offset), NORMALIZED_DOCTYPE_SYSTEM.length);
-                            i += NORMALIZED_DOCTYPE_SYSTEM.length - 1;
-                            continue;
-                        }
-                    }
-                    result[i - offset] = c;
-                } else {
-                    result[i - offset] = c;
-                }
-            }
-    
-            
-            return result;
-
-        } catch (final Exception e) {
-            throw new TemplateInputException("DOCTYPE clause has bad format: \"" + (new String(buffer, offset, len)) + "\"", e);
-        }
-        
-    }
-
-    
-    
-    public String getDocTypeClause() {
-        return this.docTypeClause;
     }
 
     
