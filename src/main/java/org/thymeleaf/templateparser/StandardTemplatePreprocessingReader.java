@@ -270,14 +270,6 @@ public final class StandardTemplatePreprocessingReader extends Reader {
         while (cbufi < last && buffi < bufferSize) {
 
 
-            if (this.buffer[buffi] == '\uFEFF') {
-                // This is a Byte Order Mark (BOM) symbol. We are working at a character level already (as opposed to
-                // a byte level), so we should be fine just ignoring it.
-                buffi++;
-                continue;
-            }
-
-            
             /*
              * Process XML_PROLOG (if needed)
              * 
