@@ -255,7 +255,7 @@
     <dependency>
       <groupId>org.attoparser</groupId>
       <artifactId>attoparser</artifactId>
-      <version>1.4.0.RELEASE</version>
+      <version>1.4.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
 
