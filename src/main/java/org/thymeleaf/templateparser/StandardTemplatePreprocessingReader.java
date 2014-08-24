@@ -255,79 +255,79 @@ public final class StandardTemplatePreprocessingReader extends Reader {
         while (cbufi < last && buffi < bufferSize) {
 
 
-            /*
-             * ------------------
-             * CHECK FOR PROTOTYPE-ONLY COMMENT BLOCKS
-             * ------------------
-             */
-
-            // Completely ignored if inside comment
-            final int matchedStartOfPrototypeOnlyComment =
-                    (this.inComment || this.inParserLevelComment?
-                            -2 : match(PROTOTYPE_ONLY_COMMENT_START, 0, PROTOTYPE_ONLY_COMMENT_START.length, this.buffer, buffi, bufferSize));
-
-            if (matchedStartOfPrototypeOnlyComment > 0) {
-
-                // no changes to "cbufi", as nothing is copied into result
-                // no changes to "totalRead", as nothing is copied into result
-                buffi += matchedStartOfPrototypeOnlyComment; // We just skip all characters in comment start
-                continue;
-
-            }
-
-
-            // Completely ignored if inside comment, in contrast with "normal" comment end
-            final int matchedEndOfPrototypeOnlyComment =
-                    (this.inComment || this.inParserLevelComment?
-                            -2 : match(PROTOTYPE_ONLY_COMMENT_END, 0, PROTOTYPE_ONLY_COMMENT_END.length, this.buffer, buffi, bufferSize));
-
-            if (matchedEndOfPrototypeOnlyComment > 0) {
-
-                // no changes to "cbufi", as nothing is copied into result
-                // no changes to "totalRead", as nothing is copied into result
-                buffi += matchedEndOfPrototypeOnlyComment; // We just skip all characters in comment end
-                continue;
-
-            }
-
-
-
-            /*
-             * ------------------
-             * CHECK FOR PARSER-LEVEL COMMENT BLOCKS
-             * ------------------
-             */
-
-            // Completely ignored if inside comment
-            final int matchedStartOfParserLevelComment =
-                    (this.inComment || this.inParserLevelComment?
-                            -2 : match(PARSER_LEVEL_COMMENT_START, 0, PARSER_LEVEL_COMMENT_START.length, this.buffer, buffi, bufferSize));
-
-            if (matchedStartOfParserLevelComment > 0) {
-
-                // no changes to "cbufi", as nothing is copied into result
-                // no changes to "totalRead", as nothing is copied into result
-                buffi += matchedStartOfParserLevelComment; // We skip all characters in comment start
-                this.inParserLevelComment = true;
-                continue;
-
-            }
+//            /*
+//             * ------------------
+//             * CHECK FOR PROTOTYPE-ONLY COMMENT BLOCKS
+//             * ------------------
+//             */
+//
+//            // Completely ignored if inside comment
+//            final int matchedStartOfPrototypeOnlyComment =
+//                    (this.inComment || this.inParserLevelComment?
+//                            -2 : match(PROTOTYPE_ONLY_COMMENT_START, 0, PROTOTYPE_ONLY_COMMENT_START.length, this.buffer, buffi, bufferSize));
+//
+//            if (matchedStartOfPrototypeOnlyComment > 0) {
+//
+//                // no changes to "cbufi", as nothing is copied into result
+//                // no changes to "totalRead", as nothing is copied into result
+//                buffi += matchedStartOfPrototypeOnlyComment; // We just skip all characters in comment start
+//                continue;
+//
+//            }
+//
+//
+//            // Completely ignored if inside comment, in contrast with "normal" comment end
+//            final int matchedEndOfPrototypeOnlyComment =
+//                    (this.inComment || this.inParserLevelComment?
+//                            -2 : match(PROTOTYPE_ONLY_COMMENT_END, 0, PROTOTYPE_ONLY_COMMENT_END.length, this.buffer, buffi, bufferSize));
+//
+//            if (matchedEndOfPrototypeOnlyComment > 0) {
+//
+//                // no changes to "cbufi", as nothing is copied into result
+//                // no changes to "totalRead", as nothing is copied into result
+//                buffi += matchedEndOfPrototypeOnlyComment; // We just skip all characters in comment end
+//                continue;
+//
+//            }
 
 
-            // Completely ignored if inside comment, in contrast with "normal" comment end
-            final int matchedEndOfParserLevelComment =
-                    (this.inParserLevelComment ?
-                            match(PARSER_LEVEL_COMMENT_END, 0, PARSER_LEVEL_COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
 
-            if (matchedEndOfParserLevelComment > 0) {
-
-                // no changes to "cbufi", as nothing is copied into result
-                // no changes to "totalRead", as nothing is copied into result
-                buffi += matchedEndOfParserLevelComment; // We skip all characters in comment end
-                this.inParserLevelComment = false;
-                continue;
-
-            }
+//            /*
+//             * ------------------
+//             * CHECK FOR PARSER-LEVEL COMMENT BLOCKS
+//             * ------------------
+//             */
+//
+//            // Completely ignored if inside comment
+//            final int matchedStartOfParserLevelComment =
+//                    (this.inComment || this.inParserLevelComment?
+//                            -2 : match(PARSER_LEVEL_COMMENT_START, 0, PARSER_LEVEL_COMMENT_START.length, this.buffer, buffi, bufferSize));
+//
+//            if (matchedStartOfParserLevelComment > 0) {
+//
+//                // no changes to "cbufi", as nothing is copied into result
+//                // no changes to "totalRead", as nothing is copied into result
+//                buffi += matchedStartOfParserLevelComment; // We skip all characters in comment start
+//                this.inParserLevelComment = true;
+//                continue;
+//
+//            }
+//
+//
+//            // Completely ignored if inside comment, in contrast with "normal" comment end
+//            final int matchedEndOfParserLevelComment =
+//                    (this.inParserLevelComment ?
+//                            match(PARSER_LEVEL_COMMENT_END, 0, PARSER_LEVEL_COMMENT_END.length, this.buffer, buffi, bufferSize) : -2);
+//
+//            if (matchedEndOfParserLevelComment > 0) {
+//
+//                // no changes to "cbufi", as nothing is copied into result
+//                // no changes to "totalRead", as nothing is copied into result
+//                buffi += matchedEndOfParserLevelComment; // We skip all characters in comment end
+//                this.inParserLevelComment = false;
+//                continue;
+//
+//            }
 
 
 
