@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+import org.attoparser.AttoHandleResult;
 import org.attoparser.AttoParseException;
 import org.attoparser.IAttoHandleResult;
 import org.attoparser.markup.MarkupAttoParser;
@@ -220,11 +221,26 @@ public class StandardTemplateParser implements ITemplateParser {
         private String xmlVersion = null;
         private boolean xmlStandalone = false;
 
-        // TODO These two should be used, and have companion Stacks for the different call levels.
-        private int lineOffset;
-        private int colOffset;
-        
-        
+        /*
+         * These structures allow reporting the correct (line,col) pair in DOM nodes during an embedded parsing
+         * operation performed inside a prototype-only comment block ('<!--/*/  /*/-->')
+         */
+        private int lineOffset = 0;
+        private int colOffset = 0;
+
+        /*
+         * These structures help processing (or more specifically, not-processing) parser-level comment blocks,
+         * which contents (reported as Text because the parser will be disabled inside them) should be completely
+         * ignored.
+         */
+        private static final char[] PARSER_LEVEL_COMMENT_CLOSE = "*/-->".toCharArray();
+        private static final IAttoHandleResult PARSER_LEVEL_COMMENT_OPEN_RESULT = new AttoHandleResult(PARSER_LEVEL_COMMENT_CLOSE);
+        private boolean inParserLevelCommentBlock = false;
+
+
+
+
+
         public TemplateAttoHandler(final String documentName) {
             
             super(StandardTemplateParser.HTML_PARSING_CONFIGURATION);
@@ -408,7 +424,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 throws AttoParseException {
 
             final String content = new String(buffer, contentOffset, contentLen);
-            final Node cdata = new CDATASection(content, null, null, true);
+            final Node cdata = new CDATASection(content, this.documentName, Integer.valueOf(line + lineOffset), true);
 
             if (this.elementStack.isEmpty()) {
                 this.rootNodes.add(cdata);
@@ -438,8 +454,33 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col) 
                 throws AttoParseException {
 
+            if (this.inParserLevelCommentBlock) {
+                // We are inside a parser-level comment block, which contents are being reported as text
+                // because parsing has been disabled. Simply ignore unless the node starts with the closing sequence
+                // of the parser-level comment block, in which case we just remove this sequence, put the flag
+                // to false and handle the rest of the Text.
+
+                for (int i = 0; i < PARSER_LEVEL_COMMENT_CLOSE.length; i++) {
+                    if (buffer[offset + i] != PARSER_LEVEL_COMMENT_CLOSE[i]) {
+                        // Ignore the Text event
+                        return null;
+                    }
+                }
+
+                // We actually found the end of the parser-level comment block, so we should just process the rest of the Text node
+                this.inParserLevelCommentBlock = false;
+                if (len - PARSER_LEVEL_COMMENT_CLOSE.length > 0) {
+                    return handleText(
+                            buffer,
+                            offset + PARSER_LEVEL_COMMENT_CLOSE.length, len - PARSER_LEVEL_COMMENT_CLOSE.length,
+                            line, col + PARSER_LEVEL_COMMENT_CLOSE.length);
+                }
+                return null; // No text left to handle
+
+            }
+
             final String content = new String(buffer, offset, len);
-            final Node textNode = new Text(content, null, null, true);
+            final Node textNode = new Text(content, this.documentName, Integer.valueOf(line + lineOffset), true);
             
             if (this.elementStack.isEmpty()) {
                 this.rootNodes.add(textNode);
@@ -474,7 +515,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 return handlePrototypeOnlyComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
             }
             // This check must always be executed AFTER checking for prototype-only comment blocks
-            if (isParserLevelCommentBlock(buffer, contentOffset, contentLen)) {
+            if (isParserLevelCommentStartBlock(buffer, contentOffset, contentLen)) {
                 return handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
             }
 
@@ -496,13 +537,26 @@ public class StandardTemplateParser implements ITemplateParser {
         }
 
 
-        private static boolean isParserLevelCommentBlock(
+        private static boolean isParserLevelCommentStartBlock(
                 final char[] buffer, final int contentOffset, final int contentLen) {
 
             // This check must always be executed AFTER checking for prototype-only comment blocks
+            // Note we only look for the starting sequence of the block, as we will disable the parser
+            // until we find the closing sequence ('*/-->') [note the inner content will be reported
+            // as text, and we should ignore it]
             return (buffer[contentOffset] == '/' &&
-                    buffer[contentOffset + 1] == '*' &&
-                    buffer[contentOffset + contentLen - 2] == '*' &&
+                    buffer[contentOffset + 1] == '*');
+
+        }
+
+
+        private static boolean isParserLevelCommentEndBlock(
+                final char[] buffer, final int contentOffset, final int contentLen) {
+
+            // This check must always be executed AFTER checking for prototype-only comment blocks
+            // This is used in order to determine whether the same comment block starts AND ends the parser-level
+            // comment, because in this case we should not involve Text handling in this operation
+            return (buffer[contentOffset + contentLen - 2] == '*' &&
                     buffer[contentOffset + contentLen - 1] == '/');
 
         }
@@ -517,7 +571,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
             final String content = new String(buffer, contentOffset, contentLen);
 
-            final Comment comment = new Comment(content);
+            final Comment comment = new Comment(content, this.documentName, Integer.valueOf(line + lineOffset));
 
             if (this.elementStack.isEmpty()) {
                 this.rootNodes.add(comment);
@@ -538,8 +592,24 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
+            /*
+             * Arrange offsets, so that DOM element positions in the embedded parse operation
+             * are reported correctly.
+             *
+             * Note we will never have a level > 0 embedded prototype-only comment, because the '--' sequence
+             * is forbidden inside a comment (it ends it). And besides that, it makes no sense :)
+             */
+            this.lineOffset = line - 1; // -1 --> lines are reported starting with 1, but we need a 0-based offset
+            this.colOffset = col + 2; // 2 = 3 - 1 --> because of the '/*/' sequence (-1 in order to work as offset)
+
             // We parse the comment content using this same handler object, but removing the "/*/.../*/"
             StandardTemplateParser.PARSER.parse(buffer, contentOffset + 3, contentLen - 6, this);
+
+            /*
+             * Return offsets to their original value.
+             */
+            this.lineOffset = 0;
+            this.colOffset = 0;
 
             return null;
 
@@ -553,8 +623,16 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
-            // Comment blocks of this type are simply ignored
-            return null;
+            if (isParserLevelCommentEndBlock(buffer, contentOffset, contentLen)) {
+                // This block both starts AND ends the parser-level comment, so ignoring it
+                // should be enough, without involving any text handling events
+                return null;
+            }
+
+            // Comment blocks of this type provoke the disabling of the parser until we find the
+            // closing sequence ('*/-->'), which might appear in a different block of code
+            this.inParserLevelCommentBlock = true;
+            return PARSER_LEVEL_COMMENT_OPEN_RESULT;
 
         }
 
@@ -606,7 +684,7 @@ public class StandardTemplateParser implements ITemplateParser {
             final String elementName = new String(buffer, offset, len);
             
             final Element element = 
-                    new Element(elementName, this.documentName, Integer.valueOf(line), RepresentationInTemplate.STANDALONE);
+                    new Element(elementName, this.documentName, Integer.valueOf(line + lineOffset), RepresentationInTemplate.STANDALONE);
             this.currentElement = element;
             
             if (this.elementStack.isEmpty()) {
@@ -634,7 +712,7 @@ public class StandardTemplateParser implements ITemplateParser {
             final String elementName = new String(buffer, offset, len);
             
             final Element element = 
-                    new Element(elementName, this.documentName, Integer.valueOf(line), RepresentationInTemplate.ONLY_OPEN);
+                    new Element(elementName, this.documentName, Integer.valueOf(line + lineOffset), RepresentationInTemplate.ONLY_OPEN);
             this.currentElement = element;
             
             this.elementStack.push(element);
