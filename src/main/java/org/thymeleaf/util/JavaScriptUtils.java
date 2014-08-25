@@ -356,10 +356,22 @@ public final class JavaScriptUtils {
             for (final PropertyDescriptor descriptor : descriptors) {
                 final Method readMethod =  descriptor.getReadMethod();
                 if (readMethod != null) {
-                    final String name = descriptor.getName();
-                    if (!"class".equals(name.toLowerCase())) {
-                        final Object value = readMethod.invoke(object);
-                        properties.put(name, value);
+                    boolean ignore = false;
+
+                    if (object.getClass().isAnnotationPresent(IgnoreSerialization.class)) {
+                        for (Annotation annotation : readMethod.getDeclaredAnnotations()) {
+                            if (annotation.annotationType() == IgnoreSerialization.class) {
+                                ignore = true;
+                            }
+                        }
+                    }
+
+                    if (!ignore) {
+                        final String name = descriptor.getName();
+                        if (!"class".equals(name.toLowerCase())) {
+                            final Object value = readMethod.invoke(object);
+                            properties.put(name, value);
+                        }
                     }
                 }
             }
@@ -400,5 +412,10 @@ public final class JavaScriptUtils {
     }
 
 
-
+    /**
+     * Value to determine whether to ignore serialization of the given object.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ElementType.FIELD, ElementType.METHOD})
+    public @interface IgnoreSerialization { }
 }
