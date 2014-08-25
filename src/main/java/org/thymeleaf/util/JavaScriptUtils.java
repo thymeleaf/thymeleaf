@@ -358,11 +358,9 @@ public final class JavaScriptUtils {
                 if (readMethod != null) {
                     boolean ignore = false;
 
-                    if (object.getClass().isAnnotationPresent(IgnoreSerialization.class)) {
-                        for (Annotation annotation : readMethod.getDeclaredAnnotations()) {
-                            if (annotation.annotationType() == IgnoreSerialization.class) {
-                                ignore = true;
-                            }
+                    for (Annotation annotation : readMethod.getDeclaredAnnotations()) {
+                        if (annotation.annotationType() == IgnoreSerialization.class) {
+                            ignore = true;
                         }
                     }
 
