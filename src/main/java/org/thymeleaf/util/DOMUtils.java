@@ -46,9 +46,8 @@ import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.resourceresolver.ClassLoaderResourceResolver;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
 import org.thymeleaf.templateparser.ITemplateParser;
+import org.thymeleaf.templateparser.StandardTemplateParser;
 import org.thymeleaf.templateparser.html.LegacyHtml5TemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XmlNonValidatingSAXTemplateParser;
 import org.thymeleaf.templateresolver.AlwaysValidTemplateResolutionValidity;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -540,19 +539,23 @@ public final class DOMUtils {
     
     
     /**
-     * 
+     *
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      * @since 2.0.8
      */
+    @Deprecated
     public static Document getHtml5DOMFor(final Reader source) {
         Validate.notNull(source, "Source cannot be null");
-        return getDOMFor(source, new XhtmlAndHtml5NonValidatingSAXTemplateParser(1));
+        return getDOMFor(source, StandardTemplateParser.INSTANCE);
     }
     
     
     /**
-     * 
+     *
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      * @since 2.0.8
      */
+    @Deprecated
     public static Document getLegacyHTML5DOMFor(final Reader source) {
         Validate.notNull(source, "Source cannot be null");
         return getDOMFor(source, new LegacyHtml5TemplateParser("LEGACYHTML5", 1));
@@ -560,22 +563,26 @@ public final class DOMUtils {
     
     
     /**
-     * 
+     *
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      * @since 2.0.8
      */
+    @Deprecated
     public static Document getXmlDOMFor(final Reader source) {
         Validate.notNull(source, "Source cannot be null");
-        return getDOMFor(source, new XmlNonValidatingSAXTemplateParser(1));
+        return getDOMFor(source, StandardTemplateParser.INSTANCE);
     }
     
     
     /**
-     * 
+     *
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      * @since 2.0.8
      */
+    @Deprecated
     public static Document getXhtmlDOMFor(final Reader source) {
         Validate.notNull(source, "Source cannot be null");
-        return getDOMFor(source, new XhtmlAndHtml5NonValidatingSAXTemplateParser(1));
+        return getDOMFor(source, StandardTemplateParser.INSTANCE);
     }
     
 

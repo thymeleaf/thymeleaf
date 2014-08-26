@@ -28,10 +28,12 @@ import org.xml.sax.SAXParseException;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
+ *
+ * @deprecated Should be removed before 3.0 is out
  * @since 1.0
  *
  */
+@Deprecated
 public final class ErrorHandler implements org.xml.sax.ErrorHandler {
     
     public static final ErrorHandler INSTANCE = new ErrorHandler();

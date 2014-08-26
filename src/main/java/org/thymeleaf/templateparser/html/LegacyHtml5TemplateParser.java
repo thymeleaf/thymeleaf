@@ -31,9 +31,11 @@ import org.thymeleaf.dom.Node;
  * </p>
  * 
  * @since 2.0.0
- * 
+ *
+ * @deprecated Should be removed before 3.0 is out
  * @author Daniel Fern&aacute;ndez
  */
+@Deprecated
 public final class LegacyHtml5TemplateParser extends AbstractHtmlTemplateParser {
     
 

@@ -46,9 +46,11 @@ import org.xml.sax.InputSource;
  * </p>
  * 
  * @since 2.0.0
- * 
+ *
+ * @deprecated Should be removed before 3.0 is out
  * @author Daniel Fern&aacute;ndez
  */
+@Deprecated
 public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
 
     private static final int BUFFER_SIZE = 8192;

@@ -25,10 +25,7 @@ import java.util.Set;
 
 import org.thymeleaf.templateparser.StandardTemplateParser;
 import org.thymeleaf.templateparser.html.LegacyHtml5TemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XhtmlAndHtml5NonValidatingSAXTemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XhtmlValidatingSAXTemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XmlNonValidatingSAXTemplateParser;
-import org.thymeleaf.templateparser.xmlsax.XmlValidatingSAXTemplateParser;
+import org.thymeleaf.templatewriter.StandardTemplateWriter;
 import org.thymeleaf.templatewriter.XhtmlHtml5TemplateWriter;
 import org.thymeleaf.templatewriter.XmlTemplateWriter;
 
@@ -61,13 +58,15 @@ public final class StandardTemplateModeHandlers {
     // this to 1337).
     private static final int MAX_PARSERS_POOL_SIZE = 24;
 
+    public static final ITemplateModeHandler STANDARD;
+
     public static final ITemplateModeHandler XML;
     public static final ITemplateModeHandler VALIDXML;
     public static final ITemplateModeHandler XHTML;
     public static final ITemplateModeHandler VALIDXHTML;
     public static final ITemplateModeHandler HTML5;
     public static final ITemplateModeHandler LEGACYHTML5;
-    
+
     
     public static final Set<ITemplateModeHandler> ALL_TEMPLATE_MODE_HANDLERS;
     
@@ -80,26 +79,38 @@ public final class StandardTemplateModeHandlers {
                 Math.min(
                         (availableProcessors <= 2? availableProcessors : availableProcessors - 1),
                         MAX_PARSERS_POOL_SIZE);
-        
+
+        /*
+         * This should be the ONLY remaining
+         */
+        STANDARD = new TemplateModeHandler(
+                "STANDARD",
+                StandardTemplateParser.INSTANCE,
+                new StandardTemplateWriter());
+
+        /*
+         * TODO All these should be removed before 3.0 is out, although all the old
+         *      template mode names should still be valid (if there are template modes)
+         */
         XML = new TemplateModeHandler(
                 "XML",
-                new XmlNonValidatingSAXTemplateParser(poolSize),
+                StandardTemplateParser.INSTANCE,
                 new XmlTemplateWriter());
         VALIDXML = new TemplateModeHandler(
-                "VALIDXML", 
-                new XmlValidatingSAXTemplateParser(poolSize),
+                "VALIDXML",
+                StandardTemplateParser.INSTANCE,
                 new XmlTemplateWriter());
         XHTML = new TemplateModeHandler(
-                "XHTML", 
-                new XhtmlAndHtml5NonValidatingSAXTemplateParser(poolSize),
+                "XHTML",
+                StandardTemplateParser.INSTANCE,
                 new XhtmlHtml5TemplateWriter());
         VALIDXHTML = new TemplateModeHandler(
-                "VALIDXHTML", 
-                new XhtmlValidatingSAXTemplateParser(poolSize),
+                "VALIDXHTML",
+                StandardTemplateParser.INSTANCE,
                 new XhtmlHtml5TemplateWriter());
         HTML5 = new TemplateModeHandler(
-                "HTML5", 
-                new StandardTemplateParser(),
+                "HTML5",
+                StandardTemplateParser.INSTANCE,
                 new XhtmlHtml5TemplateWriter());
         LEGACYHTML5 = new TemplateModeHandler(
                 "LEGACYHTML5", 

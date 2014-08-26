@@ -63,7 +63,8 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  */
 public class StandardTemplateParser implements ITemplateParser {
 
-    
+    public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
+
     protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
     static final HtmlParsingConfiguration  HTML_PARSING_CONFIGURATION;
@@ -76,7 +77,7 @@ public class StandardTemplateParser implements ITemplateParser {
     
     
     
-    public StandardTemplateParser() {
+    private StandardTemplateParser() {
         super();
     }
     
@@ -85,11 +86,9 @@ public class StandardTemplateParser implements ITemplateParser {
     
     public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
 
-        final StandardTemplatePreprocessingReader templateReader = getTemplatePreprocessingReader(reader);
-        
         try {
             
-            return doParse(documentName, templateReader);
+            return doParse(documentName, reader);
             
         } catch (final TemplateProcessingException e) {
             throw e;
@@ -112,7 +111,7 @@ public class StandardTemplateParser implements ITemplateParser {
     
     
     
-    private static Document doParse(final String documentName, final StandardTemplatePreprocessingReader reader)
+    private static Document doParse(final String documentName, final Reader reader)
             throws AttoParseException {
 
         final TemplateAttoHandler handler = new TemplateAttoHandler(documentName);
@@ -183,18 +182,6 @@ public class StandardTemplateParser implements ITemplateParser {
 
     
     
-
-    protected StandardTemplatePreprocessingReader getTemplatePreprocessingReader(final Reader reader) {
-        if (reader instanceof StandardTemplatePreprocessingReader) {
-            final StandardTemplatePreprocessingReader templatePreprocessingReader = (StandardTemplatePreprocessingReader) reader;
-            return new StandardTemplatePreprocessingReader(templatePreprocessingReader.getInnerReader(), 8192);
-        }
-        return new StandardTemplatePreprocessingReader(reader, 8192);
-    }
-    
-    
-    
-    
     
     
     
@@ -248,7 +235,7 @@ public class StandardTemplateParser implements ITemplateParser {
             this.documentName = documentName;
             
             this.elementStack = new Stack<NestableNode>();
-            this.rootNodes = new ArrayList<Node>();
+            this.rootNodes = new ArrayList<Node>(6);
             
         }
 

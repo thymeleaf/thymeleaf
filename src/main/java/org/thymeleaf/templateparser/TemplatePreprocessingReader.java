@@ -33,10 +33,12 @@ import org.thymeleaf.exceptions.TemplateInputException;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
+ *
+ * @deprecated Should be removed before 3.0 is out
  * @since 2.0.7
  *
  */
+@Deprecated
 public final class TemplatePreprocessingReader extends Reader {
 
     

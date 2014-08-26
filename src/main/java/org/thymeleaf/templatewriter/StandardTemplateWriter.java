@@ -17,57 +17,35 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser.xmlsax;
+package org.thymeleaf.templatewriter;
 
-import javax.xml.parsers.SAXParser;
 
-import org.thymeleaf.util.ResourcePool;
 
 /**
- * <p>
- *   Parses XML documents, using a standard SAX parser.
- * </p>
- * 
- * <p>
- *   This implementation populates tree nodes with detailed location 
- *   information (document name and line number).
- * </p>
  * 
  * @since 2.0.0
  * 
- * @author Guven Demir
  * @author Daniel Fern&aacute;ndez
  * 
  */
-public abstract  class AbstractValidatingSAXTemplateParser extends AbstractNonValidatingSAXTemplateParser {
-    
-    
-    
-    private final ResourcePool<SAXParser> pool;
-
-    
-    
-    protected AbstractValidatingSAXTemplateParser(final int poolSize) {
-        super(poolSize);
-        this.pool = createSaxParsers(poolSize, true);
-    }
-    
-    
+public final class StandardTemplateWriter extends AbstractGeneralTemplateWriter {
 
 
-    @Override
-    protected ResourcePool<SAXParser> getPool() {
-        return this.pool;
+    // TODO Should be refactored once the DOM model has been changed. XML Declaration should be a node, minimization should not exist anymore, etc.
+
+    public StandardTemplateWriter() {
+        super();
     }
 
-
-
-
     @Override
-    protected boolean shouldAddThymeleafRootToParser() {
+    protected boolean shouldWriteXmlDeclaration() {
         return false;
     }
 
-
-
+    @Override
+    protected boolean useXhtmlTagMinimizationRules() {
+        return true;
+    }
+    
+    
 }

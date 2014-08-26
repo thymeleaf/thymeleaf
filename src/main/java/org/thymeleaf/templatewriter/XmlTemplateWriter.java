@@ -24,10 +24,12 @@ package org.thymeleaf.templatewriter;
 /**
  * 
  * @since 2.0.0
- * 
+ *
+ * @deprecated Should be removed before 3.0
  * @author Daniel Fern&aacute;ndez
  * 
  */
+@Deprecated
 public final class XmlTemplateWriter extends AbstractGeneralTemplateWriter {
 
 

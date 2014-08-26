@@ -34,10 +34,12 @@ import org.xml.sax.SAXException;
 /**
  * 
  * @author Daniel Fern&aacute;ndez
- * 
+ *
+ * @deprecated Should be removed before 3.0 is out
  * @since 1.0
  *
  */
+@Deprecated
 public final class EntityResolver implements org.xml.sax.EntityResolver {
     
     private static final Logger logger = LoggerFactory.getLogger(EntityResolver.class);
