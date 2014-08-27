@@ -48,6 +48,8 @@ import org.thymeleaf.dom.Element.RepresentationInTemplate;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
+import org.thymeleaf.dom2.IMarkupTextRepository;
+import org.thymeleaf.dom2.MarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -64,6 +66,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 public class StandardTemplateParser implements ITemplateParser {
 
     public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
+    public static final IMarkupTextRepository TEXT_REPOSITORY = new MarkupTextRepository(5242880, new String[0]);
 
     protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
@@ -334,13 +337,13 @@ public class StandardTemplateParser implements ITemplateParser {
                 throws AttoParseException {
 
             if (versionLen > 0) {
-                this.xmlVersion = new String(buffer, versionOffset, versionLen);
+                this.xmlVersion = TEXT_REPOSITORY.getText(buffer, versionOffset, versionLen);
             }
             if (encodingLen > 0) {
-                this.xmlEncoding = new String(buffer, encodingOffset, encodingLen);
+                this.xmlEncoding = TEXT_REPOSITORY.getText(buffer, encodingOffset, encodingLen);
             }
             if (standaloneLen > 0) {
-                this.xmlStandalone = Boolean.parseBoolean(new String(buffer, standaloneOffset, standaloneLen));
+                this.xmlStandalone = Boolean.parseBoolean(TEXT_REPOSITORY.getText(buffer, standaloneOffset, standaloneLen));
             }
 
             return null;
@@ -377,16 +380,16 @@ public class StandardTemplateParser implements ITemplateParser {
                 throws AttoParseException {
 
             if (elementNameLen > 0) {
-                this.docTypeRootElementName = new String(buffer, elementNameOffset, elementNameLen);
+                this.docTypeRootElementName = TEXT_REPOSITORY.getText(buffer, elementNameOffset, elementNameLen);
             }
             if (publicIdLen > 0) {
-                this.docTypePublicId = new String(buffer, publicIdOffset, publicIdLen);
+                this.docTypePublicId = TEXT_REPOSITORY.getText(buffer, publicIdOffset, publicIdLen);
             }
             if (systemIdLen > 0) {
-                this.docTypeSystemId = new String(buffer, systemIdOffset, systemIdLen);
+                this.docTypeSystemId = TEXT_REPOSITORY.getText(buffer, systemIdOffset, systemIdLen);
             }
 
-            this.docTypeClause = new String(buffer, outerOffset, outerLen);
+            this.docTypeClause = TEXT_REPOSITORY.getText(buffer, outerOffset, outerLen);
 
             return null;
 
@@ -410,7 +413,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
-            final String content = new String(buffer, contentOffset, contentLen);
+            final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
             final Node cdata = new CDATASection(content, this.documentName, Integer.valueOf(line + lineOffset), true);
 
             if (this.elementStack.isEmpty()) {
@@ -466,7 +469,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
             }
 
-            final String content = new String(buffer, offset, len);
+            final String content = TEXT_REPOSITORY.getText(buffer, offset, len);
             final Node textNode = new Text(content, this.documentName, Integer.valueOf(line + lineOffset), true);
             
             if (this.elementStack.isEmpty()) {
@@ -556,7 +559,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
-            final String content = new String(buffer, contentOffset, contentLen);
+            final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
 
             final Comment comment = new Comment(content, this.documentName, Integer.valueOf(line + lineOffset));
 
@@ -646,8 +649,8 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int valueLine, final int valueCol) 
                 throws AttoParseException {
 
-            final String attributeName = new String(buffer, nameOffset, nameLen);
-            final String attributeValue = new String(buffer, valueContentOffset, valueContentLen);
+            final String attributeName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+            final String attributeValue = TEXT_REPOSITORY.getText(buffer, valueContentOffset, valueContentLen);
             
             this.currentElement.setAttribute(
                     attributeName, false, attributeValue, true);
@@ -668,7 +671,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col) 
                 throws AttoParseException {
 
-            final String elementName = new String(buffer, offset, len);
+            final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
             
             final Element element = 
                     new Element(elementName, this.documentName, Integer.valueOf(line + lineOffset), RepresentationInTemplate.STANDALONE);
@@ -696,7 +699,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
-            final String elementName = new String(buffer, offset, len);
+            final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
             
             final Element element = 
                     new Element(elementName, this.documentName, Integer.valueOf(line + lineOffset), RepresentationInTemplate.ONLY_OPEN);
@@ -719,7 +722,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int line, final int col) 
                 throws AttoParseException {
 
-            final String closedElementName = new String(buffer, offset, len);
+            final String closedElementName = TEXT_REPOSITORY.getText(buffer, offset, len);
 
             if (this.elementStack.isEmpty()) {
                 throw new TemplateInputException("Unbalanced close tag \"" + closedElementName + "\". " +
