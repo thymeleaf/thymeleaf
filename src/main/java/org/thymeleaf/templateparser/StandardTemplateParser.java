@@ -34,6 +34,7 @@ import org.attoparser.markup.MarkupAttoParser;
 import org.attoparser.markup.html.AbstractDetailedNonValidatingHtmlAttoHandler;
 import org.attoparser.markup.html.HtmlParsing;
 import org.attoparser.markup.html.HtmlParsingConfiguration;
+import org.attoparser.markup.html.elements.HtmlElements;
 import org.attoparser.markup.html.elements.IHtmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,6 @@ import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.dom2.IMarkupTextRepository;
-import org.thymeleaf.dom2.MarkupTextRepository;
 import org.thymeleaf.dom2.MarkupTextRepository2;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
@@ -67,16 +67,31 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 public class StandardTemplateParser implements ITemplateParser {
 
     public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
-    public static final IMarkupTextRepository TEXT_REPOSITORY = new MarkupTextRepository2(5242880, new String[0]);
 
     protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
     static final HtmlParsingConfiguration  HTML_PARSING_CONFIGURATION;
-    
+    static final IMarkupTextRepository TEXT_REPOSITORY;
+
     
     
     static {
+
         HTML_PARSING_CONFIGURATION = HtmlParsing.htmlParsingConfiguration();
+
+        final List<String> unremovableTexts  = new ArrayList<String>();
+        unremovableTexts.addAll(HtmlElements.ALL_ELEMENT_NAMES);
+        unremovableTexts.add("\n");
+        unremovableTexts.add("\n  ");
+        unremovableTexts.add("\n    ");
+        unremovableTexts.add("\n      ");
+        unremovableTexts.add("\n        ");
+        unremovableTexts.add("\n          ");
+        unremovableTexts.add("\n            ");
+        unremovableTexts.add("\n              ");
+
+        // Size = 10MBytes (1 char = 2 bytes)
+        TEXT_REPOSITORY = new MarkupTextRepository2(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
     }
     
     

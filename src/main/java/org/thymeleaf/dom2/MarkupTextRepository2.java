@@ -23,6 +23,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ *
+ */
 public final class MarkupTextRepository2 implements IMarkupTextRepository {
 
     /*
@@ -66,12 +69,15 @@ public final class MarkupTextRepository2 implements IMarkupTextRepository {
         this.texts = new String[this.textsLen];
         this.textsSize = 0;
 
-        this.textsUnremovableSetSize = 0;
-
         this.textMap = new int[TEXT_MAP_LEN][];
         for (int i = 0; i < TEXT_MAP_LEN; i++) {
             this.textMap[i] = null;
         }
+
+        for (final String unremovableText : unremovableTexts) {
+            storeText(unremovableText);
+        }
+        this.textsUnremovableSetSize = unremovableTexts.length;
 
     }
 
