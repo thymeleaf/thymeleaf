@@ -50,6 +50,7 @@ import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.dom2.IMarkupTextRepository;
 import org.thymeleaf.dom2.MarkupTextRepository;
+import org.thymeleaf.dom2.MarkupTextRepository2;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -66,7 +67,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 public class StandardTemplateParser implements ITemplateParser {
 
     public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
-    public static final IMarkupTextRepository TEXT_REPOSITORY = new MarkupTextRepository(5242880, new String[0]);
+    public static final IMarkupTextRepository TEXT_REPOSITORY = new MarkupTextRepository2(5242880, new String[0]);
 
     protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
