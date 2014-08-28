@@ -19,9 +19,42 @@
  */
 package org.thymeleaf.dom2;
 
+/**
+ * <p>
+ *     Common interface for repositories of text (<kbd>String</kbd>) instances created by the markup parser or
+ *     document model.
+ * </p>
+ * <p>
+ *     Implementations of this interface must be <strong>thread-safe</strong>.
+ * </p>
+ *
+ * @author Daniel Fern&aacute;ndez
+ *
+ * @since 3.0.0
+ *
+ */
 public interface IMarkupTextRepository {
 
+    /**
+     * <p>
+     *     Retrieve the stored version of the text passed as argument.
+     * </p>
+     *
+     * @param text the text to be retrieved.
+     * @return the stored text.
+     */
     public String getText(final String text);
+
+    /**
+     * <p>
+     *
+     * </p>
+     *
+     * @param text the buffer containing the text to be retrieved.
+     * @param offset tbe offset to be aplied to the text buffer.
+     * @param len the length of the text in the specified buffer.
+     * @return the stored text.
+     */
     public String getText(final char[] text, final int offset, final int len);
 
 }

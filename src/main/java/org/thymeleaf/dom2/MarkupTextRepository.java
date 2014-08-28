@@ -19,11 +19,38 @@
  */
 package org.thymeleaf.dom2;
 
-import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * <p>
+ *     Repository of text (<kbd>String</kbd>) instances created by the markup parser or document model.
+ * </p>
+ * <p>
+ *     This repository works in a similar way to {@link String#intern()}, except that it allows the
+ *     <em>interning</em> of texts without the need to previously have a <kbd>String</kbd> instance,
+ *     and that it allows setting a maximum size for the entire repository in chars (and therefore
+ *     in bytes too).
+ * </p>
+ * <p>
+ *     When full, objects of this class will be evited following a first-in, first-out policy. Oldest texts
+ *     added to the repository will be removed to make room for new ones no matter how many times they have been
+ *     retrieved.
+ * </p>
+ * <p>
+ *     Also, this implementation allows the specification (through a constructor argument) of a series of
+ *     texts that should never be removed from the repository.
+ * </p>
+ * <p>
+ *     Instances of this class are <strong>thread-safe</strong>.
+ * </p>
+ *
+ * @author Daniel Fern&aacute;ndez
+ *
+ * @since 3.0.0
+ *
+ */
 public final class MarkupTextRepository implements IMarkupTextRepository {
 
     /*
@@ -36,8 +63,8 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
     private static final int CONTENTS_INITIAL_LEN = 1000;
     private static final int CONTENTS_LEN_INC = 500;
 
-    // We will use this constant to avoid creating too many 0-sized char arrays
-    private static final int[] NO_IDS = new int[0];
+    // HashCode-based indexes for the text map will be distributed using a 'modulo' function, so we need a prime number
+    private static final int TEXT_MAP_LEN = 3181;
 
     private final int maxSizeInChars;
     private int currentSizeInChars;
@@ -47,10 +74,7 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
     private int textsSize;
     private int textsUnremovableSetSize;
 
-    private int textMapLen;
-    private int[] textMapKeys;
-    private int[][] textMapValues;
-    private int textMapSize;
+    private int[][] textMap;
 
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
@@ -70,12 +94,15 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
         this.texts = new String[this.textsLen];
         this.textsSize = 0;
 
-        this.textsUnremovableSetSize = 0;
+        this.textMap = new int[TEXT_MAP_LEN][];
+        for (int i = 0; i < TEXT_MAP_LEN; i++) {
+            this.textMap[i] = null;
+        }
 
-        this.textMapLen = CONTENTS_INITIAL_LEN;
-        this.textMapKeys = new int[this.textMapLen];
-        this.textMapValues = new int[this.textMapLen][];
-        this.textMapSize = 0;
+        for (final String unremovableText : unremovableTexts) {
+            storeText(unremovableText);
+        }
+        this.textsUnremovableSetSize = unremovableTexts.length;
 
     }
 
@@ -96,26 +123,17 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
 
         try {
 
-            final int[] ids = findTextIdsFromHashCode(hashCode);
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
 
-            if (ids.length == 1) {
+            if (ids != null) {
 
-                // Found something for this hash code
-                final String candidate = this.texts[ids[0]];
-                if (checkResult(text, candidate)) {
-                    return candidate;
-                }
-
-            } else if (ids.length > 1) {
-
-                // The selected ID currently stores a collision. We will have to manually check for the right text instance
+                // Now we need to iterate the array of ids looking for the target text
                 for (int i = 0; i < ids.length; i++) {
                     final String candidate = this.texts[ids[i]];
                     if (checkResult(text, candidate)) {
                         // We will return the stored instance, maybe allowing the 'text' arg to be eaten by the GC
                         return candidate;
                     }
-
                 }
 
             }
@@ -149,19 +167,11 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
 
         try {
 
-            final int[] ids = findTextIdsFromHashCode(hashCode);
+            final int[] ids = this.textMap[Math.abs(hashCode) % TEXT_MAP_LEN];
 
-            if (ids.length == 1) {
+            if (ids != null) {
 
-                // Found something for this hash code
-                final String candidate = this.texts[ids[0]];
-                if (checkResult(text,offset,len,candidate)) {
-                    return candidate;
-                }
-
-            } else if (ids.length > 1) {
-
-                // The selected ID currently stores a collision. We will have to manually check for the right text instance
+                // Now we need to iterate the array of ids looking for the target text
                 for (int i = 0; i < ids.length; i++) {
                     final String candidate = this.texts[ids[i]];
                     if (checkResult(text, offset, len, candidate)) {
@@ -189,29 +199,6 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
     }
 
 
-
-
-    private int[] findTextIdsFromHashCode(final int hashCode) {
-
-        if (textMapSize == 0) {
-            return NO_IDS;
-        }
-
-        /*
-         * Find the map index for this hashCode, if it exists. We assume the map is ordered by key
-         */
-        final int i = lookForHashCodeInTextMap(hashCode);
-        if (i >= this.textMapSize) {
-            // Not found, and all keys are < than this hashCode
-            return NO_IDS;
-        }
-        if (this.textMapKeys[i] == hashCode) {
-            // Found!
-            return this.textMapValues[i];
-        }
-        // Not found, we stopped because we found a key > than our hashCode
-        return NO_IDS;
-    }
 
 
 
@@ -254,25 +241,16 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
          * Check if this text already exists - in such case, simply return the already-inserted one
          * (this might happen if two processes were waiting for the same write lock to store the same String)
          */
-        final int[] storedIds = findTextIdsFromHashCode(hashCode);
+        final int mapIndex = Math.abs(hashCode) % TEXT_MAP_LEN;
+        final int[] ids = this.textMap[mapIndex];
 
-        if (storedIds.length == 1) {
+        if (ids != null) {
 
-            // Found something for this hash code
-            final String candidate = this.texts[storedIds[0]];
-            if (checkResult(text, candidate)) {
-                return candidate;
-            }
-
-        } else if (storedIds.length > 1) {
-
-            // The selected ID currently stores a collision. We will have to manually check for the right text instance
-            for (int i = 0; i < storedIds.length; i++) {
-                final String candidate = this.texts[storedIds[i]];
+            for (int i = 0; i < ids.length; i++) {
+                final String candidate = this.texts[ids[i]];
                 if (checkResult(text, candidate)) {
                     return candidate;
                 }
-
             }
 
         }
@@ -316,38 +294,15 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
         this.textsSize++;
 
         /*
-         * Look for the correct position in the text map
+         * Add the text to the text map
          */
-        final int i = lookForHashCodeInTextMap(hashCode);
-
-        if (i < this.textMapSize && this.textMapKeys[i] == hashCode) {
-            // This is a collision! We need to grow the values array, but nothing else.
-
-            final int[] ids = this.textMapValues[i];
-            final int[] newIds = new int[ids.length + 1];
-            System.arraycopy(ids,0,newIds,0,ids.length);
-            newIds[ids.length] = textIndex;
-            this.textMapValues[i] = newIds;
-
-            this.currentSizeInChars += textLen;
-
-            return text;
-
+        final int newIdsLen = (ids == null? 1 : ids.length + 1);
+        final int[] newIds = new int[newIdsLen];
+        if (ids != null) {
+            System.arraycopy(ids, 0, newIds, 0, ids.length);
         }
-
-        /*
-         * No collisions, just add to the text map and return
-         */
-
-        if (i < this.textMapSize) {
-            // We will add the new value somewhere in the middle of the map, so we need to make room for it
-            System.arraycopy(this.textMapKeys, i, this.textMapKeys, i + 1, this.textMapSize - i);
-            System.arraycopy(this.textMapValues, i, this.textMapValues, i + 1, this.textMapSize - i);
-        }
-
-        this.textMapKeys[i] = hashCode;
-        this.textMapValues[i] = new int[] { textIndex };
-        this.textMapSize++;
+        newIds[newIdsLen - 1] = textIndex;
+        this.textMap[mapIndex] = newIds;
 
         this.currentSizeInChars += textLen;
 
@@ -362,10 +317,6 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
 
     private void growContents() {
 
-        // Even if, due to collisions, it might happen that the texts array reaches its maximum size
-        // a bit before the texts map does, collisions should be so few this shouldn't really matter, so we
-        // can confidently grow both structures at the same pace.
-
         /*
          * Grow texts array
          */
@@ -376,21 +327,6 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
         this.texts = newTexts;
 
         this.textsLen = newTextsLen;
-
-        /*
-         * Grow texts map
-         */
-        final int newTextMapLen = this.textMapLen + CONTENTS_LEN_INC;
-
-        final int[] newTextMapKeys = new int[newTextMapLen];
-        System.arraycopy(this.textMapKeys,0,newTextMapKeys,0,this.textMapSize);
-        this.textMapKeys = newTextMapKeys;
-
-        final int[][] newTextMapValues = new int[newTextMapLen][];
-        System.arraycopy(this.textMapValues,0,newTextMapValues,0,this.textMapSize);
-        this.textMapValues = newTextMapValues;
-
-        this.textMapLen = newTextMapLen;
 
     }
 
@@ -425,24 +361,19 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
          * Remove the text from the text map
          */
 
-        final int i = lookForHashCodeInTextMap(removedTextHashCode);
+        final int i = Math.abs(removedTextHashCode) % TEXT_MAP_LEN;
 
         // Given the text exists in the repository, we must have found the exact hash code
-        final int[] ids = this.textMapValues[i];
+        final int[] ids = this.textMap[i];
 
         if (ids.length == 1) {
 
-            // Only one value, so we simply remove the complete entry
-
-            if (this.textMapSize > i + 1) {
-                System.arraycopy(this.textMapKeys, i + 1, this.textMapKeys, i, this.textMapSize - (i + 1));
-                System.arraycopy(this.textMapValues, i + 1, this.textMapValues, i, this.textMapSize - (i + 1));
-            }
-            this.textMapSize--;
+            // Only one value, so we simply remove the complete array
+            this.textMap[i] = null;
 
         } else {
 
-            // This hash code had a collision, so removing it means modifying the ids array
+            // We need to modify the array, first looking for the correct index
 
             int j = 0;
             while (j < ids.length && ids[j] != removedTextIndex) {
@@ -457,7 +388,7 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
                 System.arraycopy(ids, j + 1, newIds, j, (ids.length - (j + 1)));
             }
 
-            this.textMapValues[i] = newIds;
+            this.textMap[i] = newIds;
 
         }
 
@@ -468,11 +399,13 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
          */
 
         int kv; int[] kids;
-        for (int k = 0; k < this.textMapSize; k++) {
-            kids = this.textMapValues[k];
-            for (kv = 0; kv < kids.length; kv++) {
-                if (kids[kv] > removedTextIndex) {
-                    kids[kv]--;
+        for (int k = 0; k < TEXT_MAP_LEN; k++) {
+            kids = this.textMap[k];
+            if (kids != null) {
+                for (kv = 0; kv < kids.length; kv++) {
+                    if (kids[kv] > removedTextIndex) {
+                        kids[kv]--;
+                    }
                 }
             }
         }
@@ -490,13 +423,6 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
 
 
 
-    private int lookForHashCodeInTextMap(final int hashCode) {
-        final int p = Arrays.binarySearch(this.textMapKeys, 0, this.textMapSize, hashCode);
-        return (p < 0)?  -(p + 1) : p;
-    }
-
-
-
 
     private static int computeHashCode(final char[] text, final int offset, final int len) {
         // This basically mimics what the String.hashCode() method does, without the need to
@@ -510,6 +436,7 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
         }
         return h;
     }
+
 
 
 

@@ -50,7 +50,7 @@ import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
 import org.thymeleaf.dom2.IMarkupTextRepository;
-import org.thymeleaf.dom2.MarkupTextRepository2;
+import org.thymeleaf.dom2.MarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -89,9 +89,14 @@ public class StandardTemplateParser implements ITemplateParser {
         unremovableTexts.add("\n          ");
         unremovableTexts.add("\n            ");
         unremovableTexts.add("\n              ");
+        unremovableTexts.add("\n                ");
+        unremovableTexts.add("\n\t");
+        unremovableTexts.add("\n\t\t");
+        unremovableTexts.add("\n\t\t\t");
+        unremovableTexts.add("\n\t\t\t\t");
 
         // Size = 10MBytes (1 char = 2 bytes)
-        TEXT_REPOSITORY = new MarkupTextRepository2(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
+        TEXT_REPOSITORY = new MarkupTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
     }
     
     
