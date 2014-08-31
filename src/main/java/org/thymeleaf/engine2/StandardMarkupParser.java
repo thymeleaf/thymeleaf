@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.templateparser;
+package org.thymeleaf.engine2;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -53,6 +53,7 @@ import org.thymeleaf.dom2.IMarkupTextRepository;
 import org.thymeleaf.dom2.MarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.templateparser.ITemplateParser;
 
 /**
  * <p>
@@ -64,9 +65,9 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.0
  * 
  */
-public class StandardTemplateParser implements ITemplateParser {
+public class StandardMarkupParser implements ITemplateParser {
 
-    public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
+    public static final StandardMarkupParser INSTANCE = new StandardMarkupParser();
 
     protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
@@ -81,6 +82,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
         final List<String> unremovableTexts  = new ArrayList<String>();
         unremovableTexts.addAll(HtmlElements.ALL_ELEMENT_NAMES);
+        unremovableTexts.add(" ");
         unremovableTexts.add("\n");
         unremovableTexts.add("\n  ");
         unremovableTexts.add("\n    ");
@@ -101,7 +103,7 @@ public class StandardTemplateParser implements ITemplateParser {
     
     
     
-    private StandardTemplateParser() {
+    private StandardMarkupParser() {
         super();
     }
     
@@ -254,7 +256,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
         public TemplateAttoHandler(final String documentName) {
             
-            super(StandardTemplateParser.HTML_PARSING_CONFIGURATION);
+            super(StandardMarkupParser.HTML_PARSING_CONFIGURATION);
 
             this.documentName = documentName;
             
@@ -626,7 +628,7 @@ public class StandardTemplateParser implements ITemplateParser {
             this.colOffset = col + 2; // 2 = 3 - 1 --> because of the '/*/' sequence (-1 in order to work as offset)
 
             // We parse the comment content using this same handler object, but removing the "/*/.../*/"
-            StandardTemplateParser.PARSER.parse(buffer, contentOffset + 3, contentLen - 6, this);
+            StandardMarkupParser.PARSER.parse(buffer, contentOffset + 3, contentLen - 6, this);
 
             /*
              * Return offsets to their original value.
@@ -723,7 +725,6 @@ public class StandardTemplateParser implements ITemplateParser {
 
 
 
-
         @Override
         public IAttoHandleResult handleHtmlOpenElementStart(
                 final IHtmlElement htmlElement,
@@ -792,10 +793,94 @@ public class StandardTemplateParser implements ITemplateParser {
             return null;
 
         }
+
+
+        @Override
+        public IAttoHandleResult handleHtmlStandaloneElementEnd(
+                final IHtmlElement element,
+                final boolean minimized,
+                final char[] buffer,
+                final int nameOffset, final int nameLen,
+                final int line, final int col)
+                throws AttoParseException {
+
+            return null;
+
+        }
+
+
+        @Override
+        public IAttoHandleResult handleHtmlOpenElementEnd(
+                final IHtmlElement element,
+                final char[] buffer,
+                final int nameOffset, final int nameLen,
+                final int line, final int col)
+                throws AttoParseException {
+
+            return null;
+
+        }
+
+
+        @Override
+        public IAttoHandleResult handleHtmlCloseElementEnd(
+                final IHtmlElement element,
+                final char[] buffer,
+                final int nameOffset, final int nameLen,
+                final int line, final int col)
+                throws AttoParseException {
+
+            return null;
+
+        }
+
+
+
+        @Override
+        public IAttoHandleResult handleHtmlInnerWhiteSpace(
+                final char[] buffer,
+                final int offset, final int len,
+                final int line, final int col)
+                throws AttoParseException {
+
+            return null;
+
+        }
+
+
+
+
+
+        /*
+         * -------------------------------
+         * Processing Instruction handling
+         * -------------------------------
+         */
+
+
+        @Override
+        public IAttoHandleResult handleProcessingInstruction(
+                final char[] buffer,
+                final int targetOffset, final int targetLen,
+                final int targetLine, final int targetCol,
+                final int contentOffset, final int contentLen,
+                final int contentLine, final int contentCol,
+                final int outerOffset, final int outerLen,
+                final int line, final int col)
+                throws AttoParseException {
+
+            return null;
+
+        }
+
+
         
         
-        
-        
+
+        /*
+         * Stack-related methods
+         */
+
         private void searchInStack(final String soughtElementName) {
 
             NestableNode node = this.elementStack.peek();
