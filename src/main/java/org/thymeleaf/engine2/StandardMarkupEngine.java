@@ -69,7 +69,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
 
     public void onXmlDeclaration (
             final String xmlDeclaration,
-            final String xmlVersion, final String xmlEncoding, final boolean xmlStandalone,
+            final String version, final String encoding, final boolean standalone,
             final int line, final int col) {
 
     }
@@ -86,7 +86,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
 
     public void onDocTypeClause (
             final String docTypeClause,
-            final String docTypeRootElementName, final String docTypePublicId, final boolean docTypeSystemId,
+            final String rootElementName, final String publicId, final String systemId,
             final int line, final int col) {
 
     }

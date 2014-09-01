@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import org.attoparser.AttoHandleResult;
 import org.attoparser.AttoParseException;
@@ -40,15 +39,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dom.CDATASection;
-import org.thymeleaf.dom.Comment;
-import org.thymeleaf.dom.DocType;
-import org.thymeleaf.dom.Document;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.dom.Element.RepresentationInTemplate;
-import org.thymeleaf.dom.NestableNode;
-import org.thymeleaf.dom.Node;
-import org.thymeleaf.dom.Text;
 import org.thymeleaf.dom2.IMarkupTextRepository;
 import org.thymeleaf.dom2.MarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -65,7 +55,7 @@ import org.thymeleaf.templateparser.ITemplateParser;
  * @since 3.0.0
  * 
  */
-public class StandardMarkupParser implements ITemplateParser {
+public class StandardMarkupParser {
 
     public static final StandardMarkupParser INSTANCE = new StandardMarkupParser();
 
@@ -110,12 +100,18 @@ public class StandardMarkupParser implements ITemplateParser {
 
     
     
-    public final Document parseTemplate(final Configuration configuration, final String documentName, final Reader reader) {
+    public final void parseTemplate(final Configuration configuration,
+                                        final IMarkupEngine markupEngine,
+                                        final String documentName,
+                                        final Reader reader) {
 
         try {
-            
-            return doParse(documentName, reader);
-            
+
+
+            final StandardMarkupParserAttoHandler handler =
+                    new StandardMarkupParserAttoHandler(markupEngine, documentName);
+            PARSER.parse(reader, handler);
+
         } catch (final TemplateProcessingException e) {
             throw e;
         } catch (final AttoParseException e) {
@@ -134,105 +130,25 @@ public class StandardMarkupParser implements ITemplateParser {
         
     }
 
-    
-    
-    
-    private static Document doParse(final String documentName, final Reader reader)
-            throws AttoParseException {
-
-        final TemplateAttoHandler handler = new TemplateAttoHandler(documentName);
-
-        PARSER.parse(reader, handler);
-        
-        final String docTypeClause = handler.getDocTypeClause();
-        final String docTypeRootElementName = handler.getDocTypeRootElementName();
-        final String docTypePublicId = handler.getDocTypePublicId();
-        final String docTypeSystemId = handler.getDocTypeSystemId();
-        
-        // The DOCTYPE root element name could be null if we are parsing
-        // a non-complete document, a fragment, without a DOCTYPE declaration.
-        final DocType docType = 
-                (docTypeRootElementName != null?
-                        new DocType(docTypeRootElementName, docTypePublicId, docTypeSystemId, docTypeClause) :
-                        null);
-        
-        final List<Node> rootNodes = handler.getRootNodes();
-        
-        final String xmlVersion = handler.getXmlVersion();
-        final String xmlEncoding = handler.getXmlEncoding();
-        final boolean xmlStandalone = handler.isXmlStandalone();
-        
-        final Document document = new Document(documentName, docType);
-
-        if (xmlVersion != null) {
-            document.setNodeProperty(Node.NODE_PROPERTY_XML_VERSION, xmlVersion);
-        }
-        
-        if (xmlEncoding != null) {
-            document.setNodeProperty(Node.NODE_PROPERTY_XML_ENCODING, xmlEncoding);
-        }
-        
-        if (xmlStandalone) {
-            document.setNodeProperty(Node.NODE_PROPERTY_XML_STANDALONE, Boolean.TRUE);
-        }
-        
-        document.setChildren(rootNodes);
-        
-        return document;
-        
-    }
-    
-
-
-    
-
-    public final List<Node> parseFragment(final Configuration configuration, final String fragment) {
-        final Document document = 
-                parseTemplate(
-                        configuration,
-                        null, // documentName 
-                        new StringReader(fragment));
-        return document.getChildren();
-    }
 
 
 
-    public final List<Node> parseFragment(final Configuration configuration, final String text, final int offset, final int len) {
-        final Document document =
-                parseTemplate(
-                        configuration,
-                        null, // documentName
-                        new StringReader(text.substring(offset, offset + len)));
-        return document.getChildren();
+    public final void parseFragment(final Configuration configuration,
+                                    final IMarkupEngine markupEngine,
+                                    final String fragment) {
+        parseTemplate(configuration, markupEngine, null, new StringReader(fragment));
     }
 
     
     
     
     
-    
-    private static final class TemplateAttoHandler extends AbstractDetailedNonValidatingHtmlAttoHandler {
+    private static final class StandardMarkupParserAttoHandler extends AbstractDetailedNonValidatingHtmlAttoHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(TemplateAttoHandler.class);
+        private static final Logger logger = LoggerFactory.getLogger(StandardMarkupParserAttoHandler.class);
         
+        private final IMarkupEngine markupEngine;
         private final String documentName;
-        private final Stack<NestableNode> elementStack;
-        
-        /*
-         * TODO Should be an AttributeHolder instead of an Element in >= 2.1
-         */
-        private Element currentElement = null;
-
-        private List<Node> rootNodes = null;
-
-        private String docTypeClause = null;
-        private String docTypeRootElementName = null;
-        private String docTypePublicId = null;
-        private String docTypeSystemId = null;
-        
-        private String xmlEncoding = null;
-        private String xmlVersion = null;
-        private boolean xmlStandalone = false;
 
         /*
          * These structures allow reporting the correct (line,col) pair in DOM nodes during an embedded parsing
@@ -254,50 +170,15 @@ public class StandardMarkupParser implements ITemplateParser {
 
 
 
-        public TemplateAttoHandler(final String documentName) {
+        public StandardMarkupParserAttoHandler(final IMarkupEngine markupEngine, final String documentName) {
             
             super(StandardMarkupParser.HTML_PARSING_CONFIGURATION);
 
+            this.markupEngine = markupEngine;
             this.documentName = documentName;
-            
-            this.elementStack = new Stack<NestableNode>();
-            this.rootNodes = new ArrayList<Node>(6);
-            
+
         }
 
-
-        public String getDocTypeClause() {
-            return this.docTypeClause;
-        }
-
-        public String getDocTypeRootElementName() {
-            return this.docTypeRootElementName;
-        }
-        
-        public String getDocTypePublicId() {
-            return this.docTypePublicId;
-        }
-        
-        public String getDocTypeSystemId() {
-            return this.docTypeSystemId;
-        }
-        
-        public List<Node> getRootNodes() {
-            return this.rootNodes;
-        }
-
-        public String getXmlEncoding() {
-            return this.xmlEncoding;
-        }
-
-        public String getXmlVersion() {
-            return this.xmlVersion;
-        }
-
-        public boolean isXmlStandalone() {
-            return this.xmlStandalone;
-        }
-        
         
 
         /*
@@ -313,7 +194,7 @@ public class StandardMarkupParser implements ITemplateParser {
                 final HtmlParsingConfiguration parsingConfiguration)
                throws AttoParseException {
 
-            // Nothing to be done here
+            this.markupEngine.onDocumentStart(startTimeNanos);
             return null;
 
         }
@@ -326,16 +207,18 @@ public class StandardMarkupParser implements ITemplateParser {
                 final HtmlParsingConfiguration configuration)
                 throws AttoParseException {
 
+            this.markupEngine.onDocumentEnd(endTimeNanos, totalTimeNanos);
+
             if (logger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(totalTimeNanos);
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
                 if (this.documentName == null) {
-                    logger.trace("[THYMELEAF][{}][{}][{}] Parsed unnamed template or fragment in {} nanoseconds (approx. {}ms)", 
+                    logger.trace("[THYMELEAF][{}][{}][{}] Processed unnamed template or fragment in {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(), 
                                             elapsed, elapsedMs,
                                             elapsed, elapsedMs});
                 } else {
-                    logger.trace("[THYMELEAF][{}][{}][{}][{}] Parsed template \"{}\" in {} nanoseconds (approx. {}ms)", 
+                    logger.trace("[THYMELEAF][{}][{}][{}][{}] Processed template \"{}\" in {} nanoseconds (approx. {}ms)",
                             new Object[] {TemplateEngine.threadIndex(), 
                                             this.documentName, elapsed, elapsedMs,
                                             this.documentName, elapsed, elapsedMs});
@@ -371,15 +254,16 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int line, final int col) 
                 throws AttoParseException {
 
-            if (versionLen > 0) {
-                this.xmlVersion = TEXT_REPOSITORY.getText(buffer, versionOffset, versionLen);
-            }
-            if (encodingLen > 0) {
-                this.xmlEncoding = TEXT_REPOSITORY.getText(buffer, encodingOffset, encodingLen);
-            }
-            if (standaloneLen > 0) {
-                this.xmlStandalone = Boolean.parseBoolean(TEXT_REPOSITORY.getText(buffer, standaloneOffset, standaloneLen));
-            }
+            final String xmlDeclaration = TEXT_REPOSITORY.getText(buffer, outerOffset, outerLen);
+
+            final String version =
+                    (versionLen > 0)? TEXT_REPOSITORY.getText(buffer, versionOffset, versionLen) : null;
+            final String encoding =
+                    (encodingLen > 0)? TEXT_REPOSITORY.getText(buffer, encodingOffset, encodingLen) : null;
+            final boolean standalone =
+                    (standaloneLen > 0)? Boolean.parseBoolean(TEXT_REPOSITORY.getText(buffer, standaloneOffset, standaloneLen)): false;
+
+            this.markupEngine.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, line + this.lineOffset, col + this.colOffset);
 
             return null;
             
@@ -414,17 +298,18 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int outerLine, final int outerCol)
                 throws AttoParseException {
 
-            if (elementNameLen > 0) {
-                this.docTypeRootElementName = TEXT_REPOSITORY.getText(buffer, elementNameOffset, elementNameLen);
-            }
-            if (publicIdLen > 0) {
-                this.docTypePublicId = TEXT_REPOSITORY.getText(buffer, publicIdOffset, publicIdLen);
-            }
-            if (systemIdLen > 0) {
-                this.docTypeSystemId = TEXT_REPOSITORY.getText(buffer, systemIdOffset, systemIdLen);
-            }
+            final String docTypeClause = TEXT_REPOSITORY.getText(buffer, outerOffset, outerLen);
 
-            this.docTypeClause = TEXT_REPOSITORY.getText(buffer, outerOffset, outerLen);
+            final String rootElementName =
+                    (elementNameLen > 0)? TEXT_REPOSITORY.getText(buffer, elementNameOffset, elementNameLen) : null;
+            final String publicId =
+                    (publicIdLen > 0)? TEXT_REPOSITORY.getText(buffer, publicIdOffset, publicIdLen) : null;
+            final String systemId =
+                    (systemIdLen > 0)? TEXT_REPOSITORY.getText(buffer, systemIdOffset, systemIdLen) : null;
+
+            this.markupEngine.onDocTypeClause(
+                    docTypeClause, rootElementName, publicId, systemId,
+                    outerLine + this.lineOffset, outerCol + this.colOffset);
 
             return null;
 
@@ -449,14 +334,8 @@ public class StandardMarkupParser implements ITemplateParser {
                 throws AttoParseException {
 
             final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
-            final Node cdata = new CDATASection(content, this.documentName, Integer.valueOf(line + lineOffset), true);
 
-            if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(cdata);
-            } else {
-                final NestableNode parent = this.elementStack.peek();
-                parent.addChild(cdata);
-            }
+            this.markupEngine.onCDATASection(content, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -505,14 +384,8 @@ public class StandardMarkupParser implements ITemplateParser {
             }
 
             final String content = TEXT_REPOSITORY.getText(buffer, offset, len);
-            final Node textNode = new Text(content, this.documentName, Integer.valueOf(line + lineOffset), true);
-            
-            if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(textNode);
-            } else {
-                final NestableNode parent = this.elementStack.peek();
-                parent.addChild(textNode);
-            }
+
+            this.markupEngine.onText(content, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -596,14 +469,7 @@ public class StandardMarkupParser implements ITemplateParser {
 
             final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
 
-            final Comment comment = new Comment(content, this.documentName, Integer.valueOf(line + lineOffset));
-
-            if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(comment);
-            } else {
-                final NestableNode parent = this.elementStack.peek();
-                parent.addChild(comment);
-            }
+            this.markupEngine.onComment(content, line + this.lineOffset, col + this.lineOffset);
 
             return null;
 
@@ -684,11 +550,12 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int valueLine, final int valueCol) 
                 throws AttoParseException {
 
-            final String attributeName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
-            final String attributeValue = TEXT_REPOSITORY.getText(buffer, valueContentOffset, valueContentLen);
-            
-            this.currentElement.setAttribute(
-                    attributeName, false, attributeValue, true);
+            final String name = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+            final String operator = TEXT_REPOSITORY.getText(buffer, operatorOffset, operatorLen);
+            final String value = TEXT_REPOSITORY.getText(buffer, valueContentOffset, valueContentLen);
+            final String quotedValue = TEXT_REPOSITORY.getText(buffer, valueOuterOffset, valueOuterLen);
+
+            this.markupEngine.onAttribute(name, operator, value, quotedValue, nameLine + this.lineOffset, nameCol + this.colOffset);
 
             return null;
 
@@ -699,25 +566,17 @@ public class StandardMarkupParser implements ITemplateParser {
         
         @Override
         public IAttoHandleResult handleHtmlStandaloneElementStart(
-                final IHtmlElement htmlElement,
+                final IHtmlElement element,
                 final boolean minimized,
                 final char[] buffer, 
-                final int offset, final int len, 
+                final int nameOffset, final int nameLen,
                 final int line, final int col) 
                 throws AttoParseException {
 
-            final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
-            
-            final Element element = 
-                    new Element(elementName, this.documentName, Integer.valueOf(line + lineOffset), RepresentationInTemplate.STANDALONE);
-            this.currentElement = element;
-            
-            if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(element);
-            } else {
-                final NestableNode parent = this.elementStack.peek();
-                parent.addChild(element);
-            }
+            final String elementName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+
+            this.markupEngine.onStandaloneElementStart(
+                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -727,19 +586,16 @@ public class StandardMarkupParser implements ITemplateParser {
 
         @Override
         public IAttoHandleResult handleHtmlOpenElementStart(
-                final IHtmlElement htmlElement,
+                final IHtmlElement element,
                 final char[] buffer, 
-                final int offset, final int len,
+                final int nameOffset, final int nameLen,
                 final int line, final int col)
                 throws AttoParseException {
 
-            final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
-            
-            final Element element = 
-                    new Element(elementName, this.documentName, Integer.valueOf(line + lineOffset), RepresentationInTemplate.ONLY_OPEN);
-            this.currentElement = element;
-            
-            this.elementStack.push(element);
+            final String elementName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+
+            this.markupEngine.onOpenElementStart(
+                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -750,45 +606,16 @@ public class StandardMarkupParser implements ITemplateParser {
 
         @Override
         public IAttoHandleResult handleHtmlCloseElementStart(
-                final IHtmlElement htmlElement,
+                final IHtmlElement element,
                 final char[] buffer, 
-                final int offset, final int len,
+                final int nameOffset, final int nameLen,
                 final int line, final int col) 
                 throws AttoParseException {
 
-            final String closedElementName = TEXT_REPOSITORY.getText(buffer, offset, len);
+            final String elementName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
 
-            if (this.elementStack.isEmpty()) {
-                throw new TemplateInputException("Unbalanced close tag \"" + closedElementName + "\". " +
-                        "Perhaps you are trying to close a non-closable standalone tag? (e.g. <link>, <meta>...)");
-            }
-
-            searchInStack(closedElementName);
-
-            // We are sure this is the node we want to close
-            final NestableNode node = this.elementStack.pop();
-
-            if (node instanceof Element) {
-
-                final Element element = (Element) node;
-
-                // Adjust the representation in template. Differentiating between being
-                // empty or not will allow a more correct output behaviour if children are
-                // added or removed.
-                if (element.hasChildren()) {
-                    element.setRepresentationInTemplate(RepresentationInTemplate.OPEN_AND_CLOSE_NONEMPTY);
-                } else {
-                    element.setRepresentationInTemplate(RepresentationInTemplate.OPEN_AND_CLOSE_EMPTY);
-                }
-
-            }
-            
-            if (this.elementStack.isEmpty()) {
-                this.rootNodes.add(node);
-            } else {
-                final NestableNode parent = this.elementStack.peek();
-                parent.addChild(node);
-            }
+            this.markupEngine.onCloseElementStart(
+                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -804,6 +631,11 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
+            final String elementName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+
+            this.markupEngine.onStandaloneElementEnd(
+                    elementName, element.getName(), minimized, line + this.lineOffset, col + this.colOffset);
+
             return null;
 
         }
@@ -816,6 +648,11 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
                 throws AttoParseException {
+
+            final String elementName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+
+            this.markupEngine.onOpenElementEnd(
+                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -830,6 +667,11 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
+            final String elementName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
+
+            this.markupEngine.onCloseElementEnd(
+                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+
             return null;
 
         }
@@ -842,6 +684,11 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int offset, final int len,
                 final int line, final int col)
                 throws AttoParseException {
+
+            final String whitespace = TEXT_REPOSITORY.getText(buffer, offset, len);
+
+            this.markupEngine.onElementInnerWhiteSpace(
+                    whitespace, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -869,53 +716,19 @@ public class StandardMarkupParser implements ITemplateParser {
                 final int line, final int col)
                 throws AttoParseException {
 
+            final String processingInstruction = TEXT_REPOSITORY.getText(buffer, outerOffset, outerLen);
+
+            final String target = TEXT_REPOSITORY.getText(buffer, targetOffset, targetLen);
+            final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
+
+            this.markupEngine.onProcessingInstruction(
+                    processingInstruction, target, content, line + this.lineOffset, col + this.colOffset);
+
             return null;
 
         }
 
 
-        
-        
-
-        /*
-         * Stack-related methods
-         */
-
-        private void searchInStack(final String soughtElementName) {
-
-            NestableNode node = this.elementStack.peek();
-            
-            while (true) {
-    
-                if (node instanceof Element) {
-                    
-                    final Element element = (Element) node;
-                    final String elementName = element.getOriginalName();
-                    
-                    if (soughtElementName.equals(elementName)) {
-                        return;
-                    }
-                    
-                }
-    
-                // unbalancedNode == node, but we need to pop from stack
-                final NestableNode unbalancedNode = this.elementStack.pop();
-                
-                if (this.elementStack.isEmpty()) {
-                    // Can never happen because of the parser's Document Restrictions
-                    // (no unbalanced close tags are allowed)
-                    throw new TemplateInputException("Unbalanced close tag \"" + soughtElementName + "\"");
-                }
-                
-                final NestableNode parent = this.elementStack.peek();
-                parent.addChild(unbalancedNode);
-                
-                node = parent;
-                
-            }
-            
-        }
-        
         
     }
 
