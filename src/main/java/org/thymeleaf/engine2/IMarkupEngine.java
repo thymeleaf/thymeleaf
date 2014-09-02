@@ -65,7 +65,6 @@ public interface IMarkupEngine {
 
     public void onStandaloneElementEnd (
             final String name, final String normalizedName,
-            final boolean minimized,
             final int line, final int col);
 
 

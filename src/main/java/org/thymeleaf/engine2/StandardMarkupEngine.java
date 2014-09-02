@@ -48,12 +48,16 @@ public class StandardMarkupEngine implements IMarkupEngine {
     public void onDocumentStart(
             final long startTimeNanos) {
 
+        System.out.println("[DOCUMENT START: " + startTimeNanos + "]");
+
     }
 
 
 
     public void onDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos) {
+
+        System.out.println("[DOCUMENT END: " + endTimeNanos + "," + endTimeNanos + "]");
 
     }
 
@@ -72,6 +76,8 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String version, final String encoding, final boolean standalone,
             final int line, final int col) {
 
+        System.out.println("[XML DECLARATION: " + xmlDeclaration + "," + version + "," + encoding + "," + standalone + "," + line + "," + col + "]");
+
     }
 
 
@@ -89,6 +95,8 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String rootElementName, final String publicId, final String systemId,
             final int line, final int col) {
 
+        System.out.println("[DOCTYPE CLAUSE: " + docTypeClause + "," + rootElementName + "," + publicId + "," + systemId + "," + line + "," + col + "]");
+
     }
 
 
@@ -105,6 +113,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String content,
             final int line, final int col) {
 
+        System.out.println("[CDATA SECTION: " + content + "," + line + "," + col + "]");
 
     }
 
@@ -122,6 +131,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String content,
             final int line, final int col) {
 
+        System.out.println("[TEXT: " + content + "," + line + "," + col + "]");
 
     }
 
@@ -139,6 +149,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String content,
             final int line, final int col) {
 
+        System.out.println("[COMMENT: " + content + "," + line + "," + col + "]");
 
     }
 
@@ -170,7 +181,6 @@ public class StandardMarkupEngine implements IMarkupEngine {
 
     public void onStandaloneElementEnd (
             final String name, final String normalizedName,
-            final boolean minimized,
             final int line, final int col) {
 
 

@@ -20,7 +20,11 @@
 package org.thymeleaf;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -40,19 +44,27 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.engine2.DirectOutputMarkupEngine;
+import org.thymeleaf.engine2.IMarkupEngine;
+import org.thymeleaf.engine2.StandardMarkupEngine;
+import org.thymeleaf.engine2.StandardMarkupParser;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
+import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateOutputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
+import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.templatewriter.ITemplateWriter;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 
@@ -1054,11 +1066,12 @@ public class TemplateEngine {
             // Add context execution info
             context.addContextExecutionInfo(templateName);
             
-            final TemplateProcessingParameters templateProcessingParameters = 
+            final TemplateProcessingParameters templateProcessingParameters =
                 new TemplateProcessingParameters(this.configuration, templateName, processingContext);
             
-            process(templateProcessingParameters, fragmentSpec, writer);
-            
+            processTemplate2(templateProcessingParameters, writer);
+//            process(templateProcessingParameters, fragmentSpec, writer);
+
             final long endNanos = System.nanoTime();
             
             if (logger.isDebugEnabled()) {
@@ -1093,8 +1106,103 @@ public class TemplateEngine {
         }
         
     }
-    
-    
+
+
+
+
+
+
+
+    public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
+
+        Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
+
+        final String templateName = templateProcessingParameters.getTemplateName();
+        final Configuration configuration = templateProcessingParameters.getConfiguration();
+
+        final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
+        TemplateResolution templateResolution = null;
+        InputStream templateInputStream = null;
+
+        for (final ITemplateResolver templateResolver : templateResolvers) {
+
+            templateResolution = templateResolver.resolveTemplate(templateProcessingParameters);
+
+            if (templateResolution != null) {
+
+                final String resourceName = templateResolution.getResourceName();
+
+                final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
+                }
+
+                templateInputStream =
+                        resourceResolver.getResourceAsStream(templateProcessingParameters, resourceName);
+
+                if (templateInputStream == null) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
+                    }
+                } else {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
+                    }
+                    break;
+                }
+
+            } else {
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateResolver.getName(), templateName});
+                }
+
+            }
+
+        }
+
+        if (templateResolution == null || templateInputStream == null) {
+            throw new TemplateInputException(
+                    "Error resolving template \"" + templateProcessingParameters.getTemplateName() + "\", " +
+                            "template might not exist or might not be accessible by " +
+                            "any of the configured Template Resolvers");
+        }
+
+
+        final String characterEncoding = templateResolution.getCharacterEncoding();
+        Reader reader = null;
+        if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
+            try {
+                reader = new InputStreamReader(templateInputStream, characterEncoding);
+            } catch (final UnsupportedEncodingException e) {
+                throw new TemplateInputException("Exception parsing document", e);
+            }
+        } else {
+            reader = new InputStreamReader(templateInputStream);
+        }
+
+
+        final IMarkupEngine markupEngine = new DirectOutputMarkupEngine(templateName, writer);
+
+        StandardMarkupParser.INSTANCE.parseTemplate(markupEngine, templateName, reader);
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void process(final TemplateProcessingParameters templateProcessingParameters,
             final IFragmentSpec fragmentSpec, final Writer writer) {
