@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine2;
+package org.thymeleaf.engine.markup;
 
 /**
  *
@@ -25,12 +25,13 @@ package org.thymeleaf.engine2;
  * @since 3.0.0
  * 
  */
-public class StandardMarkupEngine implements IMarkupEngine {
+public class StandardMarkupHandler implements IMarkupHandler {
 
 
+    private boolean outputSpacePreAttr = false;
 
 
-    public StandardMarkupEngine() {
+    public StandardMarkupHandler() {
 
     }
 
@@ -48,7 +49,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
     public void onDocumentStart(
             final long startTimeNanos) {
 
-        System.out.println("[DOCUMENT START: " + startTimeNanos + "]");
+
 
     }
 
@@ -57,7 +58,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
     public void onDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos) {
 
-        System.out.println("[DOCUMENT END: " + endTimeNanos + "," + endTimeNanos + "]");
+
 
     }
 
@@ -76,7 +77,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String version, final String encoding, final boolean standalone,
             final int line, final int col) {
 
-        System.out.println("[XML DECLARATION: " + xmlDeclaration + "," + version + "," + encoding + "," + standalone + "," + line + "," + col + "]");
+
 
     }
 
@@ -95,7 +96,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String rootElementName, final String publicId, final String systemId,
             final int line, final int col) {
 
-        System.out.println("[DOCTYPE CLAUSE: " + docTypeClause + "," + rootElementName + "," + publicId + "," + systemId + "," + line + "," + col + "]");
+
 
     }
 
@@ -113,7 +114,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String content,
             final int line, final int col) {
 
-        System.out.println("[CDATA SECTION: " + content + "," + line + "," + col + "]");
+
 
     }
 
@@ -131,7 +132,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String content,
             final int line, final int col) {
 
-        System.out.println("[TEXT: " + content + "," + line + "," + col + "]");
+
 
     }
 
@@ -149,7 +150,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String content,
             final int line, final int col) {
 
-        System.out.println("[COMMENT: " + content + "," + line + "," + col + "]");
+
 
     }
 
@@ -167,40 +168,54 @@ public class StandardMarkupEngine implements IMarkupEngine {
             final String name, final String operator, final String value, final String quotedValue,
             final int line, final int col) {
 
+        if (!this.outputSpacePreAttr) {
+            // output whitespace
+        }
+
+        this.outputSpacePreAttr = false;
 
     }
+
 
 
     public void onStandaloneElementStart (
             final String name, final String normalizedName,
             final int line, final int col) {
 
+        this.outputSpacePreAttr = false;
 
     }
+
 
 
     public void onStandaloneElementEnd (
             final String name, final String normalizedName,
             final int line, final int col) {
 
+        this.outputSpacePreAttr = false;
 
     }
+
 
 
     public void onOpenElementStart (
             final String name, final String normalizedName,
             final int line, final int col) {
 
+        this.outputSpacePreAttr = false;
 
     }
+
 
 
     public void onOpenElementEnd (
             final String name, final String normalizedName,
             final int line, final int col) {
 
+        this.outputSpacePreAttr = false;
 
     }
+
 
 
     public void onCloseElementStart (
@@ -211,6 +226,7 @@ public class StandardMarkupEngine implements IMarkupEngine {
     }
 
 
+
     public void onCloseElementEnd (
             final String name, final String normalizedName,
             final int line, final int col) {
@@ -219,9 +235,12 @@ public class StandardMarkupEngine implements IMarkupEngine {
     }
 
 
+
     public void onElementInnerWhiteSpace (
             final String innerWhiteSpace,
             final int line, final int col) {
+
+        this.outputSpacePreAttr = true;
 
 
     }

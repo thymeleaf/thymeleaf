@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.dom2;
 
+import org.thymeleaf.engine.markup.dom.ElementType;
+
 public class ElementDefinition {
 
     private String normalizedName;

@@ -44,10 +44,9 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.engine2.DirectOutputMarkupEngine;
-import org.thymeleaf.engine2.IMarkupEngine;
-import org.thymeleaf.engine2.StandardMarkupEngine;
-import org.thymeleaf.engine2.StandardMarkupParser;
+import org.thymeleaf.engine.markup.DirectOutputMarkupHandler;
+import org.thymeleaf.engine.markup.IMarkupHandler;
+import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -60,7 +59,6 @@ import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
-import org.thymeleaf.templateparser.ITemplateParser;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.templatewriter.ITemplateWriter;
@@ -1165,8 +1163,8 @@ public class TemplateEngine {
         if (templateResolution == null || templateInputStream == null) {
             throw new TemplateInputException(
                     "Error resolving template \"" + templateProcessingParameters.getTemplateName() + "\", " +
-                            "template might not exist or might not be accessible by " +
-                            "any of the configured Template Resolvers");
+                    "template might not exist or might not be accessible by " +
+                    "any of the configured Template Resolvers");
         }
 
 
@@ -1183,9 +1181,10 @@ public class TemplateEngine {
         }
 
 
-        final IMarkupEngine markupEngine = new DirectOutputMarkupEngine(templateName, writer);
+        final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
+        final MarkupEngineConfiguration markupEngineConfig = MarkupEngineConfiguration.createBaseConfiguration();
 
-        StandardMarkupParser.INSTANCE.parseTemplate(markupEngine, templateName, reader);
+        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
 
 
     }

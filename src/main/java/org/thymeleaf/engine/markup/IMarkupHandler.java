@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine2;
+package org.thymeleaf.engine.markup;
 
 /**
  *
@@ -25,7 +25,7 @@ package org.thymeleaf.engine2;
  * @since 3.0.0
  * 
  */
-public interface IMarkupEngine {
+public interface IMarkupHandler {
 
 
 

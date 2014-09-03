@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine2;
+package org.thymeleaf.engine.markup;
 
 import java.io.Reader;
 
@@ -30,19 +30,23 @@ import java.io.Reader;
 public interface IMarkupParser {
 
     
-    public void parseTemplate(final IMarkupEngine markupEngine,
+    public void parseTemplate(final MarkupEngineConfiguration configuration,
+                              final IMarkupHandler handler,
                               final String documentName,
                               final Reader reader);
 
-    public void parseTemplate(final IMarkupEngine markupEngine,
+    public void parseTemplate(final MarkupEngineConfiguration configuration,
+                              final IMarkupHandler handler,
                               final String documentName,
                               final Reader reader,
                               final int lineOffset, final int colOffset);
 
-    public void parseFragment(final IMarkupEngine markupEngine,
+    public void parseFragment(final MarkupEngineConfiguration configuration,
+                              final IMarkupHandler handler,
                               final String fragment);
 
-    public void parseFragment(final IMarkupEngine markupEngine,
+    public void parseFragment(final MarkupEngineConfiguration configuration,
+                              final IMarkupHandler handler,
                               final String fragment,
                               final int lineOffset, final int colOffset);
 

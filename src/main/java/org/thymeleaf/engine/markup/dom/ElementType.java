@@ -17,10 +17,28 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.dom2;
+package org.thymeleaf.engine.markup.dom;
 
+/**
+ *
+ * @author Daniel Fern&aacute;ndez
+ * @since 3.0.0
+ *
+ */
 public enum ElementType {
 
-    STANDALONE, OPEN
+    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#void-elements
+
+    VOID(false), RAW_TEXT(true), ESCAPABLE_RAW_TEXT(true), FOREIGN(true), NORMAL(true);
+
+    private final boolean hasBody;
+
+    private ElementType(final boolean hasBody) {
+        this.hasBody = hasBody;
+    }
+
+    public boolean hasBody() {
+        return this.hasBody;
+    }
 
 }

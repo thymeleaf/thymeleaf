@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.dom2;
+package org.thymeleaf.engine.markup;
 
 /**
  * <p>

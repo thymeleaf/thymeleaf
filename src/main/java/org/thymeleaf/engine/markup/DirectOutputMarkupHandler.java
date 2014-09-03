@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine2;
+package org.thymeleaf.engine.markup;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -28,16 +28,16 @@ import org.thymeleaf.exceptions.TemplateOutputException;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public class DirectOutputMarkupEngine implements IMarkupEngine {
+public class DirectOutputMarkupHandler implements IMarkupHandler {
 
 
     private final String documentName;
     private final Writer writer;
 
 
-    public DirectOutputMarkupEngine(final String documentName, final Writer writer) {
+    public DirectOutputMarkupHandler(final String documentName, final Writer writer) {
         super();
         this.documentName = documentName;
         this.writer = writer;
