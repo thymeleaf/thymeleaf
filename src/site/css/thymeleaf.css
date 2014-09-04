@@ -375,9 +375,9 @@ div.semiwidetable {
 
 
 
-/* -------------------------- */
-/* TEAM AND CONTRIBUTOR TABLE */
-/* -------------------------- */
+/* --------- */
+/* TEAM PAGE */
+/* --------- */
 
 #teamTable th,
 #contributorTable th {
@@ -385,7 +385,7 @@ div.semiwidetable {
 } 
 #teamTable td,
 #contributorTable td {
-  font-size: 12px; 
+  font-size: 12px;
 }
 
 #workingOn {
@@ -393,6 +393,25 @@ div.semiwidetable {
   font-size: 11px; 
 }
 
+td.ourtools_logo {
+    width: 250px;
+    text-align: center;
+}
+td.ourtools_text {
+    font-style: italic;
+}
+td.ourtools_logo, td.ourtools_text {
+    background-color: #ffffff !important;
+    padding-top: 15px !important;
+}
+td.ourtools_logo a, td.ourtools_logo a:hover {
+    text-decoration: none;
+    border-bottom: 0px;
+}
+p.ourtools_note {
+    font-style: italic;
+    font-size: 0.9em;
+}
 
 
 
