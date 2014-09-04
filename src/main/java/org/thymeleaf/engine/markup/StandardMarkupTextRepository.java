@@ -51,7 +51,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @since 3.0.0
  *
  */
-public final class MarkupTextRepository implements IMarkupTextRepository {
+public final class StandardMarkupTextRepository implements IMarkupTextRepository {
 
     /*
      * This class's LRU will be based on storage order, not the real amount of times a text is actually used.
@@ -83,7 +83,7 @@ public final class MarkupTextRepository implements IMarkupTextRepository {
 
 
 
-    public MarkupTextRepository(final int maxSizeInChars, final String[] unremovableTexts) {
+    public StandardMarkupTextRepository(final int maxSizeInChars, final String[] unremovableTexts) {
 
         super();
 

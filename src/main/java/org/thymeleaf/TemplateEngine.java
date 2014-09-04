@@ -19,10 +19,12 @@
  */
 package org.thymeleaf;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -33,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1110,7 +1113,7 @@ public class TemplateEngine {
 
 
 
-
+    private final ConcurrentHashMap<String,String> entireTemplatesByName = new ConcurrentHashMap<String, String>();
     public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
 
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
@@ -1118,72 +1121,95 @@ public class TemplateEngine {
         final String templateName = templateProcessingParameters.getTemplateName();
         final Configuration configuration = templateProcessingParameters.getConfiguration();
 
-        final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
-        TemplateResolution templateResolution = null;
-        InputStream templateInputStream = null;
+//        String templateContent = this.entireTemplatesByName.get(templateName);
+//
+//        if (templateContent == null) {
 
-        for (final ITemplateResolver templateResolver : templateResolvers) {
+            final Set<ITemplateResolver> templateResolvers = configuration.getTemplateResolvers();
+            TemplateResolution templateResolution = null;
+            InputStream templateInputStream = null;
 
-            templateResolution = templateResolver.resolveTemplate(templateProcessingParameters);
+            for (final ITemplateResolver templateResolver : templateResolvers) {
 
-            if (templateResolution != null) {
+                templateResolution = templateResolver.resolveTemplate(templateProcessingParameters);
 
-                final String resourceName = templateResolution.getResourceName();
+                if (templateResolution != null) {
 
-                final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
+                    final String resourceName = templateResolution.getResourceName();
 
-                if (logger.isTraceEnabled()) {
-                    logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
-                }
+                    final IResourceResolver resourceResolver = templateResolution.getResourceResolver();
 
-                templateInputStream =
-                        resourceResolver.getResourceAsStream(templateProcessingParameters, resourceName);
-
-                if (templateInputStream == null) {
                     if (logger.isTraceEnabled()) {
-                        logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
+                        logger.trace("[THYMELEAF][{}] Trying to resolve template \"{}\" as resource \"{}\" with resource resolver \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
                     }
+
+                    templateInputStream =
+                            resourceResolver.getResourceAsStream(templateProcessingParameters, resourceName);
+
+                    if (templateInputStream == null) {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("[THYMELEAF][{}] Template \"{}\" could not be resolved as resource \"{}\" with resource resolver \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateName, resourceName, resourceResolver.getName()});
+                        }
+                    } else {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateName, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
+                        }
+                        break;
+                    }
+
                 } else {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("[THYMELEAF][{}] Template \"{}\" was correctly resolved as resource \"{}\" in mode {} with resource resolver \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateName, resourceName, templateResolution.getTemplateMode(), resourceResolver.getName()});
+
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[]{TemplateEngine.threadIndex(), templateResolver.getName(), templateName});
                     }
-                    break;
+
                 }
 
+            }
+
+            if (templateResolution == null || templateInputStream == null) {
+                throw new TemplateInputException(
+                        "Error resolving template \"" + templateProcessingParameters.getTemplateName() + "\", " +
+                                "template might not exist or might not be accessible by " +
+                                "any of the configured Template Resolvers");
+            }
+
+
+            final String characterEncoding = templateResolution.getCharacterEncoding();
+            Reader reader = null;
+            if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
+                try {
+                    reader = new InputStreamReader(templateInputStream, characterEncoding);
+                } catch (final UnsupportedEncodingException e) {
+                    throw new TemplateInputException("Exception parsing document", e);
+                }
             } else {
-
-                if (logger.isTraceEnabled()) {
-                    logger.trace("[THYMELEAF][{}] Skipping template resolver \"{}\" for template \"{}\"", new Object[] {TemplateEngine.threadIndex(), templateResolver.getName(), templateName});
-                }
-
+                reader = new InputStreamReader(templateInputStream);
             }
 
-        }
+//            try {
+//                final BufferedReader br = new BufferedReader(reader);
+//                final StringBuilder strBuilder = new StringBuilder();
+//                String line;
+//                while ((line = br.readLine()) != null) {
+//                    strBuilder.append(line);
+//                    strBuilder.append('\n');
+//                }
+//                templateContent = strBuilder.toString();
+//                this.entireTemplatesByName.put(templateName, templateContent);
+//            } catch (final IOException e) {
+//                throw new TemplateInputException("Exception reading template", e);
+//            }
+//
+//
+//        }
 
-        if (templateResolution == null || templateInputStream == null) {
-            throw new TemplateInputException(
-                    "Error resolving template \"" + templateProcessingParameters.getTemplateName() + "\", " +
-                    "template might not exist or might not be accessible by " +
-                    "any of the configured Template Resolvers");
-        }
-
-
-        final String characterEncoding = templateResolution.getCharacterEncoding();
-        Reader reader = null;
-        if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
-            try {
-                reader = new InputStreamReader(templateInputStream, characterEncoding);
-            } catch (final UnsupportedEncodingException e) {
-                throw new TemplateInputException("Exception parsing document", e);
-            }
-        } else {
-            reader = new InputStreamReader(templateInputStream);
-        }
-
+        // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
         final MarkupEngineConfiguration markupEngineConfig = MarkupEngineConfiguration.createBaseConfiguration();
 
+//        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, new StringReader(templateContent));
         markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
 
 

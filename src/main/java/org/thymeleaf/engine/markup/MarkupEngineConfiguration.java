@@ -58,7 +58,7 @@ public final class MarkupEngineConfiguration {
     public static MarkupEngineConfiguration createBaseConfiguration() {
 
         final List<String> unremovableTexts  = new ArrayList<String>();
-        unremovableTexts.addAll(HtmlElements.ALL_ELEMENT_NAMES);
+        unremovableTexts.addAll(HtmlElements.ALL_STANDARD_ELEMENT_NAMES);
         unremovableTexts.add(" ");
         unremovableTexts.add("\n");
         unremovableTexts.add("\n  ");
@@ -76,7 +76,7 @@ public final class MarkupEngineConfiguration {
 
         // Size = 10MBytes (1 char = 2 bytes)
         final IMarkupTextRepository textRepository =
-                new MarkupTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
+                new StandardMarkupTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
 
         // Pool size is set to 40, and buffer size to 2K chars = 4K bytes
