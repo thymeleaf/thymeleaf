@@ -1114,6 +1114,9 @@ public class TemplateEngine {
 
 
     private final ConcurrentHashMap<String,String> entireTemplatesByName = new ConcurrentHashMap<String, String>();
+
+    static final MarkupEngineConfiguration markupEngineConfig = MarkupEngineConfiguration.createBaseConfiguration();
+
     public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
 
         Validate.notNull(templateProcessingParameters, "Template processing parameters cannot be null");
@@ -1207,7 +1210,6 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final MarkupEngineConfiguration markupEngineConfig = MarkupEngineConfiguration.createBaseConfiguration();
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, new StringReader(templateContent));
         markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
