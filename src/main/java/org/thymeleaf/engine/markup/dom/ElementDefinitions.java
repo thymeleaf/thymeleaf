@@ -123,6 +123,8 @@ public final class ElementDefinitions {
     public static final ElementDefinition U = new ElementDefinition("u", ElementType.NORMAL);
     public static final ElementDefinition MARK = new ElementDefinition("mark", ElementType.NORMAL);
     public static final ElementDefinition RUBY = new ElementDefinition("ruby", ElementType.NORMAL);
+    public static final ElementDefinition RB = new ElementDefinition("rb", ElementType.NORMAL);
+    public static final ElementDefinition RTC = new ElementDefinition("rtc", ElementType.NORMAL);
     public static final ElementDefinition RT = new ElementDefinition("rt", ElementType.NORMAL);
     public static final ElementDefinition RP = new ElementDefinition("rp", ElementType.NORMAL);
     public static final ElementDefinition BDI = new ElementDefinition("bdi", ElementType.NORMAL);
@@ -199,7 +201,7 @@ public final class ElementDefinitions {
                                 SECTION, NAV, ASIDE, H1, H2, H3, H4, H5, H6, HGROUP, HEADER, FOOTER,
                                 ADDRESS, P, HR, PRE, BLOCKQUOTE, OL, UL, LI, DL, DT, DD, FIGURE,
                                 FIGCAPTION, DIV, A, EM, STRONG, SMALL, S, CITE, G, DFN, ABBR, TIME,
-                                CODE, VAR, SAMP, KBD, SUB, SUP, I, B, U, MARK, RUBY, RT,
+                                CODE, VAR, SAMP, KBD, SUB, SUP, I, B, U, MARK, RUBY, RB, RT, RTC,
                                 RP, BDI, BDO, SPAN, BR, WBR, INS, DEL, IMG, IFRAME, EMBED, OBJECT,
                                 PARAM, VIDEO, AUDIO, SOURCE, TRACK, CANVAS, MAP, AREA, TABLE, CAPTION,
                                 COLGROUP, COL, TBODY, THEAD, TFOOT, TR, TD, TH, FORM, FIELDSET, LEGEND, LABEL,
