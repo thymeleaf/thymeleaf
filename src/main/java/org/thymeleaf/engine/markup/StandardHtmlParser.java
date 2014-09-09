@@ -31,7 +31,6 @@ import org.attoparser.markup.MarkupAttoParser;
 import org.attoparser.markup.MarkupParsingConfiguration;
 import org.attoparser.markup.html.AbstractDetailedNonValidatingHtmlAttoHandler;
 import org.attoparser.markup.html.HtmlParsing;
-import org.attoparser.markup.html.HtmlParsingConfiguration;
 import org.attoparser.markup.html.elements.IHtmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,7 @@ public final class StandardHtmlParser implements IMarkupParser {
 
     protected final MarkupAttoParser attoParser;
     
-    static final HtmlParsingConfiguration MARKUP_PARSING_CONFIGURATION;
+    static final MarkupParsingConfiguration MARKUP_PARSING_CONFIGURATION;
 
     
     
@@ -57,18 +56,16 @@ public final class StandardHtmlParser implements IMarkupParser {
 
         /*
          * We don't need the underlying AttoHandler to perform all these validations, and this will
-         * remove the necessity to use a stak at the Markup Detailed AttoHandler level (not at the HTML
+         * remove the necessity to use a stack at the Markup Detailed AttoHandler level (not at the HTML
          * level, which is needed to determine HTML-specific aspects like which elements should be reported
          * as standalone (void) even if they have no closing solidus character (img, br, etc.) and the fact
          * that script and style have CDATA bodies (instead of PCDATA).
          */
-        MARKUP_PARSING_CONFIGURATION = new HtmlParsingConfiguration();
+        MARKUP_PARSING_CONFIGURATION = HtmlParsing.baseHtmlMarkupParsingConfiguration();
         MARKUP_PARSING_CONFIGURATION.setCaseSensitive(false);
         MARKUP_PARSING_CONFIGURATION.setRequireUniqueAttributesInElement(false);
         MARKUP_PARSING_CONFIGURATION.setRequireXmlWellFormedAttributeValues(false);
         MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(MarkupParsingConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
-
-        HtmlParsing.markupParsingConfiguration(MARKUP_PARSING_CONFIGURATION);
 
     }
     
@@ -201,7 +198,7 @@ public final class StandardHtmlParser implements IMarkupParser {
         public IAttoHandleResult handleDocumentStart(
                 final long startTimeNanos,
                 final int line, final int col,
-                final HtmlParsingConfiguration parsingConfiguration)
+                final MarkupParsingConfiguration parsingConfiguration)
                throws AttoParseException {
 
             this.markupHandler.onDocumentStart(startTimeNanos);
@@ -214,7 +211,7 @@ public final class StandardHtmlParser implements IMarkupParser {
         public IAttoHandleResult handleDocumentEnd(
                 final long endTimeNanos, final long totalTimeNanos,
                 final int line, final int col, 
-                final HtmlParsingConfiguration configuration)
+                final MarkupParsingConfiguration configuration)
                 throws AttoParseException {
 
             this.markupHandler.onDocumentEnd(endTimeNanos, totalTimeNanos);

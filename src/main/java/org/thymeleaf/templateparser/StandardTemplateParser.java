@@ -31,9 +31,9 @@ import org.attoparser.AttoHandleResult;
 import org.attoparser.AttoParseException;
 import org.attoparser.IAttoHandleResult;
 import org.attoparser.markup.MarkupAttoParser;
+import org.attoparser.markup.MarkupParsingConfiguration;
 import org.attoparser.markup.html.AbstractDetailedNonValidatingHtmlAttoHandler;
 import org.attoparser.markup.html.HtmlParsing;
-import org.attoparser.markup.html.HtmlParsingConfiguration;
 import org.attoparser.markup.html.elements.HtmlElements;
 import org.attoparser.markup.html.elements.IHtmlElement;
 import org.slf4j.Logger;
@@ -70,14 +70,14 @@ public class StandardTemplateParser implements ITemplateParser {
 
     protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
     
-    static final HtmlParsingConfiguration  HTML_PARSING_CONFIGURATION;
+    static final MarkupParsingConfiguration HTML_PARSING_CONFIGURATION;
     static final IMarkupTextRepository TEXT_REPOSITORY;
 
     
     
     static {
 
-        HTML_PARSING_CONFIGURATION = HtmlParsing.htmlParsingConfiguration();
+        HTML_PARSING_CONFIGURATION = HtmlParsing.baseHtmlMarkupParsingConfiguration();
 
         final List<String> unremovableTexts  = new ArrayList<String>();
         unremovableTexts.addAll(HtmlElements.ALL_STANDARD_ELEMENT_NAMES);
@@ -308,7 +308,7 @@ public class StandardTemplateParser implements ITemplateParser {
         public IAttoHandleResult handleDocumentStart(
                 final long startTimeNanos,
                 final int line, final int col,
-                final HtmlParsingConfiguration parsingConfiguration)
+                final MarkupParsingConfiguration parsingConfiguration)
                throws AttoParseException {
 
             // Nothing to be done here
@@ -321,7 +321,7 @@ public class StandardTemplateParser implements ITemplateParser {
         public IAttoHandleResult handleDocumentEnd(
                 final long endTimeNanos, final long totalTimeNanos,
                 final int line, final int col, 
-                final HtmlParsingConfiguration configuration)
+                final MarkupParsingConfiguration configuration)
                 throws AttoParseException {
 
             if (logger.isTraceEnabled()) {
