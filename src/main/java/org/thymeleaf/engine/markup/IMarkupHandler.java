@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.engine.markup;
 
+import org.thymeleaf.engine.markup.dom.AttributeDefinition;
+import org.thymeleaf.engine.markup.dom.ElementDefinition;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -55,36 +58,37 @@ public interface IMarkupHandler {
             final int line, final int col);
 
     public void onAttribute (
+            final AttributeDefinition attributeDefinition,
             final String name, final String operator, final String value, final String quotedValue,
             final int line, final int col);
 
     public void onStandaloneElementStart (
-            final String name, final String normalizedName,
+            final ElementDefinition elementDefinition, final String name,
             final int line, final int col);
 
 
     public void onStandaloneElementEnd (
-            final String name, final String normalizedName,
+            final ElementDefinition elementDefinition, final String name,
             final int line, final int col);
 
 
     public void onOpenElementStart (
-            final String name, final String normalizedName,
+            final ElementDefinition elementDefinition, final String name,
             final int line, final int col);
 
 
     public void onOpenElementEnd (
-            final String name, final String normalizedName,
+            final ElementDefinition elementDefinition, final String name,
             final int line, final int col);
 
 
     public void onCloseElementStart (
-            final String name, final String normalizedName,
+            final ElementDefinition elementDefinition, final String name,
             final int line, final int col);
 
 
     public void onCloseElementEnd (
-            final String name, final String normalizedName,
+            final ElementDefinition elementDefinition, final String name,
             final int line, final int col);
 
 

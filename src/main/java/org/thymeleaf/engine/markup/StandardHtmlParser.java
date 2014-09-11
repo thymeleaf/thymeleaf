@@ -35,6 +35,10 @@ import org.attoparser.markup.html.elements.IHtmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.engine.markup.dom.AttributeDefinition;
+import org.thymeleaf.engine.markup.dom.AttributeDefinitions;
+import org.thymeleaf.engine.markup.dom.ElementDefinition;
+import org.thymeleaf.engine.markup.dom.ElementDefinitions;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -563,7 +567,10 @@ public final class StandardHtmlParser implements IMarkupParser {
             final String value = this.textRepository.getText(buffer, valueContentOffset, valueContentLen);
             final String quotedValue = this.textRepository.getText(buffer, valueOuterOffset, valueOuterLen);
 
-            this.markupHandler.onAttribute(name, operator, value, quotedValue, nameLine + this.lineOffset, nameCol + this.colOffset);
+            final AttributeDefinition attributeDefinition = AttributeDefinitions.forName(name);
+
+            this.markupHandler.onAttribute(
+                    attributeDefinition, name, operator, value, quotedValue, nameLine + this.lineOffset, nameCol + this.colOffset);
 
             return null;
 
@@ -582,9 +589,10 @@ public final class StandardHtmlParser implements IMarkupParser {
                 throws AttoParseException {
 
             final String elementName = this.textRepository.getText(buffer, nameOffset, nameLen);
+            final ElementDefinition elementDefinition = ElementDefinitions.forName(elementName);
 
             this.markupHandler.onStandaloneElementStart(
-                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+                    elementDefinition, elementName, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -601,9 +609,10 @@ public final class StandardHtmlParser implements IMarkupParser {
                 throws AttoParseException {
 
             final String elementName = this.textRepository.getText(buffer, nameOffset, nameLen);
+            final ElementDefinition elementDefinition = ElementDefinitions.forName(elementName);
 
             this.markupHandler.onOpenElementStart(
-                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+                    elementDefinition, elementName, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -621,9 +630,10 @@ public final class StandardHtmlParser implements IMarkupParser {
                 throws AttoParseException {
 
             final String elementName = this.textRepository.getText(buffer, nameOffset, nameLen);
+            final ElementDefinition elementDefinition = ElementDefinitions.forName(elementName);
 
             this.markupHandler.onCloseElementStart(
-                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+                    elementDefinition, elementName, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -640,9 +650,10 @@ public final class StandardHtmlParser implements IMarkupParser {
                 throws AttoParseException {
 
             final String elementName = this.textRepository.getText(buffer, nameOffset, nameLen);
+            final ElementDefinition elementDefinition = ElementDefinitions.forName(elementName);
 
             this.markupHandler.onStandaloneElementEnd(
-                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+                    elementDefinition, elementName, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -658,9 +669,10 @@ public final class StandardHtmlParser implements IMarkupParser {
                 throws AttoParseException {
 
             final String elementName = this.textRepository.getText(buffer, nameOffset, nameLen);
+            final ElementDefinition elementDefinition = ElementDefinitions.forName(elementName);
 
             this.markupHandler.onOpenElementEnd(
-                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+                    elementDefinition, elementName, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
@@ -676,9 +688,10 @@ public final class StandardHtmlParser implements IMarkupParser {
                 throws AttoParseException {
 
             final String elementName = this.textRepository.getText(buffer, nameOffset, nameLen);
+            final ElementDefinition elementDefinition = ElementDefinitions.forName(elementName);
 
             this.markupHandler.onCloseElementEnd(
-                    elementName, element.getName(), line + this.lineOffset, col + this.colOffset);
+                    elementDefinition, elementName, line + this.lineOffset, col + this.colOffset);
 
             return null;
 
