@@ -62,6 +62,7 @@ public final class StandardHtmlParser implements IMarkupParser {
          * that script and style have CDATA bodies (instead of PCDATA).
          */
         MARKUP_PARSING_CONFIGURATION = HtmlParsing.baseHtmlMarkupParsingConfiguration();
+        MARKUP_PARSING_CONFIGURATION.setElementBalancing(MarkupParsingConfiguration.ElementBalancing.AUTO_CLOSE);
         MARKUP_PARSING_CONFIGURATION.setCaseSensitive(false);
         MARKUP_PARSING_CONFIGURATION.setRequireUniqueAttributesInElement(false);
         MARKUP_PARSING_CONFIGURATION.setRequireXmlWellFormedAttributeValues(false);
