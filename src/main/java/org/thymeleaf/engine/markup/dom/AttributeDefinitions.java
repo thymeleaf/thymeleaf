@@ -34,12 +34,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AttributeDefinitions {
 
-    // TODO Adjust sizes (here and in static block)
     // TODO Make IMarkupHandler use ElementDefinition and AttributeDefinition
 
 
     private static final ConcurrentHashMap<String,AttributeDefinition> ATTRIBUTE_DEFINITIONS =
-            new ConcurrentHashMap<String, AttributeDefinition>(200);
+            new ConcurrentHashMap<String, AttributeDefinition>(195);
 
 
     // Set containing all the standard attributes, for posible external reference

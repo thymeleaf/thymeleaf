@@ -35,7 +35,7 @@ public final class ElementDefinitions {
 
 
     private static final ConcurrentHashMap<String,ElementDefinition> ELEMENT_DEFINITIONS =
-            new ConcurrentHashMap<String, ElementDefinition>(130);
+            new ConcurrentHashMap<String, ElementDefinition>(115);
 
 
 
