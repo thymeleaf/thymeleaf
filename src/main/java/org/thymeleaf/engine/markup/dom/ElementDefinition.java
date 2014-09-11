@@ -32,9 +32,9 @@ public final class ElementDefinition {
 
 
 
-    ElementDefinition(final String normalizedName, final ElementType type) {
+    ElementDefinition(final String name, final ElementType type) {
         super();
-        this.normalizedName = normalizedName;
+        this.normalizedName = name.toLowerCase();
         this.type = type;
     }
 

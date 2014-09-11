@@ -19,17 +19,11 @@
  */
 package org.thymeleaf.engine.markup.dom;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -40,7 +34,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public final class ElementDefinitions {
 
 
-    private static final ElementDefinitionRepository ELEMENT_DEFINITIONS = new ElementDefinitionRepository();
+    private static final ConcurrentHashMap<String,ElementDefinition> ELEMENT_DEFINITIONS =
+            new ConcurrentHashMap<String, ElementDefinition>(130);
 
 
 
@@ -48,8 +43,6 @@ public final class ElementDefinitions {
     public static final Set<ElementDefinition> ALL_STANDARD_ELEMENTS;
     // Set containing all the standard element names, for posible external reference
     public static final Set<String> ALL_STANDARD_ELEMENT_NAMES;
-    // Set containing all the standard attribute names, for posible external reference
-    public static final Set<String> ALL_STANDARD_ATTRIBUTE_NAMES;
 
 
 
@@ -213,70 +206,42 @@ public final class ElementDefinitions {
          * Register the standard elements at the element repository, in order to initialize it
          */
         for (final ElementDefinition element : ALL_STANDARD_ELEMENTS) {
-            ELEMENT_DEFINITIONS.storeElement(element);
+            ELEMENT_DEFINITIONS.put(element.getNormalizedName(), element);
         }
 
 
-        final Set<String> allStandardElementNamesAux = new LinkedHashSet<String>(ALL_STANDARD_ELEMENTS.size() + 3);
-        for (final ElementDefinition element : ALL_STANDARD_ELEMENTS) {
-            allStandardElementNamesAux.add(element.getNormalizedName());
-        }
-        ALL_STANDARD_ELEMENT_NAMES = Collections.unmodifiableSet(allStandardElementNamesAux);
-
-
-        ALL_STANDARD_ATTRIBUTE_NAMES =
-                Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                        new String[] {
-                                "abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive",
-                                "autocomplete", "autofocus", "autoplay", "axis", "border", "cellpadding", "cellspacing",
-                                "challenge", "char", "charoff", "charset", "checked", "cite", "class", "classid",
-                                "codebase", "codetype", "cols", "colspan", "command", "content", "contenteditable",
-                                "contextmenu", "controls", "coords", "data", "datetime", "declare", "default",
-                                "defer", "dir", "disabled", "draggable", "dropzone", "enctype", "for", "form",
-                                "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget",
-                                "frame", "headers", "height", "hidden", "high", "href", "hreflang", "http-equiv",
-                                "icon", "id", "ismap", "keytype", "kind", "label", "lang", "list", "longdesc",
-                                "loop", "low", "max", "maxlength", "media", "method", "min", "multiple", "muted",
-                                "name", "nohref", "novalidate", "onabort", "onafterprint", "onbeforeprint",
-                                "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough", "onchange",
-                                "onclick", "oncontextmenu", "oncuechange", "ondblclick", "ondrag", "ondragend",
-                                "ondragenter", "ondragleave", "ondragover", "ondragstart", "ondrop",
-                                "ondurationchange", "onemptied", "onended", "onerror", "onfocus",
-                                "onformchange", "onforminput", "onhaschange", "oninput", "oninvalid", "onkeydown",
-                                "onkeypress", "onkeyup", "onload", "onloadeddata", "onloadedmetadata",
-                                "onloadstart", "onmessage", "onmousedown", "onmousemove", "onmouseout", "onmouseover",
-                                "onmouseup", "onmousewheel", "onoffline", "ononline", "onpagehide", "onpageshow",
-                                "onpause", "onplay", "onplaying", "onpopstate", "onprogress", "onratechange",
-                                "onredo", "onreset", "onresize", "onscroll", "onseeked", "onseeking",
-                                "onselect", "onstalled", "onstorage", "onsubmit", "onsuspend", "ontimeupdate",
-                                "onundo", "onunload", "onvolumechange", "onwaiting", "open", "optimum", "pattern",
-                                "placeholder", "poster", "preload", "profile", "radiogroup", "readonly", "rel",
-                                "required", "rev", "rows", "rowspan", "rules", "scheme", "scope", "selected",
-                                "shape", "size", "span", "spellcheck", "src", "srclang", "standby", "style", "summary",
-                                "tabindex", "title", "translate", "type", "usemap", "valign", "value", "valuetype",
-                                "width", "xml:lang", "xml:space", "xmlns"
-                        })));
-
+        ALL_STANDARD_ELEMENT_NAMES =
+                Collections.unmodifiableSet(new LinkedHashSet<String>(ELEMENT_DEFINITIONS.keySet()));
 
     }
 
-
-
-
-    public static ElementDefinition forName(final char[] nameBuffer, final int nameOffset, final int nameLen) {
-        if (nameBuffer == null) {
-            throw new IllegalArgumentException("Buffer cannot be null");
-        }
-        return ELEMENT_DEFINITIONS.getElement(nameBuffer, nameOffset, nameLen);
-    }
 
 
 
     public static ElementDefinition forName(final String elementName) {
+
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        return ELEMENT_DEFINITIONS.getElement(elementName);
+
+        // We first try without executing toLowerCase(), in order to avoid unnecessary load when most
+        // of the requests will be for the already normalized (lower-cased) version.
+        ElementDefinition definition = ELEMENT_DEFINITIONS.get(elementName);
+        if (definition != null) {
+            return definition;
+        }
+
+        definition = ELEMENT_DEFINITIONS.get(elementName.toLowerCase());
+        if (definition != null) {
+            return definition;
+        }
+
+        definition = new ElementDefinition(elementName, ElementType.NORMAL);
+
+        ELEMENT_DEFINITIONS.putIfAbsent(definition.getNormalizedName(), definition);
+
+        return definition;
+
     }
 
 
@@ -286,249 +251,6 @@ public final class ElementDefinitions {
         super();
     }
 
-
-
-    // TODO at this level, we will NEVER use char[] buffers but Strings, so we could just use a ConcurrentHashMap
-    // and make IMarkupHandlers receive an ElementDefinition as argument instead of String normalizedName's.
-
-
-
-    /*
-     * <p>
-     *     This class is <strong>thread-safe</strong>. The reason for this is that it not only contains the
-     *     standard elements, but will also contain new instances of ElementDefinition created during processing
-     *     (created when asking the repository for them when they do not exist yet). As any thread can create a new
-     *     element, this has to be lock-protected.
-     * </p>
-     * <p>
-     *     NOTE this structure is equivalent to the one used at org.attoparser.markup.html.elements.HtmlElements
-     *     to keep track of the different HTML elements involved. So any bugs that might be found here should
-     *     be also fixed at the corresponding attoparser class.
-     * </p>
-     */
-    static final class ElementDefinitionRepository {
-
-        private final List<ElementDefinition> repository;
-
-        private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
-        private final Lock readLock = this.lock.readLock();
-        private final Lock writeLock = this.lock.writeLock();
-
-
-        ElementDefinitionRepository() {
-            this.repository = new ArrayList<ElementDefinition>(40);
-        }
-
-
-
-        ElementDefinition getElement(final char[] text, final int offset, final int len) {
-
-            this.readLock.lock();
-            try {
-
-                final int index = binarySearch(this.repository, text, offset, len);
-
-                if (index != -1) {
-                    return this.repository.get(index);
-                }
-
-            } finally {
-                this.readLock.unlock();
-            }
-
-
-            /*
-             * NOT FOUND. We need to obtain a write lock and store the text
-             */
-            this.writeLock.lock();
-            try {
-                return storeElement(text, offset, len);
-            } finally {
-                this.writeLock.unlock();
-            }
-
-        }
-
-
-        ElementDefinition getElement(final String text) {
-
-            final String normalizedText = text.toLowerCase();
-
-            this.readLock.lock();
-            try {
-
-                final int index = binarySearch(this.repository, normalizedText);
-
-                if (index != -1) {
-                    return this.repository.get(index);
-                }
-
-            } finally {
-                this.readLock.unlock();
-            }
-
-
-            /*
-             * NOT FOUND. We need to obtain a write lock and store the text
-             */
-            this.writeLock.lock();
-            try {
-                return storeElement(normalizedText);
-            } finally {
-                this.writeLock.unlock();
-            }
-
-        }
-
-
-        private ElementDefinition storeElement(final char[] text, final int offset, final int len) {
-
-            final int index = binarySearch(this.repository, text, offset, len);
-            if (index != -1) {
-                // It was already added while we were waiting for the lock!
-                return this.repository.get(index);
-            }
-
-            // Every element that we do not know beforehand (because it is an HTML5 standard element
-            // will be considered of type NORMAL. In most cases, these will be XML elements, so this is the
-            // correct option.
-            final ElementDefinition element =
-                    new ElementDefinition(new String(text, offset, len).toLowerCase(), ElementType.NORMAL);
-
-
-            this.repository.add(element);
-            Collections.sort(this.repository, ElementComparator.INSTANCE);
-
-            return element;
-
-        }
-
-
-        private ElementDefinition storeElement(final String text) {
-
-            final int index = binarySearch(this.repository, text);
-            if (index != -1) {
-                // It was already added while we were waiting for the lock!
-                return this.repository.get(index);
-            }
-
-            // Every element that we do not know beforehand (because it is an HTML5 standard element
-            // will be considered of type NORMAL. In most cases, these will be XML elements, so this is the
-            // correct option.
-            final ElementDefinition element =
-                    new ElementDefinition(text, ElementType.NORMAL); // Has already been lower-cased at getElement()
-
-            this.repository.add(element);
-            Collections.sort(this.repository,ElementComparator.INSTANCE);
-
-            return element;
-
-        }
-
-
-        private ElementDefinition storeElement(final ElementDefinition element) {
-
-            // This method will only be called from within the HtmlElements class itself, during initialization of
-            // standard elements.
-
-            this.repository.add(element);
-            Collections.sort(this.repository,ElementComparator.INSTANCE);
-
-            return element;
-
-        }
-
-
-
-        private static int binarySearch(final List<ElementDefinition> values,
-                                        final String text) {
-
-            int low = 0;
-            int high = values.size() - 1;
-
-            while (low <= high) {
-
-                final int mid = (low + high) >>> 1;
-                final String midVal = values.get(mid).getNormalizedName();
-
-                final int cmp = midVal.compareTo(text);
-
-                if (cmp < 0) {
-                    low = mid + 1;
-                } else if (cmp > 0) {
-                    high = mid - 1;
-                } else {
-                    // Found!!
-                    return mid;
-                }
-
-            }
-
-            return -1;  // Not Found!!
-
-        }
-
-
-        private static int binarySearch(final List<ElementDefinition> values,
-                                        final char[] text, final int offset, final int len) {
-
-            int low = 0;
-            int high = values.size() - 1;
-
-            while (low <= high) {
-
-                final int mid = (low + high) >>> 1;
-                final String midVal = values.get(mid).getNormalizedName();
-
-                final int cmp = compare(midVal, text, offset, len);
-
-                if (cmp < 0) {
-                    low = mid + 1;
-                } else if (cmp > 0) {
-                    high = mid - 1;
-                } else {
-                    // Found!!
-                    return mid;
-                }
-
-            }
-
-            return -1;  // Not Found!!
-
-        }
-
-
-        private static int compare(final String ncr, final char[] text, final int offset, final int len) {
-            final int maxCommon = Math.min(ncr.length(), len);
-            int i;
-            for (i = 0; i < maxCommon; i++) {
-                final char tc = Character.toLowerCase(text[offset + i]);
-                if (ncr.charAt(i) < tc) {
-                    return -1;
-                } else if (ncr.charAt(i) > tc) {
-                    return 1;
-                }
-            }
-            if (ncr.length() > i) {
-                return 1;
-            }
-            if (len > i) {
-                return -1;
-            }
-            return 0;
-        }
-
-
-        private static class ElementComparator implements Comparator<ElementDefinition> {
-
-            private static ElementComparator INSTANCE = new ElementComparator();
-
-            public int compare(final ElementDefinition o1, final ElementDefinition o2) {
-                return o1.getNormalizedName().compareTo(o2.getNormalizedName());
-            }
-        }
-
-    }
 
 
 }
