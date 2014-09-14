@@ -28,14 +28,16 @@ import org.thymeleaf.engine.markup.dom.ElementDefinition;
  * @since 3.0.0
  * 
  */
-public class StandardMarkupHandler implements IMarkupHandler {
+public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
-    private boolean outputSpacePreAttr = false;
+    private final MarkupEngineConfiguration config;
 
 
-    public StandardMarkupHandler() {
 
+    public StandardMarkupHandler(final MarkupEngineConfiguration config) {
+        super();
+        this.config = config;
     }
 
 
@@ -49,6 +51,7 @@ public class StandardMarkupHandler implements IMarkupHandler {
      */
 
 
+    @Override
     public void onDocumentStart(
             final long startTimeNanos) {
 
@@ -58,6 +61,7 @@ public class StandardMarkupHandler implements IMarkupHandler {
 
 
 
+    @Override
     public void onDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos) {
 
@@ -75,6 +79,7 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * ------------------------
      */
 
+    @Override
     public void onXmlDeclaration (
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone,
@@ -94,6 +99,7 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * ---------------------
      */
 
+    @Override
     public void onDocTypeClause (
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId,
@@ -113,8 +119,9 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * --------------------
      */
 
+    @Override
     public void onCDATASection (
-            final String content,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
 
@@ -131,8 +138,9 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * -----------
      */
 
+    @Override
     public void onText (
-            final String content,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
 
@@ -149,8 +157,9 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * --------------
      */
 
+    @Override
     public void onComment (
-            final String content,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
 
@@ -167,63 +176,65 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * ----------------
      */
 
+    @Override
     public void onAttribute (
-            final AttributeDefinition attributeDefinition,
-            final String name, final String operator, final String value, final String quotedValue,
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int nameLine, final int nameCol,
+            final int operatorOffset, final int operatorLen,
+            final int operatorLine, final int operatorCol,
+            final int valueContentOffset, final int valueContentLen,
+            final int valueOuterOffset, final int valueOuterLen,
+            final int valueLine, final int valueCol) {
+
+
+}
+
+
+
+    @Override
+    public void onStandaloneElementStart(
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        if (!this.outputSpacePreAttr) {
-            // output whitespace
-        }
-
-        this.outputSpacePreAttr = false;
 
     }
 
 
 
-    public void onStandaloneElementStart (
-            final ElementDefinition elementDefinition, final String name,
-            final int line, final int col) {
-
-        this.outputSpacePreAttr = false;
-
-    }
-
-
-
+    @Override
     public void onStandaloneElementEnd (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.outputSpacePreAttr = false;
 
     }
 
 
 
+    @Override
     public void onOpenElementStart (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.outputSpacePreAttr = false;
 
     }
 
 
 
+    @Override
     public void onOpenElementEnd (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.outputSpacePreAttr = false;
 
     }
 
 
 
+    @Override
     public void onCloseElementStart (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
 
@@ -231,8 +242,9 @@ public class StandardMarkupHandler implements IMarkupHandler {
 
 
 
+    @Override
     public void onCloseElementEnd (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
 
@@ -240,11 +252,51 @@ public class StandardMarkupHandler implements IMarkupHandler {
 
 
 
-    public void onElementInnerWhiteSpace (
-            final String innerWhiteSpace,
+    @Override
+    public void onAutoCloseElementStart (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.outputSpacePreAttr = true;
+
+    }
+
+
+
+    @Override
+    public void onAutoCloseElementEnd (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col) {
+
+
+    }
+
+
+
+    @Override
+    public void onUnmatchedCloseElementStart (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col) {
+
+
+    }
+
+
+
+    @Override
+    public void onUnmatchedCloseElementEnd (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col) {
+
+
+    }
+
+
+
+    @Override
+    public void onElementInnerWhiteSpace (
+            final char[] buffer, final int offset, final int len,
+            final int line, final int col) {
+
 
 
     }
@@ -259,6 +311,7 @@ public class StandardMarkupHandler implements IMarkupHandler {
      * -------------------------------
      */
 
+    @Override
     public void onProcessingInstruction (
             final String processingInstruction,
             final String target, final String content,

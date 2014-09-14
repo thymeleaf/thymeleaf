@@ -46,54 +46,79 @@ public interface IMarkupHandler {
             final int line, final int col);
 
     public void onCDATASection (
-            final String content,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col);
 
     public void onText (
-            final String content,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col);
 
     public void onComment (
-            final String content,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col);
 
     public void onAttribute (
-            final AttributeDefinition attributeDefinition,
-            final String name, final String operator, final String value, final String quotedValue,
-            final int line, final int col);
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
+            final int nameLine, final int nameCol,
+            final int operatorOffset, final int operatorLen,
+            final int operatorLine, final int operatorCol,
+            final int valueContentOffset, final int valueContentLen,
+            final int valueOuterOffset, final int valueOuterLen,
+            final int valueLine, final int valueCol);
 
-    public void onStandaloneElementStart (
-            final ElementDefinition elementDefinition, final String name,
+    public void onStandaloneElementStart(
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col);
 
 
     public void onStandaloneElementEnd (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col);
 
 
     public void onOpenElementStart (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col);
 
 
     public void onOpenElementEnd (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col);
 
 
     public void onCloseElementStart (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col);
 
 
     public void onCloseElementEnd (
-            final ElementDefinition elementDefinition, final String name,
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col);
+
+
+    public void onAutoCloseElementStart (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col);
+
+
+    public void onAutoCloseElementEnd (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col);
+
+
+    public void onUnmatchedCloseElementStart (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
+            final int line, final int col);
+
+
+    public void onUnmatchedCloseElementEnd (
+            final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col);
 
 
     public void onElementInnerWhiteSpace (
-            final String innerWhiteSpace,
+            final char[] buffer, final int offset, final int len,
             final int line, final int col);
 
     public void onProcessingInstruction (

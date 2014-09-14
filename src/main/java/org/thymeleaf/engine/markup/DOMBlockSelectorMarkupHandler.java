@@ -19,28 +19,42 @@
  */
 package org.thymeleaf.engine.markup;
 
-import java.io.IOException;
-import java.io.Writer;
-
-import org.thymeleaf.exceptions.TemplateOutputException;
+import java.util.Arrays;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- *
+ * 
  */
-public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
+public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
 
-    private final String documentName;
-    private final Writer writer;
+    private final IMarkupHandler delegate;
+
+    private IDOMBlockSelectorItem[][] selectorItems;
+    private int currentSelectorItemLevel;
+    private boolean[][] selectorItemMatchers;
 
 
-    public DirectOutputMarkupHandler(final String documentName, final Writer writer) {
+    private int currentMarkupLevel = 0;
+
+
+    public DOMBlockSelectorMarkupHandler(final IMarkupHandler delegate, final IDOMBlockSelectorItem[][] selectorItems) {
+
         super();
-        this.documentName = documentName;
-        this.writer = writer;
+
+        this.delegate = delegate;
+
+        this.selectorItems = selectorItems;
+        this.currentSelectorItemLevel = 0;
+
+        this.selectorItemMatchers = new boolean[this.selectorItems.length][];
+        for (int i = 0; i < this.selectorItemMatchers.length; i++) {
+            this.selectorItemMatchers[i] = new boolean[this.selectorItems[i].length];
+            Arrays.fill(this.selectorItemMatchers[i],false);
+        }
+
     }
 
 
@@ -54,20 +68,18 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onDocumentStart(
-            final long startTimeNanos) {
+    public void onDocumentStart(final long startTimeNanos) {
 
-        // Nothing to be done here
+        this.delegate.onDocumentStart(startTimeNanos);
 
     }
 
 
 
     @Override
-    public void onDocumentEnd(
-            final long endTimeNanos, final long totalTimeNanos) {
+    public void onDocumentEnd(final long endTimeNanos, final long totalTimeNanos) {
 
-        // Nothing to be done here
+        this.delegate.onDocumentEnd(endTimeNanos, totalTimeNanos);
 
     }
 
@@ -87,12 +99,7 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final String version, final String encoding, final boolean standalone,
             final int line, final int col) {
 
-        try {
-            this.writer.write(xmlDeclaration);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, line, col);
 
     }
 
@@ -112,12 +119,7 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final String rootElementName, final String publicId, final String systemId,
             final int line, final int col) {
 
-        try {
-            this.writer.write(docTypeClause);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, line, col);
 
     }
 
@@ -136,14 +138,7 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        try {
-            this.writer.write("<![CDATA[");
-            this.writer.write(buffer, offset, len);
-            this.writer.write("]]>");
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onCDATASection(buffer, offset, len, line, col);
 
     }
 
@@ -162,12 +157,7 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        try {
-            this.writer.write(buffer, offset, len);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onText(buffer, offset, len, line, col);
 
     }
 
@@ -186,14 +176,7 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        try {
-            this.writer.write("<!--");
-            this.writer.write(buffer, offset, len);
-            this.writer.write("-->");
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onComment(buffer, offset, len, line, col);
 
     }
 
@@ -218,16 +201,14 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol) {
 
-    try {
-            this.writer.write(buffer, nameOffset, nameLen);
-            this.writer.write(buffer, operatorOffset, operatorLen);
-            this.writer.write(buffer, valueOuterOffset, valueOuterLen);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onAttribute(
+                buffer,
+                nameOffset, nameLen, nameLine, nameCol,
+                operatorOffset, operatorLen, operatorLine, operatorCol,
+                valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol);
 
     }
+
 
 
     @Override
@@ -235,15 +216,10 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        try {
-            this.writer.write("<");
-            this.writer.write(buffer, offset, len);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onStandaloneElementStart(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -251,14 +227,10 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        try {
-            this.writer.write("/>");
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onStandaloneElementEnd(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -266,15 +238,10 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        try {
-            this.writer.write("<");
-            this.writer.write(buffer, offset, len);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onOpenElementStart(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -282,14 +249,11 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        try {
-            this.writer.write(">");
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onOpenElementEnd(buffer, offset, len, normalizedName, line, col);
+        this.currentMarkupLevel++;
 
     }
+
 
 
     @Override
@@ -297,15 +261,11 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        try {
-            this.writer.write("</");
-            this.writer.write(buffer, offset, len);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.currentMarkupLevel--;
+        this.delegate.onCloseElementStart(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -313,14 +273,10 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        try {
-            this.writer.write(">");
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onCloseElementEnd(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -328,9 +284,11 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        // Nothing to be done here. This event is ignored in output
+        this.currentMarkupLevel--;
+        this.delegate.onAutoCloseElementStart(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -338,9 +296,10 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        // Nothing to be done here. This event is ignored in output
+        this.delegate.onAutoCloseElementEnd(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -348,9 +307,10 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        // Nothing to be done here. This event is ignored in output
+        this.delegate.onUnmatchedCloseElementStart(buffer, offset, len, normalizedName, line, col);
 
     }
+
 
 
     @Override
@@ -358,10 +318,9 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        // Nothing to be done here. This event is ignored in output
+        this.delegate.onUnmatchedCloseElementEnd(buffer, offset, len, normalizedName, line, col);
 
     }
-
 
 
 
@@ -370,12 +329,7 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        try {
-            this.writer.write(buffer, offset, len);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onElementInnerWhiteSpace(buffer, offset, len, line, col);
 
     }
 
@@ -389,21 +343,68 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
      * -------------------------------
      */
 
-    @Override
     public void onProcessingInstruction (
             final String processingInstruction,
             final String target, final String content,
             final int line, final int col) {
 
-        try {
-            this.writer.write(processingInstruction);
-        } catch (final IOException e) {
-            throw new TemplateOutputException(
-                    String.format("Error trying to write output for template \"{}\"", documentName), e);
-        }
+        this.delegate.onProcessingInstruction(processingInstruction, target, content, line, col);
 
     }
 
+
+
+
+    /*
+     *   //h2[2]
+     *   //div/p
+     *
+     *   <div>
+     *       <h2>...</h2>
+     *       <p>...</p>
+     *       <h2>...</h2>
+     *       <div>
+     *           <h2>...</h2>
+     *           <p>...</p>
+     *           <h2>...</h2>
+     *       </div>
+     *   </div>
+     */
+
+
+    static interface IDOMBlockSelectorItem {
+
+
+        boolean isAnyLevel();
+        boolean isAnyElement();
+        boolean isText();
+
+        boolean matchElement(final String normalizedElementName);
+        boolean matchAttribute(final String attributeName, final String attributeValue);
+        boolean matchText();
+
+        boolean isMatched();
+        void reset();
+
+
+    }
+
+
+    static final class DOMBlockSelectorAnyElementItem implements IDOMBlockSelectorItem {
+
+    }
+
+    static final class DOMBlockSelectorAnyElementAnyLevelItem implements IDOMBlockSelectorItem {
+
+    }
+
+    static final class DOMBlockSelectorSpecificElementAnyLevelItem implements IDOMBlockSelectorItem {
+
+    }
+
+    static final class DOMBlockSelectorTextItem implements IDOMBlockSelectorItem {
+
+    }
 
 
 
