@@ -28,7 +28,7 @@ package org.thymeleaf.engine.markup;
 public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
 
-    private final BlockSelectorFilter chain;
+    private final BlockSelectorFilter filter;
     private final IMarkupHandler handler;
 
     private int markupLevel;
@@ -43,20 +43,11 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.handler = handler;
 
-        BlockSelectorFilter firstItem = null;
-        BlockSelectorFilter lastItem = null;
-        for (final String elementName : elementNames) {
-            final BlockSelectorFilter thisItem = new BlockSelectorFilter(elementName);
-            if (lastItem != null) {
-                thisItem.setPrevious(lastItem);
-                lastItem.setNext(thisItem);
-            } else {
-                firstItem = thisItem;
-            }
-            lastItem = thisItem;
+        this.filter = new BlockSelectorFilter(null, elementNames[0]);
+        BlockSelectorFilter last = this.filter;
+        for (int i = 1; i < elementNames.length; i++) {
+            last = new BlockSelectorFilter(last, elementNames[i]);
         }
-
-        this.chain = firstItem;
 
         this.markupLevel = 0;
         this.matching = false;
@@ -107,7 +98,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         if (this.matching ||
-                this.chain.matchXmlDeclaration(0, this.markupLevel, xmlDeclaration, version, encoding, standalone)) {
+                this.filter.matchXmlDeclaration(0, this.markupLevel, xmlDeclaration, version, encoding, standalone)) {
 
             this.handler.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, line, col);
 
@@ -132,7 +123,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         if (this.matching ||
-                this.chain.matchDocTypeClause(0, this.markupLevel, docTypeClause, rootElementName, publicId, systemId)) {
+                this.filter.matchDocTypeClause(0, this.markupLevel, docTypeClause, rootElementName, publicId, systemId)) {
 
             this.handler.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, line, col);
 
@@ -156,7 +147,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         if (this.matching ||
-                this.chain.matchCDATASection(0, this.markupLevel, buffer, offset, len)) {
+                this.filter.matchCDATASection(0, this.markupLevel, buffer, offset, len)) {
 
             this.handler.onCDATASection(buffer, offset, len, line, col);
 
@@ -180,7 +171,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         if (this.matching ||
-                this.chain.matchText(0, this.markupLevel, buffer, offset, len)) {
+                this.filter.matchText(0, this.markupLevel, buffer, offset, len)) {
 
             this.handler.onText(buffer, offset, len, line, col);
 
@@ -204,7 +195,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         if (this.matching ||
-                this.chain.matchComment(0, this.markupLevel, buffer, offset, len)) {
+                this.filter.matchComment(0, this.markupLevel, buffer, offset, len)) {
 
             this.handler.onComment(buffer, offset, len, line, col);
 
@@ -257,7 +248,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             return;
         }
 
-        if (this.chain.matchStandaloneElement(0, this.markupLevel, normalizedName)) {
+        if (this.filter.matchStandaloneElement(0, this.markupLevel, normalizedName)) {
 
             this.matching = true;
             this.matchingMarkupLevel = this.markupLevel;
@@ -300,7 +291,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             return;
         }
 
-        if (this.chain.matchOpenElement(0, this.markupLevel, normalizedName)) {
+        if (this.filter.matchOpenElement(0, this.markupLevel, normalizedName)) {
 
             this.matching = true;
             this.matchingMarkupLevel = this.markupLevel;
@@ -337,7 +328,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         this.markupLevel--;
-        this.chain.removeMatchesForLevel(this.markupLevel);
+        this.filter.removeMatchesForLevel(this.markupLevel);
 
         if (this.matching) {
             this.handler.onCloseElementStart(buffer, offset, len, normalizedName, line, col);
@@ -373,7 +364,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         this.markupLevel--;
-        this.chain.removeMatchesForLevel(this.markupLevel);
+        this.filter.removeMatchesForLevel(this.markupLevel);
 
         if (this.matching) {
             this.handler.onAutoCloseElementStart(buffer, offset, len, normalizedName, line, col);
@@ -456,7 +447,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col) {
 
         if (this.matching ||
-                this.chain.matchProcessingInstruction(0, this.markupLevel, processingInstruction, target, content)) {
+                this.filter.matchProcessingInstruction(0, this.markupLevel, processingInstruction, target, content)) {
 
             this.handler.onProcessingInstruction(processingInstruction, target, content, line, col);
 

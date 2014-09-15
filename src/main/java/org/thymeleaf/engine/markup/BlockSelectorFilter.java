@@ -30,7 +30,7 @@ import java.util.Arrays;
 final class BlockSelectorFilter {
 
 
-    private BlockSelectorFilter previous;
+    private final BlockSelectorFilter prev;
     private BlockSelectorFilter next;
     private final String matchedElementName;
     private final boolean matchAnyLevel;
@@ -40,10 +40,18 @@ final class BlockSelectorFilter {
 
 
 
-    public BlockSelectorFilter(
-            final String normalizedMatchedElementName) {
+    public BlockSelectorFilter(final BlockSelectorFilter prev, final String normalizedMatchedElementName) {
         
         super();
+
+        this.prev = prev;
+        if (this.prev != null) {
+            this.prev.next = this;
+        }
+
+        this.matchingMarkupLevels = new int[10];
+        Arrays.fill(this.matchingMarkupLevels, Integer.MAX_VALUE);
+
 
         if (normalizedMatchedElementName.startsWith("//")) {
             this.matchedElementName = normalizedMatchedElementName.substring(2);
@@ -56,19 +64,6 @@ final class BlockSelectorFilter {
             this.matchAnyLevel = true;
         }
 
-        this.matchingMarkupLevels = new int[10];
-        Arrays.fill(this.matchingMarkupLevels, Integer.MAX_VALUE);
-        
-    }
-
-
-
-    public void setPrevious(final BlockSelectorFilter previous) {
-        this.previous = previous;
-    }
-
-    public void setNext(final BlockSelectorFilter next) {
-        this.next = next;
     }
 
 
@@ -223,7 +218,7 @@ final class BlockSelectorFilter {
             return false;
         }
 
-        if (this.matchAnyLevel || markupLevel == 0 || (this.previous != null && this.previous.matchingMarkupLevels[execLevel] == markupLevel - 1)) {
+        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchingMarkupLevels[execLevel] == markupLevel - 1)) {
 
             if (normalizedName.equals(this.matchedElementName)) {
                 return true;
@@ -231,8 +226,8 @@ final class BlockSelectorFilter {
 
         }
 
-        if (this.previous != null) {
-            return this.previous.matchStandaloneElement(execLevel + 1, markupLevel, normalizedName);
+        if (this.prev != null) {
+            return this.prev.matchStandaloneElement(execLevel + 1, markupLevel, normalizedName);
         }
         return false;
 
@@ -253,7 +248,7 @@ final class BlockSelectorFilter {
 
         }
 
-        if (this.matchAnyLevel || markupLevel == 0 || (this.previous != null && this.previous.matchingMarkupLevels[execLevel] == markupLevel - 1)) {
+        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchingMarkupLevels[execLevel] == markupLevel - 1)) {
 
             if (normalizedName.equals(this.matchedElementName)) {
 
@@ -265,8 +260,8 @@ final class BlockSelectorFilter {
 
         }
 
-        if (this.previous != null) {
-            return this.previous.matchOpenElement(execLevel + 1, markupLevel, normalizedName);
+        if (this.prev != null) {
+            return this.prev.matchOpenElement(execLevel + 1, markupLevel, normalizedName);
         }
         return false;
 
