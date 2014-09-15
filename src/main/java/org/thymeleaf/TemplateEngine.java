@@ -19,12 +19,10 @@
  */
 package org.thymeleaf;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -47,6 +45,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.engine.markup.BlockSelectorMarkupHandler;
 import org.thymeleaf.engine.markup.DirectOutputMarkupHandler;
 import org.thymeleaf.engine.markup.IMarkupHandler;
 import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
@@ -1210,9 +1209,10 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
+        final BlockSelectorMarkupHandler handler = new BlockSelectorMarkupHandler(directOutputHandler, "html", "p");
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, new StringReader(templateContent));
-        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
+        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, handler, templateName, reader);
 
 
     }

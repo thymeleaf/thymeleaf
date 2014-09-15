@@ -69,6 +69,10 @@ public final class StandardHtmlParser implements IMarkupParser {
         MARKUP_PARSING_CONFIGURATION.setRequireUniqueAttributesInElement(false);
         MARKUP_PARSING_CONFIGURATION.setRequireXmlWellFormedAttributeValues(false);
         MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(MarkupParsingConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
+        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setDoctypePresence(MarkupParsingConfiguration.PrologPresence.ALLOWED);
+        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setRequireDoctypeKeywordsUpperCase(false);
+        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setValidateProlog(false);
+        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setXmlDeclarationPresence(MarkupParsingConfiguration.PrologPresence.ALLOWED);
 
     }
     

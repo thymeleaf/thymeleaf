@@ -19,42 +19,49 @@
  */
 package org.thymeleaf.engine.markup;
 
-import java.util.Arrays;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
+public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
 
-    private final IMarkupHandler delegate;
+    private final BlockSelectorFilter chain;
+    private final IMarkupHandler handler;
 
-    private IDOMBlockSelectorItem[][] selectorItems;
-    private int currentSelectorItemLevel;
-    private boolean[][] selectorItemMatchers;
-
-
-    private int currentMarkupLevel = 0;
+    private int markupLevel;
+    private boolean matching;
+    private int matchingMarkupLevel;
 
 
-    public DOMBlockSelectorMarkupHandler(final IMarkupHandler delegate, final IDOMBlockSelectorItem[][] selectorItems) {
+
+    public BlockSelectorMarkupHandler(final IMarkupHandler handler, final String... elementNames) {
 
         super();
 
-        this.delegate = delegate;
+        this.handler = handler;
 
-        this.selectorItems = selectorItems;
-        this.currentSelectorItemLevel = 0;
-
-        this.selectorItemMatchers = new boolean[this.selectorItems.length][];
-        for (int i = 0; i < this.selectorItemMatchers.length; i++) {
-            this.selectorItemMatchers[i] = new boolean[this.selectorItems[i].length];
-            Arrays.fill(this.selectorItemMatchers[i],false);
+        BlockSelectorFilter firstItem = null;
+        BlockSelectorFilter lastItem = null;
+        for (final String elementName : elementNames) {
+            final BlockSelectorFilter thisItem = new BlockSelectorFilter(elementName);
+            if (lastItem != null) {
+                thisItem.setPrevious(lastItem);
+                lastItem.setNext(thisItem);
+            } else {
+                firstItem = thisItem;
+            }
+            lastItem = thisItem;
         }
 
+        this.chain = firstItem;
+
+        this.markupLevel = 0;
+        this.matching = false;
+        this.matchingMarkupLevel = Integer.MAX_VALUE;
+        
     }
 
 
@@ -70,7 +77,7 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
     @Override
     public void onDocumentStart(final long startTimeNanos) {
 
-        this.delegate.onDocumentStart(startTimeNanos);
+        this.handler.onDocumentStart(startTimeNanos);
 
     }
 
@@ -79,7 +86,7 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
     @Override
     public void onDocumentEnd(final long endTimeNanos, final long totalTimeNanos) {
 
-        this.delegate.onDocumentEnd(endTimeNanos, totalTimeNanos);
+        this.handler.onDocumentEnd(endTimeNanos, totalTimeNanos);
 
     }
 
@@ -99,7 +106,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String version, final String encoding, final boolean standalone,
             final int line, final int col) {
 
-        this.delegate.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, line, col);
+        if (this.matching ||
+                this.chain.matchXmlDeclaration(0, this.markupLevel, xmlDeclaration, version, encoding, standalone)) {
+
+            this.handler.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, line, col);
+
+        }
 
     }
 
@@ -119,7 +131,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String rootElementName, final String publicId, final String systemId,
             final int line, final int col) {
 
-        this.delegate.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, line, col);
+        if (this.matching ||
+                this.chain.matchDocTypeClause(0, this.markupLevel, docTypeClause, rootElementName, publicId, systemId)) {
+
+            this.handler.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, line, col);
+
+        }
 
     }
 
@@ -138,7 +155,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        this.delegate.onCDATASection(buffer, offset, len, line, col);
+        if (this.matching ||
+                this.chain.matchCDATASection(0, this.markupLevel, buffer, offset, len)) {
+
+            this.handler.onCDATASection(buffer, offset, len, line, col);
+
+        }
 
     }
 
@@ -157,7 +179,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        this.delegate.onText(buffer, offset, len, line, col);
+        if (this.matching ||
+                this.chain.matchText(0, this.markupLevel, buffer, offset, len)) {
+
+            this.handler.onText(buffer, offset, len, line, col);
+
+        }
 
     }
 
@@ -176,7 +203,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        this.delegate.onComment(buffer, offset, len, line, col);
+        if (this.matching ||
+                this.chain.matchComment(0, this.markupLevel, buffer, offset, len)) {
+
+            this.handler.onComment(buffer, offset, len, line, col);
+
+        }
 
     }
 
@@ -201,11 +233,15 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol) {
 
-        this.delegate.onAttribute(
-                buffer,
-                nameOffset, nameLen, nameLine, nameCol,
-                operatorOffset, operatorLen, operatorLine, operatorCol,
-                valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol);
+        if (this.matching) {
+
+            this.handler.onAttribute(
+                    buffer,
+                    nameOffset, nameLen, nameLine, nameCol,
+                    operatorOffset, operatorLen, operatorLine, operatorCol,
+                    valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol);
+
+        }
 
     }
 
@@ -216,7 +252,19 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onStandaloneElementStart(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+            this.handler.onStandaloneElementStart(buffer, offset, len, normalizedName, line, col);
+            return;
+        }
+
+        if (this.chain.matchStandaloneElement(0, this.markupLevel, normalizedName)) {
+
+            this.matching = true;
+            this.matchingMarkupLevel = this.markupLevel;
+
+            this.handler.onStandaloneElementStart(buffer, offset, len, normalizedName, line, col);
+
+        }
 
     }
 
@@ -227,7 +275,16 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onStandaloneElementEnd(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+
+            this.handler.onStandaloneElementEnd(buffer, offset, len, normalizedName, line, col);
+
+            if (this.matchingMarkupLevel == this.markupLevel) {
+                this.matching = false;
+                this.matchingMarkupLevel = Integer.MAX_VALUE;
+            }
+
+        }
 
     }
 
@@ -238,7 +295,19 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onOpenElementStart(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+            this.handler.onOpenElementStart(buffer, offset, len, normalizedName, line, col);
+            return;
+        }
+
+        if (this.chain.matchOpenElement(0, this.markupLevel, normalizedName)) {
+
+            this.matching = true;
+            this.matchingMarkupLevel = this.markupLevel;
+
+            this.handler.onOpenElementStart(buffer, offset, len, normalizedName, line, col);
+
+        }
 
     }
 
@@ -249,8 +318,14 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onOpenElementEnd(buffer, offset, len, normalizedName, line, col);
-        this.currentMarkupLevel++;
+        if (this.matching) {
+
+            this.handler.onOpenElementEnd(buffer, offset, len, normalizedName, line, col);
+
+        }
+
+
+        this.markupLevel++;
 
     }
 
@@ -261,8 +336,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.currentMarkupLevel--;
-        this.delegate.onCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        this.markupLevel--;
+        this.chain.removeMatchesForLevel(this.markupLevel);
+
+        if (this.matching) {
+            this.handler.onCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        }
 
     }
 
@@ -273,7 +352,16 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+
+            this.handler.onCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+
+            if (this.matchingMarkupLevel == this.markupLevel) {
+                this.matching = false;
+                this.matchingMarkupLevel = Integer.MAX_VALUE;
+            }
+
+        }
 
     }
 
@@ -284,8 +372,12 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.currentMarkupLevel--;
-        this.delegate.onAutoCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        this.markupLevel--;
+        this.chain.removeMatchesForLevel(this.markupLevel);
+
+        if (this.matching) {
+            this.handler.onAutoCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        }
 
     }
 
@@ -296,7 +388,16 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onAutoCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+
+            this.handler.onAutoCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+
+            if (this.matchingMarkupLevel == this.markupLevel) {
+                this.matching = false;
+                this.matchingMarkupLevel = Integer.MAX_VALUE;
+            }
+
+        }
 
     }
 
@@ -307,7 +408,9 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onUnmatchedCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+            this.handler.onUnmatchedCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        }
 
     }
 
@@ -318,7 +421,9 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len, final String normalizedName,
             final int line, final int col) {
 
-        this.delegate.onUnmatchedCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+        if (this.matching) {
+            this.handler.onUnmatchedCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+        }
 
     }
 
@@ -329,7 +434,9 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
-        this.delegate.onElementInnerWhiteSpace(buffer, offset, len, line, col);
+        if (this.matching) {
+            this.handler.onElementInnerWhiteSpace(buffer, offset, len, line, col);
+        }
 
     }
 
@@ -348,63 +455,15 @@ public final class DOMBlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String target, final String content,
             final int line, final int col) {
 
-        this.delegate.onProcessingInstruction(processingInstruction, target, content, line, col);
+        if (this.matching ||
+                this.chain.matchProcessingInstruction(0, this.markupLevel, processingInstruction, target, content)) {
+
+            this.handler.onProcessingInstruction(processingInstruction, target, content, line, col);
+
+        }
 
     }
 
-
-
-
-    /*
-     *   //h2[2]
-     *   //div/p
-     *
-     *   <div>
-     *       <h2>...</h2>
-     *       <p>...</p>
-     *       <h2>...</h2>
-     *       <div>
-     *           <h2>...</h2>
-     *           <p>...</p>
-     *           <h2>...</h2>
-     *       </div>
-     *   </div>
-     */
-
-
-    static interface IDOMBlockSelectorItem {
-
-
-        boolean isAnyLevel();
-        boolean isAnyElement();
-        boolean isText();
-
-        boolean matchElement(final String normalizedElementName);
-        boolean matchAttribute(final String attributeName, final String attributeValue);
-        boolean matchText();
-
-        boolean isMatched();
-        void reset();
-
-
-    }
-
-
-    static final class DOMBlockSelectorAnyElementItem implements IDOMBlockSelectorItem {
-
-    }
-
-    static final class DOMBlockSelectorAnyElementAnyLevelItem implements IDOMBlockSelectorItem {
-
-    }
-
-    static final class DOMBlockSelectorSpecificElementAnyLevelItem implements IDOMBlockSelectorItem {
-
-    }
-
-    static final class DOMBlockSelectorTextItem implements IDOMBlockSelectorItem {
-
-    }
 
 
 
