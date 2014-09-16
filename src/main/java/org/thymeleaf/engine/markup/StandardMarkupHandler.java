@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.engine.markup;
 
-import org.thymeleaf.engine.markup.dom.AttributeDefinition;
-import org.thymeleaf.engine.markup.dom.ElementDefinition;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -53,7 +50,7 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
     @Override
     public void onDocumentStart(
-            final long startTimeNanos) {
+            final long startTimeNanos, final String documentName) {
 
 
 
@@ -63,7 +60,7 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
     @Override
     public void onDocumentEnd(
-            final long endTimeNanos, final long totalTimeNanos) {
+            final long endTimeNanos, final long totalTimeNanos, final String documentName) {
 
 
 
@@ -80,10 +77,10 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onXmlDeclaration (
+    public void onXmlDeclaration(
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
 
@@ -100,10 +97,10 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onDocTypeClause (
+    public void onDocTypeClause(
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
 
@@ -120,9 +117,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onCDATASection (
+    public void onCDATASection(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
 
@@ -139,9 +136,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onText (
+    public void onText(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
 
@@ -158,9 +155,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onComment (
+    public void onComment(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
 
@@ -177,7 +174,7 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onAttribute (
+    public void onAttribute(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol,
@@ -185,7 +182,7 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final int operatorLine, final int operatorCol,
             final int valueContentOffset, final int valueContentLen,
             final int valueOuterOffset, final int valueOuterLen,
-            final int valueLine, final int valueCol) {
+            final int valueLine, final int valueCol, final String documentName) {
 
 
 }
@@ -194,8 +191,8 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
     @Override
     public void onStandaloneElementStart(
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final boolean minimized, final String documentName, final int line, final int col) {
 
 
     }
@@ -203,9 +200,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onStandaloneElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onStandaloneElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final boolean minimized, final String documentName, final int line, final int col) {
 
 
     }
@@ -213,9 +210,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onOpenElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onOpenElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -223,9 +220,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onOpenElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onOpenElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -233,9 +230,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onCloseElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onCloseElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -243,9 +240,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onCloseElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onCloseElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -253,9 +250,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onAutoCloseElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onAutoCloseElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -263,9 +260,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onAutoCloseElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onAutoCloseElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -273,9 +270,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onUnmatchedCloseElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onUnmatchedCloseElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -283,9 +280,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onUnmatchedCloseElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onUnmatchedCloseElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
 
     }
@@ -293,9 +290,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
 
 
     @Override
-    public void onElementInnerWhiteSpace (
+    public void onElementInnerWhiteSpace(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
 
@@ -312,10 +309,10 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onProcessingInstruction (
+    public void onProcessingInstruction(
             final String processingInstruction,
             final String target, final String content,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
 
     }

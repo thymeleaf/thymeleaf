@@ -19,6 +19,11 @@
  */
 package org.thymeleaf.engine.markup;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.thymeleaf.util.Validate;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -37,22 +42,27 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
 
 
-    public BlockSelectorMarkupHandler(final IMarkupHandler handler, final String... elementNames) {
+    public BlockSelectorMarkupHandler(final IMarkupHandler handler, final String blockSelector, final boolean caseSensitive) {
 
         super();
 
-        this.handler = handler;
+        Validate.notNull(handler, "Handler cannot be null");
+        Validate.notEmpty(blockSelector, "Block selector cannot be null or empty");
 
-        this.filter = new BlockSelectorFilter(null, elementNames[0]);
-        BlockSelectorFilter last = this.filter;
-        for (int i = 1; i < elementNames.length; i++) {
-            last = new BlockSelectorFilter(last, elementNames[i]);
-        }
+        this.handler = handler;
 
         this.markupLevel = 0;
         this.matching = false;
         this.matchingMarkupLevel = Integer.MAX_VALUE;
-        
+
+        final List<BlockSelectorItem> blockSelectorItems = BlockSelectorItem.parseBlockSelector(blockSelector, caseSensitive);
+
+        this.filter = new BlockSelectorFilter(null, blockSelectorItems.get(0).anyLevel, blockSelectorItems.get(0).elementName);
+        BlockSelectorFilter last = this.filter;
+        for (int i = 1; i < blockSelectorItems.size(); i++) {
+            last = new BlockSelectorFilter(last, blockSelectorItems.get(i).anyLevel, blockSelectorItems.get(i).elementName);
+        }
+
     }
 
 
@@ -66,19 +76,15 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onDocumentStart(final long startTimeNanos) {
-
-        this.handler.onDocumentStart(startTimeNanos);
-
+    public void onDocumentStart(final long startTimeNanos, final String documentName) {
+        this.handler.onDocumentStart(startTimeNanos, documentName);
     }
 
 
 
     @Override
-    public void onDocumentEnd(final long endTimeNanos, final long totalTimeNanos) {
-
-        this.handler.onDocumentEnd(endTimeNanos, totalTimeNanos);
-
+    public void onDocumentEnd(final long endTimeNanos, final long totalTimeNanos, final String documentName) {
+        this.handler.onDocumentEnd(endTimeNanos, totalTimeNanos, documentName);
     }
 
 
@@ -92,17 +98,18 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onXmlDeclaration (
+    public void onXmlDeclaration(
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching ||
-                this.filter.matchXmlDeclaration(0, this.markupLevel, xmlDeclaration, version, encoding, standalone)) {
-
-            this.handler.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, line, col);
-
+        if (!this.matching &&
+                !this.filter.matchXmlDeclaration(this.markupLevel, xmlDeclaration, version, encoding, standalone)) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
         }
+
+        this.handler.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, documentName, line, col);
 
     }
 
@@ -117,17 +124,18 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onDocTypeClause (
+    public void onDocTypeClause(
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching ||
-                this.filter.matchDocTypeClause(0, this.markupLevel, docTypeClause, rootElementName, publicId, systemId)) {
-
-            this.handler.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, line, col);
-
+        if (!this.matching &&
+                !this.filter.matchDocTypeClause(this.markupLevel, docTypeClause, rootElementName, publicId, systemId)) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
         }
+
+        this.handler.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, documentName, line, col);
 
     }
 
@@ -142,16 +150,17 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onCDATASection (
+    public void onCDATASection(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching ||
-                this.filter.matchCDATASection(0, this.markupLevel, buffer, offset, len)) {
-
-            this.handler.onCDATASection(buffer, offset, len, line, col);
-
+        if (!this.matching &&
+                !this.filter.matchCDATASection(this.markupLevel, buffer, offset, len)) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
         }
+
+        this.handler.onCDATASection(buffer, offset, len, documentName, line, col);
 
     }
 
@@ -166,16 +175,17 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onText (
+    public void onText(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching ||
-                this.filter.matchText(0, this.markupLevel, buffer, offset, len)) {
-
-            this.handler.onText(buffer, offset, len, line, col);
-
+        if (!this.matching &&
+                !this.filter.matchText(this.markupLevel, buffer, offset, len)) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
         }
+            
+        this.handler.onText(buffer, offset, len, documentName, line, col);
 
     }
 
@@ -190,16 +200,17 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onComment (
+    public void onComment(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching ||
-                this.filter.matchComment(0, this.markupLevel, buffer, offset, len)) {
-
-            this.handler.onComment(buffer, offset, len, line, col);
-
+        if (!this.matching ||
+                !this.filter.matchComment(this.markupLevel, buffer, offset, len)) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
         }
+
+        this.handler.onComment(buffer, offset, len, documentName, line, col);
 
     }
 
@@ -214,7 +225,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      */
 
     @Override
-    public void onAttribute (
+    public void onAttribute(
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol,
@@ -222,17 +233,19 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int operatorLine, final int operatorCol,
             final int valueContentOffset, final int valueContentLen,
             final int valueOuterOffset, final int valueOuterLen,
-            final int valueLine, final int valueCol) {
+            final int valueLine, final int valueCol, final String documentName) {
 
-        if (this.matching) {
-
-            this.handler.onAttribute(
-                    buffer,
-                    nameOffset, nameLen, nameLine, nameCol,
-                    operatorOffset, operatorLen, operatorLine, operatorCol,
-                    valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol);
-
+        if (!this.matching) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
         }
+        
+
+        this.handler.onAttribute(
+                buffer,
+                nameOffset, nameLen, nameLine, nameCol,
+                operatorOffset, operatorLen, operatorLine, operatorCol,
+                valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol, documentName);
 
     }
 
@@ -240,194 +253,208 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
     @Override
     public void onStandaloneElementStart(
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final boolean minimized, final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-            this.handler.onStandaloneElementStart(buffer, offset, len, normalizedName, line, col);
-            return;
-        }
-
-        if (this.filter.matchStandaloneElement(0, this.markupLevel, normalizedName)) {
-
-            this.matching = true;
-            this.matchingMarkupLevel = this.markupLevel;
-
-            this.handler.onStandaloneElementStart(buffer, offset, len, normalizedName, line, col);
-
-        }
-
-    }
-
-
-
-    @Override
-    public void onStandaloneElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
-
-        if (this.matching) {
-
-            this.handler.onStandaloneElementEnd(buffer, offset, len, normalizedName, line, col);
-
-            if (this.matchingMarkupLevel == this.markupLevel) {
-                this.matching = false;
-                this.matchingMarkupLevel = Integer.MAX_VALUE;
+        if (!this.matching) {
+            if (this.filter.matchStandaloneElement(this.markupLevel, normalizedName)) {
+                this.matching = true;
+                this.matchingMarkupLevel = this.markupLevel;
+            } else {
+                // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+                return;
             }
-
         }
+
+        this.handler.onStandaloneElementStart(normalizedName, buffer, offset, len, minimized, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onOpenElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onStandaloneElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final boolean minimized, final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-            this.handler.onOpenElementStart(buffer, offset, len, normalizedName, line, col);
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no use.
             return;
         }
 
-        if (this.filter.matchOpenElement(0, this.markupLevel, normalizedName)) {
-
-            this.matching = true;
-            this.matchingMarkupLevel = this.markupLevel;
-
-            this.handler.onOpenElementStart(buffer, offset, len, normalizedName, line, col);
-
+        if (this.matchingMarkupLevel == this.markupLevel) {
+            this.matching = false;
+            this.matchingMarkupLevel = Integer.MAX_VALUE;
         }
+
+        this.handler.onStandaloneElementEnd(normalizedName, buffer, offset, len, minimized, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onOpenElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onOpenElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-
-            this.handler.onOpenElementEnd(buffer, offset, len, normalizedName, line, col);
-
+        if (!this.matching) {
+            if (this.filter.matchOpenElement(this.markupLevel, normalizedName)) {
+                this.matching = true;
+                this.matchingMarkupLevel = this.markupLevel;
+            } else {
+                // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+                return;
+            }
         }
 
+        this.handler.onOpenElementStart(normalizedName, buffer, offset, len, documentName, line, col);
+
+    }
+
+
+
+    @Override
+    public void onOpenElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
         this.markupLevel++;
 
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no further use.
+            return;
+        }
+
+        this.handler.onOpenElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
+
     }
 
 
 
     @Override
-    public void onCloseElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onCloseElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
         this.markupLevel--;
         this.filter.removeMatchesForLevel(this.markupLevel);
 
-        if (this.matching) {
-            this.handler.onCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no further use.
+            return;
         }
+
+        this.handler.onCloseElementStart(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onCloseElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onCloseElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-
-            this.handler.onCloseElementEnd(buffer, offset, len, normalizedName, line, col);
-
-            if (this.matchingMarkupLevel == this.markupLevel) {
-                this.matching = false;
-                this.matchingMarkupLevel = Integer.MAX_VALUE;
-            }
-
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no use.
+            return;
         }
+
+        if (this.matchingMarkupLevel == this.markupLevel) {
+            this.matching = false;
+            this.matchingMarkupLevel = Integer.MAX_VALUE;
+        }
+
+        this.handler.onCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onAutoCloseElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onAutoCloseElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
         this.markupLevel--;
         this.filter.removeMatchesForLevel(this.markupLevel);
 
-        if (this.matching) {
-            this.handler.onAutoCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no further use.
+            return;
         }
+
+        this.handler.onAutoCloseElementStart(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onAutoCloseElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onAutoCloseElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-
-            this.handler.onAutoCloseElementEnd(buffer, offset, len, normalizedName, line, col);
-
-            if (this.matchingMarkupLevel == this.markupLevel) {
-                this.matching = false;
-                this.matchingMarkupLevel = Integer.MAX_VALUE;
-            }
-
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no use.
+            return;
         }
+
+        if (this.matchingMarkupLevel == this.markupLevel) {
+            this.matching = false;
+            this.matchingMarkupLevel = Integer.MAX_VALUE;
+        }
+
+        this.handler.onAutoCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onUnmatchedCloseElementStart (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onUnmatchedCloseElementStart(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-            this.handler.onUnmatchedCloseElementStart(buffer, offset, len, normalizedName, line, col);
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no use.
+            return;
         }
+
+        this.handler.onUnmatchedCloseElementStart(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onUnmatchedCloseElementEnd (
-            final char[] buffer, final int offset, final int len, final String normalizedName,
-            final int line, final int col) {
+    public void onUnmatchedCloseElementEnd(
+            final String normalizedName, final char[] buffer, final int offset, final int len,
+            final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-            this.handler.onUnmatchedCloseElementEnd(buffer, offset, len, normalizedName, line, col);
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no use.
+            return;
         }
+
+        this.handler.onUnmatchedCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
 
 
     @Override
-    public void onElementInnerWhiteSpace (
+    public void onElementInnerWhiteSpace(
             final char[] buffer, final int offset, final int len,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching) {
-            this.handler.onElementInnerWhiteSpace(buffer, offset, len, line, col);
+        if (!this.matching) {
+            // If we are not currently matching anything, this event is of no use.
+            return;
         }
+
+        this.handler.onElementInnerWhiteSpace(buffer, offset, len, documentName, line, col);
 
     }
 
@@ -441,17 +468,72 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
      * -------------------------------
      */
 
-    public void onProcessingInstruction (
+    public void onProcessingInstruction(
             final String processingInstruction,
             final String target, final String content,
-            final int line, final int col) {
+            final String documentName, final int line, final int col) {
 
-        if (this.matching ||
-                this.filter.matchProcessingInstruction(0, this.markupLevel, processingInstruction, target, content)) {
+        if (!this.matching &&
+                !this.filter.matchProcessingInstruction(this.markupLevel, processingInstruction, target, content)) {
+            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            return;
+        }
 
-            this.handler.onProcessingInstruction(processingInstruction, target, content, line, col);
+        this.handler.onProcessingInstruction(processingInstruction, target, content, documentName, line, col);
+
+    }
+
+
+
+
+
+    static class BlockSelectorItem {
+
+        private final boolean anyLevel;
+        private final String elementName;
+
+        private BlockSelectorItem(final boolean anyLevel, final String elementName) {
+            this.anyLevel = anyLevel;
+            this.elementName = elementName;
+        }
+
+
+
+        static List<BlockSelectorItem> parseBlockSelector(final String blockSelector, final boolean caseSensitive) {
+
+            final List<BlockSelectorItem> items = new ArrayList<BlockSelectorItem>(5);
+
+            final int blockSelectorLen = blockSelector.length();
+
+            int pos = 0;
+            while (pos < blockSelectorLen) {
+
+                int start = pos;
+
+                while (pos < blockSelectorLen && blockSelector.charAt(pos) == '/') { pos++; }
+
+                if (pos > start + 2 || pos >= blockSelectorLen) {
+                    throw new IllegalArgumentException("Bad format in block selector: " + blockSelector);
+                }
+
+                final boolean anyLevel = (pos == start + 2 || pos == start); // else, there's only one '/'
+                start = pos;
+
+                while (pos < blockSelectorLen && blockSelector.charAt(pos) != '/') { pos++; }
+
+                final String item = blockSelector.substring(start, pos);
+                items.add(new BlockSelectorItem(anyLevel, (caseSensitive? item : item.toLowerCase())));
+
+            }
+
+            if (items.isEmpty()) {
+                throw new IllegalArgumentException("Bad format in block selector: " + blockSelector);
+            }
+
+            return items;
 
         }
+
 
     }
 

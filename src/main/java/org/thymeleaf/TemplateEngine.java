@@ -1209,7 +1209,7 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final BlockSelectorMarkupHandler handler = new BlockSelectorMarkupHandler(directOutputHandler, "html", "p");
+        final BlockSelectorMarkupHandler handler = new BlockSelectorMarkupHandler(directOutputHandler, "html//p", false);
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, new StringReader(templateContent));
         markupEngineConfig.getParser().parseTemplate(markupEngineConfig, handler, templateName, reader);

@@ -35,13 +35,13 @@ final class BlockSelectorFilter {
     private final String matchedElementName;
     private final boolean matchAnyLevel;
 
-    private static final int MATCHING_MARKUP_LEVELS_LEN = 4;
-    private int[] matchingMarkupLevels;
+    private static final int MATCHED_MARKUP_LEVELS_LEN = 10;
+    private boolean[] matchedMarkupLevels;
 
 
 
 
-    BlockSelectorFilter(final BlockSelectorFilter prev, final String normalizedMatchedElementName) {
+    BlockSelectorFilter(final BlockSelectorFilter prev, final boolean anyLevel, final String normalizedMatchedElementName) {
         
         super();
 
@@ -50,20 +50,11 @@ final class BlockSelectorFilter {
             this.prev.next = this;
         }
 
-        this.matchingMarkupLevels = new int[MATCHING_MARKUP_LEVELS_LEN];
-        Arrays.fill(this.matchingMarkupLevels, Integer.MAX_VALUE);
+        this.matchedMarkupLevels = new boolean[MATCHED_MARKUP_LEVELS_LEN];
+        Arrays.fill(this.matchedMarkupLevels, false);
 
-
-        if (normalizedMatchedElementName.startsWith("//")) {
-            this.matchedElementName = normalizedMatchedElementName.substring(2);
-            this.matchAnyLevel = true;
-        } else if (normalizedMatchedElementName.startsWith("/")) {
-            this.matchedElementName = normalizedMatchedElementName.substring(1);
-            this.matchAnyLevel = false;
-        } else {
-            this.matchedElementName = normalizedMatchedElementName;
-            this.matchAnyLevel = true;
-        }
+        this.matchedElementName = normalizedMatchedElementName;
+        this.matchAnyLevel = anyLevel;
 
     }
 
@@ -78,19 +69,21 @@ final class BlockSelectorFilter {
      */
 
     boolean matchXmlDeclaration(
-            final int execLevel, final int markupLevel,
+            final int markupLevel,
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
-            if (this.next != null) {
-                return this.next.matchXmlDeclaration(execLevel, markupLevel, xmlDeclaration, version, encoding, standalone);
-            }
+        if (!matchesLevel(markupLevel)) {
+            return false;
+        }
+
+        if (this.next == null) {
             return true;
         }
-        return false;
+
+        return this.next.matchXmlDeclaration(markupLevel, xmlDeclaration, version, encoding, standalone);
 
     }
 
@@ -105,19 +98,21 @@ final class BlockSelectorFilter {
      */
 
     boolean matchDocTypeClause(
-            final int execLevel, final int markupLevel,
+            final int markupLevel,
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
-            if (this.next != null) {
-                return this.next.matchDocTypeClause(execLevel, markupLevel, docTypeClause, rootElementName, publicId, systemId);
-            }
+        if (!matchesLevel(markupLevel)) {
+            return false;
+        }
+
+        if (this.next == null) {
             return true;
         }
-        return false;
+
+        return this.next.matchDocTypeClause(markupLevel, docTypeClause, rootElementName, publicId, systemId);
 
     }
 
@@ -132,18 +127,20 @@ final class BlockSelectorFilter {
      */
 
     boolean matchCDATASection(
-            final int execLevel, final int markupLevel,
+            final int markupLevel,
             final char[] buffer, final int offset, final int len) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
-            if (this.next != null) {
-                return this.next.matchCDATASection(execLevel, markupLevel, buffer, offset, len);
-            }
+        if (!matchesLevel(markupLevel)) {
+            return false;
+        }
+
+        if (this.next == null) {
             return true;
         }
-        return false;
+
+        return this.next.matchCDATASection(markupLevel, buffer, offset, len);
 
     }
 
@@ -158,18 +155,20 @@ final class BlockSelectorFilter {
      */
 
     boolean matchText(
-            final int execLevel, final int markupLevel,
+            final int markupLevel,
             final char[] buffer, final int offset, final int len) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
-            if (this.next != null) {
-                return this.next.matchText(execLevel, markupLevel, buffer, offset, len);
-            }
+        if (!matchesLevel(markupLevel)) {
+            return false;
+        }
+
+        if (this.next == null) {
             return true;
         }
-        return false;
+
+        return this.next.matchText(markupLevel, buffer, offset, len);
 
     }
 
@@ -184,18 +183,20 @@ final class BlockSelectorFilter {
      */
 
     boolean matchComment(
-            final int execLevel, final int markupLevel,
+            final int markupLevel,
             final char[] buffer, final int offset, final int len) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
-            if (this.next != null) {
-                return this.next.matchComment(execLevel, markupLevel, buffer, offset, len);
-            }
+        if (!matchesLevel(markupLevel)) {
+            return false;
+        }
+
+        if (this.next == null) {
             return true;
         }
-        return false;
+
+        return this.next.matchComment(markupLevel, buffer, offset, len);
 
     }
 
@@ -211,90 +212,89 @@ final class BlockSelectorFilter {
 
 
 
-    boolean matchStandaloneElement(
-            final int execLevel, final int markupLevel,
-            final String normalizedName) {
+    boolean matchStandaloneElement(final int markupLevel, final String normalizedName) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
+        if (matchesLevel(markupLevel)) {
+            // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
 
             if (this.next != null) {
-                return this.next.matchStandaloneElement(execLevel, markupLevel, normalizedName);
+                return this.next.matchStandaloneElement(markupLevel, normalizedName);
             }
             return true;
 
         }
 
         if (this.next != null) {
-            // Matching means "consuming" the element, bu this is a standalone element, so there is no room for more matching!
+            // Matching means "consuming" the element, but this is a standalone element, so there would be no
+            // room for more matching!
             return false;
         }
 
-        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchingMarkupLevels[execLevel] == markupLevel - 1)) {
+        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+            // This element has not matched yet, but might match, so we should check
 
-            if (normalizedName.equals(this.matchedElementName)) {
+            final boolean matchesThisLevel = normalizedName.equals(this.matchedElementName);
+
+            if (matchesThisLevel) {
                 return true;
             }
 
         }
 
-        if (this.prev != null) {
-            return this.prev.matchStandaloneElement(execLevel + 1, markupLevel, normalizedName);
-        }
+        // This element cannot match this level, and did not match before. So it is an impossible match.
         return false;
 
     }
 
 
 
-    boolean matchOpenElement(
-            final int execLevel, final int markupLevel,
-            final String normalizedName) {
+    boolean matchOpenElement(final int markupLevel, final String normalizedName) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
+        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+            // This filter could match this level, so we must not lose the opportunity to compute whether it does or not.
+            // BUT we must only consider matching "done" for this level (and therefore consume the element) if
+            // this is the first time we match this filter. If not, we should delegate to next.
 
-            if (this.next != null) {
-                return this.next.matchOpenElement(execLevel, markupLevel, normalizedName);
-            }
-            return true;
+            final boolean matchesThisLevel = normalizedName.equals(this.matchedElementName);
 
-        }
+            if (matchesLevel(markupLevel)) {
+                // This filter was already matched before. So the fact that it matches now or not is useful information,
+                // but we should not directly return a result without first delegating to next (if there is next).
+                // The reason this is useful information is because the next filters in chain might end up not matching
+                // this piece of markup, and we still need to be able to re-initiate the matching process from
+                // here if possible.
 
-        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchingMarkupLevels[execLevel] == markupLevel - 1)) {
+                this.matchedMarkupLevels[markupLevel] = matchesThisLevel;
 
-            if (normalizedName.equals(this.matchedElementName)) {
+                if (this.next != null) {
+                    return this.next.matchOpenElement(markupLevel, normalizedName);
+                }
+                return true;
 
-                this.matchingMarkupLevels[execLevel] = markupLevel;
-                // Matching means "consuming" the element for matching, so we will only consider matching done if we are last in the chain
+            } else if (matchesThisLevel) {
+                // This filter was not matched before. So the fact that it matches now means we need to consume it,
+                // therefore not delegating.
+
+                this.matchedMarkupLevels[markupLevel] = true;
                 return (this.next == null);
 
             }
 
-        }
-
-        if (this.prev != null) {
-            return this.prev.matchOpenElement(execLevel + 1, markupLevel, normalizedName);
-        }
-        return false;
-
-    }
-
-
-
-    void removeMatchesForLevel(final int markupLevel) {
-
-        if (this.next != null) {
-            this.next.removeMatchesForLevel(markupLevel);
-        }
-
-        for (int i = this.matchingMarkupLevels.length - 1; i >= 0; i--) {
-            if (this.matchingMarkupLevels[i] == markupLevel) {
-                this.matchingMarkupLevels[i] = Integer.MAX_VALUE;
+        } else if (matchesLevel(markupLevel)) {
+            // This filter cannot match this level, but it did match before in a previous level, so we are happy
+            // delegating to next if it exists.
+            if (this.next != null) {
+                return this.next.matchOpenElement(markupLevel, normalizedName);
             }
+            return true;
         }
+
+        // This element cannot match this level, and did not match before. So it is an impossible match.
+        return false;
 
     }
 
@@ -308,19 +308,21 @@ final class BlockSelectorFilter {
      */
 
     boolean matchProcessingInstruction(
-            final int execLevel, final int markupLevel,
+            final int markupLevel,
             final String processingInstruction,
             final String target, final String content) {
 
-        checkLevelArraySize(execLevel);
+        checkMarkupLevel(markupLevel);
 
-        if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
-            if (this.next != null) {
-                return this.next.matchProcessingInstruction(execLevel, markupLevel, processingInstruction, target, content);
-            }
+        if (!matchesLevel(markupLevel)) {
+            return false;
+        }
+
+        if (this.next == null) {
             return true;
         }
-        return false;
+
+        return this.next.matchProcessingInstruction(markupLevel, processingInstruction, target, content);
 
     }
 
@@ -333,17 +335,38 @@ final class BlockSelectorFilter {
      * --------------
      */
 
-    private void checkLevelArraySize(final int execLevel) {
-        if (execLevel >= this.matchingMarkupLevels.length) {
-            final int[] newMatchingMarkupLevels = new int[this.matchingMarkupLevels.length + MATCHING_MARKUP_LEVELS_LEN];
-            Arrays.fill(newMatchingMarkupLevels, Integer.MAX_VALUE);
-            System.arraycopy(this.matchingMarkupLevels,0,newMatchingMarkupLevels,0,this.matchingMarkupLevels.length);
-            this.matchingMarkupLevels = newMatchingMarkupLevels;
+    private void checkMarkupLevel(final int markupLevel) {
+        if (markupLevel >= this.matchedMarkupLevels.length) {
+            final int newLen = Math.max(markupLevel + 1, this.matchedMarkupLevels.length + MATCHED_MARKUP_LEVELS_LEN);
+            final boolean[] newMatchedMarkupLevels = new boolean[newLen];
+            Arrays.fill(newMatchedMarkupLevels, false);
+            System.arraycopy(this.matchedMarkupLevels, 0, newMatchedMarkupLevels, 0, this.matchedMarkupLevels.length);
+            this.matchedMarkupLevels = newMatchedMarkupLevels;
         }
     }
 
 
 
+    void removeMatchesForLevel(final int markupLevel) {
+
+        if (this.matchedMarkupLevels.length > markupLevel) {
+            this.matchedMarkupLevels[markupLevel] = false;
+        }
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.removeMatchesForLevel(markupLevel);
+
+    }
+
+
+    private boolean matchesLevel(final int markupLevel) {
+        int i = markupLevel; 
+        while (i >= 0 && !this.matchedMarkupLevels[i]) { i--; }
+        return (i >= 0);
+    }
     
 
 
