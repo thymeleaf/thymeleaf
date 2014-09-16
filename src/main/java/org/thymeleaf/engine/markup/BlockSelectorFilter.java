@@ -35,12 +35,13 @@ final class BlockSelectorFilter {
     private final String matchedElementName;
     private final boolean matchAnyLevel;
 
+    private static final int MATCHING_MARKUP_LEVELS_LEN = 4;
     private int[] matchingMarkupLevels;
 
 
 
 
-    public BlockSelectorFilter(final BlockSelectorFilter prev, final String normalizedMatchedElementName) {
+    BlockSelectorFilter(final BlockSelectorFilter prev, final String normalizedMatchedElementName) {
         
         super();
 
@@ -49,7 +50,7 @@ final class BlockSelectorFilter {
             this.prev.next = this;
         }
 
-        this.matchingMarkupLevels = new int[10];
+        this.matchingMarkupLevels = new int[MATCHING_MARKUP_LEVELS_LEN];
         Arrays.fill(this.matchingMarkupLevels, Integer.MAX_VALUE);
 
 
@@ -76,10 +77,12 @@ final class BlockSelectorFilter {
      * ------------------------
      */
 
-    public boolean matchXmlDeclaration(
+    boolean matchXmlDeclaration(
             final int execLevel, final int markupLevel,
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
             if (this.next != null) {
@@ -101,10 +104,12 @@ final class BlockSelectorFilter {
      * ---------------------
      */
 
-    public boolean matchDocTypeClause(
+    boolean matchDocTypeClause(
             final int execLevel, final int markupLevel,
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
             if (this.next != null) {
@@ -126,9 +131,11 @@ final class BlockSelectorFilter {
      * --------------------
      */
 
-    public boolean matchCDATASection(
+    boolean matchCDATASection(
             final int execLevel, final int markupLevel,
             final char[] buffer, final int offset, final int len) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
             if (this.next != null) {
@@ -150,9 +157,11 @@ final class BlockSelectorFilter {
      * -----------
      */
 
-    public boolean matchText(
+    boolean matchText(
             final int execLevel, final int markupLevel,
             final char[] buffer, final int offset, final int len) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
             if (this.next != null) {
@@ -174,9 +183,11 @@ final class BlockSelectorFilter {
      * --------------
      */
 
-    public boolean matchComment(
+    boolean matchComment(
             final int execLevel, final int markupLevel,
             final char[] buffer, final int offset, final int len) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
             if (this.next != null) {
@@ -200,9 +211,11 @@ final class BlockSelectorFilter {
 
 
 
-    public boolean matchStandaloneElement(
+    boolean matchStandaloneElement(
             final int execLevel, final int markupLevel,
             final String normalizedName) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
 
@@ -235,9 +248,11 @@ final class BlockSelectorFilter {
 
 
 
-    public boolean matchOpenElement(
+    boolean matchOpenElement(
             final int execLevel, final int markupLevel,
             final String normalizedName) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
 
@@ -269,7 +284,7 @@ final class BlockSelectorFilter {
 
 
 
-    public void removeMatchesForLevel(final int markupLevel) {
+    void removeMatchesForLevel(final int markupLevel) {
 
         if (this.next != null) {
             this.next.removeMatchesForLevel(markupLevel);
@@ -292,10 +307,12 @@ final class BlockSelectorFilter {
      * -------------------------------
      */
 
-    public boolean matchProcessingInstruction(
+    boolean matchProcessingInstruction(
             final int execLevel, final int markupLevel,
             final String processingInstruction,
             final String target, final String content) {
+
+        checkLevelArraySize(execLevel);
 
         if (this.matchingMarkupLevels[execLevel] <= markupLevel) {
             if (this.next != null) {
@@ -308,7 +325,25 @@ final class BlockSelectorFilter {
     }
 
 
-    
+
+
+    /*
+     * --------------
+     * Level handling
+     * --------------
+     */
+
+    private void checkLevelArraySize(final int execLevel) {
+        if (execLevel >= this.matchingMarkupLevels.length) {
+            final int[] newMatchingMarkupLevels = new int[this.matchingMarkupLevels.length + MATCHING_MARKUP_LEVELS_LEN];
+            Arrays.fill(newMatchingMarkupLevels, Integer.MAX_VALUE);
+            System.arraycopy(this.matchingMarkupLevels,0,newMatchingMarkupLevels,0,this.matchingMarkupLevels.length);
+            this.matchingMarkupLevels = newMatchingMarkupLevels;
+        }
+    }
+
+
+
     
 
 
