@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.engine.markup.parser;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -35,6 +35,9 @@ import org.attoparser.markup.html.elements.IHtmlElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
+import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
+import org.thymeleaf.engine.markup.handler.IMarkupHandler;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 

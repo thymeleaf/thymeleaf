@@ -17,9 +17,8 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.engine.markup.handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.thymeleaf.util.Validate;
@@ -35,6 +34,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
     private final BlockSelectorFilter filter;
     private final IMarkupHandler handler;
+    private final ElementBuffer elementBuffer;
 
     private int markupLevel;
     private boolean matching;
@@ -62,6 +62,8 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 1; i < blockSelectorItems.size(); i++) {
             last = new BlockSelectorFilter(last, blockSelectorItems.get(i).anyLevel, blockSelectorItems.get(i).elementName);
         }
+
+        this.elementBuffer = new ElementBuffer();
 
     }
 
@@ -235,8 +237,14 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol, final String documentName) {
 
+
         if (!this.matching) {
-            // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+            // We are not in a matching block, so let's put this attribute into the buffer just in case it matches
+            this.elementBuffer.bufferNewAttribute(
+                    buffer,
+                    nameOffset, nameLen, nameLine, nameCol,
+                    operatorOffset, operatorLen, operatorLine, operatorCol,
+                    valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol, documentName);
             return;
         }
         
@@ -256,14 +264,11 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final boolean minimized, final String documentName, final int line, final int col) {
 
+
         if (!this.matching) {
-            if (this.filter.matchStandaloneElement(this.markupLevel, normalizedName)) {
-                this.matching = true;
-                this.matchingMarkupLevel = this.markupLevel;
-            } else {
-                // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
-                return;
-            }
+            // We are not in a matching block, so let's put this element into the buffer just in case it matches
+            this.elementBuffer.bufferNewElement(normalizedName, buffer, offset, len, documentName, line, col, true, minimized);
+            return;
         }
 
         this.handler.onStandaloneElementStart(normalizedName, buffer, offset, len, minimized, documentName, line, col);
@@ -278,13 +283,19 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final boolean minimized, final String documentName, final int line, final int col) {
 
         if (!this.matching) {
-            // If we are not currently matching anything, this event is of no use.
-            return;
-        }
 
-        if (this.matchingMarkupLevel == this.markupLevel) {
-            this.matching = false;
-            this.matchingMarkupLevel = Integer.MAX_VALUE;
+            if (this.filter.matchStandaloneElement(this.markupLevel, this.elementBuffer)) {
+
+                // The element matched! Flush the buffer then, calling all the delayed events...
+                this.elementBuffer.flushBuffer(this.handler);
+
+            } else {
+
+                // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+                return;
+
+            }
+
         }
 
         this.handler.onStandaloneElementEnd(normalizedName, buffer, offset, len, minimized, documentName, line, col);
@@ -299,13 +310,9 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching) {
-            if (this.filter.matchOpenElement(this.markupLevel, normalizedName)) {
-                this.matching = true;
-                this.matchingMarkupLevel = this.markupLevel;
-            } else {
-                // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
-                return;
-            }
+            // We are not in a matching block, so let's put this element into the buffer just in case it matches
+            this.elementBuffer.bufferNewElement(normalizedName, buffer, offset, len, documentName, line, col, false, false);
+            return;
         }
 
         this.handler.onOpenElementStart(normalizedName, buffer, offset, len, documentName, line, col);
@@ -319,12 +326,28 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-        this.markupLevel++;
-
         if (!this.matching) {
-            // If we are not currently matching anything, this event is of no further use.
-            return;
+
+            if (this.filter.matchOpenElement(this.markupLevel, this.elementBuffer)) {
+
+                this.matching = true;
+                this.matchingMarkupLevel = this.markupLevel;
+
+                // The element matched! Flush the buffer then, calling all the delayed events...
+                this.elementBuffer.flushBuffer(this.handler);
+
+            } else {
+
+                this.markupLevel++;
+
+                // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
+                return;
+
+            }
+
         }
+
+        this.markupLevel++;
 
         this.handler.onOpenElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
 
@@ -450,7 +473,8 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching) {
-            // If we are not currently matching anything, this event is of no use.
+            // We are not in a matching block, so let's put this whitespace into the buffer just in case it matches
+            this.elementBuffer.bufferNewElementInnerWhiteSpace(buffer, offset, len, documentName, line, col);
             return;
         }
 
@@ -482,62 +506,6 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
         this.handler.onProcessingInstruction(processingInstruction, target, content, documentName, line, col);
 
     }
-
-
-
-
-
-    static class BlockSelectorItem {
-
-        private final boolean anyLevel;
-        private final String elementName;
-
-        private BlockSelectorItem(final boolean anyLevel, final String elementName) {
-            this.anyLevel = anyLevel;
-            this.elementName = elementName;
-        }
-
-
-
-        static List<BlockSelectorItem> parseBlockSelector(final String blockSelector, final boolean caseSensitive) {
-
-            final List<BlockSelectorItem> items = new ArrayList<BlockSelectorItem>(5);
-
-            final int blockSelectorLen = blockSelector.length();
-
-            int pos = 0;
-            while (pos < blockSelectorLen) {
-
-                int start = pos;
-
-                while (pos < blockSelectorLen && blockSelector.charAt(pos) == '/') { pos++; }
-
-                if (pos > start + 2 || pos >= blockSelectorLen) {
-                    throw new IllegalArgumentException("Bad format in block selector: " + blockSelector);
-                }
-
-                final boolean anyLevel = (pos == start + 2 || pos == start); // else, there's only one '/'
-                start = pos;
-
-                while (pos < blockSelectorLen && blockSelector.charAt(pos) != '/') { pos++; }
-
-                final String item = blockSelector.substring(start, pos);
-                items.add(new BlockSelectorItem(anyLevel, (caseSensitive? item : item.toLowerCase())));
-
-            }
-
-            if (items.isEmpty()) {
-                throw new IllegalArgumentException("Bad format in block selector: " + blockSelector);
-            }
-
-            return items;
-
-        }
-
-
-    }
-
-
 
 
 }

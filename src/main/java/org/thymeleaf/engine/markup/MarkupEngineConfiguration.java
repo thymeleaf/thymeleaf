@@ -23,6 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.attoparser.markup.html.elements.HtmlElements;
+import org.thymeleaf.engine.markup.parser.IMarkupParser;
+import org.thymeleaf.engine.markup.parser.StandardHtmlParser;
+import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
+import org.thymeleaf.engine.markup.text.StandardMarkupTextRepository;
 
 /**
  *

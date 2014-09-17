@@ -49,8 +49,8 @@ import org.thymeleaf.dom.Element.RepresentationInTemplate;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.engine.markup.IMarkupTextRepository;
-import org.thymeleaf.engine.markup.StandardMarkupTextRepository;
+import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
+import org.thymeleaf.engine.markup.text.StandardMarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 

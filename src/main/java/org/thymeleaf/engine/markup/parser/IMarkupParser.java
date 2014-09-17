@@ -17,9 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.engine.markup.parser;
 
 import java.io.Reader;
+
+import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
+import org.thymeleaf.engine.markup.handler.IMarkupHandler;
 
 /**
  *

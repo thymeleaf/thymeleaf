@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.engine.markup.text;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;

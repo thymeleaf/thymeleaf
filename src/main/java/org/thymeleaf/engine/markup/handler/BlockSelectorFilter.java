@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.engine.markup.handler;
 
 import java.util.Arrays;
 
@@ -32,6 +32,7 @@ final class BlockSelectorFilter {
 
     private final BlockSelectorFilter prev;
     private BlockSelectorFilter next;
+
     private final String matchedElementName;
     private final boolean matchAnyLevel;
 
@@ -212,7 +213,7 @@ final class BlockSelectorFilter {
 
 
 
-    boolean matchStandaloneElement(final int markupLevel, final String normalizedName) {
+    boolean matchStandaloneElement(final int markupLevel, final ElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 
@@ -220,7 +221,7 @@ final class BlockSelectorFilter {
             // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
 
             if (this.next != null) {
-                return this.next.matchStandaloneElement(markupLevel, normalizedName);
+                return this.next.matchStandaloneElement(markupLevel, elementBuffer);
             }
             return true;
 
@@ -235,7 +236,7 @@ final class BlockSelectorFilter {
         if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This element has not matched yet, but might match, so we should check
 
-            final boolean matchesThisLevel = normalizedName.equals(this.matchedElementName);
+            final boolean matchesThisLevel = matches(elementBuffer);
 
             if (matchesThisLevel) {
                 return true;
@@ -250,7 +251,7 @@ final class BlockSelectorFilter {
 
 
 
-    boolean matchOpenElement(final int markupLevel, final String normalizedName) {
+    boolean matchOpenElement(final int markupLevel, final ElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 
@@ -259,7 +260,7 @@ final class BlockSelectorFilter {
             // BUT we must only consider matching "done" for this level (and therefore consume the element) if
             // this is the first time we match this filter. If not, we should delegate to next.
 
-            final boolean matchesThisLevel = normalizedName.equals(this.matchedElementName);
+            final boolean matchesThisLevel = matches(elementBuffer);
 
             if (matchesLevel(markupLevel)) {
                 // This filter was already matched before. So the fact that it matches now or not is useful information,
@@ -271,7 +272,7 @@ final class BlockSelectorFilter {
                 this.matchedMarkupLevels[markupLevel] = matchesThisLevel;
 
                 if (this.next != null) {
-                    return this.next.matchOpenElement(markupLevel, normalizedName);
+                    return this.next.matchOpenElement(markupLevel, elementBuffer);
                 }
                 return true;
 
@@ -288,7 +289,7 @@ final class BlockSelectorFilter {
             // This filter cannot match this level, but it did match before in a previous level, so we are happy
             // delegating to next if it exists.
             if (this.next != null) {
-                return this.next.matchOpenElement(markupLevel, normalizedName);
+                return this.next.matchOpenElement(markupLevel, elementBuffer);
             }
             return true;
         }
@@ -367,7 +368,21 @@ final class BlockSelectorFilter {
         while (i >= 0 && !this.matchedMarkupLevels[i]) { i--; }
         return (i >= 0);
     }
-    
+
+
+
+
+
+
+    /*
+     * -------------------
+     * Matching operations
+     * -------------------
+     */
+
+    private boolean matches(final ElementBuffer elementBuffer) {
+        return elementBuffer.normalizedElementName.equals(this.matchedElementName);
+    }
 
 
 }

@@ -17,24 +17,30 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.engine.markup.handler;
+
+import java.io.IOException;
+import java.io.Writer;
+
+import org.thymeleaf.exceptions.TemplateOutputException;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public class StandardMarkupHandler extends AbstractMarkupHandler {
+public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
 
 
-    private final MarkupEngineConfiguration config;
+    private final String documentName;
+    private final Writer writer;
 
 
-
-    public StandardMarkupHandler(final MarkupEngineConfiguration config) {
+    public DirectOutputMarkupHandler(final String documentName, final Writer writer) {
         super();
-        this.config = config;
+        this.documentName = documentName;
+        this.writer = writer;
     }
 
 
@@ -47,12 +53,11 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
      * ---------------
      */
 
-
     @Override
     public void onDocumentStart(
             final long startTimeNanos, final String documentName) {
 
-
+        // Nothing to be done here
 
     }
 
@@ -62,7 +67,7 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
     public void onDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final String documentName) {
 
-
+        // Nothing to be done here
 
     }
 
@@ -82,7 +87,12 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String version, final String encoding, final boolean standalone,
             final String documentName, final int line, final int col) {
 
-
+        try {
+            this.writer.write(xmlDeclaration);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -102,7 +112,12 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String rootElementName, final String publicId, final String systemId,
             final String documentName, final int line, final int col) {
 
-
+        try {
+            this.writer.write(docTypeClause);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -121,7 +136,14 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-
+        try {
+            this.writer.write("<![CDATA[");
+            this.writer.write(buffer, offset, len);
+            this.writer.write("]]>");
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -140,7 +162,12 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-
+        try {
+            this.writer.write(buffer, offset, len);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -159,7 +186,14 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-
+        try {
+            this.writer.write("<!--");
+            this.writer.write(buffer, offset, len);
+            this.writer.write("-->");
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -184,9 +218,16 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol, final String documentName) {
 
+    try {
+            this.writer.write(buffer, nameOffset, nameLen);
+            this.writer.write(buffer, operatorOffset, operatorLen);
+            this.writer.write(buffer, valueOuterOffset, valueOuterLen);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
-}
-
+    }
 
 
     @Override
@@ -194,9 +235,15 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final boolean minimized, final String documentName, final int line, final int col) {
 
+        try {
+            this.writer.write("<");
+            this.writer.write(buffer, offset, len);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
-
 
 
     @Override
@@ -204,9 +251,17 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final boolean minimized, final String documentName, final int line, final int col) {
 
+        try {
+            if (minimized) {
+                this.writer.write('/');
+            }
+            this.writer.write('>');
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
-
 
 
     @Override
@@ -214,9 +269,15 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        try {
+            this.writer.write("<");
+            this.writer.write(buffer, offset, len);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
-
 
 
     @Override
@@ -224,9 +285,14 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        try {
+            this.writer.write(">");
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
-
 
 
     @Override
@@ -234,9 +300,15 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        try {
+            this.writer.write("</");
+            this.writer.write(buffer, offset, len);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
-
 
 
     @Override
@@ -244,9 +316,14 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        try {
+            this.writer.write(">");
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
-
 
 
     @Override
@@ -254,9 +331,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        // Nothing to be done here. This event is ignored in output
 
     }
-
 
 
     @Override
@@ -264,9 +341,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        // Nothing to be done here. This event is ignored in output
 
     }
-
 
 
     @Override
@@ -274,9 +351,9 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        // Nothing to be done here. This event is ignored in output
 
     }
-
 
 
     @Override
@@ -284,8 +361,10 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
+        // Nothing to be done here. This event is ignored in output
 
     }
+
 
 
 
@@ -294,7 +373,12 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-
+        try {
+            this.writer.write(buffer, offset, len);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -314,6 +398,12 @@ public class StandardMarkupHandler extends AbstractMarkupHandler {
             final String target, final String content,
             final String documentName, final int line, final int col) {
 
+        try {
+            this.writer.write(processingInstruction);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
