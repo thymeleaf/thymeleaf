@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
 public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
 
-    private final BlockSelectorFilter filter;
+    private final MarkupSelectorFilter filter;
     private final IMarkupHandler handler;
     private final ElementBuffer elementBuffer;
 
@@ -55,12 +55,12 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
         this.matching = false;
         this.matchingMarkupLevel = Integer.MAX_VALUE;
 
-        final List<BlockSelectorItem> blockSelectorItems = BlockSelectorItem.parseBlockSelector(blockSelector, caseSensitive);
+        final List<MarkupSelectorItem> blockSelectorItems = MarkupSelectorItems.forSelector(caseSensitive, blockSelector);
 
-        this.filter = new BlockSelectorFilter(null, blockSelectorItems.get(0).anyLevel, blockSelectorItems.get(0).elementName);
-        BlockSelectorFilter last = this.filter;
+        this.filter = new MarkupSelectorFilter(null, blockSelectorItems.get(0));
+        MarkupSelectorFilter last = this.filter;
         for (int i = 1; i < blockSelectorItems.size(); i++) {
-            last = new BlockSelectorFilter(last, blockSelectorItems.get(i).anyLevel, blockSelectorItems.get(i).elementName);
+            last = new MarkupSelectorFilter(last, blockSelectorItems.get(i));
         }
 
         this.elementBuffer = new ElementBuffer();

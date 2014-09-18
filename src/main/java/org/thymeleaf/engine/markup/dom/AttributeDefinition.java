@@ -27,23 +27,23 @@ package org.thymeleaf.engine.markup.dom;
  */
 public final class AttributeDefinition {
 
-    private final String normalizedName;
+    private final String name;
 
 
 
     AttributeDefinition(final String name) {
         super();
-        this.normalizedName = name.toLowerCase();
+        this.name = name;
     }
 
 
-    public String getNormalizedName() {
-        return normalizedName;
+    public String getName() {
+        return name;
     }
 
 
     public String toString() {
-        return this.normalizedName;
+        return this.name;
     }
 
 }

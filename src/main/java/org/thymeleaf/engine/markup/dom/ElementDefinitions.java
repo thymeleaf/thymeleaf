@@ -36,6 +36,7 @@ public final class ElementDefinitions {
 
     private static final ConcurrentHashMap<String,ElementDefinition> ELEMENT_DEFINITIONS =
             new ConcurrentHashMap<String, ElementDefinition>(115);
+    private static final int ELEMENT_DEFINITIONS_MAX_SIZE = 1000; // Just in case some crazy markup appears
 
 
 
@@ -206,7 +207,7 @@ public final class ElementDefinitions {
          * Register the standard elements at the element repository, in order to initialize it
          */
         for (final ElementDefinition element : ALL_STANDARD_ELEMENTS) {
-            ELEMENT_DEFINITIONS.put(element.getNormalizedName(), element);
+            ELEMENT_DEFINITIONS.put(element.getName(), element);
         }
 
 
@@ -218,7 +219,7 @@ public final class ElementDefinitions {
 
 
 
-    public static ElementDefinition forName(final String elementName) {
+    public static ElementDefinition forName(final boolean caseSensitive, final String elementName) {
 
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -231,14 +232,19 @@ public final class ElementDefinitions {
             return definition;
         }
 
-        definition = ELEMENT_DEFINITIONS.get(elementName.toLowerCase());
-        if (definition != null) {
-            return definition;
+        if (!caseSensitive) {
+            definition = ELEMENT_DEFINITIONS.get(elementName.toLowerCase());
+            if (definition != null) {
+                return definition;
+            }
+            definition = new ElementDefinition(elementName.toLowerCase(), ElementType.NORMAL);
+        } else {
+            definition = new ElementDefinition(elementName, ElementType.NORMAL);
         }
 
-        definition = new ElementDefinition(elementName, ElementType.NORMAL);
-
-        ELEMENT_DEFINITIONS.putIfAbsent(definition.getNormalizedName(), definition);
+        if (ELEMENT_DEFINITIONS.size() < ELEMENT_DEFINITIONS_MAX_SIZE) {
+            ELEMENT_DEFINITIONS.putIfAbsent(definition.getName(), definition);
+        }
 
         return definition;
 

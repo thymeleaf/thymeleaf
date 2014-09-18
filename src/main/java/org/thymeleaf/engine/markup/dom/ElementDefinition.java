@@ -27,20 +27,20 @@ package org.thymeleaf.engine.markup.dom;
  */
 public final class ElementDefinition {
 
-    private final String normalizedName;
+    private final String name;
     private final ElementType type;
 
 
 
     ElementDefinition(final String name, final ElementType type) {
         super();
-        this.normalizedName = name.toLowerCase();
+        this.name = name;
         this.type = type;
     }
 
 
-    public String getNormalizedName() {
-        return normalizedName;
+    public String getName() {
+        return name;
     }
 
     public ElementType getType() {
@@ -49,7 +49,7 @@ public final class ElementDefinition {
 
 
     public String toString() {
-        return this.normalizedName;
+        return this.name;
     }
 
 }

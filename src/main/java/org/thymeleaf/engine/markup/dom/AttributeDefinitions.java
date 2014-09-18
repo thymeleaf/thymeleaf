@@ -34,11 +34,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AttributeDefinitions {
 
-    // TODO Make IMarkupHandler use ElementDefinition and AttributeDefinition
-
 
     private static final ConcurrentHashMap<String,AttributeDefinition> ATTRIBUTE_DEFINITIONS =
             new ConcurrentHashMap<String, AttributeDefinition>(195);
+    private static final int ATTRIBUTE_DEFINITIONS_MAX_SIZE = 1000; // Just in case some crazy markup appears
 
 
     // Set containing all the standard attributes, for posible external reference
@@ -90,7 +89,7 @@ public final class AttributeDefinitions {
          */
         for (final String standardAttributeName : ALL_STANDARD_ATTRIBUTE_NAMES) {
             final AttributeDefinition attribute = new AttributeDefinition(standardAttributeName);
-            ATTRIBUTE_DEFINITIONS.put(attribute.getNormalizedName(), attribute);
+            ATTRIBUTE_DEFINITIONS.put(attribute.getName(), attribute);
         }
 
         ALL_STANDARD_ATTRIBUTES =
@@ -102,7 +101,7 @@ public final class AttributeDefinitions {
 
 
 
-    public static AttributeDefinition forName(final String attributeName) {
+    public static AttributeDefinition forName(final boolean caseSensitive, final String attributeName) {
 
         if (attributeName == null) {
             throw new IllegalArgumentException("Name cannot be null");
@@ -115,14 +114,19 @@ public final class AttributeDefinitions {
             return definition;
         }
 
-        definition = ATTRIBUTE_DEFINITIONS.get(attributeName.toLowerCase());
-        if (definition != null) {
-            return definition;
+        if (!caseSensitive) {
+            definition = ATTRIBUTE_DEFINITIONS.get(attributeName.toLowerCase());
+            if (definition != null) {
+                return definition;
+            }
+            definition = new AttributeDefinition(attributeName.toLowerCase());
+        } else {
+            definition = new AttributeDefinition(attributeName);
         }
 
-        definition = new AttributeDefinition(attributeName);
-
-        ATTRIBUTE_DEFINITIONS.putIfAbsent(definition.getNormalizedName(), definition);
+        if (ATTRIBUTE_DEFINITIONS.size() < ATTRIBUTE_DEFINITIONS_MAX_SIZE) {
+            ATTRIBUTE_DEFINITIONS.putIfAbsent(definition.getName(), definition);
+        }
 
         return definition;
 

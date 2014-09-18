@@ -27,14 +27,13 @@ import java.util.Arrays;
  * @since 3.0.0
  * 
  */
-final class BlockSelectorFilter {
+final class MarkupSelectorFilter {
 
 
-    private final BlockSelectorFilter prev;
-    private BlockSelectorFilter next;
+    private final MarkupSelectorFilter prev;
+    private MarkupSelectorFilter next;
 
-    private final String matchedElementName;
-    private final boolean matchAnyLevel;
+    private final MarkupSelectorItem markupSelectorItem;
 
     private static final int MATCHED_MARKUP_LEVELS_LEN = 10;
     private boolean[] matchedMarkupLevels;
@@ -42,7 +41,7 @@ final class BlockSelectorFilter {
 
 
 
-    BlockSelectorFilter(final BlockSelectorFilter prev, final boolean anyLevel, final String normalizedMatchedElementName) {
+    MarkupSelectorFilter(final MarkupSelectorFilter prev, final MarkupSelectorItem markupSelectorItem) {
         
         super();
 
@@ -54,8 +53,7 @@ final class BlockSelectorFilter {
         this.matchedMarkupLevels = new boolean[MATCHED_MARKUP_LEVELS_LEN];
         Arrays.fill(this.matchedMarkupLevels, false);
 
-        this.matchedElementName = normalizedMatchedElementName;
-        this.matchAnyLevel = anyLevel;
+        this.markupSelectorItem = markupSelectorItem;
 
     }
 
@@ -162,6 +160,10 @@ final class BlockSelectorFilter {
         checkMarkupLevel(markupLevel);
 
         if (!matchesLevel(markupLevel)) {
+            if (matchesText()) {
+                // Matching consumes the element, so there is no way we can have a "next" after matching a text
+                return (this.next == null);
+            }
             return false;
         }
 
@@ -233,7 +235,7 @@ final class BlockSelectorFilter {
             return false;
         }
 
-        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+        if (this.markupSelectorItem.anyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This element has not matched yet, but might match, so we should check
 
             final boolean matchesThisLevel = matches(elementBuffer);
@@ -255,7 +257,7 @@ final class BlockSelectorFilter {
 
         checkMarkupLevel(markupLevel);
 
-        if (this.matchAnyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+        if (this.markupSelectorItem.anyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This filter could match this level, so we must not lose the opportunity to compute whether it does or not.
             // BUT we must only consider matching "done" for this level (and therefore consume the element) if
             // this is the first time we match this filter. If not, we should delegate to next.
@@ -380,8 +382,36 @@ final class BlockSelectorFilter {
      * -------------------
      */
 
+    private boolean matchesText() {
+        return this.markupSelectorItem.textSelector;
+    }
+
+
     private boolean matches(final ElementBuffer elementBuffer) {
-        return elementBuffer.normalizedElementName.equals(this.matchedElementName);
+
+        if (this.markupSelectorItem.textSelector) {
+            return false;
+        }
+
+        if (this.markupSelectorItem.elementName != null &&
+                elementBuffer.normalizedElementName.equals(this.markupSelectorItem.elementName)) {
+            return false;
+        }
+
+        if (this.markupSelectorItem.attributeConditions != null &&
+                !this.markupSelectorItem.attributeConditions.isEmpty()) {
+
+            for (final MarkupSelectorItem.AttributeCondition attributeCondition : this.markupSelectorItem.attributeConditions) {
+
+                
+
+            }
+
+        }
+
+
+        return true;
+
     }
 
 
