@@ -21,6 +21,9 @@ package org.thymeleaf.engine.markup.handler;
 
 import java.util.Arrays;
 
+import org.thymeleaf.engine.util.TextUtil;
+import org.thymeleaf.util.StringUtils;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -160,9 +163,11 @@ final class MarkupSelectorFilter {
         checkMarkupLevel(markupLevel);
 
         if (!matchesLevel(markupLevel)) {
-            if (matchesText()) {
-                // Matching consumes the element, so there is no way we can have a "next" after matching a text
-                return (this.next == null);
+            if (this.markupSelectorItem.anyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+                if (matchesText()) {
+                    // Matching consumes the element, so there is no way we can have a "next" after matching a text
+                    return (this.next == null);
+                }
             }
             return false;
         }
@@ -238,9 +243,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This element has not matched yet, but might match, so we should check
 
-            final boolean matchesThisLevel = matches(elementBuffer);
-
-            if (matchesThisLevel) {
+            if (matches(elementBuffer)) {
                 return true;
             }
 
@@ -393,19 +396,42 @@ final class MarkupSelectorFilter {
             return false;
         }
 
-        if (this.markupSelectorItem.elementName != null &&
-                elementBuffer.normalizedElementName.equals(this.markupSelectorItem.elementName)) {
+        // Quick check on attributes: if selector needs at least one and this element has none (very common case),
+        // we know matching will be false.
+        if (this.markupSelectorItem.requiresAttributesInElement && elementBuffer.attributeCount == 0) {
             return false;
         }
 
+        // Check the element name. No need to check the "caseSensitive" flag here, because we are checking
+        // a normalized element name (which will be already lower cased if the nature of the element requires it,
+        // i.e. it comes from HTML parsing), and the element name in a markup selector item, which will have already
+        // been created lower-cased if the item was created with the case-sensitive flag set to false.
+        if (this.markupSelectorItem.elementName != null &&
+                !elementBuffer.normalizedElementName.equals(this.markupSelectorItem.elementName)) {
+            return false;
+        }
+
+        // Check the attribute values and their operators
         if (this.markupSelectorItem.attributeConditions != null &&
                 !this.markupSelectorItem.attributeConditions.isEmpty()) {
 
-            for (final MarkupSelectorItem.AttributeCondition attributeCondition : this.markupSelectorItem.attributeConditions) {
+            final int attributeConditionsLen = this.markupSelectorItem.attributeConditions.size();
+            for (int i = 0; i < attributeConditionsLen; i++) {
 
-                
+                final String attrName = this.markupSelectorItem.attributeConditions.get(i).getName();
+                final MarkupSelectorItem.AttributeCondition.Operator attrOperator =
+                        this.markupSelectorItem.attributeConditions.get(i).getOperator();
+                final String attrValue =
+                        this.markupSelectorItem.attributeConditions.get(i).getValue();
+
+
+                if (!matchesAttribute(elementBuffer, attrName, attrOperator, attrValue)) {
+                    return false;
+                }
 
             }
+
+            return true;
 
         }
 
@@ -414,5 +440,139 @@ final class MarkupSelectorFilter {
 
     }
 
+
+
+    private boolean matchesAttribute(
+            final ElementBuffer elementBuffer,
+            final String attrName, final MarkupSelectorItem.AttributeCondition.Operator attrOperator, final String attrValue) {
+
+        boolean found = false;
+        for (int i = 0; i < elementBuffer.attributeCount; i++) {
+
+            if (!TextUtil.equals(this.markupSelectorItem.caseSensitive,
+                        attrName,                          0, attrName.length(),
+                        elementBuffer.attributeBuffers[i], 0, elementBuffer.attributeNameLens[i])) {
+                continue;
+            }
+
+            // Even if both HTML and XML forbid duplicated attributes, we are going to anyway going to allow
+            // them and not consider an attribute "not-matched" just because it doesn't match in one of its
+            // instances.
+            found = true;
+
+            if ("class".equals(attrName)) {
+
+                // The attribute we are comparing is actually the "class" attribute, which requires an special treatment
+                if (matchesClassAttributeValue(
+                        attrOperator, attrValue,
+                        elementBuffer.attributeBuffers[i], elementBuffer.attributeValueContentOffsets[i], elementBuffer.attributeValueContentLens[i])) {
+                    return true;
+                }
+
+            } else {
+
+                if (matchesAttributeValue(
+                        attrOperator, attrValue,
+                        elementBuffer.attributeBuffers[i], elementBuffer.attributeValueContentOffsets[i], elementBuffer.attributeValueContentLens[i])) {
+                    return true;
+                }
+
+            }
+
+
+        }
+
+        if (found) {
+            // The attribute existed, but it didn't match - we just checked until the end in case there were duplicates
+            return false;
+        }
+
+        // Attribute was not found in element, so we will consider it a match if the operator is NOT_EXISTS
+        return MarkupSelectorItem.AttributeCondition.Operator.NOT_EXISTS.equals(attrOperator);
+
+    }
+
+
+
+
+    private static boolean matchesAttributeValue(
+            final MarkupSelectorItem.AttributeCondition.Operator attrOperator,
+            final String attrValue,
+            final char[] elementAttrValueBuffer, final int elementAttrValueOffset, final int elementAttrValueLen) {
+
+        switch (attrOperator) {
+
+            case EQUALS:
+                // Test equality: we are testing values, so we always use case-sensitivity = true
+                return TextUtil.equals(true,
+                        attrValue,              0,                      attrValue.length(),
+                        elementAttrValueBuffer, elementAttrValueOffset, elementAttrValueLen);
+
+            case NOT_EQUALS:
+                // Test inequality: we are testing values, so we always use case-sensitivity = true
+                return !TextUtil.equals(true,
+                        attrValue,              0,                      attrValue.length(),
+                        elementAttrValueBuffer, elementAttrValueOffset, elementAttrValueLen);
+
+            case STARTS_WITH:
+                return TextUtil.startsWith(true,
+                        elementAttrValueBuffer, elementAttrValueOffset, elementAttrValueLen,
+                        attrValue,              0,                      attrValue.length());
+
+            case ENDS_WITH:
+                return TextUtil.endsWith(true,
+                        elementAttrValueBuffer, elementAttrValueOffset, elementAttrValueLen,
+                        attrValue,              0,                      attrValue.length());
+
+            case EXISTS:
+                // The fact that this attribute exists is enough to return true
+                return true;
+
+            case NOT_EXISTS:
+                // This attribute should not exist in order to match
+                return false;
+
+            default:
+                throw new IllegalArgumentException("Unknown operator: " + attrOperator);
+
+        }
+
+    }
+
+
+    private static boolean matchesClassAttributeValue(
+            final MarkupSelectorItem.AttributeCondition.Operator attrOperator,
+            final String attrValue,
+            final char[] elementAttrValueBuffer, final int elementAttrValueOffset, final int elementAttrValueLen) {
+
+        if (elementAttrValueLen == 0) {
+            return StringUtils.isEmptyOrWhitespace(attrValue);
+        }
+
+        int i = 0;
+
+        while (i < elementAttrValueLen && Character.isWhitespace(elementAttrValueBuffer[elementAttrValueOffset + i])) { i++; }
+
+        if (i == elementAttrValueLen) {
+            return StringUtils.isEmptyOrWhitespace(attrValue);
+        }
+
+        while (i < elementAttrValueLen) {
+
+            final int lastOffset = elementAttrValueOffset + i;
+
+            while (i < elementAttrValueLen && !Character.isWhitespace(elementAttrValueBuffer[elementAttrValueOffset + i])) { i++; }
+
+            if (matchesAttributeValue(attrOperator, attrValue, elementAttrValueBuffer, lastOffset, (elementAttrValueOffset + i) - lastOffset)) {
+                return true;
+            }
+
+            while (i < elementAttrValueLen && Character.isWhitespace(elementAttrValueBuffer[elementAttrValueOffset + i])) { i++; }
+
+        }
+
+        return false;
+
+    }
 
 }

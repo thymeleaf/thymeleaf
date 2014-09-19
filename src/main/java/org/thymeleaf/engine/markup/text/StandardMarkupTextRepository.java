@@ -23,6 +23,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.thymeleaf.engine.util.TextUtil;
+
 /**
  * <p>
  *     Repository of text (<kbd>String</kbd>) instances created by the markup parser or document model.
@@ -161,7 +163,7 @@ public final class StandardMarkupTextRepository implements IMarkupTextRepository
             return null;
         }
 
-        final int hashCode = computeHashCode(text, offset, len);
+        final int hashCode = TextUtil.hashCode(text, offset, len);
 
         this.readLock.lock();
 
@@ -422,20 +424,6 @@ public final class StandardMarkupTextRepository implements IMarkupTextRepository
     }
 
 
-
-
-    private static int computeHashCode(final char[] text, final int offset, final int len) {
-        // This basically mimics what the String.hashCode() method does, without the need to
-        // convert the char[] into a new String object
-        // If the text to compute was already a String, it would be better to directly call
-        // its 'hashCode()' method, because Strings cache their hash codes.
-        int h = 0;
-        int off = offset;
-        for (int i = 0; i < len; i++) {
-            h = 31*h + text[off++];
-        }
-        return h;
-    }
 
 
 

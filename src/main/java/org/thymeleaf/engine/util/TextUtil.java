@@ -224,6 +224,489 @@ public final class TextUtil {
 
 
 
+    public static final boolean startsWith(final boolean caseSensitive, final String text, final String prefix) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("Prefix cannot be null");
+        }
+
+        return (caseSensitive? text.startsWith(prefix) : startsWith(caseSensitive, text, 0, text.length(), prefix, 0, prefix.length()));
+
+    }
+
+
+    public static final boolean startsWith(final boolean caseSensitive, final String text, final char[] prefix) {
+        return startsWith(caseSensitive, text, 0, text.length(), prefix, 0, prefix.length);
+    }
+
+    public static final boolean startsWith(final boolean caseSensitive, final char[] text, final char[] prefix) {
+        return startsWith(caseSensitive, text, 0, text.length, prefix, 0, prefix.length);
+    }
+
+
+
+    public static final boolean startsWith(
+            final boolean caseSensitive,
+            final char[] text, final int textOffset, final int textLen,
+            final char[] prefix, final int prefixOffset, final int prefixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("Prefix cannot be null");
+        }
+
+        if (textLen < prefixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+
+            c1 = text[textOffset + i];
+            c2 = prefix[prefixOffset + i];
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final boolean startsWith(
+            final boolean caseSensitive,
+            final String text, final int textOffset, final int textLen,
+            final char[] prefix, final int prefixOffset, final int prefixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("Prefix cannot be null");
+        }
+
+        if (textLen < prefixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+
+            c1 = text.charAt(textOffset + i);
+            c2 = prefix[prefixOffset + i];
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final boolean startsWith(
+            final boolean caseSensitive,
+            final char[] text, final int textOffset, final int textLen,
+            final String prefix, final int prefixOffset, final int prefixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("Prefix cannot be null");
+        }
+
+        if (textLen < prefixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+
+            c1 = text[textOffset + i];
+            c2 = prefix.charAt(prefixOffset + i);
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final boolean startsWith(
+            final boolean caseSensitive,
+            final String text, final int textOffset, final int textLen,
+            final String prefix, final int prefixOffset, final int prefixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (prefix == null) {
+            throw new IllegalArgumentException("Prefix cannot be null");
+        }
+
+        if (textLen < prefixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+
+            c1 = text.charAt(textOffset + i);
+            c2 = prefix.charAt(prefixOffset + i);
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+
+
+
+
+
+
+    public static final boolean endsWith(final boolean caseSensitive, final String text, final String suffix) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (suffix == null) {
+            throw new IllegalArgumentException("Suffix cannot be null");
+        }
+
+        return (caseSensitive? text.endsWith(suffix) : endsWith(caseSensitive, text, 0, text.length(), suffix, 0, suffix.length()));
+
+    }
+
+
+    public static final boolean endsWith(final boolean caseSensitive, final String text, final char[] suffix) {
+        return endsWith(caseSensitive, text, 0, text.length(), suffix, 0, suffix.length);
+    }
+
+    public static final boolean endsWith(final boolean caseSensitive, final char[] text, final char[] suffix) {
+        return endsWith(caseSensitive, text, 0, text.length, suffix, 0, suffix.length);
+    }
+
+
+
+    public static final boolean endsWith(
+            final boolean caseSensitive,
+            final char[] text, final int textOffset, final int textLen,
+            final char[] suffix, final int suffixOffset, final int suffixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (suffix == null) {
+            throw new IllegalArgumentException("Suffix cannot be null");
+        }
+
+        if (textLen < suffixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+
+            c1 = text[(textOffset + textLen - 1) - i];
+            c2 = suffix[(suffixOffset + suffixLen - 1) - i];
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final boolean endsWith(
+            final boolean caseSensitive,
+            final String text, final int textOffset, final int textLen,
+            final char[] suffix, final int suffixOffset, final int suffixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (suffix == null) {
+            throw new IllegalArgumentException("Suffix cannot be null");
+        }
+
+        if (textLen < suffixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+
+            c1 = text.charAt((textOffset + textLen - 1) - i);
+            c2 = suffix[(suffixOffset + suffixLen - 1) - i];
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final boolean endsWith(
+            final boolean caseSensitive,
+            final char[] text, final int textOffset, final int textLen,
+            final String suffix, final int suffixOffset, final int suffixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (suffix == null) {
+            throw new IllegalArgumentException("Suffix cannot be null");
+        }
+
+        if (textLen < suffixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+
+            c1 = text[(textOffset + textLen - 1) - i];
+            c2 = suffix.charAt((suffixOffset + suffixLen - 1) - i);
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+    public static final boolean endsWith(
+            final boolean caseSensitive,
+            final String text, final int textOffset, final int textLen,
+            final String suffix, final int suffixOffset, final int suffixLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (suffix == null) {
+            throw new IllegalArgumentException("Suffix cannot be null");
+        }
+
+        if (textLen < suffixLen) {
+            return false;
+        }
+
+        char c1, c2;
+
+        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+
+            c1 = text.charAt((textOffset + textLen - 1) - i);
+            c2 = suffix.charAt((suffixOffset + suffixLen - 1) - i);
+
+            if (c1 == c2) {
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    continue;
+                }
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+
+
+
+
+
+
 
     public static final int compareTo(final boolean caseSensitive, final String text1, final String text2) {
 
@@ -392,6 +875,22 @@ public final class TextUtil {
 
         return text1Len - text2Len;
 
+    }
+
+
+
+
+    public static int hashCode(final char[] text, final int offset, final int len) {
+        // This basically mimics what the String.hashCode() method does, without the need to
+        // convert the char[] into a new String object
+        // If the text to compute was already a String, it would be better to directly call
+        // its 'hashCode()' method, because Strings cache their hash codes.
+        int h = 0;
+        int off = offset;
+        for (int i = 0; i < len; i++) {
+            h = 31*h + text[off++];
+        }
+        return h;
     }
 
 

@@ -50,23 +50,43 @@ final class MarkupSelectorItem {
     private static final Pattern modifiersPattern = Pattern.compile(modifiersPatternStr);
 
 
+    final boolean caseSensitive;
     final boolean anyLevel;
     final boolean textSelector;
     final String elementName;
     final String referenceName;
     final Integer index;
     final List<AttributeCondition> attributeConditions;
+    final boolean requiresAttributesInElement;
 
+
+    // TODO Add to github issues a ticket explaining that the syntax is now extended to support attribute "existence" and "non-existence"
 
     MarkupSelectorItem(
-            final boolean anyLevel, final boolean textSelector, final String elementName,
+            final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,
             final String referenceName, final Integer index, final List<AttributeCondition> attributeConditions) {
+
+        super();
+
+        this.caseSensitive = caseSensitive;
         this.anyLevel = anyLevel;
         this.textSelector = textSelector;
         this.elementName = elementName;
         this.referenceName = referenceName;
         this.index = index;
         this.attributeConditions = Collections.unmodifiableList(attributeConditions);
+
+        // This is used in order to perform quick checks when matching: if this selector requires the existence
+        // of at least one attribute in the element and the element has none, we know it won't match.
+        boolean newRequiresAttributesInElement = false;
+        for (final AttributeCondition attributeCondition : this.attributeConditions) {
+            if (!attributeCondition.getOperator().equals(AttributeCondition.Operator.NOT_EQUALS) &&
+                !attributeCondition.getOperator().equals(AttributeCondition.Operator.NOT_EXISTS)) {
+                newRequiresAttributesInElement = true;
+            }
+        }
+        this.requiresAttributesInElement = newRequiresAttributesInElement;
+
     }
 
 
@@ -313,7 +333,7 @@ final class MarkupSelectorItem {
         }
 
 
-        result.add(0, new MarkupSelectorItem(anyLevel, textSelector, selectorPath, selectorPathReferenceModifier, index, attributes));
+        result.add(0, new MarkupSelectorItem(caseSensitive, anyLevel, textSelector, selectorPath, selectorPathReferenceModifier, index, attributes));
 
         return result;
 
@@ -353,7 +373,7 @@ final class MarkupSelectorItem {
             att = indexGroup;
         }
 
-        parseAttribute(caseSensitive, selectorSpec, attributes, att);
+        parseAttribute(caseSensitive, selectorSpec, attributes, att.trim());
 
     }
 
@@ -363,31 +383,23 @@ final class MarkupSelectorItem {
         // 0 = attribute name, 1 = operator, 2 = value
         final String[] fragments = AttributeCondition.Operator.extractOperator(attributeSpec);
 
-        if (fragments[1] != null) {
-            // There is an operator
+        String attrName = fragments[0];
+        if (attrName.startsWith("@")) {
+            attrName = attrName.substring(1);
+        }
+        attrName = (caseSensitive? attrName : attrName.toLowerCase());
 
-            String attrName = fragments[0];
-            final AttributeCondition.Operator operator = AttributeCondition.Operator.parse(fragments[1]);
-            final String attrValue = fragments[2];
-            if (attrName.startsWith("@")) {
-                attrName = attrName.substring(1);
-            }
+        final AttributeCondition.Operator operator = AttributeCondition.Operator.parse(fragments[1]);
+
+        final String attrValue = fragments[2];
+        if (attrValue != null) {
             if (!(attrValue.startsWith("\"") && attrValue.endsWith("\"")) && !(attrValue.startsWith("'") && attrValue.endsWith("'"))) {
                 throw new IllegalArgumentException(
                         "Invalid syntax in selector: \"" + selectorSpec + "\"");
             }
-            attributes.add(0, new AttributeCondition(
-                    (caseSensitive? attrName : attrName.toLowerCase()), operator, attrValue.substring(1, attrValue.length() - 1)));
-
+            attributes.add(0, new AttributeCondition(attrName, operator, attrValue.substring(1, attrValue.length() - 1)));
         } else {
-            // There is NO operator
-
-            String attrName = fragments[0];
-            if (attrName.startsWith("@")) {
-                attrName = attrName.substring(1);
-            }
-            attributes.add(0, new AttributeCondition((caseSensitive? attrName : attrName.toLowerCase()), null, null));
-
+            attributes.add(0, new AttributeCondition(attrName, operator, null));
         }
 
     }
@@ -399,7 +411,7 @@ final class MarkupSelectorItem {
     static final class AttributeCondition {
 
         static enum Operator {
-            EQUALS("="), NOT_EQUALS("!="), STARTS_WITH("^="), ENDS_WITH("$=");
+            EQUALS("="), NOT_EQUALS("!="), STARTS_WITH("^="), ENDS_WITH("$="), EXISTS("*"), NOT_EXISTS("!");
 
             private String stringRepresentation;
 
@@ -423,13 +435,22 @@ final class MarkupSelectorItem {
                 if ("$=".equals(operatorStr)) {
                     return ENDS_WITH;
                 }
+                if ("!".equals(operatorStr)) {
+                    return NOT_EXISTS;
+                }
+                if ("".equals(operatorStr)) {
+                    return EXISTS;
+                }
                 return null;
             }
 
             static String[] extractOperator(final String specification) {
                 final int equalsPos = specification.indexOf('=');
                 if (equalsPos == -1) {
-                    return new String[] {specification.trim(), null, null};
+                    if (specification.charAt(0) == '!') {
+                        return new String[] {specification.substring(1).trim(), "!", null};
+                    }
+                    return new String[] {specification.trim(), "", null};
                 }
                 final char cprev = specification.charAt(equalsPos - 1);
                 switch (cprev) {
@@ -516,12 +537,16 @@ final class MarkupSelectorItem {
             strBuilder.append("[");
             strBuilder.append(this.attributeConditions.get(0).getName());
             strBuilder.append(this.attributeConditions.get(0).getOperator());
-            strBuilder.append("'" + this.attributeConditions.get(0).getValue() + "'");
+            if (this.attributeConditions.get(0).getValue() != null) {
+                strBuilder.append("'" + this.attributeConditions.get(0).getValue() + "'");
+            }
             for (int i = 1; i < this.attributeConditions.size(); i++) {
                 strBuilder.append(" and ");
                 strBuilder.append(this.attributeConditions.get(i).getName());
                 strBuilder.append(this.attributeConditions.get(i).getOperator());
-                strBuilder.append("'" + this.attributeConditions.get(i).getValue() + "'");
+                if (this.attributeConditions.get(i).getValue() != null) {
+                    strBuilder.append("'" + this.attributeConditions.get(i).getValue() + "'");
+                }
             }
             strBuilder.append("]");
         }
