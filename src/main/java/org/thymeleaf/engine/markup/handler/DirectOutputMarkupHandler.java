@@ -351,7 +351,13 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-        // Nothing to be done here. This event is ignored in output
+        try {
+            this.writer.write("</");
+            this.writer.write(buffer, offset, len);
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
@@ -361,7 +367,12 @@ public class DirectOutputMarkupHandler extends AbstractMarkupHandler {
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col) {
 
-        // Nothing to be done here. This event is ignored in output
+        try {
+            this.writer.write(">");
+        } catch (final IOException e) {
+            throw new TemplateOutputException(
+                    String.format("Error trying to write output for template \"{}\"", this.documentName), e);
+        }
 
     }
 
