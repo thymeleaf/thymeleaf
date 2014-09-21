@@ -68,6 +68,7 @@ final class MarkupSelectorItem {
     //                * support attribute "existence" and "non-existence"
     //                * support indexes "even()" and "odd()"
     //                * support "contains" attribute value with "*="
+    //                * support for > and < in indexed selectors
 
     MarkupSelectorItem(
             final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,

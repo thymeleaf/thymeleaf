@@ -41,8 +41,9 @@ final class MarkupSelectorFilter {
     private static final int MATCHED_MARKUP_LEVELS_LEN = 10;
     private boolean[] matchedMarkupLevels;
 
-    private int currentMarkupBlockIndex = -1;
-    private int currentMarkupBlockMatchingCount = 0;
+    private static final int MARKUP_BLOCK_MATCHING_COUNTERS_LEN = 4;
+    private int[] markupBlockMatchingIndexes = null;
+    private int[] markupBlockMatchingCounters = null;
 
 
 
@@ -435,49 +436,15 @@ final class MarkupSelectorFilter {
 
         }
 
-        // Last thing to test, once we know all other things match, is index in block (among siblings, children of
-        // the same father WHICH HAVE ALSO MATCHED).
+        // Last thing to test, once we know all other things match, we should check if this selector includes an index
+        // and, if it does, check the position of this matching block among all its MATCHING siblings (children of the
+        // same parent) by accessing the by-block-index counters. (A block index identifies all the children of the
+        // same parent).
         if (this.markupSelectorItem.index != null) {
-
-            if (this.currentMarkupBlockIndex != markupBlockIndex) {
-                // We are in a different block than the one we matched time ago, so initialize the counter
-                this.currentMarkupBlockIndex = markupBlockIndex;
-                this.currentMarkupBlockMatchingCount = 0;
-            } else {
-                this.currentMarkupBlockMatchingCount++;
-            }
-
-            switch (this.markupSelectorItem.index.type) {
-                case VALUE:
-                    if (this.markupSelectorItem.index.value != this.currentMarkupBlockMatchingCount) {
-                        return false;
-                    }
-                    break;
-                case LESS_THAN:
-                    if (this.markupSelectorItem.index.value <= this.currentMarkupBlockMatchingCount) {
-                        return false;
-                    }
-                    break;
-                case MORE_THAN:
-                    if (this.markupSelectorItem.index.value >= this.currentMarkupBlockMatchingCount) {
-                        return false;
-                    }
-                    break;
-                case EVEN:
-                    if (this.currentMarkupBlockMatchingCount % 2 != 0) {
-                        return false;
-                    }
-                    break;
-                case ODD:
-                    if (this.currentMarkupBlockMatchingCount % 2 == 0) {
-                        return false;
-                    }
-                    break;
-            }
-
+            return matchesIndex(markupBlockIndex);
         }
 
-
+        // Everything has gone right so far, so this has matched
         return true;
 
     }
@@ -621,5 +588,78 @@ final class MarkupSelectorFilter {
         return false;
 
     }
+
+
+
+
+    private boolean matchesIndex(final int markupBlockIndex) {
+
+        // Didn't previously exist: initialize. Given few selectors use indexes, this allows us to avoid creating
+        // these array structures if not needed.
+        if (this.markupBlockMatchingCounters == null) {
+            this.markupBlockMatchingIndexes = new int[MARKUP_BLOCK_MATCHING_COUNTERS_LEN];
+            this.markupBlockMatchingCounters = new int[MARKUP_BLOCK_MATCHING_COUNTERS_LEN];
+            Arrays.fill(this.markupBlockMatchingIndexes, -1);
+            Arrays.fill(this.markupBlockMatchingCounters, -1);
+        }
+
+        // Check whether we already had a counter for this current markup block index
+        int i = 0;
+        while (i < this.markupBlockMatchingIndexes.length
+                && this.markupBlockMatchingIndexes[i] >= 0 // Will stop at the first -1
+                && this.markupBlockMatchingIndexes[i] != markupBlockIndex) { i++; }
+
+        // If no counter found and the array is already full, grow structures
+        if (i == this.markupBlockMatchingIndexes.length) {
+            final int[] newMarkupBlockMatchingIndexes = new int[this.markupBlockMatchingIndexes.length + MARKUP_BLOCK_MATCHING_COUNTERS_LEN];
+            final int[] newMarkupBlockMatchingCounters = new int[this.markupBlockMatchingCounters.length + MARKUP_BLOCK_MATCHING_COUNTERS_LEN];
+            Arrays.fill(newMarkupBlockMatchingIndexes, -1);
+            Arrays.fill(newMarkupBlockMatchingCounters, -1);
+            System.arraycopy(this.markupBlockMatchingIndexes, 0, newMarkupBlockMatchingIndexes, 0, this.markupBlockMatchingIndexes.length);
+            System.arraycopy(this.markupBlockMatchingCounters, 0, newMarkupBlockMatchingCounters, 0, this.markupBlockMatchingCounters.length);
+            this.markupBlockMatchingIndexes = newMarkupBlockMatchingIndexes;
+            this.markupBlockMatchingCounters = newMarkupBlockMatchingCounters;
+        }
+
+        // If the counter is new, initialize it. If not, increase it
+        if (this.markupBlockMatchingIndexes[i] == -1) {
+            this.markupBlockMatchingIndexes[i] = markupBlockIndex;
+            this.markupBlockMatchingCounters[i] = 0;
+        } else {
+            this.markupBlockMatchingCounters[i]++;
+        }
+
+        switch (this.markupSelectorItem.index.type) {
+            case VALUE:
+                if (this.markupSelectorItem.index.value != this.markupBlockMatchingCounters[i]) {
+                    return false;
+                }
+                break;
+            case LESS_THAN:
+                if (this.markupSelectorItem.index.value <= this.markupBlockMatchingCounters[i]) {
+                    return false;
+                }
+                break;
+            case MORE_THAN:
+                if (this.markupSelectorItem.index.value >= this.markupBlockMatchingCounters[i]) {
+                    return false;
+                }
+                break;
+            case EVEN:
+                if (this.markupBlockMatchingCounters[i] % 2 != 0) {
+                    return false;
+                }
+                break;
+            case ODD:
+                if (this.markupBlockMatchingCounters[i] % 2 == 0) {
+                    return false;
+                }
+                break;
+        }
+
+        return true;
+
+    }
+
 
 }
