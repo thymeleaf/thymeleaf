@@ -41,6 +41,8 @@ final class MarkupSelectorFilter {
     private static final int MATCHED_MARKUP_LEVELS_LEN = 10;
     private boolean[] matchedMarkupLevels;
 
+    private int currentMarkupBlockIndex = -1;
+    private int currentMarkupBlockMatchingCount = 0;
 
 
 
@@ -71,7 +73,7 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchXmlDeclaration(
-            final int markupLevel,
+            final int markupLevel, final int markupBlockIndex,
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone) {
 
@@ -85,7 +87,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchXmlDeclaration(markupLevel, xmlDeclaration, version, encoding, standalone);
+        return this.next.matchXmlDeclaration(markupLevel, markupBlockIndex, xmlDeclaration, version, encoding, standalone);
 
     }
 
@@ -100,7 +102,7 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchDocTypeClause(
-            final int markupLevel,
+            final int markupLevel, final int markupBlockIndex,
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId) {
 
@@ -114,7 +116,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchDocTypeClause(markupLevel, docTypeClause, rootElementName, publicId, systemId);
+        return this.next.matchDocTypeClause(markupLevel, markupBlockIndex, docTypeClause, rootElementName, publicId, systemId);
 
     }
 
@@ -129,7 +131,7 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchCDATASection(
-            final int markupLevel,
+            final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
         checkMarkupLevel(markupLevel);
@@ -142,7 +144,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchCDATASection(markupLevel, buffer, offset, len);
+        return this.next.matchCDATASection(markupLevel, markupBlockIndex, buffer, offset, len);
 
     }
 
@@ -157,7 +159,7 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchText(
-            final int markupLevel,
+            final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
         checkMarkupLevel(markupLevel);
@@ -176,7 +178,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchText(markupLevel, buffer, offset, len);
+        return this.next.matchText(markupLevel, markupBlockIndex, buffer, offset, len);
 
     }
 
@@ -191,7 +193,7 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchComment(
-            final int markupLevel,
+            final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
         checkMarkupLevel(markupLevel);
@@ -204,7 +206,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchComment(markupLevel, buffer, offset, len);
+        return this.next.matchComment(markupLevel, markupBlockIndex, buffer, offset, len);
 
     }
 
@@ -220,7 +222,7 @@ final class MarkupSelectorFilter {
 
 
 
-    boolean matchStandaloneElement(final int markupLevel, final ElementBuffer elementBuffer) {
+    boolean matchStandaloneElement(final int markupLevel, final int markupBlockIndex, final ElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 
@@ -228,7 +230,7 @@ final class MarkupSelectorFilter {
             // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
 
             if (this.next != null) {
-                return this.next.matchStandaloneElement(markupLevel, elementBuffer);
+                return this.next.matchStandaloneElement(markupLevel, markupBlockIndex, elementBuffer);
             }
             return true;
 
@@ -243,7 +245,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This element has not matched yet, but might match, so we should check
 
-            if (matches(elementBuffer)) {
+            if (matches(markupBlockIndex, elementBuffer)) {
                 return true;
             }
 
@@ -256,7 +258,7 @@ final class MarkupSelectorFilter {
 
 
 
-    boolean matchOpenElement(final int markupLevel, final ElementBuffer elementBuffer) {
+    boolean matchOpenElement(final int markupLevel, final int markupBlockIndex, final ElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 
@@ -265,7 +267,7 @@ final class MarkupSelectorFilter {
             // BUT we must only consider matching "done" for this level (and therefore consume the element) if
             // this is the first time we match this filter. If not, we should delegate to next.
 
-            final boolean matchesThisLevel = matches(elementBuffer);
+            final boolean matchesThisLevel = matches(markupBlockIndex, elementBuffer);
 
             if (matchesLevel(markupLevel)) {
                 // This filter was already matched before. So the fact that it matches now or not is useful information,
@@ -277,7 +279,7 @@ final class MarkupSelectorFilter {
                 this.matchedMarkupLevels[markupLevel] = matchesThisLevel;
 
                 if (this.next != null) {
-                    return this.next.matchOpenElement(markupLevel, elementBuffer);
+                    return this.next.matchOpenElement(markupLevel, markupBlockIndex, elementBuffer);
                 }
                 return true;
 
@@ -294,7 +296,7 @@ final class MarkupSelectorFilter {
             // This filter cannot match this level, but it did match before in a previous level, so we are happy
             // delegating to next if it exists.
             if (this.next != null) {
-                return this.next.matchOpenElement(markupLevel, elementBuffer);
+                return this.next.matchOpenElement(markupLevel, markupBlockIndex, elementBuffer);
             }
             return true;
         }
@@ -314,7 +316,7 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchProcessingInstruction(
-            final int markupLevel,
+            final int markupLevel, final int markupBlockIndex,
             final String processingInstruction,
             final String target, final String content) {
 
@@ -328,7 +330,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchProcessingInstruction(markupLevel, processingInstruction, target, content);
+        return this.next.matchProcessingInstruction(markupLevel, markupBlockIndex, processingInstruction, target, content);
 
     }
 
@@ -390,7 +392,7 @@ final class MarkupSelectorFilter {
     }
 
 
-    private boolean matches(final ElementBuffer elementBuffer) {
+    private boolean matches(final int markupBlockIndex, final ElementBuffer elementBuffer) {
 
         if (this.markupSelectorItem.textSelector) {
             return false;
@@ -431,7 +433,33 @@ final class MarkupSelectorFilter {
 
             }
 
-            return true;
+        }
+
+        // Last thing to test, once we know all other things match, is index in block (among siblings, children of
+        // the same father WHICH ALSO MATCH).
+        if (this.markupSelectorItem.index != null) {
+
+            if (this.currentMarkupBlockIndex != markupBlockIndex) {
+                this.currentMarkupBlockIndex = markupBlockIndex;
+                this.currentMarkupBlockMatchingCount = 0;
+            } else {
+                this.currentMarkupBlockMatchingCount++;
+            }
+
+            if (this.markupSelectorItem.index.equals(MarkupSelectorItem.INDEX_EVEN)) {
+                if (this.currentMarkupBlockMatchingCount % 2 != 0) {
+                    return false;
+                }
+            } else if (this.markupSelectorItem.index.equals(MarkupSelectorItem.INDEX_ODD)) {
+                if (this.currentMarkupBlockMatchingCount % 2 == 0) {
+                    return false;
+                }
+            } else {
+                final int selectorIndex = this.markupSelectorItem.index.intValue();
+                if (selectorIndex != this.currentMarkupBlockMatchingCount) {
+                    return false;
+                }
+            }
 
         }
 

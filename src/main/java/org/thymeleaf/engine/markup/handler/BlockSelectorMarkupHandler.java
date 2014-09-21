@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.engine.markup.handler;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.thymeleaf.util.Validate;
@@ -39,6 +40,10 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
     private int markupLevel;
     private boolean matching;
     private int matchingMarkupLevel;
+
+    private static final int MARKUP_BLOCKS_LEN = 10;
+    private int[] markupBlocks;
+    private int markupBlockIndex;
 
 
 
@@ -64,6 +69,10 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
         }
 
         this.elementBuffer = new ElementBuffer();
+
+        this.markupBlockIndex = 0;
+        this.markupBlocks = new int[MARKUP_BLOCKS_LEN];
+        this.markupBlocks[this.markupLevel] = this.markupBlockIndex;
 
     }
 
@@ -106,7 +115,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching &&
-                !this.filter.matchXmlDeclaration(this.markupLevel, xmlDeclaration, version, encoding, standalone)) {
+                !this.filter.matchXmlDeclaration(this.markupLevel, this.markupBlocks[this.markupLevel], xmlDeclaration, version, encoding, standalone)) {
             // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
             return;
         }
@@ -132,7 +141,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching &&
-                !this.filter.matchDocTypeClause(this.markupLevel, docTypeClause, rootElementName, publicId, systemId)) {
+                !this.filter.matchDocTypeClause(this.markupLevel, this.markupBlocks[this.markupLevel], docTypeClause, rootElementName, publicId, systemId)) {
             // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
             return;
         }
@@ -157,7 +166,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching &&
-                !this.filter.matchCDATASection(this.markupLevel, buffer, offset, len)) {
+                !this.filter.matchCDATASection(this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len)) {
             // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
             return;
         }
@@ -182,11 +191,11 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching &&
-                !this.filter.matchText(this.markupLevel, buffer, offset, len)) {
+                !this.filter.matchText(this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len)) {
             // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
             return;
         }
-            
+
         this.handler.onText(buffer, offset, len, documentName, line, col);
 
     }
@@ -207,7 +216,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching ||
-                !this.filter.matchComment(this.markupLevel, buffer, offset, len)) {
+                !this.filter.matchComment(this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len)) {
             // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
             return;
         }
@@ -284,7 +293,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
         if (!this.matching) {
 
-            if (this.filter.matchStandaloneElement(this.markupLevel, this.elementBuffer)) {
+            if (this.filter.matchStandaloneElement(this.markupLevel, this.markupBlocks[this.markupLevel], this.elementBuffer)) {
 
                 // The element matched! Flush the buffer then, calling all the delayed events...
                 this.elementBuffer.flushBuffer(this.handler);
@@ -328,7 +337,7 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
         if (!this.matching) {
 
-            if (this.filter.matchOpenElement(this.markupLevel, this.elementBuffer)) {
+            if (this.filter.matchOpenElement(this.markupLevel, this.markupBlocks[this.markupLevel], this.elementBuffer)) {
 
                 this.matching = true;
                 this.matchingMarkupLevel = this.markupLevel;
@@ -340,6 +349,9 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
                 this.markupLevel++;
 
+                checkMarkupLevel(this.markupLevel);
+                this.markupBlocks[this.markupLevel] = ++this.markupBlockIndex;
+
                 // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
                 return;
 
@@ -348,6 +360,9 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
         }
 
         this.markupLevel++;
+
+        checkMarkupLevel(this.markupLevel);
+        this.markupBlocks[this.markupLevel] = ++this.markupBlockIndex;
 
         this.handler.onOpenElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
 
@@ -498,13 +513,31 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
             final String documentName, final int line, final int col) {
 
         if (!this.matching &&
-                !this.filter.matchProcessingInstruction(this.markupLevel, processingInstruction, target, content)) {
+                !this.filter.matchProcessingInstruction(this.markupLevel, this.markupBlocks[this.markupLevel], processingInstruction, target, content)) {
             // Nothing to do with this event: it's not in a matching block, and it doesn't match. Just ignore.
             return;
         }
 
         this.handler.onProcessingInstruction(processingInstruction, target, content, documentName, line, col);
 
+    }
+
+
+
+    /*
+     * -------------------------------
+     * Markup block and level handling
+     * -------------------------------
+     */
+
+    private void checkMarkupLevel(final int markupLevel) {
+        if (markupLevel >= this.markupBlocks.length) {
+            final int newLen = Math.max(markupLevel + 1, this.markupBlocks.length + MARKUP_BLOCKS_LEN);
+            final int[] newMarkupBlocks = new int[newLen];
+            Arrays.fill(newMarkupBlocks, 0);
+            System.arraycopy(this.markupBlocks, 0, newMarkupBlocks, 0, this.markupBlocks.length);
+            this.markupBlocks = newMarkupBlocks;
+        }
     }
 
 

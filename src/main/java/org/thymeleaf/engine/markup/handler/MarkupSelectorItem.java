@@ -36,13 +36,17 @@ import org.thymeleaf.util.StringUtils;
 final class MarkupSelectorItem {
 
     private static final String TEXT_SELECTOR = "text()";
-    private static final String LAST_SELECTOR = "last()";
     private static final String ID_MODIFIER_SEPARATOR = "#";
     private static final String CLASS_MODIFIER_SEPARATOR = ".";
     private static final String REFERENCE_MODIFIER_SEPARATOR = "%";
 
     private static final String ID_ATTRIBUTE_NAME = "id";
     private static final String CLASS_ATTRIBUTE_NAME = "class";
+
+    private static final String ODD_SELECTOR = "odd()";
+    private static final String EVEN_SELECTOR = "even()";
+    static final Integer INDEX_ODD = Integer.valueOf(Integer.MAX_VALUE - 1);
+    static final Integer INDEX_EVEN = Integer.valueOf(Integer.MAX_VALUE - 2);
 
     private static final String selectorPatternStr = "^(/{1,2})([^/\\s]*?)(\\[(?:.*)\\])?$";
     private static final Pattern selectorPattern = Pattern.compile(selectorPatternStr);
@@ -60,7 +64,9 @@ final class MarkupSelectorItem {
     final boolean requiresAttributesInElement;
 
 
-    // TODO Add to github issues a ticket explaining that the syntax is now extended to support attribute "existence" and "non-existence"
+    // TODO Add to github issues a ticket explaining that the syntax is now extended to:
+    //                * support attribute "existence" and "non-existence"
+    //                * support indexes "even()" and "odd()"
 
     MarkupSelectorItem(
             final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,
@@ -325,11 +331,6 @@ final class MarkupSelectorItem {
 
             }
 
-            if (anyLevel && index != null) {
-                throw new IllegalArgumentException(
-                        "Invalid syntax in selector \"" + selector + "\": index cannot be specified on a \"descend any levels\" selector (//).");
-            }
-
         }
 
 
@@ -342,8 +343,11 @@ final class MarkupSelectorItem {
 
 
     private static Integer parseIndex(final String indexGroup) {
-        if (LAST_SELECTOR.equals(indexGroup.toLowerCase())) {
-            return Integer.valueOf(-1);
+        if (ODD_SELECTOR.equals(indexGroup.toLowerCase())) {
+            return INDEX_ODD;
+        }
+        if (EVEN_SELECTOR.equals(indexGroup.toLowerCase())) {
+            return INDEX_EVEN;
         }
         try {
             return Integer.valueOf(indexGroup);
@@ -554,7 +558,7 @@ final class MarkupSelectorItem {
         if (this.index != null) {
             strBuilder.append("[");
             if (this.index.intValue() == -1) {
-                strBuilder.append(LAST_SELECTOR);
+                strBuilder.append(ODD_SELECTOR);
             } else {
                 strBuilder.append(this.index);
             }
