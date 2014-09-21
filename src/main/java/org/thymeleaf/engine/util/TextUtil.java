@@ -708,6 +708,296 @@ public final class TextUtil {
 
 
 
+    public static final boolean contains(final boolean caseSensitive, final String text, final String fragment) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (fragment == null) {
+            throw new IllegalArgumentException("Fragment cannot be null");
+        }
+
+        return (caseSensitive? text.contains(fragment) : contains(caseSensitive, text, 0, text.length(), fragment, 0, fragment.length()));
+
+    }
+
+
+    public static final boolean contains(final boolean caseSensitive, final String text, final char[] fragment) {
+        return contains(caseSensitive, text, 0, text.length(), fragment, 0, fragment.length);
+    }
+
+    public static final boolean contains(final boolean caseSensitive, final char[] text, final char[] fragment) {
+        return contains(caseSensitive, text, 0, text.length, fragment, 0, fragment.length);
+    }
+
+
+
+    public static final boolean contains(
+            final boolean caseSensitive,
+            final char[] text, final int textOffset, final int textLen,
+            final char[] fragment, final int fragmentOffset, final int fragmentLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (fragment == null) {
+            throw new IllegalArgumentException("Fragment cannot be null");
+        }
+
+        if (textLen < fragmentLen) {
+            return false;
+        }
+        if (fragmentLen == 0) {
+            return true;
+        }
+
+        char c1, c2;
+
+        for (int i = 0,j = 0; i < textLen; i++) {
+
+            c1 = text[textOffset + i];
+            c2 = fragment[fragmentOffset + j];
+
+            if (c1 == c2) {
+                if (++j == fragmentLen) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+            }
+
+            j = 0;
+
+        }
+
+        return false;
+
+    }
+
+
+
+    public static final boolean contains(
+            final boolean caseSensitive,
+            final String text, final int textOffset, final int textLen,
+            final char[] fragment, final int fragmentOffset, final int fragmentLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (fragment == null) {
+            throw new IllegalArgumentException("Fragment cannot be null");
+        }
+
+        if (textLen < fragmentLen) {
+            return false;
+        }
+        if (fragmentLen == 0) {
+            return true;
+        }
+
+        char c1, c2;
+
+        for (int i = 0,j = 0; i < textLen; i++) {
+
+            c1 = text.charAt(textOffset + i);
+            c2 = fragment[fragmentOffset + j];
+
+            if (c1 == c2) {
+                if (++j == fragmentLen) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+            }
+
+            j = 0;
+
+        }
+
+        return false;
+
+    }
+
+
+
+    public static final boolean contains(
+            final boolean caseSensitive,
+            final char[] text, final int textOffset, final int textLen,
+            final String fragment, final int fragmentOffset, final int fragmentLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (fragment == null) {
+            throw new IllegalArgumentException("Fragment cannot be null");
+        }
+
+        if (textLen < fragmentLen) {
+            return false;
+        }
+        if (fragmentLen == 0) {
+            return true;
+        }
+
+        char c1, c2;
+
+        for (int i = 0,j = 0; i < textLen; i++) {
+
+            c1 = text[textOffset + i];
+            c2 = fragment.charAt(fragmentOffset + j);
+
+            if (c1 == c2) {
+                if (++j == fragmentLen) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+            }
+
+            j = 0;
+
+        }
+
+        return false;
+
+    }
+
+
+
+    public static final boolean contains(
+            final boolean caseSensitive,
+            final String text, final int textOffset, final int textLen,
+            final String fragment, final int fragmentOffset, final int fragmentLen) {
+
+        if (text == null) {
+            throw new IllegalArgumentException("Text cannot be null");
+        }
+        if (fragment == null) {
+            throw new IllegalArgumentException("Fragment cannot be null");
+        }
+
+        if (textLen < fragmentLen) {
+            return false;
+        }
+        if (fragmentLen == 0) {
+            return true;
+        }
+
+        char c1, c2;
+
+        for (int i = 0,j = 0; i < textLen; i++) {
+
+            c1 = text.charAt(textOffset + i);
+            c2 = fragment.charAt(fragmentOffset + j);
+
+            if (c1 == c2) {
+                if (++j == fragmentLen) {
+                    return true;
+                }
+                continue;
+            }
+
+            if (!caseSensitive) {
+
+                final char u1 = Character.toUpperCase(c1);
+                final char u2 = Character.toUpperCase(c2);
+                if (u1 == u2) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                // See String#regionMatches(boolean,int,String,int,int)
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                    if (++j == fragmentLen) {
+                        return true;
+                    }
+                    continue;
+                }
+
+            }
+
+            j = 0;
+
+        }
+
+        return false;
+
+    }
+
+
+
+
+
+
+
+
+
     public static final int compareTo(final boolean caseSensitive, final String text1, final String text2) {
 
         if (text1 == null) {

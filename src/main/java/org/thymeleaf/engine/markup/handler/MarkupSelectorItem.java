@@ -67,6 +67,7 @@ final class MarkupSelectorItem {
     // TODO Add to github issues a ticket explaining that the syntax is now extended to:
     //                * support attribute "existence" and "non-existence"
     //                * support indexes "even()" and "odd()"
+    //                * support "contains" attribute value with "*="
 
     MarkupSelectorItem(
             final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,
@@ -437,7 +438,7 @@ final class MarkupSelectorItem {
     static final class AttributeCondition {
 
         static enum Operator {
-            EQUALS("="), NOT_EQUALS("!="), STARTS_WITH("^="), ENDS_WITH("$="), EXISTS("*"), NOT_EXISTS("!");
+            EQUALS("="), NOT_EQUALS("!="), STARTS_WITH("^="), ENDS_WITH("$="), EXISTS("*"), NOT_EXISTS("!"), CONTAINS("*=");
 
             private String stringRepresentation;
 
@@ -460,6 +461,9 @@ final class MarkupSelectorItem {
                 }
                 if ("$=".equals(operatorStr)) {
                     return ENDS_WITH;
+                }
+                if ("*=".equals(operatorStr)) {
+                    return CONTAINS;
                 }
                 if ("!".equals(operatorStr)) {
                     return NOT_EXISTS;
@@ -491,6 +495,10 @@ final class MarkupSelectorItem {
                     case '$':
                         return new String[] {
                                 specification.substring(0, equalsPos - 1).trim(), "$=",
+                                specification.substring(equalsPos + 1).trim()};
+                    case '*':
+                        return new String[] {
+                                specification.substring(0, equalsPos - 1).trim(), "*=",
                                 specification.substring(equalsPos + 1).trim()};
                     default:
                         return new String[] {

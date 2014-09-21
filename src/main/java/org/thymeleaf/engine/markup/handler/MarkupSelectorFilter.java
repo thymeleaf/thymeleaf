@@ -566,6 +566,11 @@ final class MarkupSelectorFilter {
                         elementAttrValueBuffer, elementAttrValueOffset, elementAttrValueLen,
                         attrValue,              0,                      attrValue.length());
 
+            case CONTAINS:
+                return TextUtil.contains(true,
+                        elementAttrValueBuffer, elementAttrValueOffset, elementAttrValueLen,
+                        attrValue,              0,                      attrValue.length());
+
             case EXISTS:
                 // The fact that this attribute exists is enough to return true
                 return true;
