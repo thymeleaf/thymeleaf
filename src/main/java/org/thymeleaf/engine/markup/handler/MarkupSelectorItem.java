@@ -59,7 +59,7 @@ final class MarkupSelectorItem {
     final boolean textSelector;
     final String elementName;
     final String referenceName;
-    final Integer index;
+    final IndexCondition index;
     final List<AttributeCondition> attributeConditions;
     final boolean requiresAttributesInElement;
 
@@ -70,7 +70,7 @@ final class MarkupSelectorItem {
 
     MarkupSelectorItem(
             final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,
-            final String referenceName, final Integer index, final List<AttributeCondition> attributeConditions) {
+            final String referenceName, final IndexCondition index, final List<AttributeCondition> attributeConditions) {
 
         super();
 
@@ -186,7 +186,7 @@ final class MarkupSelectorItem {
         String path = selectorNameGroup;
 
 
-        Integer index = null;
+        IndexCondition index = null;
         final List<AttributeCondition> attributes = new ArrayList<AttributeCondition>(2);
 
 
@@ -342,18 +342,40 @@ final class MarkupSelectorItem {
 
 
 
-    private static Integer parseIndex(final String indexGroup) {
+    private static IndexCondition parseIndex(final String indexGroup) {
+
+        // Look for the 'even()' and 'odd()' selectors
         if (ODD_SELECTOR.equals(indexGroup.toLowerCase())) {
-            return INDEX_ODD;
+            return IndexCondition.INDEX_CONDITION_ODD;
         }
         if (EVEN_SELECTOR.equals(indexGroup.toLowerCase())) {
-            return INDEX_EVEN;
+            return IndexCondition.INDEX_CONDITION_EVEN;
         }
+
+        if (indexGroup.charAt(0) == '>') {
+
+            try {
+                return new IndexCondition(IndexCondition.IndexConditionType.MORE_THAN, Integer.valueOf(indexGroup.substring(1).trim()));
+            } catch (final Exception ignored) {
+                return null;
+            }
+
+        } else if (indexGroup.charAt(0) == '<') {
+
+            try {
+                return new IndexCondition(IndexCondition.IndexConditionType.LESS_THAN, Integer.valueOf(indexGroup.substring(1).trim()));
+            } catch (final Exception ignored) {
+                return null;
+            }
+
+        }
+
         try {
-            return Integer.valueOf(indexGroup);
+            return new IndexCondition(IndexCondition.IndexConditionType.VALUE, Integer.valueOf(indexGroup.trim()));
         } catch (final Exception ignored) {
             return null;
         }
+
     }
 
 
@@ -557,15 +579,45 @@ final class MarkupSelectorItem {
 
         if (this.index != null) {
             strBuilder.append("[");
-            if (this.index.intValue() == -1) {
-                strBuilder.append(ODD_SELECTOR);
-            } else {
-                strBuilder.append(this.index);
+            switch (this.index.type) {
+                case VALUE:
+                    strBuilder.append(this.index.value);
+                    break;
+                case LESS_THAN:
+                    strBuilder.append("<" + this.index.value);
+                    break;
+                case MORE_THAN:
+                    strBuilder.append(">" + this.index.value);
+                    break;
+                case EVEN:
+                    strBuilder.append(EVEN_SELECTOR);
+                    break;
+                case ODD:
+                    strBuilder.append(ODD_SELECTOR);
+                    break;
             }
             strBuilder.append("]");
         }
 
         return strBuilder.toString();
+
+    }
+
+
+    static final class IndexCondition {
+
+        static enum IndexConditionType { VALUE, LESS_THAN, MORE_THAN, EVEN, ODD }
+        static IndexCondition INDEX_CONDITION_ODD = new IndexCondition(IndexConditionType.ODD, -1);
+        static IndexCondition INDEX_CONDITION_EVEN = new IndexCondition(IndexConditionType.EVEN, -1);
+
+        final IndexConditionType type;
+        final int value;
+
+        IndexCondition(final IndexConditionType type, final int value) {
+            super();
+            this.type = type;
+            this.value = value;
+        }
 
     }
 

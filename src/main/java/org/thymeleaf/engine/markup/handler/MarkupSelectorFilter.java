@@ -436,29 +436,43 @@ final class MarkupSelectorFilter {
         }
 
         // Last thing to test, once we know all other things match, is index in block (among siblings, children of
-        // the same father WHICH ALSO MATCH).
+        // the same father WHICH HAVE ALSO MATCHED).
         if (this.markupSelectorItem.index != null) {
 
             if (this.currentMarkupBlockIndex != markupBlockIndex) {
+                // We are in a different block than the one we matched time ago, so initialize the counter
                 this.currentMarkupBlockIndex = markupBlockIndex;
                 this.currentMarkupBlockMatchingCount = 0;
             } else {
                 this.currentMarkupBlockMatchingCount++;
             }
 
-            if (this.markupSelectorItem.index.equals(MarkupSelectorItem.INDEX_EVEN)) {
-                if (this.currentMarkupBlockMatchingCount % 2 != 0) {
-                    return false;
-                }
-            } else if (this.markupSelectorItem.index.equals(MarkupSelectorItem.INDEX_ODD)) {
-                if (this.currentMarkupBlockMatchingCount % 2 == 0) {
-                    return false;
-                }
-            } else {
-                final int selectorIndex = this.markupSelectorItem.index.intValue();
-                if (selectorIndex != this.currentMarkupBlockMatchingCount) {
-                    return false;
-                }
+            switch (this.markupSelectorItem.index.type) {
+                case VALUE:
+                    if (this.markupSelectorItem.index.value != this.currentMarkupBlockMatchingCount) {
+                        return false;
+                    }
+                    break;
+                case LESS_THAN:
+                    if (this.markupSelectorItem.index.value <= this.currentMarkupBlockMatchingCount) {
+                        return false;
+                    }
+                    break;
+                case MORE_THAN:
+                    if (this.markupSelectorItem.index.value >= this.currentMarkupBlockMatchingCount) {
+                        return false;
+                    }
+                    break;
+                case EVEN:
+                    if (this.currentMarkupBlockMatchingCount % 2 != 0) {
+                        return false;
+                    }
+                    break;
+                case ODD:
+                    if (this.currentMarkupBlockMatchingCount % 2 == 0) {
+                        return false;
+                    }
+                    break;
             }
 
         }
