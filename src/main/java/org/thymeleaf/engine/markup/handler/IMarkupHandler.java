@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.engine.markup.handler;
 
-import org.thymeleaf.engine.markup.dom.AttributeDefinition;
-import org.thymeleaf.engine.markup.dom.ElementDefinition;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
