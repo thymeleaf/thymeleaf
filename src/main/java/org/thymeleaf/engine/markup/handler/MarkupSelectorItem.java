@@ -20,8 +20,6 @@
 package org.thymeleaf.engine.markup.handler;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.thymeleaf.engine.util.TextUtil;
 import org.thymeleaf.util.StringUtils;
@@ -32,7 +30,7 @@ import org.thymeleaf.util.StringUtils;
  * @since 3.0.0
  *
  */
-final class MarkupSelectorItem {
+final class MarkupSelectorItem implements IMarkupSelectorItem {
 
     static final String TEXT_SELECTOR = "text()";
     static final String ID_MODIFIER_SEPARATOR = "#";
@@ -51,9 +49,8 @@ final class MarkupSelectorItem {
     private final boolean anyLevel;
     private final boolean textSelector;
     private final String elementName;
-    private final String referenceName;
     private final IndexCondition index;
-    private final List<AttributeCondition> attributeConditions;
+    private final IAttributeCondition attributeCondition;
     private final boolean requiresAttributesInElement;
 
 
@@ -62,10 +59,11 @@ final class MarkupSelectorItem {
     //                * support indexes "even()" and "odd()"
     //                * support "contains" attribute value with "*="
     //                * support for > and < in indexed selectors
+    //                * support for both "and" and "or" in attribute conditions
 
     MarkupSelectorItem(
             final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,
-            final String referenceName, final IndexCondition index, final List<AttributeCondition> attributeConditions) {
+            final IndexCondition index, final IAttributeCondition attributeCondition) {
 
         super();
 
@@ -73,20 +71,31 @@ final class MarkupSelectorItem {
         this.anyLevel = anyLevel;
         this.textSelector = textSelector;
         this.elementName = elementName;
-        this.referenceName = referenceName;
         this.index = index;
-        this.attributeConditions = Collections.unmodifiableList(attributeConditions);
+        this.attributeCondition = attributeCondition;
 
         // This is used in order to perform quick checks when matching: if this selector requires the existence
         // of at least one attribute in the element and the element has none, we know it won't match.
-        boolean newRequiresAttributesInElement = false;
-        for (final AttributeCondition attributeCondition : this.attributeConditions) {
-            if (!attributeCondition.operator.equals(AttributeCondition.Operator.NOT_EQUALS) &&
-                !attributeCondition.operator.equals(AttributeCondition.Operator.NOT_EXISTS)) {
-                newRequiresAttributesInElement = true;
-            }
+        this.requiresAttributesInElement = computeRequiresAttributesInElement(this.attributeCondition);
+
+    }
+
+
+    private static boolean computeRequiresAttributesInElement(final IAttributeCondition attributeCondition) {
+
+        if (attributeCondition == null) {
+            return false;
         }
-        this.requiresAttributesInElement = newRequiresAttributesInElement;
+
+        if (attributeCondition instanceof AttributeConditionRelation) {
+            final AttributeConditionRelation relation = (AttributeConditionRelation) attributeCondition;
+            // as long as one of the sides requires attributes, we should consider this "true"
+            return computeRequiresAttributesInElement(relation.left) || computeRequiresAttributesInElement(relation.right);
+        }
+
+        final AttributeCondition attrCondition = (AttributeCondition) attributeCondition;
+        return (!attrCondition.operator.equals(AttributeCondition.Operator.NOT_EQUALS) &&
+                !attrCondition.operator.equals(AttributeCondition.Operator.NOT_EXISTS));
 
     }
 
@@ -111,27 +120,9 @@ final class MarkupSelectorItem {
             strBuilder.append("*");
         }
 
-        if (this.referenceName != null) {
-            strBuilder.append("[$ref$=");
-            strBuilder.append("'" + this.referenceName + "'");
-            strBuilder.append("]");
-        }
-
-        if (this.attributeConditions != null && !this.attributeConditions.isEmpty()) {
+        if (this.attributeCondition != null) {
             strBuilder.append("[");
-            strBuilder.append(this.attributeConditions.get(0).name);
-            strBuilder.append(this.attributeConditions.get(0).operator.text);
-            if (this.attributeConditions.get(0).value != null) {
-                strBuilder.append("'" + this.attributeConditions.get(0).value + "'");
-            }
-            for (int i = 1; i < this.attributeConditions.size(); i++) {
-                strBuilder.append(" and ");
-                strBuilder.append(this.attributeConditions.get(i).name);
-                strBuilder.append(this.attributeConditions.get(i).operator.text);
-                if (this.attributeConditions.get(i).value != null) {
-                    strBuilder.append("'" + this.attributeConditions.get(i).value + "'");
-                }
-            }
+            strBuilder.append(toStringAttributeCondition(this.attributeCondition, false));
             strBuilder.append("]");
         }
 
@@ -161,13 +152,32 @@ final class MarkupSelectorItem {
 
     }
 
+    private static String toStringAttributeCondition(final IAttributeCondition attributeCondition, final boolean outputParenthesis) {
+
+        if (attributeCondition instanceof AttributeConditionRelation) {
+            final AttributeConditionRelation relation = (AttributeConditionRelation) attributeCondition;
+            if (outputParenthesis) {
+                return "(" + toStringAttributeCondition(relation.left, true) + " " + relation.type + " " + toStringAttributeCondition(relation.right, true) + ")";
+            }
+            return toStringAttributeCondition(relation.left, true) + " " + relation.type + " " + toStringAttributeCondition(relation.right, true);
+        }
+
+        final AttributeCondition attrCondition = (AttributeCondition) attributeCondition;
+        return attrCondition.name + attrCondition.operator.text + (attrCondition.value != null ? "'" + attrCondition.value + "'" : "");
+
+    }
 
 
 
 
 
 
-    static final class AttributeCondition {
+
+    static interface IAttributeCondition {
+        // Merely a marker interface
+    }
+
+    static final class AttributeCondition implements IAttributeCondition {
 
         static enum Operator {
 
@@ -189,6 +199,23 @@ final class MarkupSelectorItem {
             this.name = name;
             this.operator = operator;
             this.value = value;
+        }
+
+    }
+
+    static final class AttributeConditionRelation implements IAttributeCondition {
+
+        static enum Type { AND, OR }
+
+        final Type type;
+        final IAttributeCondition left;
+        final IAttributeCondition right;
+
+        AttributeConditionRelation(final Type type, final IAttributeCondition left, final IAttributeCondition right) {
+            super();
+            this.type = type;
+            this.left = left;
+            this.right = right;
         }
 
     }
@@ -230,17 +257,17 @@ final class MarkupSelectorItem {
      * -------------------
      */
 
-    boolean anyLevel() {
+    public boolean anyLevel() {
         return this.anyLevel;
     }
 
 
-    boolean matchesText() {
+    public boolean matchesText() {
         return this.textSelector;
     }
 
 
-    boolean matches(final int markupBlockIndex, final ElementBuffer elementBuffer,
+    public boolean matches(final int markupBlockIndex, final ElementBuffer elementBuffer,
                     final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
 
         if (this.textSelector) {
@@ -262,31 +289,19 @@ final class MarkupSelectorItem {
             return false;
         }
 
-        // Check the attribute values and their operators
-        if (this.attributeConditions != null &&
-                !this.attributeConditions.isEmpty()) {
-
-            final int attributeConditionsLen = this.attributeConditions.size();
-            for (int i = 0; i < attributeConditionsLen; i++) {
-
-                final String attrName = this.attributeConditions.get(i).name;
-                final MarkupSelectorItem.AttributeCondition.Operator attrOperator = this.attributeConditions.get(i).operator;
-                final String attrValue = this.attributeConditions.get(i).value;
-
-                if (!matchesAttribute(elementBuffer, attrName, attrOperator, attrValue)) {
-                    return false;
-                }
-
-            }
-
+        // Check the attribute conditions (if any)
+        if (this.attributeCondition != null &&
+                !matchesAttributeCondition(this.caseSensitive, elementBuffer, this.attributeCondition)) {
+            return false;
         }
 
         // Last thing to test, once we know all other things match, we should check if this selector includes an index
         // and, if it does, check the position of this matching block among all its MATCHING siblings (children of the
         // same parent) by accessing the by-block-index counters. (A block index identifies all the children of the
         // same parent).
-        if (this.index != null) {
-            return matchesIndex(markupBlockIndex, markupBlockMatchingCounter);
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
         }
 
         // Everything has gone right so far, so this has matched
@@ -296,14 +311,36 @@ final class MarkupSelectorItem {
 
 
 
-    private boolean matchesAttribute(
-            final ElementBuffer elementBuffer,
+    private static boolean matchesAttributeCondition(
+            final boolean caseSensitive, final ElementBuffer elementBuffer, final IAttributeCondition attributeCondition) {
+
+        if (attributeCondition instanceof AttributeConditionRelation) {
+            final AttributeConditionRelation relation = (AttributeConditionRelation) attributeCondition;
+            switch (relation.type) {
+                case AND:
+                    return matchesAttributeCondition(caseSensitive, elementBuffer, relation.left) &&
+                            matchesAttributeCondition(caseSensitive, elementBuffer, relation.right);
+                case OR:
+                    return matchesAttributeCondition(caseSensitive, elementBuffer, relation.left) ||
+                            matchesAttributeCondition(caseSensitive, elementBuffer, relation.right);
+            }
+        }
+
+        final AttributeCondition attrCondition = (AttributeCondition) attributeCondition;
+        return matchesAttribute(caseSensitive, elementBuffer, attrCondition.name, attrCondition.operator, attrCondition.value);
+
+    }
+
+
+
+    private static boolean matchesAttribute(
+            final boolean caseSensitive, final ElementBuffer elementBuffer,
             final String attrName, final MarkupSelectorItem.AttributeCondition.Operator attrOperator, final String attrValue) {
 
         boolean found = false;
         for (int i = 0; i < elementBuffer.attributeCount; i++) {
 
-            if (!TextUtil.equals(this.caseSensitive,
+            if (!TextUtil.equals(caseSensitive,
                     attrName, 0, attrName.length(),
                     elementBuffer.attributeBuffers[i], 0, elementBuffer.attributeNameLens[i])) {
                 continue;
@@ -437,8 +474,9 @@ final class MarkupSelectorItem {
 
 
 
-    private boolean matchesIndex(
-            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+    private static boolean matchesIndex(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter,
+            final IndexCondition indexCondition) {
 
         // Didn't previously exist: initialize. Given few selectors use indexes, this allows us to avoid creating
         // these array structures if not needed.
@@ -475,19 +513,19 @@ final class MarkupSelectorItem {
             markupBlockMatchingCounter.counters[i]++;
         }
 
-        switch (this.index.type) {
+        switch (indexCondition.type) {
             case VALUE:
-                if (this.index.value != markupBlockMatchingCounter.counters[i]) {
+                if (indexCondition.value != markupBlockMatchingCounter.counters[i]) {
                     return false;
                 }
                 break;
             case LESS_THAN:
-                if (this.index.value <= markupBlockMatchingCounter.counters[i]) {
+                if (indexCondition.value <= markupBlockMatchingCounter.counters[i]) {
                     return false;
                 }
                 break;
             case MORE_THAN:
-                if (this.index.value >= markupBlockMatchingCounter.counters[i]) {
+                if (indexCondition.value >= markupBlockMatchingCounter.counters[i]) {
                     return false;
                 }
                 break;

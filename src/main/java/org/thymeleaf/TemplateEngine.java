@@ -49,6 +49,7 @@ import org.thymeleaf.engine.markup.handler.BlockSelectorMarkupHandler;
 import org.thymeleaf.engine.markup.handler.DirectOutputMarkupHandler;
 import org.thymeleaf.engine.markup.handler.IMarkupHandler;
 import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
+import org.thymeleaf.engine.markup.handler.IMarkupSelectorReferenceResolver;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -1209,16 +1210,20 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final BlockSelectorMarkupHandler handler = new BlockSelectorMarkupHandler(directOutputHandler, "html//p", false);
+        final BlockSelectorMarkupHandler handler = new BlockSelectorMarkupHandler(directOutputHandler, "html//p", false, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
 
-//        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, new StringReader(templateContent));
+//        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
         markupEngineConfig.getParser().parseTemplate(markupEngineConfig, handler, templateName, reader);
 
 
     }
 
-
-
+    final static TestMarkupSelectorReferenceResolver TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER = new TestMarkupSelectorReferenceResolver();
+    private static class TestMarkupSelectorReferenceResolver implements IMarkupSelectorReferenceResolver {
+        public String resolveSelectorFromReference(final String reference) {
+            return "[th:fragment='" + reference + "' or data-th-fragment='" + reference + "']";
+        }
+    }
 
 
 

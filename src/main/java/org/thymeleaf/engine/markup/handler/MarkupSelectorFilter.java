@@ -33,7 +33,7 @@ final class MarkupSelectorFilter {
     private final MarkupSelectorFilter prev;
     private MarkupSelectorFilter next;
 
-    private final MarkupSelectorItem markupSelectorItem;
+    private final IMarkupSelectorItem markupSelectorItem;
 
     private static final int MATCHED_MARKUP_LEVELS_LEN = 10;
     private boolean[] matchedMarkupLevels;
@@ -48,7 +48,7 @@ final class MarkupSelectorFilter {
 
 
 
-    MarkupSelectorFilter(final MarkupSelectorFilter prev, final MarkupSelectorItem markupSelectorItem) {
+    MarkupSelectorFilter(final MarkupSelectorFilter prev, final IMarkupSelectorItem markupSelectorItem) {
         
         super();
 

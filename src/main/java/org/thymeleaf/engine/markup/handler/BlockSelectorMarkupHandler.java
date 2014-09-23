@@ -47,7 +47,8 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
 
 
-    public BlockSelectorMarkupHandler(final IMarkupHandler handler, final String blockSelector, final boolean caseSensitive) {
+    public BlockSelectorMarkupHandler(final IMarkupHandler handler, final String blockSelector, final boolean caseSensitive,
+                                      final IMarkupSelectorReferenceResolver referenceResolver) {
 
         super();
 
@@ -60,7 +61,8 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
         this.matching = false;
         this.matchingMarkupLevel = Integer.MAX_VALUE;
 
-        final List<MarkupSelectorItem> blockSelectorItems = MarkupSelectorItems.forSelector(caseSensitive, blockSelector);
+        final List<IMarkupSelectorItem> blockSelectorItems =
+                MarkupSelectorItems.forSelector(caseSensitive, blockSelector, referenceResolver);
 
         this.filter = new MarkupSelectorFilter(null, blockSelectorItems.get(0));
         MarkupSelectorFilter last = this.filter;
