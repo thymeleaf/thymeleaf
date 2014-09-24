@@ -224,7 +224,7 @@ final class MarkupSelectorFilter {
 
 
 
-    boolean matchStandaloneElement(final int markupLevel, final int markupBlockIndex, final ElementBuffer elementBuffer) {
+    boolean matchStandaloneElement(final int markupLevel, final int markupBlockIndex, final SelectorElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 
@@ -260,7 +260,7 @@ final class MarkupSelectorFilter {
 
 
 
-    boolean matchOpenElement(final int markupLevel, final int markupBlockIndex, final ElementBuffer elementBuffer) {
+    boolean matchOpenElement(final int markupLevel, final int markupBlockIndex, final SelectorElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 

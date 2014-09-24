@@ -45,11 +45,16 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
+import org.thymeleaf.engine.markup.handler.AttributeMarkingSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.BlockSelectorMarkupHandler;
+import org.thymeleaf.engine.markup.handler.DelegatingSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.DirectOutputMarkupHandler;
 import org.thymeleaf.engine.markup.handler.IMarkupHandler;
 import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
 import org.thymeleaf.engine.markup.handler.IMarkupSelectorReferenceResolver;
+import org.thymeleaf.engine.markup.handler.INonSelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.ISelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.NoOpNonSelectedSelectorEventHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -1210,7 +1215,12 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final BlockSelectorMarkupHandler handler = new BlockSelectorMarkupHandler(directOutputHandler, "html//p", false, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
+        final ISelectedSelectorEventHandler selectedEventHandler = new AttributeMarkingSelectedSelectorEventHandler();
+        final INonSelectedSelectorEventHandler nonSelectedEventHandler = new NoOpNonSelectedSelectorEventHandler();
+
+        final BlockSelectorMarkupHandler handler =
+                new BlockSelectorMarkupHandler(directOutputHandler, selectedEventHandler, nonSelectedEventHandler,
+                        new String[] {"html//p", "html//div", "title", "li/a" }, false, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
         markupEngineConfig.getParser().parseTemplate(markupEngineConfig, handler, templateName, reader);

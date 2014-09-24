@@ -27,7 +27,7 @@ import java.util.Arrays;
  * @since 3.0.0
  *
  */
-final class ElementBuffer {
+final class SelectorElementBuffer {
 
     private static final int DEFAULT_ELEMENT_NAME_SIZE = 10;
     private static final int DEFAULT_ATTRIBUTES_SIZE = 8;
@@ -46,6 +46,9 @@ final class ElementBuffer {
 
     int elementNameLine;
     int elementNameCol;
+
+    int elementEndLine;
+    int elementEndCol;
 
     int attributeCount;
 
@@ -75,7 +78,7 @@ final class ElementBuffer {
     int[] elementInnerWhiteSpaceCols;
 
 
-    ElementBuffer() {
+    SelectorElementBuffer() {
 
         super();
 
@@ -91,6 +94,9 @@ final class ElementBuffer {
 
         this.elementNameLine = 0;
         this.elementNameCol = 0;
+
+        this.elementEndLine = 0;
+        this.elementEndCol = 0;
 
 
         this.attributeCount = 0;
@@ -144,9 +150,9 @@ final class ElementBuffer {
     }
 
 
-    void bufferNewElement(final String normalizedName, final char[] buffer, final int offset, final int len,
-                           final String documentName, final int line, final int col,
-                           final boolean standalone, final boolean minimized) {
+    void bufferElementStart(final String normalizedName, final char[] buffer, final int offset, final int len,
+                            final String documentName, final int line, final int col,
+                            final boolean standalone, final boolean minimized) {
 
         this.documentName = documentName;
         this.normalizedElementName = normalizedName;
@@ -160,6 +166,9 @@ final class ElementBuffer {
         this.elementNameLine = line;
         this.elementNameCol = col;
 
+        this.elementEndLine = 0;
+        this.elementEndCol = 0;
+
         this.standalone = standalone;
         this.minimized = minimized;
 
@@ -169,14 +178,14 @@ final class ElementBuffer {
     }
 
 
-    void bufferNewAttribute(final char[] buffer,
-                            final int nameOffset, final int nameLen,
-                            final int nameLine, final int nameCol,
-                            final int operatorOffset, final int operatorLen,
-                            final int operatorLine, final int operatorCol,
-                            final int valueContentOffset, final int valueContentLen,
-                            final int valueOuterOffset, final int valueOuterLen,
-                            final int valueLine, final int valueCol, final String documentName) {
+    void bufferAttribute(final char[] buffer,
+                         final int nameOffset, final int nameLen,
+                         final int nameLine, final int nameCol,
+                         final int operatorOffset, final int operatorLen,
+                         final int operatorLine, final int operatorCol,
+                         final int valueContentOffset, final int valueContentLen,
+                         final int valueOuterOffset, final int valueOuterLen,
+                         final int valueLine, final int valueCol, final String documentName) {
 
         if (this.attributeCount >= this.attributeBuffers.length) {
             // We've reached the max number of attributes currently allowed in the structure, so we must grow
@@ -277,8 +286,17 @@ final class ElementBuffer {
     }
 
 
-    void bufferNewElementInnerWhiteSpace(final char[] buffer, final int offset, final int len,
-                                    final String documentName, final int line, final int col) {
+    void bufferElementEnd(final String normalizedName, final char[] buffer, final int offset, final int len,
+                          final String documentName, final int line, final int col) {
+
+        this.elementEndLine = line;
+        this.elementEndCol = col;
+
+    }
+
+
+    void bufferElementInnerWhiteSpace(final char[] buffer, final int offset, final int len,
+                                      final String documentName, final int line, final int col) {
 
         if (this.elementInnerWhiteSpaceCount >= this.elementInnerWhiteSpaceBuffers.length) {
             // We've reached the max number of whitespaces currently allowed in the structure, so we must grow
@@ -316,44 +334,124 @@ final class ElementBuffer {
     }
 
 
-    void flushBuffer(final IMarkupHandler handler) {
+
+    void flushSelectedBuffer(
+            final ISelectedSelectorEventHandler handler, final IMarkupHandler markupHandler,
+            final String[] selectors, final boolean[] selectorMatches) {
 
         if (this.standalone) {
-            handler.onStandaloneElementStart(
-                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.minimized, this.documentName, this.elementNameLine, this.elementNameCol);
+            handler.onSelectedStandaloneElementStart(
+                    selectors, selectorMatches,
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.minimized, this.documentName, this.elementNameLine, this.elementNameCol, markupHandler);
         } else {
-            handler.onOpenElementStart(
-                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.documentName, this.elementNameLine, this.elementNameCol);
+            handler.onSelectedOpenElementStart(
+                    selectors, selectorMatches,
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.documentName, this.elementNameLine, this.elementNameCol, markupHandler);
         }
 
         for (int i = 0; i < this.attributeCount; i++) {
 
-            handler.onElementInnerWhiteSpace(
+            handler.onSelectedElementInnerWhiteSpace(
+                    selectors, selectorMatches,
                     this.elementInnerWhiteSpaceBuffers[i],
                     0, this.elementInnerWhiteSpaceLens[i],
-                    this.documentName, this.elementInnerWhiteSpaceLines[i], this.elementInnerWhiteSpaceCols[i]);
+                    this.documentName, this.elementInnerWhiteSpaceLines[i], this.elementInnerWhiteSpaceCols[i],
+                    markupHandler);
 
-            handler.onAttribute(
+            handler.onSelectedAttribute(
+                    selectors, selectorMatches,
                     this.attributeBuffers[i],
                     0, this.attributeNameLens[i], this.attributeNameLines[i], this.attributeNameCols[i],
                     this.attributeNameLens[i], this.attributeOperatorLens[i], this.attributeOperatorLines[i], this.attributeOperatorCols[i],
                     this.attributeValueContentOffsets[i], this.attributeValueContentLens[i],
                     this.attributeNameLens[i] + this.attributeOperatorLens[i], this.attributeValueOuterLens[i],
                     this.attributeValueLines[i], this.attributeValueCols[i],
-                    this.documentName);
+                    this.documentName,
+                    markupHandler);
         }
 
         if (this.elementInnerWhiteSpaceCount - this.attributeCount > 0) {
 
             for (int i = this.attributeCount; i < this.elementInnerWhiteSpaceCount; i++) {
 
-                handler.onElementInnerWhiteSpace(
+                handler.onSelectedElementInnerWhiteSpace(
+                        selectors, selectorMatches,
                         this.elementInnerWhiteSpaceBuffers[i],
                         0, this.elementInnerWhiteSpaceLens[i],
-                        this.documentName, this.elementInnerWhiteSpaceLines[i], this.elementInnerWhiteSpaceCols[i]);
+                        this.documentName, this.elementInnerWhiteSpaceLines[i], this.elementInnerWhiteSpaceCols[i],
+                        markupHandler);
 
             }
 
+        }
+
+        if (this.standalone) {
+            handler.onSelectedStandaloneElementEnd(
+                    selectors, selectorMatches,
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.minimized, this.documentName, this.elementEndLine, this.elementEndCol, markupHandler);
+        } else {
+            handler.onSelectedOpenElementEnd(
+                    selectors, selectorMatches,
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.documentName, this.elementEndLine, this.elementEndCol, markupHandler);
+        }
+
+    }
+
+
+
+    void flushNonSelectedBuffer(final INonSelectedSelectorEventHandler handler, final IMarkupHandler markupHandler) {
+
+        if (this.standalone) {
+            handler.onNonSelectedStandaloneElementStart(
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.minimized, this.documentName, this.elementNameLine, this.elementNameCol,
+                    markupHandler);
+        } else {
+            handler.onNonSelectedOpenElementStart(
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.documentName, this.elementNameLine, this.elementNameCol,
+                    markupHandler);
+        }
+
+        for (int i = 0; i < this.attributeCount; i++) {
+
+            handler.onNonSelectedElementInnerWhiteSpace(
+                    this.elementInnerWhiteSpaceBuffers[i],
+                    0, this.elementInnerWhiteSpaceLens[i],
+                    this.documentName, this.elementInnerWhiteSpaceLines[i], this.elementInnerWhiteSpaceCols[i],
+                    markupHandler);
+
+            handler.onNonSelectedAttribute(
+                    this.attributeBuffers[i],
+                    0, this.attributeNameLens[i], this.attributeNameLines[i], this.attributeNameCols[i],
+                    this.attributeNameLens[i], this.attributeOperatorLens[i], this.attributeOperatorLines[i], this.attributeOperatorCols[i],
+                    this.attributeValueContentOffsets[i], this.attributeValueContentLens[i],
+                    this.attributeNameLens[i] + this.attributeOperatorLens[i], this.attributeValueOuterLens[i],
+                    this.attributeValueLines[i], this.attributeValueCols[i],
+                    this.documentName,
+                    markupHandler);
+        }
+
+        if (this.elementInnerWhiteSpaceCount - this.attributeCount > 0) {
+
+            for (int i = this.attributeCount; i < this.elementInnerWhiteSpaceCount; i++) {
+
+                handler.onNonSelectedElementInnerWhiteSpace(
+                        this.elementInnerWhiteSpaceBuffers[i],
+                        0, this.elementInnerWhiteSpaceLens[i],
+                        this.documentName, this.elementInnerWhiteSpaceLines[i], this.elementInnerWhiteSpaceCols[i],
+                        markupHandler);
+
+            }
+
+        }
+
+        if (this.standalone) {
+            handler.onNonSelectedStandaloneElementEnd(
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.minimized, this.documentName, this.elementEndLine, this.elementEndCol,
+                    markupHandler);
+        } else {
+            handler.onNonSelectedOpenElementEnd(
+                    this.normalizedElementName, this.elementName, 0, this.elementNameLen, this.documentName, this.elementEndLine, this.elementEndCol,
+                    markupHandler);
         }
 
     }

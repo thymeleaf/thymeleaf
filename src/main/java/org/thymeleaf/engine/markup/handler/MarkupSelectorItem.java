@@ -267,7 +267,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     }
 
 
-    public boolean matches(final int markupBlockIndex, final ElementBuffer elementBuffer,
+    public boolean matches(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
                     final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
 
         if (this.textSelector) {
@@ -312,7 +312,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
 
     private static boolean matchesAttributeCondition(
-            final boolean caseSensitive, final ElementBuffer elementBuffer, final IAttributeCondition attributeCondition) {
+            final boolean caseSensitive, final SelectorElementBuffer elementBuffer, final IAttributeCondition attributeCondition) {
 
         if (attributeCondition instanceof AttributeConditionRelation) {
             final AttributeConditionRelation relation = (AttributeConditionRelation) attributeCondition;
@@ -334,7 +334,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
 
     private static boolean matchesAttribute(
-            final boolean caseSensitive, final ElementBuffer elementBuffer,
+            final boolean caseSensitive, final SelectorElementBuffer elementBuffer,
             final String attrName, final MarkupSelectorItem.AttributeCondition.Operator attrOperator, final String attrValue) {
 
         boolean found = false;
