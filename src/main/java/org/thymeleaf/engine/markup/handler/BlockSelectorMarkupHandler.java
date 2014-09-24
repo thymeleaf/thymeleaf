@@ -185,17 +185,26 @@ public final class BlockSelectorMarkupHandler extends AbstractMarkupHandler {
 
             this.someSelectorsMatch = false;
             for (int i = 0; i < this.selectorsLen; i++) {
-                this.selectorMatches[i] =
-                    this.selectorFilters[i].matchXmlDeclaration(this.markupLevel, this.markupBlocks[this.markupLevel], xmlDeclaration, version, encoding, standalone);
-                if (this.selectorMatches[i]) {
+
+                if (this.matchingMarkupLevelsPerSelector[i] > this.markupLevel) {
+                    this.selectorMatches[i] =
+                            this.selectorFilters[i].matchXmlDeclaration(this.markupLevel, this.markupBlocks[this.markupLevel], xmlDeclaration, version, encoding, standalone);
+                    if (this.selectorMatches[i]) {
+                        this.someSelectorsMatch = true;
+                    }
+                } else {
+                    this.selectorMatches[i] = true;
                     this.someSelectorsMatch = true;
                 }
+
             }
+
             if (this.someSelectorsMatch) {
                 this.selectedHandler.onSelectedXmlDeclaration(this.selectors, this.selectorMatches, xmlDeclaration, version, encoding, standalone, documentName, line, col, this.handler);
-            } else {
-                this.nonSelectedHandler.onNonSelectedXmlDeclaration(xmlDeclaration, version, encoding, standalone, documentName, line, col, this.handler);
+                return;
             }
+
+            this.nonSelectedHandler.onNonSelectedXmlDeclaration(xmlDeclaration, version, encoding, standalone, documentName, line, col, this.handler);
             return;
 
         }
