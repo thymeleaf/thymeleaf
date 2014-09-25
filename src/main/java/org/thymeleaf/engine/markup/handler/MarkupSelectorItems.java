@@ -288,18 +288,22 @@ final class MarkupSelectorItems {
 
 
         /*
-         * Compute the possibility that our path selector is a TEXT selector: "text()"
+         * Compute the possibility that our path selector is a:
+         *    - TEXT selector: "text()"
+         *    - COMMENT selector: "comment()"
          */
 
         final boolean textSelector = MarkupSelectorItem.TEXT_SELECTOR.equals(path);
+        final boolean commentSelector = MarkupSelectorItem.COMMENT_SELECTOR.equals(path);
 
+        final boolean isNonElementSelector = (textSelector || commentSelector);
 
         /*
          * Compute the final path selector we're left with (if any)
          */
 
         final String caseSensitiveSelectorPath =
-                (textSelector ? null : (StringUtils.isEmptyOrWhitespace(path) ? null : path));
+                (isNonElementSelector ? null : (StringUtils.isEmptyOrWhitespace(path) ? null : path));
         final String selectorPath =
                 (caseSensitiveSelectorPath == null? null : (caseSensitive? caseSensitiveSelectorPath : caseSensitiveSelectorPath.toLowerCase()));
 
@@ -376,7 +380,9 @@ final class MarkupSelectorItems {
 
         }
 
-        IMarkupSelectorItem thisItem = new MarkupSelectorItem(caseSensitive, anyLevel, textSelector, selectorPath, index, attributeCondition);
+        IMarkupSelectorItem thisItem =
+                new MarkupSelectorItem(
+                        caseSensitive, anyLevel, textSelector, commentSelector, selectorPath, index, attributeCondition);
 
         if (referenceResolver != null && (selectorPathReferenceModifier != null || selectorPath != null)) {
 

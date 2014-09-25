@@ -31,7 +31,9 @@ interface IMarkupSelectorItem {
 
     boolean matchesText();
 
-    boolean matches(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
-                    final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
+    boolean matchesComment();
+
+    boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
+                           final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
 }

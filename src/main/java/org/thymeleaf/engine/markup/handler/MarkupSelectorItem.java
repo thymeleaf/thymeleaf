@@ -33,6 +33,7 @@ import org.thymeleaf.util.StringUtils;
 final class MarkupSelectorItem implements IMarkupSelectorItem {
 
     static final String TEXT_SELECTOR = "text()";
+    static final String COMMENT_SELECTOR = "comment()";
     static final String ID_MODIFIER_SEPARATOR = "#";
     static final String CLASS_MODIFIER_SEPARATOR = ".";
     static final String REFERENCE_MODIFIER_SEPARATOR = "%";
@@ -48,6 +49,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     private final boolean caseSensitive;
     private final boolean anyLevel;
     private final boolean textSelector;
+    private final boolean commentSelector;
     private final String elementName;
     private final IndexCondition index;
     private final IAttributeCondition attributeCondition;
@@ -62,14 +64,16 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     //                * support for both "and" and "or" in attribute conditions
 
     MarkupSelectorItem(
-            final boolean caseSensitive, final boolean anyLevel, final boolean textSelector, final String elementName,
-            final IndexCondition index, final IAttributeCondition attributeCondition) {
+            final boolean caseSensitive, final boolean anyLevel,
+            final boolean textSelector, final boolean commentSelector,
+            final String elementName, final IndexCondition index, final IAttributeCondition attributeCondition) {
 
         super();
 
         this.caseSensitive = caseSensitive;
         this.anyLevel = anyLevel;
         this.textSelector = textSelector;
+        this.commentSelector = commentSelector;
         this.elementName = elementName;
         this.index = index;
         this.attributeCondition = attributeCondition;
@@ -116,6 +120,8 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
             strBuilder.append(this.elementName);
         } else if (this.textSelector) {
             strBuilder.append(TEXT_SELECTOR);
+        } else if (this.commentSelector) {
+            strBuilder.append(COMMENT_SELECTOR);
         } else {
             strBuilder.append("*");
         }
@@ -267,8 +273,13 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     }
 
 
-    public boolean matches(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
-                    final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+    public boolean matchesComment() {
+        return this.commentSelector;
+    }
+
+
+    public boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
+                                  final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
 
         if (this.textSelector) {
             return false;

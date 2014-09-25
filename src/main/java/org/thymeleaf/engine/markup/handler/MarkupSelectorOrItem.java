@@ -49,9 +49,13 @@ final class MarkupSelectorOrItem implements IMarkupSelectorItem {
         return this.left.matchesText() || this.right.matchesText();
     }
 
-    public boolean matches(final int markupBlockIndex, final SelectorElementBuffer elementBuffer, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
-        return this.left.matches(markupBlockIndex, elementBuffer, markupBlockMatchingCounter) ||
-                this.right.matches(markupBlockIndex, elementBuffer, markupBlockMatchingCounter);
+    public boolean matchesComment() {
+        return this.left.matchesComment() || this.right.matchesComment();
+    }
+
+    public boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesElement(markupBlockIndex, elementBuffer, markupBlockMatchingCounter) ||
+                this.right.matchesElement(markupBlockIndex, elementBuffer, markupBlockMatchingCounter);
     }
 
     public String toString() {

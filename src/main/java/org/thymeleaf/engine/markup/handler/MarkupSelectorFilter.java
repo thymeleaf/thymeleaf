@@ -232,21 +232,40 @@ final class MarkupSelectorFilter {
             final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
-        if (!blockMatching) {
-            return false;
-        }
-
         checkMarkupLevel(markupLevel);
 
-        if (!matchesPreviousOrCurrentLevel(markupLevel)) {
-            return false;
+        if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+            // This text has not matched yet, but might match, so we should check
+
+            final boolean matchesThisLevel = this.markupSelectorItem.matchesComment();
+
+            if (matchesPreviousOrCurrentLevel(markupLevel)) {
+                // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
+
+                if (this.next != null) {
+                    return this.next.matchComment(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
+                }
+                return (blockMatching? true : matchesThisLevel);
+
+            } else if (matchesThisLevel) {
+                // This filter was not matched before. So the fact that it matches now means we need to consume it,
+                // therefore not delegating.
+
+                return (this.next == null);
+
+            }
+
+        } else if (matchesPreviousOrCurrentLevel(markupLevel)) {
+            // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
+
+            if (this.next != null) {
+                return this.next.matchComment(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
+            }
+            return blockMatching;
+
         }
 
-        if (this.next == null) {
-            return true;
-        }
-
-        return this.next.matchComment(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
+        return false;
 
     }
 
@@ -271,7 +290,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This element has not matched yet, but might match, so we should check
 
-            final boolean matchesThisLevel = this.markupSelectorItem.matches(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter);
+            final boolean matchesThisLevel = this.markupSelectorItem.matchesElement(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
@@ -317,7 +336,7 @@ final class MarkupSelectorFilter {
             // this is the first time we match this filter. If not, we should delegate to next.
 
 
-            final boolean matchesThisLevel = this.markupSelectorItem.matches(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter);
+            final boolean matchesThisLevel = this.markupSelectorItem.matchesElement(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched before. So the fact that it matches now or not is useful information,
