@@ -25,10 +25,10 @@ package org.thymeleaf.engine.markup.handler;
  * @since 3.0.0
  *
  */
-public class NoOpNonSelectedSelectorEventHandler implements INonSelectedSelectorEventHandler {
+public class AllowingNonSelectedSelectorEventHandler implements INonSelectedSelectorEventHandler {
 
 
-    public NoOpNonSelectedSelectorEventHandler() {
+    public AllowingNonSelectedSelectorEventHandler() {
         super();
     }
 
@@ -38,7 +38,7 @@ public class NoOpNonSelectedSelectorEventHandler implements INonSelectedSelector
             final String version, final String encoding, final boolean standalone,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, documentName, line, col);
     }
 
     public void onNonSelectedDocTypeClause(
@@ -46,28 +46,28 @@ public class NoOpNonSelectedSelectorEventHandler implements INonSelectedSelector
             final String rootElementName, final String publicId, final String systemId,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onDocTypeClause(docTypeClause, rootElementName, publicId, systemId, documentName, line, col);
     }
 
     public void onNonSelectedCDATASection(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onCDATASection(buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedText(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onText(buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedComment(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onComment(buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedAttribute(
@@ -77,7 +77,12 @@ public class NoOpNonSelectedSelectorEventHandler implements INonSelectedSelector
             final int valueContentOffset, final int valueContentLen, final int valueOuterOffset, final int valueOuterLen, final int valueLine, final int valueCol,
             final String documentName,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onAttribute(
+                buffer,
+                nameOffset, nameLen, nameLine, nameCol,
+                operatorOffset, operatorLen, operatorLine, operatorCol,
+                valueContentOffset, valueContentLen, valueOuterOffset, valueOuterLen, valueLine, valueCol,
+                documentName);
     }
 
     public void onNonSelectedStandaloneElementStart(
@@ -85,7 +90,7 @@ public class NoOpNonSelectedSelectorEventHandler implements INonSelectedSelector
             final boolean minimized,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onStandaloneElementStart(normalizedName, buffer, offset, len, minimized, documentName, line, col);
     }
 
     public void onNonSelectedStandaloneElementEnd(
@@ -93,77 +98,78 @@ public class NoOpNonSelectedSelectorEventHandler implements INonSelectedSelector
             final boolean minimized,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onStandaloneElementEnd(normalizedName, buffer, offset, len, minimized, documentName, line, col);
     }
 
     public void onNonSelectedOpenElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onOpenElementStart(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedOpenElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onOpenElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedCloseElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onCloseElementStart(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedCloseElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedAutoCloseElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onAutoCloseElementStart(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedAutoCloseElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onAutoCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedUnmatchedCloseElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onUnmatchedCloseElementStart(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedUnmatchedCloseElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onUnmatchedCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedElementInnerWhiteSpace(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onElementInnerWhiteSpace(buffer, offset, len, documentName, line, col);
     }
 
     public void onNonSelectedProcessingInstruction(
             final String processingInstruction, final String target, final String content,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
-        // Nothing to do
+        handler.onProcessingInstruction(processingInstruction, target, content, documentName, line, col);
     }
+
 
 }

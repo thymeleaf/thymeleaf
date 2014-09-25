@@ -44,7 +44,10 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
     private final boolean[] selectorMatches;
     private final MarkupSelectorFilter[] selectorFilters;
 
+    private final int[][] matchingMarkupLevelsPerSelector;
+
     private boolean someSelectorsMatch;
+
 
     private int markupLevel;
 
@@ -129,6 +132,9 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.elementBuffer = new SelectorElementBuffer();
 
+        this.matchingMarkupLevelsPerSelector = new int[this.selectorsLen][];
+        Arrays.fill(this.matchingMarkupLevelsPerSelector, null);
+
         this.markupLevel = 0;
 
         this.markupBlockIndex = 0;
@@ -179,7 +185,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchXmlDeclaration(this.markupLevel, this.markupBlocks[this.markupLevel], xmlDeclaration, version, encoding, standalone);
+                    this.selectorFilters[i].matchXmlDeclaration(false, this.markupLevel, this.markupBlocks[this.markupLevel], xmlDeclaration, version, encoding, standalone);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -215,7 +221,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchDocTypeClause(this.markupLevel, this.markupBlocks[this.markupLevel], docTypeClause, rootElementName, publicId, systemId);
+                    this.selectorFilters[i].matchDocTypeClause(false, this.markupLevel, this.markupBlocks[this.markupLevel], docTypeClause, rootElementName, publicId, systemId);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -250,7 +256,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchCDATASection(this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len);
+                    this.selectorFilters[i].matchCDATASection(false, this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -285,7 +291,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchText(this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len);
+                    this.selectorFilters[i].matchText(false, this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -320,7 +326,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchComment(this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len);
+                    this.selectorFilters[i].matchComment(false, this.markupLevel, this.markupBlocks[this.markupLevel], buffer, offset, len);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -390,7 +396,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchStandaloneElement(this.markupLevel, this.markupBlocks[this.markupLevel], this.elementBuffer);
+                    this.selectorFilters[i].matchStandaloneElement(false, this.markupLevel, this.markupBlocks[this.markupLevel], this.elementBuffer);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -429,9 +435,10 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchOpenElement(this.markupLevel, this.markupBlocks[this.markupLevel], this.elementBuffer);
+                    this.selectorFilters[i].matchOpenElement(false, this.markupLevel, this.markupBlocks[this.markupLevel], this.elementBuffer);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
+                addMatchingMarkupLevel(i, this.markupLevel);
             }
         }
 
@@ -463,8 +470,8 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
-            // We use the flags indicating past matchings to recompute new ones
-            this.selectorMatches[i] = this.matchingMarkupLevelsPerSelector[i] <= this.markupLevel;
+            // We use the flags indicating past matches to recompute new ones
+            this.selectorMatches[i] = isMatchingMarkupLevel(i, this.markupLevel);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -488,17 +495,11 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
-            // We use the flags indicating past matchings to recompute new ones
-            this.selectorMatches[i] = this.matchingMarkupLevelsPerSelector[i] <= this.markupLevel;
+            // We use the flags indicating past matches to recompute new ones
+            this.selectorMatches[i] = isMatchingMarkupLevel(i, this.markupLevel);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
-            }
-        }
-
-        for (int i = 0; i < this.selectorsLen; i++) {
-            if (this.matchingMarkupLevelsPerSelector[i] == this.markupLevel) {
-                this.insideAllSelectorMatchingBlock = false;
-                this.matchingMarkupLevelsPerSelector[i] = Integer.MAX_VALUE;
+                removeMatchingMarkupLevel(i, this.markupLevel);
             }
         }
 
@@ -525,8 +526,8 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
-            // We use the flags indicating past matchings to recompute new ones
-            this.selectorMatches[i] = this.matchingMarkupLevelsPerSelector[i] <= this.markupLevel;
+            // We use the flags indicating past matches to recompute new ones
+            this.selectorMatches[i] = isMatchingMarkupLevel(i, this.markupLevel);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -550,17 +551,11 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
-            // We use the flags indicating past matchings to recompute new ones
-            this.selectorMatches[i] = this.matchingMarkupLevelsPerSelector[i] <= this.markupLevel;
+            // We use the flags indicating past matches to recompute new ones
+            this.selectorMatches[i] = isMatchingMarkupLevel(i, this.markupLevel);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
-            }
-        }
-
-        for (int i = 0; i < this.selectorsLen; i++) {
-            if (this.matchingMarkupLevelsPerSelector[i] == this.markupLevel) {
-                this.insideAllSelectorMatchingBlock = false;
-                this.matchingMarkupLevelsPerSelector[i] = Integer.MAX_VALUE;
+                removeMatchingMarkupLevel(i, this.markupLevel);
             }
         }
 
@@ -582,8 +577,8 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
-            // We use the flags indicating past matchings to recompute new ones
-            this.selectorMatches[i] = this.matchingMarkupLevelsPerSelector[i] <= this.markupLevel;
+            // We use the flags indicating past matches to recompute new ones
+            this.selectorMatches[i] = isMatchingMarkupLevel(i, this.markupLevel);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -607,8 +602,8 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
 
         this.someSelectorsMatch = false;
         for (int i = 0; i < this.selectorsLen; i++) {
-            // We use the flags indicating past matchings to recompute new ones
-            this.selectorMatches[i] = this.matchingMarkupLevelsPerSelector[i] <= this.markupLevel;
+            // We use the flags indicating past matches to recompute new ones
+            this.selectorMatches[i] = isMatchingMarkupLevel(i, this.markupLevel);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -654,7 +649,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             this.selectorMatches[i] =
-                    this.selectorFilters[i].matchProcessingInstruction(this.markupLevel, this.markupBlocks[this.markupLevel], processingInstruction, target, content);
+                    this.selectorFilters[i].matchProcessingInstruction(false, this.markupLevel, this.markupBlocks[this.markupLevel], processingInstruction, target, content);
             if (this.selectorMatches[i]) {
                 this.someSelectorsMatch = true;
             }
@@ -687,6 +682,56 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
             this.markupBlocks = newMarkupBlocks;
         }
     }
+
+
+    private void addMatchingMarkupLevel(final int selector, final int markupLevel) {
+
+        if (this.matchingMarkupLevelsPerSelector[selector] == null) {
+            // Structure for this selector didn't exist before: create it
+            this.matchingMarkupLevelsPerSelector[selector] = new int[2];
+            Arrays.fill(this.matchingMarkupLevelsPerSelector[selector], Integer.MAX_VALUE);
+        }
+
+        for (int i = 0; i < this.matchingMarkupLevelsPerSelector[selector].length; i++) {
+            if (this.matchingMarkupLevelsPerSelector[selector][i] == Integer.MAX_VALUE) {
+                this.matchingMarkupLevelsPerSelector[selector][i] = markupLevel;
+                return;
+            }
+        }
+
+        // Not found an available place: grow the structure
+        int[] newMatchingMarkupLevelsPerSelector = new int[this.matchingMarkupLevelsPerSelector[selector].length + 2];
+        Arrays.fill(newMatchingMarkupLevelsPerSelector, Integer.MAX_VALUE);
+        System.arraycopy(this.matchingMarkupLevelsPerSelector[selector],0,newMatchingMarkupLevelsPerSelector,0,this.matchingMarkupLevelsPerSelector[selector].length);
+
+        newMatchingMarkupLevelsPerSelector[this.matchingMarkupLevelsPerSelector[selector].length] = markupLevel;
+        this.matchingMarkupLevelsPerSelector[selector] = newMatchingMarkupLevelsPerSelector;
+
+    }
+
+
+    private boolean isMatchingMarkupLevel(final int selector, final int markupLevel) {
+        if (this.matchingMarkupLevelsPerSelector[selector] == null) {
+            return false;
+        }
+        for (int i = 0; i < this.matchingMarkupLevelsPerSelector[selector].length; i++) {
+            if (this.matchingMarkupLevelsPerSelector[selector][i] == markupLevel) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private void removeMatchingMarkupLevel(final int selector, final int markupLevel) {
+        for (int i = 0; i < this.matchingMarkupLevelsPerSelector[selector].length; i++) {
+            if (this.matchingMarkupLevelsPerSelector[selector][i] == markupLevel) {
+                this.matchingMarkupLevelsPerSelector[selector][i] = Integer.MAX_VALUE;
+                return;
+            }
+        }
+    }
+
 
 
 }

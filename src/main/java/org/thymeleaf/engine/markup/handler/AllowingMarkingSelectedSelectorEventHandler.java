@@ -25,24 +25,27 @@ package org.thymeleaf.engine.markup.handler;
  * @since 3.0.0
  *
  */
-public class AttributeMarkingSelectedSelectorEventHandler extends DelegatingSelectedSelectorEventHandler {
+public class AllowingMarkingSelectedSelectorEventHandler extends DelegatingSelectedSelectorEventHandler {
 
-    private static final char[] SELECTOR_ATTRIBUTE_NAME = "selectors".toCharArray();
     private static final char[] INNER_WHITESPACE_BUFFER = " ".toCharArray();
-    private static final int SELECTOR_ATTRIBUTE_BUFFER_LEN = 40;
+
+    private final char[] selectorAttributeName;
+    private final int selectorAttributeNameLen;
 
     private boolean lastWasInnerWhiteSpace = false;
     private char[] selectorAttributeBuffer;
 
 
-    public AttributeMarkingSelectedSelectorEventHandler() {
+    public AllowingMarkingSelectedSelectorEventHandler(final String selectorAttributeName) {
 
         super();
 
-        this.selectorAttributeBuffer = new char[SELECTOR_ATTRIBUTE_BUFFER_LEN];
-        System.arraycopy(SELECTOR_ATTRIBUTE_NAME, 0, this.selectorAttributeBuffer, 0, SELECTOR_ATTRIBUTE_NAME.length);
-        this.selectorAttributeBuffer[SELECTOR_ATTRIBUTE_NAME.length] = '=';
-        this.selectorAttributeBuffer[SELECTOR_ATTRIBUTE_NAME.length + 1] = '\"';
+        this.selectorAttributeName = selectorAttributeName.toCharArray();
+        this.selectorAttributeNameLen = this.selectorAttributeName.length;
+        this.selectorAttributeBuffer = new char[this.selectorAttributeNameLen + 20];
+        System.arraycopy(this.selectorAttributeName, 0, this.selectorAttributeBuffer, 0, this.selectorAttributeNameLen);
+        this.selectorAttributeBuffer[this.selectorAttributeNameLen] = '=';
+        this.selectorAttributeBuffer[this.selectorAttributeNameLen + 1] = '\"';
 
     }
 
@@ -93,16 +96,17 @@ public class AttributeMarkingSelectedSelectorEventHandler extends DelegatingSele
         if (selectorValues != null) {
 
             final int selectorValuesLen = selectorValues.length();
+            checkSelectorAttributeLen(selectorValuesLen);
 
-            selectorValues.getChars(0, selectorValuesLen, this.selectorAttributeBuffer, SELECTOR_ATTRIBUTE_NAME.length + 2);
-            this.selectorAttributeBuffer[SELECTOR_ATTRIBUTE_NAME.length + 2 + selectorValuesLen] = '\"';
+            selectorValues.getChars(0, selectorValuesLen, this.selectorAttributeBuffer, this.selectorAttributeNameLen + 2);
+            this.selectorAttributeBuffer[this.selectorAttributeNameLen + 2 + selectorValuesLen] = '\"';
 
             handler.onAttribute(
                     this.selectorAttributeBuffer,
-                    0, SELECTOR_ATTRIBUTE_NAME.length, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length, 1, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length + 2, selectorValuesLen,
-                    SELECTOR_ATTRIBUTE_NAME.length + 1, selectorValuesLen + 2, line, col,
+                    0, this.selectorAttributeNameLen, line, col,
+                    this.selectorAttributeNameLen, 1, line, col,
+                    this.selectorAttributeNameLen + 2, selectorValuesLen,
+                    this.selectorAttributeNameLen + 1, selectorValuesLen + 2, line, col,
                     documentName);
 
         }
@@ -139,114 +143,23 @@ public class AttributeMarkingSelectedSelectorEventHandler extends DelegatingSele
         if (selectorValues != null) {
 
             final int selectorValuesLen = selectorValues.length();
+            checkSelectorAttributeLen(selectorValuesLen);
 
-            selectorValues.getChars(0, selectorValuesLen, this.selectorAttributeBuffer, SELECTOR_ATTRIBUTE_NAME.length + 2);
-            this.selectorAttributeBuffer[SELECTOR_ATTRIBUTE_NAME.length + 2 + selectorValuesLen] = '\"';
+            selectorValues.getChars(0, selectorValuesLen, this.selectorAttributeBuffer, this.selectorAttributeNameLen + 2);
+            this.selectorAttributeBuffer[this.selectorAttributeNameLen + 2 + selectorValuesLen] = '\"';
 
             handler.onAttribute(
                     this.selectorAttributeBuffer,
-                    0, SELECTOR_ATTRIBUTE_NAME.length, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length, 1, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length + 2, selectorValuesLen,
-                    SELECTOR_ATTRIBUTE_NAME.length + 1, selectorValuesLen + 2, line, col,
+                    0, this.selectorAttributeNameLen, line, col,
+                    this.selectorAttributeNameLen, 1, line, col,
+                    this.selectorAttributeNameLen + 2, selectorValuesLen,
+                    this.selectorAttributeNameLen + 1, selectorValuesLen + 2, line, col,
                     documentName);
 
         }
 
         this.lastWasInnerWhiteSpace = false;
         handler.onOpenElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
-
-    }
-
-    @Override
-    public void onSelectedCloseElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
-            final String normalizedName, final char[] buffer, final int offset, final int len,
-            final String documentName, final int line, final int col,
-            final IMarkupHandler handler) {
-
-        if (!this.lastWasInnerWhiteSpace) {
-            handler.onElementInnerWhiteSpace(INNER_WHITESPACE_BUFFER, 0, INNER_WHITESPACE_BUFFER.length, documentName, line, col);
-            this.lastWasInnerWhiteSpace = true;
-        }
-
-        StringBuilder selectorValues = null;
-        for (int i = 0; i < selectors.length; i++) {
-            if (selectorMatches[i]) {
-                if (selectorValues != null) {
-                    selectorValues.append(' ');
-                } else {
-                    selectorValues = new StringBuilder(30);
-                }
-                selectorValues.append(selectors[i]);
-            }
-        }
-
-        if (selectorValues != null) {
-
-            final int selectorValuesLen = selectorValues.length();
-
-            selectorValues.getChars(0, selectorValuesLen, this.selectorAttributeBuffer, SELECTOR_ATTRIBUTE_NAME.length + 2);
-            this.selectorAttributeBuffer[SELECTOR_ATTRIBUTE_NAME.length + 2 + selectorValuesLen] = '\"';
-
-            handler.onAttribute(
-                    this.selectorAttributeBuffer,
-                    0, SELECTOR_ATTRIBUTE_NAME.length, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length, 1, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length + 2, selectorValuesLen,
-                    SELECTOR_ATTRIBUTE_NAME.length + 1, selectorValuesLen + 2, line, col,
-                    documentName);
-
-        }
-
-        this.lastWasInnerWhiteSpace = false;
-        handler.onCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
-
-    }
-
-    @Override
-    public void onSelectedUnmatchedCloseElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
-            final String normalizedName, final char[] buffer, final int offset, final int len,
-            final String documentName, final int line, final int col,
-            final IMarkupHandler handler) {
-
-        if (!this.lastWasInnerWhiteSpace) {
-            handler.onElementInnerWhiteSpace(INNER_WHITESPACE_BUFFER, 0, INNER_WHITESPACE_BUFFER.length, documentName, line, col);
-            this.lastWasInnerWhiteSpace = true;
-        }
-
-        StringBuilder selectorValues = null;
-        for (int i = 0; i < selectors.length; i++) {
-            if (selectorMatches[i]) {
-                if (selectorValues != null) {
-                    selectorValues.append(' ');
-                } else {
-                    selectorValues = new StringBuilder(30);
-                }
-                selectorValues.append(selectors[i]);
-            }
-        }
-
-        if (selectorValues != null) {
-
-            final int selectorValuesLen = selectorValues.length();
-
-            selectorValues.getChars(0, selectorValuesLen, this.selectorAttributeBuffer, SELECTOR_ATTRIBUTE_NAME.length + 2);
-            this.selectorAttributeBuffer[SELECTOR_ATTRIBUTE_NAME.length + 2 + selectorValuesLen] = '\"';
-
-            handler.onAttribute(
-                    this.selectorAttributeBuffer,
-                    0, SELECTOR_ATTRIBUTE_NAME.length, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length, 1, line, col,
-                    SELECTOR_ATTRIBUTE_NAME.length + 2, selectorValuesLen,
-                    SELECTOR_ATTRIBUTE_NAME.length + 1, selectorValuesLen + 2, line, col,
-                    documentName);
-
-        }
-
-        this.lastWasInnerWhiteSpace = false;
-        handler.onUnmatchedCloseElementEnd(normalizedName, buffer, offset, len, documentName, line, col);
 
     }
 
@@ -264,7 +177,7 @@ public class AttributeMarkingSelectedSelectorEventHandler extends DelegatingSele
 
 
     private void checkSelectorAttributeLen(final int valueLen) {
-        final int totalLenRequired = SELECTOR_ATTRIBUTE_NAME.length + 3 + valueLen;
+        final int totalLenRequired = this.selectorAttributeNameLen + 3 + valueLen;
         if (this.selectorAttributeBuffer.length < totalLenRequired) {
             final char[] newSelectorAttributeBuffer = new char[totalLenRequired];
             System.arraycopy(this.selectorAttributeBuffer, 0, newSelectorAttributeBuffer, 0, this.selectorAttributeBuffer.length);

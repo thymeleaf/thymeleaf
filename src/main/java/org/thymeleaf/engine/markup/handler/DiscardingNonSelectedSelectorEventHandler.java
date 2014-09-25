@@ -25,16 +25,15 @@ package org.thymeleaf.engine.markup.handler;
  * @since 3.0.0
  *
  */
-public class NoOpSelectedSelectorEventHandler implements ISelectedSelectorEventHandler {
+public class DiscardingNonSelectedSelectorEventHandler implements INonSelectedSelectorEventHandler {
 
 
-    public NoOpSelectedSelectorEventHandler() {
+    public DiscardingNonSelectedSelectorEventHandler() {
         super();
     }
 
 
-    public void onSelectedXmlDeclaration(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedXmlDeclaration(
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone,
             final String documentName, final int line, final int col,
@@ -42,8 +41,7 @@ public class NoOpSelectedSelectorEventHandler implements ISelectedSelectorEventH
         // Nothing to do
     }
 
-    public void onSelectedDocTypeClause(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedDocTypeClause(
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId,
             final String documentName, final int line, final int col,
@@ -51,32 +49,28 @@ public class NoOpSelectedSelectorEventHandler implements ISelectedSelectorEventH
         // Nothing to do
     }
 
-    public void onSelectedCDATASection(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedCDATASection(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedText(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedText(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedComment(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedComment(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedAttribute(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedAttribute(
             final char[] buffer,
             final int nameOffset, final int nameLen, final int nameLine, final int nameCol,
             final int operatorOffset, final int operatorLen, final int operatorLine, final int operatorCol,
@@ -86,8 +80,7 @@ public class NoOpSelectedSelectorEventHandler implements ISelectedSelectorEventH
         // Nothing to do
     }
 
-    public void onSelectedStandaloneElementStart(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedStandaloneElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final boolean minimized,
             final String documentName, final int line, final int col,
@@ -95,8 +88,7 @@ public class NoOpSelectedSelectorEventHandler implements ISelectedSelectorEventH
         // Nothing to do
     }
 
-    public void onSelectedStandaloneElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedStandaloneElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final boolean minimized,
             final String documentName, final int line, final int col,
@@ -104,80 +96,70 @@ public class NoOpSelectedSelectorEventHandler implements ISelectedSelectorEventH
         // Nothing to do
     }
 
-    public void onSelectedOpenElementStart(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedOpenElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedOpenElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedOpenElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedCloseElementStart(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedCloseElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedCloseElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedCloseElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedAutoCloseElementStart(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedAutoCloseElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedAutoCloseElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedAutoCloseElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedUnmatchedCloseElementStart(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedUnmatchedCloseElementStart(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedUnmatchedCloseElementEnd(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedUnmatchedCloseElementEnd(
             final String normalizedName, final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedElementInnerWhiteSpace(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedElementInnerWhiteSpace(
             final char[] buffer, final int offset, final int len,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {
         // Nothing to do
     }
 
-    public void onSelectedProcessingInstruction(
-            final String[] selectors, final boolean[] selectorMatches,
+    public void onNonSelectedProcessingInstruction(
             final String processingInstruction, final String target, final String content,
             final String documentName, final int line, final int col,
             final IMarkupHandler handler) {

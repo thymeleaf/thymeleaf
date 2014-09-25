@@ -45,16 +45,15 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.engine.markup.handler.AttributeMarkingSelectedSelectorEventHandler;
-import org.thymeleaf.engine.markup.handler.BlockSelectorMarkupHandler;
-import org.thymeleaf.engine.markup.handler.DelegatingSelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.AllowingMarkingSelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.AllowingNonSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.DirectOutputMarkupHandler;
 import org.thymeleaf.engine.markup.handler.IMarkupHandler;
 import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
 import org.thymeleaf.engine.markup.handler.IMarkupSelectorReferenceResolver;
 import org.thymeleaf.engine.markup.handler.INonSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.ISelectedSelectorEventHandler;
-import org.thymeleaf.engine.markup.handler.NoOpNonSelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.NodeSelectorMarkupHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -1095,18 +1094,21 @@ public class TemplateEngine {
             }
             
         } catch (final TemplateOutputException e) {
-            
-            logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
+
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}), e);
             throw e;
             
         } catch (final TemplateEngineException e) {
-            
-            logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
+
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}), e);
             throw e;
             
         } catch (final RuntimeException e) {
-            
-            logger.error("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()});
+
+            // We log the exception just in case higher levels do not end up logging it (e.g. they could simply display traces in the browser
+            logger.error(String.format("[THYMELEAF][{}] Exception processing template \"{}\": {}", new Object[] {TemplateEngine.threadIndex(), templateName, e.getMessage()}), e);
             throw new TemplateProcessingException("Exception processing template", templateName, e);
             
         }
@@ -1215,12 +1217,13 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final ISelectedSelectorEventHandler selectedEventHandler = new AttributeMarkingSelectedSelectorEventHandler();
-        final INonSelectedSelectorEventHandler nonSelectedEventHandler = new NoOpNonSelectedSelectorEventHandler();
+        final ISelectedSelectorEventHandler selectedEventHandler = new AllowingMarkingSelectedSelectorEventHandler("sel");
+        final INonSelectedSelectorEventHandler nonSelectedEventHandler = new AllowingNonSelectedSelectorEventHandler();
 
-        final BlockSelectorMarkupHandler handler =
-                new BlockSelectorMarkupHandler(directOutputHandler, selectedEventHandler, nonSelectedEventHandler,
-                        new String[] {"html//p", "html//div", "title", "li/a" }, false, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
+        final IMarkupHandler handler =
+                new NodeSelectorMarkupHandler(directOutputHandler, selectedEventHandler, nonSelectedEventHandler,
+                        new String[] {"html//p", "html//div", "title", "li/a", "ol/li", "li", "[th:include*='footer']" }, false, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
+
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
         markupEngineConfig.getParser().parseTemplate(markupEngineConfig, handler, templateName, reader);

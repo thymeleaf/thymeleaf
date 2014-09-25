@@ -75,13 +75,18 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchXmlDeclaration(
+            final boolean blockMatching,
             final int markupLevel, final int markupBlockIndex,
             final String xmlDeclaration,
             final String version, final String encoding, final boolean standalone) {
 
+        if (!blockMatching) {
+            return false;
+        }
+
         checkMarkupLevel(markupLevel);
 
-        if (!matchesLevel(markupLevel)) {
+        if (!matchesPreviousOrCurrentLevel(markupLevel)) {
             return false;
         }
 
@@ -89,7 +94,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchXmlDeclaration(markupLevel, markupBlockIndex, xmlDeclaration, version, encoding, standalone);
+        return this.next.matchXmlDeclaration(blockMatching, markupLevel, markupBlockIndex, xmlDeclaration, version, encoding, standalone);
 
     }
 
@@ -104,13 +109,18 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchDocTypeClause(
+            final boolean blockMatching,
             final int markupLevel, final int markupBlockIndex,
             final String docTypeClause,
             final String rootElementName, final String publicId, final String systemId) {
 
+        if (!blockMatching) {
+            return false;
+        }
+
         checkMarkupLevel(markupLevel);
 
-        if (!matchesLevel(markupLevel)) {
+        if (!matchesPreviousOrCurrentLevel(markupLevel)) {
             return false;
         }
 
@@ -118,7 +128,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchDocTypeClause(markupLevel, markupBlockIndex, docTypeClause, rootElementName, publicId, systemId);
+        return this.next.matchDocTypeClause(blockMatching, markupLevel, markupBlockIndex, docTypeClause, rootElementName, publicId, systemId);
 
     }
 
@@ -133,12 +143,17 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchCDATASection(
+            final boolean blockMatching,
             final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
+        if (!blockMatching) {
+            return false;
+        }
+
         checkMarkupLevel(markupLevel);
 
-        if (!matchesLevel(markupLevel)) {
+        if (!matchesPreviousOrCurrentLevel(markupLevel)) {
             return false;
         }
 
@@ -146,7 +161,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchCDATASection(markupLevel, markupBlockIndex, buffer, offset, len);
+        return this.next.matchCDATASection(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
 
     }
 
@@ -161,26 +176,44 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchText(
+            final boolean blockMatching,
             final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
         checkMarkupLevel(markupLevel);
 
-        if (!matchesLevel(markupLevel)) {
-            if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
-                if (this.markupSelectorItem.matchesText()) {
-                    // Matching consumes the element, so there is no way we can have a "next" after matching a text
-                    return (this.next == null);
+        if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
+            // This text has not matched yet, but might match, so we should check
+
+            final boolean matchesThisLevel = this.markupSelectorItem.matchesText();
+
+            if (matchesPreviousOrCurrentLevel(markupLevel)) {
+                // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
+
+                if (this.next != null) {
+                    return this.next.matchText(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
                 }
+                return (blockMatching? true : matchesThisLevel);
+
+            } else if (matchesThisLevel) {
+                // This filter was not matched before. So the fact that it matches now means we need to consume it,
+                // therefore not delegating.
+
+                return (this.next == null);
+
             }
-            return false;
+
+        } else if (matchesPreviousOrCurrentLevel(markupLevel)) {
+            // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
+
+            if (this.next != null) {
+                return this.next.matchText(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
+            }
+            return blockMatching;
+
         }
 
-        if (this.next == null) {
-            return true;
-        }
-
-        return this.next.matchText(markupLevel, markupBlockIndex, buffer, offset, len);
+        return false;
 
     }
 
@@ -195,12 +228,17 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchComment(
+            final boolean blockMatching,
             final int markupLevel, final int markupBlockIndex,
             final char[] buffer, final int offset, final int len) {
 
+        if (!blockMatching) {
+            return false;
+        }
+
         checkMarkupLevel(markupLevel);
 
-        if (!matchesLevel(markupLevel)) {
+        if (!matchesPreviousOrCurrentLevel(markupLevel)) {
             return false;
         }
 
@@ -208,7 +246,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchComment(markupLevel, markupBlockIndex, buffer, offset, len);
+        return this.next.matchComment(blockMatching, markupLevel, markupBlockIndex, buffer, offset, len);
 
     }
 
@@ -224,43 +262,52 @@ final class MarkupSelectorFilter {
 
 
 
-    boolean matchStandaloneElement(final int markupLevel, final int markupBlockIndex, final SelectorElementBuffer elementBuffer) {
+    boolean matchStandaloneElement(
+            final boolean blockMatching,
+            final int markupLevel, final int markupBlockIndex, final SelectorElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
-
-        if (matchesLevel(markupLevel)) {
-            // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
-
-            if (this.next != null) {
-                return this.next.matchStandaloneElement(markupLevel, markupBlockIndex, elementBuffer);
-            }
-            return true;
-
-        }
-
-        if (this.next != null) {
-            // Matching means "consuming" the element, but this is a standalone element, so there would be no
-            // room for more matching!
-            return false;
-        }
 
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This element has not matched yet, but might match, so we should check
 
-            if (this.markupSelectorItem.matches(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter)) {
-                return true;
+            final boolean matchesThisLevel = this.markupSelectorItem.matches(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter);
+
+            if (matchesPreviousOrCurrentLevel(markupLevel)) {
+                // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
+
+                if (this.next != null) {
+                    return this.next.matchStandaloneElement(blockMatching, markupLevel, markupBlockIndex, elementBuffer);
+                }
+                return (blockMatching? true : matchesThisLevel);
+
+            } else if (matchesThisLevel) {
+                // This filter was not matched before. So the fact that it matches now means we need to consume it,
+                // therefore not delegating.
+
+                return (this.next == null);
+
             }
+
+        } else if (matchesPreviousOrCurrentLevel(markupLevel)) {
+            // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
+
+            if (this.next != null) {
+                return this.next.matchStandaloneElement(blockMatching, markupLevel, markupBlockIndex, elementBuffer);
+            }
+            return blockMatching;
 
         }
 
-        // This element cannot match this level, and did not match before. So it is an impossible match.
         return false;
 
     }
 
 
 
-    boolean matchOpenElement(final int markupLevel, final int markupBlockIndex, final SelectorElementBuffer elementBuffer) {
+    boolean matchOpenElement(
+            final boolean blockMatching,
+            final int markupLevel, final int markupBlockIndex, final SelectorElementBuffer elementBuffer) {
 
         checkMarkupLevel(markupLevel);
 
@@ -269,9 +316,10 @@ final class MarkupSelectorFilter {
             // BUT we must only consider matching "done" for this level (and therefore consume the element) if
             // this is the first time we match this filter. If not, we should delegate to next.
 
+
             final boolean matchesThisLevel = this.markupSelectorItem.matches(markupBlockIndex, elementBuffer, this.markupBlockMatchingCounter);
 
-            if (matchesLevel(markupLevel)) {
+            if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched before. So the fact that it matches now or not is useful information,
                 // but we should not directly return a result without first delegating to next (if there is next).
                 // The reason this is useful information is because the next filters in chain might end up not matching
@@ -281,9 +329,9 @@ final class MarkupSelectorFilter {
                 this.matchedMarkupLevels[markupLevel] = matchesThisLevel;
 
                 if (this.next != null) {
-                    return this.next.matchOpenElement(markupLevel, markupBlockIndex, elementBuffer);
+                    return this.next.matchOpenElement(blockMatching, markupLevel, markupBlockIndex, elementBuffer);
                 }
-                return true;
+                return (blockMatching? true : matchesThisLevel);
 
             } else if (matchesThisLevel) {
                 // This filter was not matched before. So the fact that it matches now means we need to consume it,
@@ -294,13 +342,13 @@ final class MarkupSelectorFilter {
 
             }
 
-        } else if (matchesLevel(markupLevel)) {
+        } else if (matchesPreviousOrCurrentLevel(markupLevel)) {
             // This filter cannot match this level, but it did match before in a previous level, so we are happy
             // delegating to next if it exists.
             if (this.next != null) {
-                return this.next.matchOpenElement(markupLevel, markupBlockIndex, elementBuffer);
+                return this.next.matchOpenElement(blockMatching, markupLevel, markupBlockIndex, elementBuffer);
             }
-            return true;
+            return blockMatching;
         }
 
         // This element cannot match this level, and did not match before. So it is an impossible match.
@@ -318,13 +366,18 @@ final class MarkupSelectorFilter {
      */
 
     boolean matchProcessingInstruction(
+            final boolean blockMatching,
             final int markupLevel, final int markupBlockIndex,
             final String processingInstruction,
             final String target, final String content) {
 
+        if (!blockMatching) {
+            return false;
+        }
+
         checkMarkupLevel(markupLevel);
 
-        if (!matchesLevel(markupLevel)) {
+        if (!matchesPreviousOrCurrentLevel(markupLevel)) {
             return false;
         }
 
@@ -332,7 +385,7 @@ final class MarkupSelectorFilter {
             return true;
         }
 
-        return this.next.matchProcessingInstruction(markupLevel, markupBlockIndex, processingInstruction, target, content);
+        return this.next.matchProcessingInstruction(blockMatching, markupLevel, markupBlockIndex, processingInstruction, target, content);
 
     }
 
@@ -372,8 +425,8 @@ final class MarkupSelectorFilter {
     }
 
 
-    private boolean matchesLevel(final int markupLevel) {
-        int i = markupLevel; 
+    private boolean matchesPreviousOrCurrentLevel(final int markupLevel) {
+        int i = markupLevel;
         while (i >= 0 && !this.matchedMarkupLevels[i]) { i--; }
         return (i >= 0);
     }
