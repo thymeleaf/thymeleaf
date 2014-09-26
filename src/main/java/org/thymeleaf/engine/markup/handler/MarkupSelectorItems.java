@@ -152,7 +152,7 @@ final class MarkupSelectorItems {
             selectorSpecStr = selectorSpecStr.substring(0, firstNonSlash + selEnd);
             result = parseSelector(caseSensitive, tail, referenceResolver);
         } else {
-            result = new ArrayList(3);
+            result = new ArrayList<IMarkupSelectorItem>(3);
         }
 
         final Matcher matcher = selectorPattern.matcher(selectorSpecStr);
@@ -295,8 +295,13 @@ final class MarkupSelectorItems {
 
         final boolean textSelector = MarkupSelectorItem.TEXT_SELECTOR.equals(path);
         final boolean commentSelector = MarkupSelectorItem.COMMENT_SELECTOR.equals(path);
+        final boolean cdataSectionSelector = MarkupSelectorItem.CDATA_SECTION_SELECTOR.equals(path);
+        final boolean docTypeClauseSelector = MarkupSelectorItem.DOC_TYPE_CLAUSE_SELECTOR.equals(path);
+        final boolean xmlDeclarationSelector = MarkupSelectorItem.XML_DECLARATION_SELECTOR.equals(path);
+        final boolean processingInstructionSelector = MarkupSelectorItem.PROCESSING_INSTRUCTION_SELECTOR.equals(path);
 
-        final boolean isNonElementSelector = (textSelector || commentSelector);
+        final boolean isNonElementSelector =
+                (textSelector || commentSelector || cdataSectionSelector || docTypeClauseSelector || xmlDeclarationSelector || processingInstructionSelector);
 
         /*
          * Compute the final path selector we're left with (if any)
@@ -382,7 +387,9 @@ final class MarkupSelectorItems {
 
         IMarkupSelectorItem thisItem =
                 new MarkupSelectorItem(
-                        caseSensitive, anyLevel, textSelector, commentSelector, selectorPath, index, attributeCondition);
+                        caseSensitive, anyLevel,
+                        textSelector, commentSelector, cdataSectionSelector, docTypeClauseSelector, xmlDeclarationSelector, processingInstructionSelector,
+                        selectorPath, index, attributeCondition);
 
         if (referenceResolver != null && (selectorPathReferenceModifier != null || selectorPath != null)) {
 

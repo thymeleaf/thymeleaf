@@ -53,6 +53,22 @@ final class MarkupSelectorOrItem implements IMarkupSelectorItem {
         return this.left.matchesComment() || this.right.matchesComment();
     }
 
+    public boolean matchesCDATASection() {
+        return this.left.matchesCDATASection() || this.right.matchesCDATASection();
+    }
+
+    public boolean matchesDocTypeClause() {
+        return this.left.matchesDocTypeClause() || this.right.matchesDocTypeClause();
+    }
+
+    public boolean matchesXmlDeclaration() {
+        return this.left.matchesXmlDeclaration() || this.right.matchesXmlDeclaration();
+    }
+
+    public boolean matchesProcessingInstruction() {
+        return this.left.matchesProcessingInstruction() || this.right.matchesProcessingInstruction();
+    }
+
     public boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
         return this.left.matchesElement(markupBlockIndex, elementBuffer, markupBlockMatchingCounter) ||
                 this.right.matchesElement(markupBlockIndex, elementBuffer, markupBlockMatchingCounter);

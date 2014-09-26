@@ -33,6 +33,14 @@ interface IMarkupSelectorItem {
 
     boolean matchesComment();
 
+    boolean matchesCDATASection();
+
+    boolean matchesDocTypeClause();
+
+    boolean matchesXmlDeclaration();
+
+    boolean matchesProcessingInstruction();
+
     boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
                            final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 

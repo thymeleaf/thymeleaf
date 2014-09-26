@@ -34,6 +34,10 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
     static final String TEXT_SELECTOR = "text()";
     static final String COMMENT_SELECTOR = "comment()";
+    static final String CDATA_SECTION_SELECTOR = "cdata()";
+    static final String DOC_TYPE_CLAUSE_SELECTOR = "doctype()";
+    static final String XML_DECLARATION_SELECTOR = "xmldecl()";
+    static final String PROCESSING_INSTRUCTION_SELECTOR = "procinstr()";
     static final String ID_MODIFIER_SEPARATOR = "#";
     static final String CLASS_MODIFIER_SEPARATOR = ".";
     static final String REFERENCE_MODIFIER_SEPARATOR = "%";
@@ -50,6 +54,10 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     private final boolean anyLevel;
     private final boolean textSelector;
     private final boolean commentSelector;
+    private final boolean cdataSectionSelector;
+    private final boolean docTypeClauseSelector;
+    private final boolean xmlDeclarationSelector;
+    private final boolean processingInstructionSelector;
     private final String elementName;
     private final IndexCondition index;
     private final IAttributeCondition attributeCondition;
@@ -62,10 +70,13 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     //                * support "contains" attribute value with "*="
     //                * support for > and < in indexed selectors
     //                * support for both "and" and "or" in attribute conditions
+    //                * support for matching comments, CDATA, DOCTYPE, XML Declarations and Processing Instructions
 
     MarkupSelectorItem(
             final boolean caseSensitive, final boolean anyLevel,
             final boolean textSelector, final boolean commentSelector,
+            final boolean cdataSectionSelector, final boolean docTypeClauseSelector,
+            final boolean xmlDeclarationSelector, final boolean processingInstructionSelector,
             final String elementName, final IndexCondition index, final IAttributeCondition attributeCondition) {
 
         super();
@@ -74,6 +85,10 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
         this.anyLevel = anyLevel;
         this.textSelector = textSelector;
         this.commentSelector = commentSelector;
+        this.cdataSectionSelector = cdataSectionSelector;
+        this.docTypeClauseSelector = docTypeClauseSelector;
+        this.xmlDeclarationSelector = xmlDeclarationSelector;
+        this.processingInstructionSelector = processingInstructionSelector;
         this.elementName = elementName;
         this.index = index;
         this.attributeCondition = attributeCondition;
@@ -122,6 +137,14 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
             strBuilder.append(TEXT_SELECTOR);
         } else if (this.commentSelector) {
             strBuilder.append(COMMENT_SELECTOR);
+        } else if (this.cdataSectionSelector) {
+            strBuilder.append(CDATA_SECTION_SELECTOR);
+        } else if (this.docTypeClauseSelector) {
+            strBuilder.append(DOC_TYPE_CLAUSE_SELECTOR);
+        } else if (this.xmlDeclarationSelector) {
+            strBuilder.append(XML_DECLARATION_SELECTOR);
+        } else if (this.processingInstructionSelector) {
+            strBuilder.append(PROCESSING_INSTRUCTION_SELECTOR);
         } else {
             strBuilder.append("*");
         }
@@ -139,10 +162,10 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
                     strBuilder.append(this.index.value);
                     break;
                 case LESS_THAN:
-                    strBuilder.append("<" + this.index.value);
+                    strBuilder.append("<").append(this.index.value);
                     break;
                 case MORE_THAN:
-                    strBuilder.append(">" + this.index.value);
+                    strBuilder.append(">").append(this.index.value);
                     break;
                 case EVEN:
                     strBuilder.append(EVEN_SELECTOR);
@@ -278,10 +301,31 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     }
 
 
+    public boolean matchesCDATASection() {
+        return this.cdataSectionSelector;
+    }
+
+
+    public boolean matchesDocTypeClause() {
+        return this.docTypeClauseSelector;
+    }
+
+
+    public boolean matchesXmlDeclaration() {
+        return this.xmlDeclarationSelector;
+    }
+
+
+    public boolean matchesProcessingInstruction() {
+        return this.processingInstructionSelector;
+    }
+
+
     public boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
                                   final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
 
-        if (this.textSelector) {
+        if (this.textSelector || this.commentSelector || this.cdataSectionSelector ||
+                this.docTypeClauseSelector || this.xmlDeclarationSelector || this.processingInstructionSelector) {
             return false;
         }
 
