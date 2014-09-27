@@ -87,7 +87,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This text has not matched yet, but might match, so we should check
 
-            this.matchesThisLevel = this.markupSelectorItem.matchesXmlDeclaration();
+            this.matchesThisLevel = this.markupSelectorItem.matchesXmlDeclaration(markupBlockIndex, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
@@ -140,7 +140,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This text has not matched yet, but might match, so we should check
 
-            this.matchesThisLevel = this.markupSelectorItem.matchesDocTypeClause();
+            this.matchesThisLevel = this.markupSelectorItem.matchesDocTypeClause(markupBlockIndex, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
@@ -192,7 +192,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This text has not matched yet, but might match, so we should check
 
-            this.matchesThisLevel = this.markupSelectorItem.matchesCDATASection();
+            this.matchesThisLevel = this.markupSelectorItem.matchesCDATASection(markupBlockIndex, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
@@ -244,7 +244,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This text has not matched yet, but might match, so we should check
 
-            this.matchesThisLevel = this.markupSelectorItem.matchesText();
+            this.matchesThisLevel = this.markupSelectorItem.matchesText(markupBlockIndex, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
@@ -296,7 +296,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This text has not matched yet, but might match, so we should check
 
-            this.matchesThisLevel = this.markupSelectorItem.matchesComment();
+            this.matchesThisLevel = this.markupSelectorItem.matchesComment(markupBlockIndex, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.
@@ -454,7 +454,7 @@ final class MarkupSelectorFilter {
         if (this.markupSelectorItem.anyLevel() || markupLevel == 0 || (this.prev != null && this.prev.matchedMarkupLevels[markupLevel - 1])) {
             // This text has not matched yet, but might match, so we should check
 
-            this.matchesThisLevel = this.markupSelectorItem.matchesProcessingInstruction();
+            this.matchesThisLevel = this.markupSelectorItem.matchesProcessingInstruction(markupBlockIndex, this.markupBlockMatchingCounter);
 
             if (matchesPreviousOrCurrentLevel(markupLevel)) {
                 // This filter was already matched by a previous level (through an "open" event), so just delegate to next.

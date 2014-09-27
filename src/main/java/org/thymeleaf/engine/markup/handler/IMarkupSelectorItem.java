@@ -29,17 +29,23 @@ interface IMarkupSelectorItem {
 
     boolean anyLevel();
 
-    boolean matchesText();
+    boolean matchesText(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
-    boolean matchesComment();
+    boolean matchesComment(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
-    boolean matchesCDATASection();
+    boolean matchesCDATASection(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
-    boolean matchesDocTypeClause();
+    boolean matchesDocTypeClause(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
-    boolean matchesXmlDeclaration();
+    boolean matchesXmlDeclaration(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
-    boolean matchesProcessingInstruction();
+    boolean matchesProcessingInstruction(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);
 
     boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer,
                            final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter);

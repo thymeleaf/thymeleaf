@@ -291,33 +291,105 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     }
 
 
-    public boolean matchesText() {
-        return this.textSelector;
+    public boolean matchesText(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+
+        if (!this.textSelector) {
+            return false;
+        }
+
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
+        }
+
+        return true;
+
     }
 
 
-    public boolean matchesComment() {
-        return this.commentSelector;
+    public boolean matchesComment(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+
+        if (!this.commentSelector) {
+            return false;
+        }
+
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
+        }
+
+        return true;
+
     }
 
 
-    public boolean matchesCDATASection() {
-        return this.cdataSectionSelector;
+    public boolean matchesCDATASection(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+
+        if (!this.cdataSectionSelector) {
+            return false;
+        }
+
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
+        }
+
+        return true;
+
     }
 
 
-    public boolean matchesDocTypeClause() {
-        return this.docTypeClauseSelector;
+    public boolean matchesDocTypeClause(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+
+        if (!this.docTypeClauseSelector) {
+            return false;
+        }
+
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
+        }
+
+        return true;
+
     }
 
 
-    public boolean matchesXmlDeclaration() {
-        return this.xmlDeclarationSelector;
+    public boolean matchesXmlDeclaration(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+
+        if (!this.xmlDeclarationSelector) {
+            return false;
+        }
+
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
+        }
+
+        return true;
+
     }
 
 
-    public boolean matchesProcessingInstruction() {
-        return this.processingInstructionSelector;
+    public boolean matchesProcessingInstruction(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+
+        if (!this.processingInstructionSelector) {
+            return false;
+        }
+
+        if (this.index != null &&
+                !matchesIndex(markupBlockIndex, markupBlockMatchingCounter, this.index)) {
+            return false;
+        }
+
+        return true;
+
     }
 
 

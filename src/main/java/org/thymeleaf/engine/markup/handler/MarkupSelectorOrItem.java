@@ -45,28 +45,40 @@ final class MarkupSelectorOrItem implements IMarkupSelectorItem {
         return this.left.anyLevel();
     }
 
-    public boolean matchesText() {
-        return this.left.matchesText() || this.right.matchesText();
+    public boolean matchesText(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesText(markupBlockIndex, markupBlockMatchingCounter) ||
+                this.right.matchesText(markupBlockIndex, markupBlockMatchingCounter);
     }
 
-    public boolean matchesComment() {
-        return this.left.matchesComment() || this.right.matchesComment();
+    public boolean matchesComment(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesComment(markupBlockIndex, markupBlockMatchingCounter) ||
+                this.right.matchesComment(markupBlockIndex, markupBlockMatchingCounter);
     }
 
-    public boolean matchesCDATASection() {
-        return this.left.matchesCDATASection() || this.right.matchesCDATASection();
+    public boolean matchesCDATASection(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesCDATASection(markupBlockIndex, markupBlockMatchingCounter) ||
+                this.right.matchesCDATASection(markupBlockIndex, markupBlockMatchingCounter);
     }
 
-    public boolean matchesDocTypeClause() {
-        return this.left.matchesDocTypeClause() || this.right.matchesDocTypeClause();
+    public boolean matchesDocTypeClause(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesDocTypeClause(markupBlockIndex, markupBlockMatchingCounter) ||
+                this.right.matchesDocTypeClause(markupBlockIndex, markupBlockMatchingCounter);
     }
 
-    public boolean matchesXmlDeclaration() {
-        return this.left.matchesXmlDeclaration() || this.right.matchesXmlDeclaration();
+    public boolean matchesXmlDeclaration(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesXmlDeclaration(markupBlockIndex, markupBlockMatchingCounter) ||
+                this.right.matchesXmlDeclaration(markupBlockIndex, markupBlockMatchingCounter);
     }
 
-    public boolean matchesProcessingInstruction() {
-        return this.left.matchesProcessingInstruction() || this.right.matchesProcessingInstruction();
+    public boolean matchesProcessingInstruction(
+            final int markupBlockIndex, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
+        return this.left.matchesProcessingInstruction(markupBlockIndex, markupBlockMatchingCounter) ||
+                this.right.matchesProcessingInstruction(markupBlockIndex, markupBlockMatchingCounter);
     }
 
     public boolean matchesElement(final int markupBlockIndex, final SelectorElementBuffer elementBuffer, final MarkupSelectorFilter.MarkupBlockMatchingCounter markupBlockMatchingCounter) {
