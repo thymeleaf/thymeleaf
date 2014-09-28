@@ -53,6 +53,7 @@ import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
 import org.thymeleaf.engine.markup.handler.IMarkupSelectorReferenceResolver;
 import org.thymeleaf.engine.markup.handler.INonSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.ISelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.MarkupSelectorMode;
 import org.thymeleaf.engine.markup.handler.NodeSelectorMarkupHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
@@ -1222,7 +1223,8 @@ public class TemplateEngine {
 
         final IMarkupHandler handler =
                 new NodeSelectorMarkupHandler(directOutputHandler, selectedEventHandler, nonSelectedEventHandler,
-                        new String[] {"html//p", "html//div", "title", "li/a", "ol/li", "li", "[th:include*='footer']" }, false, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
+                        new String[] {"html//p", "html//div", "title", "li/a", "ol/li", "li", "[th:include*='footer']" },
+                        MarkupSelectorMode.HTML, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
 
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);

@@ -63,8 +63,8 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
     public NodeSelectorMarkupHandler(final IMarkupHandler handler,
                                      final ISelectedSelectorEventHandler selectedEventHandler,
                                      final INonSelectedSelectorEventHandler nonSelectedEventHandler,
-                                     final String selector, final boolean caseSensitive) {
-        this(handler, selectedEventHandler, nonSelectedEventHandler, new String[] {selector}, caseSensitive, null);
+                                     final String selector, final MarkupSelectorMode mode) {
+        this(handler, selectedEventHandler, nonSelectedEventHandler, new String[] {selector}, mode, null);
     }
 
 
@@ -72,8 +72,8 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
     public NodeSelectorMarkupHandler(final IMarkupHandler handler,
                                      final ISelectedSelectorEventHandler selectedEventHandler,
                                      final INonSelectedSelectorEventHandler nonSelectedEventHandler,
-                                     final String[] selectors, final boolean caseSensitive) {
-        this(handler, selectedEventHandler, nonSelectedEventHandler, selectors, caseSensitive, null);
+                                     final String[] selectors, final MarkupSelectorMode mode) {
+        this(handler, selectedEventHandler, nonSelectedEventHandler, selectors, mode, null);
     }
 
 
@@ -81,9 +81,9 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
     public NodeSelectorMarkupHandler(final IMarkupHandler handler,
                                      final ISelectedSelectorEventHandler selectedEventHandler,
                                      final INonSelectedSelectorEventHandler nonSelectedEventHandler,
-                                     final String selector, final boolean caseSensitive,
+                                     final String selector, final MarkupSelectorMode mode,
                                      final IMarkupSelectorReferenceResolver referenceResolver) {
-        this(handler, selectedEventHandler, nonSelectedEventHandler, new String[] {selector}, caseSensitive, referenceResolver);
+        this(handler, selectedEventHandler, nonSelectedEventHandler, new String[] {selector}, mode, referenceResolver);
     }
 
 
@@ -91,7 +91,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
     public NodeSelectorMarkupHandler(final IMarkupHandler handler,
                                      final ISelectedSelectorEventHandler selectedEventHandler,
                                      final INonSelectedSelectorEventHandler nonSelectedEventHandler,
-                                     final String[] selectors, final boolean caseSensitive,
+                                     final String[] selectors, final MarkupSelectorMode mode,
                                      final IMarkupSelectorReferenceResolver referenceResolver) {
 
         super();
@@ -120,7 +120,7 @@ public final class NodeSelectorMarkupHandler extends AbstractMarkupHandler {
         for (int i = 0; i < this.selectorsLen; i++) {
 
             final List<IMarkupSelectorItem> selectorItems =
-                    MarkupSelectorItems.forSelector(caseSensitive, selectors[i], referenceResolver);
+                    MarkupSelectorItems.forSelector(mode, selectors[i], referenceResolver);
 
             this.selectorFilters[i] = new MarkupSelectorFilter(null, selectorItems.get(0));
             MarkupSelectorFilter last = this.selectorFilters[i];

@@ -52,7 +52,7 @@ final class MarkupSelectorItems {
 
 
     static List<IMarkupSelectorItem> forSelector(
-            final boolean caseSensitive, final String selector, final IMarkupSelectorReferenceResolver referenceResolver) {
+            final MarkupSelectorMode mode, final String selector, final IMarkupSelectorReferenceResolver referenceResolver) {
 
         if (StringUtils.isEmptyOrWhitespace(selector)) {
             throw new IllegalArgumentException("Selector cannot be null");
@@ -60,7 +60,7 @@ final class MarkupSelectorItems {
 
         final ConcurrentHashMap<String,List<IMarkupSelectorItem>> map;
         if (referenceResolver == null) {
-            map = NO_REFERENCE_RESOLVER_REPOSITORY.getMap(caseSensitive);
+            map = NO_REFERENCE_RESOLVER_REPOSITORY.getMap(mode);
         } else {
             if (!REPOSITORIES_BY_REFERENCE_RESOLVER.containsKey(referenceResolver)) {
                 if (REPOSITORIES_BY_REFERENCE_RESOLVER.size() < SelectorRepository.SELECTOR_ITEMS_MAX_SIZE) {
@@ -68,7 +68,7 @@ final class MarkupSelectorItems {
                     REPOSITORIES_BY_REFERENCE_RESOLVER.putIfAbsent(referenceResolver, new SelectorRepository());
                 }
             }
-            map = REPOSITORIES_BY_REFERENCE_RESOLVER.get(referenceResolver).getMap(caseSensitive);
+            map = REPOSITORIES_BY_REFERENCE_RESOLVER.get(referenceResolver).getMap(mode);
         }
 
         List<IMarkupSelectorItem> items = map.get(selector);
@@ -76,7 +76,7 @@ final class MarkupSelectorItems {
             return items;
         }
 
-        items = Collections.unmodifiableList(parseSelector(caseSensitive, selector, referenceResolver));
+        items = Collections.unmodifiableList(parseSelector(mode, selector, referenceResolver));
 
         if (map.size() < SelectorRepository.SELECTOR_ITEMS_MAX_SIZE) {
             map.putIfAbsent(selector, items);
@@ -97,8 +97,8 @@ final class MarkupSelectorItems {
                 new ConcurrentHashMap<String, List<IMarkupSelectorItem>>(20);
 
 
-        ConcurrentHashMap<String,List<IMarkupSelectorItem>> getMap(final boolean caseSensitive) {
-            return (caseSensitive ? CASE_SENSITIVE_SELECTOR_ITEMS : CASE_INSENSITIVE_SELECTOR_ITEMS);
+        ConcurrentHashMap<String,List<IMarkupSelectorItem>> getMap(final MarkupSelectorMode mode) {
+            return (mode.isCaseSensitive() ? CASE_SENSITIVE_SELECTOR_ITEMS : CASE_INSENSITIVE_SELECTOR_ITEMS);
         }
 
     }
@@ -109,14 +109,14 @@ final class MarkupSelectorItems {
 
 
     static List<IMarkupSelectorItem> parseSelector(
-            final boolean caseSensitive, final String selector,
+            final MarkupSelectorMode mode, final String selector,
             final IMarkupSelectorReferenceResolver referenceResolver) {
-        return parseSelector(caseSensitive, selector, null, null, referenceResolver);
+        return parseSelector(mode, selector, null, null, referenceResolver);
     }
 
 
     private static List<IMarkupSelectorItem> parseSelector(
-            final boolean caseSensitive, final String selector,
+            final MarkupSelectorMode mode, final String selector,
             final MarkupSelectorItem.IAttributeCondition initialAttributeCondition,
             final MarkupSelectorItem.IndexCondition initialIndexCondition,
             final IMarkupSelectorReferenceResolver referenceResolver) {
@@ -150,7 +150,7 @@ final class MarkupSelectorItems {
         if (selEnd != -1) {
             final String tail = selectorSpecStr.substring(firstNonSlash).substring(selEnd);
             selectorSpecStr = selectorSpecStr.substring(0, firstNonSlash + selEnd);
-            result = parseSelector(caseSensitive, tail, referenceResolver);
+            result = parseSelector(mode, tail, referenceResolver);
         } else {
             result = new ArrayList<IMarkupSelectorItem>(3);
         }
@@ -203,13 +203,15 @@ final class MarkupSelectorItems {
         MarkupSelectorItem.IAttributeCondition attributeCondition = initialAttributeCondition;
 
 
-        final int idModifierPos = path.indexOf(MarkupSelectorItem.ID_MODIFIER_SEPARATOR);
-        final int classModifierPos = path.indexOf(MarkupSelectorItem.CLASS_MODIFIER_SEPARATOR);
+        final int idModifierPos =
+                (MarkupSelectorMode.HTML.equals(mode) ? path.indexOf(MarkupSelectorItem.ID_MODIFIER_SEPARATOR) : -1);
+        final int classModifierPos =
+                (MarkupSelectorMode.HTML.equals(mode) ? path.indexOf(MarkupSelectorItem.CLASS_MODIFIER_SEPARATOR) : -1);
         final int referenceModifierPos = path.indexOf(MarkupSelectorItem.REFERENCE_MODIFIER_SEPARATOR);
 
 
         /*
-         * Compute the possible existence of an ID selector: "x#id"
+         * Compute the possible existence of an ID selector: "x#id" (if in HTML mode)
          */
 
         if (idModifierPos != -1) {
@@ -238,7 +240,7 @@ final class MarkupSelectorItems {
         }
 
         /*
-         * Compute the possible existence of a CLASS selector: "x.class"
+         * Compute the possible existence of a CLASS selector: "x.class" (if in HTML mode)
          */
 
         if (classModifierPos != -1) {
@@ -310,7 +312,9 @@ final class MarkupSelectorItems {
         final String caseSensitiveSelectorPath =
                 (isNonElementSelector ? null : (StringUtils.isEmptyOrWhitespace(path) ? null : path));
         final String selectorPath =
-                (caseSensitiveSelectorPath == null? null : (caseSensitive? caseSensitiveSelectorPath : caseSensitiveSelectorPath.toLowerCase()));
+                (caseSensitiveSelectorPath == null?
+                        null :
+                        (mode.isCaseSensitive() ? caseSensitiveSelectorPath : caseSensitiveSelectorPath.toLowerCase()));
 
 
         /*
@@ -364,7 +368,8 @@ final class MarkupSelectorItems {
                 } else {
                     // Modifier is not an index
 
-                    final MarkupSelectorItem.IAttributeCondition newAttributeCondition = parseAttributeCondition(caseSensitive, selector, currentModifier);
+                    final MarkupSelectorItem.IAttributeCondition newAttributeCondition =
+                            parseAttributeCondition(mode, selector, currentModifier);
                     if (newAttributeCondition == null) {
                         throw new IllegalArgumentException(
                                 "Invalid syntax in selector \"" + selector + "\": selector does not match selector syntax: " +
@@ -387,7 +392,7 @@ final class MarkupSelectorItems {
 
         IMarkupSelectorItem thisItem =
                 new MarkupSelectorItem(
-                        caseSensitive, anyLevel,
+                        mode, anyLevel,
                         textSelector, commentSelector, cdataSectionSelector, docTypeClauseSelector, xmlDeclarationSelector, processingInstructionSelector,
                         selectorPath, index, attributeCondition);
 
@@ -413,7 +418,7 @@ final class MarkupSelectorItems {
                     }
 
                     // We don't send the reference resolver again (null)
-                    final List<IMarkupSelectorItem> parsedReference = parseSelector(caseSensitive, resolvedSelector, null);
+                    final List<IMarkupSelectorItem> parsedReference = parseSelector(mode, resolvedSelector, null);
                     if (parsedReference != null && parsedReference.size() > 1) {
                         throw new IllegalArgumentException(
                                 "Invalid selector resolved by reference resolver of class " + referenceResolver.getClass().getName() + " " +
@@ -446,7 +451,7 @@ final class MarkupSelectorItems {
                     }
 
                     // We don't send the reference resolver again (null)
-                    final List<IMarkupSelectorItem> parsedReference = parseSelector(caseSensitive, resolvedSelector, attributeCondition, index, null);
+                    final List<IMarkupSelectorItem> parsedReference = parseSelector(mode, resolvedSelector, attributeCondition, index, null);
                     if (parsedReference != null && parsedReference.size() > 1) {
                         throw new IllegalArgumentException(
                                 "Invalid selector resolved by reference resolver of class " + referenceResolver.getClass().getName() + " " +
@@ -508,7 +513,8 @@ final class MarkupSelectorItems {
 
 
 
-    private static MarkupSelectorItem.IAttributeCondition parseAttributeCondition(final boolean caseSensitive, final String selectorSpec, final String attrGroup) {
+    private static MarkupSelectorItem.IAttributeCondition parseAttributeCondition(
+            final MarkupSelectorMode mode, final String selectorSpec, final String attrGroup) {
 
         String text = attrGroup.trim();
         if (text.startsWith("(") && text.endsWith(")")) {
@@ -542,9 +548,9 @@ final class MarkupSelectorItems {
                     Character.isWhitespace(text.charAt(i + 4))) {
 
                 final MarkupSelectorItem.IAttributeCondition left =
-                        parseAttributeCondition(caseSensitive, selectorSpec, text.substring(0,i));
+                        parseAttributeCondition(mode, selectorSpec, text.substring(0,i));
                 final MarkupSelectorItem.IAttributeCondition right =
-                        parseAttributeCondition(caseSensitive, selectorSpec, text.substring(i + 5,textLen));
+                        parseAttributeCondition(mode, selectorSpec, text.substring(i + 5,textLen));
                 return new MarkupSelectorItem.AttributeConditionRelation(
                         MarkupSelectorItem.AttributeConditionRelation.Type.AND, left, right);
 
@@ -556,9 +562,9 @@ final class MarkupSelectorItems {
                     Character.isWhitespace(text.charAt(i + 3))) {
 
                 final MarkupSelectorItem.IAttributeCondition left =
-                        parseAttributeCondition(caseSensitive, selectorSpec, text.substring(0,i));
+                        parseAttributeCondition(mode, selectorSpec, text.substring(0,i));
                 final MarkupSelectorItem.IAttributeCondition right =
-                        parseAttributeCondition(caseSensitive, selectorSpec, text.substring(i + 4,textLen));
+                        parseAttributeCondition(mode, selectorSpec, text.substring(i + 4,textLen));
                 return new MarkupSelectorItem.AttributeConditionRelation(
                         MarkupSelectorItem.AttributeConditionRelation.Type.OR, left, right);
 
@@ -568,13 +574,13 @@ final class MarkupSelectorItems {
 
         }
 
-        return parseSimpleAttributeCondition(caseSensitive, selectorSpec, text);
+        return parseSimpleAttributeCondition(mode, selectorSpec, text);
 
     }
 
 
     private static MarkupSelectorItem.AttributeCondition parseSimpleAttributeCondition(
-            final boolean caseSensitive, final String selectorSpec, final String attributeSpec) {
+            final MarkupSelectorMode mode, final String selectorSpec, final String attributeSpec) {
 
         // 0 = attribute name, 1 = operator, 2 = value
         final String[] fragments = tokenizeAttributeSpec(attributeSpec);
@@ -583,7 +589,7 @@ final class MarkupSelectorItems {
         if (attrName.startsWith("@")) {
             attrName = attrName.substring(1);
         }
-        attrName = (caseSensitive? attrName : attrName.toLowerCase());
+        attrName = (mode.isCaseSensitive()? attrName : attrName.toLowerCase());
 
         final MarkupSelectorItem.AttributeCondition.Operator operator = parseAttributeOperator(fragments[1]);
 

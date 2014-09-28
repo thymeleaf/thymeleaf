@@ -50,7 +50,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
 
 
-    private final boolean caseSensitive;
+    private final MarkupSelectorMode mode;
     private final boolean anyLevel;
     private final boolean textSelector;
     private final boolean commentSelector;
@@ -73,7 +73,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
     //                * support for matching comments, CDATA, DOCTYPE, XML Declarations and Processing Instructions
 
     MarkupSelectorItem(
-            final boolean caseSensitive, final boolean anyLevel,
+            final MarkupSelectorMode mode, final boolean anyLevel,
             final boolean textSelector, final boolean commentSelector,
             final boolean cdataSectionSelector, final boolean docTypeClauseSelector,
             final boolean xmlDeclarationSelector, final boolean processingInstructionSelector,
@@ -81,7 +81,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
         super();
 
-        this.caseSensitive = caseSensitive;
+        this.mode = mode;
         this.anyLevel = anyLevel;
         this.textSelector = textSelector;
         this.commentSelector = commentSelector;
@@ -418,7 +418,7 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
         // Check the attribute conditions (if any)
         if (this.attributeCondition != null &&
-                !matchesAttributeCondition(this.caseSensitive, elementBuffer, this.attributeCondition)) {
+                !matchesAttributeCondition(this.mode, elementBuffer, this.attributeCondition)) {
             return false;
         }
 
@@ -439,35 +439,35 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
 
 
     private static boolean matchesAttributeCondition(
-            final boolean caseSensitive, final SelectorElementBuffer elementBuffer, final IAttributeCondition attributeCondition) {
+            final MarkupSelectorMode mode, final SelectorElementBuffer elementBuffer, final IAttributeCondition attributeCondition) {
 
         if (attributeCondition instanceof AttributeConditionRelation) {
             final AttributeConditionRelation relation = (AttributeConditionRelation) attributeCondition;
             switch (relation.type) {
                 case AND:
-                    return matchesAttributeCondition(caseSensitive, elementBuffer, relation.left) &&
-                            matchesAttributeCondition(caseSensitive, elementBuffer, relation.right);
+                    return matchesAttributeCondition(mode, elementBuffer, relation.left) &&
+                            matchesAttributeCondition(mode, elementBuffer, relation.right);
                 case OR:
-                    return matchesAttributeCondition(caseSensitive, elementBuffer, relation.left) ||
-                            matchesAttributeCondition(caseSensitive, elementBuffer, relation.right);
+                    return matchesAttributeCondition(mode, elementBuffer, relation.left) ||
+                            matchesAttributeCondition(mode, elementBuffer, relation.right);
             }
         }
 
         final AttributeCondition attrCondition = (AttributeCondition) attributeCondition;
-        return matchesAttribute(caseSensitive, elementBuffer, attrCondition.name, attrCondition.operator, attrCondition.value);
+        return matchesAttribute(mode, elementBuffer, attrCondition.name, attrCondition.operator, attrCondition.value);
 
     }
 
 
 
     private static boolean matchesAttribute(
-            final boolean caseSensitive, final SelectorElementBuffer elementBuffer,
+            final MarkupSelectorMode mode, final SelectorElementBuffer elementBuffer,
             final String attrName, final MarkupSelectorItem.AttributeCondition.Operator attrOperator, final String attrValue) {
 
         boolean found = false;
         for (int i = 0; i < elementBuffer.attributeCount; i++) {
 
-            if (!TextUtil.equals(caseSensitive,
+            if (!TextUtil.equals(mode.isCaseSensitive(),
                     attrName, 0, attrName.length(),
                     elementBuffer.attributeBuffers[i], 0, elementBuffer.attributeNameLens[i])) {
                 continue;
@@ -478,9 +478,10 @@ final class MarkupSelectorItem implements IMarkupSelectorItem {
             // instances.
             found = true;
 
-            if ("class".equals(attrName)) {
+            if (MarkupSelectorMode.HTML.equals(mode) && "class".equals(attrName)) {
 
                 // The attribute we are comparing is actually the "class" attribute, which requires an special treatment
+                // if we are in HTML mode.
                 if (matchesClassAttributeValue(
                         attrOperator, attrValue,
                         elementBuffer.attributeBuffers[i], elementBuffer.attributeValueContentOffsets[i], elementBuffer.attributeValueContentLens[i])) {
