@@ -45,7 +45,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.engine.markup.handler.AllowingMarkingSelectedSelectorEventHandler;
+import org.thymeleaf.engine.markup.handler.AttributeMarkingSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.AllowingNonSelectedSelectorEventHandler;
 import org.thymeleaf.engine.markup.handler.DirectOutputMarkupHandler;
 import org.thymeleaf.engine.markup.handler.IMarkupHandler;
@@ -1218,7 +1218,7 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
         final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final ISelectedSelectorEventHandler selectedEventHandler = new AllowingMarkingSelectedSelectorEventHandler("sel");
+        final ISelectedSelectorEventHandler selectedEventHandler = new AttributeMarkingSelectedSelectorEventHandler("sel");
         final INonSelectedSelectorEventHandler nonSelectedEventHandler = new AllowingNonSelectedSelectorEventHandler();
 
         final IMarkupHandler handler =

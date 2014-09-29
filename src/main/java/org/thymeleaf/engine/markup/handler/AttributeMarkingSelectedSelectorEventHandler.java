@@ -25,7 +25,7 @@ package org.thymeleaf.engine.markup.handler;
  * @since 3.0.0
  *
  */
-public class AllowingMarkingSelectedSelectorEventHandler extends DelegatingSelectedSelectorEventHandler {
+public class AttributeMarkingSelectedSelectorEventHandler extends AllowingSelectedSelectorEventHandler {
 
     private static final char[] INNER_WHITESPACE_BUFFER = " ".toCharArray();
 
@@ -36,7 +36,7 @@ public class AllowingMarkingSelectedSelectorEventHandler extends DelegatingSelec
     private char[] selectorAttributeBuffer;
 
 
-    public AllowingMarkingSelectedSelectorEventHandler(final String selectorAttributeName) {
+    public AttributeMarkingSelectedSelectorEventHandler(final String selectorAttributeName) {
 
         super();
 

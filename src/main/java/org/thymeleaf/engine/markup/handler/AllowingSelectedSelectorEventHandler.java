@@ -25,10 +25,10 @@ package org.thymeleaf.engine.markup.handler;
  * @since 3.0.0
  *
  */
-public class DelegatingSelectedSelectorEventHandler implements ISelectedSelectorEventHandler {
+public class AllowingSelectedSelectorEventHandler implements ISelectedSelectorEventHandler {
 
 
-    public DelegatingSelectedSelectorEventHandler() {
+    public AllowingSelectedSelectorEventHandler() {
         super();
     }
 
