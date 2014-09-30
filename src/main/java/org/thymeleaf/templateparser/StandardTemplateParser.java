@@ -30,12 +30,11 @@ import java.util.Stack;
 import org.attoparser.AttoHandleResult;
 import org.attoparser.AttoParseException;
 import org.attoparser.IAttoHandleResult;
+import org.attoparser.markup.AbstractMarkupAttoHandler;
 import org.attoparser.markup.MarkupAttoParser;
 import org.attoparser.markup.MarkupParsingConfiguration;
-import org.attoparser.markup.html.AbstractDetailedNonValidatingHtmlAttoHandler;
-import org.attoparser.markup.html.HtmlParsing;
-import org.attoparser.markup.html.elements.HtmlElements;
-import org.attoparser.markup.html.elements.IHtmlElement;
+import org.attoparser.markup.html.HtmlMarkupAttoHandler;
+import org.attoparser.markup.html.HtmlNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
@@ -68,7 +67,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
     public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
 
-    protected static final MarkupAttoParser PARSER = new MarkupAttoParser();
+    protected static final MarkupAttoParser PARSER;
     
     static final MarkupParsingConfiguration HTML_PARSING_CONFIGURATION;
     static final IMarkupTextRepository TEXT_REPOSITORY;
@@ -77,10 +76,11 @@ public class StandardTemplateParser implements ITemplateParser {
     
     static {
 
-        HTML_PARSING_CONFIGURATION = HtmlParsing.baseHtmlMarkupParsingConfiguration();
+        HTML_PARSING_CONFIGURATION = MarkupParsingConfiguration.defaultHtmlConfiguration();
 
         final List<String> unremovableTexts  = new ArrayList<String>();
-        unremovableTexts.addAll(HtmlElements.ALL_STANDARD_ELEMENT_NAMES);
+        unremovableTexts.addAll(HtmlNames.ALL_STANDARD_ELEMENT_NAMES);
+        unremovableTexts.addAll(HtmlNames.ALL_STANDARD_ATTRIBUTE_NAMES);
         unremovableTexts.add("\n");
         unremovableTexts.add("\n  ");
         unremovableTexts.add("\n    ");
@@ -97,6 +97,8 @@ public class StandardTemplateParser implements ITemplateParser {
 
         // Size = 10MBytes (1 char = 2 bytes)
         TEXT_REPOSITORY = new StandardMarkupTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
+
+        PARSER = new MarkupAttoParser(HTML_PARSING_CONFIGURATION);
     }
     
     
@@ -140,7 +142,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
         final TemplateAttoHandler handler = new TemplateAttoHandler(documentName);
 
-        PARSER.parse(reader, handler);
+        PARSER.parse(reader, new HtmlMarkupAttoHandler(handler));
         
         final String docTypeClause = handler.getDocTypeClause();
         final String docTypeRootElementName = handler.getDocTypeRootElementName();
@@ -209,7 +211,7 @@ public class StandardTemplateParser implements ITemplateParser {
     
     
     
-    private static final class TemplateAttoHandler extends AbstractDetailedNonValidatingHtmlAttoHandler {
+    private static final class TemplateAttoHandler extends AbstractMarkupAttoHandler {
 
         private static final Logger logger = LoggerFactory.getLogger(TemplateAttoHandler.class);
         
@@ -254,7 +256,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
         public TemplateAttoHandler(final String documentName) {
             
-            super(StandardTemplateParser.HTML_PARSING_CONFIGURATION);
+            super();
 
             this.documentName = documentName;
             
@@ -307,8 +309,7 @@ public class StandardTemplateParser implements ITemplateParser {
         @Override
         public IAttoHandleResult handleDocumentStart(
                 final long startTimeNanos,
-                final int line, final int col,
-                final MarkupParsingConfiguration parsingConfiguration)
+                final int line, final int col)
                throws AttoParseException {
 
             // Nothing to be done here
@@ -320,8 +321,7 @@ public class StandardTemplateParser implements ITemplateParser {
         @Override
         public IAttoHandleResult handleDocumentEnd(
                 final long endTimeNanos, final long totalTimeNanos,
-                final int line, final int col, 
-                final MarkupParsingConfiguration configuration)
+                final int line, final int col)
                 throws AttoParseException {
 
             if (logger.isTraceEnabled()) {
@@ -355,7 +355,7 @@ public class StandardTemplateParser implements ITemplateParser {
         
         
         @Override
-        public IAttoHandleResult handleXmlDeclarationDetail(
+        public IAttoHandleResult handleXmlDeclaration(
                 final char[] buffer,
                 final int keywordOffset, final int keywordLen, 
                 final int keywordLine, final int keywordCol, 
@@ -671,7 +671,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
         
         @Override
-        public IAttoHandleResult handleHtmlAttribute(
+        public IAttoHandleResult handleAttribute(
                 final char[] buffer, 
                 final int nameOffset, final int nameLen,
                 final int nameLine, final int nameCol, 
@@ -696,12 +696,11 @@ public class StandardTemplateParser implements ITemplateParser {
         
         
         @Override
-        public IAttoHandleResult handleHtmlStandaloneElementStart(
-                final IHtmlElement htmlElement,
+        public IAttoHandleResult handleStandaloneElementStart(
+                final char[] buffer,
+                final int offset, final int len,
                 final boolean minimized,
-                final char[] buffer, 
-                final int offset, final int len, 
-                final int line, final int col) 
+                final int line, final int col)
                 throws AttoParseException {
 
             final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
@@ -725,9 +724,8 @@ public class StandardTemplateParser implements ITemplateParser {
 
 
         @Override
-        public IAttoHandleResult handleHtmlOpenElementStart(
-                final IHtmlElement htmlElement,
-                final char[] buffer, 
+        public IAttoHandleResult handleOpenElementStart(
+                final char[] buffer,
                 final int offset, final int len,
                 final int line, final int col)
                 throws AttoParseException {
@@ -748,9 +746,8 @@ public class StandardTemplateParser implements ITemplateParser {
 
 
         @Override
-        public IAttoHandleResult handleHtmlCloseElementStart(
-                final IHtmlElement htmlElement,
-                final char[] buffer, 
+        public IAttoHandleResult handleCloseElementStart(
+                final char[] buffer,
                 final int offset, final int len,
                 final int line, final int col) 
                 throws AttoParseException {

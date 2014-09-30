@@ -22,7 +22,7 @@ package org.thymeleaf.engine.markup;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.attoparser.markup.html.elements.HtmlElements;
+import org.attoparser.markup.html.HtmlNames;
 import org.thymeleaf.engine.markup.parser.IMarkupParser;
 import org.thymeleaf.engine.markup.parser.StandardHtmlParser;
 import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
@@ -62,7 +62,8 @@ public final class MarkupEngineConfiguration {
     public static MarkupEngineConfiguration createBaseConfiguration() {
 
         final List<String> unremovableTexts  = new ArrayList<String>();
-        unremovableTexts.addAll(HtmlElements.ALL_STANDARD_ELEMENT_NAMES);
+        unremovableTexts.addAll(HtmlNames.ALL_STANDARD_ELEMENT_NAMES);
+        unremovableTexts.addAll(HtmlNames.ALL_STANDARD_ATTRIBUTE_NAMES);
         unremovableTexts.add(" ");
         unremovableTexts.add("\n");
         unremovableTexts.add("\n  ");
