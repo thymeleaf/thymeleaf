@@ -77,34 +77,42 @@ public final class TextUtil {
             return false;
         }
 
+        if (text1 == text2 && text1Offset == text2Offset && text1Len == text2Len) {
+            return true;
+        }
+
         char c1, c2;
 
-        for (int i = 0; i < text1Len; i++) { // Both lens are equal, so using one will suffice
+        int n = text1Len;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text1[text1Offset + i];
             c2 = text2[text2Offset + i];
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -132,32 +140,36 @@ public final class TextUtil {
 
         char c1, c2;
 
-        for (int i = 0; i < text1Len; i++) { // Both lens are equal, so using one will suffice
+        int n = text1Len;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text1.charAt(text1Offset + i);
             c2 = text2[text2Offset + i];
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -183,34 +195,42 @@ public final class TextUtil {
             return false;
         }
 
+        if (text1 == text2 && text1Offset == text2Offset && text1Len == text2Len) {
+            return true;
+        }
+
         char c1, c2;
 
-        for (int i = 0; i < text1Len; i++) { // Both lens are equal, so using one will suffice
+        int n = text1Len;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text1.charAt(text1Offset + i);
             c2 = text2.charAt(text2Offset + i);
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -268,32 +288,36 @@ public final class TextUtil {
 
         char c1, c2;
 
-        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+        int n = prefixLen;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text[textOffset + i];
             c2 = prefix[prefixOffset + i];
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -321,32 +345,36 @@ public final class TextUtil {
 
         char c1, c2;
 
-        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+        int n = prefixLen;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text.charAt(textOffset + i);
             c2 = prefix[prefixOffset + i];
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -374,32 +402,36 @@ public final class TextUtil {
 
         char c1, c2;
 
-        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+        int n = prefixLen;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text[textOffset + i];
             c2 = prefix.charAt(prefixOffset + i);
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -427,32 +459,36 @@ public final class TextUtil {
 
         char c1, c2;
 
-        for (int i = 0; i < prefixLen; i++) { // Checking up to prefix length will be enough
+        int n = prefixLen;
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text.charAt(textOffset + i);
             c2 = prefix.charAt(prefixOffset + i);
 
-            if (c1 == c2) {
-                continue;
-            }
+            if (c1 != c2) {
 
-            if (!caseSensitive) {
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -508,34 +544,41 @@ public final class TextUtil {
             return false;
         }
 
+        final int textReverseOffset = textOffset + textLen - 1;
+        final int suffixReverseOffset = suffixOffset + suffixLen - 1;
+
         char c1, c2;
 
-        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+        int n = suffixLen;
+        int i = 0;
 
-            c1 = text[(textOffset + textLen - 1) - i];
-            c2 = suffix[(suffixOffset + suffixLen - 1) - i];
+        while (n-- != 0) {
 
-            if (c1 == c2) {
-                continue;
-            }
+            c1 = text[textReverseOffset - i];
+            c2 = suffix[suffixReverseOffset - i];
 
-            if (!caseSensitive) {
+            if (c1 != c2) {
+
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -561,34 +604,41 @@ public final class TextUtil {
             return false;
         }
 
+        final int textReverseOffset = textOffset + textLen - 1;
+        final int suffixReverseOffset = suffixOffset + suffixLen - 1;
+
         char c1, c2;
 
-        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+        int n = suffixLen;
+        int i = 0;
 
-            c1 = text.charAt((textOffset + textLen - 1) - i);
-            c2 = suffix[(suffixOffset + suffixLen - 1) - i];
+        while (n-- != 0) {
 
-            if (c1 == c2) {
-                continue;
-            }
+            c1 = text.charAt(textReverseOffset - i);
+            c2 = suffix[suffixReverseOffset - i];
 
-            if (!caseSensitive) {
+            if (c1 != c2) {
+
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -614,34 +664,41 @@ public final class TextUtil {
             return false;
         }
 
+        final int textReverseOffset = textOffset + textLen - 1;
+        final int suffixReverseOffset = suffixOffset + suffixLen - 1;
+
         char c1, c2;
 
-        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+        int n = suffixLen;
+        int i = 0;
 
-            c1 = text[(textOffset + textLen - 1) - i];
-            c2 = suffix.charAt((suffixOffset + suffixLen - 1) - i);
+        while (n-- != 0) {
 
-            if (c1 == c2) {
-                continue;
-            }
+            c1 = text[textReverseOffset - i];
+            c2 = suffix.charAt(suffixReverseOffset - i);
 
-            if (!caseSensitive) {
+            if (c1 != c2) {
+
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -667,34 +724,41 @@ public final class TextUtil {
             return false;
         }
 
+        final int textReverseOffset = textOffset + textLen - 1;
+        final int suffixReverseOffset = suffixOffset + suffixLen - 1;
+
         char c1, c2;
 
-        for (int i = 0; i < suffixLen; i++) { // Checking up to suffix length will be enough
+        int n = suffixLen;
+        int i = 0;
 
-            c1 = text.charAt((textOffset + textLen - 1) - i);
-            c2 = suffix.charAt((suffixOffset + suffixLen - 1) - i);
+        while (n-- != 0) {
 
-            if (c1 == c2) {
-                continue;
-            }
+            c1 = text.charAt(textReverseOffset - i);
+            c2 = suffix.charAt(suffixReverseOffset - i);
 
-            if (!caseSensitive) {
+            if (c1 != c2) {
+
+                if (caseSensitive) {
+                    return false;
+                }
 
                 c1 = Character.toUpperCase(c1);
                 c2 = Character.toUpperCase(c2);
-                if (c1 == c2) {
-                    continue;
-                }
 
-                // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
-                // See String#regionMatches(boolean,int,String,int,int)
-                if (Character.toLowerCase(c1) == Character.toLowerCase(c2)) {
-                    continue;
+                if (c1 != c2) {
+
+                    // We check both upper and lower case because that is how String#equalsIgnoreCase() is defined.
+                    // See String#regionMatches(boolean,int,String,int,int)
+                    if (Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
+                        return false;
+                    }
+
                 }
 
             }
 
-            return false;
+            i++;
 
         }
 
@@ -1036,10 +1100,16 @@ public final class TextUtil {
             throw new IllegalArgumentException("Second text buffer being compared cannot be null");
         }
 
-        final int min = Math.min(text1Len, text2Len);
+        if (text1 == text2 && text1Offset == text2Offset && text1Len == text2Len) {
+            return 0;
+        }
 
         char c1, c2;
-        for (int i = 0; i < min; i++) {
+
+        int n = Math.min(text1Len, text2Len);
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text1[text1Offset + i];
             c2 = text2[text2Offset + i];
@@ -1065,6 +1135,8 @@ public final class TextUtil {
 
             }
 
+            i++;
+
         }
 
         return text1Len - text2Len;
@@ -1085,10 +1157,12 @@ public final class TextUtil {
             throw new IllegalArgumentException("Second text buffer being compared cannot be null");
         }
 
-        final int min = Math.min(text1Len, text2Len);
-
         char c1, c2;
-        for (int i = 0; i < min; i++) {
+
+        int n = Math.min(text1Len, text2Len);
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text1.charAt(text1Offset + i);
             c2 = text2[text2Offset + i];
@@ -1114,6 +1188,8 @@ public final class TextUtil {
 
             }
 
+            i++;
+
         }
 
         return text1Len - text2Len;
@@ -1135,10 +1211,16 @@ public final class TextUtil {
             throw new IllegalArgumentException("Second text being compared cannot be null");
         }
 
-        final int min = Math.min(text1Len, text2Len);
+        if (text1 == text2 && text1Offset == text2Offset && text1Len == text2Len) {
+            return 0;
+        }
 
         char c1, c2;
-        for (int i = 0; i < min; i++) {
+
+        int n = Math.min(text1Len, text2Len);
+        int i = 0;
+
+        while (n-- != 0) {
 
             c1 = text1.charAt(text1Offset + i);
             c2 = text2.charAt(text2Offset + i);
@@ -1163,6 +1245,8 @@ public final class TextUtil {
                 }
 
             }
+
+            i++;
 
         }
 
