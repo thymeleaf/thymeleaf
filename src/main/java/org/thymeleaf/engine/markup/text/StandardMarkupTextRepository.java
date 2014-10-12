@@ -74,9 +74,9 @@ public final class StandardMarkupTextRepository implements IMarkupTextRepository
     private int textsLen;
     private String[] texts;
     private int textsSize;
-    private int textsUnremovableSetSize;
+    private final int textsUnremovableSetSize;
 
-    private int[][] textMap;
+    private final int[][] textMap;
 
 
     private final ReadWriteLock lock = new ReentrantReadWriteLock(true);

@@ -22,7 +22,6 @@ package org.thymeleaf.engine.markup;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.attoparser.markup.html.HtmlNames;
 import org.thymeleaf.engine.markup.parser.IMarkupParser;
 import org.thymeleaf.engine.markup.parser.StandardHtmlParser;
 import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
