@@ -22,9 +22,8 @@ package org.thymeleaf.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -260,7 +259,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Set<String> keySet() {
-        final Set<String> keySet = new LinkedHashSet<String>(10);
+        final Set<String> keySet = new HashSet<String>(attributeNames.size() + 3);
         keySet.addAll(this.attributeNames);
         keySet.addAll(super.keySet());
         return keySet;
@@ -271,7 +270,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Object> values() {
-        final List<Object> values = new ArrayList<Object>(10);
+        final List<Object> values = new ArrayList<Object>(this.attributeNames.size() + 3);
         for (String attributeName : attributeNames) {
             values.add(this.request.getAttribute(attributeName));
         }
@@ -283,7 +282,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
     @Override
     public Set<java.util.Map.Entry<String,Object>> entrySet() {
-        final Map<String, Object> attributeMap = new LinkedHashMap<String, Object>(10);
+        final Map<String, Object> attributeMap = new HashMap<String, Object>(this.attributeNames.size() + 3);
         for (String attributeName : attributeNames) {
             attributeMap.put(attributeName, request.getAttribute(attributeName));
         }
@@ -355,7 +354,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     @SuppressWarnings("unchecked")
     private static Map<String,Object> getAttributeMap(final HttpServletRequest request) {
 
-        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>(10);
+        final Map<String,Object> attributeMap = new HashMap<String, Object>();
         final Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
