@@ -24,17 +24,20 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
-import org.attoparser.AttoHandleResult;
-import org.attoparser.AttoParseException;
-import org.attoparser.IAttoHandleResult;
-import org.attoparser.markup.AbstractMarkupAttoHandler;
-import org.attoparser.markup.MarkupAttoParser;
-import org.attoparser.markup.MarkupParsingConfiguration;
-import org.attoparser.markup.html.HtmlMarkupAttoHandler;
-import org.attoparser.markup.html.HtmlNames;
+import org.attoparser.AbstractMarkupHandler;
+import org.attoparser.IMarkupHandler;
+import org.attoparser.IMarkupParser;
+import org.attoparser.MarkupParser;
+import org.attoparser.ParseException;
+import org.attoparser.ParseStatus;
+import org.attoparser.config.ParseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
@@ -53,6 +56,7 @@ import org.thymeleaf.engine.markup.text.StandardMarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
+
 /**
  * <p>
  *     Standard implementation of the {@link org.thymeleaf.templateparser.ITemplateParser} interface,
@@ -65,22 +69,85 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  */
 public class StandardTemplateParser implements ITemplateParser {
 
+
     public static final StandardTemplateParser INSTANCE = new StandardTemplateParser();
 
-    protected static final MarkupAttoParser PARSER;
-    
-    static final MarkupParsingConfiguration HTML_PARSING_CONFIGURATION;
+    protected static final IMarkupParser PARSER;
+
+
+    private static Set<String> ALL_STANDARD_ELEMENT_NAMES =
+            Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(new String[]{
+                    "a", "abbr", "address", "area", "article", "aside",
+                    "audio", "b", "base", "bdi", "bdo", "blockquote",
+                    "body", "br", "button", "canvas", "caption", "cite",
+                    "code", "col", "colgroup", "command", "content", "datalist",
+                    "dd", "decorator", "del", "details", "dfn", "dialog",
+                    "div", "dl", "dt", "element", "em", "embed",
+                    "fieldset", "figcaption", "figure", "footer", "form", "g",
+                    "h1", "h2", "h3", "h4", "h5", "h6",
+                    "head", "header", "hgroup", "hr", "html", "i",
+                    "iframe", "img", "input", "ins", "kbd", "keygen",
+                    "label", "legend", "li", "link", "main", "map",
+                    "mark", "menu", "menuitem", "meta", "meter", "nav",
+                    "noscript", "object", "ol", "optgroup", "option", "output",
+                    "p", "param", "pre", "progress", "rb", "rp",
+                    "rt", "rtc", "ruby", "s", "samp", "script",
+                    "section", "select", "shadow", "small", "source", "span",
+                    "strong", "style", "sub", "summary", "sup", "table",
+                    "tbody", "td", "template", "textarea", "tfoot", "th",
+                    "thead", "time", "title", "tr", "track", "u",
+                    "ul", "var", "video", "wbr"
+            })));
+
+    private static Set<String> ALL_STANDARD_ATTRIBUTE_NAMES =
+            Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(new String[]{
+                    "abbr","accept","accept-charset","accesskey","action","align",
+                    "alt","archive","autocomplete","autofocus","autoplay","axis",
+                    "border","cellpadding","cellspacing","challenge","char","charoff",
+                    "charset","checked","cite","class","classid","codebase",
+                    "codetype","cols","colspan","command","content","contenteditable",
+                    "contextmenu","controls","coords","data","datetime","declare",
+                    "default","defer","dir","disabled","draggable","dropzone",
+                    "enctype","for","form","formaction","formenctype","formmethod",
+                    "formnovalidate","formtarget","frame","headers","height","hidden",
+                    "high","href","hreflang","http-equiv","icon","id",
+                    "ismap","keytype","kind","label","lang","list",
+                    "longdesc","loop","low","max","maxlength","media",
+                    "method","min","multiple","muted","name","nohref",
+                    "novalidate","onabort","onafterprint","onbeforeprint","onbeforeunload","onblur",
+                    "oncanplay","oncanplaythrough","onchange","onclick","oncontextmenu","oncuechange",
+                    "ondblclick","ondrag","ondragend","ondragenter","ondragleave","ondragover",
+                    "ondragstart","ondrop","ondurationchange","onemptied","onended","onerror",
+                    "onfocus","onformchange","onforminput","onhaschange","oninput","oninvalid",
+                    "onkeydown","onkeypress","onkeyup","onload","onloadeddata","onloadedmetadata",
+                    "onloadstart","onmessage","onmousedown","onmousemove","onmouseout","onmouseover",
+                    "onmouseup","onmousewheel","onoffline","ononline","onpagehide","onpageshow",
+                    "onpause","onplay","onplaying","onpopstate","onprogress","onratechange",
+                    "onredo","onreset","onresize","onscroll","onseeked","onseeking",
+                    "onselect","onstalled","onstorage","onsubmit","onsuspend","ontimeupdate",
+                    "onundo","onunload","onvolumechange","onwaiting","open","optimum",
+                    "pattern","placeholder","poster","preload","profile","radiogroup",
+                    "readonly","rel","required","rev","rows","rowspan",
+                    "rules","scheme","scope","selected","shape","size",
+                    "span","spellcheck","src","srclang","standby","style",
+                    "summary","tabindex","title","translate","type","usemap",
+                    "valign","value","valuetype","width","xml:lang","xml:space",
+                    "xmlns"
+            })));
+
+
+    static final ParseConfiguration HTML_PARSING_CONFIGURATION;
     static final IMarkupTextRepository TEXT_REPOSITORY;
 
     
     
     static {
 
-        HTML_PARSING_CONFIGURATION = MarkupParsingConfiguration.defaultHtmlConfiguration();
+        HTML_PARSING_CONFIGURATION = ParseConfiguration.htmlConfiguration();
 
         final List<String> unremovableTexts  = new ArrayList<String>();
-        unremovableTexts.addAll(HtmlNames.ALL_STANDARD_ELEMENT_NAMES);
-        unremovableTexts.addAll(HtmlNames.ALL_STANDARD_ATTRIBUTE_NAMES);
+        unremovableTexts.addAll(ALL_STANDARD_ELEMENT_NAMES);
+        unremovableTexts.addAll(ALL_STANDARD_ATTRIBUTE_NAMES);
         unremovableTexts.add("\n");
         unremovableTexts.add("\n  ");
         unremovableTexts.add("\n    ");
@@ -98,7 +165,7 @@ public class StandardTemplateParser implements ITemplateParser {
         // Size = 10MBytes (1 char = 2 bytes)
         TEXT_REPOSITORY = new StandardMarkupTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
-        PARSER = new MarkupAttoParser(HTML_PARSING_CONFIGURATION);
+        PARSER = new MarkupParser(HTML_PARSING_CONFIGURATION);
     }
     
     
@@ -118,7 +185,7 @@ public class StandardTemplateParser implements ITemplateParser {
             
         } catch (final TemplateProcessingException e) {
             throw e;
-        } catch (final AttoParseException e) {
+        } catch (final ParseException e) {
             String message = null;
             if (documentName == null) {
                 message = 
@@ -138,11 +205,11 @@ public class StandardTemplateParser implements ITemplateParser {
     
     
     private static Document doParse(final String documentName, final Reader reader)
-            throws AttoParseException {
+            throws ParseException {
 
         final TemplateAttoHandler handler = new TemplateAttoHandler(documentName);
 
-        PARSER.parse(reader, new HtmlMarkupAttoHandler(handler));
+        PARSER.parse(reader, handler);
         
         final String docTypeClause = handler.getDocTypeClause();
         final String docTypeRootElementName = handler.getDocTypeRootElementName();
@@ -211,11 +278,16 @@ public class StandardTemplateParser implements ITemplateParser {
     
     
     
-    private static final class TemplateAttoHandler extends AbstractMarkupAttoHandler {
+    private static final class TemplateAttoHandler extends AbstractMarkupHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(TemplateAttoHandler.class);
+        private static final Logger logger = LoggerFactory.getLogger(StandardTemplateParser.class);
         
         private final String documentName;
+
+        private ParseStatus parseStatus;
+        private IMarkupParser parser;
+        private IMarkupHandler handlerChain;
+
         private final Stack<NestableNode> elementStack;
         
         /*
@@ -247,7 +319,6 @@ public class StandardTemplateParser implements ITemplateParser {
          * ignored.
          */
         private static final char[] PARSER_LEVEL_COMMENT_CLOSE = "*/-->".toCharArray();
-        private static final IAttoHandleResult PARSER_LEVEL_COMMENT_OPEN_RESULT = new AttoHandleResult(PARSER_LEVEL_COMMENT_CLOSE);
         private boolean inParserLevelCommentBlock = false;
 
 
@@ -300,29 +371,49 @@ public class StandardTemplateParser implements ITemplateParser {
         
         
 
+
+
+        /*
+         * -----------------
+         * Handler maintenance methods
+         * -----------------
+         */
+
+        @Override
+        public void setParseStatus(final ParseStatus status) {
+            this.parseStatus = status;
+            super.setParseStatus(status);
+        }
+
+
+        @Override
+        public void setParser(final IMarkupParser parser) {
+            this.parser = parser;
+            super.setParser(parser);
+        }
+
+        @Override
+        public void setHandlerChain(final IMarkupHandler handlerChain) {
+            this.handlerChain = handlerChain;
+            super.setHandlerChain(handlerChain);
+        }
+
+
+
+
+
         /*
          * -----------------
          * Document handling
          * -----------------
          */
 
-        @Override
-        public IAttoHandleResult handleDocumentStart(
-                final long startTimeNanos,
-                final int line, final int col)
-               throws AttoParseException {
-
-            // Nothing to be done here
-            return null;
-
-        }
-
 
         @Override
-        public IAttoHandleResult handleDocumentEnd(
+        public void handleDocumentEnd(
                 final long endTimeNanos, final long totalTimeNanos,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             if (logger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(totalTimeNanos);
@@ -340,8 +431,6 @@ public class StandardTemplateParser implements ITemplateParser {
                 }
             }
 
-            return null;
-
         }
 
         
@@ -355,7 +444,7 @@ public class StandardTemplateParser implements ITemplateParser {
         
         
         @Override
-        public IAttoHandleResult handleXmlDeclaration(
+        public void handleXmlDeclaration(
                 final char[] buffer,
                 final int keywordOffset, final int keywordLen, 
                 final int keywordLine, final int keywordCol, 
@@ -367,7 +456,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int standaloneLine, final int standaloneCol, 
                 final int outerOffset, final int outerLen, 
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
             if (versionLen > 0) {
                 this.xmlVersion = TEXT_REPOSITORY.getText(buffer, versionOffset, versionLen);
@@ -379,8 +468,6 @@ public class StandardTemplateParser implements ITemplateParser {
                 this.xmlStandalone = Boolean.parseBoolean(TEXT_REPOSITORY.getText(buffer, standaloneOffset, standaloneLen));
             }
 
-            return null;
-            
         }
 
 
@@ -394,7 +481,7 @@ public class StandardTemplateParser implements ITemplateParser {
         
 
         @Override
-        public IAttoHandleResult handleDocType(
+        public void handleDocType(
                 final char[] buffer, 
                 final int keywordOffset, final int keywordLen, 
                 final int keywordLine, final int keywordCol,
@@ -410,7 +497,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int internalSubsetLine, final int internalSubsetCol, 
                 final int outerOffset, final int outerLen, 
                 final int outerLine, final int outerCol)
-                throws AttoParseException {
+                throws ParseException {
 
             if (elementNameLen > 0) {
                 this.docTypeRootElementName = TEXT_REPOSITORY.getText(buffer, elementNameOffset, elementNameLen);
@@ -423,8 +510,6 @@ public class StandardTemplateParser implements ITemplateParser {
             }
 
             this.docTypeClause = TEXT_REPOSITORY.getText(buffer, outerOffset, outerLen);
-
-            return null;
 
         }
 
@@ -439,12 +524,12 @@ public class StandardTemplateParser implements ITemplateParser {
 
 
         @Override
-        public IAttoHandleResult handleCDATASection(
+        public void handleCDATASection(
                 final char[] buffer, 
                 final int contentOffset, final int contentLen, 
                 final int outerOffset, final int outerLen, 
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
             final Node cdata = new CDATASection(content, this.documentName, Integer.valueOf(line + lineOffset), true);
@@ -455,8 +540,6 @@ public class StandardTemplateParser implements ITemplateParser {
                 final NestableNode parent = this.elementStack.peek();
                 parent.addChild(cdata);
             }
-
-            return null;
 
         }
         
@@ -471,11 +554,11 @@ public class StandardTemplateParser implements ITemplateParser {
 
         
         @Override
-        public IAttoHandleResult handleText(
+        public void handleText(
                 final char[] buffer, 
                 final int offset, final int len, 
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
             if (this.inParserLevelCommentBlock) {
                 // We are inside a parser-level comment block, which contents are being reported as text
@@ -486,19 +569,19 @@ public class StandardTemplateParser implements ITemplateParser {
                 for (int i = 0; i < PARSER_LEVEL_COMMENT_CLOSE.length; i++) {
                     if (buffer[offset + i] != PARSER_LEVEL_COMMENT_CLOSE[i]) {
                         // Ignore the Text event
-                        return null;
+                        return;
                     }
                 }
 
                 // We actually found the end of the parser-level comment block, so we should just process the rest of the Text node
                 this.inParserLevelCommentBlock = false;
                 if (len - PARSER_LEVEL_COMMENT_CLOSE.length > 0) {
-                    return handleText(
+                    handleText(
                             buffer,
                             offset + PARSER_LEVEL_COMMENT_CLOSE.length, len - PARSER_LEVEL_COMMENT_CLOSE.length,
                             line, col + PARSER_LEVEL_COMMENT_CLOSE.length);
                 }
-                return null; // No text left to handle
+                return; // No text left to handle
 
             }
 
@@ -511,8 +594,6 @@ public class StandardTemplateParser implements ITemplateParser {
                 final NestableNode parent = this.elementStack.peek();
                 parent.addChild(textNode);
             }
-
-            return null;
 
         }
         
@@ -527,22 +608,24 @@ public class StandardTemplateParser implements ITemplateParser {
         
 
         @Override
-        public IAttoHandleResult handleComment(
+        public void handleComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen, 
                 final int outerOffset, final int outerLen, 
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             if (isPrototypeOnlyCommentBlock(buffer, contentOffset, contentLen)) {
-                return handlePrototypeOnlyComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                handlePrototypeOnlyComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                return;
             }
             // This check must always be executed AFTER checking for prototype-only comment blocks
             if (isParserLevelCommentStartBlock(buffer, contentOffset, contentLen)) {
-                return handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                return;
             }
 
-            return handleNormalComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+            handleNormalComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
         }
 
@@ -585,12 +668,12 @@ public class StandardTemplateParser implements ITemplateParser {
         }
 
 
-        private IAttoHandleResult handleNormalComment(
+        private void handleNormalComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             final String content = TEXT_REPOSITORY.getText(buffer, contentOffset, contentLen);
 
@@ -603,17 +686,15 @@ public class StandardTemplateParser implements ITemplateParser {
                 parent.addChild(comment);
             }
 
-            return null;
-
         }
 
 
-        private IAttoHandleResult handlePrototypeOnlyComment(
+        private void handlePrototypeOnlyComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             /*
              * Arrange offsets, so that DOM element positions in the embedded parse operation
@@ -626,7 +707,7 @@ public class StandardTemplateParser implements ITemplateParser {
             this.colOffset = col + 2; // 2 = 3 - 1 --> because of the '/*/' sequence (-1 in order to work as offset)
 
             // We parse the comment content using this same handler object, but removing the "/*/.../*/"
-            StandardTemplateParser.PARSER.parse(buffer, contentOffset + 3, contentLen - 6, this);
+            this.parser.parse(buffer, contentOffset + 3, contentLen - 6, this.handlerChain);
 
             /*
              * Return offsets to their original value.
@@ -634,28 +715,28 @@ public class StandardTemplateParser implements ITemplateParser {
             this.lineOffset = 0;
             this.colOffset = 0;
 
-            return null;
-
         }
 
 
-        private IAttoHandleResult handleParserLevelComment(
+        private void handleParserLevelComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             if (isParserLevelCommentEndBlock(buffer, contentOffset, contentLen)) {
                 // This block both starts AND ends the parser-level comment, so ignoring it
                 // should be enough, without involving any text handling events
-                return null;
+                return;
             }
 
             // Comment blocks of this type provoke the disabling of the parser until we find the
             // closing sequence ('*/-->'), which might appear in a different block of code
             this.inParserLevelCommentBlock = true;
-            return PARSER_LEVEL_COMMENT_OPEN_RESULT;
+
+            // Disable parsing until we find the end of the parser-level comment block
+            this.parseStatus.setParsingDisabled(PARSER_LEVEL_COMMENT_CLOSE);
 
         }
 
@@ -671,7 +752,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
         
         @Override
-        public IAttoHandleResult handleAttribute(
+        public void handleAttribute(
                 final char[] buffer, 
                 final int nameOffset, final int nameLen,
                 final int nameLine, final int nameCol, 
@@ -680,7 +761,7 @@ public class StandardTemplateParser implements ITemplateParser {
                 final int valueContentOffset, final int valueContentLen, 
                 final int valueOuterOffset, final int valueOuterLen,
                 final int valueLine, final int valueCol) 
-                throws AttoParseException {
+                throws ParseException {
 
             final String attributeName = TEXT_REPOSITORY.getText(buffer, nameOffset, nameLen);
             final String attributeValue = TEXT_REPOSITORY.getText(buffer, valueContentOffset, valueContentLen);
@@ -688,20 +769,18 @@ public class StandardTemplateParser implements ITemplateParser {
             this.currentElement.setAttribute(
                     attributeName, false, attributeValue, true);
 
-            return null;
-
         }
 
 
         
         
         @Override
-        public IAttoHandleResult handleStandaloneElementStart(
+        public void handleStandaloneElementStart(
                 final char[] buffer,
                 final int offset, final int len,
                 final boolean minimized,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
             
@@ -716,19 +795,17 @@ public class StandardTemplateParser implements ITemplateParser {
                 parent.addChild(element);
             }
 
-            return null;
-
         }
 
 
 
 
         @Override
-        public IAttoHandleResult handleOpenElementStart(
+        public void handleOpenElementStart(
                 final char[] buffer,
                 final int offset, final int len,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             final String elementName = TEXT_REPOSITORY.getText(buffer, offset, len);
             
@@ -738,19 +815,17 @@ public class StandardTemplateParser implements ITemplateParser {
             
             this.elementStack.push(element);
 
-            return null;
-
         }
 
         
 
 
         @Override
-        public IAttoHandleResult handleCloseElementStart(
+        public void handleCloseElementStart(
                 final char[] buffer,
                 final int offset, final int len,
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
             final String closedElementName = TEXT_REPOSITORY.getText(buffer, offset, len);
 
@@ -785,8 +860,6 @@ public class StandardTemplateParser implements ITemplateParser {
                 final NestableNode parent = this.elementStack.peek();
                 parent.addChild(node);
             }
-
-            return null;
 
         }
         

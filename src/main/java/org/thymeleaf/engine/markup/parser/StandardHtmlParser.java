@@ -60,7 +60,7 @@ public final class StandardHtmlParser implements ITemplateParser {
         MARKUP_PARSING_CONFIGURATION.setElementBalancing(ParseConfiguration.ElementBalancing.AUTO_CLOSE);
         MARKUP_PARSING_CONFIGURATION.setCaseSensitive(false);
         MARKUP_PARSING_CONFIGURATION.setNoUnmatchedCloseElementsRequired(false);
-        MARKUP_PARSING_CONFIGURATION.setUniqueAttributesInElementRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setUniqueAttributesInElementRequired(true);
         MARKUP_PARSING_CONFIGURATION.setXmlWellFormedAttributeValuesRequired(false);
         MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(ParseConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
         MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setDoctypePresence(ParseConfiguration.PrologPresence.ALLOWED);

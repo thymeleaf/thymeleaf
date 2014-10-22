@@ -35,6 +35,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.attoparser.IMarkupHandler;
+import org.attoparser.discard.DiscardMarkupHandler;
+import org.attoparser.output.OutputMarkupHandler;
+import org.attoparser.select.AttributeMarkingSelectedMarkupHandler;
+import org.attoparser.select.IMarkupSelectorReferenceResolver;
+import org.attoparser.select.NodeSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
@@ -45,16 +51,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
-import org.thymeleaf.engine.markup.handler.AttributeMarkingSelectedSelectorEventHandler;
-import org.thymeleaf.engine.markup.handler.AllowingNonSelectedSelectorEventHandler;
-import org.thymeleaf.engine.markup.handler.DirectOutputMarkupHandler;
-import org.thymeleaf.engine.markup.handler.IMarkupHandler;
 import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
-import org.thymeleaf.engine.markup.handler.IMarkupSelectorReferenceResolver;
-import org.thymeleaf.engine.markup.handler.INonSelectedSelectorEventHandler;
-import org.thymeleaf.engine.markup.handler.ISelectedSelectorEventHandler;
-import org.thymeleaf.engine.markup.handler.MarkupSelectorMode;
-import org.thymeleaf.engine.markup.handler.NodeSelectorMarkupHandler;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -1217,18 +1214,17 @@ public class TemplateEngine {
 
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
-        final IMarkupHandler directOutputHandler = new DirectOutputMarkupHandler(templateName, writer);
-        final ISelectedSelectorEventHandler selectedEventHandler = new AttributeMarkingSelectedSelectorEventHandler("sel");
-        final INonSelectedSelectorEventHandler nonSelectedEventHandler = new AllowingNonSelectedSelectorEventHandler();
+        final IMarkupHandler directOutputHandler = new OutputMarkupHandler(writer);
+        final IMarkupHandler selectedEventHandler = new AttributeMarkingSelectedMarkupHandler("sel", directOutputHandler);
 
         final IMarkupHandler handler =
-                new NodeSelectorMarkupHandler(directOutputHandler, selectedEventHandler, nonSelectedEventHandler,
+                new NodeSelectorMarkupHandler(selectedEventHandler, new DiscardMarkupHandler(),
                         new String[] {"html//p", "html//div", "title", "li/a", "ol/li", "li", "[th:include*='footer']" },
-                        MarkupSelectorMode.HTML, TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
+                        TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
 
 
 //        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
-        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, handler, templateName, reader);
+        markupEngineConfig.getParser().parse(templateName, reader, handler);
 
 
     }
