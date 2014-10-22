@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.attoparser.markup.html.HtmlNames;
-import org.thymeleaf.engine.markup.parser.IMarkupParser;
+import org.thymeleaf.engine.markup.parser.ITemplateParser;
 import org.thymeleaf.engine.markup.parser.StandardHtmlParser;
 import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
 import org.thymeleaf.engine.markup.text.StandardMarkupTextRepository;
@@ -37,19 +37,19 @@ import org.thymeleaf.engine.markup.text.StandardMarkupTextRepository;
 public final class MarkupEngineConfiguration {
 
 
-    private final IMarkupParser parser;
+    private final ITemplateParser parser;
     private final IMarkupTextRepository textRepository;
 
 
     public MarkupEngineConfiguration(
-            final IMarkupParser parser, final IMarkupTextRepository textRepository) {
+            final ITemplateParser parser, final IMarkupTextRepository textRepository) {
         super();
         this.parser = parser;
         this.textRepository = textRepository;
     }
 
 
-    public IMarkupParser getParser() {
+    public ITemplateParser getParser() {
         return this.parser;
     }
 
@@ -87,7 +87,7 @@ public final class MarkupEngineConfiguration {
         // Pool size is set to 40, and buffer size to 2K chars = 4K bytes
         // This should be enough for processing 20 templates at a time, each one being able to include external
         // fragments and/or parsable content (2 buffers per template).
-        final IMarkupParser parser = new StandardHtmlParser(2048,40);
+        final ITemplateParser parser = new StandardHtmlParser(40,2048);
 
         return new MarkupEngineConfiguration(parser, textRepository);
 

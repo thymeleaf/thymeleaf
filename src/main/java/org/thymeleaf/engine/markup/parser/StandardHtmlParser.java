@@ -20,23 +20,19 @@
 package org.thymeleaf.engine.markup.parser;
 
 import java.io.Reader;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.attoparser.AttoHandleResult;
-import org.attoparser.AttoParseException;
-import org.attoparser.IAttoHandleResult;
-import org.attoparser.markup.AbstractMarkupAttoHandler;
-import org.attoparser.markup.MarkupAttoParser;
-import org.attoparser.markup.MarkupParsingConfiguration;
-import org.attoparser.markup.html.HtmlMarkupAttoHandler;
+import org.attoparser.AbstractChainedMarkupHandler;
+import org.attoparser.IMarkupHandler;
+import org.attoparser.IMarkupParser;
+import org.attoparser.MarkupParser;
+import org.attoparser.ParseException;
+import org.attoparser.ParseStatus;
+import org.attoparser.config.ParseConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
-import org.thymeleaf.engine.markup.handler.IMarkupHandler;
-import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -46,81 +42,102 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.0
  * 
  */
-public final class StandardHtmlParser implements IMarkupParser {
+public final class StandardHtmlParser implements ITemplateParser {
 
-    protected final MarkupAttoParser attoParser;
+    protected final IMarkupParser parser;
     
-    static final MarkupParsingConfiguration MARKUP_PARSING_CONFIGURATION;
+    static final ParseConfiguration MARKUP_PARSING_CONFIGURATION;
 
     
     
     static {
 
         /*
-         * We don't need the underlying AttoHandler to perform all these validations, and this will
-         * remove the necessity to use a stack at the Markup Detailed AttoHandler level (not at the HTML
-         * level, which is needed to determine HTML-specific aspects like which elements should be reported
-         * as standalone (void) even if they have no closing solidus character (img, br, etc.) and the fact
-         * that script and style have CDATA bodies (instead of PCDATA).
+         * We don't need the underlying parser to perform many of the available validations, but we will
+         * enable AUTO_CLOSE in order to have HTML-compliant auto-closing of tags.
          */
-        MARKUP_PARSING_CONFIGURATION = MarkupParsingConfiguration.defaultHtmlConfiguration();
-        MARKUP_PARSING_CONFIGURATION.setElementBalancing(MarkupParsingConfiguration.ElementBalancing.AUTO_CLOSE);
+        MARKUP_PARSING_CONFIGURATION = ParseConfiguration.htmlConfiguration();
+        MARKUP_PARSING_CONFIGURATION.setElementBalancing(ParseConfiguration.ElementBalancing.AUTO_CLOSE);
         MARKUP_PARSING_CONFIGURATION.setCaseSensitive(false);
-        MARKUP_PARSING_CONFIGURATION.setRequireUniqueAttributesInElement(false);
-        MARKUP_PARSING_CONFIGURATION.setRequireXmlWellFormedAttributeValues(false);
-        MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(MarkupParsingConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
-        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setDoctypePresence(MarkupParsingConfiguration.PrologPresence.ALLOWED);
-        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setRequireDoctypeKeywordsUpperCase(false);
-        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setValidateProlog(false);
-        MARKUP_PARSING_CONFIGURATION.getPrologParsingConfiguration().setXmlDeclarationPresence(MarkupParsingConfiguration.PrologPresence.ALLOWED);
+        MARKUP_PARSING_CONFIGURATION.setNoUnmatchedCloseElementsRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setUniqueAttributesInElementRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setXmlWellFormedAttributeValuesRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(ParseConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setDoctypePresence(ParseConfiguration.PrologPresence.ALLOWED);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setRequireDoctypeKeywordsUpperCase(false);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setValidateProlog(false);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setXmlDeclarationPresence(ParseConfiguration.PrologPresence.ALLOWED);
 
     }
     
     
     
-    public StandardHtmlParser(final int bufferSize, final int bufferPoolSize) {
+    public StandardHtmlParser(final int bufferPoolSize, final int bufferSize) {
         super();
-        this.attoParser = new MarkupAttoParser(MARKUP_PARSING_CONFIGURATION, false, bufferPoolSize, bufferSize);
-    }
-    
-
-    
-    
-    public final void parseTemplate(final MarkupEngineConfiguration configuration,
-                                    final IMarkupHandler handler,
-                                    final String documentName,
-                                    final Reader reader) {
-        parseTemplate(configuration, handler, documentName, reader, 0, 0);
+        this.parser = new MarkupParser(MARKUP_PARSING_CONFIGURATION, bufferPoolSize, bufferSize);
     }
 
 
 
-    public final void parseTemplate(final MarkupEngineConfiguration configuration,
-                                    final IMarkupHandler handler,
-                                    final String documentName,
-                                    final Reader reader,
-                                    final int lineOffset, final int colOffset) {
+
+    /*
+     * -------------------
+     * PARSE METHODS
+     * -------------------
+     */
+
+
+
+    public void parse(
+            final String documentName, final String document,
+            final IMarkupHandler handler) {
+        parse(documentName, document, handler, 0, 0);
+    }
+
+
+
+    public void parse(
+            final String documentName, final char[] document,
+            final IMarkupHandler handler) {
+        parse(documentName, document, handler, 0, 0);
+    }
+
+
+
+    public void parse(
+            final String documentName, final char[] document, final int offset, final int len,
+            final IMarkupHandler handler) {
+        parse(documentName, document, offset, len, handler, 0, 0);
+    }
+
+
+
+    public void parse(
+            final String documentName, final Reader reader,
+            final IMarkupHandler handler) {
+        parse(documentName, reader, handler, 0, 0);
+    }
+
+
+
+    public void parse(
+            final String documentName, final String document,
+            final IMarkupHandler handler,
+            final int lineOffset, final int colOffset) {
 
         try {
 
-
-            final StandardHtmlParserAttoHandler attoHandler =
-                    new StandardHtmlParserAttoHandler(configuration, handler, this.attoParser, documentName, lineOffset, colOffset);
-            attoParser.parse(reader, new HtmlMarkupAttoHandler(attoHandler));
+            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
+                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
+            this.parser.parse(document, standardHtmlHandler);
 
         } catch (final TemplateProcessingException e) {
             throw e;
-        } catch (final AttoParseException e) {
-            String message = null;
-            if (documentName == null) {
-                message =
-                        String.format("Exception parsing unnamed document or fragment: line %d - column %d",
-                                e.getLine(), e.getCol());
-            } else {
-                message =
-                        String.format("Exception parsing document: template=\"%s\", line %d - column %d",
-                                documentName, e.getLine(), e.getCol());
-            }
+        } catch (final ParseException e) {
+            final String message =
+                    (documentName == null?
+                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
+                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
             throw new TemplateInputException(message, e);
         }
 
@@ -128,33 +145,101 @@ public final class StandardHtmlParser implements IMarkupParser {
 
 
 
-    public final void parseFragment(final MarkupEngineConfiguration configuration,
-                                    final IMarkupHandler handler,
-                                    final String fragment) {
-        parseFragment(configuration, handler, fragment, 0, 0);
+    public void parse(
+            final String documentName, final char[] document,
+            final IMarkupHandler handler,
+            final int lineOffset, final int colOffset) {
+
+        try {
+
+            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
+                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
+            this.parser.parse(document, standardHtmlHandler);
+
+        } catch (final TemplateProcessingException e) {
+            throw e;
+        } catch (final ParseException e) {
+            final String message =
+                    (documentName == null?
+                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
+                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
+            throw new TemplateInputException(message, e);
+        }
+
     }
 
 
 
-    public final void parseFragment(final MarkupEngineConfiguration configuration,
-                                    final IMarkupHandler handler,
-                                    final String fragment,
-                                    final int lineOffset, final int colOffset) {
-        parseTemplate(configuration, handler, null, new StringReader(fragment), lineOffset, colOffset);
+    public void parse(
+            final String documentName, final char[] document, final int offset, final int len,
+            final IMarkupHandler handler,
+            final int lineOffset, final int colOffset) {
+
+        try {
+
+            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
+                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
+            this.parser.parse(document, offset, len, standardHtmlHandler);
+
+        } catch (final TemplateProcessingException e) {
+            throw e;
+        } catch (final ParseException e) {
+            final String message =
+                    (documentName == null?
+                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
+                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
+            throw new TemplateInputException(message, e);
+        }
+
     }
 
-    
-    
-    
-    
-    private static final class StandardHtmlParserAttoHandler extends AbstractMarkupAttoHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(StandardHtmlParserAttoHandler.class);
+
+    public void parse(
+            final String documentName, final Reader reader,
+            final IMarkupHandler handler,
+            final int lineOffset, final int colOffset) {
+
+        try {
+
+            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
+                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
+            this.parser.parse(reader, standardHtmlHandler);
+
+        } catch (final TemplateProcessingException e) {
+            throw e;
+        } catch (final ParseException e) {
+            final String message =
+                    (documentName == null?
+                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
+                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
+            throw new TemplateInputException(message, e);
+        }
+
+    }
+
+
+
+
+
+
+    /*
+     * ---------------------------
+     * HANDLER IMPLEMENTATION
+     * ---------------------------
+     */
+
+
+
+    private static final class StandardHtmlTemplateBaseMarkupHandler extends AbstractChainedMarkupHandler {
+
+        private static final Logger logger = LoggerFactory.getLogger(StandardHtmlParser.class);
         
-        private final IMarkupHandler markupHandler;
-        private final IMarkupTextRepository textRepository;
-        private final MarkupAttoParser attoParser;
         private final String documentName;
+
+        private ParseStatus parseStatus;
+        private IMarkupParser parser;
+        private IMarkupHandler handlerChain;
 
         /*
          * These structures allow reporting the correct (line,col) pair in DOM nodes during an embedded parsing
@@ -169,25 +254,19 @@ public final class StandardHtmlParser implements IMarkupParser {
          * ignored.
          */
         private static final char[] PARSER_LEVEL_COMMENT_CLOSE = "*/-->".toCharArray();
-        private static final IAttoHandleResult PARSER_LEVEL_COMMENT_OPEN_RESULT = new AttoHandleResult(PARSER_LEVEL_COMMENT_CLOSE);
         private boolean inParserLevelCommentBlock = false;
 
 
 
 
 
-        public StandardHtmlParserAttoHandler(
-                final MarkupEngineConfiguration configuration, final IMarkupHandler markupHandler,
-                final MarkupAttoParser attoParser, final String documentName,
+        public StandardHtmlTemplateBaseMarkupHandler(
+                final IMarkupHandler handler, final String documentName,
                 final int lineOffset, final int colOffset) {
             
-            super();
+            super(handler);
 
-            this.markupHandler = markupHandler;
-            this.textRepository = configuration.getTextRepository();
-            this.attoParser = attoParser;
             this.documentName = documentName;
-
             this.lineOffset = lineOffset;
             this.colOffset = colOffset;
 
@@ -197,29 +276,55 @@ public final class StandardHtmlParser implements IMarkupParser {
 
         /*
          * -----------------
+         * Handler maintenance methods
+         * -----------------
+         */
+
+        @Override
+        public void setParseStatus(final ParseStatus status) {
+            this.parseStatus = status;
+            super.setParseStatus(status);
+        }
+
+
+        @Override
+        public void setParser(final IMarkupParser parser) {
+            this.parser = parser;
+            super.setParser(parser);
+        }
+
+        @Override
+        public void setHandlerChain(final IMarkupHandler handlerChain) {
+            this.handlerChain = handlerChain;
+            super.setHandlerChain(handlerChain);
+        }
+
+
+
+
+        /*
+         * -----------------
          * Document handling
          * -----------------
          */
 
         @Override
-        public IAttoHandleResult handleDocumentStart(
-                final long startTimeNanos,
-                final int line, final int col)
-               throws AttoParseException {
-
-            this.markupHandler.onDocumentStart(startTimeNanos, this.documentName);
-            return null;
-
+        public void handleDocumentStart(
+                final long startTimeNanos, final int line, final int col) throws ParseException {
+            
+            super.handleDocumentStart(startTimeNanos, line + this.lineOffset, col + this.colOffset);
+            
         }
-
+        
+        
 
         @Override
-        public IAttoHandleResult handleDocumentEnd(
+        public void handleDocumentEnd(
                 final long endTimeNanos, final long totalTimeNanos,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onDocumentEnd(endTimeNanos, totalTimeNanos, this.documentName);
+            super.handleDocumentEnd(endTimeNanos, totalTimeNanos, line + this.lineOffset, col + this.colOffset);
 
             if (logger.isTraceEnabled()) {
                 final BigDecimal elapsed = BigDecimal.valueOf(totalTimeNanos);
@@ -237,8 +342,6 @@ public final class StandardHtmlParser implements IMarkupParser {
                 }
             }
 
-            return null;
-
         }
 
         
@@ -252,7 +355,7 @@ public final class StandardHtmlParser implements IMarkupParser {
         
         
         @Override
-        public IAttoHandleResult handleXmlDeclaration(
+        public void handleXmlDeclaration(
                 final char[] buffer,
                 final int keywordOffset, final int keywordLen, 
                 final int keywordLine, final int keywordCol, 
@@ -264,21 +367,16 @@ public final class StandardHtmlParser implements IMarkupParser {
                 final int standaloneLine, final int standaloneCol, 
                 final int outerOffset, final int outerLen, 
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
-            final String xmlDeclaration = this.textRepository.getText(buffer, outerOffset, outerLen);
+            super.handleXmlDeclaration(
+                    buffer,
+                    keywordOffset, keywordLen, keywordLine + this.lineOffset, keywordCol + this.colOffset,
+                    versionOffset, versionLen, versionLine + this.lineOffset, versionCol + this.colOffset,
+                    encodingOffset, encodingLen, encodingLine + this.lineOffset, encodingCol + this.colOffset,
+                    standaloneOffset, standaloneLen, standaloneLine + this.lineOffset, standaloneCol + this.colOffset,
+                    outerOffset, outerLen, line + this.lineOffset, col + this.colOffset);
 
-            final String version =
-                    (versionLen > 0)? this.textRepository.getText(buffer, versionOffset, versionLen) : null;
-            final String encoding =
-                    (encodingLen > 0)? this.textRepository.getText(buffer, encodingOffset, encodingLen) : null;
-            final boolean standalone =
-                    (standaloneLen > 0)? Boolean.parseBoolean(this.textRepository.getText(buffer, standaloneOffset, standaloneLen)): false;
-
-            this.markupHandler.onXmlDeclaration(xmlDeclaration, version, encoding, standalone, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
-            
         }
 
 
@@ -292,7 +390,7 @@ public final class StandardHtmlParser implements IMarkupParser {
         
 
         @Override
-        public IAttoHandleResult handleDocType(
+        public void handleDocType(
                 final char[] buffer, 
                 final int keywordOffset, final int keywordLen, 
                 final int keywordLine, final int keywordCol,
@@ -308,22 +406,17 @@ public final class StandardHtmlParser implements IMarkupParser {
                 final int internalSubsetLine, final int internalSubsetCol, 
                 final int outerOffset, final int outerLen, 
                 final int outerLine, final int outerCol)
-                throws AttoParseException {
+                throws ParseException {
 
-            final String docTypeClause = this.textRepository.getText(buffer, outerOffset, outerLen);
-
-            final String rootElementName =
-                    (elementNameLen > 0)? this.textRepository.getText(buffer, elementNameOffset, elementNameLen) : null;
-            final String publicId =
-                    (publicIdLen > 0)? this.textRepository.getText(buffer, publicIdOffset, publicIdLen) : null;
-            final String systemId =
-                    (systemIdLen > 0)? this.textRepository.getText(buffer, systemIdOffset, systemIdLen) : null;
-
-            this.markupHandler.onDocTypeClause(
-                    docTypeClause, rootElementName, publicId, systemId, this.documentName,
-                    outerLine + this.lineOffset, outerCol + this.colOffset);
-
-            return null;
+            super.handleDocType(
+                    buffer,
+                    keywordOffset, keywordLen, keywordLine + this.lineOffset, keywordCol + this.colOffset,
+                    elementNameOffset, elementNameLen, elementNameLine + this.lineOffset, elementNameCol + this.colOffset,
+                    typeOffset, typeLen, typeLine + this.lineOffset, typeCol + this.colOffset,
+                    publicIdOffset, publicIdLen, publicIdLine + this.lineOffset, publicIdCol + this.colOffset,
+                    systemIdOffset, systemIdLen, systemIdLine + this.lineOffset, systemIdCol + this.colOffset,
+                    internalSubsetOffset, internalSubsetLen, internalSubsetLine + this.lineOffset, internalSubsetCol + this.colOffset,
+                    outerOffset, outerLen, outerLine + this.lineOffset, outerCol + this.colOffset);
 
         }
 
@@ -338,16 +431,14 @@ public final class StandardHtmlParser implements IMarkupParser {
 
 
         @Override
-        public IAttoHandleResult handleCDATASection(
+        public void handleCDATASection(
                 final char[] buffer, 
                 final int contentOffset, final int contentLen, 
                 final int outerOffset, final int outerLen, 
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onCDATASection(buffer, contentOffset, contentLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line + this.lineOffset, col + this.colOffset);
 
         }
         
@@ -362,11 +453,11 @@ public final class StandardHtmlParser implements IMarkupParser {
 
         
         @Override
-        public IAttoHandleResult handleText(
+        public void handleText(
                 final char[] buffer, 
                 final int offset, final int len, 
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
             if (this.inParserLevelCommentBlock) {
                 // We are inside a parser-level comment block, which contents are being reported as text
@@ -377,25 +468,27 @@ public final class StandardHtmlParser implements IMarkupParser {
                 for (int i = 0; i < PARSER_LEVEL_COMMENT_CLOSE.length; i++) {
                     if (buffer[offset + i] != PARSER_LEVEL_COMMENT_CLOSE[i]) {
                         // Ignore the Text event
-                        return null;
+                        return;
                     }
                 }
 
                 // We actually found the end of the parser-level comment block, so we should just process the rest of the Text node
                 this.inParserLevelCommentBlock = false;
                 if (len - PARSER_LEVEL_COMMENT_CLOSE.length > 0) {
-                    return handleText(
+
+                    super.handleText(
                             buffer,
                             offset + PARSER_LEVEL_COMMENT_CLOSE.length, len - PARSER_LEVEL_COMMENT_CLOSE.length,
-                            line, col + PARSER_LEVEL_COMMENT_CLOSE.length);
+                            line + this.lineOffset, col + PARSER_LEVEL_COMMENT_CLOSE.length + this.colOffset);
+
                 }
-                return null; // No text left to handle
+
+                return; // No text left to handle
 
             }
 
-            this.markupHandler.onText(buffer, offset, len, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleText(
+                    buffer, offset, len, line + this.lineOffset, col + this.colOffset);
 
         }
         
@@ -410,22 +503,24 @@ public final class StandardHtmlParser implements IMarkupParser {
         
 
         @Override
-        public IAttoHandleResult handleComment(
+        public void handleComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen, 
                 final int outerOffset, final int outerLen, 
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             if (isPrototypeOnlyCommentBlock(buffer, contentOffset, contentLen)) {
-                return handlePrototypeOnlyComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                handlePrototypeOnlyComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                return;
             }
             // This check must always be executed AFTER checking for prototype-only comment blocks
             if (isParserLevelCommentStartBlock(buffer, contentOffset, contentLen)) {
-                return handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                handleParserLevelComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+                return;
             }
 
-            return handleNormalComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+            handleNormalComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
         }
 
@@ -468,26 +563,25 @@ public final class StandardHtmlParser implements IMarkupParser {
         }
 
 
-        private IAttoHandleResult handleNormalComment(
+        private void handleNormalComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onComment(buffer, contentOffset, contentLen, this.documentName, line + this.lineOffset, col + this.lineOffset);
-
-            return null;
+            super.handleComment(
+                    buffer, contentOffset, contentLen, outerOffset, outerLen, line + this.lineOffset, col + this.lineOffset);
 
         }
 
 
-        private IAttoHandleResult handlePrototypeOnlyComment(
+        private void handlePrototypeOnlyComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             /*
              * Arrange offsets, so that DOM element positions in the embedded parse operation
@@ -500,7 +594,7 @@ public final class StandardHtmlParser implements IMarkupParser {
             this.colOffset = col + 2; // 2 = 3 - 1 --> because of the '/*/' sequence (-1 in order to work as offset)
 
             // We parse the comment content using this same handler object, but removing the "/*/.../*/"
-            this.attoParser.parse(buffer, contentOffset + 3, contentLen - 6, this);
+            this.parser.parse(buffer, contentOffset + 3, contentLen - 6, this.handlerChain);
 
             /*
              * Return offsets to their original value.
@@ -508,28 +602,28 @@ public final class StandardHtmlParser implements IMarkupParser {
             this.lineOffset = 0;
             this.colOffset = 0;
 
-            return null;
-
         }
 
 
-        private IAttoHandleResult handleParserLevelComment(
+        private void handleParserLevelComment(
                 final char[] buffer,
                 final int contentOffset, final int contentLen,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
             if (isParserLevelCommentEndBlock(buffer, contentOffset, contentLen)) {
                 // This block both starts AND ends the parser-level comment, so ignoring it
                 // should be enough, without involving any text handling events
-                return null;
+                return;
             }
 
             // Comment blocks of this type provoke the disabling of the parser until we find the
             // closing sequence ('*/-->'), which might appear in a different block of code
             this.inParserLevelCommentBlock = true;
-            return PARSER_LEVEL_COMMENT_OPEN_RESULT;
+
+            // Disable parsing until we find the end of the parser-level comment block
+            this.parseStatus.setParsingDisabled(PARSER_LEVEL_COMMENT_CLOSE);
 
         }
 
@@ -545,7 +639,7 @@ public final class StandardHtmlParser implements IMarkupParser {
 
         
         @Override
-        public IAttoHandleResult handleAttribute(
+        public void handleAttribute(
                 final char[] buffer, 
                 final int nameOffset, final int nameLen,
                 final int nameLine, final int nameCol, 
@@ -554,19 +648,15 @@ public final class StandardHtmlParser implements IMarkupParser {
                 final int valueContentOffset, final int valueContentLen, 
                 final int valueOuterOffset, final int valueOuterLen,
                 final int valueLine, final int valueCol) 
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onAttribute(
+            super.handleAttribute(
                     buffer,
-                    nameOffset, nameLen,
-                    nameLine + this.lineOffset, nameCol + this.colOffset,
-                    operatorOffset, operatorLen,
-                    operatorLine + this.lineOffset, operatorCol + this.colOffset,
+                    nameOffset, nameLen, nameLine + this.lineOffset, nameCol + this.colOffset,
+                    operatorOffset, operatorLen, operatorLine + this.lineOffset, operatorCol + this.colOffset,
                     valueContentOffset, valueContentLen,
                     valueOuterOffset, valueOuterLen,
-                    valueLine + this.lineOffset, valueCol + this.colOffset, this.documentName);
-
-            return null;
+                    valueLine + this.lineOffset, valueCol + this.colOffset);
 
         }
 
@@ -574,178 +664,180 @@ public final class StandardHtmlParser implements IMarkupParser {
         
         
         @Override
-        public IAttoHandleResult handleStandaloneElementStart(
+        public void handleStandaloneElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final boolean minimized,
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onStandaloneElementStart(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, minimized, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleStandaloneElementStart(
+                    buffer, nameOffset, nameLen, minimized, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleOpenElementStart(
+        public void handleOpenElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onOpenElementStart(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleOpenElementStart(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
-        
+
+        @Override
+        public void handleAutoOpenElementStart(
+                final char[] buffer,
+                final int nameOffset, final int nameLen,
+                final int line, final int col)
+                throws ParseException {
+
+            super.handleAutoOpenElementStart(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+
+        }
 
 
         @Override
-        public IAttoHandleResult handleCloseElementStart(
+        public void handleAutoOpenElementEnd(
+                final char[] buffer,
+                final int nameOffset, final int nameLen,
+                final int line, final int col)
+                throws ParseException {
+
+            super.handleAutoOpenElementEnd(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+
+        }
+
+
+        @Override
+        public void handleCloseElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col) 
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onCloseElementStart(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleCloseElementStart(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleAutoCloseElementStart(
+        public void handleAutoCloseElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onAutoCloseElementStart(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleAutoCloseElementStart(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleUnmatchedCloseElementStart(
+        public void handleUnmatchedCloseElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onUnmatchedCloseElementStart(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleUnmatchedCloseElementStart(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleStandaloneElementEnd(
+        public void handleStandaloneElementEnd(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final boolean minimized,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onStandaloneElementEnd(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, minimized, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleUnmatchedCloseElementEnd(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleOpenElementEnd(
+        public void handleOpenElementEnd(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onOpenElementEnd(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleOpenElementEnd(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
         @Override
-        public IAttoHandleResult handleCloseElementEnd(
+        public void handleCloseElementEnd(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onCloseElementEnd(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleCloseElementEnd(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleAutoCloseElementEnd(
+        public void handleAutoCloseElementEnd(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onAutoCloseElementEnd(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleAutoCloseElementEnd(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleUnmatchedCloseElementEnd(
+        public void handleUnmatchedCloseElementEnd(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onUnmatchedCloseElementEnd(
-                    this.textRepository.getText(buffer, nameOffset, nameLen), buffer, nameOffset, nameLen, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleUnmatchedCloseElementEnd(
+                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
 
 
         @Override
-        public IAttoHandleResult handleInnerWhiteSpace(
+        public void handleInnerWhiteSpace(
                 final char[] buffer,
                 final int offset, final int len,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            this.markupHandler.onElementInnerWhiteSpace(
-                    buffer, offset, len, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleInnerWhiteSpace(
+                    buffer, offset, len, line + this.lineOffset, col + this.colOffset);
 
         }
 
@@ -761,7 +853,7 @@ public final class StandardHtmlParser implements IMarkupParser {
 
 
         @Override
-        public IAttoHandleResult handleProcessingInstruction(
+        public void handleProcessingInstruction(
                 final char[] buffer,
                 final int targetOffset, final int targetLen,
                 final int targetLine, final int targetCol,
@@ -769,17 +861,13 @@ public final class StandardHtmlParser implements IMarkupParser {
                 final int contentLine, final int contentCol,
                 final int outerOffset, final int outerLen,
                 final int line, final int col)
-                throws AttoParseException {
+                throws ParseException {
 
-            final String processingInstruction = this.textRepository.getText(buffer, outerOffset, outerLen);
-
-            final String target = this.textRepository.getText(buffer, targetOffset, targetLen);
-            final String content = this.textRepository.getText(buffer, contentOffset, contentLen);
-
-            this.markupHandler.onProcessingInstruction(
-                    processingInstruction, target, content, this.documentName, line + this.lineOffset, col + this.colOffset);
-
-            return null;
+            super.handleProcessingInstruction(
+                    buffer,
+                    targetOffset, targetLen, targetLine + this.lineOffset, targetCol + this.colOffset,
+                    contentOffset, contentLen, contentLine + this.lineOffset, contentCol + this.colOffset,
+                    outerOffset, outerLen, line + this.lineOffset, col + this.colOffset);
 
         }
 
