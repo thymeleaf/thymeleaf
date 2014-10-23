@@ -770,8 +770,8 @@ public final class StandardHtmlParser implements ITemplateParser {
                 final int line, final int col)
                 throws ParseException {
 
-            super.handleUnmatchedCloseElementEnd(
-                    buffer, nameOffset, nameLen, line + this.lineOffset, col + this.colOffset);
+            super.handleStandaloneElementEnd(
+                    buffer, nameOffset, nameLen, minimized, line + this.lineOffset, col + this.colOffset);
 
         }
 

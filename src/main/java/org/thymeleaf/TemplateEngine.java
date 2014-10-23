@@ -36,11 +36,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.attoparser.IMarkupHandler;
-import org.attoparser.discard.DiscardMarkupHandler;
 import org.attoparser.output.OutputMarkupHandler;
 import org.attoparser.select.AttributeMarkingSelectedMarkupHandler;
+import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
-import org.attoparser.select.NodeSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.cache.ICacheManager;
@@ -1218,7 +1217,7 @@ public class TemplateEngine {
         final IMarkupHandler selectedEventHandler = new AttributeMarkingSelectedMarkupHandler("sel", directOutputHandler);
 
         final IMarkupHandler handler =
-                new NodeSelectorMarkupHandler(selectedEventHandler, new DiscardMarkupHandler(),
+                new BlockSelectorMarkupHandler(selectedEventHandler, directOutputHandler,
                         new String[] {"html//p", "html//div", "title", "li/a", "ol/li", "li", "[th:include*='footer']" },
                         TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
 
