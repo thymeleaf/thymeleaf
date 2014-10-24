@@ -215,14 +215,15 @@ public abstract class AbstractProcessor implements IProcessor {
             if (!e.hasTemplateName()) {
                 e.setTemplateName(node.getDocumentName());
             }
-            if (!e.hasLineNumber()) {
-                e.setLineNumber(node.getLineNumber());
+            if (!e.hasLine()) {
+                e.setLine(node.getLineNumber());
             }
             throw e;
         } catch (final Exception e) {
+            // TODO Line and column number are here assigned just in order to adhere to the APIs, but obviously -1 shouldn't be the column number
             throw new TemplateProcessingException(
                             "Error during execution of processor '" + this.getClass().getName() + "'", 
-                            node.getDocumentName(), node.getLineNumber(), e);
+                            node.getDocumentName(), node.getLineNumber().intValue(), -1, e);
         }
         
     }

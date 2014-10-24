@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.engine.markup.parser;
 
-import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -30,11 +29,17 @@ import org.attoparser.MarkupParser;
 import org.attoparser.ParseException;
 import org.attoparser.ParseStatus;
 import org.attoparser.config.ParseConfiguration;
+import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.engine.markup.handler.ITemplateHandler;
+import org.thymeleaf.engine.markup.resource.CharArrayResource;
+import org.thymeleaf.engine.markup.resource.IResource;
+import org.thymeleaf.engine.markup.resource.ReaderResource;
+import org.thymeleaf.engine.markup.resource.StringResource;
 import org.thymeleaf.exceptions.TemplateInputException;
-import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -42,10 +47,10 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @since 3.0.0
  * 
  */
-public final class StandardHtmlParser implements ITemplateParser {
+public final class StandardHtmlTemplateParser implements ITemplateParser {
+
 
     private final IMarkupParser parser;
-    
     static final ParseConfiguration MARKUP_PARSING_CONFIGURATION;
 
     
@@ -72,7 +77,7 @@ public final class StandardHtmlParser implements ITemplateParser {
     
     
     
-    public StandardHtmlParser(final int bufferPoolSize, final int bufferSize) {
+    public StandardHtmlTemplateParser(final int bufferPoolSize, final int bufferSize) {
         super();
         this.parser = new MarkupParser(MARKUP_PARSING_CONFIGURATION, bufferPoolSize, bufferSize);
     }
@@ -89,131 +94,63 @@ public final class StandardHtmlParser implements ITemplateParser {
 
 
     public void parse(
-            final String documentName, final String document,
-            final IMarkupHandler handler) {
-        parse(documentName, document, handler, 0, 0);
+            final IResource templateResource,
+            final ITemplateHandler templateHandler) {
+        parse(templateResource, null, null, templateHandler);
     }
 
 
 
     public void parse(
-            final String documentName, final char[] document,
-            final IMarkupHandler handler) {
-        parse(documentName, document, handler, 0, 0);
-    }
+            final IResource templateResource,
+            final String dialectPrefix, String selector,
+            final ITemplateHandler templateHandler) {
 
+        Validate.notNull(templateResource, "Template resource cannot be null");
+        Validate.notNull(templateHandler, "Template handler cannot be null");
 
-
-    public void parse(
-            final String documentName, final char[] document, final int offset, final int len,
-            final IMarkupHandler handler) {
-        parse(documentName, document, offset, len, handler, 0, 0);
-    }
-
-
-
-    public void parse(
-            final String documentName, final Reader reader,
-            final IMarkupHandler handler) {
-        parse(documentName, reader, handler, 0, 0);
-    }
-
-
-
-    public void parse(
-            final String documentName, final String document,
-            final IMarkupHandler handler,
-            final int lineOffset, final int colOffset) {
+        final String documentName = templateResource.getName();
 
         try {
 
             final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
-                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
-            this.parser.parse(document, standardHtmlHandler);
+                    new StandardHtmlTemplateBaseMarkupHandler(templateHandler, documentName);
 
-        } catch (final TemplateProcessingException e) {
-            throw e;
+            final TemplateFragmentMarkupReferenceResolver referenceResolver =
+                    TemplateFragmentMarkupReferenceResolver.forPrefix(dialectPrefix);
+
+            final BlockSelectorMarkupHandler blockSelectorMarkupHandler =
+                    (selector == null ? null : new BlockSelectorMarkupHandler(standardHtmlHandler, selector, referenceResolver));
+
+            final IMarkupHandler parseHandler =
+                    (blockSelectorMarkupHandler == null ? standardHtmlHandler : blockSelectorMarkupHandler);
+
+            if (templateResource instanceof ReaderResource) {
+
+                this.parser.parse(((ReaderResource)templateResource).getContent(), parseHandler);
+
+            } else if (templateResource instanceof StringResource) {
+
+                this.parser.parse(((StringResource)templateResource).getContent(), parseHandler);
+
+            } else if (templateResource instanceof CharArrayResource) {
+
+                final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
+                this.parser.parse(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen(), parseHandler);
+
+            } else {
+
+                throw new IllegalArgumentException(
+                        "Cannot parse: unrecognized " + IResource.class.getSimpleName() + " implementation: " + templateResource.getClass().getName());
+
+            }
+
         } catch (final ParseException e) {
-            final String message =
-                    (documentName == null?
-                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
-                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
-            throw new TemplateInputException(message, e);
-        }
-
-    }
-
-
-
-    public void parse(
-            final String documentName, final char[] document,
-            final IMarkupHandler handler,
-            final int lineOffset, final int colOffset) {
-
-        try {
-
-            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
-                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
-            this.parser.parse(document, standardHtmlHandler);
-
-        } catch (final TemplateProcessingException e) {
-            throw e;
-        } catch (final ParseException e) {
-            final String message =
-                    (documentName == null?
-                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
-                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
-            throw new TemplateInputException(message, e);
-        }
-
-    }
-
-
-
-    public void parse(
-            final String documentName, final char[] document, final int offset, final int len,
-            final IMarkupHandler handler,
-            final int lineOffset, final int colOffset) {
-
-        try {
-
-            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
-                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
-            this.parser.parse(document, offset, len, standardHtmlHandler);
-
-        } catch (final TemplateProcessingException e) {
-            throw e;
-        } catch (final ParseException e) {
-            final String message =
-                    (documentName == null?
-                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
-                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
-            throw new TemplateInputException(message, e);
-        }
-
-    }
-
-
-
-    public void parse(
-            final String documentName, final Reader reader,
-            final IMarkupHandler handler,
-            final int lineOffset, final int colOffset) {
-
-        try {
-
-            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
-                    new StandardHtmlTemplateBaseMarkupHandler(handler, documentName, lineOffset, colOffset);
-            this.parser.parse(reader, standardHtmlHandler);
-
-        } catch (final TemplateProcessingException e) {
-            throw e;
-        } catch (final ParseException e) {
-            final String message =
-                    (documentName == null?
-                            String.format("Exception parsing unnamed document or fragment: line %d - column %d", e.getLine(), e.getCol()) :
-                            String.format("Exception parsing document: template=\"%s\", line %d - column %d", documentName, e.getLine(), e.getCol()));
-            throw new TemplateInputException(message, e);
+            final String message = "An error happened during template parsing";
+            if (e.getLine() != null && e.getCol() != null) {
+                throw new TemplateInputException(message, templateResource.getName(), e.getLine().intValue(), e.getCol().intValue(), e);
+            }
+            throw new TemplateInputException(message, templateResource.getName(), e);
         }
 
     }
@@ -233,8 +170,8 @@ public final class StandardHtmlParser implements ITemplateParser {
 
     private static final class StandardHtmlTemplateBaseMarkupHandler extends AbstractChainedMarkupHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(StandardHtmlParser.class);
-        
+        private static final Logger logger = LoggerFactory.getLogger(StandardHtmlTemplateParser.class);
+
         private final String documentName;
 
         private ParseStatus parseStatus;
@@ -261,14 +198,15 @@ public final class StandardHtmlParser implements ITemplateParser {
 
 
         public StandardHtmlTemplateBaseMarkupHandler(
-                final IMarkupHandler handler, final String documentName,
-                final int lineOffset, final int colOffset) {
-            
-            super(handler);
+                final ITemplateHandler templateHandler, final String documentName) {
+
+            // We need to adapt the AttoParser adapter to Thymeleaf's own, in a way that causes the less
+            // disturbance to the parser, so we just chain a specific-purpose adapter handler.
+            super(new TemplateAdapterMarkupHandler(templateHandler));
 
             this.documentName = documentName;
-            this.lineOffset = lineOffset;
-            this.colOffset = colOffset;
+            this.lineOffset = 0;
+            this.colOffset = 0;
 
         }
 
@@ -284,20 +222,17 @@ public final class StandardHtmlParser implements ITemplateParser {
         @Override
         public void setParseStatus(final ParseStatus status) {
             this.parseStatus = status;
-            super.setParseStatus(status);
         }
 
 
         @Override
         public void setParser(final IMarkupParser parser) {
             this.parser = parser;
-            super.setParser(parser);
         }
 
         @Override
         public void setHandlerChain(final IMarkupHandler handlerChain) {
             this.handlerChain = handlerChain;
-            super.setHandlerChain(handlerChain);
         }
 
 
@@ -314,10 +249,10 @@ public final class StandardHtmlParser implements ITemplateParser {
                 final long startTimeNanos, final int line, final int col) throws ParseException {
             
             super.handleDocumentStart(startTimeNanos, line + this.lineOffset, col + this.colOffset);
-            
+
         }
-        
-        
+
+
 
         @Override
         public void handleDocumentEnd(
@@ -332,12 +267,12 @@ public final class StandardHtmlParser implements ITemplateParser {
                 final BigDecimal elapsedMs = elapsed.divide(BigDecimal.valueOf(1000000), RoundingMode.HALF_UP);
                 if (this.documentName == null) {
                     logger.trace("[THYMELEAF][{}][{}][{}] Processed unnamed template or fragment in {} nanoseconds (approx. {}ms)",
-                            new Object[] {TemplateEngine.threadIndex(), 
+                            new Object[] {TemplateEngine.threadIndex(),
                                             elapsed, elapsedMs,
                                             elapsed, elapsedMs});
                 } else {
                     logger.trace("[THYMELEAF][{}][{}][{}][{}] Processed template \"{}\" in {} nanoseconds (approx. {}ms)",
-                            new Object[] {TemplateEngine.threadIndex(), 
+                            new Object[] {TemplateEngine.threadIndex(),
                                             this.documentName, elapsed, elapsedMs,
                                             this.documentName, elapsed, elapsedMs});
                 }
@@ -345,29 +280,29 @@ public final class StandardHtmlParser implements ITemplateParser {
 
         }
 
-        
 
-        
+
+
         /*
          * ------------------------
          * XML Declaration handling
          * ------------------------
          */
-        
-        
+
+
         @Override
         public void handleXmlDeclaration(
                 final char[] buffer,
-                final int keywordOffset, final int keywordLen, 
-                final int keywordLine, final int keywordCol, 
+                final int keywordOffset, final int keywordLen,
+                final int keywordLine, final int keywordCol,
                 final int versionOffset, final int versionLen,
-                final int versionLine, final int versionCol, 
-                final int encodingOffset, final int encodingLen, 
+                final int versionLine, final int versionCol,
+                final int encodingOffset, final int encodingLen,
                 final int encodingLine, final int encodingCol,
-                final int standaloneOffset, final int standaloneLen, 
-                final int standaloneLine, final int standaloneCol, 
-                final int outerOffset, final int outerLen, 
-                final int line, final int col) 
+                final int standaloneOffset, final int standaloneLen,
+                final int standaloneLine, final int standaloneCol,
+                final int outerOffset, final int outerLen,
+                final int line, final int col)
                 throws ParseException {
 
             super.handleXmlDeclaration(
@@ -382,30 +317,30 @@ public final class StandardHtmlParser implements ITemplateParser {
 
 
 
-        
+
         /*
          * ----------------
          * DOCTYPE handling
          * ----------------
          */
-        
+
 
         @Override
         public void handleDocType(
-                final char[] buffer, 
-                final int keywordOffset, final int keywordLen, 
+                final char[] buffer,
+                final int keywordOffset, final int keywordLen,
                 final int keywordLine, final int keywordCol,
-                final int elementNameOffset, final int elementNameLen, 
-                final int elementNameLine, final int elementNameCol, 
-                final int typeOffset, final int typeLen, 
-                final int typeLine, final int typeCol, 
+                final int elementNameOffset, final int elementNameLen,
+                final int elementNameLine, final int elementNameCol,
+                final int typeOffset, final int typeLen,
+                final int typeLine, final int typeCol,
                 final int publicIdOffset, final int publicIdLen,
-                final int publicIdLine, final int publicIdCol, 
-                final int systemIdOffset, final int systemIdLen, 
+                final int publicIdLine, final int publicIdCol,
+                final int systemIdOffset, final int systemIdLen,
                 final int systemIdLine, final int systemIdCol,
                 final int internalSubsetOffset, final int internalSubsetLen,
-                final int internalSubsetLine, final int internalSubsetCol, 
-                final int outerOffset, final int outerLen, 
+                final int internalSubsetLine, final int internalSubsetCol,
+                final int outerOffset, final int outerLen,
                 final int outerLine, final int outerCol)
                 throws ParseException {
 
@@ -421,9 +356,9 @@ public final class StandardHtmlParser implements ITemplateParser {
 
         }
 
-        
 
-        
+
+
         /*
          * ----------------------
          * CDATA Section handling
@@ -433,9 +368,9 @@ public final class StandardHtmlParser implements ITemplateParser {
 
         @Override
         public void handleCDATASection(
-                final char[] buffer, 
-                final int contentOffset, final int contentLen, 
-                final int outerOffset, final int outerLen, 
+                final char[] buffer,
+                final int contentOffset, final int contentLen,
+                final int outerOffset, final int outerLen,
                 final int line, final int col)
                 throws ParseException {
 
@@ -444,22 +379,22 @@ public final class StandardHtmlParser implements ITemplateParser {
                     line + this.lineOffset, col + this.colOffset);
 
         }
-        
-        
 
-        
+
+
+
         /*
          * -------------
          * Text handling
          * -------------
          */
 
-        
+
         @Override
         public void handleText(
-                final char[] buffer, 
-                final int offset, final int len, 
-                final int line, final int col) 
+                final char[] buffer,
+                final int offset, final int len,
+                final int line, final int col)
                 throws ParseException {
 
             if (this.inParserLevelCommentBlock) {
@@ -494,22 +429,22 @@ public final class StandardHtmlParser implements ITemplateParser {
                     buffer, offset, len, line + this.lineOffset, col + this.colOffset);
 
         }
-        
 
 
-        
+
+
         /*
          * ----------------
          * Comment handling
          * ----------------
          */
-        
+
 
         @Override
         public void handleComment(
                 final char[] buffer,
-                final int contentOffset, final int contentLen, 
-                final int outerOffset, final int outerLen, 
+                final int contentOffset, final int contentLen,
+                final int outerOffset, final int outerLen,
                 final int line, final int col)
                 throws ParseException {
 
@@ -633,24 +568,24 @@ public final class StandardHtmlParser implements ITemplateParser {
 
 
 
-        
+
         /*
          * ----------------
          * Element handling
          * ----------------
          */
 
-        
+
         @Override
         public void handleAttribute(
-                final char[] buffer, 
+                final char[] buffer,
                 final int nameOffset, final int nameLen,
-                final int nameLine, final int nameCol, 
+                final int nameLine, final int nameCol,
                 final int operatorOffset, final int operatorLen,
-                final int operatorLine, final int operatorCol, 
-                final int valueContentOffset, final int valueContentLen, 
+                final int operatorLine, final int operatorCol,
+                final int valueContentOffset, final int valueContentLen,
                 final int valueOuterOffset, final int valueOuterLen,
-                final int valueLine, final int valueCol) 
+                final int valueLine, final int valueCol)
                 throws ParseException {
 
             super.handleAttribute(
@@ -664,14 +599,14 @@ public final class StandardHtmlParser implements ITemplateParser {
         }
 
 
-        
-        
+
+
         @Override
         public void handleStandaloneElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
                 final boolean minimized,
-                final int line, final int col) 
+                final int line, final int col)
                 throws ParseException {
 
             super.handleStandaloneElementStart(
@@ -724,7 +659,7 @@ public final class StandardHtmlParser implements ITemplateParser {
         public void handleCloseElementStart(
                 final char[] buffer,
                 final int nameOffset, final int nameLen,
-                final int line, final int col) 
+                final int line, final int col)
                 throws ParseException {
 
             super.handleCloseElementStart(

@@ -17,11 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.parser;
+package org.thymeleaf.engine.markup.resource;
 
-import org.thymeleaf.engine.markup.handler.ITemplateHandler;
-import org.thymeleaf.engine.markup.resource.IResource;
-
+import java.io.Serializable;
 
 /**
  *
@@ -29,14 +27,33 @@ import org.thymeleaf.engine.markup.resource.IResource;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public final class StringResource implements IResource, Serializable {
+
+    private static final long serialVersionUID = 7176266821500073497L;
+
+    private final String name;
+    private final String content;
 
 
-    public void parse(final IResource templateResource,
-                      final ITemplateHandler handler);
+    public StringResource(final String name, final String content) {
+        super();
+        // We will intentionally not use org.thymeleaf.util.Validate in order to make resource implementations
+        // as free from other thymeleaf APIs as possible.
+        if (content == null) {
+            throw new IllegalArgumentException("Resource content cannot be null");
+        }
+        this.name = name;
+        this.content = content;
+    }
 
-    public void parse(final IResource templateResource,
-                      final String dialectPrefix, final String selector,
-                      final ITemplateHandler handler);
+
+    public String getName() {
+        return this.name;
+    }
+
+
+    public String getContent() {
+        return this.content;
+    }
 
 }

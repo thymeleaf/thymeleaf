@@ -39,23 +39,30 @@ public class TemplateInputException extends TemplateProcessingException {
     public TemplateInputException(final String message, final Throwable cause) {
         super(message, cause);
     }
-    
-    public TemplateInputException(final String message, final String templateName, final Integer lineNumber, final Throwable cause) {
-        super(message, templateName, lineNumber, cause);
-    }
 
-    public TemplateInputException(final String message, final String templateName, final Integer lineNumber) {
-        super(message, templateName, lineNumber);
+    public TemplateInputException(final String message, final String templateName) {
+        super(message, templateName);
     }
 
     public TemplateInputException(final String message, final String templateName, final Throwable cause) {
         super(message, templateName, cause);
     }
 
-    public TemplateInputException(final String message, final String templateName) {
-        super(message, templateName);
+    /**
+     *
+     * @since 3.0.0
+     */
+    public TemplateInputException(final String message, final String templateName, final int line, final int col) {
+        super(message, templateName, line, col);
     }
-    
-    
+
+    /**
+     *
+     * @since 3.0.0
+     */
+    public TemplateInputException(final String message, final String templateName, final int line, final int col, final Throwable cause) {
+        super(message, templateName, line, col, cause);
+    }
+
     
 }

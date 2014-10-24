@@ -27,7 +27,7 @@ package org.thymeleaf.engine.markup.dom;
  */
 public enum ElementType {
 
-    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#void-elements
+    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#elements-0
 
     VOID(false), RAW_TEXT(true), ESCAPABLE_RAW_TEXT(true), FOREIGN(true), NORMAL(true);
 

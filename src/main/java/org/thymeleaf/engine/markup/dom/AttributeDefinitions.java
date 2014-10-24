@@ -19,10 +19,12 @@
  */
 package org.thymeleaf.engine.markup.dom;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,50 +52,69 @@ public final class AttributeDefinitions {
 
     static {
 
+        final List<String> attributeNameListAux =
+                new ArrayList<String>(Arrays.asList(new String[]{
+                        "abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive",
+                        "autocomplete", "autofocus", "autoplay", "axis", "border", "cellpadding", "cellspacing",
+                        "challenge", "char", "charoff", "charset", "checked", "cite", "class", "classid",
+                        "codebase", "codetype", "cols", "colspan", "command", "content", "contenteditable",
+                        "contextmenu", "controls", "coords", "data", "datetime", "declare", "default",
+                        "defer", "dir", "disabled", "draggable", "dropzone", "enctype", "for", "form",
+                        "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget",
+                        "frame", "headers", "height", "hidden", "high", "href", "hreflang", "http-equiv",
+                        "icon", "id", "ismap", "keytype", "kind", "label", "lang", "list", "longdesc",
+                        "loop", "low", "max", "maxlength", "media", "method", "min", "multiple", "muted",
+                        "name", "nohref", "novalidate", "onabort", "onafterprint", "onbeforeprint",
+                        "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough", "onchange",
+                        "onclick", "oncontextmenu", "oncuechange", "ondblclick", "ondrag", "ondragend",
+                        "ondragenter", "ondragleave", "ondragover", "ondragstart", "ondrop",
+                        "ondurationchange", "onemptied", "onended", "onerror", "onfocus",
+                        "onformchange", "onforminput", "onhaschange", "oninput", "oninvalid", "onkeydown",
+                        "onkeypress", "onkeyup", "onload", "onloadeddata", "onloadedmetadata",
+                        "onloadstart", "onmessage", "onmousedown", "onmousemove", "onmouseout", "onmouseover",
+                        "onmouseup", "onmousewheel", "onoffline", "ononline", "onpagehide", "onpageshow",
+                        "onpause", "onplay", "onplaying", "onpopstate", "onprogress", "onratechange",
+                        "onredo", "onreset", "onresize", "onscroll", "onseeked", "onseeking",
+                        "onselect", "onstalled", "onstorage", "onsubmit", "onsuspend", "ontimeupdate",
+                        "onundo", "onunload", "onvolumechange", "onwaiting", "open", "optimum", "pattern",
+                        "placeholder", "poster", "preload", "profile", "radiogroup", "readonly", "rel",
+                        "required", "rev", "rows", "rowspan", "rules", "scheme", "scope", "selected",
+                        "shape", "size", "span", "spellcheck", "src", "srclang", "standby", "style", "summary",
+                        "tabindex", "title", "translate", "type", "usemap", "valign", "value", "valuetype",
+                        "width", "xml:lang", "xml:space", "xmlns"
+                }));
+
+        Collections.sort(attributeNameListAux);
+
         ALL_STANDARD_ATTRIBUTE_NAMES =
-                Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                        new String[] {
-                                "abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive",
-                                "autocomplete", "autofocus", "autoplay", "axis", "border", "cellpadding", "cellspacing",
-                                "challenge", "char", "charoff", "charset", "checked", "cite", "class", "classid",
-                                "codebase", "codetype", "cols", "colspan", "command", "content", "contenteditable",
-                                "contextmenu", "controls", "coords", "data", "datetime", "declare", "default",
-                                "defer", "dir", "disabled", "draggable", "dropzone", "enctype", "for", "form",
-                                "formaction", "formenctype", "formmethod", "formnovalidate", "formtarget",
-                                "frame", "headers", "height", "hidden", "high", "href", "hreflang", "http-equiv",
-                                "icon", "id", "ismap", "keytype", "kind", "label", "lang", "list", "longdesc",
-                                "loop", "low", "max", "maxlength", "media", "method", "min", "multiple", "muted",
-                                "name", "nohref", "novalidate", "onabort", "onafterprint", "onbeforeprint",
-                                "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough", "onchange",
-                                "onclick", "oncontextmenu", "oncuechange", "ondblclick", "ondrag", "ondragend",
-                                "ondragenter", "ondragleave", "ondragover", "ondragstart", "ondrop",
-                                "ondurationchange", "onemptied", "onended", "onerror", "onfocus",
-                                "onformchange", "onforminput", "onhaschange", "oninput", "oninvalid", "onkeydown",
-                                "onkeypress", "onkeyup", "onload", "onloadeddata", "onloadedmetadata",
-                                "onloadstart", "onmessage", "onmousedown", "onmousemove", "onmouseout", "onmouseover",
-                                "onmouseup", "onmousewheel", "onoffline", "ononline", "onpagehide", "onpageshow",
-                                "onpause", "onplay", "onplaying", "onpopstate", "onprogress", "onratechange",
-                                "onredo", "onreset", "onresize", "onscroll", "onseeked", "onseeking",
-                                "onselect", "onstalled", "onstorage", "onsubmit", "onsuspend", "ontimeupdate",
-                                "onundo", "onunload", "onvolumechange", "onwaiting", "open", "optimum", "pattern",
-                                "placeholder", "poster", "preload", "profile", "radiogroup", "readonly", "rel",
-                                "required", "rev", "rows", "rowspan", "rules", "scheme", "scope", "selected",
-                                "shape", "size", "span", "spellcheck", "src", "srclang", "standby", "style", "summary",
-                                "tabindex", "title", "translate", "type", "usemap", "valign", "value", "valuetype",
-                                "width", "xml:lang", "xml:space", "xmlns"
-                        })));
+                Collections.unmodifiableSet(new LinkedHashSet<String>(attributeNameListAux));
 
 
         /*
          * Create and register the standard attributes at the attribute repository, in order to initialize it
          */
-        for (final String standardAttributeName : ALL_STANDARD_ATTRIBUTE_NAMES) {
-            final AttributeDefinition attribute = new AttributeDefinition(standardAttributeName);
-            ATTRIBUTE_DEFINITIONS.put(attribute.getName(), attribute);
+        final List<AttributeDefinition> attributeDefinitionListAux =
+                new ArrayList<AttributeDefinition>(ALL_STANDARD_ATTRIBUTE_NAMES.size() + 1);
+        for (final String attributeName : ALL_STANDARD_ATTRIBUTE_NAMES) {
+            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName);
+            attributeDefinitionListAux.add(attributeDefinition);
         }
 
         ALL_STANDARD_ATTRIBUTES =
-                Collections.unmodifiableSet(new LinkedHashSet<AttributeDefinition>(ATTRIBUTE_DEFINITIONS.values()));
+                Collections.unmodifiableSet(new LinkedHashSet<AttributeDefinition>(attributeDefinitionListAux));
+
+
+
+
+
+        /*
+         * Register the standard elements at the element repository, in order to initialize it
+         */
+        for (final AttributeDefinition attributeDefinition : ALL_STANDARD_ATTRIBUTES) {
+            ATTRIBUTE_DEFINITIONS.put(attributeDefinition.getName(), attributeDefinition);
+        }
+
+
 
 
     }

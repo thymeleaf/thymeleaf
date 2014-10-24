@@ -17,11 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.parser;
-
-import org.thymeleaf.engine.markup.handler.ITemplateHandler;
-import org.thymeleaf.engine.markup.resource.IResource;
-
+package org.thymeleaf.engine.markup.resource;
 
 /**
  *
@@ -29,14 +25,9 @@ import org.thymeleaf.engine.markup.resource.IResource;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public interface IResource {
 
 
-    public void parse(final IResource templateResource,
-                      final ITemplateHandler handler);
-
-    public void parse(final IResource templateResource,
-                      final String dialectPrefix, final String selector,
-                      final ITemplateHandler handler);
+    public String getName();
 
 }

@@ -35,10 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.attoparser.IMarkupHandler;
-import org.attoparser.output.OutputMarkupHandler;
-import org.attoparser.select.AttributeMarkingSelectedMarkupHandler;
-import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +47,10 @@ import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.engine.markup.MarkupEngineConfiguration;
+import org.thymeleaf.engine.markup.handler.ITemplateHandler;
+import org.thymeleaf.engine.markup.handler.OutputTemplateHandler;
+import org.thymeleaf.engine.markup.resource.IResource;
+import org.thymeleaf.engine.markup.resource.ReaderResource;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.NotInitializedException;
 import org.thymeleaf.exceptions.TemplateEngineException;
@@ -1213,17 +1213,13 @@ public class TemplateEngine {
 
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
-        final IMarkupHandler directOutputHandler = new OutputMarkupHandler(writer);
-        final IMarkupHandler selectedEventHandler = new AttributeMarkingSelectedMarkupHandler("sel", directOutputHandler);
+        final IResource templateResource = new ReaderResource(templateName, reader);
 
-        final IMarkupHandler handler =
-                new BlockSelectorMarkupHandler(selectedEventHandler, directOutputHandler,
-                        new String[] {"html//p", "html//div", "title", "li/a", "ol/li", "li", "[th:include*='footer']" },
-                        TEST_MARKUP_SELECTOR_REFERENCE_RESOLVER);
+        final ITemplateHandler handler = new OutputTemplateHandler(templateName, writer);
 
 
-//        markupEngineConfig.getParser().parseTemplate(markupEngineConfig, directOutputHandler, templateName, reader);
-        markupEngineConfig.getParser().parse(templateName, reader, handler);
+//        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
+        markupEngineConfig.getParser().parse(templateResource, "th", "html//p", handler);
 
 
     }

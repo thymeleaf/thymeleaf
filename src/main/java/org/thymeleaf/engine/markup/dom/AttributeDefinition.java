@@ -27,7 +27,7 @@ package org.thymeleaf.engine.markup.dom;
  */
 public final class AttributeDefinition {
 
-    private final String name;
+    final String name;
 
 
 

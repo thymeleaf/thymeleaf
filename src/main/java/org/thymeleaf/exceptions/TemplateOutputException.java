@@ -38,14 +38,30 @@ public class TemplateOutputException extends TemplateProcessingException {
     public TemplateOutputException(final String message, final Throwable cause) {
         super(message, cause);
     }
-    
-    public TemplateOutputException(final String message, final String templateName, final Throwable cause) {
-        super(message, templateName, cause);
-    }
 
     public TemplateOutputException(final String message, final String templateName) {
         super(message, templateName);
     }
-    
+
+    public TemplateOutputException(final String message, final String templateName, final Throwable cause) {
+        super(message, templateName, cause);
+    }
+
+    /**
+     *
+     * @since 3.0.0
+     */
+    public TemplateOutputException(final String message, final String templateName, final int line, final int col) {
+        super(message, templateName, line, col);
+    }
+
+    /**
+     *
+     * @since 3.0.0
+     */
+    public TemplateOutputException(final String message, final String templateName, final int line, final int col, final Throwable cause) {
+        super(message, templateName, line, col, cause);
+    }
+
     
 }

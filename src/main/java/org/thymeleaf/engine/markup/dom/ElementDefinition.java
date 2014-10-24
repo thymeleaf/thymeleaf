@@ -27,8 +27,8 @@ package org.thymeleaf.engine.markup.dom;
  */
 public final class ElementDefinition {
 
-    private final String name;
-    private final ElementType type;
+    final String name;
+    final ElementType type;
 
 
 

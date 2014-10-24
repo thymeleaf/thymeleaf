@@ -37,38 +37,57 @@ public class TemplateProcessingException extends TemplateEngineException {
     private static final long serialVersionUID = 5985749439214775193L;
 
     private String templateName;
-    private Integer lineNumber;
+    private Integer line;
+    private Integer col;
     
     
     
     public TemplateProcessingException(final String message) {
-        this(message, null, (Integer)null);
+        this(message, (String)null);
     }
     
     public TemplateProcessingException(final String message, final Throwable cause) {
-        this(message, null, null, cause);
-    }
-    
-    public TemplateProcessingException(final String message, final String templateName) {
-        this(message, templateName, (Integer)null);
-    }
-    
-    public TemplateProcessingException(final String message, final String templateName, final Throwable cause) {
-        this(message, templateName, null, cause);
+        this(message, null, cause);
     }
     
     public TemplateProcessingException(
-            final String message, final String templateName, final Integer lineNumber) {
+            final String message, final String templateName) {
         super(message);
         this.templateName = templateName;
-        this.lineNumber = lineNumber;
+        this.line = null;
+        this.col = null;
     }
     
     public TemplateProcessingException(
-            final String message, final String templateName, final Integer lineNumber, final Throwable cause) {
+            final String message, final String templateName, final Throwable cause) {
         super(message, cause);
         this.templateName = templateName;
-        this.lineNumber = lineNumber;
+        this.line = null;
+        this.col = null;
+    }
+
+    /**
+     *
+     * @since 3.0.0
+     */
+    public TemplateProcessingException(
+            final String message, final String templateName, final int line, final int col) {
+        super(message);
+        this.templateName = templateName;
+        this.line = Integer.valueOf(line);
+        this.col = Integer.valueOf(col);
+    }
+
+    /**
+     *
+     * @since 3.0.0
+     */
+    public TemplateProcessingException(
+            final String message, final String templateName, final int line, final int col, final Throwable cause) {
+        super(message, cause);
+        this.templateName = templateName;
+        this.line = Integer.valueOf(line);
+        this.col = Integer.valueOf(col);
     }
 
     
@@ -82,22 +101,34 @@ public class TemplateProcessingException extends TemplateEngineException {
         return this.templateName != null;
     }
 
-    public Integer getLineNumber() {
-        return this.lineNumber;
+    public Integer getLine() {
+        return this.line;
     }
-    
-    public boolean hasLineNumber() {
-        return this.lineNumber != null;
+
+    public Integer getCol() {
+        return this.col;
+    }
+
+    public boolean hasLine() {
+        return this.line != null;
+    }
+
+    public boolean hasCol() {
+        return this.col != null;
     }
 
     public void setTemplateName(final String templateName) {
         this.templateName = templateName;
     }
 
-    public void setLineNumber(final Integer lineNumber) {
-        this.lineNumber = lineNumber;
+    public void setLine(final int line) {
+        this.line = Integer.valueOf(line);
     }
-    
+
+    public void setCol(final int col) {
+        this.line = Integer.valueOf(col);
+    }
+
     
     
 
@@ -111,13 +142,23 @@ public class TemplateProcessingException extends TemplateEngineException {
         if (this.templateName != null) {
             sb.append(' ');
             sb.append('(');
+            sb.append('"');
             sb.append(this.templateName);
-            if (this.lineNumber != null) {
-                sb.append(':').append(this.lineNumber);
+            sb.append('"');
+            if (this.line != null || this.col != null) {
+                sb.append(": ");
+                if (this.line != null) {
+                    sb.append("line ");
+                    sb.append(this.line);
+                }
+                if (this.col != null) {
+                    sb.append(", col ");
+                    sb.append(this.col);
+                }
             }
             sb.append(')');
         }
-        
+
         return sb.toString();
         
     }
