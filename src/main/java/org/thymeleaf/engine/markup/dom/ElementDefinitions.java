@@ -26,12 +26,10 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.attoparser.HtmlElement;
 import org.attoparser.util.TextUtil;
 
 /**
@@ -43,16 +41,20 @@ import org.attoparser.util.TextUtil;
 public final class ElementDefinitions {
 
 
-    private static final ConcurrentHashMap<String,ElementDefinition> ELEMENT_DEFINITIONS =
-            new ConcurrentHashMap<String, ElementDefinition>(115);
-    private static final int ELEMENT_DEFINITIONS_MAX_SIZE = 1000; // Just in case some crazy markup appears
+
+    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
+    // Besides, we don't want HTML-only element types like "VOID" or "RAW_TEXT" be applied to XML elements even if they have the same name.
+    // Also, there is no need to add any 'standard elements' to XML because other than the synthetic block, there are none, and avoiding its
+    // creation we save a repository query each time an element is asked for.
+    private static final ElementDefinitionRepository HTML_ELEMENT_REPOSITORY = new ElementDefinitionRepository(false, true);
+    private static final ElementDefinitionRepository XML_ELEMENT_REPOSITORY = new ElementDefinitionRepository(true, false);
 
 
 
     // Set containing all the standard elements, for possible external reference
-    public static final Set<ElementDefinition> ALL_STANDARD_ELEMENTS;
+    public static final Set<ElementDefinition> ALL_STANDARD_HTML_ELEMENTS;
     // Set containing all the standard element names, for possible external reference
-    public static final Set<String> ALL_STANDARD_ELEMENT_NAMES;
+    public static final Set<String> ALL_STANDARD_HTML_ELEMENT_NAMES;
 
 
 
@@ -199,12 +201,19 @@ public final class ElementDefinitions {
     static final ElementDefinition SHADOW = new ElementDefinition("shadow", ElementType.NORMAL);
 
 
+    // Thymeleaf standard dialect elements
+    // We might save some time asking the non-synchronized repository for these, instead of the lock-synchronized
+    // read-write one (at least if we are using the standard dialect default prefix "th").
+    static final ElementDefinition THBLOCK = new ElementDefinition("th:block", ElementType.NORMAL);
+    static final ElementDefinition DATATHBLOCK = new ElementDefinition("th-block", ElementType.NORMAL);
+
+
 
 
 
     static {
 
-        final List<ElementDefinition> elementDefinitionListAux =
+        final List<ElementDefinition> htmlElementDefinitionListAux =
                 new ArrayList<ElementDefinition>(Arrays.asList(
                         new ElementDefinition[] {
                                 HTML, HEAD, TITLE, BASE, LINK, META, STYLE, SCRIPT, NOSCRIPT, BODY, ARTICLE,
@@ -220,32 +229,35 @@ public final class ElementDefinitions {
                                 ELEMENT, DECORATOR, CONTENT, SHADOW
                         }));
 
-        Collections.sort(elementDefinitionListAux, new Comparator<ElementDefinition>() {
-            public int compare(final ElementDefinition o1, final ElementDefinition o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
+        Collections.sort(htmlElementDefinitionListAux, ElementComparator.forCaseSensitive(false));
 
 
-        ALL_STANDARD_ELEMENTS =
-                Collections.unmodifiableSet(new LinkedHashSet<ElementDefinition>(elementDefinitionListAux));
+        ALL_STANDARD_HTML_ELEMENTS =
+                Collections.unmodifiableSet(new LinkedHashSet<ElementDefinition>(htmlElementDefinitionListAux));
 
 
-        final LinkedHashSet<String> elementDefinitionNamesAux = new LinkedHashSet<String>(ALL_STANDARD_ELEMENTS.size() + 1, 1.0f);
-        for (final ElementDefinition elementDefinition : ALL_STANDARD_ELEMENTS) {
-            elementDefinitionNamesAux.add(elementDefinition.getName());
+        final LinkedHashSet<String> htmlElementDefinitionNamesAux = new LinkedHashSet<String>(ALL_STANDARD_HTML_ELEMENTS.size() + 1, 1.0f);
+        for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
+            htmlElementDefinitionNamesAux.add(elementDefinition.getName());
         }
 
-        ALL_STANDARD_ELEMENT_NAMES = Collections.unmodifiableSet(elementDefinitionNamesAux);
+        ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(htmlElementDefinitionNamesAux);
 
 
 
         /*
          * Register the standard elements at the element repository, in order to initialize it
          */
-        for (final ElementDefinition elementDefinition : ALL_STANDARD_ELEMENTS) {
-            ELEMENT_DEFINITIONS.put(elementDefinition.getName(), elementDefinition);
+        for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
+            HTML_ELEMENT_REPOSITORY.storeStandardElement(elementDefinition);
         }
+
+        // The Thymeleaf elements are added to the repos, but not to the standard element/names sets, as they aren't
+        // truly standard HTML elements.
+        HTML_ELEMENT_REPOSITORY.storeStandardElement(THBLOCK);
+        HTML_ELEMENT_REPOSITORY.storeStandardElement(DATATHBLOCK);
+        XML_ELEMENT_REPOSITORY.storeStandardElement(THBLOCK);
+        XML_ELEMENT_REPOSITORY.storeStandardElement(DATATHBLOCK);
 
 
     }
@@ -253,36 +265,45 @@ public final class ElementDefinitions {
 
 
 
-    public static ElementDefinition forName(final boolean caseSensitive, final String elementName) {
-
+    public static ElementDefinition forHtmlName(final String elementName) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-
-        // We first try without executing toLowerCase(), in order to avoid unnecessary load when most
-        // of the requests will be for the already normalized (lower-cased) version.
-        ElementDefinition definition = ELEMENT_DEFINITIONS.get(elementName);
-        if (definition != null) {
-            return definition;
-        }
-
-        if (!caseSensitive) {
-            definition = ELEMENT_DEFINITIONS.get(elementName.toLowerCase());
-            if (definition != null) {
-                return definition;
-            }
-            definition = new ElementDefinition(elementName.toLowerCase(), ElementType.NORMAL);
-        } else {
-            definition = new ElementDefinition(elementName, ElementType.NORMAL);
-        }
-
-        if (ELEMENT_DEFINITIONS.size() < ELEMENT_DEFINITIONS_MAX_SIZE) {
-            ELEMENT_DEFINITIONS.putIfAbsent(definition.getName(), definition);
-        }
-
-        return definition;
-
+        return HTML_ELEMENT_REPOSITORY.getElement(elementName);
     }
+
+
+    public static ElementDefinition forHtmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return HTML_ELEMENT_REPOSITORY.getElement(elementName, elementNameOffset, elementNameLen);
+    }
+
+
+
+    public static ElementDefinition forXmlName(final String elementName) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        return XML_ELEMENT_REPOSITORY.getElement(elementName);
+    }
+
+
+    public static ElementDefinition forXmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return XML_ELEMENT_REPOSITORY.getElement(elementName, elementNameOffset, elementNameLen);
+    }
+
+
 
 
 
@@ -299,10 +320,12 @@ public final class ElementDefinitions {
     /*
      * This repository class is thread-safe. The reason for this is that it not only contains the
      * standard elements, but will also contain new instances of ElementDefinition created during processing (created
-     * when asking the repository for them when they do not exist yet. As any thread can create a new element,
+     * when asking the repository for them when they do not exist yet). As any thread can create a new element,
      * this has to be lock-protected.
      */
     static final class ElementDefinitionRepository {
+
+        private final boolean caseSensitive;
 
         private final List<ElementDefinition> standardRepository; // read-only, no sync needed
         private final List<ElementDefinition> repository;  // read-write, sync will be needed
@@ -312,23 +335,28 @@ public final class ElementDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        ElementDefinitionRepository() {
-            this.standardRepository = new ArrayList<ElementDefinition>(150);
+        ElementDefinitionRepository(final boolean caseSensitive, final boolean createStandardRepo) {
+            super();
+            this.caseSensitive = caseSensitive;
+            this.standardRepository = (createStandardRepo ? new ArrayList<ElementDefinition>(150) : null);
             this.repository = new ArrayList<ElementDefinition>(150);
         }
 
 
-
         ElementDefinition getElement(final char[] text, final int offset, final int len) {
 
-            /*
-             * We first try to find it in the repository containing the standard elements, which does not need
-             * any synchronization.
-             */
-            int index = binarySearch(this.standardRepository, text, offset, len);
+            int index;
 
-            if (index >= 0) {
-                return this.standardRepository.get(index);
+            if (this.standardRepository != null) {
+                /*
+                 * We first try to find it in the repository containing the standard elements, which does not need
+                 * any synchronization.
+                 */
+                index = binarySearch(this.caseSensitive, this.standardRepository, text, offset, len);
+
+                if (index >= 0) {
+                    return this.standardRepository.get(index);
+                }
             }
 
             /*
@@ -339,7 +367,7 @@ public final class ElementDefinitions {
             this.readLock.lock();
             try {
 
-                index = binarySearch(this.repository, text, offset, len);
+                index = binarySearch(this.caseSensitive, this.repository, text, offset, len);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -363,15 +391,87 @@ public final class ElementDefinitions {
         }
 
 
+        ElementDefinition getElement(final String text) {
+
+            int index;
+
+            if (this.standardRepository != null) {
+                /*
+                 * We first try to find it in the repository containing the standard elements, which does not need
+                 * any synchronization.
+                 */
+                index = binarySearch(this.caseSensitive, this.standardRepository, text);
+
+                if (index >= 0) {
+                    return this.standardRepository.get(index);
+                }
+            }
+
+            /*
+             * We did not find it in the repository of standard elements, so let's try in the read+write one,
+             * which does require synchronization through a readwrite lock.
+             */
+
+            this.readLock.lock();
+            try {
+
+                index = binarySearch(this.caseSensitive, this.repository, text);
+
+                if (index >= 0) {
+                    return this.repository.get(index);
+                }
+
+            } finally {
+                this.readLock.unlock();
+            }
+
+
+            /*
+             * NOT FOUND. We need to obtain a write lock and store the text
+             */
+            this.writeLock.lock();
+            try {
+                return storeElement(text);
+            } finally {
+                this.writeLock.unlock();
+            }
+
+        }
+
+
         private ElementDefinition storeElement(final char[] text, final int offset, final int len) {
 
-            final int index = binarySearch(this.repository, text, offset, len);
+            final int index = binarySearch(this.caseSensitive, this.repository, text, offset, len);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
             }
 
-            final ElementDefinition element = new ElementDefinition(new String(text, offset, len).toLowerCase());
+            final String elementName = new String(text, offset, len);
+
+            final ElementDefinition element =
+                    new ElementDefinition((this.caseSensitive? elementName : elementName.toLowerCase()), ElementType.NORMAL);
+
+            // binary Search returned (-(insertion point) - 1)
+            this.repository.add(((index + 1) * -1), element);
+
+            return element;
+
+        }
+
+
+        private ElementDefinition storeElement(final String text) {
+
+            final int index = binarySearch(this.caseSensitive, this.repository, text);
+            if (index >= 0) {
+                // It was already added while we were waiting for the lock!
+                return this.repository.get(index);
+            }
+
+            final String elementName = text;
+
+            final ElementDefinition element =
+                    new ElementDefinition((this.caseSensitive? elementName : elementName.toLowerCase()), ElementType.NORMAL);
 
             // binary Search returned (-(insertion point) - 1)
             this.repository.add(((index + 1) * -1), element);
@@ -386,32 +486,34 @@ public final class ElementDefinitions {
             // This method will only be called from within the HtmlElements class itself, during initialization of
             // standard elements.
 
-            this.standardRepository.add(element);
+            if (this.standardRepository != null) {
+                this.standardRepository.add(element);
+                Collections.sort(this.standardRepository, ElementComparator.forCaseSensitive(this.caseSensitive));
+            }
+
             this.repository.add(element);
-            Collections.sort(this.standardRepository,ElementComparator.INSTANCE);
-            Collections.sort(this.repository,ElementComparator.INSTANCE);
+            Collections.sort(this.repository, ElementComparator.forCaseSensitive(this.caseSensitive));
 
             return element;
 
         }
 
 
-
-        private static int binarySearch(final List<ElementDefinition> values,
+        private static int binarySearch(final boolean caseSensitive, final List<ElementDefinition> values,
                                         final char[] text, final int offset, final int len) {
 
             int low = 0;
             int high = values.size() - 1;
 
             int mid, cmp;
-            char[] midVal;
+            String midVal;
 
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
                 midVal = values.get(mid).name;
 
-                cmp = TextUtil.compareTo(false, midVal, 0, midVal.length, text, offset, len);
+                cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length(), text, offset, len);
 
                 if (cmp < 0) {
                     low = mid + 1;
@@ -429,13 +531,60 @@ public final class ElementDefinitions {
         }
 
 
-        private static class ElementComparator implements Comparator<HtmlElement> {
+        private static int binarySearch(final boolean caseSensitive, final List<ElementDefinition> values, final String text) {
 
-            private static ElementComparator INSTANCE = new ElementComparator();
+            int low = 0;
+            int high = values.size() - 1;
 
-            public int compare(final HtmlElement o1, final HtmlElement o2) {
-                return TextUtil.compareTo(false, o1.name, o2.name);
+            int mid, cmp;
+            String midVal;
+
+            while (low <= high) {
+
+                mid = (low + high) >>> 1;
+                midVal = values.get(mid).name;
+
+                cmp = TextUtil.compareTo(caseSensitive, midVal, text);
+
+                if (cmp < 0) {
+                    low = mid + 1;
+                } else if (cmp > 0) {
+                    high = mid - 1;
+                } else {
+                    // Found!!
+                    return mid;
+                }
+
             }
+
+            return -(low + 1);  // Not Found!! We return (-(insertion point) - 1), to guarantee all non-founds are < 0
+
         }
+
+
+    }
+
+
+    private static class ElementComparator implements Comparator<ElementDefinition> {
+
+        private static ElementComparator INSTANCE_CASE_SENSITIVE = new ElementComparator(true);
+        private static ElementComparator INSTANCE_CASE_INSENSITIVE = new ElementComparator(false);
+
+        private final boolean caseSensitive;
+
+        static ElementComparator forCaseSensitive(final boolean caseSensitive) {
+            return caseSensitive ? INSTANCE_CASE_SENSITIVE : INSTANCE_CASE_INSENSITIVE;
+        }
+
+        private ElementComparator(final boolean caseSensitive) {
+            super();
+            this.caseSensitive = caseSensitive;
+        }
+
+        public int compare(final ElementDefinition o1, final ElementDefinition o2) {
+            // caseSensitive is true here because we might have
+            return TextUtil.compareTo(this.caseSensitive, o1.name, o2.name);
+        }
+    }
 
 }
