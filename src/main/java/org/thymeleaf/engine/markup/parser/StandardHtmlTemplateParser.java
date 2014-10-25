@@ -103,7 +103,7 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
 
     public void parse(
             final IResource templateResource,
-            final String dialectPrefix, String selector,
+            final String dialectPrefix, String[] selectors,
             final ITemplateHandler templateHandler) {
 
         Validate.notNull(templateResource, "Template resource cannot be null");
@@ -113,30 +113,35 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
 
         try {
 
-            final StandardHtmlTemplateBaseMarkupHandler standardHtmlHandler =
-                    new StandardHtmlTemplateBaseMarkupHandler(templateHandler, documentName);
+            // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
+            IMarkupHandler handler = new TemplateAdapterMarkupHandler(templateHandler);
 
-            final TemplateFragmentMarkupReferenceResolver referenceResolver =
-                    TemplateFragmentMarkupReferenceResolver.forPrefix(dialectPrefix);
+            // If we need to select blocks, we will need a block selector here. Note this will get executed in the
+            // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to
+            // include in selectors code inside prototype-only comments.
+            if (selectors != null) {
+                final TemplateFragmentMarkupReferenceResolver referenceResolver =
+                        TemplateFragmentMarkupReferenceResolver.forPrefix(dialectPrefix);
+                handler = new BlockSelectorMarkupHandler(handler, selectors, referenceResolver);
+            }
 
-            final BlockSelectorMarkupHandler blockSelectorMarkupHandler =
-                    (selector == null ? null : new BlockSelectorMarkupHandler(standardHtmlHandler, selector, referenceResolver));
+            // This is the point at which we insert thymeleaf's own handler, which will take care of parser-level
+            // and prototype-only comments.
+            handler = new ThymeleafHtmlTemplateMarkupHandler(handler, documentName);
 
-            final IMarkupHandler parseHandler =
-                    (blockSelectorMarkupHandler == null ? standardHtmlHandler : blockSelectorMarkupHandler);
-
+            // Each type of resource will require a different parser method to be called.
             if (templateResource instanceof ReaderResource) {
 
-                this.parser.parse(((ReaderResource)templateResource).getContent(), parseHandler);
+                this.parser.parse(((ReaderResource)templateResource).getContent(), handler);
 
             } else if (templateResource instanceof StringResource) {
 
-                this.parser.parse(((StringResource)templateResource).getContent(), parseHandler);
+                this.parser.parse(((StringResource)templateResource).getContent(), handler);
 
             } else if (templateResource instanceof CharArrayResource) {
 
                 final CharArrayResource charArrayResource = (CharArrayResource) templateResource;
-                this.parser.parse(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen(), parseHandler);
+                this.parser.parse(charArrayResource.getContent(), charArrayResource.getOffset(), charArrayResource.getLen(), handler);
 
             } else {
 
@@ -168,7 +173,7 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
 
 
 
-    private static final class StandardHtmlTemplateBaseMarkupHandler extends AbstractChainedMarkupHandler {
+    private static final class ThymeleafHtmlTemplateMarkupHandler extends AbstractChainedMarkupHandler {
 
         private static final Logger logger = LoggerFactory.getLogger(StandardHtmlTemplateParser.class);
 
@@ -197,12 +202,12 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
 
 
 
-        public StandardHtmlTemplateBaseMarkupHandler(
-                final ITemplateHandler templateHandler, final String documentName) {
+        private ThymeleafHtmlTemplateMarkupHandler(
+                final IMarkupHandler next, final String documentName) {
 
             // We need to adapt the AttoParser adapter to Thymeleaf's own, in a way that causes the less
             // disturbance to the parser, so we just chain a specific-purpose adapter handler.
-            super(new TemplateAdapterMarkupHandler(templateHandler));
+            super(next);
 
             this.documentName = documentName;
             this.lineOffset = 0;

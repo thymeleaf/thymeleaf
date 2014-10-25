@@ -36,7 +36,7 @@ public interface ITemplateParser {
                       final ITemplateHandler handler);
 
     public void parse(final IResource templateResource,
-                      final String dialectPrefix, final String selector,
+                      final String dialectPrefix, final String[] selectors,
                       final ITemplateHandler handler);
 
 }

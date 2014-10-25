@@ -1219,7 +1219,7 @@ public class TemplateEngine {
 
 
 //        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        markupEngineConfig.getParser().parse(templateResource, "th", "html//p", handler);
+        markupEngineConfig.getParser().parse(templateResource, "th", new String[] {"html//p"}, handler);
 
 
     }
