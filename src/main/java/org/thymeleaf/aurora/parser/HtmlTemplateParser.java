@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.parser;
+package org.thymeleaf.aurora.parser;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,11 +33,11 @@ import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.engine.markup.handler.ITemplateHandler;
-import org.thymeleaf.engine.markup.resource.CharArrayResource;
-import org.thymeleaf.engine.markup.resource.IResource;
-import org.thymeleaf.engine.markup.resource.ReaderResource;
-import org.thymeleaf.engine.markup.resource.StringResource;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.aurora.resource.CharArrayResource;
+import org.thymeleaf.aurora.resource.IResource;
+import org.thymeleaf.aurora.resource.ReaderResource;
+import org.thymeleaf.aurora.resource.StringResource;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.Validate;
 
@@ -47,7 +47,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class StandardHtmlTemplateParser implements ITemplateParser {
+public final class HtmlTemplateParser implements ITemplateParser {
 
 
     private final IMarkupParser parser;
@@ -77,7 +77,7 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
     
     
     
-    public StandardHtmlTemplateParser(final int bufferPoolSize, final int bufferSize) {
+    public HtmlTemplateParser(final int bufferPoolSize, final int bufferSize) {
         super();
         this.parser = new MarkupParser(MARKUP_PARSING_CONFIGURATION, bufferPoolSize, bufferSize);
     }
@@ -114,7 +114,7 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
         try {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
-            IMarkupHandler handler = new TemplateAdapterMarkupHandler(templateHandler);
+            IMarkupHandler handler = new HtmlTemplateAdapterMarkupHandler(templateHandler);
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to
@@ -175,7 +175,7 @@ public final class StandardHtmlTemplateParser implements ITemplateParser {
 
     private static final class ThymeleafHtmlTemplateMarkupHandler extends AbstractChainedMarkupHandler {
 
-        private static final Logger logger = LoggerFactory.getLogger(StandardHtmlTemplateParser.class);
+        private static final Logger logger = LoggerFactory.getLogger(HtmlTemplateParser.class);
 
         private final String documentName;
 

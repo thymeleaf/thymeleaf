@@ -17,12 +17,39 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.dom2;
+package org.thymeleaf.aurora.engine;
 
-public class Element {
+/**
+ *
+ * @author Daniel Fern&aacute;ndez
+ * @since 3.0.0
+ *
+ */
+public final class ElementDefinition {
+
+    final String name;
+    final ElementType type;
 
 
-    private ElementDefinition definition;
-    private String name;
+
+    ElementDefinition(final String name, final ElementType type) {
+        super();
+        this.name = name;
+        this.type = type;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public ElementType getType() {
+        return type;
+    }
+
+
+    public String toString() {
+        return this.name;
+    }
 
 }

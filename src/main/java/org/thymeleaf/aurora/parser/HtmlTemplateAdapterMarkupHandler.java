@@ -17,11 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.parser;
+package org.thymeleaf.aurora.parser;
 
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
-import org.thymeleaf.engine.markup.handler.ITemplateHandler;
+import org.thymeleaf.aurora.engine.AttributeDefinition;
+import org.thymeleaf.aurora.engine.AttributeDefinitions;
+import org.thymeleaf.aurora.engine.ElementDefinition;
+import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
 
 /**
  *
@@ -29,12 +33,15 @@ import org.thymeleaf.engine.markup.handler.ITemplateHandler;
  * @since 3.0.0
  * 
  */
-final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
+final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private final ITemplateHandler templateHandler;
+
+    private ElementDefinition elementDefinition;
+    private AttributeDefinition attributeDefinition;
+
     
-    
-    TemplateAdapterMarkupHandler(final ITemplateHandler templateHandler) {
+    HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler) {
         super();
         this.templateHandler = templateHandler;
     }
@@ -154,7 +161,10 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final boolean minimized, final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
+
+        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.templateHandler.handleStandaloneElementStart(this.elementDefinition, buffer, nameOffset, nameLen, minimized, line, col);
+
     }
 
     @Override
@@ -163,7 +173,9 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final boolean minimized, final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleStandaloneElementEnd(buffer, nameOffset, nameLen, minimized, line, col);
+
+        this.templateHandler.handleStandaloneElementEnd(this.elementDefinition, buffer, nameOffset, nameLen, minimized, line, col);
+
     }
 
 
@@ -174,7 +186,10 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
+
+        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.templateHandler.handleOpenElementStart(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
     @Override
@@ -183,7 +198,9 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleOpenElementEnd(buffer, nameOffset, nameLen, line, col);
+
+        this.templateHandler.handleOpenElementEnd(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
 
@@ -194,7 +211,10 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleAutoOpenElementStart(buffer, nameOffset, nameLen, line, col);
+
+        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.templateHandler.handleAutoOpenElementStart(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
     @Override
@@ -203,7 +223,9 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleAutoOpenElementEnd(buffer, nameOffset, nameLen, line, col);
+
+        this.templateHandler.handleAutoOpenElementEnd(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
 
@@ -214,7 +236,10 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
+
+        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.templateHandler.handleCloseElementStart(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
     @Override
@@ -223,7 +248,9 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+
+        this.templateHandler.handleCloseElementEnd(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
 
@@ -234,7 +261,10 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleAutoCloseElementStart(buffer, nameOffset, nameLen, line, col);
+
+        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.templateHandler.handleAutoCloseElementStart(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
     @Override
@@ -243,7 +273,9 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleAutoCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+
+        this.templateHandler.handleAutoCloseElementEnd(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
 
@@ -254,7 +286,10 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleUnmatchedCloseElementStart(buffer, nameOffset, nameLen, line, col);
+
+        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.templateHandler.handleUnmatchedCloseElementStart(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
 
@@ -264,7 +299,9 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int nameOffset, final int nameLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleUnmatchedCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+
+        this.templateHandler.handleUnmatchedCloseElementEnd(this.elementDefinition, buffer, nameOffset, nameLen, line, col);
+
     }
 
 
@@ -280,12 +317,16 @@ final class TemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol)
             throws ParseException {
+
+        this.attributeDefinition = AttributeDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.templateHandler.handleAttribute(
+                this.attributeDefinition,
                 buffer,
                 nameOffset, nameLen, nameLine, nameCol,
                 operatorOffset, operatorLen, operatorLine, operatorCol,
                 valueContentOffset, valueContentLen,
                 valueOuterOffset, valueOuterLen, valueLine, valueCol);
+
     }
 
 

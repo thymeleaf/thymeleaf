@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.dom;
+package org.thymeleaf.aurora.engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;

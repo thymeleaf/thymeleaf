@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.handler;
+package org.thymeleaf.aurora.engine;
 
 import java.io.Writer;
 
@@ -108,6 +108,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleStandaloneElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final boolean minimized, final int line, final int col) {
         
@@ -125,6 +126,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleStandaloneElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final boolean minimized, final int line, final int col) {
         
@@ -144,6 +146,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleOpenElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
@@ -161,6 +164,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleOpenElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
 
@@ -177,6 +181,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleAutoOpenElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
@@ -187,6 +192,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleAutoOpenElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
@@ -196,8 +202,10 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleCloseElementStart(final char[] buffer, final int offset, final int len, final int line,
-            final int col) {
+    public void handleCloseElementStart(
+            final ElementDefinition elementDefinition,
+            final char[] buffer, final int offset, final int len,
+            final int line, final int col) {
         
         try {
             this.writer.write("</");
@@ -213,6 +221,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         
@@ -229,6 +238,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleAutoCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
@@ -240,6 +250,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleAutoCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
@@ -250,10 +261,11 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleUnmatchedCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         // They were present at the original template, so simply output them.
-        handleCloseElementStart(buffer, offset, len, line, col);
+        handleCloseElementStart(elementDefinition, buffer, offset, len, line, col);
     }
 
 
@@ -261,17 +273,21 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleUnmatchedCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer, final int offset, final int len,
             final int line, final int col) {
         // They were present at the original template, so simply output them.
-        handleCloseElementEnd(buffer, offset, len, line, col);
+        handleCloseElementEnd(elementDefinition, buffer, offset, len, line, col);
     }
 
 
 
 
     @Override
-    public void handleAttribute(final char[] buffer, final int nameOffset, final int nameLen,
+    public void handleAttribute(
+            final AttributeDefinition attributeDefinition,
+            final char[] buffer,
+            final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol, final int operatorOffset, final int operatorLen,
             final int operatorLine, final int operatorCol, final int valueContentOffset,
             final int valueContentLen, final int valueOuterOffset, final int valueOuterLen,

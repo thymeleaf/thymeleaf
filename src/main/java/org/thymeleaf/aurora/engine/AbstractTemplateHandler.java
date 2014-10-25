@@ -17,25 +17,36 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.handler;
+package org.thymeleaf.aurora.engine;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface ITemplateHandler {
+public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
 
-    public void handleDocumentStart(final long startTimeNanos, final int line, final int col);
+    protected AbstractTemplateHandler() {
+        super();
+    }
 
+
+
+    public void handleDocumentStart(
+            final long startTimeNanos, final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
     public void handleDocumentEnd(
-            final long endTimeNanos, final long totalTimeNanos, final int line, final int col);
+            final long endTimeNanos, final long totalTimeNanos, final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
 
@@ -50,7 +61,9 @@ public interface ITemplateHandler {
             final int standaloneOffset, final int standaloneLen,
             final int standaloneLine, final int standaloneCol,
             final int outerOffset, final int outerLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
 
@@ -69,7 +82,9 @@ public interface ITemplateHandler {
             final int internalSubsetOffset, final int internalSubsetLen,
             final int internalSubsetLine, final int internalSubsetCol,
             final int outerOffset, final int outerLen,
-            final int outerLine, final int outerCol);
+            final int outerLine, final int outerCol) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
 
@@ -77,7 +92,9 @@ public interface ITemplateHandler {
             final char[] buffer,
             final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
 
@@ -85,84 +102,131 @@ public interface ITemplateHandler {
             final char[] buffer,
             final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
+
 
 
     public void handleText(
             final char[] buffer,
             final int offset, final int len,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
     public void handleStandaloneElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final boolean minimized,
-            final int line, final int col);
+            final boolean minimized, final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
     public void handleStandaloneElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final boolean minimized,
-            final int line, final int col);
+            final boolean minimized, final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
+    
 
     public void handleOpenElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int nameOffset, final int nameLen, 
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
     public void handleOpenElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
+
 
 
     public void handleAutoOpenElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
     public void handleAutoOpenElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
+
 
 
     public void handleCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int nameOffset, final int nameLen, 
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
     public void handleCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
+    
     public void handleAutoCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int nameOffset, final int nameLen, 
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
     public void handleAutoCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
+    
 
-
+    
     public void handleUnmatchedCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int nameOffset, final int nameLen, 
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
+
 
     public void handleUnmatchedCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
+    
     public void handleAttribute(
+            final AttributeDefinition attributeDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol,
@@ -170,13 +234,18 @@ public interface ITemplateHandler {
             final int operatorLine, final int operatorCol,
             final int valueContentOffset, final int valueContentLen,
             final int valueOuterOffset, final int valueOuterLen,
-            final int valueLine, final int valueCol);
+            final int valueLine, final int valueCol) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
+    
     public void handleInnerWhiteSpace(
             final char[] buffer,
             final int offset, final int len,
-            final int line, final int col);
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
 
@@ -187,8 +256,9 @@ public interface ITemplateHandler {
             final int contentOffset, final int contentLen,
             final int contentLine, final int contentCol,
             final int outerOffset, final int outerLen,
-            final int line, final int col);
-
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
 
 
 }

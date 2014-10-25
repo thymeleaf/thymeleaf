@@ -17,13 +17,13 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.text;
+package org.thymeleaf.aurora.text;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.thymeleaf.engine.util.TextUtil;
+import org.thymeleaf.aurora.util.TextUtil;
 
 /**
  * <p>

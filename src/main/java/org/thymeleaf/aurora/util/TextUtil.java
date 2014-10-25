@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.util;
+package org.thymeleaf.aurora.util;
 
 
 /**

@@ -17,22 +17,33 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.dom2;
+package org.thymeleaf.aurora.engine;
 
-public class Event {
+/**
+ *
+ * @author Daniel Fern&aacute;ndez
+ * @since 3.0.0
+ *
+ */
+public final class AttributeDefinition {
 
-    /*
-     * Types:
-     *   - Open tag
-     *   - Close tag
-     *   - Minimized tag
-     *   - Attribute
-     *   - Text
-     *   - CData Section
-     *   - Comment
-     *   - DOCTYPE Clause
-     *   - XML Declaration
-     *   - Processing Instruction
-     */
+    final String name;
+
+
+
+    AttributeDefinition(final String name) {
+        super();
+        this.name = name;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public String toString() {
+        return this.name;
+    }
 
 }

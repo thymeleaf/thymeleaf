@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup;
+package org.thymeleaf.aurora.config;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,10 +26,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.engine.markup.parser.ITemplateParser;
-import org.thymeleaf.engine.markup.parser.StandardHtmlTemplateParser;
-import org.thymeleaf.engine.markup.text.IMarkupTextRepository;
-import org.thymeleaf.engine.markup.text.StandardMarkupTextRepository;
+import org.thymeleaf.aurora.parser.HtmlTemplateParser;
+import org.thymeleaf.aurora.parser.ITemplateParser;
+import org.thymeleaf.aurora.text.IMarkupTextRepository;
+import org.thymeleaf.aurora.text.StandardMarkupTextRepository;
 
 /**
  *
@@ -152,7 +152,7 @@ public final class MarkupEngineConfiguration {
         // Pool size is set to 40, and buffer size to 2K chars = 4K bytes
         // This should be enough for processing 20 templates at a time, each one being able to include external
         // fragments and/or parsable content (2 buffers per template).
-        final ITemplateParser parser = new StandardHtmlTemplateParser(40,2048);
+        final ITemplateParser parser = new HtmlTemplateParser(40,2048);
 
         return new MarkupEngineConfiguration(parser, textRepository);
 

@@ -17,13 +17,28 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.dom2;
+package org.thymeleaf.aurora.engine;
 
-import org.thymeleaf.engine.markup.dom.ElementType;
+/**
+ *
+ * @author Daniel Fern&aacute;ndez
+ * @since 3.0.0
+ *
+ */
+public enum ElementType {
 
-public class ElementDefinition {
+    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#elements-0
 
-    private String normalizedName;
-    private ElementType elementType;
+    VOID(false), RAW_TEXT(true), ESCAPABLE_RAW_TEXT(true), FOREIGN(true), NORMAL(true);
+
+    private final boolean hasBody;
+
+    private ElementType(final boolean hasBody) {
+        this.hasBody = hasBody;
+    }
+
+    public boolean hasBody() {
+        return this.hasBody;
+    }
 
 }

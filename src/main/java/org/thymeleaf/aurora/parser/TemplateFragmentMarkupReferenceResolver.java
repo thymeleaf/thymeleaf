@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.parser;
+package org.thymeleaf.aurora.parser;
 
 import java.util.concurrent.ConcurrentHashMap;
 

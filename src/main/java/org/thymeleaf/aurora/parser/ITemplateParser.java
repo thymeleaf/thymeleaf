@@ -17,10 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.parser;
+package org.thymeleaf.aurora.parser;
 
-import org.thymeleaf.engine.markup.handler.ITemplateHandler;
-import org.thymeleaf.engine.markup.resource.IResource;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.aurora.resource.IResource;
 
 
 /**

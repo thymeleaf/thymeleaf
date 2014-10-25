@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.handler;
+package org.thymeleaf.aurora.engine;
 
 
 /**
@@ -159,103 +159,116 @@ public abstract class AbstractChainedTemplateHandler
 
 
     public void handleStandaloneElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final boolean minimized, final int line, final int col) {
-        this.next.handleStandaloneElementStart(buffer, nameOffset, nameLen, minimized, line, col);
+        this.next.handleStandaloneElementStart(elementDefinition, buffer, nameOffset, nameLen, minimized, line, col);
     }
 
     public void handleStandaloneElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final boolean minimized, final int line, final int col) {
-        this.next.handleStandaloneElementEnd(buffer, nameOffset, nameLen, minimized, line, col);
+        this.next.handleStandaloneElementEnd(elementDefinition, buffer, nameOffset, nameLen, minimized, line, col);
     }
 
     
 
     public void handleOpenElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen, 
             final int line, final int col) {
-        this.next.handleOpenElementStart(buffer, nameOffset, nameLen, line, col);
+        this.next.handleOpenElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
     public void handleOpenElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col) {
-        this.next.handleOpenElementEnd(buffer, nameOffset, nameLen, line, col);
+        this.next.handleOpenElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
 
 
     public void handleAutoOpenElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col) {
-        this.next.handleAutoOpenElementStart(buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoOpenElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
     public void handleAutoOpenElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col) {
-        this.next.handleAutoOpenElementEnd(buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoOpenElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
 
     
     public void handleCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen, 
             final int line, final int col) {
-        this.next.handleCloseElementStart(buffer, nameOffset, nameLen, line, col);
+        this.next.handleCloseElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
     public void handleCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col) {
-        this.next.handleCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+        this.next.handleCloseElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
 
     
     public void handleAutoCloseElementStart(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen, 
             final int line, final int col) {
-        this.next.handleAutoCloseElementStart(buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoCloseElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
     public void handleAutoCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col) {
-        this.next.handleAutoCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoCloseElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
     
 
     
     public void handleUnmatchedCloseElementStart(
-            final char[] buffer, 
+            final ElementDefinition elementDefinition,
+            final char[] buffer,
             final int nameOffset, final int nameLen, 
             final int line, final int col) {
-        this.next.handleUnmatchedCloseElementStart(buffer, nameOffset, nameLen, line, col);
+        this.next.handleUnmatchedCloseElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
 
     public void handleUnmatchedCloseElementEnd(
+            final ElementDefinition elementDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int line, final int col) {
-        this.next.handleUnmatchedCloseElementEnd(buffer, nameOffset, nameLen, line, col);
+        this.next.handleUnmatchedCloseElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
     }
 
 
     
     public void handleAttribute(
+            final AttributeDefinition attributeDefinition,
             final char[] buffer,
             final int nameOffset, final int nameLen,
             final int nameLine, final int nameCol,
@@ -265,6 +278,7 @@ public abstract class AbstractChainedTemplateHandler
             final int valueOuterOffset, final int valueOuterLen,
             final int valueLine, final int valueCol) {
         this.next.handleAttribute(
+                attributeDefinition,
                 buffer,
                 nameOffset, nameLen, nameLine, nameCol,
                 operatorOffset, operatorLen, operatorLine, operatorCol,

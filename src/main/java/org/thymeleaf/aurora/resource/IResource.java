@@ -17,9 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.resource;
-
-import java.io.Reader;
+package org.thymeleaf.aurora.resource;
 
 /**
  *
@@ -27,33 +25,9 @@ import java.io.Reader;
  * @since 3.0.0
  * 
  */
-public final class ReaderResource implements IResource {
-
-    // Note this resource implementation is NOT serializable
-
-    private final String name;
-    private final Reader content;
+public interface IResource {
 
 
-    public ReaderResource(final String name, final Reader content) {
-        super();
-        // We will intentionally not use org.thymeleaf.util.Validate in order to make resource implementations
-        // as free from other thymeleaf APIs as possible.
-        if (content == null) {
-            throw new IllegalArgumentException("Resource content cannot be null");
-        }
-        this.name = name;
-        this.content = content;
-    }
-
-
-    public String getName() {
-        return this.name;
-    }
-
-
-    public Reader getContent() {
-        return this.content;
-    }
+    public String getName();
 
 }

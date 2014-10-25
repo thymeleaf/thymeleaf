@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.resource;
+package org.thymeleaf.aurora.resource;
 
 import java.io.Serializable;
 
@@ -27,38 +27,23 @@ import java.io.Serializable;
  * @since 3.0.0
  * 
  */
-public final class CharArrayResource implements IResource, Serializable {
+public final class StringResource implements IResource, Serializable {
 
-    private static final long serialVersionUID = -2301065999827410882L;
+    private static final long serialVersionUID = 7176266821500073497L;
 
     private final String name;
-    private final char[] content;
-    private final int offset;
-    private final int len;
+    private final String content;
 
 
-    public CharArrayResource(final String name, final char[] content) {
-        this(name, content, 0, (content != null? content.length : 0));
-    }
-
-
-    public CharArrayResource(final String name, final char[] content, final int offset, final int len) {
+    public StringResource(final String name, final String content) {
         super();
         // We will intentionally not use org.thymeleaf.util.Validate in order to make resource implementations
         // as free from other thymeleaf APIs as possible.
         if (content == null) {
             throw new IllegalArgumentException("Resource content cannot be null");
         }
-        if (offset < 0) {
-            throw new IllegalArgumentException("Resource offset must be equal to or greater than 0");
-        }
-        if (len < 0) {
-            throw new IllegalArgumentException("Resource length must be equal to or greater than 0");
-        }
         this.name = name;
         this.content = content;
-        this.offset = offset;
-        this.len = len;
     }
 
 
@@ -67,15 +52,8 @@ public final class CharArrayResource implements IResource, Serializable {
     }
 
 
-    public char[] getContent() {
+    public String getContent() {
         return this.content;
     }
 
-    public int getOffset() {
-        return this.offset;
-    }
-
-    public int getLen() {
-        return this.len;
-    }
 }

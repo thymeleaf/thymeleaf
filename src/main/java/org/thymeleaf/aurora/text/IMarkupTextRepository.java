@@ -17,7 +17,7 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.engine.markup.text;
+package org.thymeleaf.aurora.text;
 
 /**
  * <p>
