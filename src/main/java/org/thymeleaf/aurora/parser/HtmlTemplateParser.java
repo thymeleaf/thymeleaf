@@ -33,6 +33,7 @@ import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.resource.CharArrayResource;
 import org.thymeleaf.aurora.resource.IResource;
@@ -94,18 +95,21 @@ public final class HtmlTemplateParser implements ITemplateParser {
 
 
     public void parse(
-            final IResource templateResource,
+            final ITemplateProcessingContext context, final IResource templateResource,
             final ITemplateHandler templateHandler) {
-        parse(templateResource, null, null, templateHandler);
+        parse(context, templateResource, null, null, templateHandler);
     }
 
 
 
     public void parse(
+            final ITemplateProcessingContext context,
             final IResource templateResource,
             final String dialectPrefix, String[] selectors,
             final ITemplateHandler templateHandler) {
 
+        Validate.notNull(context, "Template processing context cannot be null");
+        Validate.notNull(context.getTextRepository(), "Template processing context cannot return a null text repository");
         Validate.notNull(templateResource, "Template resource cannot be null");
         Validate.notNull(templateHandler, "Template handler cannot be null");
 
@@ -114,7 +118,7 @@ public final class HtmlTemplateParser implements ITemplateParser {
         try {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
-            IMarkupHandler handler = new HtmlTemplateAdapterMarkupHandler(templateHandler);
+            IMarkupHandler handler = new HtmlTemplateAdapterMarkupHandler(templateHandler, context.getTextRepository());
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to

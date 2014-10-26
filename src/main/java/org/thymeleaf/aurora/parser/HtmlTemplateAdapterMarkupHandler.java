@@ -26,6 +26,7 @@ import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.aurora.text.ITextRepository;
 
 /**
  *
@@ -36,14 +37,16 @@ import org.thymeleaf.aurora.engine.ITemplateHandler;
 final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private final ITemplateHandler templateHandler;
+    private final ITextRepository textRepository;
 
     private ElementDefinition elementDefinition;
     private AttributeDefinition attributeDefinition;
 
     
-    HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler) {
+    HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler, final ITextRepository textRepository) {
         super();
         this.templateHandler = templateHandler;
+        this.textRepository = textRepository;
     }
 
 

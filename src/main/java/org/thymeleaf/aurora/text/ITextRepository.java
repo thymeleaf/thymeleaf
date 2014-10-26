@@ -33,7 +33,7 @@ package org.thymeleaf.aurora.text;
  * @since 3.0.0
  *
  */
-public interface IMarkupTextRepository {
+public interface ITextRepository {
 
     /**
      * <p>

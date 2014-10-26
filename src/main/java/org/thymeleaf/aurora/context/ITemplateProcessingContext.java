@@ -17,12 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.parser;
+package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.resource.IResource;
-
+import org.thymeleaf.aurora.text.ITextRepository;
 
 /**
  *
@@ -30,16 +27,9 @@ import org.thymeleaf.aurora.resource.IResource;
  * @since 3.0.0
  * 
  */
-public interface ITemplateParser {
+public interface ITemplateProcessingContext {
 
 
-    public void parse(final ITemplateProcessingContext context,
-                      final IResource templateResource,
-                      final ITemplateHandler handler);
-
-    public void parse(final ITemplateProcessingContext context,
-                      final IResource templateResource,
-                      final String dialectPrefix, final String[] selectors,
-                      final ITemplateHandler handler);
+    public ITextRepository getTextRepository();
 
 }

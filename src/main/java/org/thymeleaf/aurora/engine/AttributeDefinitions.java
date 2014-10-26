@@ -52,10 +52,15 @@ public final class AttributeDefinitions {
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ATTRIBUTE_NAMES;
 
+    // Set containing all the standard element names, plus those thymeleaf-specfic ones that are initialized into the repo
+    public static final Set<String> ALL_DEFAULT_CONFIGURED_ATTRIBUTE_NAMES;
+
 
 
 
     static {
+
+        final List<String> allDefaultConfiguredAttributeNamesAux = new ArrayList<String>(700);
 
         final List<String> htmlAttributeNameListAux =
                 new ArrayList<String>(Arrays.asList(new String[]{
@@ -93,7 +98,7 @@ public final class AttributeDefinitions {
 
         ALL_STANDARD_HTML_ATTRIBUTE_NAMES =
                 Collections.unmodifiableSet(new LinkedHashSet<String>(htmlAttributeNameListAux));
-
+        allDefaultConfiguredAttributeNamesAux.addAll(ALL_STANDARD_HTML_ATTRIBUTE_NAMES);
 
 
         final List<AttributeDefinition> htmlAttributeDefinitionListAux =
@@ -122,10 +127,17 @@ public final class AttributeDefinitions {
 
         // First, the th: and data-th- equivalents to all standard attribute names added to the HTML repository
         for (final String attributeName : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-            final AttributeDefinition attributeDefinitionTh = new AttributeDefinition("th:" + attributeName);
-            final AttributeDefinition attributeDefinitionDataTh = new AttributeDefinition("data-th-" + attributeName);
+
+            final String attributeNameTh = "th:" + attributeName;
+            final AttributeDefinition attributeDefinitionTh = new AttributeDefinition(attributeNameTh);
             HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
+            allDefaultConfiguredAttributeNamesAux.add(attributeNameTh);
+
+            final String attributeNameDataTh = "data-th-" + attributeName;
+            final AttributeDefinition attributeDefinitionDataTh = new AttributeDefinition(attributeNameDataTh);
             HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
+            allDefaultConfiguredAttributeNamesAux.add(attributeNameDataTh);
+
         }
 
         // Now add other thymeleaf attribute names, those that are not the th: or data-th- equivalents to standard HTML attributes
@@ -136,18 +148,31 @@ public final class AttributeDefinitions {
             "with", "xmlbase", "xmllang", "xmlspace"
         };
         for (final String attributeName : customThymeleafAttributeNames) {
-            final AttributeDefinition attributeDefinitionTh = new AttributeDefinition("th:" + attributeName);
-            final AttributeDefinition attributeDefinitionDataTh = new AttributeDefinition("data-th-" + attributeName);
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
-            // This time we add them to the XML repository too, as it makes sense that these attributes are
+            // This time we will add them to the XML repository too, as it makes sense that these attributes are
             // (probably) the only ones used in XML documents.
+
+            final String attributeNameTh = "th:" + attributeName;
+            final AttributeDefinition attributeDefinitionTh = new AttributeDefinition(attributeNameTh);
+            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
             XML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
+            allDefaultConfiguredAttributeNamesAux.add(attributeNameTh);
+
+            final String attributeNameDataTh = "data-th-" + attributeName;
+            final AttributeDefinition attributeDefinitionDataTh = new AttributeDefinition(attributeNameDataTh);
+            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
             XML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
+            allDefaultConfiguredAttributeNamesAux.add(attributeNameDataTh);
+
         }
 
         // Finally, the "xmlns" attribute could be common in XML files
         XML_ATTRIBUTE_REPOSITORY.storeStandardElement(new AttributeDefinition("xmlns"));
+
+
+        // And we also consolidate the set with all the configured attribute names
+        Collections.sort(allDefaultConfiguredAttributeNamesAux);
+        ALL_DEFAULT_CONFIGURED_ATTRIBUTE_NAMES =
+                Collections.unmodifiableSet(new LinkedHashSet<String>(allDefaultConfiguredAttributeNamesAux));
 
     }
 

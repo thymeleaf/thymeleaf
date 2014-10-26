@@ -56,6 +56,8 @@ public final class ElementDefinitions {
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ELEMENT_NAMES;
 
+    // Set containing all the standard element names, plus those thymeleaf-specfic ones that are initialized into the repo
+    public static final Set<String> ALL_DEFAULT_CONFIGURED_ELEMENT_NAMES;
 
 
     // Root
@@ -213,6 +215,8 @@ public final class ElementDefinitions {
 
     static {
 
+        final List<String> allDefaultConfiguredElementNamesAux = new ArrayList<String>(700);
+
         final List<ElementDefinition> htmlElementDefinitionListAux =
                 new ArrayList<ElementDefinition>(Arrays.asList(
                         new ElementDefinition[] {
@@ -242,7 +246,7 @@ public final class ElementDefinitions {
         }
 
         ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(htmlElementDefinitionNamesAux);
-
+        allDefaultConfiguredElementNamesAux.addAll(ALL_STANDARD_HTML_ELEMENT_NAMES);
 
 
         /*
@@ -258,6 +262,14 @@ public final class ElementDefinitions {
         HTML_ELEMENT_REPOSITORY.storeStandardElement(DATATHBLOCK);
         XML_ELEMENT_REPOSITORY.storeStandardElement(THBLOCK);
         XML_ELEMENT_REPOSITORY.storeStandardElement(DATATHBLOCK);
+        allDefaultConfiguredElementNamesAux.add(THBLOCK.name);
+        allDefaultConfiguredElementNamesAux.add(DATATHBLOCK.name);
+
+
+        // And we also consolidate the set with all the configured element names
+        Collections.sort(allDefaultConfiguredElementNamesAux);
+        ALL_DEFAULT_CONFIGURED_ELEMENT_NAMES =
+                Collections.unmodifiableSet(new LinkedHashSet<String>(allDefaultConfiguredElementNamesAux));
 
 
     }

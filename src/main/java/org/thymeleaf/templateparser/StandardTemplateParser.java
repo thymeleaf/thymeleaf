@@ -42,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.aurora.text.StandardTextRepository;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
@@ -51,8 +53,6 @@ import org.thymeleaf.dom.Element.RepresentationInTemplate;
 import org.thymeleaf.dom.NestableNode;
 import org.thymeleaf.dom.Node;
 import org.thymeleaf.dom.Text;
-import org.thymeleaf.aurora.text.IMarkupTextRepository;
-import org.thymeleaf.aurora.text.StandardMarkupTextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
@@ -137,7 +137,7 @@ public class StandardTemplateParser implements ITemplateParser {
 
 
     static final ParseConfiguration HTML_PARSING_CONFIGURATION;
-    static final IMarkupTextRepository TEXT_REPOSITORY;
+    static final ITextRepository TEXT_REPOSITORY;
 
     
     
@@ -163,7 +163,7 @@ public class StandardTemplateParser implements ITemplateParser {
         unremovableTexts.add("\n\t\t\t\t");
 
         // Size = 10MBytes (1 char = 2 bytes)
-        TEXT_REPOSITORY = new StandardMarkupTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
+        TEXT_REPOSITORY = new StandardTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
         PARSER = new MarkupParser(HTML_PARSING_CONFIGURATION);
     }

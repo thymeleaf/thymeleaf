@@ -53,7 +53,7 @@ import org.thymeleaf.aurora.util.TextUtil;
  * @since 3.0.0
  *
  */
-public final class StandardMarkupTextRepository implements IMarkupTextRepository {
+public final class StandardTextRepository implements ITextRepository {
 
     /*
      * This class's LRU will be based on storage order, not the real amount of times a text is actually used.
@@ -62,7 +62,7 @@ public final class StandardMarkupTextRepository implements IMarkupTextRepository
      */
 
     // We will initially make room for 1000 different texts, and we will grow in increments of 500
-    private static final int CONTENTS_INITIAL_LEN = 1000;
+    private static final int CONTENTS_INITIAL_LEN = 1500;
     private static final int CONTENTS_LEN_INC = 500;
 
     // HashCode-based indexes for the text map will be distributed using a 'modulo' function, so we need a prime number
@@ -85,7 +85,7 @@ public final class StandardMarkupTextRepository implements IMarkupTextRepository
 
 
 
-    public StandardMarkupTextRepository(final int maxSizeInChars, final String[] unremovableTexts) {
+    public StandardTextRepository(final int maxSizeInChars, final String[] unremovableTexts) {
 
         super();
 
