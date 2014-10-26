@@ -79,53 +79,29 @@ public abstract class AbstractChainedTemplateHandler
 
 
     public void handleXmlDeclaration(
-            final char[] buffer,
-            final int keywordOffset, final int keywordLen,
-            final int keywordLine, final int keywordCol,
-            final int versionOffset, final int versionLen,
-            final int versionLine, final int versionCol,
-            final int encodingOffset, final int encodingLen,
-            final int encodingLine, final int encodingCol,
-            final int standaloneOffset, final int standaloneLen,
-            final int standaloneLine, final int standaloneCol,
-            final int outerOffset, final int outerLen,
+            final String xmlDeclaration,
+            final String keyword,
+            final String version,
+            final String encoding,
+            final String standalone,
             final int line, final int col) {
         this.next.handleXmlDeclaration(
-                buffer,
-                keywordOffset, keywordLen, keywordLine, keywordCol,
-                versionOffset, versionLen, versionLine, versionCol,
-                encodingOffset, encodingLen, encodingLine, encodingCol,
-                standaloneOffset, standaloneLen, standaloneLine, standaloneCol,
-                outerOffset, outerLen, line, col);
+                xmlDeclaration, keyword, version, encoding, standalone, line, col);
     }
 
 
 
     public void handleDocType(
-            final char[] buffer,
-            final int keywordOffset, final int keywordLen,
-            final int keywordLine, final int keywordCol,
-            final int elementNameOffset, final int elementNameLen,
-            final int elementNameLine, final int elementNameCol,
-            final int typeOffset, final int typeLen,
-            final int typeLine, final int typeCol,
-            final int publicIdOffset, final int publicIdLen,
-            final int publicIdLine, final int publicIdCol,
-            final int systemIdOffset, final int systemIdLen,
-            final int systemIdLine, final int systemIdCol,
-            final int internalSubsetOffset, final int internalSubsetLen,
-            final int internalSubsetLine, final int internalSubsetCol,
-            final int outerOffset, final int outerLen,
-            final int outerLine, final int outerCol) {
+            final String docType,
+            final String keyword,
+            final String elementName,
+            final String type,
+            final String publicId,
+            final String systemId,
+            final String internalSubset,
+            final int line, final int col) {
         this.next.handleDocType(
-                buffer,
-                keywordOffset, keywordLen, keywordLine, keywordCol,
-                elementNameOffset, elementNameLen, elementNameLine, elementNameCol,
-                typeOffset, typeLen, typeLine, typeCol,
-                publicIdOffset, publicIdLen, publicIdLine, publicIdCol,
-                systemIdOffset, systemIdLen, systemIdLine, systemIdCol,
-                internalSubsetOffset, internalSubsetLen, internalSubsetLine, internalSubsetCol,
-                outerOffset, outerLen, outerLine, outerCol);
+                docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
     }
 
 
@@ -276,18 +252,12 @@ public abstract class AbstractChainedTemplateHandler
 
 
     public void handleProcessingInstruction(
-            final char[] buffer,
-            final int targetOffset, final int targetLen,
-            final int targetLine, final int targetCol,
-            final int contentOffset, final int contentLen,
-            final int contentLine, final int contentCol,
-            final int outerOffset, final int outerLen,
+            final String processingInstruction,
+            final String target,
+            final String content,
             final int line, final int col) {
         this.next.handleProcessingInstruction(
-                buffer,
-                targetOffset, targetLen, targetLine, targetCol,
-                contentOffset, contentLen, contentLine, contentCol,
-                outerOffset, outerLen, line, col);
+                processingInstruction, target, content, line, col);
     }
 
 

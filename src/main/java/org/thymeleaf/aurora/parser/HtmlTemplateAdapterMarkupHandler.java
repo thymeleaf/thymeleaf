@@ -85,13 +85,19 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
+
+        final String xmlDeclaration = this.textRepository.getText(buffer, outerOffset, outerLen);
+        final String keyword = this.textRepository.getText(buffer, keywordOffset, keywordLen);
+        final String version =
+                (versionLen == 0? null : this.textRepository.getText(buffer, versionOffset, versionLen));
+        final String encoding =
+                (encodingLen == 0? null : this.textRepository.getText(buffer, encodingOffset, encodingLen));
+        final String standalone =
+                (standaloneLen == 0? null : this.textRepository.getText(buffer, standaloneOffset, standaloneLen));
+
         this.templateHandler.handleXmlDeclaration(
-                buffer,
-                keywordOffset, keywordLen, keywordLine, keywordCol,
-                versionOffset, versionLen, versionLine, versionCol,
-                encodingOffset, encodingLen, encodingLine, encodingCol,
-                standaloneOffset, standaloneLen, standaloneLine, standaloneCol,
-                outerOffset, outerLen, line, col);
+                xmlDeclaration, keyword, version, encoding, standalone, line, col);
+
     }
 
 
@@ -114,15 +120,22 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int outerOffset, final int outerLen,
             final int outerLine, final int outerCol)
             throws ParseException {
+
+        final String docType = this.textRepository.getText(buffer, outerOffset, outerLen);
+        final String keyword = this.textRepository.getText(buffer, keywordOffset, keywordLen);
+        final String rootElementName = this.textRepository.getText(buffer, elementNameOffset, elementNameLen);
+        final String type =
+                (typeLen == 0? null : this.textRepository.getText(buffer, typeOffset, typeLen));
+        final String publicId =
+                (publicIdLen == 0? null : this.textRepository.getText(buffer, publicIdOffset, publicIdLen));
+        final String systemId =
+                (systemIdLen == 0? null : this.textRepository.getText(buffer, systemIdOffset, systemIdLen));
+        final String internalSubset =
+                (internalSubsetLen == 0? null : this.textRepository.getText(buffer, internalSubsetOffset, internalSubsetLen));
+
         this.templateHandler.handleDocType(
-                buffer,
-                keywordOffset, keywordLen, keywordLine, keywordCol,
-                elementNameOffset, elementNameLen, elementNameLine, elementNameCol,
-                typeOffset, typeLen, typeLine, typeCol,
-                publicIdOffset, publicIdLen, publicIdLine, publicIdCol,
-                systemIdOffset, systemIdLen, systemIdLine, systemIdCol,
-                internalSubsetOffset, internalSubsetLen, internalSubsetLine, internalSubsetCol,
-                outerOffset, outerLen, outerLine, outerCol);
+                docType, keyword, rootElementName, type, publicId, systemId, internalSubset, outerLine, outerCol);
+
     }
 
 
@@ -379,11 +392,14 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleProcessingInstruction(
-                buffer,
-                targetOffset, targetLen, targetLine, targetCol,
-                contentOffset, contentLen, contentLine, contentCol,
-                outerOffset, outerLen, line, col);
+
+        final String processingInstruction = this.textRepository.getText(buffer, outerOffset, outerLen);
+        final String target = this.textRepository.getText(buffer, targetOffset, targetLen);
+        final String content =
+                (contentLen == 0? null : this.textRepository.getText(buffer, contentOffset, contentLen));
+
+        this.templateHandler.handleProcessingInstruction(processingInstruction, target, content, line, col);
+
     }
     
     
