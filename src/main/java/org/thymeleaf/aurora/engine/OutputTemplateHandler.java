@@ -109,12 +109,13 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleStandaloneElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
-            final boolean minimized, final int line, final int col) {
+            final String name,
+            final boolean minimized,
+            final int line, final int col) {
         
         try {
             this.writer.write('<');
-            this.writer.write(buffer, offset, len);
+            this.writer.write(name);
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
@@ -127,8 +128,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleStandaloneElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
-            final boolean minimized, final int line, final int col) {
+            final String name,
+            final boolean minimized,
+            final int line, final int col) {
         
         try {
             if (minimized) {
@@ -147,12 +149,12 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleOpenElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
 
         try {
             this.writer.write('<');
-            this.writer.write(buffer, offset, len);
+            this.writer.write(name);
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
@@ -165,7 +167,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleOpenElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
 
         try {
@@ -182,7 +184,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoOpenElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
     }
@@ -193,7 +195,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoOpenElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
     }
@@ -204,12 +206,12 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         
         try {
             this.writer.write("</");
-            this.writer.write(buffer, offset, len);
+            this.writer.write(name);
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
@@ -222,7 +224,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         
         try {
@@ -239,7 +241,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
     }
@@ -251,7 +253,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         // Nothing to be done... balanced elements were not present at the original template!
     }
@@ -262,10 +264,10 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleUnmatchedCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         // They were present at the original template, so simply output them.
-        handleCloseElementStart(elementDefinition, buffer, offset, len, line, col);
+        handleCloseElementStart(elementDefinition, name, line, col);
     }
 
 
@@ -274,10 +276,10 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleUnmatchedCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer, final int offset, final int len,
+            final String name,
             final int line, final int col) {
         // They were present at the original template, so simply output them.
-        handleCloseElementEnd(elementDefinition, buffer, offset, len, line, col);
+        handleCloseElementEnd(elementDefinition, name, line, col);
     }
 
 
@@ -286,19 +288,36 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAttribute(
             final AttributeDefinition attributeDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int nameLine, final int nameCol, final int operatorOffset, final int operatorLen,
-            final int operatorLine, final int operatorCol, final int valueContentOffset,
-            final int valueContentLen, final int valueOuterOffset, final int valueOuterLen,
-            final int valueLine, final int valueCol) {
+            final String name,
+            final String operator,
+            final String value,
+            final AttributeValueQuoting quoting,
+            final int line, final int col) {
         
         try {
-            this.writer.write(buffer, nameOffset, nameLen);
-            this.writer.write(buffer, operatorOffset, operatorLen);
-            this.writer.write(buffer, valueOuterOffset, valueOuterLen);
+            this.writer.write(name);
+            if (operator != null) {
+                this.writer.write(operator);
+            }
+            if (value != null) {
+                switch (quoting) {
+                    case DOUBLE:
+                        this.writer.write('"');
+                        this.writer.write(value);
+                        this.writer.write('"');
+                        break;
+                    case SINGLE:
+                        this.writer.write('\'');
+                        this.writer.write(value);
+                        this.writer.write('\'');
+                        break;
+                    case NONE:
+                        this.writer.write(value);
+                        break;
+                }
+            }
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, nameLine, nameCol, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
     }
@@ -308,12 +327,11 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleInnerWhiteSpace(
-            final char[] buffer, 
-            final int offset, final int len, 
+            final String whiteSpace,
             final int line, final int col) {
         
         try {
-            this.writer.write(buffer, offset, len);
+            this.writer.write(whiteSpace);
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }

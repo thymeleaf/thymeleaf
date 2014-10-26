@@ -48,6 +48,7 @@ public final class TextRepositories {
 
         unremovableTexts.addAll(ElementDefinitions.ALL_DEFAULT_CONFIGURED_ELEMENT_NAMES);
         unremovableTexts.addAll(AttributeDefinitions.ALL_DEFAULT_CONFIGURED_ATTRIBUTE_NAMES);
+        unremovableTexts.add("");
         unremovableTexts.add(" ");
         unremovableTexts.add("\n");
         unremovableTexts.add("\n  ");

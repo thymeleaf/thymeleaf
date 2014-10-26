@@ -160,139 +160,117 @@ public abstract class AbstractChainedTemplateHandler
 
     public void handleStandaloneElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final boolean minimized, final int line, final int col) {
-        this.next.handleStandaloneElementStart(elementDefinition, buffer, nameOffset, nameLen, minimized, line, col);
+        this.next.handleStandaloneElementStart(elementDefinition, name, minimized, line, col);
     }
 
     public void handleStandaloneElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final boolean minimized, final int line, final int col) {
-        this.next.handleStandaloneElementEnd(elementDefinition, buffer, nameOffset, nameLen, minimized, line, col);
+        this.next.handleStandaloneElementEnd(elementDefinition, name, minimized, line, col);
     }
 
     
 
     public void handleOpenElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
-        this.next.handleOpenElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleOpenElementStart(elementDefinition, name, line, col);
     }
 
     public void handleOpenElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
-        this.next.handleOpenElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleOpenElementEnd(elementDefinition, name, line, col);
     }
 
 
 
     public void handleAutoOpenElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
-        this.next.handleAutoOpenElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoOpenElementStart(elementDefinition, name, line, col);
     }
 
     public void handleAutoOpenElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
-        this.next.handleAutoOpenElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoOpenElementEnd(elementDefinition, name, line, col);
     }
 
 
     
     public void handleCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
-        this.next.handleCloseElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleCloseElementStart(elementDefinition, name, line, col);
     }
 
     public void handleCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
-        this.next.handleCloseElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleCloseElementEnd(elementDefinition, name, line, col);
     }
 
 
     
     public void handleAutoCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
-        this.next.handleAutoCloseElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoCloseElementStart(elementDefinition, name, line, col);
     }
 
     public void handleAutoCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
-        this.next.handleAutoCloseElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleAutoCloseElementEnd(elementDefinition, name, line, col);
     }
     
 
     
     public void handleUnmatchedCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
-        this.next.handleUnmatchedCloseElementStart(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleUnmatchedCloseElementStart(elementDefinition, name, line, col);
     }
 
 
     public void handleUnmatchedCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
-        this.next.handleUnmatchedCloseElementEnd(elementDefinition, buffer, nameOffset, nameLen, line, col);
+        this.next.handleUnmatchedCloseElementEnd(elementDefinition, name, line, col);
     }
 
 
     
     public void handleAttribute(
             final AttributeDefinition attributeDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int nameLine, final int nameCol,
-            final int operatorOffset, final int operatorLen,
-            final int operatorLine, final int operatorCol,
-            final int valueContentOffset, final int valueContentLen,
-            final int valueOuterOffset, final int valueOuterLen,
-            final int valueLine, final int valueCol) {
-        this.next.handleAttribute(
-                attributeDefinition,
-                buffer,
-                nameOffset, nameLen, nameLine, nameCol,
-                operatorOffset, operatorLen, operatorLine, operatorCol,
-                valueContentOffset, valueContentLen,
-                valueOuterOffset, valueOuterLen, valueLine, valueCol);
+            final String name,
+            final String operator,
+            final String value,
+            final AttributeValueQuoting quoting,
+            final int line, final int col) {
+        this.next.handleAttribute(attributeDefinition, name, operator, value, quoting, line, col);
     }
 
 
     
     public void handleInnerWhiteSpace(
-            final char[] buffer,
-            final int offset, final int len,
+            final String whiteSpace,
             final int line, final int col) {
-        this.next.handleInnerWhiteSpace(buffer, offset, len, line, col);
+        this.next.handleInnerWhiteSpace(whiteSpace, line, col);
     }
 
 

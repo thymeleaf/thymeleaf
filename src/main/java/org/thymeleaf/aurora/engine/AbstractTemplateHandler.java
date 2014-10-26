@@ -118,16 +118,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     public void handleStandaloneElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final boolean minimized, final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
     public void handleStandaloneElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final boolean minimized, final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -136,16 +134,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     public void handleOpenElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
     public void handleOpenElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -154,16 +150,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     public void handleAutoOpenElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
     public void handleAutoOpenElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -172,16 +166,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     public void handleCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
     public void handleCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -190,16 +182,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     
     public void handleAutoCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
     public void handleAutoCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -208,8 +198,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     
     public void handleUnmatchedCloseElementStart(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen, 
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -217,8 +206,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     public void handleUnmatchedCloseElementEnd(
             final ElementDefinition elementDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
+            final String name,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
@@ -227,22 +215,18 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     
     public void handleAttribute(
             final AttributeDefinition attributeDefinition,
-            final char[] buffer,
-            final int nameOffset, final int nameLen,
-            final int nameLine, final int nameCol,
-            final int operatorOffset, final int operatorLen,
-            final int operatorLine, final int operatorCol,
-            final int valueContentOffset, final int valueContentLen,
-            final int valueOuterOffset, final int valueOuterLen,
-            final int valueLine, final int valueCol) {
+            final String name,
+            final String operator,
+            final String value,
+            final AttributeValueQuoting quoting,
+            final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
 
     
     public void handleInnerWhiteSpace(
-            final char[] buffer,
-            final int offset, final int len,
+            final String whiteSpace,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
