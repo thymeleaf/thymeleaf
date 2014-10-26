@@ -40,11 +40,11 @@ public final class ElementDefinition {
 
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public ElementType getType() {
-        return type;
+        return this.type;
     }
 
 
