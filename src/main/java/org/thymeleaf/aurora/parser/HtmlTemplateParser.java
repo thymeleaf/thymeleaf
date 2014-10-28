@@ -33,7 +33,6 @@ import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.resource.CharArrayResource;
 import org.thymeleaf.aurora.resource.IResource;

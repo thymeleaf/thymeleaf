@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.aurora.parser;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.text.ITextRepository;

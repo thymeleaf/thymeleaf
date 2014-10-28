@@ -104,46 +104,35 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-    public void handleStandaloneElementStart(
+    public void handleStandaloneElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final boolean minimized, final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-    public void handleStandaloneElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final boolean minimized, final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-    
-
-    public void handleOpenElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-    public void handleOpenElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
+            final Attributes attributes,
+            final boolean minimized,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
 
-
-    public void handleAutoOpenElementStart(
+    public void handleOpenElement(
             final ElementDefinition elementDefinition,
             final String name,
+            final Attributes attributes,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }
 
-    public void handleAutoOpenElementEnd(
+
+    public void handleAutoOpenElement(
+            final ElementDefinition elementDefinition,
+            final String name,
+            final Attributes attributes,
+            final int line, final int col) {
+        // Nothing to be done here, meant to be overridden if required
+    }
+
+
+    public void handleCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
@@ -151,15 +140,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-
-    public void handleCloseElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-    public void handleCloseElementEnd(
+    public void handleAutoCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
@@ -167,54 +148,9 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-    
-    public void handleAutoCloseElementStart(
+    public void handleUnmatchedCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-    public void handleAutoCloseElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-    
-
-    
-    public void handleUnmatchedCloseElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-
-    public void handleUnmatchedCloseElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-
-    
-    public void handleAttribute(
-            final AttributeDefinition attributeDefinition,
-            final String name,
-            final String operator,
-            final String value,
-            final AttributeValueQuotes quotes,
-            final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
-    }
-
-
-    
-    public void handleInnerWhiteSpace(
-            final String whiteSpace,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }

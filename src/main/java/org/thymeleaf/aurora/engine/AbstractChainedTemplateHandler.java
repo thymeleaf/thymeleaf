@@ -134,119 +134,55 @@ public abstract class AbstractChainedTemplateHandler
     }
 
 
-    public void handleStandaloneElementStart(
+    public void handleStandaloneElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final boolean minimized, final int line, final int col) {
-        this.next.handleStandaloneElementStart(elementDefinition, name, minimized, line, col);
-    }
-
-    public void handleStandaloneElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final boolean minimized, final int line, final int col) {
-        this.next.handleStandaloneElementEnd(elementDefinition, name, minimized, line, col);
-    }
-
-    
-
-    public void handleOpenElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
+            final Attributes attributes,
+            final boolean minimized,
             final int line, final int col) {
-        this.next.handleOpenElementStart(elementDefinition, name, line, col);
+        this.next.handleStandaloneElement(elementDefinition, name, attributes, minimized, line, col);
     }
 
-    public void handleOpenElementEnd(
+
+    public void handleOpenElement(
             final ElementDefinition elementDefinition,
             final String name,
+            final Attributes attributes,
             final int line, final int col) {
-        this.next.handleOpenElementEnd(elementDefinition, name, line, col);
+        this.next.handleOpenElement(elementDefinition, name, attributes, line, col);
     }
 
 
+    public void handleAutoOpenElement(
+            final ElementDefinition elementDefinition,
+            final String name,
+            final Attributes attributes,
+            final int line, final int col) {
+        this.next.handleAutoOpenElement(elementDefinition, name, attributes, line, col);
+    }
 
-    public void handleAutoOpenElementStart(
+
+    public void handleCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        this.next.handleAutoOpenElementStart(elementDefinition, name, line, col);
+        this.next.handleCloseElement(elementDefinition, name, line, col);
     }
 
-    public void handleAutoOpenElementEnd(
+
+    public void handleAutoCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        this.next.handleAutoOpenElementEnd(elementDefinition, name, line, col);
+        this.next.handleAutoCloseElement(elementDefinition, name, line, col);
     }
 
 
-    
-    public void handleCloseElementStart(
+    public void handleUnmatchedCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        this.next.handleCloseElementStart(elementDefinition, name, line, col);
-    }
-
-    public void handleCloseElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        this.next.handleCloseElementEnd(elementDefinition, name, line, col);
-    }
-
-
-    
-    public void handleAutoCloseElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        this.next.handleAutoCloseElementStart(elementDefinition, name, line, col);
-    }
-
-    public void handleAutoCloseElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        this.next.handleAutoCloseElementEnd(elementDefinition, name, line, col);
-    }
-    
-
-    
-    public void handleUnmatchedCloseElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        this.next.handleUnmatchedCloseElementStart(elementDefinition, name, line, col);
-    }
-
-
-    public void handleUnmatchedCloseElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col) {
-        this.next.handleUnmatchedCloseElementEnd(elementDefinition, name, line, col);
-    }
-
-
-    
-    public void handleAttribute(
-            final AttributeDefinition attributeDefinition,
-            final String name,
-            final String operator,
-            final String value,
-            final AttributeValueQuotes quotes,
-            final int line, final int col) {
-        this.next.handleAttribute(attributeDefinition, name, operator, value, quotes, line, col);
-    }
-
-
-    
-    public void handleInnerWhiteSpace(
-            final String whiteSpace,
-            final int line, final int col) {
-        this.next.handleInnerWhiteSpace(whiteSpace, line, col);
+        this.next.handleUnmatchedCloseElement(elementDefinition, name, line, col);
     }
 
 
