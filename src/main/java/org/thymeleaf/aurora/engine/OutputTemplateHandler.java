@@ -37,6 +37,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     private final Writer writer;
 
 
+    // TODO writing methods for elements and attributes here should directly delegate on these structures' 'writeTo' methods.
 
     /**
      * <p>
@@ -291,31 +292,11 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String name,
             final String operator,
             final String value,
-            final AttributeValueQuoting quoting,
+            final AttributeValueQuotes quotes,
             final int line, final int col) {
         
         try {
-            this.writer.write(name);
-            if (operator != null) {
-                this.writer.write(operator);
-            }
-            if (value != null) {
-                switch (quoting) {
-                    case DOUBLE:
-                        this.writer.write('"');
-                        this.writer.write(value);
-                        this.writer.write('"');
-                        break;
-                    case SINGLE:
-                        this.writer.write('\'');
-                        this.writer.write(value);
-                        this.writer.write('\'');
-                        break;
-                    case NONE:
-                        this.writer.write(value);
-                        break;
-                }
-            }
+            Attribute.writeAttribute(name, operator, value, quotes, this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }

@@ -206,7 +206,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final String name,
             final String operator,
             final String value,
-            final AttributeValueQuoting quoting,
+            final AttributeValueQuotes quotes,
             final int line, final int col) {
         // Nothing to be done here, meant to be overridden if required
     }

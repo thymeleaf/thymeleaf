@@ -21,13 +21,9 @@ package org.thymeleaf.aurora.text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
-import org.thymeleaf.aurora.util.TextUtil;
 
 /**
 *
@@ -38,16 +34,16 @@ import org.thymeleaf.aurora.util.TextUtil;
  */
 public final class TextRepositories {
 
-    // Size = 20Mbytes
-    public static final int DEFAULT_TEXT_REPOSITORY_SIZE_BYTES = 20971520;
+    // Size = 10Mbytes
+    public static final int DEFAULT_TEXT_REPOSITORY_SIZE_BYTES = 10485760;
 
 
     public static ITextRepository createDefault() {
 
         final List<String> unremovableTexts  = new ArrayList<String>();
 
-        unremovableTexts.addAll(ElementDefinitions.ALL_DEFAULT_CONFIGURED_ELEMENT_NAMES);
-        unremovableTexts.addAll(AttributeDefinitions.ALL_DEFAULT_CONFIGURED_ATTRIBUTE_NAMES);
+        unremovableTexts.addAll(ElementDefinitions.ALL_STANDARD_HTML_ELEMENT_NAMES);
+        unremovableTexts.addAll(AttributeDefinitions.ALL_STANDARD_HTML_ATTRIBUTE_NAMES);
         unremovableTexts.add("");
         unremovableTexts.add(" ");
         unremovableTexts.add("\n");

@@ -23,7 +23,7 @@ import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.aurora.engine.AttributeDefinition;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
-import org.thymeleaf.aurora.engine.AttributeValueQuoting;
+import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
@@ -44,6 +44,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private ElementDefinition elementDefinition;
     private String elementName;
+    private Attributes attributes;
 
     
     HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler, final ITextRepository textRepository) {
@@ -172,6 +173,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             throws ParseException {
         this.templateHandler.handleText(buffer, offset, len, line, col);
     }
+
 
 
     @Override
@@ -356,15 +358,15 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
                 (operator != null ?
                         this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
                         null);
-        final AttributeValueQuoting quoting =
+        final Attribute.ValueQuotes quotes =
                 (value != null ?
                         (valueOuterOffset != valueContentOffset ?
-                                (buffer[valueOuterOffset] == '"' ? AttributeValueQuoting.DOUBLE : AttributeValueQuoting.SINGLE) :
-                                AttributeValueQuoting.NONE) :
+                                (buffer[valueOuterOffset] == '"' ? Attribute.ValueQuotes.DOUBLE : Attribute.ValueQuotes.SINGLE) :
+                                Attribute.ValueQuotes.NONE) :
                         null);
 
         this.templateHandler.handleAttribute(
-                attributeDefinition, name, operator, value, quoting, nameLine, nameCol);
+                attributeDefinition, name, operator, value, quotes, nameLine, nameCol);
 
     }
 

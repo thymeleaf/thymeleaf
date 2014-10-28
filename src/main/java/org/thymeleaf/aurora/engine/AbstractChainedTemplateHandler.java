@@ -236,9 +236,9 @@ public abstract class AbstractChainedTemplateHandler
             final String name,
             final String operator,
             final String value,
-            final AttributeValueQuoting quoting,
+            final AttributeValueQuotes quotes,
             final int line, final int col) {
-        this.next.handleAttribute(attributeDefinition, name, operator, value, quoting, line, col);
+        this.next.handleAttribute(attributeDefinition, name, operator, value, quotes, line, col);
     }
 
 

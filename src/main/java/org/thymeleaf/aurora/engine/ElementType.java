@@ -29,16 +29,16 @@ public enum ElementType {
 
     // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#elements-0
 
-    VOID(false), RAW_TEXT(true), ESCAPABLE_RAW_TEXT(true), FOREIGN(true), NORMAL(true);
+    VOID(true), RAW_TEXT(false), ESCAPABLE_RAW_TEXT(false), FOREIGN(false), NORMAL(false);
 
-    private final boolean hasBody;
+    final boolean isVoid;
 
-    private ElementType(final boolean hasBody) {
-        this.hasBody = hasBody;
+    private ElementType(final boolean voidElement) {
+        this.isVoid = voidElement;
     }
 
-    public boolean hasBody() {
-        return this.hasBody;
+    public boolean isVoid() {
+        return this.isVoid;
     }
 
 }

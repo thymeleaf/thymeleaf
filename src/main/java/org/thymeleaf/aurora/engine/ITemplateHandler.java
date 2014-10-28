@@ -82,85 +82,43 @@ public interface ITemplateHandler {
             final int line, final int col);
 
 
-    public void handleStandaloneElementStart(
+    public void handleStandaloneElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final boolean minimized,
-            final int line, final int col);
-
-    public void handleStandaloneElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
+            final Attributes attributes,
             final boolean minimized,
             final int line, final int col);
 
 
-    public void handleOpenElementStart(
+    public void handleOpenElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final int line, final int col);
-
-    public void handleOpenElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
+            final Attributes attributes,
             final int line, final int col);
 
 
-    public void handleAutoOpenElementStart(
+    public void handleAutoOpenElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final int line, final int col);
-
-    public void handleAutoOpenElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
+            final Attributes attributes,
             final int line, final int col);
 
 
-    public void handleCloseElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col);
-
-    public void handleCloseElementEnd(
+    public void handleCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col);
 
 
-    public void handleAutoCloseElementStart(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col);
-
-    public void handleAutoCloseElementEnd(
+    public void handleAutoCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col);
 
 
-    public void handleUnmatchedCloseElementStart(
+    public void handleUnmatchedCloseElement(
             final ElementDefinition elementDefinition,
             final String name,
-            final int line, final int col);
-
-    public void handleUnmatchedCloseElementEnd(
-            final ElementDefinition elementDefinition,
-            final String name,
-            final int line, final int col);
-
-
-    public void handleAttribute(
-            final AttributeDefinition attributeDefinition,
-            final String name,
-            final String operator,
-            final String value,
-            final AttributeValueQuoting quoting,
-            final int line, final int col);
-
-
-    public void handleInnerWhiteSpace(
-            final String whiteSpace,
             final int line, final int col);
 
 

@@ -39,6 +39,7 @@ import org.thymeleaf.aurora.resource.CharArrayResource;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.aurora.resource.StringResource;
+import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.Validate;
 
@@ -95,22 +96,22 @@ public final class HtmlTemplateParser implements ITemplateParser {
 
 
     public void parse(
-            final ITemplateProcessingContext context, final IResource templateResource,
+            final IResource templateResource,
+            final ITextRepository textRepository,
             final ITemplateHandler templateHandler) {
-        parse(context, templateResource, null, null, templateHandler);
+        parse(templateResource, null, null, textRepository, templateHandler);
     }
 
 
 
     public void parse(
-            final ITemplateProcessingContext context,
             final IResource templateResource,
             final String dialectPrefix, String[] selectors,
+            final ITextRepository textRepository,
             final ITemplateHandler templateHandler) {
 
-        Validate.notNull(context, "Template processing context cannot be null");
-        Validate.notNull(context.getTextRepository(), "Template processing context cannot return a null text repository");
         Validate.notNull(templateResource, "Template resource cannot be null");
+        Validate.notNull(textRepository, "Text repository cannot be null");
         Validate.notNull(templateHandler, "Template handler cannot be null");
 
         final String documentName = templateResource.getName();
@@ -118,7 +119,7 @@ public final class HtmlTemplateParser implements ITemplateParser {
         try {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
-            IMarkupHandler handler = new HtmlTemplateAdapterMarkupHandler(templateHandler, context.getTextRepository());
+            IMarkupHandler handler = new HtmlTemplateAdapterMarkupHandler(templateHandler, textRepository);
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to

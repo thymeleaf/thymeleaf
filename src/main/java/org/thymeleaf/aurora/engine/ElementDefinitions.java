@@ -56,9 +56,6 @@ public final class ElementDefinitions {
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ELEMENT_NAMES;
 
-    // Set containing all the standard element names, plus those thymeleaf-specfic ones that are initialized into the repo
-    public static final Set<String> ALL_DEFAULT_CONFIGURED_ELEMENT_NAMES;
-
 
     // Root
     static final ElementDefinition HTML = new ElementDefinition("html", ElementType.NORMAL);
@@ -203,19 +200,10 @@ public final class ElementDefinitions {
     static final ElementDefinition SHADOW = new ElementDefinition("shadow", ElementType.NORMAL);
 
 
-    // Thymeleaf standard dialect elements
-    // We might save some time asking the non-synchronized repository for these, instead of the lock-synchronized
-    // read-write one (at least if we are using the standard dialect default prefix "th").
-    static final ElementDefinition THBLOCK = new ElementDefinition("th:block", ElementType.NORMAL);
-    static final ElementDefinition DATATHBLOCK = new ElementDefinition("th-block", ElementType.NORMAL);
-
-
 
 
 
     static {
-
-        final List<String> allDefaultConfiguredElementNamesAux = new ArrayList<String>(700);
 
         final List<ElementDefinition> htmlElementDefinitionListAux =
                 new ArrayList<ElementDefinition>(Arrays.asList(
@@ -246,7 +234,6 @@ public final class ElementDefinitions {
         }
 
         ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(htmlElementDefinitionNamesAux);
-        allDefaultConfiguredElementNamesAux.addAll(ALL_STANDARD_HTML_ELEMENT_NAMES);
 
 
         /*
@@ -255,22 +242,6 @@ public final class ElementDefinitions {
         for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
             HTML_ELEMENT_REPOSITORY.storeStandardElement(elementDefinition);
         }
-
-        // The Thymeleaf elements are added to the repos, but not to the standard element/names sets, as they aren't
-        // truly standard HTML elements.
-        HTML_ELEMENT_REPOSITORY.storeStandardElement(THBLOCK);
-        HTML_ELEMENT_REPOSITORY.storeStandardElement(DATATHBLOCK);
-        XML_ELEMENT_REPOSITORY.storeStandardElement(THBLOCK);
-        XML_ELEMENT_REPOSITORY.storeStandardElement(DATATHBLOCK);
-        allDefaultConfiguredElementNamesAux.add(THBLOCK.name);
-        allDefaultConfiguredElementNamesAux.add(DATATHBLOCK.name);
-
-
-        // And we also consolidate the set with all the configured element names
-        Collections.sort(allDefaultConfiguredElementNamesAux);
-        ALL_DEFAULT_CONFIGURED_ELEMENT_NAMES =
-                Collections.unmodifiableSet(new LinkedHashSet<String>(allDefaultConfiguredElementNamesAux));
-
 
     }
 

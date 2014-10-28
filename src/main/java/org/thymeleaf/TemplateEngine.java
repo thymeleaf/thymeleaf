@@ -38,15 +38,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.context.TemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.parser.HtmlTemplateParser;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
-import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.text.TextRepositories;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.DialectAwareProcessingContext;
@@ -1125,7 +1121,6 @@ public class TemplateEngine {
 
 
     private static final org.thymeleaf.aurora.parser.ITemplateParser PARSER = new HtmlTemplateParser(40,2048);
-    private static final ITextRepository TEXT_REPOSITORY = TextRepositories.createDefault();
 
 
     public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
@@ -1221,15 +1216,13 @@ public class TemplateEngine {
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
 
-        final ITemplateProcessingContext processingContext = new TemplateProcessingContext(TEXT_REPOSITORY);
-
         final IResource templateResource = new ReaderResource(templateName, reader);
 
         final ITemplateHandler handler = new OutputTemplateHandler(templateName, writer);
 
 
 //        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        PARSER.parse(processingContext, templateResource, /*"th", new String[] {"html//p"}, */ handler);
+        PARSER.parse(templateResource, /*"th", new String[] {"html//p"}, */ this.configuration.getTextRepository(), handler);
 
 
     }

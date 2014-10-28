@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.Configuration;
 
 /**
  *
@@ -29,7 +29,6 @@ import org.thymeleaf.aurora.text.ITextRepository;
  */
 public interface ITemplateProcessingContext {
 
-
-    public ITextRepository getTextRepository();
+    public Configuration getConfiguration();
 
 }

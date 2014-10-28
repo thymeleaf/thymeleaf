@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.Configuration;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -29,20 +30,19 @@ import org.thymeleaf.aurora.text.ITextRepository;
  */
 public class TemplateProcessingContext implements ITemplateProcessingContext {
 
-    private final ITextRepository textRepository;
+    private final Configuration configuration;
 
 
 
-    public TemplateProcessingContext(final ITextRepository textRepository) {
+    public TemplateProcessingContext(final Configuration configuration) {
         super();
-        this.textRepository = textRepository;
+        Validate.notNull(configuration, "Configuration cannot be null");
+        this.configuration = configuration;
     }
 
 
-
-    public ITextRepository getTextRepository() {
-        return this.textRepository;
+    public Configuration getConfiguration() {
+        return configuration;
     }
-
 
 }

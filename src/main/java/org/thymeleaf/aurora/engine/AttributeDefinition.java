@@ -28,17 +28,30 @@ package org.thymeleaf.aurora.engine;
 public final class AttributeDefinition {
 
     final String name;
-
+    final boolean booleanAttribute;
 
 
     AttributeDefinition(final String name) {
+        this(name, false);
+    }
+
+    AttributeDefinition(final String name, final boolean booleanAttribute) {
+
         super();
+
         this.name = name;
+        this.booleanAttribute = booleanAttribute;
+
     }
 
 
     public String getName() {
         return this.name;
+    }
+
+
+    public boolean isBooleanAttribute() {
+        return this.booleanAttribute;
     }
 
 

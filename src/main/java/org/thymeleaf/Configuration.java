@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.aurora.text.TextRepositories;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.doctype.DocTypeIdentifier;
@@ -68,13 +70,6 @@ import org.thymeleaf.util.Validate;
 public final class Configuration {
 
 
-    /**
-     * @deprecated Deprecated in 2.1.0. Create a new instance of the StandardDialect using its constructors instead.
-     *             Will be removed in 3.0
-     */
-    @Deprecated
-    public static final IDialect STANDARD_THYMELEAF_DIALECT = new StandardDialect();
-
     private static final TemplateResolverComparator TEMPLATE_RESOLVER_COMPARATOR = new TemplateResolverComparator();
     private static final MessageResolverComparator MESSAGE_RESOLVER_COMPARATOR = new MessageResolverComparator();
 
@@ -100,6 +95,8 @@ public final class Configuration {
     
     private Set<IMessageResolver> defaultMessageResolvers = null;
     private Set<ITemplateModeHandler> defaultTemplateModeHandlers = null;
+
+    private ITextRepository textRepository = TextRepositories.createDefault();
     
     private volatile boolean initialized;
     
@@ -299,6 +296,22 @@ public final class Configuration {
         // Can be set to null (= no caches)
         checkNotInitialized();
         this.cacheManager = cacheManager;
+    }
+
+
+
+
+
+
+    public ITextRepository getTextRepository() {
+        return this.textRepository;
+    }
+
+
+    public void setTextRepository(final ITextRepository textRepository) {
+        Validate.notNull(textRepository, "Text Repository cannot be set to null");
+        checkNotInitialized();
+        this.textRepository = textRepository;
     }
 
  

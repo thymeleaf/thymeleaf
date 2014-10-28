@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,15 +53,10 @@ public final class AttributeDefinitions {
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ATTRIBUTE_NAMES;
 
-    // Set containing all the standard element names, plus those thymeleaf-specfic ones that are initialized into the repo
-    public static final Set<String> ALL_DEFAULT_CONFIGURED_ATTRIBUTE_NAMES;
-
 
 
 
     static {
-
-        final List<String> allDefaultConfiguredAttributeNamesAux = new ArrayList<String>(700);
 
         final List<String> htmlAttributeNameListAux =
                 new ArrayList<String>(Arrays.asList(new String[]{
@@ -96,15 +92,24 @@ public final class AttributeDefinitions {
 
         Collections.sort(htmlAttributeNameListAux);
 
+        final Set<String> htmlBooleanAttributeNameListAux =
+                new HashSet<String>(Arrays.asList(new String[]{
+                        "async", "autofocus", "autoplay", "checked", "controls",
+                        "declare", "default", "defer", "disabled", "formnovalidate",
+                        "hidden", "ismap", "loop", "multiple", "novalidate",
+                        "nowrap", "open", "pubdate", "readonly", "required",
+                        "reversed", "selected", "scoped", "seamless"
+                }));
+
+
         ALL_STANDARD_HTML_ATTRIBUTE_NAMES =
                 Collections.unmodifiableSet(new LinkedHashSet<String>(htmlAttributeNameListAux));
-        allDefaultConfiguredAttributeNamesAux.addAll(ALL_STANDARD_HTML_ATTRIBUTE_NAMES);
 
 
         final List<AttributeDefinition> htmlAttributeDefinitionListAux =
                 new ArrayList<AttributeDefinition>(ALL_STANDARD_HTML_ATTRIBUTE_NAMES.size() + 1);
         for (final String attributeName : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName);
+            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName, htmlBooleanAttributeNameListAux.contains(attributeName));
             htmlAttributeDefinitionListAux.add(attributeDefinition);
         }
 
@@ -122,57 +127,9 @@ public final class AttributeDefinitions {
 
 
         /*
-         * Add Thymeleaf attributes to the repo.
+         * Finally, the "xmlns" attribute could be common in XML files
          */
-
-        // First, the th: and data-th- equivalents to all standard attribute names added to the HTML repository
-        for (final String attributeName : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-
-            final String attributeNameTh = "th:" + attributeName;
-            final AttributeDefinition attributeDefinitionTh = new AttributeDefinition(attributeNameTh);
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
-            allDefaultConfiguredAttributeNamesAux.add(attributeNameTh);
-
-            final String attributeNameDataTh = "data-th-" + attributeName;
-            final AttributeDefinition attributeDefinitionDataTh = new AttributeDefinition(attributeNameDataTh);
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
-            allDefaultConfiguredAttributeNamesAux.add(attributeNameDataTh);
-
-        }
-
-        // Now add other thymeleaf attribute names, those that are not the th: or data-th- equivalents to standard HTML attributes
-        final String[] customThymeleafAttributeNames = new String[] {
-            "alt-title", "assert", "attr", "attrappend", "attrprepend", "case", "classappend",
-            "each", "fragment" , "if", "inline", "unless", "include", "lang-xmllang",
-            "remove", "replace", "styleappend", "substituteby", "switch", "text", "utext",
-            "with", "xmlbase", "xmllang", "xmlspace"
-        };
-        for (final String attributeName : customThymeleafAttributeNames) {
-            // This time we will add them to the XML repository too, as it makes sense that these attributes are
-            // (probably) the only ones used in XML documents.
-
-            final String attributeNameTh = "th:" + attributeName;
-            final AttributeDefinition attributeDefinitionTh = new AttributeDefinition(attributeNameTh);
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
-            XML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionTh);
-            allDefaultConfiguredAttributeNamesAux.add(attributeNameTh);
-
-            final String attributeNameDataTh = "data-th-" + attributeName;
-            final AttributeDefinition attributeDefinitionDataTh = new AttributeDefinition(attributeNameDataTh);
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
-            XML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinitionDataTh);
-            allDefaultConfiguredAttributeNamesAux.add(attributeNameDataTh);
-
-        }
-
-        // Finally, the "xmlns" attribute could be common in XML files
         XML_ATTRIBUTE_REPOSITORY.storeStandardElement(new AttributeDefinition("xmlns"));
-
-
-        // And we also consolidate the set with all the configured attribute names
-        Collections.sort(allDefaultConfiguredAttributeNamesAux);
-        ALL_DEFAULT_CONFIGURED_ATTRIBUTE_NAMES =
-                Collections.unmodifiableSet(new LinkedHashSet<String>(allDefaultConfiguredAttributeNamesAux));
 
     }
 
@@ -249,8 +206,8 @@ public final class AttributeDefinitions {
         AttributeDefinitionRepository(final boolean caseSensitive, final boolean createStandardRepo) {
             super();
             this.caseSensitive = caseSensitive;
-            this.standardRepository = (createStandardRepo ? new ArrayList<AttributeDefinition>(700) : null);
-            this.repository = new ArrayList<AttributeDefinition>(700);
+            this.standardRepository = (createStandardRepo ? new ArrayList<AttributeDefinition>(150) : null);
+            this.repository = new ArrayList<AttributeDefinition>(500);
         }
 
 
