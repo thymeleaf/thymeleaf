@@ -28,6 +28,7 @@ package org.thymeleaf.aurora.engine;
 public interface ITemplateHandler {
 
 
+    public void setNext(final ITemplateHandler next);
 
 
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col);

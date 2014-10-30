@@ -29,23 +29,81 @@ package org.thymeleaf.aurora.engine;
 public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
+    private ITemplateHandler next = null;
 
 
+    /**
+     * <p>
+     *   Create a new instance of this handler, specifying the handler that will be used as next step in the
+     *   chain.
+     * </p>
+     *
+     * @param next the next step in the chain.
+     */
+    protected AbstractTemplateHandler(final ITemplateHandler next) {
+        super();
+        this.next = next;
+    }
+
+
+    /**
+     * <p>
+     *   Create a new instance of this handler, not specifying the 'next' handler.
+     * </p>
+     */
     protected AbstractTemplateHandler() {
         super();
     }
 
 
+    /**
+     * <p>
+     *   Set the next handler in the chain, so that events can be (optionally) delegated to it.
+     * </p>
+     *
+     * @param next the next handler in the chain.
+     */
+    public final void setNext(final ITemplateHandler next) {
+        this.next = next;
+    }
+
+
+    /**
+     * <p>
+     *   Return the next handler in the chain, so that events can be delegated to it.
+     * </p>
+     *
+     * @return the next handler in the chain.
+     */
+    protected final ITemplateHandler getNext() {
+        return this.next;
+    }
+
+
+
+
 
     public void handleDocumentStart(
             final long startTimeNanos, final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleDocumentStart(startTimeNanos, line, col);
+
     }
 
 
     public void handleDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleDocumentEnd(endTimeNanos, totalTimeNanos, line, col);
+
     }
 
 
@@ -57,7 +115,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final String encoding,
             final String standalone,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleXmlDeclaration(
+                xmlDeclaration, keyword, version, encoding, standalone, line, col);
+
     }
 
 
@@ -71,7 +136,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final String systemId,
             final String internalSubset,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleDocType(
+                docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
+
     }
 
 
@@ -81,7 +153,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+
     }
 
 
@@ -91,7 +169,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+
     }
 
 
@@ -100,7 +184,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final char[] buffer,
             final int offset, final int len,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleText(buffer, offset, len, line, col);
+
     }
 
 
@@ -110,7 +200,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final Attributes attributes,
             final boolean minimized,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleStandaloneElement(elementDefinition, name, attributes, minimized, line, col);
+
     }
 
 
@@ -119,7 +215,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final String name,
             final Attributes attributes,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleOpenElement(elementDefinition, name, attributes, line, col);
+
     }
 
 
@@ -128,7 +230,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final String name,
             final Attributes attributes,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleAutoOpenElement(elementDefinition, name, attributes, line, col);
+
     }
 
 
@@ -136,7 +244,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleCloseElement(elementDefinition, name, line, col);
+
     }
 
 
@@ -144,7 +258,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleAutoCloseElement(elementDefinition, name, line, col);
+
     }
 
 
@@ -152,7 +272,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleUnmatchedCloseElement(elementDefinition, name, line, col);
+
     }
 
 
@@ -162,7 +288,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             final String target,
             final String content,
             final int line, final int col) {
-        // Nothing to be done here, meant to be overridden if required
+
+        if (this.next == null) {
+            return;
+        }
+
+        this.next.handleProcessingInstruction(
+                processingInstruction, target, content, line, col);
+
     }
 
 

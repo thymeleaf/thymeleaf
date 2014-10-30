@@ -37,7 +37,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     private final Writer writer;
 
 
-    // TODO writing methods for elements and attributes here should directly delegate on these structures' 'writeTo' methods.
 
     /**
      * <p>
@@ -55,8 +54,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         this.templateName = templateName;
     }
 
-    
-    
+
 
 
 
@@ -68,6 +66,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
+
+        // Just in case someone set us a 'next'
+        super.handleText(buffer, offset, len, line, col);
 
     }
 
@@ -86,6 +87,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
+        // Just in case someone set us a 'next'
+        super.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+
     }
 
     
@@ -101,6 +105,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
+
+        // Just in case someone set us a 'next'
+        super.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
     }
 
@@ -127,6 +134,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
+        // Just in case someone set us a 'next'
+        super.handleStandaloneElement(elementDefinition, name, attributes, minimized, line, col);
+
     }
 
 
@@ -146,6 +156,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
+        // Just in case someone set us a 'next'
+        super.handleOpenElement(elementDefinition, name, attributes, line, col);
+
     }
 
 
@@ -155,7 +168,12 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String name,
             final Attributes attributes,
             final int line, final int col) {
-        // Nothing to be done... balanced elements were not present at the original template!
+
+        // Nothing to be written... balanced elements were not present at the original template!
+
+        // Just in case someone set us a 'next'
+        super.handleAutoOpenElement(elementDefinition, name, attributes, line, col);
+
     }
 
 
@@ -173,6 +191,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
+        // Just in case someone set us a 'next'
+        super.handleCloseElement(elementDefinition, name, line, col);
+
     }
 
 
@@ -181,7 +202,12 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        // Nothing to be done... balanced elements were not present at the original template!
+
+        // Nothing to be written... balanced elements were not present at the original template!
+
+        // Just in case someone set us a 'next'
+        super.handleAutoCloseElement(elementDefinition, name, line, col);
+
     }
 
 
@@ -190,8 +216,19 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final ElementDefinition elementDefinition,
             final String name,
             final int line, final int col) {
-        // We don't mind it being unmatched, just do the same as with matched close elements
-        handleCloseElement(elementDefinition, name, line, col);
+
+        // We will write exactly the same as for non-unmatched close elements, because that does not matter from the markup point
+        try {
+            this.writer.write("</");
+            this.writer.write(name);
+            this.writer.write('>');
+        } catch (final Exception e) {
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+        }
+
+        // Just in case someone set us a 'next'
+        super.handleUnmatchedCloseElement(elementDefinition, name, line, col);
+
     }
 
 
@@ -214,6 +251,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
+        // Just in case someone set us a 'next'
+        super.handleDocType(docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
+
     }
 
     
@@ -234,6 +274,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
 
+        // Just in case someone set us a 'next'
+        super.handleXmlDeclaration(xmlDeclaration, keyword, version, encoding, standalone, line, col);
+
     }
 
 
@@ -253,6 +296,9 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         } catch (final Exception e) {
             throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
         }
+
+        // Just in case someone set us a 'next'
+        super.handleProcessingInstruction(processingInstruction, target, content, line, col);
 
     }
 
