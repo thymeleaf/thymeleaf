@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.processor;
 
+import org.thymeleaf.aurora.processor.element.IElementProcessorMatch;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez

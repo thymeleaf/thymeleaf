@@ -17,7 +17,11 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor;
+package org.thymeleaf.aurora.processor.element;
+
+import org.thymeleaf.aurora.engine.Attributes;
+import org.thymeleaf.aurora.engine.ElementDefinition;
+import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
@@ -25,6 +29,17 @@ package org.thymeleaf.aurora.processor;
  * @since 3.0.0
  * 
  */
-public interface ICDATAProcessor extends IProcessor {
+public interface IElementProcessor extends IProcessor {
+
+    public IElementProcessorMatch getMatchers();
+
+    IElementProcessorResult processOpen(
+            final ElementDefinition elementDefinition, final String name, final Attributes attributes, final int line, final int col);
+
+    IElementProcessorResult processStandalone(
+            final ElementDefinition elementDefinition, final String name, final Attributes attributes, final boolean minimized, final int line, final int col);
+
+    IElementProcessorResult processClose(
+            final ElementDefinition elementDefinition, final String name, final int line, final int col);
 
 }

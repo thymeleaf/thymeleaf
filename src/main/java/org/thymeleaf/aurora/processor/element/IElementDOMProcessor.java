@@ -17,7 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor;
+package org.thymeleaf.aurora.processor.element;
+
+import org.thymeleaf.aurora.engine.IDOM;
+import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
@@ -25,6 +28,11 @@ package org.thymeleaf.aurora.processor;
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
+public interface IElementDOMProcessor extends IProcessor {
+
+    public IElementProcessorMatch getMatchers();
+
+    void processBefore(final IDOM dom);
+    void processAfter(final IDOM dom);
 
 }

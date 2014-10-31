@@ -17,9 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor;
-
-import org.thymeleaf.aurora.engine.IDOM;
+package org.thymeleaf.aurora.processor.element.attribute;
 
 /**
  *
@@ -27,12 +25,7 @@ import org.thymeleaf.aurora.engine.IDOM;
  * @since 3.0.0
  * 
  */
-public interface IElementDOMProcessor extends IElementProcessor {
+public interface IAttributeProcessorResult {
 
-    IElementEventProcessorResult processOpen(final IDOM dom);
-
-    IElementEventProcessorResult processStandalone(final IDOM dom);
-
-    IElementEventProcessorResult processClose(final IDOM dom);
 
 }

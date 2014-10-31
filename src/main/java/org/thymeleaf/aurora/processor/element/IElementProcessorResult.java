@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.processor.element;
 
 /**
  *
@@ -25,7 +25,7 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IDOM {
+public interface IElementProcessorResult {
 
 
 }
