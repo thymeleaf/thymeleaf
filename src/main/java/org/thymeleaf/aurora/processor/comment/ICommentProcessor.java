@@ -17,7 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.attribute;
+package org.thymeleaf.aurora.processor.comment;
+
+import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
@@ -25,7 +27,15 @@ package org.thymeleaf.aurora.processor.attribute;
  * @since 3.0.0
  * 
  */
-public interface IAttributeProcessorResult {
+public interface ICommentProcessor extends IProcessor {
 
+    public boolean matches(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col);
+
+    // Null result = no changes
+    public CommentProcessorResult process(final String content, final int line, final int col);
 
 }

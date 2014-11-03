@@ -17,13 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.attribute;
-
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.AttributeName;
-import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.ElementName;
+package org.thymeleaf.aurora.processor.text;
 
 /**
  *
@@ -31,14 +25,31 @@ import org.thymeleaf.aurora.processor.ElementName;
  * @since 3.0.0
  * 
  */
-public interface IAttributeProcessor extends IProcessor {
+public final class TextBufferProcessorResult {
 
-    public ElementName getElementName();
-    public AttributeName getAttributeNames();
-    public String getAttributeValue();
+    private final char[] buffer;
+    private final int offset;
+    private final int len;
 
-    public IAttributeProcessorResult process(
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
-            final String attributeName, final String attributeValue, final int line, final int col);
+
+    public TextBufferProcessorResult(final char[] buffer, final int offset, final int len) {
+        super();
+        this.buffer = buffer;
+        this.offset = offset;
+        this.len = len;
+    }
+
+
+    public char[] getBuffer() {
+        return this.buffer;
+    }
+
+    public int getLen() {
+        return this.len;
+    }
+
+    public int getOffset() {
+        return this.offset;
+    }
 
 }

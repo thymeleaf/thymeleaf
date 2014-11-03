@@ -17,7 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.processor.cdatasection;
+
+import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
@@ -25,7 +27,15 @@ package org.thymeleaf.aurora.processor.element;
  * @since 3.0.0
  * 
  */
-public interface IElementProcessorResult {
+public interface ICDATASectionProcessor extends IProcessor {
 
+    public boolean matches(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col);
+
+    // Null result = no changes
+    public CDATASectionProcessorResult process(final String content, final int line, final int col);
 
 }

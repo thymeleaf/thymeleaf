@@ -19,24 +19,13 @@
  */
 package org.thymeleaf.aurora.processor.element;
 
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.ElementName;
-import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcessorResult;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
+public final class ElementProcessorResult {
 
-    public ElementName getElementName();
-
-    public ElementAttributeProcessorResult process(
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
-            final int line, final int col);
 
 }

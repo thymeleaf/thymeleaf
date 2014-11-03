@@ -17,13 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
-
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.ElementName;
-import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcessorResult;
+package org.thymeleaf.aurora.processor.comment;
 
 /**
  *
@@ -31,12 +25,19 @@ import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcesso
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
+public final class CommentProcessorResult {
 
-    public ElementName getElementName();
+    private final String content;
 
-    public ElementAttributeProcessorResult process(
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
-            final int line, final int col);
+
+    public CommentProcessorResult(final String content) {
+        super();
+        this.content = content;
+    }
+
+
+    public String getContent() {
+        return this.content;
+    }
 
 }

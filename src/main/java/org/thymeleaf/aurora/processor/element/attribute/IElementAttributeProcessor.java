@@ -17,13 +17,13 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.processor.element.attribute;
 
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.ElementName;
+import org.thymeleaf.aurora.processor.AttributeName;
 import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcessorResult;
+import org.thymeleaf.aurora.processor.ElementName;
 
 /**
  *
@@ -31,12 +31,14 @@ import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcesso
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
+public interface IElementAttributeProcessor extends IProcessor {
 
     public ElementName getElementName();
+    public AttributeName getAttributeNames();
+    public String getAttributeValue();
 
     public ElementAttributeProcessorResult process(
             final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
-            final int line, final int col);
+            final String attributeName, final String attributeValue, final int line, final int col);
 
 }

@@ -17,13 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.processor.xmldeclaration;
 
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.ElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcessorResult;
 
 /**
  *
@@ -31,12 +27,16 @@ import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcesso
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
+public interface IXmlDeclarationProcessor extends IProcessor {
 
-    public ElementName getElementName();
 
-    public ElementAttributeProcessorResult process(
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
+    // Null result = no changes
+    public XmlDeclarationProcessorResult process(
+            final String xmlDeclaration,
+            final String keyword,
+            final String version,
+            final String encoding,
+            final String standalone,
             final int line, final int col);
 
 }

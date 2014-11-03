@@ -17,15 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.dom;
-
-import org.thymeleaf.aurora.dom.Node;
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.AttributeName;
-import org.thymeleaf.aurora.processor.ElementName;
-import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.attribute.IAttributeProcessorResult;
+package org.thymeleaf.aurora.processor.xmldeclaration;
 
 /**
  *
@@ -33,18 +25,41 @@ import org.thymeleaf.aurora.processor.attribute.IAttributeProcessorResult;
  * @since 3.0.0
  * 
  */
-public interface IElementDOMProcessor extends IProcessor {
+public final class XmlDeclarationProcessorResult {
 
-    public ElementName getElementName();
-    public AttributeName getAttributeName();
-    public String getAttributeValue();
-
-
-    public IAttributeProcessorResult matches(
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
-            final int line, final int col);
+    private final String keyword;
+    private final String version;
+    private final String encoding;
+    private final String standalone;
 
 
-    public void process(final Node dom);
+    public XmlDeclarationProcessorResult(
+            final String keyword,
+            final String version,
+            final String encoding,
+            final String standalone) {
+        super();
+        this.keyword = keyword;
+        this.version = version;
+        this.encoding = encoding;
+        this.standalone = standalone;
+    }
+
+
+    public String getStandalone() {
+        return this.standalone;
+    }
+
+    public String getEncoding() {
+        return this.encoding;
+    }
+
+    public String getKeyword() {
+        return this.keyword;
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
 
 }
