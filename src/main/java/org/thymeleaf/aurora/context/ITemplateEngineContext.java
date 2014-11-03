@@ -19,7 +19,12 @@
  */
 package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.util.Validate;
+import java.util.List;
+
+import org.thymeleaf.aurora.dialect.IDialect;
+import org.thymeleaf.aurora.engine.AttributeDefinitions;
+import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.text.ITextRepository;
 
 /**
  *
@@ -27,21 +32,14 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public class TemplateProcessingContext implements ITemplateProcessingContext {
+public interface ITemplateEngineContext {
 
-    private final ITemplateEngineContext templateEngineContext;
+    public List<IDialect> getDialects();
 
+    public ElementDefinitions getElementDefinitins();
 
+    public AttributeDefinitions getAttributeDefinitions();
 
-    public TemplateProcessingContext(final ITemplateEngineContext templateEngineContext) {
-        super();
-        Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
-        this.templateEngineContext = templateEngineContext;
-    }
-
-
-    public ITemplateEngineContext getTemplateEngineContext() {
-        return this.templateEngineContext;
-    }
+    public ITextRepository getTextRepository();
 
 }

@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.Configuration;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -29,6 +27,6 @@ import org.thymeleaf.Configuration;
  */
 public interface ITemplateProcessingContext {
 
-    public Configuration getConfiguration();
+    public ITemplateEngineContext getTemplateEngineContext();
 
 }

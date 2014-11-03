@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.processor.attribute;
 
 /**
  *
@@ -25,12 +25,7 @@ package org.thymeleaf.aurora.processor.element;
  * @since 3.0.0
  * 
  */
-public interface IElementProcessorMatch {
+public interface IAttributeProcessorResult {
 
-    // This work as an "AND". This match will be successful if the element BOTH has the specified name AND the specified attribute
-    // Both element and attribute can be null, meaning "any". But note both cannot be null at the same time.
-
-    public String getElementName();
-    public String getAttributeName();
 
 }

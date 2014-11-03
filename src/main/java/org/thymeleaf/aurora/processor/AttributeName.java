@@ -17,9 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
-
-import org.thymeleaf.util.Validate;
+package org.thymeleaf.aurora.processor;
 
 /**
  *
@@ -27,21 +25,25 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public class TemplateProcessingContext implements ITemplateProcessingContext {
+public class AttributeName {
 
-    private final ITemplateEngineContext templateEngineContext;
+    private final boolean prefixed;
+    private final String name;
 
 
-
-    public TemplateProcessingContext(final ITemplateEngineContext templateEngineContext) {
+    public AttributeName(final boolean prefixed, final String name) {
         super();
-        Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
-        this.templateEngineContext = templateEngineContext;
+        this.prefixed = prefixed;
+        this.name = name;
     }
 
 
-    public ITemplateEngineContext getTemplateEngineContext() {
-        return this.templateEngineContext;
+    public boolean isPrefixed() {
+        return this.prefixed;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
 }

@@ -17,31 +17,29 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
+package org.thymeleaf.aurora.dialect;
 
-import org.thymeleaf.util.Validate;
+import java.util.List;
+import java.util.Map;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public class TemplateProcessingContext implements ITemplateProcessingContext {
+public interface IExtendedDialect extends IDialect {
 
-    private final ITemplateEngineContext templateEngineContext;
+    public Map<String,Object> getExecutionAttributes();
 
+    public Map<String,Object> getExpressionObjects(final ITemplateProcessingContext processingContext);
 
+    public List<Class<? extends ITemplateHandler>> getPreProcessors();
 
-    public TemplateProcessingContext(final ITemplateEngineContext templateEngineContext) {
-        super();
-        Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
-        this.templateEngineContext = templateEngineContext;
-    }
-
-
-    public ITemplateEngineContext getTemplateEngineContext() {
-        return this.templateEngineContext;
-    }
+    public List<Class<? extends ITemplateHandler>> getPostProcessors();
 
 }

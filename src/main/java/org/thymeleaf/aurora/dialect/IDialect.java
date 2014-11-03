@@ -17,22 +17,23 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.dialect;
 
-import org.thymeleaf.aurora.engine.IDOM;
+import java.util.Set;
+
 import org.thymeleaf.aurora.processor.IProcessor;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface IElementDOMProcessor extends IProcessor {
+public interface IDialect {
 
-    public IElementProcessorMatch getMatchers();
+    public String getPrefix();
 
-    void processBefore(final IDOM dom);
-    void processAfter(final IDOM dom);
+    public Set<IProcessor> getProcessors();
 
 }

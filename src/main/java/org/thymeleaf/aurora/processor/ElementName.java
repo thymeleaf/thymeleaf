@@ -17,11 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element.attribute;
-
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.IProcessor;
+package org.thymeleaf.aurora.processor;
 
 /**
  *
@@ -29,17 +25,25 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IAttributeProcessor extends IProcessor {
+public class ElementName {
 
-    public String getAttributeName();
+    private final boolean prefixed;
+    private final String name;
 
-    IAttributeProcessorResult processOpen(
-            final ElementDefinition elementDefinition, final String name, final Attributes attributes, final int line, final int col);
 
-    IAttributeProcessorResult processStandalone(
-            final ElementDefinition elementDefinition, final String name, final Attributes attributes, final boolean minimized, final int line, final int col);
+    public ElementName(final boolean prefixed, final String name) {
+        super();
+        this.prefixed = prefixed;
+        this.name = name;
+    }
 
-    IAttributeProcessorResult processClose(
-            final ElementDefinition elementDefinition, final String name, final int line, final int col);
+
+    public boolean isPrefixed() {
+        return this.prefixed;
+    }
+
+    public String getName() {
+        return this.name;
+    }
 
 }

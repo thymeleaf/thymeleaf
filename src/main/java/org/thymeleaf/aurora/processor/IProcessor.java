@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.processor;
 
-import org.thymeleaf.aurora.processor.element.IElementProcessorMatch;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -29,6 +27,6 @@ import org.thymeleaf.aurora.processor.element.IElementProcessorMatch;
  */
 public interface IProcessor {
 
-    int getPrecedence();
+    public int getPrecedence();
 
 }

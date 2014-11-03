@@ -17,9 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
+package org.thymeleaf.aurora.processor.dom;
 
-import org.thymeleaf.util.Validate;
+import org.thymeleaf.aurora.dom.Node;
+import org.thymeleaf.aurora.engine.Attributes;
+import org.thymeleaf.aurora.engine.ElementDefinition;
+import org.thymeleaf.aurora.processor.AttributeName;
+import org.thymeleaf.aurora.processor.ElementName;
+import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.attribute.IAttributeProcessorResult;
 
 /**
  *
@@ -27,21 +33,18 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public class TemplateProcessingContext implements ITemplateProcessingContext {
+public interface IElementDOMProcessor extends IProcessor {
 
-    private final ITemplateEngineContext templateEngineContext;
-
-
-
-    public TemplateProcessingContext(final ITemplateEngineContext templateEngineContext) {
-        super();
-        Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
-        this.templateEngineContext = templateEngineContext;
-    }
+    public ElementName getElementName();
+    public AttributeName getAttributeName();
+    public String getAttributeValue();
 
 
-    public ITemplateEngineContext getTemplateEngineContext() {
-        return this.templateEngineContext;
-    }
+    public IAttributeProcessorResult matches(
+            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
+            final int line, final int col);
+
+
+    public void process(final Node dom);
 
 }

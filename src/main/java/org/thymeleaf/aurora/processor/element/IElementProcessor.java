@@ -21,7 +21,9 @@ package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
+import org.thymeleaf.aurora.processor.ElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.attribute.IAttributeProcessorResult;
 
 /**
  *
@@ -31,15 +33,10 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface IElementProcessor extends IProcessor {
 
-    public IElementProcessorMatch getMatchers();
+    public ElementName getElementName();
 
-    IElementProcessorResult processOpen(
-            final ElementDefinition elementDefinition, final String name, final Attributes attributes, final int line, final int col);
-
-    IElementProcessorResult processStandalone(
-            final ElementDefinition elementDefinition, final String name, final Attributes attributes, final boolean minimized, final int line, final int col);
-
-    IElementProcessorResult processClose(
-            final ElementDefinition elementDefinition, final String name, final int line, final int col);
+    public IAttributeProcessorResult process(
+            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
+            final int line, final int col);
 
 }
