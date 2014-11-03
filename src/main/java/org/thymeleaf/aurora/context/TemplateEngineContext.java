@@ -19,12 +19,14 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.aurora.text.TextRepositories;
 
 /**
  *
@@ -32,21 +34,45 @@ import org.thymeleaf.aurora.text.ITextRepository;
  * @since 3.0.0
  * 
  */
-public interface ITemplateEngineContext {
+public class TemplateEngineContext implements ITemplateEngineContext {
 
-    // Cannot be null
-    public List<IDialect> getDialects();
+    private final ITextRepository textRepository;
 
-    // Might be null if no standard dialect has been registered
-    public String getStandardDialectPrefix();
+    private final ElementDefinitions elementDefinitions;
+    private final AttributeDefinitions attributeDefinitions;
 
-    // Cannot be null
-    public ElementDefinitions getElementDefinitions();
 
-    // Cannot be null
-    public AttributeDefinitions getAttributeDefinitions();
+    public TemplateEngineContext() {
 
-    // Can be null (a no-cache implementation will be used)
-    public ITextRepository getTextRepository();
+        super();
+
+        this.textRepository = TextRepositories.createLimitedSizeCacheRepository();
+
+        this.elementDefinitions = new ElementDefinitions();
+        this.attributeDefinitions = new AttributeDefinitions();
+
+    }
+
+
+
+    public List<IDialect> getDialects() {
+        return Collections.emptyList();
+    }
+
+    public String getStandardDialectPrefix() {
+        return "th";
+    }
+
+    public ElementDefinitions getElementDefinitions() {
+        return this.elementDefinitions;
+    }
+
+    public AttributeDefinitions getAttributeDefinitions() {
+        return this.attributeDefinitions;
+    }
+
+    public ITextRepository getTextRepository() {
+        return this.textRepository;
+    }
 
 }

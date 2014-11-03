@@ -17,29 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.parser;
+package org.thymeleaf.aurora.dialect;
 
-import org.thymeleaf.aurora.context.ITemplateEngineContext;
-import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.resource.IResource;
+import java.util.Map;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface ITemplateParser {
+public interface IExxpresionObjectAwareDialect extends IDialect {
 
-
-    public void parse(final ITemplateEngineContext templateEngineContext,
-                      final IResource templateResource,
-                      final ITemplateHandler handler);
-
-    public void parse(final ITemplateEngineContext templateEngineContext,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public Map<String,Object> getExpressionObjects(final ITemplateProcessingContext processingContext);
 
 }

@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.text.StandardTextRepository;
+import org.thymeleaf.aurora.text.LimitedSizeCacheTextRepository;
 import org.thymeleaf.dom.CDATASection;
 import org.thymeleaf.dom.Comment;
 import org.thymeleaf.dom.DocType;
@@ -163,7 +163,7 @@ public class StandardTemplateParser implements ITemplateParser {
         unremovableTexts.add("\n\t\t\t\t");
 
         // Size = 10MBytes (1 char = 2 bytes)
-        TEXT_REPOSITORY = new StandardTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
+        TEXT_REPOSITORY = new LimitedSizeCacheTextRepository(5242880, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
         PARSER = new MarkupParser(HTML_PARSING_CONFIGURATION);
     }

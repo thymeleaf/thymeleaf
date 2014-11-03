@@ -33,12 +33,12 @@ import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.context.ITemplateEngineContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.resource.CharArrayResource;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.aurora.resource.StringResource;
-import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.Validate;
 
@@ -95,37 +95,46 @@ public final class HtmlTemplateParser implements ITemplateParser {
 
 
     public void parse(
+            final ITemplateEngineContext templateEngineContext,
             final IResource templateResource,
-            final ITextRepository textRepository,
             final ITemplateHandler templateHandler) {
-        parse(templateResource, null, null, textRepository, templateHandler);
+        parse(templateEngineContext, templateResource, null, templateHandler);
     }
 
 
 
     public void parse(
+            final ITemplateEngineContext templateEngineContext,
             final IResource templateResource,
-            final String dialectPrefix, String[] selectors,
-            final ITextRepository textRepository,
+            final String[] selectors,
             final ITemplateHandler templateHandler) {
 
-        Validate.notNull(templateResource, "Template resource cannot be null");
-        Validate.notNull(textRepository, "Text repository cannot be null");
-        Validate.notNull(templateHandler, "Template handler cannot be null");
+        Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
+        Validate.notNull(templateResource, "Template Resource cannot be null");
+        Validate.notNull(templateHandler, "Template Handler cannot be null");
 
         final String documentName = templateResource.getName();
 
         try {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
-            IMarkupHandler handler = new HtmlTemplateAdapterMarkupHandler(templateHandler, textRepository);
+            IMarkupHandler handler =
+                    new HtmlTemplateAdapterMarkupHandler(
+                            templateHandler,
+                            templateEngineContext.getTextRepository(),
+                            templateEngineContext.getElementDefinitions(),
+                            templateEngineContext.getAttributeDefinitions());
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to
             // include in selectors code inside prototype-only comments.
             if (selectors != null) {
+
+                final String standardDialectPrefix = templateEngineContext.getStandardDialectPrefix();
+
                 final TemplateFragmentMarkupReferenceResolver referenceResolver =
-                        TemplateFragmentMarkupReferenceResolver.forPrefix(dialectPrefix);
+                        (standardDialectPrefix != null ?
+                            TemplateFragmentMarkupReferenceResolver.forPrefix(standardDialectPrefix) : null);
                 handler = new BlockSelectorMarkupHandler(handler, selectors, referenceResolver);
             }
 

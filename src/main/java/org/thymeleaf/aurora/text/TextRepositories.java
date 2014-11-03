@@ -35,10 +35,26 @@ import org.thymeleaf.aurora.engine.ElementDefinitions;
 public final class TextRepositories {
 
     // Size = 10Mbytes
-    public static final int DEFAULT_TEXT_REPOSITORY_SIZE_BYTES = 10485760;
+    public static final int DEFAULT_TEXT_REPOSITORY_CACHE_SIZE_BYTES = 10485760;
+
+    private static final NoCacheTextRepository NO_CACHE_INSTANCE = new NoCacheTextRepository();
 
 
-    public static ITextRepository createDefault() {
+    public static ITextRepository createNoCacheRepository() {
+        return NO_CACHE_INSTANCE;
+    }
+
+
+    public static ITextRepository createLimitedSizeCacheRepository() {
+        return createLimitedSizeCacheRepository(DEFAULT_TEXT_REPOSITORY_CACHE_SIZE_BYTES);
+    }
+
+
+    public static ITextRepository createLimitedSizeCacheRepository(final int cacheSizeBytes) {
+
+        if (cacheSizeBytes <= 0) {
+            throw new IllegalArgumentException("Cache size in bytes must be greater than zero");
+        }
 
         final List<String> unremovableTexts  = new ArrayList<String>();
 
@@ -62,7 +78,7 @@ public final class TextRepositories {
 
         // (1 char = 2 bytes), thus we divide by 2 the default size in bytes
         final ITextRepository textRepository =
-                new StandardTextRepository(DEFAULT_TEXT_REPOSITORY_SIZE_BYTES / 2, unremovableTexts.toArray(new String[unremovableTexts.size()]));
+                new LimitedSizeCacheTextRepository(cacheSizeBytes / 2, unremovableTexts.toArray(new String[unremovableTexts.size()]));
 
         return textRepository;
 

@@ -42,15 +42,6 @@ public final class ElementDefinitions {
 
 
 
-    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
-    // Besides, we don't want HTML-only element types like "VOID" or "RAW_TEXT" be applied to XML elements even if they have the same name.
-    // Also, there is no need to add any 'standard elements' to XML because other than the synthetic block, there are none, and avoiding its
-    // creation we save a repository query each time an element is asked for.
-    private static final ElementDefinitionRepository HTML_ELEMENT_REPOSITORY = new ElementDefinitionRepository(false, true);
-    private static final ElementDefinitionRepository XML_ELEMENT_REPOSITORY = new ElementDefinitionRepository(true, false);
-
-
-
     // Set containing all the standard elements, for possible external reference
     public static final Set<ElementDefinition> ALL_STANDARD_HTML_ELEMENTS;
     // Set containing all the standard element names, for possible external reference
@@ -202,6 +193,15 @@ public final class ElementDefinitions {
 
 
 
+    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
+    // Besides, we don't want HTML-only element types like "VOID" or "RAW_TEXT" be applied to XML elements even if they have the same name.
+    // Also, there is no need to add any 'standard elements' to XML because other than the synthetic block, there are none, and avoiding its
+    // creation we save a repository query each time an element is asked for.
+    private final ElementDefinitionRepository htmlElementRepository = new ElementDefinitionRepository(false, true);
+    private final ElementDefinitionRepository xmlElementRepository = new ElementDefinitionRepository(true, false);
+
+
+
 
     static {
 
@@ -236,11 +236,22 @@ public final class ElementDefinitions {
         ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(htmlElementDefinitionNamesAux);
 
 
+    }
+
+
+
+
+
+
+    public ElementDefinitions() {
+
+        super();
+
         /*
          * Register the standard elements at the element repository, in order to initialize it
          */
         for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
-            HTML_ELEMENT_REPOSITORY.storeStandardElement(elementDefinition);
+            this.htmlElementRepository.storeStandardElement(elementDefinition);
         }
 
     }
@@ -248,52 +259,45 @@ public final class ElementDefinitions {
 
 
 
-    public static ElementDefinition forHtmlName(final String elementName) {
+    public ElementDefinition forHtmlName(final String elementName) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        return HTML_ELEMENT_REPOSITORY.getElement(elementName);
+        return this.htmlElementRepository.getElement(elementName);
     }
 
 
-    public static ElementDefinition forHtmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
-        if (elementName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-        if (elementNameOffset < 0 || elementNameLen < 0) {
-            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
-        }
-        return HTML_ELEMENT_REPOSITORY.getElement(elementName, elementNameOffset, elementNameLen);
-    }
-
-
-
-    public static ElementDefinition forXmlName(final String elementName) {
-        if (elementName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-        return XML_ELEMENT_REPOSITORY.getElement(elementName);
-    }
-
-
-    public static ElementDefinition forXmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+    public ElementDefinition forHtmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
         }
-        return XML_ELEMENT_REPOSITORY.getElement(elementName, elementNameOffset, elementNameLen);
+        return this.htmlElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
     }
 
 
 
-
-
-
-    private ElementDefinitions() {
-        super();
+    public ElementDefinition forXmlName(final String elementName) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        return this.xmlElementRepository.getElement(elementName);
     }
+
+
+    public ElementDefinition forXmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return this.xmlElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
+    }
+
+
 
 
 

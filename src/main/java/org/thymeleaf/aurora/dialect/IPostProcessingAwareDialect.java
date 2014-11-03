@@ -20,9 +20,7 @@
 package org.thymeleaf.aurora.dialect;
 
 import java.util.List;
-import java.util.Map;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 
 
@@ -32,13 +30,7 @@ import org.thymeleaf.aurora.engine.ITemplateHandler;
  * @since 3.0.0
  *
  */
-public interface IExtendedDialect extends IDialect {
-
-    public Map<String,Object> getExecutionAttributes();
-
-    public Map<String,Object> getExpressionObjects(final ITemplateProcessingContext processingContext);
-
-    public List<Class<? extends ITemplateHandler>> getPreProcessors();
+public interface IPostProcessingAwareDialect extends IDialect {
 
     public List<Class<? extends ITemplateHandler>> getPostProcessors();
 

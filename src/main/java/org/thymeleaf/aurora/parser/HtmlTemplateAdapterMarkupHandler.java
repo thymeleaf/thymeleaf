@@ -27,6 +27,7 @@ import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.aurora.text.TextRepositories;
 
 /**
  *
@@ -40,6 +41,8 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
+    private final ElementDefinitions elementDefinitions;
+    private final AttributeDefinitions attributeDefinitions;
 
     private ElementDefinition elementDefinition = null;
     private String elementName = null;
@@ -49,10 +52,31 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
     private int elementCol = -1;
 
     
-    HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler, final ITextRepository textRepository) {
+    HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler, 
+                                     final ITextRepository textRepository,
+                                     final ElementDefinitions elementDefinitions,
+                                     final AttributeDefinitions attributeDefinitions) {
         super();
+
+        if (templateHandler == null) {
+            throw new IllegalArgumentException("Template handler cannot be null");
+        }
+        if (elementDefinitions == null) {
+            throw new IllegalArgumentException("Element Definitions repository cannot be null");
+        }
+        if (attributeDefinitions == null) {
+            throw new IllegalArgumentException("Attribute Definitions repository cannot be null");
+        }
+
         this.templateHandler = templateHandler;
-        this.textRepository = textRepository;
+
+        // We will default the text repository to a no-cache implementation
+        this.textRepository = (textRepository != null? textRepository : TextRepositories.createNoCacheRepository());
+
+        // These cannot be null
+        this.elementDefinitions = elementDefinitions;
+        this.attributeDefinitions = attributeDefinitions;
+
     }
 
 
@@ -186,7 +210,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.reset();
         this.elementMinimized = minimized;
@@ -227,7 +251,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.reset();
         this.elementMinimized = false; // does not apply
@@ -268,7 +292,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.reset();
         this.elementMinimized = false; // does not apply
@@ -309,7 +333,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.reset(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -350,7 +374,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.reset(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -391,7 +415,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = ElementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.reset(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -438,7 +462,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int valueLine, final int valueCol)
             throws ParseException {
 
-        final AttributeDefinition attributeDefinition = AttributeDefinitions.forHtmlName(buffer, nameOffset, nameLen);
+        final AttributeDefinition attributeDefinition = this.attributeDefinitions.forHtmlName(buffer, nameOffset, nameLen);
 
         final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
 
@@ -501,6 +525,6 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     }
     
-    
+
 
 }

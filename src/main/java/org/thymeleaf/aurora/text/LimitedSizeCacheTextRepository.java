@@ -53,7 +53,7 @@ import org.thymeleaf.aurora.util.TextUtil;
  * @since 3.0.0
  *
  */
-public final class StandardTextRepository implements ITextRepository {
+public final class LimitedSizeCacheTextRepository implements ITextRepository {
 
     /*
      * This class's LRU will be based on storage order, not the real amount of times a text is actually used.
@@ -85,7 +85,7 @@ public final class StandardTextRepository implements ITextRepository {
 
 
 
-    public StandardTextRepository(final int maxSizeInChars, final String[] unremovableTexts) {
+    public LimitedSizeCacheTextRepository(final int maxSizeInChars, final String[] unremovableTexts) {
 
         super();
 

@@ -19,13 +19,6 @@
  */
 package org.thymeleaf.aurora.dom;
 
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.AttributeName;
-import org.thymeleaf.aurora.processor.ElementName;
-import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.attribute.IAttributeProcessorResult;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez

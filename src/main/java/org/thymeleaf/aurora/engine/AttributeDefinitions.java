@@ -42,17 +42,17 @@ import org.attoparser.util.TextUtil;
 public final class AttributeDefinitions {
 
 
-    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
-    private static final AttributeDefinitionRepository HTML_ATTRIBUTE_REPOSITORY = new AttributeDefinitionRepository(false, true);
-    private static final AttributeDefinitionRepository XML_ATTRIBUTE_REPOSITORY = new AttributeDefinitionRepository(true, true);
-
-
 
     // Set containing all the standard elements, for possible external reference
     public static final Set<AttributeDefinition> ALL_STANDARD_HTML_ATTRIBUTES;
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ATTRIBUTE_NAMES;
 
+
+
+    // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
+    private final AttributeDefinitionRepository htmlAttributeRepository = new AttributeDefinitionRepository(false, true);
+    private final AttributeDefinitionRepository xmlAttributeRepository = new AttributeDefinitionRepository(true, true);
 
 
 
@@ -118,70 +118,75 @@ public final class AttributeDefinitions {
 
 
 
+    }
+
+
+
+
+
+
+    public AttributeDefinitions() {
+
+        super();
+
         /*
          * Register the standard elements at the element repository, in order to initialize it
          */
         for (final AttributeDefinition attributeDefinition : ALL_STANDARD_HTML_ATTRIBUTES) {
-            HTML_ATTRIBUTE_REPOSITORY.storeStandardElement(attributeDefinition);
+            this.htmlAttributeRepository.storeStandardElement(attributeDefinition);
         }
 
 
         /*
          * Finally, the "xmlns" attribute could be common in XML files
          */
-        XML_ATTRIBUTE_REPOSITORY.storeStandardElement(new AttributeDefinition("xmlns"));
+        this.xmlAttributeRepository.storeStandardElement(new AttributeDefinition("xmlns"));
 
     }
 
 
 
 
-    public static AttributeDefinition forHtmlName(final String attributeName) {
+
+    public AttributeDefinition forHtmlName(final String attributeName) {
         if (attributeName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        return HTML_ATTRIBUTE_REPOSITORY.getAttribute(attributeName);
+        return this.htmlAttributeRepository.getAttribute(attributeName);
     }
 
 
-    public static AttributeDefinition forHtmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
-        if (attributeName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-        if (attributeNameOffset < 0 || attributeNameLen < 0) {
-            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
-        }
-        return HTML_ATTRIBUTE_REPOSITORY.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
-    }
-
-
-
-    public static AttributeDefinition forXmlName(final String attributeName) {
-        if (attributeName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
-        }
-        return XML_ATTRIBUTE_REPOSITORY.getAttribute(attributeName);
-    }
-
-
-    public static AttributeDefinition forXmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+    public AttributeDefinition forHtmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
         if (attributeName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
         }
-        return XML_ATTRIBUTE_REPOSITORY.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+        return this.htmlAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
     }
 
 
 
-
-
-
-    private AttributeDefinitions() {
-        super();
+    public AttributeDefinition forXmlName(final String attributeName) {
+        if (attributeName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        return this.xmlAttributeRepository.getAttribute(attributeName);
     }
+
+
+    public AttributeDefinition forXmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeName == null) {
+            throw new IllegalArgumentException("Name cannot be null");
+        }
+        if (attributeNameOffset < 0 || attributeNameLen < 0) {
+            throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
+        }
+        return this.xmlAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+    }
+
+
 
 
 

@@ -38,6 +38,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import org.thymeleaf.aurora.context.TemplateEngineContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.parser.HtmlTemplateParser;
@@ -1215,6 +1217,7 @@ public class TemplateEngine {
 
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
+        final ITemplateEngineContext templateEngineContext = new TemplateEngineContext();
 
         final IResource templateResource = new ReaderResource(templateName, reader);
 
@@ -1222,7 +1225,7 @@ public class TemplateEngine {
 
 
 //        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        PARSER.parse(templateResource, /*"th", new String[] {"html//p"}, */ this.configuration.getTextRepository(), handler);
+        PARSER.parse(templateEngineContext, templateResource, /* new String[] {"html//p"}, */ handler);
 
 
     }

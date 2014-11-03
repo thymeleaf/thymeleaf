@@ -96,7 +96,7 @@ public final class Configuration {
     private Set<IMessageResolver> defaultMessageResolvers = null;
     private Set<ITemplateModeHandler> defaultTemplateModeHandlers = null;
 
-    private ITextRepository textRepository = TextRepositories.createDefault();
+    private ITextRepository textRepository = TextRepositories.createLimitedSizeCacheRepository();
     
     private volatile boolean initialized;
     

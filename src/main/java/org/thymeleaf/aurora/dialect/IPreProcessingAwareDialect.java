@@ -17,29 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.parser;
+package org.thymeleaf.aurora.dialect;
 
-import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import java.util.List;
+
 import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.resource.IResource;
 
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface ITemplateParser {
+public interface IPreProcessingAwareDialect extends IDialect {
 
-
-    public void parse(final ITemplateEngineContext templateEngineContext,
-                      final IResource templateResource,
-                      final ITemplateHandler handler);
-
-    public void parse(final ITemplateEngineContext templateEngineContext,
-                      final IResource templateResource,
-                      final String[] selectors,
-                      final ITemplateHandler handler);
+    public List<Class<? extends ITemplateHandler>> getPreProcessors();
 
 }
