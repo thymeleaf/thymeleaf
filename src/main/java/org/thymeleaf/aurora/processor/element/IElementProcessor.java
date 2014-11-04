@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.processor.element;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.processor.ElementName;
@@ -36,6 +37,7 @@ public interface IElementProcessor extends IProcessor {
     public ElementName getElementName();
 
     public ElementAttributeProcessorResult process(
+            final ITemplateProcessingContext processingContext,
             final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
             final int line, final int col);
 

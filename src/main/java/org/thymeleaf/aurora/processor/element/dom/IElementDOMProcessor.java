@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.processor.element.dom;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.dom.Node;
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
@@ -45,6 +46,6 @@ public interface IElementDOMProcessor extends IProcessor {
             final int line, final int col);
 
 
-    public void process(final Node dom);
+    public void process(final ITemplateProcessingContext processingContext, final Node dom);
 
 }
