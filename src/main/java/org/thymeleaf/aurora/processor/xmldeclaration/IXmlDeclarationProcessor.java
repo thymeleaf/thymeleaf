@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.processor.xmldeclaration;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.XmlDeclaration;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -29,14 +31,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface IXmlDeclarationProcessor extends IProcessor {
 
-
-    // Null result = no changes
-    public XmlDeclarationProcessorResult process(
-            final String xmlDeclaration,
-            final String keyword,
-            final String version,
-            final String encoding,
-            final String standalone,
-            final int line, final int col);
+    // Null result = remove structure
+    public XmlDeclaration process(
+            final ITemplateProcessingContext processingContext, final XmlDeclaration xmlDeclaration, final int line, final int col);
 
 }

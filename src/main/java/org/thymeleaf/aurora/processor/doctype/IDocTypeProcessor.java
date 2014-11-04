@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.processor.doctype;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.DocType;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -29,16 +31,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface IDocTypeProcessor extends IProcessor {
 
-
-    // Null result = no changes
-    public DocTypeProcessorResult process(
-            final String docType,
-            final String keyword,
-            final String elementName,
-            final String type,
-            final String publicId,
-            final String systemId,
-            final String internalSubset,
-            final int line, final int col);
+    // Null result = remove structure
+    public DocType process(
+            final ITemplateProcessingContext processingContext, final DocType docType, final int line, final int col);
 
 }

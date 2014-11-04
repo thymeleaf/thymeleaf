@@ -22,8 +22,8 @@ package org.thymeleaf.aurora.processor.element.attribute;
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.processor.AttributeName;
-import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.ElementName;
+import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *

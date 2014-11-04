@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.processor.processinginstruction;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ProcessingInstruction;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -29,12 +31,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface IProcessingInstructionProcessor extends IProcessor {
 
-
-    // Null result = no changes
-    public ProcessingInstructionProcessorResult process(
-            final String processingInstruction,
-            final String target,
-            final String content,
-            final int line, final int col);
+    // Null result = remove structure
+    public ProcessingInstruction process(
+            final ITemplateProcessingContext processingContext, final ProcessingInstruction processingInstruction, final int line, final int col);
 
 }

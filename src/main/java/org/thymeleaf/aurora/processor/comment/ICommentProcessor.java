@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.processor.comment;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.Comment;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -29,13 +31,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface ICommentProcessor extends IProcessor {
 
-    public boolean matches(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col);
-
-    // Null result = no changes
-    public CommentProcessorResult process(final String content, final int line, final int col);
+    // Null result = remove structure
+    public Comment process(
+            final ITemplateProcessingContext processingContext, final Comment comment, final int line, final int col);
 
 }

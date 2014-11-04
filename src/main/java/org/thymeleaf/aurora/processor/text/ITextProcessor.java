@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.processor.text;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.Text;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -29,9 +31,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface ITextProcessor extends IProcessor {
 
-    public boolean matches(final char[] buffer, final int offset, final int len, final int line, final int col);
-
-    // Null result = no changes
-    public TextProcessorResult process(final String text, final int line, final int col);
+    // Null result = remove structure
+    public Text process(
+            final ITemplateProcessingContext processingContext, final Text text, final int line, final int col);
 
 }
