@@ -21,12 +21,9 @@ package org.thymeleaf.aurora.processor.element.dom;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.dom.Node;
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.processor.AttributeName;
 import org.thymeleaf.aurora.processor.ElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcessorResult;
 
 /**
  *
@@ -41,11 +38,7 @@ public interface IElementDOMProcessor extends IProcessor {
     public String getAttributeValue();
 
 
-    public ElementAttributeProcessorResult matches(
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
-            final int line, final int col);
-
-
-    public void process(final ITemplateProcessingContext processingContext, final Node dom);
+    public void processBefore(final ITemplateProcessingContext processingContext, final Node dom);
+    public void processAfter(final ITemplateProcessingContext processingContext, final Node dom);
 
 }
