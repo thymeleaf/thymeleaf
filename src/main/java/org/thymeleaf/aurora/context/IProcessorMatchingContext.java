@@ -17,7 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor;
+package org.thymeleaf.aurora.context;
+
+import java.util.List;
+
+import org.thymeleaf.aurora.dialect.IDialect;
+import org.thymeleaf.aurora.engine.AttributeDefinitions;
+import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.text.ITextRepository;
 
 /**
  *
@@ -25,25 +32,10 @@ package org.thymeleaf.aurora.processor;
  * @since 3.0.0
  * 
  */
-public class ElementName {
+public interface IProcessorMatchingContext {
 
-    private final boolean prefixed;
-    private final String name;
+    public IDialect getDialect();
 
-
-    public ElementName(final boolean prefixed, final String name) {
-        super();
-        this.prefixed = prefixed;
-        this.name = name;
-    }
-
-
-    public boolean isPrefixed() {
-        return this.prefixed;
-    }
-
-    public String getName() {
-        return this.name;
-    }
+    public String getDialectPrefix();
 
 }

@@ -19,12 +19,13 @@
  */
 package org.thymeleaf.aurora.processor.element;
 
+import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.processor.ElementName;
+import org.thymeleaf.aurora.engine.ElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcessorResult;
 
 /**
  *
@@ -35,10 +36,13 @@ import org.thymeleaf.aurora.processor.element.attribute.ElementAttributeProcesso
 public interface IElementProcessor extends IProcessor {
 
     public ElementName getElementName();
+    public AttributeName getAttributeName();
+    public String getAttributeValue();
 
-    public ElementAttributeProcessorResult process(
-            final ITemplateProcessingContext processingContext,
-            final ElementDefinition elementDefinition, final String elementName, final Attributes attributes,
+    public ElementProcessorResult process(
+            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
+            final ElementDefinition elementDefinition, final String elementName,
+            final Attributes attributes,
             final int line, final int col);
 
 }
