@@ -29,10 +29,10 @@ import org.thymeleaf.aurora.util.TextUtil;
  */
 public class AttributeName {
 
-    private final String dialectPrefix;
-    private final String attributeName;
-    private final String completeNSAttributeName;
-    private final String completeDataAttributeName;
+    final String dialectPrefix;
+    final String attributeName;
+    final String completeNSAttributeName;
+    final String completeHtml5CustomAttributeName;
 
 
 
@@ -253,6 +253,18 @@ public class AttributeName {
 
 
 
+    public static AttributeName forHtmlName(final String dialectPrefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        return new AttributeName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen), true);
+    }
+
+
+
+    public static AttributeName forXmlName(final String dialectPrefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        return new AttributeName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen), false);
+    }
+
+
+
     public static AttributeName forHtmlName(final String dialectPrefix, final String attributeName) {
         return new AttributeName(dialectPrefix, attributeName, true);
     }
@@ -267,7 +279,7 @@ public class AttributeName {
 
 
 
-    AttributeName(final String dialectPrefix, final String attributeName, final boolean crateCompleteHtml5AttributeName) {
+    AttributeName(final String dialectPrefix, final String attributeName, final boolean createHtml5CustomName) {
 
         super();
 
@@ -280,12 +292,12 @@ public class AttributeName {
 
         this.completeNSAttributeName = (dialectPrefix == null? attributeName : dialectPrefix + ":" + attributeName);
 
-        if (crateCompleteHtml5AttributeName) {
+        if (createHtml5CustomName) {
             // Note that, if prefix is null, we are not creating attribute names like "data-{name}" because the
             // fact tha prefix is null means that we want to act on the standard HTML/XML attributes themselves.
-            this.completeDataAttributeName = (dialectPrefix == null? attributeName : "data-" + dialectPrefix + "-" + attributeName);
+            this.completeHtml5CustomAttributeName = (dialectPrefix == null? attributeName : "data-" + dialectPrefix + "-" + attributeName);
         } else {
-            this.completeDataAttributeName = null;
+            this.completeHtml5CustomAttributeName = null;
         }
 
     }
@@ -304,8 +316,8 @@ public class AttributeName {
         return this.completeNSAttributeName;
     }
 
-    public String getCompleteDataAttributeName() {
-        return this.completeDataAttributeName;
+    public String getCompleteHtml5CustomAttributeName() {
+        return this.completeHtml5CustomAttributeName;
     }
 
 
@@ -313,10 +325,10 @@ public class AttributeName {
     @Override
     public String toString() {
         // Reference equality is OK (and faster) in this case
-        if (this.completeDataAttributeName == null || this.completeNSAttributeName == this.completeDataAttributeName) {
+        if (this.completeHtml5CustomAttributeName == null || this.completeNSAttributeName == this.completeHtml5CustomAttributeName) {
             return "{" + this.completeNSAttributeName + "}";
         }
-        return "{" + this.completeNSAttributeName + "," + this.completeDataAttributeName + "}";
+        return "{" + this.completeNSAttributeName + "," + this.completeHtml5CustomAttributeName + "}";
     }
 
 }

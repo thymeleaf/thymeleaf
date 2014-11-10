@@ -51,8 +51,8 @@ public final class AttributeDefinitions {
 
 
     // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
-    private final AttributeDefinitionRepository htmlAttributeRepository = new AttributeDefinitionRepository(false, true);
-    private final AttributeDefinitionRepository xmlAttributeRepository = new AttributeDefinitionRepository(true, true);
+    private final AttributeDefinitionRepository htmlAttributeRepository = new AttributeDefinitionRepository(true);
+    private final AttributeDefinitionRepository xmlAttributeRepository = new AttributeDefinitionRepository(false);
 
 
 
@@ -108,8 +108,9 @@ public final class AttributeDefinitions {
 
         final List<AttributeDefinition> htmlAttributeDefinitionListAux =
                 new ArrayList<AttributeDefinition>(ALL_STANDARD_HTML_ATTRIBUTE_NAMES.size() + 1);
-        for (final String attributeName : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName, htmlBooleanAttributeNameListAux.contains(attributeName));
+        for (final String attributeNameStr : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
+            final AttributeName attributeName = AttributeName.forHtmlName(attributeNameStr);
+            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName, htmlBooleanAttributeNameListAux.contains(attributeNameStr));
             htmlAttributeDefinitionListAux.add(attributeDefinition);
         }
 
@@ -133,14 +134,8 @@ public final class AttributeDefinitions {
          * Register the standard elements at the element repository, in order to initialize it
          */
         for (final AttributeDefinition attributeDefinition : ALL_STANDARD_HTML_ATTRIBUTES) {
-            this.htmlAttributeRepository.storeStandardElement(attributeDefinition);
+            this.htmlAttributeRepository.storeStandardAttribute(attributeDefinition);
         }
-
-
-        /*
-         * Finally, the "xmlns" attribute could be common in XML files
-         */
-        this.xmlAttributeRepository.storeStandardElement(new AttributeDefinition("xmlns"));
 
     }
 
@@ -198,21 +193,23 @@ public final class AttributeDefinitions {
      */
     static final class AttributeDefinitionRepository {
 
-        private final boolean caseSensitive;
+        private final boolean html;
 
         private final List<AttributeDefinition> standardRepository; // read-only, no sync needed
-        private final List<AttributeDefinition> repository;  // read-write, sync will be needed
+        private final List<AttributeDefinition> repositoryNS;  // read-write, sync will be needed
+        private final List<AttributeDefinition> repositoryHtml5Custom;  // read-write, sync will be needed
 
         private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
         private final Lock readLock = this.lock.readLock();
         private final Lock writeLock = this.lock.writeLock();
 
 
-        AttributeDefinitionRepository(final boolean caseSensitive, final boolean createStandardRepo) {
+        AttributeDefinitionRepository(final boolean html) {
             super();
-            this.caseSensitive = caseSensitive;
-            this.standardRepository = (createStandardRepo ? new ArrayList<AttributeDefinition>(150) : null);
-            this.repository = new ArrayList<AttributeDefinition>(500);
+            this.html = html;
+            this.standardRepository = (html ? new ArrayList<AttributeDefinition>(150) : null);
+            this.repositoryNS = new ArrayList<AttributeDefinition>(500);
+            this.repositoryHtml5Custom = (html ? new ArrayList<AttributeDefinition>(500) : null);
         }
 
 
@@ -220,12 +217,12 @@ public final class AttributeDefinitions {
 
             int index;
 
-            if (this.standardRepository != null) {
+            if (this.standardRepository != null) { // either ns and html5 are null, or not
                 /*
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(this.caseSensitive, this.standardRepository, text, offset, len);
+                index = binarySearch(!this.html, this.standardRepository, text, offset, len, true);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -240,10 +237,26 @@ public final class AttributeDefinitions {
             this.readLock.lock();
             try {
 
-                index = binarySearch(this.caseSensitive, this.repository, text, offset, len);
+                /*
+                 * First look for the element in the namespaced repository
+                 */
+                index = binarySearch(!this.html, this.repositoryNS, text, offset, len, true);
 
                 if (index >= 0) {
-                    return this.repository.get(index);
+                    return this.repositoryNS.get(index);
+                }
+
+                if (this.html) {
+
+                    /*
+                     * Now look for the element in the HTML5-custom repository
+                     */
+                    index = binarySearch(!this.html, this.repositoryHtml5Custom, text, offset, len, false);
+
+                    if (index >= 0) {
+                        return this.repositoryHtml5Custom.get(index);
+                    }
+
                 }
 
             } finally {
@@ -256,7 +269,7 @@ public final class AttributeDefinitions {
              */
             this.writeLock.lock();
             try {
-                return storeElement(text, offset, len);
+                return storeAttribute(text, offset, len);
             } finally {
                 this.writeLock.unlock();
             }
@@ -268,12 +281,12 @@ public final class AttributeDefinitions {
 
             int index;
 
-            if (this.standardRepository != null) {
+            if (this.standardRepository != null) { // either ns and html5 are null, or not
                 /*
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(this.caseSensitive, this.standardRepository, text);
+                index = binarySearch(!this.html, this.standardRepository, text, true);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -288,10 +301,26 @@ public final class AttributeDefinitions {
             this.readLock.lock();
             try {
 
-                index = binarySearch(this.caseSensitive, this.repository, text);
+                /*
+                 * First look for the element in the namespaced repository
+                 */
+                index = binarySearch(!this.html, this.repositoryNS, text, true);
 
                 if (index >= 0) {
-                    return this.repository.get(index);
+                    return this.repositoryNS.get(index);
+                }
+
+                if (this.html) {
+
+                    /*
+                     * Now look for the element in the HTML5-custom repository
+                     */
+                    index = binarySearch(!this.html, this.repositoryHtml5Custom, text, false);
+
+                    if (index >= 0) {
+                        return this.repositoryHtml5Custom.get(index);
+                    }
+
                 }
 
             } finally {
@@ -304,7 +333,7 @@ public final class AttributeDefinitions {
              */
             this.writeLock.lock();
             try {
-                return storeElement(text);
+                return storeAttribute(text);
             } finally {
                 this.writeLock.unlock();
             }
@@ -312,68 +341,105 @@ public final class AttributeDefinitions {
         }
 
 
-        private AttributeDefinition storeElement(final char[] text, final int offset, final int len) {
+        private AttributeDefinition storeAttribute(final char[] text, final int offset, final int len) {
 
-            final int index = binarySearch(this.caseSensitive, this.repository, text, offset, len);
-            if (index >= 0) {
+            final AttributeName attributeName =
+                    this.html? AttributeName.forHtmlName(text, offset, len) : AttributeName.forXmlName(text, offset, len);
+
+            final int indexNS = binarySearch(!this.html, this.repositoryNS, attributeName.completeNSAttributeName, true);
+            if (indexNS >= 0) {
                 // It was already added while we were waiting for the lock!
-                return this.repository.get(index);
+                return this.repositoryNS.get(indexNS);
             }
 
-            final String elementName = new String(text, offset, len);
+            final AttributeDefinition element = new AttributeDefinition(attributeName);
 
-            final AttributeDefinition attribute =
-                    new AttributeDefinition((this.caseSensitive? elementName : elementName.toLowerCase()));
+            if (this.html) {
+
+                final int indexHtml5Custom =
+                        binarySearch(!this.html, this.repositoryHtml5Custom, attributeName.completeHtml5CustomAttributeName, false);
+                if (indexHtml5Custom >= 0) {
+                    throw new IllegalStateException(
+                            "Attribute was present in the repository in namespaced format, but it exists in HTML5Custom format.");
+                }
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryHtml5Custom.add(((indexHtml5Custom + 1) * -1), element);
+
+            }
 
             // binary Search returned (-(insertion point) - 1)
-            this.repository.add(((index + 1) * -1), attribute);
-
-            return attribute;
-
-        }
-
-
-        private AttributeDefinition storeElement(final String text) {
-
-            final int index = binarySearch(this.caseSensitive, this.repository, text);
-            if (index >= 0) {
-                // It was already added while we were waiting for the lock!
-                return this.repository.get(index);
-            }
-
-            final String attributeName = text;
-
-            final AttributeDefinition attribute =
-                    new AttributeDefinition((this.caseSensitive? attributeName : attributeName.toLowerCase()));
-
-            // binary Search returned (-(insertion point) - 1)
-            this.repository.add(((index + 1) * -1), attribute);
-
-            return attribute;
-
-        }
-
-
-        private AttributeDefinition storeStandardElement(final AttributeDefinition element) {
-
-            // This method will only be called from within the HtmlElements class itself, during initialization of
-            // standard elements.
-
-            if (this.standardRepository != null) {
-                this.standardRepository.add(element);
-                Collections.sort(this.standardRepository, AttributeComparator.forCaseSensitive(this.caseSensitive));
-            }
-
-            this.repository.add(element);
-            Collections.sort(this.repository, AttributeComparator.forCaseSensitive(this.caseSensitive));
+            this.repositoryNS.add(((indexNS + 1) * -1), element);
 
             return element;
 
         }
 
 
-        private static int binarySearch(final boolean caseSensitive, final List<AttributeDefinition> values,
-                                        final char[] text, final int offset, final int len) {
+        private AttributeDefinition storeAttribute(final String text) {
+
+            final AttributeName attributeName =
+                    this.html? AttributeName.forHtmlName(text) : AttributeName.forXmlName(text);
+
+            final int indexNS = binarySearch(!this.html, this.repositoryNS, attributeName.completeNSAttributeName, true);
+            if (indexNS >= 0) {
+                // It was already added while we were waiting for the lock!
+                return this.repositoryNS.get(indexNS);
+            }
+
+            final AttributeDefinition element = new AttributeDefinition(attributeName);
+
+            if (this.html) {
+
+                final int indexHtml5Custom =
+                        binarySearch(!this.html, this.repositoryHtml5Custom, attributeName.completeHtml5CustomAttributeName, false);
+                if (indexHtml5Custom >= 0) {
+                    throw new IllegalStateException(
+                            "Attribute was present in the repository in namespaced format, but it exists in HTML5Custom format.");
+                }
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryHtml5Custom.add(((indexHtml5Custom + 1) * -1), element);
+
+            }
+
+            // binary Search returned (-(insertion point) - 1)
+            this.repositoryNS.add(((indexNS + 1) * -1), element);
+
+            return element;
+
+        }
+
+
+        private AttributeDefinition storeStandardAttribute(final AttributeDefinition attributeDefinition) {
+
+            // This method will only be called from within the AttributeDefinitions class itself, during initialization of
+            // standard elements.
+
+            final AttributeComparator comparatorNS =
+                    this.html ? AttributeComparator.forHtml(true) : AttributeComparator.forXml();
+            final AttributeComparator comparatorHtml5Custom =
+                    this.html ? AttributeComparator.forHtml(false) : null;
+
+            if (this.standardRepository != null) {
+                this.standardRepository.add(attributeDefinition);
+                Collections.sort(this.standardRepository, comparatorNS); // namespaced comparator is OK for standard
+            }
+
+            this.repositoryNS.add(attributeDefinition);
+            Collections.sort(this.repositoryNS, comparatorNS);
+
+            this.repositoryHtml5Custom.add(attributeDefinition);
+            Collections.sort(this.repositoryHtml5Custom, comparatorHtml5Custom);
+
+            return attributeDefinition;
+
+        }
+
+
+        private static int binarySearch(
+                final boolean caseSensitive, final List<AttributeDefinition> values, final char[] text, final int offset, final int len,
+                final boolean namespaced) {
 
             int low = 0;
             int high = values.size() - 1;
@@ -384,7 +450,7 @@ public final class AttributeDefinitions {
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
-                midVal = values.get(mid).name;
+                midVal = namespaced? values.get(mid).name.completeNSAttributeName : values.get(mid).name.completeHtml5CustomAttributeName;
 
                 cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length(), text, offset, len);
 
@@ -404,7 +470,9 @@ public final class AttributeDefinitions {
         }
 
 
-        private static int binarySearch(final boolean caseSensitive, final List<AttributeDefinition> values, final String text) {
+        private static int binarySearch(
+                final boolean caseSensitive, final List<AttributeDefinition> values, final String text,
+                final boolean namespaced) {
 
             int low = 0;
             int high = values.size() - 1;
@@ -415,7 +483,7 @@ public final class AttributeDefinitions {
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
-                midVal = values.get(mid).name;
+                midVal = namespaced? values.get(mid).name.completeNSAttributeName : values.get(mid).name.completeHtml5CustomAttributeName;
 
                 cmp = TextUtil.compareTo(caseSensitive, midVal, text);
 
@@ -440,23 +508,33 @@ public final class AttributeDefinitions {
 
     private static class AttributeComparator implements Comparator<AttributeDefinition> {
 
-        private static AttributeComparator INSTANCE_CASE_SENSITIVE = new AttributeComparator(true);
-        private static AttributeComparator INSTANCE_CASE_INSENSITIVE = new AttributeComparator(false);
+        private static AttributeComparator INSTANCE_HTML_NS = new AttributeComparator(true, true);
+        private static AttributeComparator INSTANCE_HTML_HTMLCUSTOM = new AttributeComparator(true, false);
+        private static AttributeComparator INSTANCE_XML_NS = new AttributeComparator(false, true);
 
-        private final boolean caseSensitive;
+        private final boolean html;
+        private final boolean namespaced;
 
-        static AttributeComparator forCaseSensitive(final boolean caseSensitive) {
-            return caseSensitive ? INSTANCE_CASE_SENSITIVE : INSTANCE_CASE_INSENSITIVE;
+        static AttributeComparator forHtml(final boolean namespaced) {
+            return namespaced ? INSTANCE_HTML_NS : INSTANCE_HTML_HTMLCUSTOM;
         }
 
-        private AttributeComparator(final boolean caseSensitive) {
+        static AttributeComparator forXml() {
+            return INSTANCE_XML_NS;
+        }
+
+        private AttributeComparator(final boolean html, final boolean namespaced) {
             super();
-            this.caseSensitive = caseSensitive;
+            this.html = html;
+            this.namespaced = namespaced;
         }
 
         public int compare(final AttributeDefinition o1, final AttributeDefinition o2) {
             // caseSensitive is true here because we might have
-            return TextUtil.compareTo(this.caseSensitive, o1.name, o2.name);
+            if (this.namespaced) {
+                return TextUtil.compareTo(!this.html, o1.name.completeNSAttributeName, o2.name.completeNSAttributeName);
+            }
+            return TextUtil.compareTo(!this.html, o1.name.completeHtml5CustomAttributeName, o2.name.completeHtml5CustomAttributeName);
         }
     }
 

@@ -49,146 +49,146 @@ public final class ElementDefinitions {
 
 
     // Root
-    static final ElementDefinition HTML = new ElementDefinition("html", ElementType.NORMAL);
+    static final ElementDefinition HTML = new ElementDefinition(ElementName.forHtmlName("html"), ElementType.NORMAL);
 
     // Document metadata
-    static final ElementDefinition HEAD = new ElementDefinition("head", ElementType.NORMAL);
-    static final ElementDefinition TITLE = new ElementDefinition("title", ElementType.ESCAPABLE_RAW_TEXT);
-    static final ElementDefinition BASE = new ElementDefinition("base", ElementType.VOID);
-    static final ElementDefinition LINK = new ElementDefinition("link", ElementType.VOID);
-    static final ElementDefinition META = new ElementDefinition("meta", ElementType.VOID);
-    static final ElementDefinition STYLE = new ElementDefinition("style", ElementType.RAW_TEXT);
+    static final ElementDefinition HEAD = new ElementDefinition(ElementName.forHtmlName("head"), ElementType.NORMAL);
+    static final ElementDefinition TITLE = new ElementDefinition(ElementName.forHtmlName("title"), ElementType.ESCAPABLE_RAW_TEXT);
+    static final ElementDefinition BASE = new ElementDefinition(ElementName.forHtmlName("base"), ElementType.VOID);
+    static final ElementDefinition LINK = new ElementDefinition(ElementName.forHtmlName("link"), ElementType.VOID);
+    static final ElementDefinition META = new ElementDefinition(ElementName.forHtmlName("meta"), ElementType.VOID);
+    static final ElementDefinition STYLE = new ElementDefinition(ElementName.forHtmlName("style"), ElementType.RAW_TEXT);
 
     // Scripting
-    static final ElementDefinition SCRIPT = new ElementDefinition("script", ElementType.RAW_TEXT);
-    static final ElementDefinition NOSCRIPT = new ElementDefinition("noscript", ElementType.NORMAL);
+    static final ElementDefinition SCRIPT = new ElementDefinition(ElementName.forHtmlName("script"), ElementType.RAW_TEXT);
+    static final ElementDefinition NOSCRIPT = new ElementDefinition(ElementName.forHtmlName("noscript"), ElementType.NORMAL);
 
     // Sections
-    static final ElementDefinition BODY = new ElementDefinition("body", ElementType.NORMAL);
-    static final ElementDefinition ARTICLE = new ElementDefinition("article", ElementType.NORMAL);
-    static final ElementDefinition SECTION = new ElementDefinition("section", ElementType.NORMAL);
-    static final ElementDefinition NAV = new ElementDefinition("nav", ElementType.NORMAL);
-    static final ElementDefinition ASIDE = new ElementDefinition("aside", ElementType.NORMAL);
-    static final ElementDefinition H1 = new ElementDefinition("h1", ElementType.NORMAL);
-    static final ElementDefinition H2 = new ElementDefinition("h2", ElementType.NORMAL);
-    static final ElementDefinition H3 = new ElementDefinition("h3", ElementType.NORMAL);
-    static final ElementDefinition H4 = new ElementDefinition("h4", ElementType.NORMAL);
-    static final ElementDefinition H5 = new ElementDefinition("h5", ElementType.NORMAL);
-    static final ElementDefinition H6 = new ElementDefinition("h6", ElementType.NORMAL);
-    static final ElementDefinition HGROUP = new ElementDefinition("hgroup", ElementType.NORMAL);
-    static final ElementDefinition HEADER = new ElementDefinition("header", ElementType.NORMAL);
-    static final ElementDefinition FOOTER = new ElementDefinition("footer", ElementType.NORMAL);
-    static final ElementDefinition ADDRESS = new ElementDefinition("address", ElementType.NORMAL);
-    static final ElementDefinition MAIN = new ElementDefinition("main", ElementType.NORMAL);
+    static final ElementDefinition BODY = new ElementDefinition(ElementName.forHtmlName("body"), ElementType.NORMAL);
+    static final ElementDefinition ARTICLE = new ElementDefinition(ElementName.forHtmlName("article"), ElementType.NORMAL);
+    static final ElementDefinition SECTION = new ElementDefinition(ElementName.forHtmlName("section"), ElementType.NORMAL);
+    static final ElementDefinition NAV = new ElementDefinition(ElementName.forHtmlName("nav"), ElementType.NORMAL);
+    static final ElementDefinition ASIDE = new ElementDefinition(ElementName.forHtmlName("aside"), ElementType.NORMAL);
+    static final ElementDefinition H1 = new ElementDefinition(ElementName.forHtmlName("h1"), ElementType.NORMAL);
+    static final ElementDefinition H2 = new ElementDefinition(ElementName.forHtmlName("h2"), ElementType.NORMAL);
+    static final ElementDefinition H3 = new ElementDefinition(ElementName.forHtmlName("h3"), ElementType.NORMAL);
+    static final ElementDefinition H4 = new ElementDefinition(ElementName.forHtmlName("h4"), ElementType.NORMAL);
+    static final ElementDefinition H5 = new ElementDefinition(ElementName.forHtmlName("h5"), ElementType.NORMAL);
+    static final ElementDefinition H6 = new ElementDefinition(ElementName.forHtmlName("h6"), ElementType.NORMAL);
+    static final ElementDefinition HGROUP = new ElementDefinition(ElementName.forHtmlName("hgroup"), ElementType.NORMAL);
+    static final ElementDefinition HEADER = new ElementDefinition(ElementName.forHtmlName("header"), ElementType.NORMAL);
+    static final ElementDefinition FOOTER = new ElementDefinition(ElementName.forHtmlName("footer"), ElementType.NORMAL);
+    static final ElementDefinition ADDRESS = new ElementDefinition(ElementName.forHtmlName("address"), ElementType.NORMAL);
+    static final ElementDefinition MAIN = new ElementDefinition(ElementName.forHtmlName("main"), ElementType.NORMAL);
 
     // Grouping content
-    static final ElementDefinition P = new ElementDefinition("p", ElementType.NORMAL);
-    static final ElementDefinition HR = new ElementDefinition("hr", ElementType.VOID);
-    static final ElementDefinition PRE = new ElementDefinition("pre", ElementType.NORMAL);
-    static final ElementDefinition BLOCKQUOTE = new ElementDefinition("blockquote", ElementType.NORMAL);
-    static final ElementDefinition OL = new ElementDefinition("ol", ElementType.NORMAL);
-    static final ElementDefinition UL = new ElementDefinition("ul", ElementType.NORMAL);
-    static final ElementDefinition LI = new ElementDefinition("li", ElementType.NORMAL);
-    static final ElementDefinition DL = new ElementDefinition("dl", ElementType.NORMAL);
-    static final ElementDefinition DT = new ElementDefinition("dt", ElementType.NORMAL);
-    static final ElementDefinition DD = new ElementDefinition("dd", ElementType.NORMAL);
-    static final ElementDefinition FIGURE = new ElementDefinition("figure", ElementType.NORMAL);
-    static final ElementDefinition FIGCAPTION = new ElementDefinition("figcaption", ElementType.NORMAL);
-    static final ElementDefinition DIV = new ElementDefinition("div", ElementType.NORMAL);
+    static final ElementDefinition P = new ElementDefinition(ElementName.forHtmlName("p"), ElementType.NORMAL);
+    static final ElementDefinition HR = new ElementDefinition(ElementName.forHtmlName("hr"), ElementType.VOID);
+    static final ElementDefinition PRE = new ElementDefinition(ElementName.forHtmlName("pre"), ElementType.NORMAL);
+    static final ElementDefinition BLOCKQUOTE = new ElementDefinition(ElementName.forHtmlName("blockquote"), ElementType.NORMAL);
+    static final ElementDefinition OL = new ElementDefinition(ElementName.forHtmlName("ol"), ElementType.NORMAL);
+    static final ElementDefinition UL = new ElementDefinition(ElementName.forHtmlName("ul"), ElementType.NORMAL);
+    static final ElementDefinition LI = new ElementDefinition(ElementName.forHtmlName("li"), ElementType.NORMAL);
+    static final ElementDefinition DL = new ElementDefinition(ElementName.forHtmlName("dl"), ElementType.NORMAL);
+    static final ElementDefinition DT = new ElementDefinition(ElementName.forHtmlName("dt"), ElementType.NORMAL);
+    static final ElementDefinition DD = new ElementDefinition(ElementName.forHtmlName("dd"), ElementType.NORMAL);
+    static final ElementDefinition FIGURE = new ElementDefinition(ElementName.forHtmlName("figure"), ElementType.NORMAL);
+    static final ElementDefinition FIGCAPTION = new ElementDefinition(ElementName.forHtmlName("figcaption"), ElementType.NORMAL);
+    static final ElementDefinition DIV = new ElementDefinition(ElementName.forHtmlName("div"), ElementType.NORMAL);
 
     // Text-level semantics
-    static final ElementDefinition A = new ElementDefinition("a", ElementType.NORMAL);
-    static final ElementDefinition EM = new ElementDefinition("em", ElementType.NORMAL);
-    static final ElementDefinition STRONG = new ElementDefinition("strong", ElementType.NORMAL);
-    static final ElementDefinition SMALL = new ElementDefinition("small", ElementType.NORMAL);
-    static final ElementDefinition S = new ElementDefinition("s", ElementType.NORMAL);
-    static final ElementDefinition CITE = new ElementDefinition("cite", ElementType.NORMAL);
-    static final ElementDefinition G = new ElementDefinition("g", ElementType.NORMAL);
-    static final ElementDefinition DFN = new ElementDefinition("dfn", ElementType.NORMAL);
-    static final ElementDefinition ABBR = new ElementDefinition("abbr", ElementType.NORMAL);
-    static final ElementDefinition TIME = new ElementDefinition("time", ElementType.NORMAL);
-    static final ElementDefinition CODE = new ElementDefinition("code", ElementType.NORMAL);
-    static final ElementDefinition VAR = new ElementDefinition("var", ElementType.NORMAL);
-    static final ElementDefinition SAMP = new ElementDefinition("samp", ElementType.NORMAL);
-    static final ElementDefinition KBD = new ElementDefinition("kbd", ElementType.NORMAL);
-    static final ElementDefinition SUB = new ElementDefinition("sub", ElementType.NORMAL);
-    static final ElementDefinition SUP = new ElementDefinition("sup", ElementType.NORMAL);
-    static final ElementDefinition I = new ElementDefinition("i", ElementType.NORMAL);
-    static final ElementDefinition B = new ElementDefinition("b", ElementType.NORMAL);
-    static final ElementDefinition U = new ElementDefinition("u", ElementType.NORMAL);
-    static final ElementDefinition MARK = new ElementDefinition("mark", ElementType.NORMAL);
-    static final ElementDefinition RUBY = new ElementDefinition("ruby", ElementType.NORMAL);
-    static final ElementDefinition RB = new ElementDefinition("rb", ElementType.NORMAL);
-    static final ElementDefinition RT = new ElementDefinition("rt", ElementType.NORMAL);
-    static final ElementDefinition RTC = new ElementDefinition("rtc", ElementType.NORMAL);
-    static final ElementDefinition RP = new ElementDefinition("rp", ElementType.NORMAL);
-    static final ElementDefinition BDI = new ElementDefinition("bdi", ElementType.NORMAL);
-    static final ElementDefinition BDO = new ElementDefinition("bdo", ElementType.NORMAL);
-    static final ElementDefinition SPAN = new ElementDefinition("span", ElementType.NORMAL);
-    static final ElementDefinition BR = new ElementDefinition("br", ElementType.VOID);
-    static final ElementDefinition WBR = new ElementDefinition("wbr", ElementType.VOID);
+    static final ElementDefinition A = new ElementDefinition(ElementName.forHtmlName("a"), ElementType.NORMAL);
+    static final ElementDefinition EM = new ElementDefinition(ElementName.forHtmlName("em"), ElementType.NORMAL);
+    static final ElementDefinition STRONG = new ElementDefinition(ElementName.forHtmlName("strong"), ElementType.NORMAL);
+    static final ElementDefinition SMALL = new ElementDefinition(ElementName.forHtmlName("small"), ElementType.NORMAL);
+    static final ElementDefinition S = new ElementDefinition(ElementName.forHtmlName("s"), ElementType.NORMAL);
+    static final ElementDefinition CITE = new ElementDefinition(ElementName.forHtmlName("cite"), ElementType.NORMAL);
+    static final ElementDefinition G = new ElementDefinition(ElementName.forHtmlName("g"), ElementType.NORMAL);
+    static final ElementDefinition DFN = new ElementDefinition(ElementName.forHtmlName("dfn"), ElementType.NORMAL);
+    static final ElementDefinition ABBR = new ElementDefinition(ElementName.forHtmlName("abbr"), ElementType.NORMAL);
+    static final ElementDefinition TIME = new ElementDefinition(ElementName.forHtmlName("time"), ElementType.NORMAL);
+    static final ElementDefinition CODE = new ElementDefinition(ElementName.forHtmlName("code"), ElementType.NORMAL);
+    static final ElementDefinition VAR = new ElementDefinition(ElementName.forHtmlName("var"), ElementType.NORMAL);
+    static final ElementDefinition SAMP = new ElementDefinition(ElementName.forHtmlName("samp"), ElementType.NORMAL);
+    static final ElementDefinition KBD = new ElementDefinition(ElementName.forHtmlName("kbd"), ElementType.NORMAL);
+    static final ElementDefinition SUB = new ElementDefinition(ElementName.forHtmlName("sub"), ElementType.NORMAL);
+    static final ElementDefinition SUP = new ElementDefinition(ElementName.forHtmlName("sup"), ElementType.NORMAL);
+    static final ElementDefinition I = new ElementDefinition(ElementName.forHtmlName("i"), ElementType.NORMAL);
+    static final ElementDefinition B = new ElementDefinition(ElementName.forHtmlName("b"), ElementType.NORMAL);
+    static final ElementDefinition U = new ElementDefinition(ElementName.forHtmlName("u"), ElementType.NORMAL);
+    static final ElementDefinition MARK = new ElementDefinition(ElementName.forHtmlName("mark"), ElementType.NORMAL);
+    static final ElementDefinition RUBY = new ElementDefinition(ElementName.forHtmlName("ruby"), ElementType.NORMAL);
+    static final ElementDefinition RB = new ElementDefinition(ElementName.forHtmlName("rb"), ElementType.NORMAL);
+    static final ElementDefinition RT = new ElementDefinition(ElementName.forHtmlName("rt"), ElementType.NORMAL);
+    static final ElementDefinition RTC = new ElementDefinition(ElementName.forHtmlName("rtc"), ElementType.NORMAL);
+    static final ElementDefinition RP = new ElementDefinition(ElementName.forHtmlName("rp"), ElementType.NORMAL);
+    static final ElementDefinition BDI = new ElementDefinition(ElementName.forHtmlName("bdi"), ElementType.NORMAL);
+    static final ElementDefinition BDO = new ElementDefinition(ElementName.forHtmlName("bdo"), ElementType.NORMAL);
+    static final ElementDefinition SPAN = new ElementDefinition(ElementName.forHtmlName("span"), ElementType.NORMAL);
+    static final ElementDefinition BR = new ElementDefinition(ElementName.forHtmlName("br"), ElementType.VOID);
+    static final ElementDefinition WBR = new ElementDefinition(ElementName.forHtmlName("wbr"), ElementType.VOID);
 
     // Edits
-    static final ElementDefinition INS = new ElementDefinition("ins", ElementType.NORMAL);
-    static final ElementDefinition DEL = new ElementDefinition("del", ElementType.NORMAL);
+    static final ElementDefinition INS = new ElementDefinition(ElementName.forHtmlName("ins"), ElementType.NORMAL);
+    static final ElementDefinition DEL = new ElementDefinition(ElementName.forHtmlName("del"), ElementType.NORMAL);
 
     // Embedded content
-    static final ElementDefinition IMG = new ElementDefinition("img", ElementType.VOID);
-    static final ElementDefinition IFRAME = new ElementDefinition("iframe", ElementType.NORMAL);
-    static final ElementDefinition EMBED = new ElementDefinition("embed", ElementType.VOID);
-    static final ElementDefinition OBJECT = new ElementDefinition("object", ElementType.NORMAL);
-    static final ElementDefinition PARAM = new ElementDefinition("param", ElementType.VOID);
-    static final ElementDefinition VIDEO = new ElementDefinition("video", ElementType.NORMAL);
-    static final ElementDefinition AUDIO = new ElementDefinition("audio", ElementType.NORMAL);
-    static final ElementDefinition SOURCE = new ElementDefinition("source", ElementType.VOID);
-    static final ElementDefinition TRACK = new ElementDefinition("track", ElementType.VOID);
-    static final ElementDefinition CANVAS = new ElementDefinition("canvas", ElementType.NORMAL);
-    static final ElementDefinition MAP = new ElementDefinition("map", ElementType.NORMAL);
-    static final ElementDefinition AREA = new ElementDefinition("area", ElementType.VOID);
+    static final ElementDefinition IMG = new ElementDefinition(ElementName.forHtmlName("img"), ElementType.VOID);
+    static final ElementDefinition IFRAME = new ElementDefinition(ElementName.forHtmlName("iframe"), ElementType.NORMAL);
+    static final ElementDefinition EMBED = new ElementDefinition(ElementName.forHtmlName("embed"), ElementType.VOID);
+    static final ElementDefinition OBJECT = new ElementDefinition(ElementName.forHtmlName("object"), ElementType.NORMAL);
+    static final ElementDefinition PARAM = new ElementDefinition(ElementName.forHtmlName("param"), ElementType.VOID);
+    static final ElementDefinition VIDEO = new ElementDefinition(ElementName.forHtmlName("video"), ElementType.NORMAL);
+    static final ElementDefinition AUDIO = new ElementDefinition(ElementName.forHtmlName("audio"), ElementType.NORMAL);
+    static final ElementDefinition SOURCE = new ElementDefinition(ElementName.forHtmlName("source"), ElementType.VOID);
+    static final ElementDefinition TRACK = new ElementDefinition(ElementName.forHtmlName("track"), ElementType.VOID);
+    static final ElementDefinition CANVAS = new ElementDefinition(ElementName.forHtmlName("canvas"), ElementType.NORMAL);
+    static final ElementDefinition MAP = new ElementDefinition(ElementName.forHtmlName("map"), ElementType.NORMAL);
+    static final ElementDefinition AREA = new ElementDefinition(ElementName.forHtmlName("area"), ElementType.VOID);
 
     // Tabular data
-    static final ElementDefinition TABLE = new ElementDefinition("table", ElementType.NORMAL);
-    static final ElementDefinition CAPTION = new ElementDefinition("caption", ElementType.NORMAL);
-    static final ElementDefinition COLGROUP = new ElementDefinition("colgroup", ElementType.NORMAL);
-    static final ElementDefinition COL = new ElementDefinition("col", ElementType.VOID);
-    static final ElementDefinition TBODY = new ElementDefinition("tbody", ElementType.NORMAL);
-    static final ElementDefinition THEAD = new ElementDefinition("thead", ElementType.NORMAL);
-    static final ElementDefinition TFOOT = new ElementDefinition("tfoot", ElementType.NORMAL);
-    static final ElementDefinition TR = new ElementDefinition("tr", ElementType.NORMAL);
-    static final ElementDefinition TD = new ElementDefinition("td", ElementType.NORMAL);
-    static final ElementDefinition TH = new ElementDefinition("th", ElementType.NORMAL);
+    static final ElementDefinition TABLE = new ElementDefinition(ElementName.forHtmlName("table"), ElementType.NORMAL);
+    static final ElementDefinition CAPTION = new ElementDefinition(ElementName.forHtmlName("caption"), ElementType.NORMAL);
+    static final ElementDefinition COLGROUP = new ElementDefinition(ElementName.forHtmlName("colgroup"), ElementType.NORMAL);
+    static final ElementDefinition COL = new ElementDefinition(ElementName.forHtmlName("col"), ElementType.VOID);
+    static final ElementDefinition TBODY = new ElementDefinition(ElementName.forHtmlName("tbody"), ElementType.NORMAL);
+    static final ElementDefinition THEAD = new ElementDefinition(ElementName.forHtmlName("thead"), ElementType.NORMAL);
+    static final ElementDefinition TFOOT = new ElementDefinition(ElementName.forHtmlName("tfoot"), ElementType.NORMAL);
+    static final ElementDefinition TR = new ElementDefinition(ElementName.forHtmlName("tr"), ElementType.NORMAL);
+    static final ElementDefinition TD = new ElementDefinition(ElementName.forHtmlName("td"), ElementType.NORMAL);
+    static final ElementDefinition TH = new ElementDefinition(ElementName.forHtmlName("th"), ElementType.NORMAL);
 
     // Forms
-    static final ElementDefinition FORM = new ElementDefinition("form", ElementType.NORMAL);
-    static final ElementDefinition FIELDSET = new ElementDefinition("fieldset", ElementType.NORMAL);
-    static final ElementDefinition LEGEND = new ElementDefinition("legend", ElementType.NORMAL);
-    static final ElementDefinition LABEL = new ElementDefinition("label", ElementType.NORMAL);
-    static final ElementDefinition INPUT = new ElementDefinition("input", ElementType.VOID);
-    static final ElementDefinition BUTTON = new ElementDefinition("button", ElementType.NORMAL);
-    static final ElementDefinition SELECT = new ElementDefinition("select", ElementType.NORMAL);
-    static final ElementDefinition DATALIST = new ElementDefinition("datalist", ElementType.NORMAL);
-    static final ElementDefinition OPTGROUP = new ElementDefinition("optgroup", ElementType.NORMAL);
-    static final ElementDefinition OPTION = new ElementDefinition("option", ElementType.NORMAL);
-    static final ElementDefinition TEXTAREA = new ElementDefinition("textarea", ElementType.ESCAPABLE_RAW_TEXT);
-    static final ElementDefinition KEYGEN = new ElementDefinition("keygen", ElementType.VOID);
-    static final ElementDefinition OUTPUT = new ElementDefinition("output", ElementType.NORMAL);
-    static final ElementDefinition PROGRESS = new ElementDefinition("progress", ElementType.NORMAL);
-    static final ElementDefinition METER = new ElementDefinition("meter", ElementType.NORMAL);
+    static final ElementDefinition FORM = new ElementDefinition(ElementName.forHtmlName("form"), ElementType.NORMAL);
+    static final ElementDefinition FIELDSET = new ElementDefinition(ElementName.forHtmlName("fieldset"), ElementType.NORMAL);
+    static final ElementDefinition LEGEND = new ElementDefinition(ElementName.forHtmlName("legend"), ElementType.NORMAL);
+    static final ElementDefinition LABEL = new ElementDefinition(ElementName.forHtmlName("label"), ElementType.NORMAL);
+    static final ElementDefinition INPUT = new ElementDefinition(ElementName.forHtmlName("input"), ElementType.VOID);
+    static final ElementDefinition BUTTON = new ElementDefinition(ElementName.forHtmlName("button"), ElementType.NORMAL);
+    static final ElementDefinition SELECT = new ElementDefinition(ElementName.forHtmlName("select"), ElementType.NORMAL);
+    static final ElementDefinition DATALIST = new ElementDefinition(ElementName.forHtmlName("datalist"), ElementType.NORMAL);
+    static final ElementDefinition OPTGROUP = new ElementDefinition(ElementName.forHtmlName("optgroup"), ElementType.NORMAL);
+    static final ElementDefinition OPTION = new ElementDefinition(ElementName.forHtmlName("option"), ElementType.NORMAL);
+    static final ElementDefinition TEXTAREA = new ElementDefinition(ElementName.forHtmlName("textarea"), ElementType.ESCAPABLE_RAW_TEXT);
+    static final ElementDefinition KEYGEN = new ElementDefinition(ElementName.forHtmlName("keygen"), ElementType.VOID);
+    static final ElementDefinition OUTPUT = new ElementDefinition(ElementName.forHtmlName("output"), ElementType.NORMAL);
+    static final ElementDefinition PROGRESS = new ElementDefinition(ElementName.forHtmlName("progress"), ElementType.NORMAL);
+    static final ElementDefinition METER = new ElementDefinition(ElementName.forHtmlName("meter"), ElementType.NORMAL);
 
     // Interactive elements
-    static final ElementDefinition DETAILS = new ElementDefinition("details", ElementType.NORMAL);
-    static final ElementDefinition SUMMARY = new ElementDefinition("summary", ElementType.NORMAL);
-    static final ElementDefinition COMMAND = new ElementDefinition("command", ElementType.NORMAL);
-    static final ElementDefinition MENU = new ElementDefinition("menu", ElementType.NORMAL);
-    static final ElementDefinition MENUITEM = new ElementDefinition("menuitem", ElementType.VOID);
-    static final ElementDefinition DIALOG = new ElementDefinition("dialog", ElementType.NORMAL);
+    static final ElementDefinition DETAILS = new ElementDefinition(ElementName.forHtmlName("details"), ElementType.NORMAL);
+    static final ElementDefinition SUMMARY = new ElementDefinition(ElementName.forHtmlName("summary"), ElementType.NORMAL);
+    static final ElementDefinition COMMAND = new ElementDefinition(ElementName.forHtmlName("command"), ElementType.NORMAL);
+    static final ElementDefinition MENU = new ElementDefinition(ElementName.forHtmlName("menu"), ElementType.NORMAL);
+    static final ElementDefinition MENUITEM = new ElementDefinition(ElementName.forHtmlName("menuitem"), ElementType.VOID);
+    static final ElementDefinition DIALOG = new ElementDefinition(ElementName.forHtmlName("dialog"), ElementType.NORMAL);
 
     // WebComponents
-    static final ElementDefinition TEMPLATE = new ElementDefinition("template", ElementType.RAW_TEXT);
-    static final ElementDefinition ELEMENT = new ElementDefinition("element", ElementType.NORMAL);
-    static final ElementDefinition DECORATOR = new ElementDefinition("decorator", ElementType.NORMAL);
-    static final ElementDefinition CONTENT = new ElementDefinition("content", ElementType.NORMAL);
-    static final ElementDefinition SHADOW = new ElementDefinition("shadow", ElementType.NORMAL);
+    static final ElementDefinition TEMPLATE = new ElementDefinition(ElementName.forHtmlName("template"), ElementType.RAW_TEXT);
+    static final ElementDefinition ELEMENT = new ElementDefinition(ElementName.forHtmlName("element"), ElementType.NORMAL);
+    static final ElementDefinition DECORATOR = new ElementDefinition(ElementName.forHtmlName("decorator"), ElementType.NORMAL);
+    static final ElementDefinition CONTENT = new ElementDefinition(ElementName.forHtmlName("content"), ElementType.NORMAL);
+    static final ElementDefinition SHADOW = new ElementDefinition(ElementName.forHtmlName("shadow"), ElementType.NORMAL);
 
 
 
@@ -197,8 +197,8 @@ public final class ElementDefinitions {
     // Besides, we don't want HTML-only element types like "VOID" or "RAW_TEXT" be applied to XML elements even if they have the same name.
     // Also, there is no need to add any 'standard elements' to XML because other than the synthetic block, there are none, and avoiding its
     // creation we save a repository query each time an element is asked for.
-    private final ElementDefinitionRepository htmlElementRepository = new ElementDefinitionRepository(false, true);
-    private final ElementDefinitionRepository xmlElementRepository = new ElementDefinitionRepository(true, false);
+    private final ElementDefinitionRepository htmlElementRepository = new ElementDefinitionRepository(true);
+    private final ElementDefinitionRepository xmlElementRepository = new ElementDefinitionRepository(false);
 
 
 
@@ -221,7 +221,7 @@ public final class ElementDefinitions {
                                 ELEMENT, DECORATOR, CONTENT, SHADOW
                         }));
 
-        Collections.sort(htmlElementDefinitionListAux, ElementComparator.forCaseSensitive(false));
+        Collections.sort(htmlElementDefinitionListAux, ElementComparator.forHtml(true)); // In this case, namespaced==true doesn't really matter
 
 
         ALL_STANDARD_HTML_ELEMENTS =
@@ -230,7 +230,13 @@ public final class ElementDefinitions {
 
         final LinkedHashSet<String> htmlElementDefinitionNamesAux = new LinkedHashSet<String>(ALL_STANDARD_HTML_ELEMENTS.size() + 1, 1.0f);
         for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
-            htmlElementDefinitionNamesAux.add(elementDefinition.getName());
+            final ElementName elementName = elementDefinition.getElementName();
+            if (elementName.getCompleteNSElementName() != null) {
+                htmlElementDefinitionNamesAux.add(elementName.getCompleteNSElementName());
+            }
+            if (elementName.getCompleteHtml5CustomElementName() != null) {
+                htmlElementDefinitionNamesAux.add(elementName.getCompleteHtml5CustomElementName());
+            }
         }
 
         ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(htmlElementDefinitionNamesAux);
@@ -312,21 +318,23 @@ public final class ElementDefinitions {
      */
     static final class ElementDefinitionRepository {
 
-        private final boolean caseSensitive;
+        private final boolean html;
 
         private final List<ElementDefinition> standardRepository; // read-only, no sync needed
-        private final List<ElementDefinition> repository;  // read-write, sync will be needed
+        private final List<ElementDefinition> repositoryNS;  // read-write, sync will be needed
+        private final List<ElementDefinition> repositoryHtml5Custom;  // read-write, sync will be needed
 
         private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
         private final Lock readLock = this.lock.readLock();
         private final Lock writeLock = this.lock.writeLock();
 
 
-        ElementDefinitionRepository(final boolean caseSensitive, final boolean createStandardRepo) {
+        ElementDefinitionRepository(final boolean html) {
             super();
-            this.caseSensitive = caseSensitive;
-            this.standardRepository = (createStandardRepo ? new ArrayList<ElementDefinition>(150) : null);
-            this.repository = new ArrayList<ElementDefinition>(150);
+            this.html = html;
+            this.standardRepository = (html ? new ArrayList<ElementDefinition>(150) : null);
+            this.repositoryNS = new ArrayList<ElementDefinition>(150);
+            this.repositoryHtml5Custom = (html ? new ArrayList<ElementDefinition>(150) : null);
         }
 
 
@@ -334,16 +342,17 @@ public final class ElementDefinitions {
 
             int index;
 
-            if (this.standardRepository != null) {
+            if (this.standardRepository != null) { // either ns and html5 are null, or not
                 /*
-                 * We first try to find it in the repository containing the standard elements, which does not need
+                 * We first try to find it in the repositories containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(this.caseSensitive, this.standardRepository, text, offset, len);
+                index = binarySearch(!this.html, this.standardRepository, text, offset, len, true);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
                 }
+
             }
 
             /*
@@ -354,10 +363,26 @@ public final class ElementDefinitions {
             this.readLock.lock();
             try {
 
-                index = binarySearch(this.caseSensitive, this.repository, text, offset, len);
+                /*
+                 * First look for the element in the namespaced repository
+                 */
+                index = binarySearch(!this.html, this.repositoryNS, text, offset, len, true);
 
                 if (index >= 0) {
-                    return this.repository.get(index);
+                    return this.repositoryNS.get(index);
+                }
+
+                if (this.html) {
+
+                    /*
+                     * Now look for the element in the HTML5-custom repository
+                     */
+                    index = binarySearch(!this.html, this.repositoryHtml5Custom, text, offset, len, false);
+
+                    if (index >= 0) {
+                        return this.repositoryHtml5Custom.get(index);
+                    }
+
                 }
 
             } finally {
@@ -382,12 +407,12 @@ public final class ElementDefinitions {
 
             int index;
 
-            if (this.standardRepository != null) {
+            if (this.standardRepository != null) { // either ns and html5 are null, or not
                 /*
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(this.caseSensitive, this.standardRepository, text);
+                index = binarySearch(!this.html, this.standardRepository, text, true);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -402,10 +427,26 @@ public final class ElementDefinitions {
             this.readLock.lock();
             try {
 
-                index = binarySearch(this.caseSensitive, this.repository, text);
+                /*
+                 * First look for the element in the namespaced repository
+                 */
+                index = binarySearch(!this.html, this.repositoryNS, text, true);
 
                 if (index >= 0) {
-                    return this.repository.get(index);
+                    return this.repositoryNS.get(index);
+                }
+
+                if (this.html) {
+
+                    /*
+                     * Now look for the element in the HTML5-custom repository
+                     */
+                    index = binarySearch(!this.html, this.repositoryHtml5Custom, text, false);
+
+                    if (index >= 0) {
+                        return this.repositoryHtml5Custom.get(index);
+                    }
+
                 }
 
             } finally {
@@ -428,19 +469,33 @@ public final class ElementDefinitions {
 
         private ElementDefinition storeElement(final char[] text, final int offset, final int len) {
 
-            final int index = binarySearch(this.caseSensitive, this.repository, text, offset, len);
-            if (index >= 0) {
+            final ElementName elementName =
+                    this.html? ElementName.forHtmlName(text, offset, len) : ElementName.forXmlName(text, offset, len);
+
+            final int indexNS = binarySearch(!this.html, this.repositoryNS, elementName.completeNSElementName, true);
+            if (indexNS >= 0) {
                 // It was already added while we were waiting for the lock!
-                return this.repository.get(index);
+                return this.repositoryNS.get(indexNS);
             }
 
-            final String elementName = new String(text, offset, len);
+            final ElementDefinition element = new ElementDefinition(elementName, ElementType.NORMAL);
 
-            final ElementDefinition element =
-                    new ElementDefinition((this.caseSensitive? elementName : elementName.toLowerCase()), ElementType.NORMAL);
+            if (this.html) {
+
+                final int indexHtml5Custom =
+                        binarySearch(!this.html, this.repositoryHtml5Custom, elementName.completeHtml5CustomElementName, false);
+                if (indexHtml5Custom >= 0) {
+                    throw new IllegalStateException(
+                            "Element was present in the repository in namespaced format, but it exists in HTML5Custom format.");
+                }
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryHtml5Custom.add(((indexHtml5Custom + 1) * -1), element);
+
+            }
 
             // binary Search returned (-(insertion point) - 1)
-            this.repository.add(((index + 1) * -1), element);
+            this.repositoryNS.add(((indexNS + 1) * -1), element);
 
             return element;
 
@@ -449,45 +504,68 @@ public final class ElementDefinitions {
 
         private ElementDefinition storeElement(final String text) {
 
-            final int index = binarySearch(this.caseSensitive, this.repository, text);
-            if (index >= 0) {
+            final ElementName elementName =
+                    this.html? ElementName.forHtmlName(text) : ElementName.forXmlName(text);
+
+            final int indexNS = binarySearch(!this.html, this.repositoryNS, elementName.completeNSElementName, true);
+            if (indexNS >= 0) {
                 // It was already added while we were waiting for the lock!
-                return this.repository.get(index);
+                return this.repositoryNS.get(indexNS);
             }
 
-            final String elementName = text;
+            final ElementDefinition element = new ElementDefinition(elementName, ElementType.NORMAL);
 
-            final ElementDefinition element =
-                    new ElementDefinition((this.caseSensitive? elementName : elementName.toLowerCase()), ElementType.NORMAL);
+            if (this.html) {
+
+                final int indexHtml5Custom =
+                        binarySearch(!this.html, this.repositoryHtml5Custom, elementName.completeHtml5CustomElementName, false);
+                if (indexHtml5Custom >= 0) {
+                    throw new IllegalStateException(
+                            "Element was present in the repository in namespaced format, but it exists in HTML5Custom format.");
+                }
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryHtml5Custom.add(((indexHtml5Custom + 1) * -1), element);
+
+            }
 
             // binary Search returned (-(insertion point) - 1)
-            this.repository.add(((index + 1) * -1), element);
+            this.repositoryNS.add(((indexNS + 1) * -1), element);
 
             return element;
 
         }
 
 
-        private ElementDefinition storeStandardElement(final ElementDefinition element) {
+        private ElementDefinition storeStandardElement(final ElementDefinition elementDefinition) {
 
-            // This method will only be called from within the HtmlElements class itself, during initialization of
+            // This method will only be called from within the ElementDefinitions class itself, during initialization of
             // standard elements.
 
+            final ElementComparator comparatorNS =
+                    this.html ? ElementComparator.forHtml(true) : ElementComparator.forXml();
+            final ElementComparator comparatorHtml5Custom =
+                    this.html ? ElementComparator.forHtml(false) : null;
+
             if (this.standardRepository != null) {
-                this.standardRepository.add(element);
-                Collections.sort(this.standardRepository, ElementComparator.forCaseSensitive(this.caseSensitive));
+                this.standardRepository.add(elementDefinition);
+                Collections.sort(this.standardRepository, comparatorNS); // namespaced comparator is OK for standard
             }
 
-            this.repository.add(element);
-            Collections.sort(this.repository, ElementComparator.forCaseSensitive(this.caseSensitive));
+            this.repositoryNS.add(elementDefinition);
+            Collections.sort(this.repositoryNS, comparatorNS);
 
-            return element;
+            this.repositoryHtml5Custom.add(elementDefinition);
+            Collections.sort(this.repositoryHtml5Custom, comparatorHtml5Custom);
+
+            return elementDefinition;
 
         }
 
 
-        private static int binarySearch(final boolean caseSensitive, final List<ElementDefinition> values,
-                                        final char[] text, final int offset, final int len) {
+        private static int binarySearch(
+                final boolean caseSensitive, final List<ElementDefinition> values, final char[] text, final int offset, final int len,
+                final boolean namespaced) {
 
             int low = 0;
             int high = values.size() - 1;
@@ -498,7 +576,7 @@ public final class ElementDefinitions {
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
-                midVal = values.get(mid).name;
+                midVal = namespaced? values.get(mid).name.completeNSElementName : values.get(mid).name.completeHtml5CustomElementName;
 
                 cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length(), text, offset, len);
 
@@ -518,7 +596,9 @@ public final class ElementDefinitions {
         }
 
 
-        private static int binarySearch(final boolean caseSensitive, final List<ElementDefinition> values, final String text) {
+        private static int binarySearch(
+                final boolean caseSensitive, final List<ElementDefinition> values, final String text,
+                final boolean namespaced) {
 
             int low = 0;
             int high = values.size() - 1;
@@ -529,7 +609,7 @@ public final class ElementDefinitions {
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
-                midVal = values.get(mid).name;
+                midVal = namespaced? values.get(mid).name.completeNSElementName : values.get(mid).name.completeHtml5CustomElementName;
 
                 cmp = TextUtil.compareTo(caseSensitive, midVal, text);
 
@@ -554,23 +634,33 @@ public final class ElementDefinitions {
 
     private static class ElementComparator implements Comparator<ElementDefinition> {
 
-        private static ElementComparator INSTANCE_CASE_SENSITIVE = new ElementComparator(true);
-        private static ElementComparator INSTANCE_CASE_INSENSITIVE = new ElementComparator(false);
+        private static ElementComparator INSTANCE_HTML_NS = new ElementComparator(true, true);
+        private static ElementComparator INSTANCE_HTML_HTMLCUSTOM = new ElementComparator(true, false);
+        private static ElementComparator INSTANCE_XML_NS = new ElementComparator(false, true);
 
-        private final boolean caseSensitive;
+        private final boolean html;
+        private final boolean namespaced;
 
-        static ElementComparator forCaseSensitive(final boolean caseSensitive) {
-            return caseSensitive ? INSTANCE_CASE_SENSITIVE : INSTANCE_CASE_INSENSITIVE;
+        static ElementComparator forHtml(final boolean namespaced) {
+            return namespaced ? INSTANCE_HTML_NS : INSTANCE_HTML_HTMLCUSTOM;
         }
 
-        private ElementComparator(final boolean caseSensitive) {
+        static ElementComparator forXml() {
+            return INSTANCE_XML_NS;
+        }
+
+        private ElementComparator(final boolean html, final boolean namespaced) {
             super();
-            this.caseSensitive = caseSensitive;
+            this.html = html;
+            this.namespaced = namespaced;
         }
 
         public int compare(final ElementDefinition o1, final ElementDefinition o2) {
             // caseSensitive is true here because we might have
-            return TextUtil.compareTo(this.caseSensitive, o1.name, o2.name);
+            if (this.namespaced) {
+                return TextUtil.compareTo(!this.html, o1.name.completeNSElementName, o2.name.completeNSElementName);
+            }
+            return TextUtil.compareTo(!this.html, o1.name.completeHtml5CustomElementName, o2.name.completeHtml5CustomElementName);
         }
     }
 

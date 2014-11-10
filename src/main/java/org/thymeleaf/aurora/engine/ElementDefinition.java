@@ -27,19 +27,19 @@ package org.thymeleaf.aurora.engine;
  */
 public final class ElementDefinition {
 
-    final String name;
+    final ElementName name;
     final ElementType type;
 
 
 
-    ElementDefinition(final String name, final ElementType type) {
+    ElementDefinition(final ElementName name, final ElementType type) {
         super();
         this.name = name;
         this.type = type;
     }
 
 
-    public String getName() {
+    public ElementName getElementName() {
         return this.name;
     }
 
@@ -49,7 +49,7 @@ public final class ElementDefinition {
 
 
     public String toString() {
-        return this.name;
+        return this.name.toString();
     }
 
 }

@@ -29,10 +29,10 @@ import org.thymeleaf.aurora.util.TextUtil;
  */
 public class ElementName {
 
-    private final String dialectPrefix;
-    private final String elementName;
-    private final String completeNSElementName;
-    private final String completeHtml5StandatdElementName;
+    final String dialectPrefix;
+    final String elementName;
+    final String completeNSElementName;
+    final String completeHtml5CustomElementName;
 
 
 
@@ -83,17 +83,16 @@ public class ElementName {
     public static ElementName forHtmlName(final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
 
         if (elementNameBuffer == null) {
-            throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
+            throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
-            throw new IllegalArgumentException("Atribute name offset and len must be equal or greater than zero");
+            throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
         }
 
 
         char c;
         int i = elementNameOffset;
         int n = elementNameLen;
-        boolean inData = false;
         while (n-- != 0) {
 
             c = elementNameBuffer[i++];
@@ -101,7 +100,7 @@ public class ElementName {
                 continue;
             }
 
-            if (!inData && c == ':') {
+            if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
                     return new ElementName(
@@ -120,26 +119,15 @@ public class ElementName {
                         true);
             }
 
-            if (!inData && c == '-') {
-                if (i == 5 && TextUtil.equals(false, "data", 0, 4, elementNameBuffer, elementNameOffset, 4)) {
-                    inData = true;
-                    continue;
-                } else {
-                    // this is just a normal, non-thymeleaf 'data-*' attribute
-                    return new ElementName(
-                            null, new String(elementNameBuffer, elementNameOffset, elementNameLen).toLowerCase(), true);
-                }
-            }
-
-            if (inData && c == '-') {
-                if (i == 6) {
-                    // '-' was the first char after 'data-', no prefix there
+            if (c == '-') {
+                if (i == 1) {
+                    // '-' was the first char, no prefix there
                     return new ElementName(
                             null, new String(elementNameBuffer, elementNameOffset, elementNameLen).toLowerCase(), true);
 
                 }
                 return new ElementName(
-                        new String(elementNameBuffer, elementNameOffset + 5, (i - (elementNameOffset + 6))).toLowerCase(),
+                        new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))).toLowerCase(),
                         new String(elementNameBuffer, i, elementNameLen - i).toLowerCase(),
                         true);
             }
@@ -156,7 +144,7 @@ public class ElementName {
     public static ElementName forXmlName(final String elementName) {
 
         if (elementName == null) {
-            throw new IllegalArgumentException("Attribute name cannot be null or empty");
+            throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
 
@@ -193,13 +181,12 @@ public class ElementName {
     public static ElementName forHtmlName(final String elementName) {
 
         if (elementName == null) {
-            throw new IllegalArgumentException("Attribute name cannot be null or empty");
+            throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
         char c;
         int i = 0;
         int n = elementName.length();
-        boolean inData = false;
         while (n-- != 0) {
 
             c = elementName.charAt(i++);
@@ -207,7 +194,7 @@ public class ElementName {
                 continue;
             }
 
-            if (!inData && c == ':') {
+            if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
                     return new ElementName(null, elementName.toLowerCase(), true);
@@ -224,24 +211,14 @@ public class ElementName {
                         true);
             }
 
-            if (!inData && c == '-') {
-                if (i == 5 && TextUtil.equals(false, "data", 0, 4, elementName, 0, 4)) {
-                    inData = true;
-                    continue;
-                } else {
-                    // this is just a normal, non-thymeleaf 'data-*' attribute
-                    return new ElementName(null, elementName.toLowerCase(), true);
-                }
-            }
-
-            if (inData && c == '-') {
-                if (i == 6) {
-                    // '-' was the first char after 'data-', no prefix there
+            if (c == '-') {
+                if (i == 1) {
+                    // '-' was the first char, no prefix there
                     return new ElementName(null, elementName.toLowerCase(), true);
 
                 }
                 return new ElementName(
-                        elementName.substring(5, i - 1).toLowerCase(),
+                        elementName.substring(0, i - 1).toLowerCase(),
                         elementName.substring(i, elementName.length()).toLowerCase(),
                         true);
             }
@@ -254,13 +231,43 @@ public class ElementName {
 
 
 
+    public static ElementName forHtmlName(final String dialectPrefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        if (elementNameBuffer == null) {
+            throw new IllegalArgumentException("Element name buffer cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
+        }
+        return new ElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen), true);
+    }
+
+
+
+    public static ElementName forXmlName(final String dialectPrefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        if (elementNameBuffer == null) {
+            throw new IllegalArgumentException("Element name buffer cannot be null or empty");
+        }
+        if (elementNameOffset < 0 || elementNameLen < 0) {
+            throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
+        }
+        return new ElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen), false);
+    }
+
+
+
     public static ElementName forHtmlName(final String dialectPrefix, final String elementName) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Element name cannot be null or empty");
+        }
         return new ElementName(dialectPrefix, elementName, true);
     }
 
 
 
     public static ElementName forXmlName(final String dialectPrefix, final String elementName) {
+        if (elementName == null) {
+            throw new IllegalArgumentException("Element name cannot be null or empty");
+        }
         return new ElementName(dialectPrefix, elementName, false);
     }
 
@@ -269,7 +276,7 @@ public class ElementName {
 
 
 
-    public ElementName(final String dialectPrefix, final String elementName, final boolean createHtml5StandardName) {
+    ElementName(final String dialectPrefix, final String elementName, final boolean createHtml5CustomName) {
 
         super();
 
@@ -281,7 +288,12 @@ public class ElementName {
         this.elementName = elementName;
 
         this.completeNSElementName = (dialectPrefix == null? elementName : dialectPrefix + ":" + elementName);
-        this.completeHtml5StandatdElementName = (dialectPrefix == null? elementName : dialectPrefix + "-" + elementName);
+
+        if (createHtml5CustomName) {
+            this.completeHtml5CustomElementName = (dialectPrefix == null? elementName : dialectPrefix + "-" + elementName);
+        } else {
+            this.completeHtml5CustomElementName = null;
+        }
 
     }
 
@@ -290,7 +302,7 @@ public class ElementName {
         return this.dialectPrefix;
     }
 
-    public String getAttributeName() {
+    public String getElementName() {
         return this.elementName;
     }
 
@@ -299,8 +311,19 @@ public class ElementName {
         return this.completeNSElementName;
     }
 
-    public String getCompleteHtml5StandatdElementName() {
-        return this.completeHtml5StandatdElementName;
+    public String getCompleteHtml5CustomElementName() {
+        return this.completeHtml5CustomElementName;
+    }
+
+
+
+    @Override
+    public String toString() {
+        // Reference equality is OK (and faster) in this case
+        if (this.completeHtml5CustomElementName == null || this.completeNSElementName == this.completeHtml5CustomElementName) {
+            return "{" + this.completeNSElementName + "}";
+        }
+        return "{" + this.completeNSElementName + "," + this.completeHtml5CustomElementName + "}";
     }
 
 }

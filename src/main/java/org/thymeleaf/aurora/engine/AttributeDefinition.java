@@ -27,17 +27,21 @@ package org.thymeleaf.aurora.engine;
  */
 public final class AttributeDefinition {
 
-    final String name;
+    final AttributeName name;
     final boolean booleanAttribute;
 
 
-    AttributeDefinition(final String name) {
+    AttributeDefinition(final AttributeName name) {
         this(name, false);
     }
 
-    AttributeDefinition(final String name, final boolean booleanAttribute) {
+    AttributeDefinition(final AttributeName name, final boolean booleanAttribute) {
 
         super();
+
+        if (name == null) {
+            throw new IllegalArgumentException("Attribute name cannot be null");
+        }
 
         this.name = name;
         this.booleanAttribute = booleanAttribute;
@@ -45,7 +49,7 @@ public final class AttributeDefinition {
     }
 
 
-    public String getName() {
+    public AttributeName getAttributeName() {
         return this.name;
     }
 
@@ -56,7 +60,7 @@ public final class AttributeDefinition {
 
 
     public String toString() {
-        return this.name;
+        return this.name.toString();
     }
 
 }
