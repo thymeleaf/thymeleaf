@@ -25,38 +25,37 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class AttributeName {
+public class HtmlPrefixedAttributeName extends PrefixedAttributeName {
 
-    final String attributeName;
+    final String completeNamespacedAttributeName;
+    final String completeHtml5CustomAttributeName;
     final String[] completeAttributeNames;
 
 
 
 
+    HtmlPrefixedAttributeName(final String prefix, final String attributeName) {
 
-    AttributeName(final String attributeName) {
+        super((prefix == null? null : prefix.toLowerCase()), (attributeName == null? null : attributeName.toLowerCase()));
+        // Prefix CANNOT be null
+        this.completeNamespacedAttributeName = this.prefix + ":" + this.attributeName;
+        this.completeHtml5CustomAttributeName = "data-" + this.prefix + "-" + this.attributeName;
 
-        super();
-
-        if (attributeName == null || attributeName.length() == 0) {
-            throw new IllegalArgumentException("Attribute name cannot be null or empty");
-        }
-
-        this.attributeName = attributeName;
-        this.completeAttributeNames = new String[] { this.attributeName };
+        this.completeAttributeNames =
+                new String[] { this.completeNamespacedAttributeName, this.completeHtml5CustomAttributeName };
 
     }
 
 
-    public String getAttributeName() {
-        return this.attributeName;
+    public String getCompleteNamespacedAttributeName() {
+        return this.completeNamespacedAttributeName;
     }
 
-
-    public boolean isPrefixed() {
-        return false;
+    public String getCompleteHtml5CustomAttributeName() {
+        return this.completeHtml5CustomAttributeName;
     }
 
+    @Override
     public String[] getCompleteAttributeNames() {
         return this.completeAttributeNames;
     }
@@ -65,8 +64,7 @@ public class AttributeName {
 
     @Override
     public String toString() {
-        // Reference equality is OK (and faster) in this case
-        return "{" + this.attributeName + "}";
+        return "{" + this.completeNamespacedAttributeName + "," + this.completeHtml5CustomAttributeName + "}";
     }
 
 }

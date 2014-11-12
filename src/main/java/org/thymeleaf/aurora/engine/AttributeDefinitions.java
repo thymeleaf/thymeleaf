@@ -22,7 +22,6 @@ package org.thymeleaf.aurora.engine;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -109,7 +108,7 @@ public final class AttributeDefinitions {
         final List<AttributeDefinition> htmlAttributeDefinitionListAux =
                 new ArrayList<AttributeDefinition>(ALL_STANDARD_HTML_ATTRIBUTE_NAMES.size() + 1);
         for (final String attributeNameStr : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-            final AttributeName attributeName = AttributeName.forHtmlName(attributeNameStr);
+            final AttributeName attributeName = AttributeNames.forHtmlName(attributeNameStr);
             final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName, htmlBooleanAttributeNameListAux.contains(attributeNameStr));
             htmlAttributeDefinitionListAux.add(attributeDefinition);
         }
@@ -195,9 +194,11 @@ public final class AttributeDefinitions {
 
         private final boolean html;
 
+        private final List<String> standardRepositoryNames; // read-only, no sync needed
         private final List<AttributeDefinition> standardRepository; // read-only, no sync needed
-        private final List<AttributeDefinition> repositoryNS;  // read-write, sync will be needed
-        private final List<AttributeDefinition> repositoryHtml5Custom;  // read-write, sync will be needed
+
+        private final List<String> repositoryNames;  // read-write, sync will be needed
+        private final List<AttributeDefinition> repository;  // read-write, sync will be needed
 
         private final ReadWriteLock lock = new ReentrantReadWriteLock(true);
         private final Lock readLock = this.lock.readLock();
@@ -205,11 +206,17 @@ public final class AttributeDefinitions {
 
 
         AttributeDefinitionRepository(final boolean html) {
+
             super();
+
             this.html = html;
+
+            this.standardRepositoryNames = (html ? new ArrayList<String>(150) : null);
             this.standardRepository = (html ? new ArrayList<AttributeDefinition>(150) : null);
-            this.repositoryNS = new ArrayList<AttributeDefinition>(500);
-            this.repositoryHtml5Custom = (html ? new ArrayList<AttributeDefinition>(500) : null);
+
+            this.repositoryNames = new ArrayList<String>(500);
+            this.repository = new ArrayList<AttributeDefinition>(500);
+
         }
 
 
@@ -217,12 +224,12 @@ public final class AttributeDefinitions {
 
             int index;
 
-            if (this.standardRepository != null) { // either ns and html5 are null, or not
+            if (this.standardRepository != null) {
                 /*
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepository, text, offset, len, true);
+                index = binarySearch(!this.html, this.standardRepositoryNames, text, offset, len);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -240,23 +247,10 @@ public final class AttributeDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNS, text, offset, len, true);
+                index = binarySearch(!this.html, this.repositoryNames, text, offset, len);
 
                 if (index >= 0) {
-                    return this.repositoryNS.get(index);
-                }
-
-                if (this.html) {
-
-                    /*
-                     * Now look for the element in the HTML5-custom repository
-                     */
-                    index = binarySearch(!this.html, this.repositoryHtml5Custom, text, offset, len, false);
-
-                    if (index >= 0) {
-                        return this.repositoryHtml5Custom.get(index);
-                    }
-
+                    return this.repository.get(index);
                 }
 
             } finally {
@@ -281,12 +275,12 @@ public final class AttributeDefinitions {
 
             int index;
 
-            if (this.standardRepository != null) { // either ns and html5 are null, or not
+            if (this.standardRepository != null) {
                 /*
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepository, text, true);
+                index = binarySearch(!this.html, this.standardRepositoryNames, text);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -304,23 +298,10 @@ public final class AttributeDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNS, text, true);
+                index = binarySearch(!this.html, this.repositoryNames, text);
 
                 if (index >= 0) {
-                    return this.repositoryNS.get(index);
-                }
-
-                if (this.html) {
-
-                    /*
-                     * Now look for the element in the HTML5-custom repository
-                     */
-                    index = binarySearch(!this.html, this.repositoryHtml5Custom, text, false);
-
-                    if (index >= 0) {
-                        return this.repositoryHtml5Custom.get(index);
-                    }
-
+                    return this.repository.get(index);
                 }
 
             } finally {
@@ -343,70 +324,60 @@ public final class AttributeDefinitions {
 
         private AttributeDefinition storeAttribute(final char[] text, final int offset, final int len) {
 
-            final AttributeName attributeName =
-                    this.html? AttributeName.forHtmlName(text, offset, len) : AttributeName.forXmlName(text, offset, len);
-
-            final int indexNS = binarySearch(!this.html, this.repositoryNS, attributeName.completeNSAttributeName, true);
-            if (indexNS >= 0) {
+            int index = binarySearch(!this.html, this.repositoryNames, text, offset, len);
+            if (index >= 0) {
                 // It was already added while we were waiting for the lock!
-                return this.repositoryNS.get(indexNS);
+                return this.repository.get(index);
             }
 
-            final AttributeDefinition element = new AttributeDefinition(attributeName);
+            final AttributeName attributeName =
+                    this.html? AttributeNames.forHtmlName(text, offset, len) : AttributeNames.forXmlName(text, offset, len);
 
-            if (this.html) {
+            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName);
 
-                final int indexHtml5Custom =
-                        binarySearch(!this.html, this.repositoryHtml5Custom, attributeName.completeHtml5CustomAttributeName, false);
-                if (indexHtml5Custom >= 0) {
-                    throw new IllegalStateException(
-                            "Attribute was present in the repository in namespaced format, but it exists in HTML5Custom format.");
-                }
+            final String[] completeAttributeNames = attributeName.getCompleteAttributeNames();
+
+            for (final String completeAttributeName : completeAttributeNames) {
+
+                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
-                this.repositoryHtml5Custom.add(((indexHtml5Custom + 1) * -1), element);
+                this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
+                this.repository.add(((index + 1) * -1), attributeDefinition);
 
             }
 
-            // binary Search returned (-(insertion point) - 1)
-            this.repositoryNS.add(((indexNS + 1) * -1), element);
-
-            return element;
+            return attributeDefinition;
 
         }
 
 
         private AttributeDefinition storeAttribute(final String text) {
 
-            final AttributeName attributeName =
-                    this.html? AttributeName.forHtmlName(text) : AttributeName.forXmlName(text);
-
-            final int indexNS = binarySearch(!this.html, this.repositoryNS, attributeName.completeNSAttributeName, true);
-            if (indexNS >= 0) {
+            int index = binarySearch(!this.html, this.repositoryNames, text);
+            if (index >= 0) {
                 // It was already added while we were waiting for the lock!
-                return this.repositoryNS.get(indexNS);
+                return this.repository.get(index);
             }
 
-            final AttributeDefinition element = new AttributeDefinition(attributeName);
+            final AttributeName attributeName =
+                    this.html? AttributeNames.forHtmlName(text) : AttributeNames.forXmlName(text);
 
-            if (this.html) {
+            final AttributeDefinition attributeDefinition = new AttributeDefinition(attributeName);
 
-                final int indexHtml5Custom =
-                        binarySearch(!this.html, this.repositoryHtml5Custom, attributeName.completeHtml5CustomAttributeName, false);
-                if (indexHtml5Custom >= 0) {
-                    throw new IllegalStateException(
-                            "Attribute was present in the repository in namespaced format, but it exists in HTML5Custom format.");
-                }
+            final String[] completeAttributeNames = attributeName.getCompleteAttributeNames();
+
+            for (final String completeAttributeName : completeAttributeNames) {
+
+                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
 
                 // binary Search returned (-(insertion point) - 1)
-                this.repositoryHtml5Custom.add(((indexHtml5Custom + 1) * -1), element);
+                this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
+                this.repository.add(((index + 1) * -1), attributeDefinition);
 
             }
 
-            // binary Search returned (-(insertion point) - 1)
-            this.repositoryNS.add(((indexNS + 1) * -1), element);
-
-            return element;
+            return attributeDefinition;
 
         }
 
@@ -416,21 +387,24 @@ public final class AttributeDefinitions {
             // This method will only be called from within the AttributeDefinitions class itself, during initialization of
             // standard elements.
 
-            final AttributeComparator comparatorNS =
-                    this.html ? AttributeComparator.forHtml(true) : AttributeComparator.forXml();
-            final AttributeComparator comparatorHtml5Custom =
-                    this.html ? AttributeComparator.forHtml(false) : null;
+            final String[] completeAttributeNames = attributeDefinition.getAttributeName().getCompleteAttributeNames();
 
-            if (this.standardRepository != null) {
-                this.standardRepository.add(attributeDefinition);
-                Collections.sort(this.standardRepository, comparatorNS); // namespaced comparator is OK for standard
+            int index;
+            for (final String completeAttributeName : completeAttributeNames) {
+
+                index = binarySearch(!this.html, this.standardRepositoryNames, completeAttributeName);
+
+                // binary Search returned (-(insertion point) - 1)
+                this.standardRepositoryNames.add(((index + 1) * -1), completeAttributeName);
+                this.standardRepository.add(((index + 1) * -1), attributeDefinition);
+
+                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
+                this.repository.add(((index + 1) * -1), attributeDefinition);
+
             }
-
-            this.repositoryNS.add(attributeDefinition);
-            Collections.sort(this.repositoryNS, comparatorNS);
-
-            this.repositoryHtml5Custom.add(attributeDefinition);
-            Collections.sort(this.repositoryHtml5Custom, comparatorHtml5Custom);
 
             return attributeDefinition;
 
@@ -438,8 +412,7 @@ public final class AttributeDefinitions {
 
 
         private static int binarySearch(
-                final boolean caseSensitive, final List<AttributeDefinition> values, final char[] text, final int offset, final int len,
-                final boolean namespaced) {
+                final boolean caseSensitive, final List<String> values, final char[] text, final int offset, final int len) {
 
             int low = 0;
             int high = values.size() - 1;
@@ -450,7 +423,7 @@ public final class AttributeDefinitions {
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
-                midVal = namespaced? values.get(mid).name.completeNSAttributeName : values.get(mid).name.completeHtml5CustomAttributeName;
+                midVal = values.get(mid);
 
                 cmp = TextUtil.compareTo(caseSensitive, midVal, 0, midVal.length(), text, offset, len);
 
@@ -470,9 +443,7 @@ public final class AttributeDefinitions {
         }
 
 
-        private static int binarySearch(
-                final boolean caseSensitive, final List<AttributeDefinition> values, final String text,
-                final boolean namespaced) {
+        private static int binarySearch(final boolean caseSensitive, final List<String> values, final String text) {
 
             int low = 0;
             int high = values.size() - 1;
@@ -483,7 +454,7 @@ public final class AttributeDefinitions {
             while (low <= high) {
 
                 mid = (low + high) >>> 1;
-                midVal = namespaced? values.get(mid).name.completeNSAttributeName : values.get(mid).name.completeHtml5CustomAttributeName;
+                midVal = values.get(mid);
 
                 cmp = TextUtil.compareTo(caseSensitive, midVal, text);
 
@@ -503,39 +474,6 @@ public final class AttributeDefinitions {
         }
 
 
-    }
-
-
-    private static class AttributeComparator implements Comparator<AttributeDefinition> {
-
-        private static AttributeComparator INSTANCE_HTML_NS = new AttributeComparator(true, true);
-        private static AttributeComparator INSTANCE_HTML_HTMLCUSTOM = new AttributeComparator(true, false);
-        private static AttributeComparator INSTANCE_XML_NS = new AttributeComparator(false, true);
-
-        private final boolean html;
-        private final boolean namespaced;
-
-        static AttributeComparator forHtml(final boolean namespaced) {
-            return namespaced ? INSTANCE_HTML_NS : INSTANCE_HTML_HTMLCUSTOM;
-        }
-
-        static AttributeComparator forXml() {
-            return INSTANCE_XML_NS;
-        }
-
-        private AttributeComparator(final boolean html, final boolean namespaced) {
-            super();
-            this.html = html;
-            this.namespaced = namespaced;
-        }
-
-        public int compare(final AttributeDefinition o1, final AttributeDefinition o2) {
-            // caseSensitive is true here because we might have
-            if (this.namespaced) {
-                return TextUtil.compareTo(!this.html, o1.name.completeNSAttributeName, o2.name.completeNSAttributeName);
-            }
-            return TextUtil.compareTo(!this.html, o1.name.completeHtml5CustomAttributeName, o2.name.completeHtml5CustomAttributeName);
-        }
     }
 
 

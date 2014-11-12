@@ -25,44 +25,40 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class ElementName {
+public class XmlPrefixedElementName extends PrefixedElementName {
 
-    final String elementName;
+    final String completeNamespacedElementName;
     final String[] completeElementNames;
 
 
 
 
-    ElementName(final String elementName) {
 
-        super();
 
-        if (elementName == null || elementName.length() == 0) {
-            throw new IllegalArgumentException("Element name cannot be null or empty");
-        }
+    XmlPrefixedElementName(final String prefix, final String elementName) {
 
-        this.elementName = elementName;
-        this.completeElementNames = new String[] { this.elementName };
+        super(prefix, elementName);
+        // Prefix CANNOT be null
+        this.completeNamespacedElementName = prefix + ":" + elementName;
+        this.completeElementNames = new String[] { this.completeNamespacedElementName };
 
     }
 
 
-    public String getElementName() {
-        return this.elementName;
+    public String getCompleteNamespacedElementName() {
+        return this.completeNamespacedElementName;
     }
 
-    public boolean isPrefixed() {
-        return false;
-    }
-
+    @Override
     public String[] getCompleteElementNames() {
         return this.completeElementNames;
     }
 
 
+
     @Override
     public String toString() {
-        return "{" + this.elementName + "}";
+        return "{" + this.completeNamespacedElementName + "}";
     }
 
 }

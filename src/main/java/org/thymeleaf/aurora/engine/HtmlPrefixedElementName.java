@@ -25,44 +25,48 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class ElementName {
+public class HtmlPrefixedElementName extends PrefixedElementName {
 
-    final String elementName;
+    final String completeNamespacedElementName;
+    final String completeHtml5CustomElementName;
     final String[] completeElementNames;
 
 
 
 
-    ElementName(final String elementName) {
 
-        super();
 
-        if (elementName == null || elementName.length() == 0) {
-            throw new IllegalArgumentException("Element name cannot be null or empty");
-        }
+    HtmlPrefixedElementName(final String prefix, final String elementName) {
 
-        this.elementName = elementName;
-        this.completeElementNames = new String[] { this.elementName };
+        super((prefix == null? null : prefix.toLowerCase()), (elementName == null? null : elementName.toLowerCase()));
+        // Prefix CANNOT be null
+        this.completeNamespacedElementName = this.prefix + ":" + this.elementName;
+        this.completeHtml5CustomElementName = this.prefix + "-" + this.elementName;
+
+        this.completeElementNames =
+                new String[] { this.completeNamespacedElementName, this.completeHtml5CustomElementName };
 
     }
 
 
-    public String getElementName() {
-        return this.elementName;
+    public String getCompleteNamespacedElementName() {
+        return this.completeNamespacedElementName;
     }
 
-    public boolean isPrefixed() {
-        return false;
+    public String getCompleteHtml5CustomElementName() {
+        return this.completeHtml5CustomElementName;
     }
 
+    @Override
     public String[] getCompleteElementNames() {
         return this.completeElementNames;
     }
 
 
+
     @Override
     public String toString() {
-        return "{" + this.elementName + "}";
+        return "{" + this.completeNamespacedElementName + "," + this.completeHtml5CustomElementName + "}";
     }
 
 }

@@ -25,44 +25,38 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class ElementName {
+public abstract class PrefixedAttributeName extends AttributeName {
 
-    final String elementName;
-    final String[] completeElementNames;
-
-
+    final String prefix;
+    final String attributeName;
 
 
-    ElementName(final String elementName) {
 
-        super();
 
-        if (elementName == null || elementName.length() == 0) {
-            throw new IllegalArgumentException("Element name cannot be null or empty");
+
+
+    PrefixedAttributeName(final String prefix, final String attributeName) {
+
+        super(attributeName);
+
+        if (prefix == null || prefix.length() == 0) {
+            throw new IllegalArgumentException("Attribute prefix cannot be null or empty");
         }
 
-        this.elementName = elementName;
-        this.completeElementNames = new String[] { this.elementName };
+        this.prefix = prefix;
+        this.attributeName = attributeName;
 
-    }
-
-
-    public String getElementName() {
-        return this.elementName;
-    }
-
-    public boolean isPrefixed() {
-        return false;
-    }
-
-    public String[] getCompleteElementNames() {
-        return this.completeElementNames;
     }
 
 
     @Override
-    public String toString() {
-        return "{" + this.elementName + "}";
+    public boolean isPrefixed() {
+        return true;
+    }
+
+
+    public String getPrefix() {
+        return this.prefix;
     }
 
 }
