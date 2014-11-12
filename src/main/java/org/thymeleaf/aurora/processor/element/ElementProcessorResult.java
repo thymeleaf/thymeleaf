@@ -27,5 +27,24 @@ package org.thymeleaf.aurora.processor.element;
  */
 public final class ElementProcessorResult {
 
+   /*
+    * Processor result = sequence of actions of these types:
+    *
+    *   - ADD ATTRIBUTE TO CURRENT ELEMENT
+    *   - REMOVE ATTRIBUTE TO CURRENT ELEMENT
+    *   - MODIFY ATTRIBUTE TO CURRENT ELEMENT
+    *   - MODIFY CURRENT ELEMENT NAME
+    *   - REMOVE CURRENT ELEMENT AND BODY
+    *   - REMOVE CURRENT ELEMENT, LEAVE BODY
+    *   - REMOVE CURRENT ELEMENT's BODY
+    *   - SET CURRENT ELEMENT's BODY
+    *   - ADD LOCAL VARIABLE FOR BODY
+    *   - MODIFY LOCAL VARIABLE FOR BODY
+    *   - REMOVE LOCAL VARIABLE FOR BODY
+    *   - SET SELECTION TARGET FOR BODY
+    *   - ITERATE CURRENT ELEMENT n TIMES
+    *   - SET INLINING MODE FOR BODY
+    *   - INCLUDE FRAGMENT
+    */
 
 }

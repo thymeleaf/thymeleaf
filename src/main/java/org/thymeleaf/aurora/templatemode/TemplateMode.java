@@ -17,28 +17,17 @@
  *
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.templatemode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
  *
  */
-public enum ElementType {
+public enum TemplateMode {
 
-    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#elements-0
-
-    VOID(true), RAW_TEXT(false), ESCAPABLE_RAW_TEXT(false), FOREIGN(false), NORMAL(false);
-
-    final boolean isVoid;
-
-    private ElementType(final boolean voidElement) {
-        this.isVoid = voidElement;
-    }
-
-    public boolean isVoid() {
-        return this.isVoid;
-    }
+    HTML, XML, TEXT
 
 }

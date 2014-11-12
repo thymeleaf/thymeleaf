@@ -25,19 +25,29 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public abstract class AttributeDefinition {
+public final class XmlAttributeDefinition extends AttributeDefinition {
+
+    final XmlAttributeName name;
 
 
-    AttributeDefinition() {
+    XmlAttributeDefinition(final XmlAttributeName name) {
+
         super();
+
+        if (name == null) {
+            throw new IllegalArgumentException("Attribute name cannot be null");
+        }
+
+        this.name = name;
+
     }
 
 
-    public abstract AttributeName getAttributeName();
 
-
-    public String toString() {
-        return getAttributeName().toString();
+    @Override
+    public XmlAttributeName getAttributeName() {
+        return this.name;
     }
+
 
 }

@@ -25,7 +25,7 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class ElementName {
+public abstract class ElementName {
 
     final String elementName;
     final String[] completeElementNames;

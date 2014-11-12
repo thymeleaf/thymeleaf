@@ -46,7 +46,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private ElementDefinition elementDefinition = null;
     private String elementName = null;
-    private ParsedAttributes elementAttributes = new ParsedAttributes();
+    private ParsedHtmlAttributes elementAttributes = new ParsedHtmlAttributes();
     private boolean elementMinimized = false;
     private int elementLine = -1;
     private int elementCol = -1;

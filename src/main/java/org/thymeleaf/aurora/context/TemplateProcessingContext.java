@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.context;
 
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -30,18 +31,33 @@ import org.thymeleaf.util.Validate;
 public class TemplateProcessingContext implements ITemplateProcessingContext {
 
     private final ITemplateEngineContext templateEngineContext;
+    private final String templateName;
+    private final TemplateMode templateMode;
 
 
-
-    public TemplateProcessingContext(final ITemplateEngineContext templateEngineContext) {
+    public TemplateProcessingContext(
+            final ITemplateEngineContext templateEngineContext,
+            final String templateName, final TemplateMode templateMode) {
         super();
         Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
+        Validate.notNull(templateName, "Template Name cannot be null");
+        Validate.notNull(templateMode, "Template Mode cannot be null");
         this.templateEngineContext = templateEngineContext;
+        this.templateName = templateName;
+        this.templateMode = templateMode;
     }
 
 
     public ITemplateEngineContext getTemplateEngineContext() {
         return this.templateEngineContext;
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
+    }
+
+    public TemplateMode getTemplateMode() {
+        return this.templateMode;
     }
 
 }

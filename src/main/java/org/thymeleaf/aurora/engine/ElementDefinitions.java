@@ -43,152 +43,152 @@ public final class ElementDefinitions {
 
 
     // Set containing all the standard elements, for possible external reference
-    public static final Set<ElementDefinition> ALL_STANDARD_HTML_ELEMENTS;
+    public static final Set<HtmlElementDefinition> ALL_STANDARD_HTML_ELEMENTS;
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ELEMENT_NAMES;
 
 
     // Root
-    static final ElementDefinition HTML = new ElementDefinition(ElementNames.forHtmlName("html"), ElementType.NORMAL);
+    static final HtmlElementDefinition HTML = new HtmlElementDefinition(ElementNames.forHtmlName("html"), HtmlElementType.NORMAL);
 
     // Document metadata
-    static final ElementDefinition HEAD = new ElementDefinition(ElementNames.forHtmlName("head"), ElementType.NORMAL);
-    static final ElementDefinition TITLE = new ElementDefinition(ElementNames.forHtmlName("title"), ElementType.ESCAPABLE_RAW_TEXT);
-    static final ElementDefinition BASE = new ElementDefinition(ElementNames.forHtmlName("base"), ElementType.VOID);
-    static final ElementDefinition LINK = new ElementDefinition(ElementNames.forHtmlName("link"), ElementType.VOID);
-    static final ElementDefinition META = new ElementDefinition(ElementNames.forHtmlName("meta"), ElementType.VOID);
-    static final ElementDefinition STYLE = new ElementDefinition(ElementNames.forHtmlName("style"), ElementType.RAW_TEXT);
+    static final HtmlElementDefinition HEAD = new HtmlElementDefinition(ElementNames.forHtmlName("head"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TITLE = new HtmlElementDefinition(ElementNames.forHtmlName("title"), HtmlElementType.ESCAPABLE_RAW_TEXT);
+    static final HtmlElementDefinition BASE = new HtmlElementDefinition(ElementNames.forHtmlName("base"), HtmlElementType.VOID);
+    static final HtmlElementDefinition LINK = new HtmlElementDefinition(ElementNames.forHtmlName("link"), HtmlElementType.VOID);
+    static final HtmlElementDefinition META = new HtmlElementDefinition(ElementNames.forHtmlName("meta"), HtmlElementType.VOID);
+    static final HtmlElementDefinition STYLE = new HtmlElementDefinition(ElementNames.forHtmlName("style"), HtmlElementType.RAW_TEXT);
 
     // Scripting
-    static final ElementDefinition SCRIPT = new ElementDefinition(ElementNames.forHtmlName("script"), ElementType.RAW_TEXT);
-    static final ElementDefinition NOSCRIPT = new ElementDefinition(ElementNames.forHtmlName("noscript"), ElementType.NORMAL);
+    static final HtmlElementDefinition SCRIPT = new HtmlElementDefinition(ElementNames.forHtmlName("script"), HtmlElementType.RAW_TEXT);
+    static final HtmlElementDefinition NOSCRIPT = new HtmlElementDefinition(ElementNames.forHtmlName("noscript"), HtmlElementType.NORMAL);
 
     // Sections
-    static final ElementDefinition BODY = new ElementDefinition(ElementNames.forHtmlName("body"), ElementType.NORMAL);
-    static final ElementDefinition ARTICLE = new ElementDefinition(ElementNames.forHtmlName("article"), ElementType.NORMAL);
-    static final ElementDefinition SECTION = new ElementDefinition(ElementNames.forHtmlName("section"), ElementType.NORMAL);
-    static final ElementDefinition NAV = new ElementDefinition(ElementNames.forHtmlName("nav"), ElementType.NORMAL);
-    static final ElementDefinition ASIDE = new ElementDefinition(ElementNames.forHtmlName("aside"), ElementType.NORMAL);
-    static final ElementDefinition H1 = new ElementDefinition(ElementNames.forHtmlName("h1"), ElementType.NORMAL);
-    static final ElementDefinition H2 = new ElementDefinition(ElementNames.forHtmlName("h2"), ElementType.NORMAL);
-    static final ElementDefinition H3 = new ElementDefinition(ElementNames.forHtmlName("h3"), ElementType.NORMAL);
-    static final ElementDefinition H4 = new ElementDefinition(ElementNames.forHtmlName("h4"), ElementType.NORMAL);
-    static final ElementDefinition H5 = new ElementDefinition(ElementNames.forHtmlName("h5"), ElementType.NORMAL);
-    static final ElementDefinition H6 = new ElementDefinition(ElementNames.forHtmlName("h6"), ElementType.NORMAL);
-    static final ElementDefinition HGROUP = new ElementDefinition(ElementNames.forHtmlName("hgroup"), ElementType.NORMAL);
-    static final ElementDefinition HEADER = new ElementDefinition(ElementNames.forHtmlName("header"), ElementType.NORMAL);
-    static final ElementDefinition FOOTER = new ElementDefinition(ElementNames.forHtmlName("footer"), ElementType.NORMAL);
-    static final ElementDefinition ADDRESS = new ElementDefinition(ElementNames.forHtmlName("address"), ElementType.NORMAL);
-    static final ElementDefinition MAIN = new ElementDefinition(ElementNames.forHtmlName("main"), ElementType.NORMAL);
+    static final HtmlElementDefinition BODY = new HtmlElementDefinition(ElementNames.forHtmlName("body"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition ARTICLE = new HtmlElementDefinition(ElementNames.forHtmlName("article"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SECTION = new HtmlElementDefinition(ElementNames.forHtmlName("section"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition NAV = new HtmlElementDefinition(ElementNames.forHtmlName("nav"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition ASIDE = new HtmlElementDefinition(ElementNames.forHtmlName("aside"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition H1 = new HtmlElementDefinition(ElementNames.forHtmlName("h1"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition H2 = new HtmlElementDefinition(ElementNames.forHtmlName("h2"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition H3 = new HtmlElementDefinition(ElementNames.forHtmlName("h3"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition H4 = new HtmlElementDefinition(ElementNames.forHtmlName("h4"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition H5 = new HtmlElementDefinition(ElementNames.forHtmlName("h5"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition H6 = new HtmlElementDefinition(ElementNames.forHtmlName("h6"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition HGROUP = new HtmlElementDefinition(ElementNames.forHtmlName("hgroup"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition HEADER = new HtmlElementDefinition(ElementNames.forHtmlName("header"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition FOOTER = new HtmlElementDefinition(ElementNames.forHtmlName("footer"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition ADDRESS = new HtmlElementDefinition(ElementNames.forHtmlName("address"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition MAIN = new HtmlElementDefinition(ElementNames.forHtmlName("main"), HtmlElementType.NORMAL);
 
     // Grouping content
-    static final ElementDefinition P = new ElementDefinition(ElementNames.forHtmlName("p"), ElementType.NORMAL);
-    static final ElementDefinition HR = new ElementDefinition(ElementNames.forHtmlName("hr"), ElementType.VOID);
-    static final ElementDefinition PRE = new ElementDefinition(ElementNames.forHtmlName("pre"), ElementType.NORMAL);
-    static final ElementDefinition BLOCKQUOTE = new ElementDefinition(ElementNames.forHtmlName("blockquote"), ElementType.NORMAL);
-    static final ElementDefinition OL = new ElementDefinition(ElementNames.forHtmlName("ol"), ElementType.NORMAL);
-    static final ElementDefinition UL = new ElementDefinition(ElementNames.forHtmlName("ul"), ElementType.NORMAL);
-    static final ElementDefinition LI = new ElementDefinition(ElementNames.forHtmlName("li"), ElementType.NORMAL);
-    static final ElementDefinition DL = new ElementDefinition(ElementNames.forHtmlName("dl"), ElementType.NORMAL);
-    static final ElementDefinition DT = new ElementDefinition(ElementNames.forHtmlName("dt"), ElementType.NORMAL);
-    static final ElementDefinition DD = new ElementDefinition(ElementNames.forHtmlName("dd"), ElementType.NORMAL);
-    static final ElementDefinition FIGURE = new ElementDefinition(ElementNames.forHtmlName("figure"), ElementType.NORMAL);
-    static final ElementDefinition FIGCAPTION = new ElementDefinition(ElementNames.forHtmlName("figcaption"), ElementType.NORMAL);
-    static final ElementDefinition DIV = new ElementDefinition(ElementNames.forHtmlName("div"), ElementType.NORMAL);
+    static final HtmlElementDefinition P = new HtmlElementDefinition(ElementNames.forHtmlName("p"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition HR = new HtmlElementDefinition(ElementNames.forHtmlName("hr"), HtmlElementType.VOID);
+    static final HtmlElementDefinition PRE = new HtmlElementDefinition(ElementNames.forHtmlName("pre"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition BLOCKQUOTE = new HtmlElementDefinition(ElementNames.forHtmlName("blockquote"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition OL = new HtmlElementDefinition(ElementNames.forHtmlName("ol"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition UL = new HtmlElementDefinition(ElementNames.forHtmlName("ul"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition LI = new HtmlElementDefinition(ElementNames.forHtmlName("li"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DL = new HtmlElementDefinition(ElementNames.forHtmlName("dl"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DT = new HtmlElementDefinition(ElementNames.forHtmlName("dt"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DD = new HtmlElementDefinition(ElementNames.forHtmlName("dd"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition FIGURE = new HtmlElementDefinition(ElementNames.forHtmlName("figure"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition FIGCAPTION = new HtmlElementDefinition(ElementNames.forHtmlName("figcaption"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DIV = new HtmlElementDefinition(ElementNames.forHtmlName("div"), HtmlElementType.NORMAL);
 
     // Text-level semantics
-    static final ElementDefinition A = new ElementDefinition(ElementNames.forHtmlName("a"), ElementType.NORMAL);
-    static final ElementDefinition EM = new ElementDefinition(ElementNames.forHtmlName("em"), ElementType.NORMAL);
-    static final ElementDefinition STRONG = new ElementDefinition(ElementNames.forHtmlName("strong"), ElementType.NORMAL);
-    static final ElementDefinition SMALL = new ElementDefinition(ElementNames.forHtmlName("small"), ElementType.NORMAL);
-    static final ElementDefinition S = new ElementDefinition(ElementNames.forHtmlName("s"), ElementType.NORMAL);
-    static final ElementDefinition CITE = new ElementDefinition(ElementNames.forHtmlName("cite"), ElementType.NORMAL);
-    static final ElementDefinition G = new ElementDefinition(ElementNames.forHtmlName("g"), ElementType.NORMAL);
-    static final ElementDefinition DFN = new ElementDefinition(ElementNames.forHtmlName("dfn"), ElementType.NORMAL);
-    static final ElementDefinition ABBR = new ElementDefinition(ElementNames.forHtmlName("abbr"), ElementType.NORMAL);
-    static final ElementDefinition TIME = new ElementDefinition(ElementNames.forHtmlName("time"), ElementType.NORMAL);
-    static final ElementDefinition CODE = new ElementDefinition(ElementNames.forHtmlName("code"), ElementType.NORMAL);
-    static final ElementDefinition VAR = new ElementDefinition(ElementNames.forHtmlName("var"), ElementType.NORMAL);
-    static final ElementDefinition SAMP = new ElementDefinition(ElementNames.forHtmlName("samp"), ElementType.NORMAL);
-    static final ElementDefinition KBD = new ElementDefinition(ElementNames.forHtmlName("kbd"), ElementType.NORMAL);
-    static final ElementDefinition SUB = new ElementDefinition(ElementNames.forHtmlName("sub"), ElementType.NORMAL);
-    static final ElementDefinition SUP = new ElementDefinition(ElementNames.forHtmlName("sup"), ElementType.NORMAL);
-    static final ElementDefinition I = new ElementDefinition(ElementNames.forHtmlName("i"), ElementType.NORMAL);
-    static final ElementDefinition B = new ElementDefinition(ElementNames.forHtmlName("b"), ElementType.NORMAL);
-    static final ElementDefinition U = new ElementDefinition(ElementNames.forHtmlName("u"), ElementType.NORMAL);
-    static final ElementDefinition MARK = new ElementDefinition(ElementNames.forHtmlName("mark"), ElementType.NORMAL);
-    static final ElementDefinition RUBY = new ElementDefinition(ElementNames.forHtmlName("ruby"), ElementType.NORMAL);
-    static final ElementDefinition RB = new ElementDefinition(ElementNames.forHtmlName("rb"), ElementType.NORMAL);
-    static final ElementDefinition RT = new ElementDefinition(ElementNames.forHtmlName("rt"), ElementType.NORMAL);
-    static final ElementDefinition RTC = new ElementDefinition(ElementNames.forHtmlName("rtc"), ElementType.NORMAL);
-    static final ElementDefinition RP = new ElementDefinition(ElementNames.forHtmlName("rp"), ElementType.NORMAL);
-    static final ElementDefinition BDI = new ElementDefinition(ElementNames.forHtmlName("bdi"), ElementType.NORMAL);
-    static final ElementDefinition BDO = new ElementDefinition(ElementNames.forHtmlName("bdo"), ElementType.NORMAL);
-    static final ElementDefinition SPAN = new ElementDefinition(ElementNames.forHtmlName("span"), ElementType.NORMAL);
-    static final ElementDefinition BR = new ElementDefinition(ElementNames.forHtmlName("br"), ElementType.VOID);
-    static final ElementDefinition WBR = new ElementDefinition(ElementNames.forHtmlName("wbr"), ElementType.VOID);
+    static final HtmlElementDefinition A = new HtmlElementDefinition(ElementNames.forHtmlName("a"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition EM = new HtmlElementDefinition(ElementNames.forHtmlName("em"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition STRONG = new HtmlElementDefinition(ElementNames.forHtmlName("strong"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SMALL = new HtmlElementDefinition(ElementNames.forHtmlName("small"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition S = new HtmlElementDefinition(ElementNames.forHtmlName("s"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition CITE = new HtmlElementDefinition(ElementNames.forHtmlName("cite"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition G = new HtmlElementDefinition(ElementNames.forHtmlName("g"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DFN = new HtmlElementDefinition(ElementNames.forHtmlName("dfn"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition ABBR = new HtmlElementDefinition(ElementNames.forHtmlName("abbr"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TIME = new HtmlElementDefinition(ElementNames.forHtmlName("time"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition CODE = new HtmlElementDefinition(ElementNames.forHtmlName("code"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition VAR = new HtmlElementDefinition(ElementNames.forHtmlName("var"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SAMP = new HtmlElementDefinition(ElementNames.forHtmlName("samp"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition KBD = new HtmlElementDefinition(ElementNames.forHtmlName("kbd"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SUB = new HtmlElementDefinition(ElementNames.forHtmlName("sub"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SUP = new HtmlElementDefinition(ElementNames.forHtmlName("sup"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition I = new HtmlElementDefinition(ElementNames.forHtmlName("i"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition B = new HtmlElementDefinition(ElementNames.forHtmlName("b"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition U = new HtmlElementDefinition(ElementNames.forHtmlName("u"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition MARK = new HtmlElementDefinition(ElementNames.forHtmlName("mark"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition RUBY = new HtmlElementDefinition(ElementNames.forHtmlName("ruby"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition RB = new HtmlElementDefinition(ElementNames.forHtmlName("rb"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition RT = new HtmlElementDefinition(ElementNames.forHtmlName("rt"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition RTC = new HtmlElementDefinition(ElementNames.forHtmlName("rtc"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition RP = new HtmlElementDefinition(ElementNames.forHtmlName("rp"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition BDI = new HtmlElementDefinition(ElementNames.forHtmlName("bdi"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition BDO = new HtmlElementDefinition(ElementNames.forHtmlName("bdo"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SPAN = new HtmlElementDefinition(ElementNames.forHtmlName("span"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition BR = new HtmlElementDefinition(ElementNames.forHtmlName("br"), HtmlElementType.VOID);
+    static final HtmlElementDefinition WBR = new HtmlElementDefinition(ElementNames.forHtmlName("wbr"), HtmlElementType.VOID);
 
     // Edits
-    static final ElementDefinition INS = new ElementDefinition(ElementNames.forHtmlName("ins"), ElementType.NORMAL);
-    static final ElementDefinition DEL = new ElementDefinition(ElementNames.forHtmlName("del"), ElementType.NORMAL);
+    static final HtmlElementDefinition INS = new HtmlElementDefinition(ElementNames.forHtmlName("ins"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DEL = new HtmlElementDefinition(ElementNames.forHtmlName("del"), HtmlElementType.NORMAL);
 
     // Embedded content
-    static final ElementDefinition IMG = new ElementDefinition(ElementNames.forHtmlName("img"), ElementType.VOID);
-    static final ElementDefinition IFRAME = new ElementDefinition(ElementNames.forHtmlName("iframe"), ElementType.NORMAL);
-    static final ElementDefinition EMBED = new ElementDefinition(ElementNames.forHtmlName("embed"), ElementType.VOID);
-    static final ElementDefinition OBJECT = new ElementDefinition(ElementNames.forHtmlName("object"), ElementType.NORMAL);
-    static final ElementDefinition PARAM = new ElementDefinition(ElementNames.forHtmlName("param"), ElementType.VOID);
-    static final ElementDefinition VIDEO = new ElementDefinition(ElementNames.forHtmlName("video"), ElementType.NORMAL);
-    static final ElementDefinition AUDIO = new ElementDefinition(ElementNames.forHtmlName("audio"), ElementType.NORMAL);
-    static final ElementDefinition SOURCE = new ElementDefinition(ElementNames.forHtmlName("source"), ElementType.VOID);
-    static final ElementDefinition TRACK = new ElementDefinition(ElementNames.forHtmlName("track"), ElementType.VOID);
-    static final ElementDefinition CANVAS = new ElementDefinition(ElementNames.forHtmlName("canvas"), ElementType.NORMAL);
-    static final ElementDefinition MAP = new ElementDefinition(ElementNames.forHtmlName("map"), ElementType.NORMAL);
-    static final ElementDefinition AREA = new ElementDefinition(ElementNames.forHtmlName("area"), ElementType.VOID);
+    static final HtmlElementDefinition IMG = new HtmlElementDefinition(ElementNames.forHtmlName("img"), HtmlElementType.VOID);
+    static final HtmlElementDefinition IFRAME = new HtmlElementDefinition(ElementNames.forHtmlName("iframe"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition EMBED = new HtmlElementDefinition(ElementNames.forHtmlName("embed"), HtmlElementType.VOID);
+    static final HtmlElementDefinition OBJECT = new HtmlElementDefinition(ElementNames.forHtmlName("object"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition PARAM = new HtmlElementDefinition(ElementNames.forHtmlName("param"), HtmlElementType.VOID);
+    static final HtmlElementDefinition VIDEO = new HtmlElementDefinition(ElementNames.forHtmlName("video"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition AUDIO = new HtmlElementDefinition(ElementNames.forHtmlName("audio"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SOURCE = new HtmlElementDefinition(ElementNames.forHtmlName("source"), HtmlElementType.VOID);
+    static final HtmlElementDefinition TRACK = new HtmlElementDefinition(ElementNames.forHtmlName("track"), HtmlElementType.VOID);
+    static final HtmlElementDefinition CANVAS = new HtmlElementDefinition(ElementNames.forHtmlName("canvas"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition MAP = new HtmlElementDefinition(ElementNames.forHtmlName("map"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition AREA = new HtmlElementDefinition(ElementNames.forHtmlName("area"), HtmlElementType.VOID);
 
     // Tabular data
-    static final ElementDefinition TABLE = new ElementDefinition(ElementNames.forHtmlName("table"), ElementType.NORMAL);
-    static final ElementDefinition CAPTION = new ElementDefinition(ElementNames.forHtmlName("caption"), ElementType.NORMAL);
-    static final ElementDefinition COLGROUP = new ElementDefinition(ElementNames.forHtmlName("colgroup"), ElementType.NORMAL);
-    static final ElementDefinition COL = new ElementDefinition(ElementNames.forHtmlName("col"), ElementType.VOID);
-    static final ElementDefinition TBODY = new ElementDefinition(ElementNames.forHtmlName("tbody"), ElementType.NORMAL);
-    static final ElementDefinition THEAD = new ElementDefinition(ElementNames.forHtmlName("thead"), ElementType.NORMAL);
-    static final ElementDefinition TFOOT = new ElementDefinition(ElementNames.forHtmlName("tfoot"), ElementType.NORMAL);
-    static final ElementDefinition TR = new ElementDefinition(ElementNames.forHtmlName("tr"), ElementType.NORMAL);
-    static final ElementDefinition TD = new ElementDefinition(ElementNames.forHtmlName("td"), ElementType.NORMAL);
-    static final ElementDefinition TH = new ElementDefinition(ElementNames.forHtmlName("th"), ElementType.NORMAL);
+    static final HtmlElementDefinition TABLE = new HtmlElementDefinition(ElementNames.forHtmlName("table"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition CAPTION = new HtmlElementDefinition(ElementNames.forHtmlName("caption"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition COLGROUP = new HtmlElementDefinition(ElementNames.forHtmlName("colgroup"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition COL = new HtmlElementDefinition(ElementNames.forHtmlName("col"), HtmlElementType.VOID);
+    static final HtmlElementDefinition TBODY = new HtmlElementDefinition(ElementNames.forHtmlName("tbody"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition THEAD = new HtmlElementDefinition(ElementNames.forHtmlName("thead"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TFOOT = new HtmlElementDefinition(ElementNames.forHtmlName("tfoot"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TR = new HtmlElementDefinition(ElementNames.forHtmlName("tr"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TD = new HtmlElementDefinition(ElementNames.forHtmlName("td"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TH = new HtmlElementDefinition(ElementNames.forHtmlName("th"), HtmlElementType.NORMAL);
 
     // Forms
-    static final ElementDefinition FORM = new ElementDefinition(ElementNames.forHtmlName("form"), ElementType.NORMAL);
-    static final ElementDefinition FIELDSET = new ElementDefinition(ElementNames.forHtmlName("fieldset"), ElementType.NORMAL);
-    static final ElementDefinition LEGEND = new ElementDefinition(ElementNames.forHtmlName("legend"), ElementType.NORMAL);
-    static final ElementDefinition LABEL = new ElementDefinition(ElementNames.forHtmlName("label"), ElementType.NORMAL);
-    static final ElementDefinition INPUT = new ElementDefinition(ElementNames.forHtmlName("input"), ElementType.VOID);
-    static final ElementDefinition BUTTON = new ElementDefinition(ElementNames.forHtmlName("button"), ElementType.NORMAL);
-    static final ElementDefinition SELECT = new ElementDefinition(ElementNames.forHtmlName("select"), ElementType.NORMAL);
-    static final ElementDefinition DATALIST = new ElementDefinition(ElementNames.forHtmlName("datalist"), ElementType.NORMAL);
-    static final ElementDefinition OPTGROUP = new ElementDefinition(ElementNames.forHtmlName("optgroup"), ElementType.NORMAL);
-    static final ElementDefinition OPTION = new ElementDefinition(ElementNames.forHtmlName("option"), ElementType.NORMAL);
-    static final ElementDefinition TEXTAREA = new ElementDefinition(ElementNames.forHtmlName("textarea"), ElementType.ESCAPABLE_RAW_TEXT);
-    static final ElementDefinition KEYGEN = new ElementDefinition(ElementNames.forHtmlName("keygen"), ElementType.VOID);
-    static final ElementDefinition OUTPUT = new ElementDefinition(ElementNames.forHtmlName("output"), ElementType.NORMAL);
-    static final ElementDefinition PROGRESS = new ElementDefinition(ElementNames.forHtmlName("progress"), ElementType.NORMAL);
-    static final ElementDefinition METER = new ElementDefinition(ElementNames.forHtmlName("meter"), ElementType.NORMAL);
+    static final HtmlElementDefinition FORM = new HtmlElementDefinition(ElementNames.forHtmlName("form"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition FIELDSET = new HtmlElementDefinition(ElementNames.forHtmlName("fieldset"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition LEGEND = new HtmlElementDefinition(ElementNames.forHtmlName("legend"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition LABEL = new HtmlElementDefinition(ElementNames.forHtmlName("label"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition INPUT = new HtmlElementDefinition(ElementNames.forHtmlName("input"), HtmlElementType.VOID);
+    static final HtmlElementDefinition BUTTON = new HtmlElementDefinition(ElementNames.forHtmlName("button"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SELECT = new HtmlElementDefinition(ElementNames.forHtmlName("select"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DATALIST = new HtmlElementDefinition(ElementNames.forHtmlName("datalist"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition OPTGROUP = new HtmlElementDefinition(ElementNames.forHtmlName("optgroup"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition OPTION = new HtmlElementDefinition(ElementNames.forHtmlName("option"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition TEXTAREA = new HtmlElementDefinition(ElementNames.forHtmlName("textarea"), HtmlElementType.ESCAPABLE_RAW_TEXT);
+    static final HtmlElementDefinition KEYGEN = new HtmlElementDefinition(ElementNames.forHtmlName("keygen"), HtmlElementType.VOID);
+    static final HtmlElementDefinition OUTPUT = new HtmlElementDefinition(ElementNames.forHtmlName("output"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition PROGRESS = new HtmlElementDefinition(ElementNames.forHtmlName("progress"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition METER = new HtmlElementDefinition(ElementNames.forHtmlName("meter"), HtmlElementType.NORMAL);
 
     // Interactive elements
-    static final ElementDefinition DETAILS = new ElementDefinition(ElementNames.forHtmlName("details"), ElementType.NORMAL);
-    static final ElementDefinition SUMMARY = new ElementDefinition(ElementNames.forHtmlName("summary"), ElementType.NORMAL);
-    static final ElementDefinition COMMAND = new ElementDefinition(ElementNames.forHtmlName("command"), ElementType.NORMAL);
-    static final ElementDefinition MENU = new ElementDefinition(ElementNames.forHtmlName("menu"), ElementType.NORMAL);
-    static final ElementDefinition MENUITEM = new ElementDefinition(ElementNames.forHtmlName("menuitem"), ElementType.VOID);
-    static final ElementDefinition DIALOG = new ElementDefinition(ElementNames.forHtmlName("dialog"), ElementType.NORMAL);
+    static final HtmlElementDefinition DETAILS = new HtmlElementDefinition(ElementNames.forHtmlName("details"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SUMMARY = new HtmlElementDefinition(ElementNames.forHtmlName("summary"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition COMMAND = new HtmlElementDefinition(ElementNames.forHtmlName("command"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition MENU = new HtmlElementDefinition(ElementNames.forHtmlName("menu"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition MENUITEM = new HtmlElementDefinition(ElementNames.forHtmlName("menuitem"), HtmlElementType.VOID);
+    static final HtmlElementDefinition DIALOG = new HtmlElementDefinition(ElementNames.forHtmlName("dialog"), HtmlElementType.NORMAL);
 
     // WebComponents
-    static final ElementDefinition TEMPLATE = new ElementDefinition(ElementNames.forHtmlName("template"), ElementType.RAW_TEXT);
-    static final ElementDefinition ELEMENT = new ElementDefinition(ElementNames.forHtmlName("element"), ElementType.NORMAL);
-    static final ElementDefinition DECORATOR = new ElementDefinition(ElementNames.forHtmlName("decorator"), ElementType.NORMAL);
-    static final ElementDefinition CONTENT = new ElementDefinition(ElementNames.forHtmlName("content"), ElementType.NORMAL);
-    static final ElementDefinition SHADOW = new ElementDefinition(ElementNames.forHtmlName("shadow"), ElementType.NORMAL);
+    static final HtmlElementDefinition TEMPLATE = new HtmlElementDefinition(ElementNames.forHtmlName("template"), HtmlElementType.RAW_TEXT);
+    static final HtmlElementDefinition ELEMENT = new HtmlElementDefinition(ElementNames.forHtmlName("element"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition DECORATOR = new HtmlElementDefinition(ElementNames.forHtmlName("decorator"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition CONTENT = new HtmlElementDefinition(ElementNames.forHtmlName("content"), HtmlElementType.NORMAL);
+    static final HtmlElementDefinition SHADOW = new HtmlElementDefinition(ElementNames.forHtmlName("shadow"), HtmlElementType.NORMAL);
 
 
 
@@ -205,9 +205,9 @@ public final class ElementDefinitions {
 
     static {
 
-        final List<ElementDefinition> htmlElementDefinitionListAux =
-                new ArrayList<ElementDefinition>(Arrays.asList(
-                        new ElementDefinition[] {
+        final List<HtmlElementDefinition> htmlElementDefinitionListAux =
+                new ArrayList<HtmlElementDefinition>(Arrays.asList(
+                        new HtmlElementDefinition[] {
                                 HTML, HEAD, TITLE, BASE, LINK, META, STYLE, SCRIPT, NOSCRIPT, BODY, ARTICLE,
                                 SECTION, NAV, ASIDE, H1, H2, H3, H4, H5, H6, HGROUP, HEADER, FOOTER,
                                 ADDRESS, P, HR, PRE, BLOCKQUOTE, OL, UL, LI, DL, DT, DD, FIGURE,
@@ -229,7 +229,7 @@ public final class ElementDefinitions {
 
 
         ALL_STANDARD_HTML_ELEMENTS =
-                Collections.unmodifiableSet(new LinkedHashSet<ElementDefinition>(htmlElementDefinitionListAux));
+                Collections.unmodifiableSet(new LinkedHashSet<HtmlElementDefinition>(htmlElementDefinitionListAux));
 
 
         final LinkedHashSet<String> htmlElementDefinitionNamesAux = new LinkedHashSet<String>(ALL_STANDARD_HTML_ELEMENTS.size() + 1, 1.0f);
@@ -265,42 +265,42 @@ public final class ElementDefinitions {
 
 
 
-    public ElementDefinition forHtmlName(final String elementName) {
+    public HtmlElementDefinition forHtmlName(final String elementName) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        return this.htmlElementRepository.getElement(elementName);
+        return (HtmlElementDefinition) this.htmlElementRepository.getElement(elementName);
     }
 
 
-    public ElementDefinition forHtmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+    public HtmlElementDefinition forHtmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
         }
-        return this.htmlElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
+        return (HtmlElementDefinition) this.htmlElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
     }
 
 
 
-    public ElementDefinition forXmlName(final String elementName) {
+    public XmlElementDefinition forXmlName(final String elementName) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
-        return this.xmlElementRepository.getElement(elementName);
+        return (XmlElementDefinition) this.xmlElementRepository.getElement(elementName);
     }
 
 
-    public ElementDefinition forXmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
+    public XmlElementDefinition forXmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
         if (elementName == null) {
             throw new IllegalArgumentException("Name cannot be null");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
         }
-        return this.xmlElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
+        return (XmlElementDefinition) this.xmlElementRepository.getElement(elementName, elementNameOffset, elementNameLen);
     }
 
 
@@ -457,12 +457,12 @@ public final class ElementDefinitions {
                 return this.repository.get(index);
             }
 
-            final ElementName elementName =
-                    this.html? ElementNames.forHtmlName(text, offset, len) : ElementNames.forXmlName(text, offset, len);
+            final ElementDefinition elementDefinition =
+                    this.html?
+                            new HtmlElementDefinition(ElementNames.forHtmlName(text, offset, len), HtmlElementType.NORMAL) :
+                            new XmlElementDefinition(ElementNames.forXmlName(text, offset, len));
 
-            final ElementDefinition elementDefinition = new ElementDefinition(elementName, ElementType.NORMAL);
-
-            final String[] completeElementNames = elementName.getCompleteElementNames();
+            final String[] completeElementNames = elementDefinition.getElementName().getCompleteElementNames();
 
             for (final String completeElementName : completeElementNames) {
 
@@ -487,12 +487,12 @@ public final class ElementDefinitions {
                 return this.repository.get(index);
             }
 
-            final ElementName elementName =
-                    this.html? ElementNames.forHtmlName(text) : ElementNames.forXmlName(text);
+            final ElementDefinition elementDefinition =
+                    this.html?
+                            new HtmlElementDefinition(ElementNames.forHtmlName(text), HtmlElementType.NORMAL) :
+                            new XmlElementDefinition(ElementNames.forXmlName(text));
 
-            final ElementDefinition elementDefinition = new ElementDefinition(elementName, ElementType.NORMAL);
-
-            final String[] completeElementNames = elementName.getCompleteElementNames();
+            final String[] completeElementNames = elementDefinition.getElementName().getCompleteElementNames();
 
             for (final String completeElementName : completeElementNames) {
 

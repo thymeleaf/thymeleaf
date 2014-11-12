@@ -25,8 +25,9 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class XmlPrefixedAttributeName extends PrefixedAttributeName {
+public class XmlPrefixedAttributeName extends XmlAttributeName {
 
+    final String prefix;
     final String completeNamespacedAttributeName;
     final String[] completeAttributeNames;
 
@@ -35,11 +36,28 @@ public class XmlPrefixedAttributeName extends PrefixedAttributeName {
 
     XmlPrefixedAttributeName(final String prefix, final String attributeName) {
 
-        super(prefix, attributeName);
-        // Prefix CANNOT be null
-        this.completeNamespacedAttributeName = prefix + ":" + attributeName;
+        super(attributeName);
+
+        if (prefix == null || prefix.length() == 0) {
+            throw new IllegalArgumentException("Attribute prefix cannot be null or empty");
+        }
+
+        this.prefix = prefix;
+
+        this.completeNamespacedAttributeName = prefix + ":" + this.attributeName;
         this.completeAttributeNames = new String[] { this.completeNamespacedAttributeName };
 
+    }
+
+
+    @Override
+    public boolean isPrefixed() {
+        return true;
+    }
+
+
+    public String getPrefix() {
+        return this.prefix;
     }
 
 

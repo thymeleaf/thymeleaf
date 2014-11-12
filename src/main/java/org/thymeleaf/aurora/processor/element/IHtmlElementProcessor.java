@@ -25,6 +25,10 @@ import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.Attributes;
 import org.thymeleaf.aurora.engine.ElementDefinition;
 import org.thymeleaf.aurora.engine.ElementName;
+import org.thymeleaf.aurora.engine.HtmlAttributeName;
+import org.thymeleaf.aurora.engine.HtmlAttributes;
+import org.thymeleaf.aurora.engine.HtmlElementDefinition;
+import org.thymeleaf.aurora.engine.HtmlElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -33,16 +37,16 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
+public interface IHtmlElementProcessor extends IProcessor {
 
-    public ElementName getElementName();
-    public AttributeName getAttributeName();
-    public String getAttributeValue();
+    public HtmlElementName getHtmlElementName();
+    public HtmlAttributeName getHtmlAttributeName();
+    public String getHtmlAttributeValue();
 
-    public ElementProcessorResult process(
+    public ElementProcessorResult processHtmlElement(
             final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
-            final ElementDefinition elementDefinition, final String elementName,
-            final Attributes attributes,
+            final HtmlElementDefinition elementDefinition, final String elementName,
+            final HtmlAttributes attributes,
             final int line, final int col);
 
 }

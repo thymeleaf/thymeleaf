@@ -25,8 +25,9 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class HtmlPrefixedElementName extends PrefixedElementName {
+public class HtmlPrefixedElementName extends HtmlElementName {
 
+    final String prefix;
     final String completeNamespacedElementName;
     final String completeHtml5CustomElementName;
     final String[] completeElementNames;
@@ -38,14 +39,31 @@ public class HtmlPrefixedElementName extends PrefixedElementName {
 
     HtmlPrefixedElementName(final String prefix, final String elementName) {
 
-        super((prefix == null? null : prefix.toLowerCase()), (elementName == null? null : elementName.toLowerCase()));
-        // Prefix CANNOT be null
+        super(elementName);
+
+        if (prefix == null || prefix.length() == 0) {
+            throw new IllegalArgumentException("Element prefix cannot be null or empty");
+        }
+
+        this.prefix = prefix.toLowerCase();
+
         this.completeNamespacedElementName = this.prefix + ":" + this.elementName;
         this.completeHtml5CustomElementName = this.prefix + "-" + this.elementName;
 
         this.completeElementNames =
                 new String[] { this.completeNamespacedElementName, this.completeHtml5CustomElementName };
 
+    }
+
+
+    @Override
+    public boolean isPrefixed() {
+        return true;
+    }
+
+
+    public String getPrefix() {
+        return this.prefix;
     }
 
 

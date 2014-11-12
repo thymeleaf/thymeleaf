@@ -31,7 +31,7 @@ public class AttributeNames {
 
 
 
-    public static AttributeName forXmlName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+    public static XmlAttributeName forXmlName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
 
         if (attributeNameBuffer == null) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
@@ -52,25 +52,25 @@ public class AttributeNames {
             }
 
             if (c == ':') {
-                if (i == 1){
+                if (i == attributeNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return new XmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
                 return new XmlPrefixedAttributeName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
-                        new String(attributeNameBuffer, i, attributeNameLen - i));
+                        new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
 
         }
 
-        return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return new XmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
     }
 
 
 
-    public static AttributeName forHtmlName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+    public static HtmlAttributeName forHtmlName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
 
         if (attributeNameBuffer == null) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
@@ -92,51 +92,52 @@ public class AttributeNames {
             }
 
             if (!inData && c == ':') {
-                if (i == 1){
+                if (i == attributeNameOffset + 1){
                     // ':' was the first char, no prefix there
-                    return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                if (TextUtil.equals(false, "xml", 0, 3, attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1)))) {
-                    // 'xml' is not a valid dialect prefix in HTML mode
-                    return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                if (TextUtil.equals(false, "xml:", 0, 4, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset)) ||
+                    TextUtil.equals(false, "xmlns:", 0, 6, attributeNameBuffer, attributeNameOffset, (i - attributeNameOffset))) {
+                    // 'xml' and 'xmlns' are not a valid dialect prefix in HTML mode
+                    return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
                 return new HtmlPrefixedAttributeName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
-                        new String(attributeNameBuffer, i, attributeNameLen - i));
+                        new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
 
             if (!inData && c == '-') {
-                if (i == 5 && TextUtil.equals(false, "data", 0, 4, attributeNameBuffer, attributeNameOffset, 4)) {
+                if (i == attributeNameOffset + 5 && TextUtil.equals(false, "data", 0, 4, attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1)))) {
                     inData = true;
                     continue;
                 } else {
                     // this is just a normal, non-thymeleaf 'data-*' attribute
-                    return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
             }
 
             if (inData && c == '-') {
-                if (i == 6) {
+                if (i == attributeNameOffset + 6) {
                     // '-' was the first char after 'data-', no prefix there
-                    return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+                    return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
                 }
                 return new HtmlPrefixedAttributeName(
                         new String(attributeNameBuffer, attributeNameOffset + 5, (i - (attributeNameOffset + 6))),
-                        new String(attributeNameBuffer, i, attributeNameLen - i));
+                        new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
 
         }
 
-        return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
     }
 
 
 
-    public static AttributeName forXmlName(final String attributeName) {
+    public static XmlAttributeName forXmlName(final String attributeName) {
 
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
@@ -156,7 +157,7 @@ public class AttributeNames {
             if (c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new AttributeName(attributeName);
+                    return new XmlAttributeName(attributeName);
                 }
 
                 return new XmlPrefixedAttributeName(
@@ -166,13 +167,13 @@ public class AttributeNames {
 
         }
 
-        return new AttributeName(attributeName);
+        return new XmlAttributeName(attributeName);
 
     }
 
 
 
-    public static AttributeName forHtmlName(final String attributeName) {
+    public static HtmlAttributeName forHtmlName(final String attributeName) {
 
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
@@ -192,12 +193,13 @@ public class AttributeNames {
             if (!inData && c == ':') {
                 if (i == 1){
                     // ':' was the first char, no prefix there
-                    return new AttributeName(attributeName);
+                    return new HtmlAttributeName(attributeName);
                 }
 
-                if (TextUtil.equals(false, "xml", 0, 3, attributeName, 0, 3)) {
+                if (TextUtil.equals(false, "xml:", 0, 4, attributeName, 0, i) ||
+                    TextUtil.equals(false, "xmlns:", 0, 6, attributeName, 0, i)) {
                     // 'xml' is not a valid dialect prefix in HTML mode
-                    return new AttributeName(attributeName);
+                    return new HtmlAttributeName(attributeName);
                 }
 
                 return new HtmlPrefixedAttributeName(
@@ -211,14 +213,14 @@ public class AttributeNames {
                     continue;
                 } else {
                     // this is just a normal, non-thymeleaf 'data-*' attribute
-                    return new AttributeName(attributeName);
+                    return new HtmlAttributeName(attributeName);
                 }
             }
 
             if (inData && c == '-') {
                 if (i == 6) {
                     // '-' was the first char after 'data-', no prefix there
-                    return new AttributeName(attributeName);
+                    return new HtmlAttributeName(attributeName);
 
                 }
                 return new HtmlPrefixedAttributeName(
@@ -228,13 +230,13 @@ public class AttributeNames {
 
         }
 
-        return new AttributeName(attributeName);
+        return new HtmlAttributeName(attributeName);
 
     }
 
 
 
-    public static AttributeName forHtmlName(final String dialectPrefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+    public static HtmlAttributeName forHtmlName(final String dialectPrefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
         if (attributeNameBuffer == null) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
@@ -242,14 +244,14 @@ public class AttributeNames {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
         if (dialectPrefix == null) {
-            return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+            return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
         }
         return new HtmlPrefixedAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
 
-    public static AttributeName forXmlName(final String dialectPrefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+    public static XmlAttributeName forXmlName(final String dialectPrefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
         if (attributeNameBuffer == null) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
@@ -257,31 +259,31 @@ public class AttributeNames {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
         if (dialectPrefix == null) {
-            return new AttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+            return new XmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
         }
         return new XmlPrefixedAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
 
-    public static AttributeName forHtmlName(final String dialectPrefix, final String attributeName) {
+    public static HtmlAttributeName forHtmlName(final String dialectPrefix, final String attributeName) {
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
         if (dialectPrefix == null) {
-            return new AttributeName(attributeName);
+            return new HtmlAttributeName(attributeName);
         }
         return new HtmlPrefixedAttributeName(dialectPrefix, attributeName);
     }
 
 
 
-    public static AttributeName forXmlName(final String dialectPrefix, final String attributeName) {
+    public static XmlAttributeName forXmlName(final String dialectPrefix, final String attributeName) {
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
         if (dialectPrefix == null) {
-            return new AttributeName(attributeName);
+            return new XmlAttributeName(attributeName);
         }
         return new XmlPrefixedAttributeName(dialectPrefix, attributeName);
     }

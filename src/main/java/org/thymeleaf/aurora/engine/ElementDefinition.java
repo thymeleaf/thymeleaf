@@ -25,31 +25,21 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public final class ElementDefinition {
-
-    final ElementName name;
-    final ElementType type;
+public abstract class ElementDefinition {
 
 
 
-    ElementDefinition(final ElementName name, final ElementType type) {
+    ElementDefinition() {
         super();
-        this.name = name;
-        this.type = type;
     }
 
 
-    public ElementName getElementName() {
-        return this.name;
-    }
+    public abstract ElementName getElementName();
 
-    public ElementType getType() {
-        return this.type;
-    }
 
 
     public String toString() {
-        return this.name.toString();
+        return getElementName().toString();
     }
 
 }

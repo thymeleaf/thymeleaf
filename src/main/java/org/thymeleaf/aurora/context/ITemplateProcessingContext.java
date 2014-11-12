@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.context;
 
+import org.thymeleaf.aurora.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -28,5 +30,9 @@ package org.thymeleaf.aurora.context;
 public interface ITemplateProcessingContext {
 
     public ITemplateEngineContext getTemplateEngineContext();
+
+    public TemplateMode getTemplateMode();
+    public String getTemplateName();
+
 
 }

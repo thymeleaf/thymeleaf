@@ -25,19 +25,39 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public abstract class AttributeDefinition {
+public final class HtmlAttributeDefinition extends AttributeDefinition {
+
+    final HtmlAttributeName name;
+    final boolean booleanAttribute;
 
 
-    AttributeDefinition() {
+    HtmlAttributeDefinition(final HtmlAttributeName name) {
+        this(name, false);
+    }
+
+    HtmlAttributeDefinition(final HtmlAttributeName name, final boolean booleanAttribute) {
+
         super();
+
+        if (name == null) {
+            throw new IllegalArgumentException("Attribute name cannot be null");
+        }
+
+        this.name = name;
+        this.booleanAttribute = booleanAttribute;
+
     }
 
 
-    public abstract AttributeName getAttributeName();
-
-
-    public String toString() {
-        return getAttributeName().toString();
+    @Override
+    public HtmlAttributeName getAttributeName() {
+        return this.name;
     }
+
+
+    public boolean isBooleanAttribute() {
+        return this.booleanAttribute;
+    }
+
 
 }

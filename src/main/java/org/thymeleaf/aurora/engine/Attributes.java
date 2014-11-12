@@ -29,7 +29,7 @@ import java.util.Arrays;
  * @since 3.0.0
  *
  */
-public class Attributes {
+public abstract class Attributes {
 
     private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
 
@@ -79,11 +79,11 @@ public class Attributes {
         Attribute newAttribute = this.attributes[this.attributesSize];
         if (newAttribute == null) {
             // The Attribute object didn't exist yet : create it
-            newAttribute = new Attribute();
+            newAttribute = createAttributeInstance();
             this.attributes[this.attributesSize] = newAttribute;
         }
 
-        newAttribute.definition = attributeDefinition;
+        newAttribute.setAttributeDefinition(attributeDefinition);
         newAttribute.name = name;
         newAttribute.operator = operator;
         newAttribute.value = value;
@@ -95,6 +95,9 @@ public class Attributes {
         this.attributesSize++;
 
     }
+
+
+    protected abstract Attribute createAttributeInstance();
 
 
 
@@ -167,7 +170,7 @@ public class Attributes {
 
 
 
-    private static final class InnerWhiteSpace {
+    static final class InnerWhiteSpace {
 
         String whiteSpace;
         int line;
@@ -182,13 +185,12 @@ public class Attributes {
 
 
 
-    private static final class Attribute {
+    static abstract class Attribute {
 
 
         private static final String DEFAULT_OPERATOR = "=";
 
 
-        AttributeDefinition definition = null;
         String name = null;
         String operator = DEFAULT_OPERATOR;
         String value = null;
@@ -200,7 +202,7 @@ public class Attributes {
 
         /*
          * Note 1: Objects of this class are not visible from outside the engine package. All modifications on an element's
-         * (in fact an element events) attributes should be done through the Attributes class.
+         * attributes should be done through the Attributes class.
          *
          * Note 2: An Attribute should not be made responsible for converting non-String values to String, or computing
          * the boolean-ness of attributes or their representation. All these should be the reponsibility of the
@@ -213,9 +215,8 @@ public class Attributes {
         }
 
 
-        public AttributeDefinition getDefinition() {
-            return this.definition;
-        }
+        public abstract AttributeDefinition getDefinition();
+        public abstract void setAttributeDefinition(final AttributeDefinition attributeDefinition);
 
         public String getName() {
             return this.name;

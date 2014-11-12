@@ -25,19 +25,20 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public abstract class AttributeDefinition {
+public enum HtmlElementType {
 
+    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#elements-0
 
-    AttributeDefinition() {
-        super();
+    VOID(true), RAW_TEXT(false), ESCAPABLE_RAW_TEXT(false), FOREIGN(false), NORMAL(false);
+
+    final boolean isVoid;
+
+    private HtmlElementType(final boolean voidElement) {
+        this.isVoid = voidElement;
     }
 
-
-    public abstract AttributeName getAttributeName();
-
-
-    public String toString() {
-        return getAttributeName().toString();
+    public boolean isVoid() {
+        return this.isVoid;
     }
 
 }

@@ -25,19 +25,22 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public abstract class AttributeDefinition {
+public final class XmlElementDefinition extends ElementDefinition {
+
+    final XmlElementName name;
 
 
-    AttributeDefinition() {
+
+    XmlElementDefinition(final XmlElementName name) {
         super();
+        this.name = name;
     }
 
 
-    public abstract AttributeName getAttributeName();
-
-
-    public String toString() {
-        return getAttributeName().toString();
+    @Override
+    public XmlElementName getElementName() {
+        return this.name;
     }
+
 
 }
