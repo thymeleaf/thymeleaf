@@ -1123,6 +1123,7 @@ public class TemplateEngine {
 
 
     private static final org.thymeleaf.aurora.parser.ITemplateParser PARSER = new HtmlTemplateParser(40,2048);
+    private static final TemplateEngineContext TEMPLATE_ENGINE_CONTEXT = new TemplateEngineContext();
 
 
     public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
@@ -1217,15 +1218,13 @@ public class TemplateEngine {
 
         // TODO The entire-template-contents cache seems to have no effect!! (disk cache so fast? hit the actual Tomcat performance top?)
 
-        final ITemplateEngineContext templateEngineContext = new TemplateEngineContext();
-
         final IResource templateResource = new ReaderResource(templateName, reader);
 
         final ITemplateHandler handler = new OutputTemplateHandler(templateName, writer);
 
 
 //        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        PARSER.parse(templateEngineContext, templateResource, /* new String[] {"html//p"}, */ handler);
+        PARSER.parse(TEMPLATE_ENGINE_CONTEXT, templateResource, /* new String[] {"html//p"}, */ handler);
 
 
     }
