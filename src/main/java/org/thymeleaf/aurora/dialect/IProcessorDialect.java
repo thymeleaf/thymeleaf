@@ -19,9 +19,9 @@
  */
 package org.thymeleaf.aurora.dialect;
 
-import java.util.List;
+import java.util.Set;
 
-import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.aurora.processor.IProcessor;
 
 
 /**
@@ -30,8 +30,10 @@ import org.thymeleaf.aurora.engine.ITemplateHandler;
  * @since 3.0.0
  *
  */
-public interface IPostProcessingAwareDialect extends IDialect {
+public interface IProcessorDialect extends IDialect {
 
-    public List<Class<? extends ITemplateHandler>> getPostProcessors();
+    public String getPrefix();
+
+    public Set<IProcessor> getProcessors();
 
 }

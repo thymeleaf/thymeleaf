@@ -17,20 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
+package org.thymeleaf.aurora.dialect;
 
-import org.thymeleaf.aurora.dialect.IProcessorDialect;
+import java.util.Map;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public interface IProcessorMatchingContext {
+public interface IExpresionObjectsDialect extends IDialect {
 
-    public IProcessorDialect getDialect();
-
-    public String getDialectPrefix();
+    public Map<String,Object> getExpressionObjects(final ITemplateProcessingContext processingContext);
 
 }

@@ -30,8 +30,8 @@ import org.thymeleaf.aurora.engine.ITemplateHandler;
  * @since 3.0.0
  *
  */
-public interface IPreProcessingAwareDialect extends IDialect {
+public interface IPostProcessorDialect extends IDialect {
 
-    public List<Class<? extends ITemplateHandler>> getPreProcessors();
+    public List<Class<? extends ITemplateHandler>> getPostProcessors();
 
 }

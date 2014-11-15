@@ -21,8 +21,6 @@ package org.thymeleaf.aurora.dialect;
 
 import java.util.Map;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-
 
 /**
  *
@@ -30,8 +28,8 @@ import org.thymeleaf.aurora.context.ITemplateProcessingContext;
  * @since 3.0.0
  *
  */
-public interface IExxpresionObjectAwareDialect extends IDialect {
+public interface IExecutionAttributesDialect extends IDialect {
 
-    public Map<String,Object> getExpressionObjects(final ITemplateProcessingContext processingContext);
+    public Map<String,Object> getExecutionAttributes();
 
 }

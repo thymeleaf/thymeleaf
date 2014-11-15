@@ -19,7 +19,9 @@
  */
 package org.thymeleaf.aurora.dialect;
 
-import java.util.Map;
+import java.util.List;
+
+import org.thymeleaf.aurora.engine.ITemplateHandler;
 
 
 /**
@@ -28,8 +30,8 @@ import java.util.Map;
  * @since 3.0.0
  *
  */
-public interface IExecutionAttributeAwareDialect extends IDialect {
+public interface IPreProcessorDialect extends IDialect {
 
-    public Map<String,Object> getExecutionAttributes();
+    public List<Class<? extends ITemplateHandler>> getPreProcessors();
 
 }

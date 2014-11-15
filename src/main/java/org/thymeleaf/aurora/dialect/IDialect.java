@@ -19,11 +19,6 @@
  */
 package org.thymeleaf.aurora.dialect;
 
-import java.util.Set;
-
-import org.thymeleaf.aurora.processor.IProcessor;
-
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -32,8 +27,6 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface IDialect {
 
-    public String getPrefix();
-
-    public Set<IProcessor> getProcessors();
+    public String getName();
 
 }
