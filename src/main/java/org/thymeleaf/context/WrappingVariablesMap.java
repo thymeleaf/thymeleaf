@@ -4,8 +4,8 @@ import java.util.*;
 
 /**
  * Wrapper around a {@link VariablesMap} which 'masks' the wrapped map by keeping track of extra puts.
- * Does not support removing entries from the wrapped map through {@see #remove} nor providing true views on the 
- * underlying map through {@see #keySet}, {@see #values} and {@see entrySet} unless the wrapped map is empty. 
+ * Does not support removing entries from the wrapped map through {@link #remove(Object)} nor providing true views on the
+ * underlying map through {@link #keySet()}, {@link #values()} and {@link #entrySet()} unless the wrapped map is empty.
  * This is more efficient than making defensive copies up-front for every node.
  */
 public class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
