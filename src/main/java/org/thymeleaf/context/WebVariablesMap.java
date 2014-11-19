@@ -22,8 +22,8 @@ package org.thymeleaf.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,9 +37,9 @@ import javax.servlet.http.HttpServletRequest;
  *   and {@link #put(Object, Object)} calls to a contained 
  *   HttpServletRequest. 
  * </p>
- * 
+ *
  * @author Daniel Fern&aacute;ndez
- * 
+ *
  * @since 2.0.9
  *
  */
@@ -48,8 +48,8 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
     private static final long serialVersionUID = 3862067921983550180L;
 
-    
-    
+
+
     /**
      * <p>
      *   Name of the variable that contains the request parameters.
@@ -80,18 +80,19 @@ class WebVariablesMap extends VariablesMap<String,Object> {
      * DIRECTLY AT THE EXTENDED HASHMAP.
      * ---------------------------------------------------------------------------
      */
-    
-    
+
+
     private final HttpServletRequest request;
     private final ServletContext servletContext;
 
-    
+
     private final WebRequestParamsVariablesMap requestParamsVariablesMap;
     private final WebSessionVariablesMap sessionVariablesMap;
     private final WebServletContextVariablesMap servletContextVariablesMap;
-    
-    
-    
+
+    private final Set<String> attributeNames = new HashSet<String>();
+
+
 
 
     WebVariablesMap(final HttpServletRequest request, final ServletContext servletContext,
@@ -110,6 +111,12 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         super.put(PARAM_VARIABLE_NAME, this.requestParamsVariablesMap);
         super.put(SESSION_VARIABLE_NAME, this.sessionVariablesMap);
 
+        // cache the attribute names, as they're expensive to get from the request 1000s of times per request
+        Enumeration<String> names = request.getAttributeNames();
+        while (names.hasMoreElements()) {
+            this.attributeNames.add(names.nextElement());
+        }
+
         if (m != null) {
             // This must be done at the end because it relies on the request having been already set.
             putAll(m);
@@ -119,7 +126,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
 
 
-    
+
     public WebRequestParamsVariablesMap getRequestParamsVariablesMap() {
         return this.requestParamsVariablesMap;
     }
@@ -138,28 +145,22 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
 
 
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public int size() {
-        int size = 3; // session, param, application
-        final Enumeration<String> attributeNames = this.request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            attributeNames.nextElement();
-            size++;
-        }
-        return size;
+        return attributeNames.size() + 3; // session, param, application
     }
 
-    
-    
+
+
     @Override
     public boolean isEmpty() {
         return false; // at least 3 elements (session, param, application)
     }
 
-    
-    
+
+
     @Override
     public Object get(final Object key) {
         if (isReservedVariableName((String)key)) {
@@ -168,32 +169,19 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         return this.request.getAttribute((String)key);
     }
 
-    
-    
+
+
     @Override
     @SuppressWarnings("unchecked")
     public boolean containsKey(final Object key) {
         if (isReservedVariableName((String)key)) {
             return true;
         }
-        final Enumeration<String> attributeNames = this.request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            final String attributeName = attributeNames.nextElement(); 
-            if (key == null) {
-                if (attributeName == null) {
-                    return true;
-                }
-            } else {
-                if (key.equals(attributeName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return attributeNames.contains(key);
     }
 
-    
-    
+
+
     @Override
     public Object put(final String key, final Object value) {
         if (isReservedVariableName(key)) {
@@ -202,11 +190,12 @@ class WebVariablesMap extends VariablesMap<String,Object> {
                     "a reserved variable name.");
         }
         this.request.setAttribute(key, value);
+        this.attributeNames.add(key);
         return value;
     }
 
-    
-    
+
+
     @Override
     public void putAll(final Map<? extends String, ?> m) {
         for (final Map.Entry<? extends String, ?> mEntry : m.entrySet()) {
@@ -214,8 +203,8 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         }
     }
 
-    
-    
+
+
     @Override
     public Object remove(final Object key) {
         if (isReservedVariableName((String)key)) {
@@ -225,19 +214,20 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         }
         final Object value = this.request.getAttribute((String)key);
         this.request.removeAttribute((String)key);
+        this.attributeNames.remove(key);
         return value;
     }
 
-    
-    
+
+
     @Override
     public void clear() {
         throw new UnsupportedOperationException(
                 "Web variable context map cannot be completely cleared.");
     }
 
-    
-    
+
+
     @Override
     @SuppressWarnings("unchecked")
     public boolean containsValue(final Object value) {
@@ -249,9 +239,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
                 return true;
             }
         }
-        final Enumeration<String> attributeNames = this.request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            final String attributeName = attributeNames.nextElement();
+        for (String attributeName : attributeNames) {
             final Object attributeValue = this.request.getAttribute(attributeName);
             if (value == null) {
                 if (attributeValue == null) {
@@ -267,47 +255,45 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     }
 
 
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public Set<String> keySet() {
-        final Set<String> keySet = new LinkedHashSet<String>(10);
-        final Enumeration<String> attributeNames = this.request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            keySet.add(attributeNames.nextElement());
-        }
+        final Set<String> keySet = new HashSet<String>(attributeNames.size() + 3);
+        keySet.addAll(this.attributeNames);
         keySet.addAll(super.keySet());
         return keySet;
     }
 
-    
-    
+
+
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Object> values() {
-        final List<Object> values = new ArrayList<Object>(10);
-        final Enumeration<String> attributeNames = this.request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            final String attributeName = attributeNames.nextElement();
+        final List<Object> values = new ArrayList<Object>(this.attributeNames.size() + 3);
+        for (String attributeName : attributeNames) {
             values.add(this.request.getAttribute(attributeName));
         }
         values.addAll(super.values());
         return values;
     }
 
-    
-    
+
+
     @Override
     public Set<java.util.Map.Entry<String,Object>> entrySet() {
-        final Map<String,Object> attributeMap = getAttributeMap(this.request);
-        for (final Map.Entry<String,Object> superEntry : super.entrySet()) {
+        final Map<String, Object> attributeMap = new HashMap<String, Object>(this.attributeNames.size() + 3);
+        for (String attributeName : attributeNames) {
+            attributeMap.put(attributeName, request.getAttribute(attributeName));
+        }
+        for (final Map.Entry<String, Object> superEntry : super.entrySet()) {
             attributeMap.put(superEntry.getKey(), superEntry.getValue());
         }
         return attributeMap.entrySet();
     }
 
-    
-    
+
+
     @Override
     public String toString() {
         final Map<String,Object> attributeMap = getAttributeMap(this.request);
@@ -317,12 +303,12 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         return attributeMap.toString();
     }
 
-    
 
-    
-    
-    
-    
+
+
+
+
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -367,23 +353,23 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
     @SuppressWarnings("unchecked")
     private static Map<String,Object> getAttributeMap(final HttpServletRequest request) {
-        
-        final Map<String,Object> attributeMap = new LinkedHashMap<String, Object>(10);
+
+        final Map<String,Object> attributeMap = new HashMap<String, Object>();
         final Enumeration<String> attributeNames = request.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             final String attributeName = attributeNames.nextElement();
             final Object attributeValue = request.getAttribute(attributeName);
             attributeMap.put(attributeName, attributeValue);
         }
-        
+
         return attributeMap;
-        
+
     }
 
-    
-    
 
-    
+
+
+
     private static boolean isReservedVariableName(final String name) {
         return PARAM_VARIABLE_NAME.equals(name) ||
                SESSION_VARIABLE_NAME.equals(name) ||
