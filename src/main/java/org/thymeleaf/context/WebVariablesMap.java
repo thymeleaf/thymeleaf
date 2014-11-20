@@ -91,6 +91,13 @@ class WebVariablesMap extends VariablesMap<String,Object> {
     private final WebSessionVariablesMap sessionVariablesMap;
     private final WebServletContextVariablesMap servletContextVariablesMap;
 
+    /*
+     * This flag is used for caching the presence of the SELECTION TARGET atttribute in the variables map. The reason
+     * to cache this is that HttpServletRequest#getParameterNames() is an extremely memory-inefficient method in some
+     * implementations like Tomcat's, and this class's #containsKey() method is called many times from
+     * AbstractProcessingContext asking for the presence of this SELECTION TARGET. So we cache it in order to avoid
+     * calling HttpServletRequest#getParameterNames() in #containsKey() every time.
+     */
     private boolean evalSelectionTargetPresent = false;
 
 
