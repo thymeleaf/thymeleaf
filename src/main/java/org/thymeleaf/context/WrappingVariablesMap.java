@@ -43,12 +43,15 @@ import java.util.Set;
  */
 class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
 
+    private static final long serialVersionUID = 5894245538819382467L;
+
     private final VariablesMap<K, V> targetMap;
     private HashSet<K> targetRemovedKeys;
 
 
 
     WrappingVariablesMap(VariablesMap<K, V> targetMap) {
+        super();
         this.targetMap = targetMap;
         this.targetRemovedKeys = null;
     }
@@ -169,6 +172,12 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         final Set<Map.Entry<K, V>> entrySet = new HashSet<Map.Entry<K, V>>(targetEntrySet);
         entrySet.addAll(super.entrySet());
         return Collections.unmodifiableSet(entrySet);
+    }
+
+
+
+    public WrappingVariablesMap clone() {
+        return (WrappingVariablesMap) super.clone();
     }
 
 }
