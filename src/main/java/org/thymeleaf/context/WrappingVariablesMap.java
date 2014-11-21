@@ -54,24 +54,28 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
     WrappingVariablesMap(VariablesMap<K, V> targetMap) {
         super();
         this.targetMap = targetMap;
-        this.targetRemovedKeys = null;
     }
 
 
     @Override
     public int size() {
-        return super.size() + this.targetMap.size();
+        return super.size() + this.targetMap.size() -
+                (this.targetRemovedKeys == null ? 0 : this.targetRemovedKeys.size());
     }
 
     @Override
     public boolean isEmpty() {
-        return super.isEmpty() && this.targetMap.isEmpty();
+        return super.isEmpty() && (this.targetMap.isEmpty() ||
+                this.targetRemovedKeys != null && this.targetRemovedKeys.size() == this.targetMap.size());
     }
 
     @Override
     public boolean containsKey(Object key) {
         if (super.containsKey(key)) {
             return true;
+        }
+        if (containsRemovedKey(key)) {
+            return false;
         }
         return this.targetMap.containsKey(key);
     }
@@ -81,7 +85,21 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         if (super.containsValue(value)) {
             return true;
         }
-        return this.targetMap.containsValue(value);
+        if (this.targetRemovedKeys == null) {
+            return this.targetMap.containsValue(value);
+        }
+        for (Map.Entry<K, V> targetEntry : targetMap.entrySet()) {
+            if (!containsRemovedKey(targetEntry.getKey())) {
+                if (value == null) {
+                    if (targetEntry.getValue() == null) {
+                        return true;
+                    }
+                } else if (value.equals(targetEntry.getValue())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -89,7 +107,7 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         if (super.containsKey(key)) {
             return super.get(key);
         }
-        if (targetRemovedKeys != null && targetRemovedKeys.contains(key)) {
+        if (containsRemovedKey(key)) {
             return null;
         }
         return this.targetMap.get(key);
@@ -97,10 +115,17 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
 
     @Override
     public V put(K key, V value) {
-        if (targetRemovedKeys != null) {
-            targetRemovedKeys.remove(key);
+        V oldValue = super.put(key, value);
+        if (oldValue == null && targetMap.containsKey(key)) {
+            // ensure that we properly override by marking the target key as removed
+            if (targetRemovedKeys == null) {
+                targetRemovedKeys = new HashSet<K>(3);
+            } else if (!targetRemovedKeys.contains(key)) {
+                oldValue = targetMap.get(key);
+            }
+            targetRemovedKeys.add(key);
         }
-        return super.put(key, value);
+        return oldValue;
     }
 
     @Override
@@ -108,24 +133,23 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         if (super.containsKey(key)) {
             return super.remove(key);
         }
-        if (this.targetRemovedKeys != null && this.targetRemovedKeys.contains(key)) {
+        if (containsRemovedKey(key)) {
             return null;
         }
         if (this.targetMap.containsKey(key)) {
             if (this.targetRemovedKeys == null) {
                 this.targetRemovedKeys = new HashSet<K>(3);
             }
-            this.targetRemovedKeys.add((K) key);
+            if (this.targetRemovedKeys.add((K) key)) {
+                return targetMap.get(key);
+            }
         }
         return null;
     }
 
     @Override
     public void clear() {
-        if (this.targetRemovedKeys == null) {
-            this.targetRemovedKeys = new HashSet<K>(3);
-        }
-        this.targetRemovedKeys.addAll(this.targetMap.keySet());
+        this.targetRemovedKeys = new HashSet<K>(this.targetMap.keySet());
         super.clear();
     }
 
@@ -146,10 +170,10 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
             return super.keySet();
         }
         final Set<K> keySet = new HashSet<K>(targetKeySet);
-        keySet.addAll(super.keySet());
         if (targetRemovedKeys != null) {
             keySet.removeAll(targetRemovedKeys);
         }
+        keySet.addAll(super.keySet());
         return Collections.unmodifiableSet(keySet);
     }
 
@@ -162,19 +186,17 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
      */
     @Override
     public Collection<V> values() {
+        if (this.targetMap.isEmpty()) {
+            return super.values();
+        }
         final Collection<V> values;
-        if (this.targetRemovedKeys == null) {
-            final Collection<V> targetValues = this.targetMap.values();
-            if (targetValues.isEmpty()) {
-                return super.values();
-            }
-            values = new ArrayList<V>(targetValues);
+        if (targetRemovedKeys == null) {
+            values = new ArrayList<V>(targetMap.values());
         } else {
             final Set<Map.Entry<K, V>> targetEntrySet = this.targetMap.entrySet();
-            values = new ArrayList<V>(targetEntrySet.size() + super.size());
+            values = new ArrayList<V>(targetEntrySet.size() + super.size() - targetRemovedKeys.size());
             for (Map.Entry<K, V> targetEntry : targetEntrySet) {
-                final K targetKey = targetEntry.getKey();
-                if (!(super.containsKey(targetKey) || targetRemovedKeys.contains(targetKey))) {
+                if (!targetRemovedKeys.contains(targetEntry.getKey())) {
                     values.add(targetEntry.getValue());
                 }
             }
@@ -184,7 +206,7 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
     }
 
     /**
-     * This violates the Map contract because it returns a read-only Set, not a mutable Sne
+     * This violates the Map contract because it returns a read-only Set, not a mutable Set
      * that reflects the underlying table, unless the wrapped map is empty.
      *
      * @return immutable Set containing the union of the wrapped map's entrySet and this map's entrySet,
@@ -192,18 +214,17 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
      */
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
-        final Set<Map.Entry<K, V>> targetEntrySet;
+        final Set<Map.Entry<K, V>> entrySet;
         if (targetRemovedKeys == null) {
-            targetEntrySet = targetMap.entrySet();
+            entrySet = new HashSet<Map.Entry<K, V>>(targetMap.entrySet());
         } else {
             HashMap<K, V> targetMapCopy = new HashMap<K, V>(targetMap);
             targetMapCopy.keySet().removeAll(targetRemovedKeys);
-            targetEntrySet = targetMapCopy.entrySet();
+            entrySet = targetMapCopy.entrySet();
         }
-        if (targetEntrySet.isEmpty()) {
+        if (entrySet.isEmpty()) {
             return super.entrySet();
         }
-        final Set<Map.Entry<K, V>> entrySet = new HashSet<Map.Entry<K, V>>(targetEntrySet);
         entrySet.addAll(super.entrySet());
         return Collections.unmodifiableSet(entrySet);
     }
@@ -214,4 +235,8 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         return (WrappingVariablesMap) super.clone();
     }
 
+
+    private boolean containsRemovedKey(Object key) {
+        return this.targetRemovedKeys != null && this.targetRemovedKeys.contains(key);
+    }
 }
