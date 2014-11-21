@@ -22,6 +22,7 @@ package org.thymeleaf.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -88,7 +89,18 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         if (super.containsKey(key)) {
             return super.get(key);
         }
+        if (targetRemovedKeys != null && targetRemovedKeys.contains(key)) {
+            return null;
+        }
         return this.targetMap.get(key);
+    }
+
+    @Override
+    public V put(K key, V value) {
+        if (targetRemovedKeys != null) {
+            targetRemovedKeys.remove(key);
+        }
+        return super.put(key, value);
     }
 
     @Override
@@ -135,6 +147,9 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
         }
         final Set<K> keySet = new HashSet<K>(targetKeySet);
         keySet.addAll(super.keySet());
+        if (targetRemovedKeys != null) {
+            keySet.removeAll(targetRemovedKeys);
+        }
         return Collections.unmodifiableSet(keySet);
     }
 
@@ -147,11 +162,23 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
      */
     @Override
     public Collection<V> values() {
-        final Collection<V> targetValues = this.targetMap.values();
-        if (targetValues.isEmpty()) {
-            return super.values();
+        final Collection<V> values;
+        if (this.targetRemovedKeys == null) {
+            final Collection<V> targetValues = this.targetMap.values();
+            if (targetValues.isEmpty()) {
+                return super.values();
+            }
+            values = new ArrayList<V>(targetValues);
+        } else {
+            final Set<Map.Entry<K, V>> targetEntrySet = this.targetMap.entrySet();
+            values = new ArrayList<V>(targetEntrySet.size() + super.size());
+            for (Map.Entry<K, V> targetEntry : targetEntrySet) {
+                final K targetKey = targetEntry.getKey();
+                if (!(super.containsKey(targetKey) || targetRemovedKeys.contains(targetKey))) {
+                    values.add(targetEntry.getValue());
+                }
+            }
         }
-        final Collection<V> values = new ArrayList<V>(targetValues);
         values.addAll(super.values());
         return Collections.unmodifiableCollection(values);
     }
@@ -165,7 +192,14 @@ class WrappingVariablesMap<K,V> extends VariablesMap<K, V> {
      */
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
-        final Set<Map.Entry<K, V>> targetEntrySet = targetMap.entrySet();
+        final Set<Map.Entry<K, V>> targetEntrySet;
+        if (targetRemovedKeys == null) {
+            targetEntrySet = targetMap.entrySet();
+        } else {
+            HashMap<K, V> targetMapCopy = new HashMap<K, V>(targetMap);
+            targetMapCopy.keySet().removeAll(targetRemovedKeys);
+            targetEntrySet = targetMapCopy.entrySet();
+        }
         if (targetEntrySet.isEmpty()) {
             return super.entrySet();
         }
