@@ -95,7 +95,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         // because we want to avoid undesirable interactions like, for example, those that could happen
         // if we executed putAll on a WebVariablesMap object (which would add those variables to the HttpServletRequest
         // and therefore make them available to the whole page and not just the local variable scope).
-        final VariablesMap<String,Object> newEvaluationRoot = new VariablesMap<String, Object>(contextVariables);
+        final VariablesMap<String,Object> newEvaluationRoot = new WrappingVariablesMap<String, Object>(contextVariables);
         if (this.localVariables != null) {
             newEvaluationRoot.putAll(this.localVariables);
         }

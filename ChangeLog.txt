@@ -10,6 +10,8 @@
   (e.g. '2013-01-01T14:30:00.000+02:00').
 - Fixed expression execution exceptions being silently ignored in javascript/dart inlining.
 - Fixed second-level th:object being ignored when combined with th:remove="tag".
+- Improved performance of WebVariablesMap by avoiding calls to HttpServletRequest.getAttributeNames(), very slow
+  and memory-inefficient in Tomcat implementations.
 
 
 2.1.3
