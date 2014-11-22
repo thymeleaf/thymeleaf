@@ -93,12 +93,12 @@ class WebVariablesMap extends VariablesMap<String,Object> {
 
     /*
      * This flag is used for caching the presence of the SELECTION TARGET atttribute in the variables map. The reason
-     * to cache this is that HttpServletRequest#getParameterNames() is an extremely memory-inefficient method in some
-     * implementations like Tomcat's, and this class's #containsKey() method is called many times from
+     * to cache this is that HttpServletRequest#getParameterNames() is an extremely cpu- and memory-inefficient method
+     * in some implementations like Tomcat's, and this class's #containsKey() method is called many times from
      * AbstractProcessingContext asking for the presence of this SELECTION TARGET. So we cache it in order to avoid
      * calling HttpServletRequest#getParameterNames() in #containsKey() every time.
      */
-    private boolean evalSelectionTargetPresent = false;
+    private boolean evalSelectionTargetPresent;
 
 
 
@@ -123,13 +123,14 @@ class WebVariablesMap extends VariablesMap<String,Object> {
             putAll(m);
         }
 
-        // Initialize the 'evalSelectionTargetPresent' flag, just in case it comes either as a request param or as
-        // a variable (inside the 'm' map). No need to check directly in the 'm' map because we just put all the
-        // variables to the request using the above 'putAll(m)'
-        final Enumeration<String> attributeNames = this.request.getAttributeNames();
-        while (attributeNames.hasMoreElements()) {
-            if (AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(attributeNames.nextElement())) {
-                this.evalSelectionTargetPresent = true;
+        // check if 'evalSelectionTargetPresent' flag comes as a request attribute.
+        if (!this.evalSelectionTargetPresent) {
+            final Enumeration<String> attributeNames = this.request.getAttributeNames();
+            while (attributeNames.hasMoreElements()) {
+                if (AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(attributeNames.nextElement())) {
+                    this.evalSelectionTargetPresent = true;
+                    break;
+                }
             }
         }
 
@@ -197,7 +198,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
         }
 
         // This one is called A LOT from AbstractProcessingContext, and it will always be added via a put
-        if (key != null && AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(key)) {
+        if (AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(key)) {
             return this.evalSelectionTargetPresent;
         }
 
@@ -226,7 +227,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
                     "Putting a context variable with name \"" + key + "\" is forbidden, as it is " +
                     "a reserved variable name.");
         }
-        if (key != null && AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(key)) {
+        if (AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(key)) {
             this.evalSelectionTargetPresent = true;
         }
         this.request.setAttribute(key, value);
@@ -251,7 +252,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
                     "Removing context variable \"" + key + "\" is forbidden, as it is " +
                     "a reserved variable name.");
         }
-        if (key != null && AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(key)) {
+        if (AbstractProcessingContext.EVAL_SELECTION_TARGET_LOCAL_VARIABLE_NAME.equals(key)) {
             this.evalSelectionTargetPresent = false;
         }
         final Object value = this.request.getAttribute((String)key);
