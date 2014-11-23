@@ -710,8 +710,17 @@ public final class Configuration {
             /*
              * Aggregate all the processors not assigned to a specific attribute or element name
              */
-            nonSpecificProcessorsByNodeClass.putAll(dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass());
-            
+            for (final Map.Entry<Class<? extends Node>,Set<ProcessorAndContext>> processorsEntry : dialectConfiguration.unsafeGetNonSpecificProcessorsByNodeClass().entrySet()) {
+                final Class<? extends Node> nodeClass = processorsEntry.getKey();
+                Set<ProcessorAndContext> nonSpecificProcessorsByNodeClassValues = nonSpecificProcessorsByNodeClass.get(nodeClass);
+                if (nonSpecificProcessorsByNodeClassValues == null) {
+                    nonSpecificProcessorsByNodeClassValues = new HashSet<ProcessorAndContext>(3);
+                    nonSpecificProcessorsByNodeClass.put(nodeClass, nonSpecificProcessorsByNodeClassValues);
+                }
+                nonSpecificProcessorsByNodeClassValues.addAll(processorsEntry.getValue());
+            }
+
+
 
             /*
              * Merge execution attributes
