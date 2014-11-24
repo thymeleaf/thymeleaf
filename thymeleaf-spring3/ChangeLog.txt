@@ -1,3 +1,9 @@
+2.1.4
+=====
+- Set ApplicationContext to RedirectViews so that RequestDataValueProcessor can modify the
+  URLs to which the application redirects.
+
+
 2.1.3
 =====
 - Added MapAccessor to ThymeleafEvaluationContext in order to allow dot syntax accessing map
