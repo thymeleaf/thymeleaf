@@ -611,7 +611,9 @@ public class ThymeleafViewResolver
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
-            return new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
+			RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
+			view.setApplicationContext(getApplicationContext());
+			return view;
         }
         if (viewName.startsWith(FORWARD_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a forward, and will not be handled directly by ThymeleafViewResolver.", viewName);
