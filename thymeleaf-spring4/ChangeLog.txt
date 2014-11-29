@@ -2,6 +2,8 @@
 =====
 - Set ApplicationContext to RedirectViews so that RequestDataValueProcessor can modify the
   URLs to which the application redirects.
+- Modified behavuour at ThymeleafViewResolver so that a non-View registered bean cannot be
+  accidentally picked for prototyping a view object.
 
 
 2.1.3
