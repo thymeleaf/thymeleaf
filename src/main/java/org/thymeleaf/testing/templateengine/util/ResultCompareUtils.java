@@ -563,6 +563,7 @@ public class ResultCompareUtils {
                 }
 
                 eventItem = trace.get(++i);
+                eventType = eventItem.getEventType();
 
             }
             
