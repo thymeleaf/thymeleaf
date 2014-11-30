@@ -27,10 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.attoparser.AttoParseException;
-import org.attoparser.markup.MarkupAttoParser;
-import org.attoparser.markup.html.trace.TracingDetailedHtmlAttoHandler;
-import org.attoparser.markup.trace.TraceEvent;
+import org.attoparser.IMarkupParser;
+import org.attoparser.MarkupParser;
+import org.attoparser.ParseException;
+import org.attoparser.config.ParseConfiguration;
+import org.attoparser.trace.MarkupTraceEvent;
+import org.attoparser.trace.TraceBuilderMarkupHandler;
 import org.thymeleaf.testing.templateengine.exception.TestEngineExecutionException;
 import org.thymeleaf.util.Validate;
 
@@ -43,7 +45,9 @@ public class ResultCompareUtils {
 
     
     private static final AttributeEventComparator ATTRIBUTE_EVENT_COMPARATOR = new AttributeEventComparator();
-    private static final MarkupAttoParser PARSER = new MarkupAttoParser();
+    private static final IMarkupParser PARSER;
+    private static final ParseConfiguration MARKUP_PARSING_CONFIGURATION;
+
 
     
     private static final Set<String> BLOCK_ELEMENTS =
@@ -62,111 +66,150 @@ public class ResultCompareUtils {
                             "form", "header", "hgroup",  "noscript", "ol", "section", "table", 
                             "tbody", "tr", "tfoot", "ul"
                     }));
-    
-    
+
+
+
+    static {
+
+        /*
+         * Exactly the same configuration used at Thymeleaf's HtmlTemplateParser (> v3.0)
+         */
+        MARKUP_PARSING_CONFIGURATION = ParseConfiguration.htmlConfiguration();
+        MARKUP_PARSING_CONFIGURATION.setElementBalancing(ParseConfiguration.ElementBalancing.AUTO_CLOSE);
+        MARKUP_PARSING_CONFIGURATION.setCaseSensitive(false);
+        MARKUP_PARSING_CONFIGURATION.setNoUnmatchedCloseElementsRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setUniqueAttributesInElementRequired(true);
+        MARKUP_PARSING_CONFIGURATION.setXmlWellFormedAttributeValuesRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(ParseConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setDoctypePresence(ParseConfiguration.PrologPresence.ALLOWED);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setRequireDoctypeKeywordsUpperCase(false);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setValidateProlog(false);
+        MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setXmlDeclarationPresence(ParseConfiguration.PrologPresence.ALLOWED);
+
+        PARSER = new MarkupParser(MARKUP_PARSING_CONFIGURATION);
+
+    }
 
     
     public static ResultComparison compareResults(final String expected, final String actual, final boolean lenient) {
-        
+
         Validate.notNull(expected, "Expected result cannot be null");
         Validate.notNull(actual, "Actual result cannot be null");
 
-        final TracingDetailedHtmlAttoHandler expectedHandler = new TracingDetailedHtmlAttoHandler();
-        final TracingDetailedHtmlAttoHandler actualHandler = new TracingDetailedHtmlAttoHandler();
-        
+        final TraceBuilderMarkupHandler expectedHandler = new TraceBuilderMarkupHandler();
+        final TraceBuilderMarkupHandler actualHandler = new TraceBuilderMarkupHandler();
+
         try {
             PARSER.parse(expected, expectedHandler);
             PARSER.parse(actual, actualHandler);
-        } catch (final AttoParseException e) {
+        } catch (final ParseException e) {
             throw new TestEngineExecutionException("Error while trying to compare results", e);
         }
-        
-        final List<TraceEvent> expectedTrace = 
+
+        final List<MarkupTraceEvent> expectedTrace =
                 (lenient? normalizeTrace(expectedHandler.getTrace()) : expectedHandler.getTrace());
-        final List<TraceEvent> actualTrace = 
+        final List<MarkupTraceEvent> actualTrace =
                 (lenient? normalizeTrace(actualHandler.getTrace()) : actualHandler.getTrace());
 
         final int actualTraceSize = actualTrace.size();
         final int expectedTraceSize = expectedTrace.size();
-        
+
         for (int i = 0; i < actualTraceSize; i++) {
-            
-            final TraceEvent actualTraceItem = actualTrace.get(i);
-            final TraceEvent expectedTraceItem = 
+
+            final MarkupTraceEvent actualTraceItem = actualTrace.get(i);
+            final MarkupTraceEvent expectedTraceItem =
                     (expectedTraceSize > i? expectedTrace.get(i) : null);
-            
+
+            if (actualTraceItem instanceof MarkupTraceEvent.DocumentStartTraceEvent &&
+                    expectedTraceItem != null && expectedTraceItem instanceof MarkupTraceEvent.DocumentStartTraceEvent) {
+                continue;
+            }
+
+            if (actualTraceItem instanceof MarkupTraceEvent.DocumentEndTraceEvent &&
+                    expectedTraceItem != null && expectedTraceItem instanceof MarkupTraceEvent.DocumentEndTraceEvent) {
+                continue;
+            }
+
             if (expectedTraceItem == null) {
 
                 final int[] actualFragmentReportSizes = computeErrorMessageLength(actualTrace, i, actual);
                 final int[] expectedFragmentReportSizes = new int[] {20,0};
-                
+
+                final int actualTraceItemLine = computeFirstLine(actualTraceItem);
+                final int actualTraceItemCol = computeFirstCol(actualTraceItem);
+
                 final String actualFragment =
                         getFragmentSurrounding(
-                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), actualFragmentReportSizes[0], actualFragmentReportSizes[1]);
+                                actual, actualTraceItemLine, actualTraceItemCol, actualFragmentReportSizes[0], actualFragmentReportSizes[1]);
                 final String expectedFragment =
                         getFragmentSurrounding(
                                 expected, Integer.MAX_VALUE, Integer.MAX_VALUE, expectedFragmentReportSizes[0], expectedFragmentReportSizes[1]);
-               
-                final String explanation =
-                        createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
-                
-                return new ResultComparison(false, explanation);
-                
-            }
-            
 
-            final TraceEvent comparableActualTraceItem = compressWhitespaceIfText(actualTraceItem);
-            final TraceEvent comparableExpectedTraceItem = compressWhitespaceIfText(expectedTraceItem);
-            
-            final boolean itemMatches = 
+                final String explanation =
+                        createExplanation(actualFragment, actualTraceItemLine, actualTraceItemCol, expectedFragment);
+
+                return new ResultComparison(false, explanation);
+
+            }
+
+
+            final MarkupTraceEvent comparableActualTraceItem = compressWhitespaceIfText(actualTraceItem);
+            final MarkupTraceEvent comparableExpectedTraceItem = compressWhitespaceIfText(expectedTraceItem);
+
+            final boolean itemMatches =
                     (lenient? comparableActualTraceItem.matchesTypeAndContent(comparableExpectedTraceItem) : actualTraceItem.equals(expectedTraceItem));
-            
+
             if (!itemMatches) {
 
                 final int[] actualFragmentReportSizes = computeErrorMessageLength(actualTrace, i, actual);
                 final int[] expectedFragmentReportSizes = computeErrorMessageLength(expectedTrace, i, expected);
-                
+
+                final int actualTraceItemLine = computeFirstLine(actualTraceItem);
+                final int actualTraceItemCol = computeFirstCol(actualTraceItem);
+                final int expectedTraceItemLine = computeFirstLine(expectedTraceItem);
+                final int expectedTraceItemCol = computeFirstCol(expectedTraceItem);
+
                 final String actualFragment =
                         getFragmentSurrounding(
-                                actual, actualTraceItem.getLine(), actualTraceItem.getCol(), actualFragmentReportSizes[0], actualFragmentReportSizes[1]);
+                                actual, actualTraceItemLine, actualTraceItemCol, actualFragmentReportSizes[0], actualFragmentReportSizes[1]);
                 final String expectedFragment =
                         getFragmentSurrounding(
-                                expected, expectedTraceItem.getLine(), expectedTraceItem.getCol(), expectedFragmentReportSizes[0], expectedFragmentReportSizes[1]);
-               
+                                expected, expectedTraceItemLine, expectedTraceItemCol, expectedFragmentReportSizes[0], expectedFragmentReportSizes[1]);
+
                 final String explanation =
-                        createExplanation(actualFragment, actualTraceItem.getLine(), actualTraceItem.getCol(), expectedFragment);
-                
+                        createExplanation(actualFragment, actualTraceItemLine, actualTraceItemCol, expectedFragment);
+
                 return new ResultComparison(false, explanation);
-                
+
             }
-            
+
         }
-        
-        
+
+
         return new ResultComparison(true, "OK");
-        
+
     }
     
     
     
     
 
-    private static List<TraceEvent> normalizeTrace(final List<TraceEvent> trace) {
+    private static List<MarkupTraceEvent> normalizeTrace(final List<MarkupTraceEvent> trace) {
         
         String lastOpenElementName = null;
         String lastClosedElementName = null;
         boolean lastIsWhiteSpace = false;
         
-        final List<TraceEvent> newTrace = new ArrayList<TraceEvent>();
-        final List<TraceEvent> currentAttributeList = new ArrayList<TraceEvent>();
+        final List<MarkupTraceEvent> newTrace = new ArrayList<MarkupTraceEvent>();
+        final List<MarkupTraceEvent> currentAttributeList = new ArrayList<MarkupTraceEvent>();
         
-        for (final TraceEvent event : trace) {
+        for (final MarkupTraceEvent event : trace) {
             
-            final String eventType = event.getType();
+            final MarkupTraceEvent.EventType eventType = event.getEventType();
             
             if (!currentAttributeList.isEmpty()) {
-                if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType) &&
-                        !TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
+                if (MarkupTraceEvent.EventType.ATTRIBUTE != eventType &&
+                        MarkupTraceEvent.EventType.INNER_WHITE_SPACE != eventType) {
                     Collections.sort(currentAttributeList, ATTRIBUTE_EVENT_COMPARATOR);
                     newTrace.addAll(currentAttributeList);
                     currentAttributeList.clear();
@@ -182,9 +225,9 @@ public class ResultCompareUtils {
                  * We check newTrace to be of size 2 because we look for: 
                  * [0] = DOCUMENT_START, [1] = TEXT
                  */
-                if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCTYPE.equals(eventType) &&
-                    !TracingDetailedHtmlAttoHandler.TRACE_TYPE_XMLDECL.equals(eventType) && 
-                    !TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCUMENT_END.equals(eventType)) {
+                if (MarkupTraceEvent.EventType.DOC_TYPE != eventType &&
+                    MarkupTraceEvent.EventType.XML_DECLARATION != eventType &&
+                    MarkupTraceEvent.EventType.DOCUMENT_END != eventType) {
                     
                     if (lastIsWhiteSpace) {
                         newTrace.remove(newTrace.size() - 1);
@@ -194,10 +237,10 @@ public class ResultCompareUtils {
                 }
             }
             
-            if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventType)) {
+            if (MarkupTraceEvent.EventType.TEXT == eventType) {
                 // We need to compress all whitespace in order to perform a correct lenient check
                 
-                final String text = event.getContent()[0];
+                final String text = ((MarkupTraceEvent.TextTraceEvent)event).getContent();
 
                 // We will not perform the whitespace compression here. Instead, we will
                 // do that only in the very moment the text event items are compared, so that
@@ -212,38 +255,45 @@ public class ResultCompareUtils {
                 }
                 
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_INNERWHITESPACE.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.INNER_WHITE_SPACE == eventType) {
                 
                 // These events are not relevant for result matching, so we just ignore them 
                 // (they represent mere inter-attribute whitespace)
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.ATTRIBUTE == eventType) {
                 
                 currentAttributeList.add(event);
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_CLOSE_ELEMENT_END.equals(eventType) ||
-                       TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_END.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.CLOSE_ELEMENT_END == eventType ||
+                       MarkupTraceEvent.EventType.STANDALONE_ELEMENT_END == eventType) {
                 
                 /*
                  * We need to store the name of the last element closed in order to later determine whether
                  * any white space events between it and the following element should be ignored.
                  */
                 
-                lastClosedElementName = event.getContent()[0].toLowerCase();
+                lastClosedElementName =
+                        (MarkupTraceEvent.EventType.CLOSE_ELEMENT_END == eventType?
+                                ((MarkupTraceEvent.CloseElementEndTraceEvent)event).getElementName().toLowerCase() :
+                                ((MarkupTraceEvent.StandaloneElementEndTraceEvent)event).getElementName().toLowerCase());
+
                 lastOpenElementName = null;
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventType) ||
-                       TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.OPEN_ELEMENT_START == eventType ||
+                       MarkupTraceEvent.EventType.STANDALONE_ELEMENT_START == eventType) {
 
                 /*
                  * Whitespace between block elements (e.g. <div>, <p>...) or between block containers
                  * and block elements (e.g. <div><p>, <ul><li>) should not be considered.
                  */
-                
-                final String elementName = event.getContent()[0].toLowerCase();
-                
+
+                final String elementName =
+                        (MarkupTraceEvent.EventType.OPEN_ELEMENT_START == eventType?
+                                ((MarkupTraceEvent.OpenElementStartTraceEvent)event).getElementName().toLowerCase() :
+                                ((MarkupTraceEvent.StandaloneElementStartTraceEvent)event).getElementName().toLowerCase());
+
                 if (lastClosedElementName != null && 
                     BLOCK_ELEMENTS.contains(lastClosedElementName) &&
                     BLOCK_ELEMENTS.contains(elementName)) {
@@ -264,24 +314,24 @@ public class ResultCompareUtils {
 
                 } 
                 
-                if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventType)) {
+                if (MarkupTraceEvent.EventType.STANDALONE_ELEMENT_START == eventType) {
                     lastOpenElementName = null;
-                    lastClosedElementName = event.getContent()[0].toLowerCase();
+                    lastClosedElementName = elementName;
                 } else {
-                    lastOpenElementName = event.getContent()[0].toLowerCase();
+                    lastOpenElementName = elementName;
                     lastClosedElementName = null;
                 }
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_CLOSE_ELEMENT_START.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.CLOSE_ELEMENT_START == eventType) {
 
                 /*
                  * Whitespace between block elements closing tags and block containers closing tags
                  * (e.g. </p></div>, </li></ul>) should not be considered.
                  */
                 
-                final String elementName = event.getContent()[0].toLowerCase();
+                final String elementName = ((MarkupTraceEvent.CloseElementStartTraceEvent)event).getElementName().toLowerCase();
                 
                 if (lastClosedElementName != null && 
                     BLOCK_ELEMENTS.contains(lastClosedElementName) &&
@@ -295,21 +345,21 @@ public class ResultCompareUtils {
                 } 
                 
                 lastOpenElementName = null;
-                lastClosedElementName = event.getContent()[0].toLowerCase();
+                lastClosedElementName = elementName;
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_DOCUMENT_END.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.DOCUMENT_END == eventType) {
                 
                 /*
                  * If the last event before document end is just whitespace text and trace is 
                  * bigger than just two events (document start + one event),
                  * we will just remove it. Whitespace at the end of a document has no influence at all.
                  */
-                final TraceEvent lastEvent = 
+                final MarkupTraceEvent lastEvent =
                         (newTrace.size() > 2? newTrace.get(newTrace.size() - 1) : null);
-                if (lastEvent != null && TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(lastEvent.getType())) {
-                    final String text = lastEvent.getContent()[0];
+                if (lastEvent != null && MarkupTraceEvent.EventType.TEXT == lastEvent.getEventType()) {
+                    final String text = ((MarkupTraceEvent.TextTraceEvent)lastEvent).getContent();
                     if (isAllWhitespace(text)) {
                         newTrace.remove(newTrace.size() - 1);
                     }
@@ -317,7 +367,7 @@ public class ResultCompareUtils {
                 newTrace.add(event);
                 lastIsWhiteSpace = false;
                 
-            } else if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_END.equals(eventType)) {
+            } else if (MarkupTraceEvent.EventType.OPEN_ELEMENT_END == eventType) {
                 
                 // If we are closing an opening tag, we should not initialize the "lastOpenElementName" field
                 // that we just set at the OPEN_ELEMENT_START
@@ -344,16 +394,18 @@ public class ResultCompareUtils {
     
     
     
-    private static TraceEvent compressWhitespaceIfText(final TraceEvent event) {
+    private static MarkupTraceEvent compressWhitespaceIfText(final MarkupTraceEvent event) {
         
-        final String eventType = event.getType();
-        if (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventType)) {
+        final MarkupTraceEvent.EventType eventType = event.getEventType();
+        if (MarkupTraceEvent.EventType.TEXT != eventType) {
             return event;
         }
-        
-        final String text = event.getContent()[0]; 
+
+        final MarkupTraceEvent.TextTraceEvent textEvent = ((MarkupTraceEvent.TextTraceEvent)event);
+
+        final String text = textEvent.getContent();
                 
-        final StringBuilder strBuilder = new StringBuilder();
+        final StringBuilder strBuilder = new StringBuilder(text.length());
         
         boolean whitespace = false;
         
@@ -371,7 +423,7 @@ public class ResultCompareUtils {
             }
         }
         
-        return new TraceEvent(event.getLine(), event.getCol(), event.getType(), strBuilder.toString());
+        return new MarkupTraceEvent.TextTraceEvent(strBuilder.toString(), textEvent.getLine(), textEvent.getCol());
         
     }
     
@@ -442,68 +494,76 @@ public class ResultCompareUtils {
     
     
     
-    private static int[] computeErrorMessageLength(final List<TraceEvent> trace, final int position, final String result) {
-        
-        TraceEvent eventItem = trace.get(position);
-        
-        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_TEXT.equals(eventItem.getType())) {
-            
-            final Object[] contentArray = eventItem.getContent();
-            if (contentArray == null || contentArray.length == 0) {
-                return new int[] {20, 80};
-            }
-            
-            // We first at content item number 1, because during trace normalization
-            // we might have added there the un-whitespace-stripped original text, which is
-            // the correct one to be used for computing this message length.
-            final Object contentObj = eventItem.getContent()[0];
-            if (contentObj == null || !(contentObj instanceof String)) {
-                return new int[] {20, 80};
-            }
-            
-            final String content = (String) contentObj;
-            return new int[] {20, content.length() + 20};
+    private static int[] computeErrorMessageLength(final List<MarkupTraceEvent> trace, final int position, final String result) {
+
+        MarkupTraceEvent eventItem = trace.get(position);
+
+        MarkupTraceEvent.EventType eventType = eventItem.getEventType();
+
+        if (MarkupTraceEvent.EventType.TEXT == eventType) {
+
+            final MarkupTraceEvent.TextTraceEvent textEvent = (MarkupTraceEvent.TextTraceEvent) eventItem;
+
+            final String content = textEvent.getContent();
+            final int contentLen = content == null ? 0 : content.length();
+
+            return new int[] {20, contentLen + 20};
             
         }
 
-        if (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType()) ||
-            TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) ||
-            TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType())) {
+        if (MarkupTraceEvent.EventType.ATTRIBUTE == eventType ||
+                MarkupTraceEvent.EventType.OPEN_ELEMENT_START == eventType ||
+                MarkupTraceEvent.EventType.STANDALONE_ELEMENT_START == eventType) {
             
             // We will try to output all text from the start of the container tag to the last
             // attribute in the same tag.
-            
-            final int attributeLine = eventItem.getLine();
-            final int attributeCol = eventItem.getCol();
+
+            final int attributeLine = computeFirstLine(eventItem);
+            final int attributeCol = computeFirstCol(eventItem);
+
+            /*
+             * If this event is an attribute, we need to go back in the sequence until we find the corresponding
+             * element, so that we can include it complete in the output.
+             */
 
             int i = position;
             eventItem = trace.get(i);
-            while (!TracingDetailedHtmlAttoHandler.TRACE_TYPE_OPEN_ELEMENT_START.equals(eventItem.getType()) &&
-                    !TracingDetailedHtmlAttoHandler.TRACE_TYPE_STANDALONE_ELEMENT_START.equals(eventItem.getType()) &&
+            eventType = eventItem.getEventType();
+            while (MarkupTraceEvent.EventType.OPEN_ELEMENT_START != eventType &&
+                    MarkupTraceEvent.EventType.STANDALONE_ELEMENT_START != eventType &&
                     i > 0) {
                 eventItem = trace.get(--i);
+                eventType = eventItem.getEventType();
             }
-            
-            final int elementLine = eventItem.getLine();
-            final int elementCol = eventItem.getCol();
-            final int beforeDistance = 
+
+            final int elementLine = computeFirstLine(eventItem);
+            final int elementCol = computeFirstCol(eventItem);
+
+            final int beforeDistance =
                     computeDistance(result, elementLine, elementCol, attributeLine, attributeCol);
             
             int afterDistance = 0;
             int lastAttributeLen = 0;
             eventItem = trace.get(++i);
-            
-            while (TracingDetailedHtmlAttoHandler.TRACE_TYPE_ATTRIBUTE.equals(eventItem.getType()) && i < trace.size()) {
+            eventType = eventItem.getEventType();
+
+            while (MarkupTraceEvent.EventType.ATTRIBUTE == eventType && i < trace.size()) {
+
+                final MarkupTraceEvent.AttributeTraceEvent attributeTraceEvent =
+                        (MarkupTraceEvent.AttributeTraceEvent) eventItem;
+
                 final int distance = 
-                        computeDistance(result, attributeLine, attributeCol, eventItem.getLine(), eventItem.getCol());
+                        computeDistance(result, attributeLine, attributeCol, attributeTraceEvent.getNameLine(), attributeTraceEvent.getNameCol());
                 if (distance > afterDistance) {
                     afterDistance = distance;
                     lastAttributeLen =
-                            eventItem.getContent()[0].length() + 
-                            (eventItem.getContent()[1] != null? eventItem.getContent()[1].length() : 0) + 
-                            (eventItem.getContent()[2] != null? eventItem.getContent()[2].length() : 0); 
+                            attributeTraceEvent.getName().length() +
+                            (attributeTraceEvent.getOperator() != null? attributeTraceEvent.getOperator().length() : 0) +
+                            (attributeTraceEvent.getOuterValue() != null? attributeTraceEvent.getOuterValue().length() : 0);
                 }
+
                 eventItem = trace.get(++i);
+
             }
             
 
@@ -515,7 +575,7 @@ public class ResultCompareUtils {
         
     }
     
-    
+
     
     
     private static int computeDistance(
@@ -568,7 +628,169 @@ public class ResultCompareUtils {
         
     }
     
-    
+
+
+
+    private static int computeFirstLine(final MarkupTraceEvent event) {
+
+        if (event instanceof MarkupTraceEvent.XmlDeclarationTraceEvent) {
+            return ((MarkupTraceEvent.XmlDeclarationTraceEvent)event).getKeywordLine();
+        }
+        if (event instanceof MarkupTraceEvent.DocTypeTraceEvent) {
+            return ((MarkupTraceEvent.DocTypeTraceEvent)event).getKeywordLine();
+        }
+        if (event instanceof MarkupTraceEvent.CommentTraceEvent) {
+            return ((MarkupTraceEvent.CommentTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.TextTraceEvent) {
+            return ((MarkupTraceEvent.TextTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.ProcessingInstructionTraceEvent) {
+            return ((MarkupTraceEvent.ProcessingInstructionTraceEvent)event).getTargetLine();
+        }
+        if (event instanceof MarkupTraceEvent.CDATASectionTraceEvent) {
+            return ((MarkupTraceEvent.CDATASectionTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.StandaloneElementStartTraceEvent) {
+            return ((MarkupTraceEvent.StandaloneElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.StandaloneElementEndTraceEvent) {
+            return ((MarkupTraceEvent.StandaloneElementEndTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.OpenElementStartTraceEvent) {
+            return ((MarkupTraceEvent.OpenElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.OpenElementEndTraceEvent) {
+            return ((MarkupTraceEvent.OpenElementEndTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.AutoOpenElementStartTraceEvent) {
+            return ((MarkupTraceEvent.AutoOpenElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.AutoOpenElementEndTraceEvent) {
+            return ((MarkupTraceEvent.AutoOpenElementEndTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.CloseElementStartTraceEvent) {
+            return ((MarkupTraceEvent.CloseElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.CloseElementEndTraceEvent) {
+            return ((MarkupTraceEvent.CloseElementEndTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.AutoCloseElementStartTraceEvent) {
+            return ((MarkupTraceEvent.AutoCloseElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.AutoCloseElementEndTraceEvent) {
+            return ((MarkupTraceEvent.AutoCloseElementEndTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.AttributeTraceEvent) {
+            return ((MarkupTraceEvent.AttributeTraceEvent)event).getNameLine();
+        }
+        if (event instanceof MarkupTraceEvent.InnerWhiteSpaceTraceEvent) {
+            return ((MarkupTraceEvent.InnerWhiteSpaceTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.NonMinimizedStandaloneElementStartTraceEvent) {
+            return ((MarkupTraceEvent.NonMinimizedStandaloneElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.NonMinimizedStandaloneElementEndTraceEvent) {
+            return ((MarkupTraceEvent.NonMinimizedStandaloneElementEndTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.UnmatchedCloseElementStartTraceEvent) {
+            return ((MarkupTraceEvent.UnmatchedCloseElementStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.UnmatchedCloseElementEndTraceEvent) {
+            return ((MarkupTraceEvent.UnmatchedCloseElementEndTraceEvent) event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.DocumentStartTraceEvent) {
+            return ((MarkupTraceEvent.DocumentStartTraceEvent)event).getLine();
+        }
+        if (event instanceof MarkupTraceEvent.DocumentEndTraceEvent) {
+            return ((MarkupTraceEvent.DocumentEndTraceEvent)event).getLine();
+        }
+
+        throw new IllegalStateException("Unrecognized event class: " + event.getClass().getName());
+
+    }
+
+
+    private static int computeFirstCol(final MarkupTraceEvent event) {
+
+        if (event instanceof MarkupTraceEvent.XmlDeclarationTraceEvent) {
+            return ((MarkupTraceEvent.XmlDeclarationTraceEvent)event).getKeywordCol();
+        }
+        if (event instanceof MarkupTraceEvent.DocTypeTraceEvent) {
+            return ((MarkupTraceEvent.DocTypeTraceEvent)event).getKeywordCol();
+        }
+        if (event instanceof MarkupTraceEvent.CommentTraceEvent) {
+            return ((MarkupTraceEvent.CommentTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.TextTraceEvent) {
+            return ((MarkupTraceEvent.TextTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.ProcessingInstructionTraceEvent) {
+            return ((MarkupTraceEvent.ProcessingInstructionTraceEvent)event).getTargetCol();
+        }
+        if (event instanceof MarkupTraceEvent.CDATASectionTraceEvent) {
+            return ((MarkupTraceEvent.CDATASectionTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.StandaloneElementStartTraceEvent) {
+            return ((MarkupTraceEvent.StandaloneElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.StandaloneElementEndTraceEvent) {
+            return ((MarkupTraceEvent.StandaloneElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.OpenElementStartTraceEvent) {
+            return ((MarkupTraceEvent.OpenElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.OpenElementEndTraceEvent) {
+            return ((MarkupTraceEvent.OpenElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.AutoOpenElementStartTraceEvent) {
+            return ((MarkupTraceEvent.AutoOpenElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.AutoOpenElementEndTraceEvent) {
+            return ((MarkupTraceEvent.AutoOpenElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.CloseElementStartTraceEvent) {
+            return ((MarkupTraceEvent.CloseElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.CloseElementEndTraceEvent) {
+            return ((MarkupTraceEvent.CloseElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.AutoCloseElementStartTraceEvent) {
+            return ((MarkupTraceEvent.AutoCloseElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.AutoCloseElementEndTraceEvent) {
+            return ((MarkupTraceEvent.AutoCloseElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.AttributeTraceEvent) {
+            return ((MarkupTraceEvent.AttributeTraceEvent)event).getNameCol();
+        }
+        if (event instanceof MarkupTraceEvent.InnerWhiteSpaceTraceEvent) {
+            return ((MarkupTraceEvent.InnerWhiteSpaceTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.NonMinimizedStandaloneElementStartTraceEvent) {
+            return ((MarkupTraceEvent.NonMinimizedStandaloneElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.NonMinimizedStandaloneElementEndTraceEvent) {
+            return ((MarkupTraceEvent.NonMinimizedStandaloneElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.UnmatchedCloseElementStartTraceEvent) {
+            return ((MarkupTraceEvent.UnmatchedCloseElementStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.UnmatchedCloseElementEndTraceEvent) {
+            return ((MarkupTraceEvent.UnmatchedCloseElementEndTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.DocumentStartTraceEvent) {
+            return ((MarkupTraceEvent.DocumentStartTraceEvent)event).getCol();
+        }
+        if (event instanceof MarkupTraceEvent.DocumentEndTraceEvent) {
+            return ((MarkupTraceEvent.DocumentEndTraceEvent)event).getCol();
+        }
+
+        throw new IllegalStateException("Unrecognized event class: " + event.getClass().getName());
+
+    }
+
+
     
     
     
@@ -580,14 +802,14 @@ public class ResultCompareUtils {
     
     
     
-    private static class AttributeEventComparator implements Comparator<TraceEvent> {
+    private static class AttributeEventComparator implements Comparator<MarkupTraceEvent> {
 
         
         AttributeEventComparator() {
             super();
         }
         
-        public int compare(final TraceEvent o1, final TraceEvent o2) {
+        public int compare(final MarkupTraceEvent o1, final MarkupTraceEvent o2) {
             
             if (o1 == null) {
                 return -1;
@@ -595,21 +817,12 @@ public class ResultCompareUtils {
             if (o2 == null) {
                 return 1;
             }
-            
-            final String name1 = 
-                    (o1.getContent().length > 0 ? o1.getContent()[0] : null);
-            final String name2 = 
-                    (o2.getContent().length > 0 ? o2.getContent()[0] : null);
 
-            if (name1 == null) {
-                return -1;
-            }
-            if (name2 == null) {
-                return 1;
-            }
-            
-            return name1.compareTo(name2);
-            
+            final MarkupTraceEvent.AttributeTraceEvent ao1 = (MarkupTraceEvent.AttributeTraceEvent) o1;
+            final MarkupTraceEvent.AttributeTraceEvent ao2 = (MarkupTraceEvent.AttributeTraceEvent) o2;
+
+            return ao1.getName().compareTo(ao2.getName());
+
         }
         
     }
