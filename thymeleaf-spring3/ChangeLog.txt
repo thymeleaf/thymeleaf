@@ -3,7 +3,9 @@
 - Set ApplicationContext to RedirectViews so that RequestDataValueProcessor can modify the
   URLs to which the application redirects.
 - Modified behavuour at ThymeleafViewResolver so that a non-View registered bean cannot be
-  accidentally picked for prototyping a view object.
+  accidentally picked for prototyping a view object.zx
+- Made data Spring format/conversion not apply for inputs with type 'number' or 'range' to
+  avoid browsers being unable to parse data because of format (e.g. percents).
 
 
 2.1.3

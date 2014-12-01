@@ -115,9 +115,13 @@ public final class SpringInputGeneralFieldAttrProcessor
         // Thanks to precedence, this should have already been computed
         final String type = element.getAttributeValueFromNormalizedName("type");
 
-        // No escaping needed as attribute values are always escaped by default
-        final String value = ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false);
-        
+        // Apply the conversions (editor), depending on type (no conversion for "number" and "range"
+        // Also, no escaping needed as attribute values are always escaped by default
+        final String value =
+                applyConversion(type)?
+                        ValueFormatterWrapper.getDisplayString(bindStatus.getValue(), bindStatus.getEditor(), false) :
+                        ValueFormatterWrapper.getDisplayString(bindStatus.getActualValue(), false);
+
         element.setAttribute("id", id);
         element.setAttribute("name", name);
         
@@ -132,6 +136,10 @@ public final class SpringInputGeneralFieldAttrProcessor
         
     }
 
+
+    private static boolean applyConversion(final String type) {
+        return !(type != null && ("number".equalsIgnoreCase(type) || "range".equalsIgnoreCase(type)));
+    }
     
 
 }
