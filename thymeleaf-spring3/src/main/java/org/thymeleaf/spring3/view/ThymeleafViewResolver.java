@@ -611,7 +611,7 @@ public class ThymeleafViewResolver
         if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
             vrlogger.trace("[THYMELEAF] View \"{}\" is a redirect, and will not be handled directly by ThymeleafViewResolver.", viewName);
             final String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
-            RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
+            final RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
 			view.setApplicationContext(getApplicationContext());
 			return view;
         }
@@ -635,24 +635,32 @@ public class ThymeleafViewResolver
         
         AbstractThymeleafView view = BeanUtils.instantiateClass(getViewClass());
 
-        if (beanFactory.containsBean(viewName)) {
-            final Class<?> viewBeanType = beanFactory.getType(viewName);
-            // viewBeanType could be null if bean is abstract (just a set of properties)
-            if (viewBeanType != null && AbstractThymeleafView.class.isAssignableFrom(viewBeanType)) {
-                view = (AbstractThymeleafView) beanFactory.configureBean(view, viewName);
-            } else {
-                // The AUTOWIRE_NO mode applies autowiring only through annotations
-                beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
-                // A bean with this name exists, so we apply its properties
-                beanFactory.applyBeanPropertyValues(view, viewName);
-                // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
-                view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
-            }
+        final boolean viewBeanExists = beanFactory.containsBean(viewName);
+        final Class<?> viewBeanType = viewBeanExists? beanFactory.getType(viewName) : null;
+
+        if (viewBeanExists && viewBeanType != null && AbstractThymeleafView.class.isAssignableFrom(viewBeanType)) {
+            // AppCtx has a bean with name == viewName, and it is a View bean. So let's use it as a prototype!
+
+            view = (AbstractThymeleafView) beanFactory.configureBean(view, viewName);
+
+        } else if (viewBeanExists && viewBeanType == null) {
+            // AppCtx has a bean with name == viewName, but it is an abstract bean. We still can use it as a prototype.
+
+            // The AUTOWIRE_NO mode applies autowiring only through annotations
+            beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
+            // A bean with this name exists, so we apply its properties
+            beanFactory.applyBeanPropertyValues(view, viewName);
+            // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
+            view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
+
         } else {
+            // Either AppCtx has no bean with name == viewName, or it is of an incompatible class. No prototyping done.
+
             // The AUTOWIRE_NO mode applies autowiring only through annotations
             beanFactory.autowireBeanProperties(view, AutowireCapableBeanFactory.AUTOWIRE_NO, false);
             // Finally, we let Spring do the remaining initializations (incl. proxifying if needed)
             view = (AbstractThymeleafView) beanFactory.initializeBean(view, viewName);
+
         }
 
         view.setTemplateEngine(getTemplateEngine());
