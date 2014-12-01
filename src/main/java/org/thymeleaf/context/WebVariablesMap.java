@@ -98,7 +98,7 @@ class WebVariablesMap extends VariablesMap<String,Object> {
      * AbstractProcessingContext asking for the presence of this SELECTION TARGET. So we cache it in order to avoid
      * calling HttpServletRequest#getParameterNames() in #containsKey() every time.
      */
-    private boolean evalSelectionTargetPresent;
+    private boolean evalSelectionTargetPresent = false;
 
 
 
