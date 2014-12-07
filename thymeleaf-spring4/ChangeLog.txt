@@ -8,6 +8,7 @@
   avoid browsers being unable to parse data because of format (e.g. percents).
 - Fixed th:errorclass not picking the correct form property name when selected object expression
   has more than one level.
+- Fixed bad selection of th:field processor when the "type" attribute is computed in runtime.
 
 
 2.1.3
