@@ -27,6 +27,7 @@ import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.processor.ProcessorResult;
 import org.thymeleaf.spring3.requestdata.RequestDataValueProcessorUtils;
+import org.thymeleaf.util.StringUtils;
 
 
 /**
@@ -81,10 +82,12 @@ public final class SpringInputGeneralFieldAttrProcessor
 
     
     public static final SpringInputGeneralFieldAttrProcessor[] PROCESSORS;
-    
-    
-    
-    
+
+    private boolean computedType;
+
+
+
+
     static {
         PROCESSORS = new SpringInputGeneralFieldAttrProcessor[ALL_TYPE_ATTR_VALUES.length];
         for (int i = 0; i < ALL_TYPE_ATTR_VALUES.length; i++) {
@@ -98,6 +101,13 @@ public final class SpringInputGeneralFieldAttrProcessor
 
     private SpringInputGeneralFieldAttrProcessor(final String hostFilterAttributeValue) {
         super(ATTR_NAME, INPUT_TAG_NAME, INPUT_TYPE_ATTR_NAME, hostFilterAttributeValue);
+        /*
+         * This tries to verify whether we are executing the instance of this attribute processor that matches on
+         * type == null, which means that we are executing it because we are lacking a more specialized type, and also
+         * that we might also have generated a "type" attribute by other means (e.g. th:type), a circumstance that
+         * we should check before executing the processor.
+         */
+        this.computedType = (hostFilterAttributeValue == null);
     }
 
 
@@ -106,7 +116,20 @@ public final class SpringInputGeneralFieldAttrProcessor
     protected ProcessorResult doProcess(final Arguments arguments, final Element element,
             final String attributeName, final String attributeValue, final BindStatus bindStatus,
             final Map<String, Object> localVariables) {
-        
+
+        // First of all, take care of the fact that we might have generated the value of the "type" attribute
+        // with a different attribute (e.g. th:type), and that might have provoked this processor to be
+        // executed instead of the right, more specialized one (e.g. "checkbox").
+        if (this.computedType) {
+            if (!StringUtils.isEmptyOrWhitespace(element.getAttributeValueFromNormalizedName("type"))) {
+                // This means we now have a type which we didn't have before, and we must recompute
+                element.setRecomputeProcessorsImmediately(true);
+                return ProcessorResult.OK;
+            }
+        }
+
+        // Now we know we are executing the right processor
+
         String name = bindStatus.getExpression();
         name = (name == null? "" : name);
         
