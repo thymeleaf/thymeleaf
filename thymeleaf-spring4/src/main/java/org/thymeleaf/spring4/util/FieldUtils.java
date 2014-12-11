@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -350,9 +351,13 @@ public final class FieldUtils {
 
 
         if (isBound(requestContext, expression, completeExpression)) {
-            // Creating an instance of BindStatus for an unbound object results in an exception,
-            // so we avoid it by checking first.
-            return new BindStatus(requestContext, completeExpression, false);
+            // Creating an instance of BindStatus for an unbound object results in an (expensive) exception,
+            // so we avoid it by checking first. Because the check is a simplification, we still handle the exception.
+            try {
+                return new BindStatus(requestContext, completeExpression, false);
+            } catch (final NotReadablePropertyException ignored) {
+                return null;
+            }
         }
 
         return null;
@@ -424,8 +429,30 @@ public final class FieldUtils {
         final String beanName = completeExpression.substring(0, dotPos);
 
         // The getErrors() method is not extremely efficient, but it has a cache map, so it should be fine
-        return (requestContext.getErrors(beanName, false) != null);
+        final boolean beanValid = requestContext.getErrors(beanName, false) != null;
+        if (beanValid && completeExpression.length() > dotPos) {
+            final CharSequence path = completeExpression.subSequence(dotPos + 1, completeExpression.length() - 1);
+            // We will validate the rest of the expression as a bean property identifier or a bean property expression.
+            return validateBeanPath(path);
+        }
+        return false;
 
+    }
+
+
+    /*
+     * This method determines whether a fragment of a bean path is a valid bean property identifier
+     * or bean property expression.
+     */
+    private static boolean validateBeanPath(final CharSequence path) {
+        final int pathLen = path.length();
+        for (int charPos = 0; charPos < pathLen; charPos++) {
+            final char c = path.charAt(charPos);
+            if (!Character.isJavaIdentifierPart(c) || c == '.') {
+                return false;
+            }
+        }
+        return true;
     }
 
 
