@@ -84,6 +84,19 @@ public final class SpringVersionUtils {
     }
 
 
+    public static boolean isSpring41AtLeast() {
+
+        final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
+        try {
+            Class.forName("org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer", false, classLoader);
+            return true;
+        } catch (final Exception e) {
+            return false;
+        }
+
+    }
+
+
 
     private SpringVersionUtils() {
 	    super();
