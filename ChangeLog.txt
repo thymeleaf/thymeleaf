@@ -1,3 +1,8 @@
+2.1.2
+=====
+- Improved MANIFEST metadata.
+
+
 2.1.1
 =====
 - Generalized code depending on thymeleaf-spring3 so that thymeleaf-spring4 is also supported.
