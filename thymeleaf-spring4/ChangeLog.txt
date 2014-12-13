@@ -9,6 +9,9 @@
 - Fixed th:errorclass not picking the correct form property name when selected object expression
   has more than one level.
 - Fixed bad selection of th:field processor when the "type" attribute is computed in runtime.
+- Fixed NotReadablePropertyException on conversion service called on bound bean's method
+  instead of property.
+- Improved MANIFEST jar metadata.
 
 
 2.1.3
