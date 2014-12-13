@@ -166,7 +166,6 @@
         <version>2.4</version>
         <configuration>
           <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
             <addMavenDescriptor>false</addMavenDescriptor>
             <manifest>
               <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
