@@ -109,6 +109,7 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <springframework.version>3.1.0.RELEASE</springframework.version>
     <springwebflow.version>2.3.1.RELEASE</springwebflow.version>
+    <slf4j.version>1.6.1</slf4j.version>
   </properties>
 
 
@@ -329,7 +330,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
+      <version>${slf4j.version}</version>
       <scope>compile</scope>
     </dependency>
 
