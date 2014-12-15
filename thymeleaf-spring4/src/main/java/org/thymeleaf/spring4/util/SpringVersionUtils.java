@@ -88,7 +88,7 @@ public final class SpringVersionUtils {
 
         final ClassLoader classLoader = ClassLoaderUtils.getClassLoader(SpringVersionUtils.class);
         try {
-            Class.forName("org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer", false, classLoader);
+            Class.forName("org.springframework.cache.annotation.CacheConfig", false, classLoader);
             return true;
         } catch (final Exception e) {
             return false;
