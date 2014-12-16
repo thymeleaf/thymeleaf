@@ -21,16 +21,21 @@ package org.thymeleaf.spring3.dialect;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.Standards;
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.dialect.IExpressionEnhancingDialect;
 import org.thymeleaf.doctype.DocTypeIdentifier;
 import org.thymeleaf.doctype.resolution.ClassLoaderDocTypeResolutionEntry;
 import org.thymeleaf.doctype.resolution.IDocTypeResolutionEntry;
 import org.thymeleaf.doctype.translation.DocTypeTranslation;
 import org.thymeleaf.doctype.translation.IDocTypeTranslation;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.spring3.expression.Mvc;
 import org.thymeleaf.spring3.expression.SpelVariableExpressionEvaluator;
 import org.thymeleaf.spring3.expression.SpringStandardConversionService;
 import org.thymeleaf.spring3.processor.attr.SpringActionAttrProcessor;
@@ -77,6 +82,12 @@ import org.thymeleaf.standard.processor.attr.StandardValueAttrProcessor;
  *       <li>Modification to <tt>th:object</tt> for using it as a form-back bean selection mechanism.</li>
  *     </ul>
  *   </li>
+ *   <li>
+ *     New expression evaluation utility objects:
+ *     <ul>
+ *       <li><tt>#mvc</tt> for Spring MVC URI mapping operations.</li>
+ *     </ul>
+ *   </li>
  *   <li>New DTDs for validating template modes:
  *     <ul>
  *       <li><b>XHTML 1.0 Strict</b> : <tt>SYSTEMID "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-2.dtd"</tt></li>
@@ -92,9 +103,12 @@ import org.thymeleaf.standard.processor.attr.StandardValueAttrProcessor;
  * @since 1.0
  *
  */
-public class SpringStandardDialect extends StandardDialect {
+public class SpringStandardDialect extends StandardDialect implements IExpressionEnhancingDialect {
 
-    
+
+    public static final String MVC_EXPRESSION_OBJECT_NAME = "mvc";
+
+
     public static final DocTypeIdentifier XHTML1_STRICT_THYMELEAFSPRING3_1_SYSTEMID = 
         DocTypeIdentifier.forValue("http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-spring3-1.dtd");
     public static final DocTypeIdentifier XHTML1_TRANSITIONAL_THYMELEAFSPRING3_1_SYSTEMID = 
@@ -539,6 +553,17 @@ public class SpringStandardDialect extends StandardDialect {
 
         return processors;
         
+    }
+
+
+
+
+    public Map<String, Object> getAdditionalExpressionObjects(final IProcessingContext processingContext) {
+
+        final Map<String, Object> additionalExpressionObjects = new HashMap<String, Object>(2,1.0f);
+        additionalExpressionObjects.put(MVC_EXPRESSION_OBJECT_NAME, new Mvc());
+        return additionalExpressionObjects;
+
     }
 
 

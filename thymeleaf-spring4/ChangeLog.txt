@@ -12,6 +12,8 @@
 - Fixed NotReadablePropertyException on conversion service called on bound bean's method
   instead of property.
 - Improved MANIFEST jar metadata.
+- Added "#mvc" expression utility object with "uri(...)" method equivalent to Spring JSP's
+  "s:mvcUrl" function (only for Spring 4.1+).
 
 
 2.1.3
