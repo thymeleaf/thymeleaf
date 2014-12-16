@@ -107,7 +107,9 @@
     <maven.compile.source>1.5</maven.compile.source>
     <maven.compile.target>1.5</maven.compile.target>
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
-    <springframework.version>4.0.0.RELEASE</springframework.version>
+    <!-- Spring version 4.0 is supported, but 4.1 is used as a dependency -->
+    <!-- in order to integrate with some 4.1-only features.               -->
+    <springframework.version>4.1.0.RELEASE</springframework.version>
     <springwebflow.version>2.3.1.RELEASE</springwebflow.version>
     <slf4j.version>1.6.1</slf4j.version>
   </properties>
