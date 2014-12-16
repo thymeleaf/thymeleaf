@@ -39,8 +39,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.RequestContext;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.thymeleaf.context.IWebContext;
@@ -119,9 +122,18 @@ public class SpringWebProcessingContextBuilder extends WebProcessingContextBuild
 
 
         /*
+         * INITIALIZATION OF APPLICATION CONTEXT AND REQUEST ATTRIBUTES
+         */
+        request.setAttribute(DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE, appCtx);
+        final ServletWebRequest servletWebRequest = new ServletWebRequest(request, response);
+        RequestContextHolder.setRequestAttributes(servletWebRequest);
+
+
+        /*
          * CONVERSION SERVICE
          */
         final ConversionService conversionService = getConversionService(appCtx); // can be null!
+
 
         /*
          * REQUEST CONTEXT
