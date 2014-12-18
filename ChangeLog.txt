@@ -13,6 +13,7 @@
 - Improved performance of WebVariablesMap by avoiding calls to HttpServletRequest.getAttributeNames(), very slow
   and memory-inefficient in Tomcat implementations.
 - Fixed bad merging of non-element processors in dialects.
+- Improved performance of DOM tree processing during template execution.
 - Improved MANIFEST jar metadata.
 
 

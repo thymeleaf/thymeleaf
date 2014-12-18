@@ -52,6 +52,7 @@ public abstract class NestableNode extends Node {
     
     private Node[] children = null;
     private int childrenLen = 0;
+    private int childrenVersion = 0;
     
 
 
@@ -200,6 +201,7 @@ public abstract class NestableNode extends Node {
                 this.children = new Node[DEFAULT_CHILDREN_SIZE];
                 this.children[0] = newChild;
                 this.childrenLen = 1;
+                this.childrenVersion++;
                 
             } else {
                 
@@ -213,7 +215,8 @@ public abstract class NestableNode extends Node {
                     this.children = ArrayUtils.copyOf(this.children, this.children.length * 2);
                 }
                 this.children[this.childrenLen++] = newChild;
-                
+                this.childrenVersion++;
+
             }
             
             newChild.parent = this;
@@ -278,6 +281,7 @@ public abstract class NestableNode extends Node {
                 this.children = new Node[DEFAULT_CHILDREN_SIZE];
                 this.children[0] = newChild;
                 this.childrenLen = 1;
+                this.childrenVersion++;
                 
             } else {
 
@@ -288,7 +292,8 @@ public abstract class NestableNode extends Node {
                 System.arraycopy(this.children, index, this.children, index + 1, (this.childrenLen - index));
                 this.children[index] = newChild;
                 this.childrenLen++;
-                
+                this.childrenVersion++;
+
             }
             
             newChild.parent = this;
@@ -381,12 +386,14 @@ public abstract class NestableNode extends Node {
         if (newChildren == null || newChildren.size() == 0) {
             this.children = null;
             this.childrenLen = 0;
+            this.childrenVersion++;
         } else {
             for (final Node newChild : newChildren) {
+                // Version will be changed inside addChild()
                 addChild(newChild);
             }
         }
-        
+
     }
     
 
@@ -402,6 +409,7 @@ public abstract class NestableNode extends Node {
             }
             this.children = null;
             this.childrenLen = 0;
+            this.childrenVersion++;
         }
     }
     
@@ -424,6 +432,7 @@ public abstract class NestableNode extends Node {
         this.children[index].parent = null;
         System.arraycopy(this.children, index + 1, this.children, index, (this.childrenLen - (index + 1)));
         this.childrenLen--;
+        this.childrenVersion++;
     }
     
 
@@ -471,6 +480,7 @@ public abstract class NestableNode extends Node {
             }
             this.children = null;
             this.childrenLen = 0;
+            this.childrenVersion++;
         }
         
     }
@@ -502,9 +512,9 @@ public abstract class NestableNode extends Node {
                 for (int i = 0; i < this.childrenLen; i++) {
                     
                     if (this.children[i] == nestableChild) {
-                        unsafeRemoveChild(i);
+                        unsafeRemoveChild(i);  // This will change childrenVersion
                         for (int j = 0; j < nestableChild.childrenLen; j++) {
-                            insertChild(i + j, nestableChild.children[j]);
+                            insertChild(i + j, nestableChild.children[j]); // Additional changes to childrenVersion
                             nestableChild.children[j].addAllNonExistingNodeLocalVariables(nestableChildNodeLocalVariables);
                         }
                         return;
@@ -513,7 +523,7 @@ public abstract class NestableNode extends Node {
                 }
                 
             } else {
-                unsafeRemoveChild(child);
+                unsafeRemoveChild(child); // changed childrenVersion here too
             }
 
         }
@@ -626,6 +636,7 @@ public abstract class NestableNode extends Node {
             }
             nestableNode.children = elementChildren;
             nestableNode.childrenLen = elementChildren.length;
+            nestableNode.childrenVersion++;
         }
         
         doCloneNestableNodeInternals(nestableNode, newParent, cloneProcessors);
@@ -651,22 +662,34 @@ public abstract class NestableNode extends Node {
     @Override
     final void doAdditionalProcess(final Arguments arguments) {
         if (this.childrenLen > 0) {
-            final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(this.childrenLen);
-            while (!isDetached() && computeNextChild(arguments, this, alreadyProcessed)) { /* Nothing to be done here */ }
+            final IdentityCounter<Node> alreadyProcessed = new IdentityCounter<Node>(this.childrenLen + 3);
+            int currentChildrenVersion = this.childrenVersion;
+            int currentChildIndex = 0;
+            while (!isDetached() && computeNextChild(arguments, this, currentChildIndex, alreadyProcessed)) {
+                // By checking whether this node's children have actually been modified or not, we avoid having
+                // to continuously re-iterate over already-processed nodes at the 'computeNextChild()' method.
+                if (this.childrenVersion == currentChildrenVersion) {
+                    currentChildIndex++;
+                } else {
+                    currentChildrenVersion = this.childrenVersion;
+                    currentChildIndex = 0;
+                }
+            }
         }
     }
-    
+
 
     
     
     private static boolean computeNextChild(
-            final Arguments arguments, final NestableNode node, final IdentityCounter<Node> alreadyProcessed) {
+            final Arguments arguments, final NestableNode node,
+            final int currentChildIndex, final IdentityCounter<Node> alreadyProcessed) {
         
         // This method scans the whole array of children each time
         // it tries to execute one so that it executes all sister nodes
         // that might be created by, for example, iteration processors.
-        if (node.childrenLen > 0) {
-            for (int i = 0; i < node.childrenLen; i++) {
+        if (node.childrenLen > currentChildIndex) {
+            for (int i = currentChildIndex; i < node.childrenLen; i++) {
                 final Node child = node.children[i];
                 if (!alreadyProcessed.isAlreadyCounted(child)) {
                     child.processNode(arguments);
