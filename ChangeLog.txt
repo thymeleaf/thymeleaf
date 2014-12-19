@@ -15,6 +15,7 @@
 - Fixed bad merging of non-element processors in dialects.
 - Improved performance of DOM tree processing during template execution.
 - Improved MANIFEST jar metadata.
+- Updated dependencies (OGNL 3.0.6 -> 3.0.8; nekohtml 1.9.15 -> 1.9.21; slf4j 1.6.1 -> 1.6.6)
 
 
 2.1.3
