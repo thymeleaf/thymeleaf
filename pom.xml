@@ -112,9 +112,9 @@
     <mockito.version>1.9.5</mockito.version>
     <springframework.version>3.0.7.RELEASE</springframework.version>
     <springsecurity.version>3.1.2.RELEASE</springsecurity.version>
-    <ognl.version>3.0.6</ognl.version>
+    <ognl.version>3.0.8</ognl.version>
     <commons-lang3.version>3.1</commons-lang3.version>
-    <slf4j.version>1.6.1</slf4j.version>
+    <slf4j.version>1.6.6</slf4j.version>
   </properties>
 
   
@@ -148,7 +148,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.2</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
@@ -158,7 +158,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.7</version>
         <configuration>
           <encoding>US-ASCII</encoding>
         </configuration>
@@ -167,7 +167,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
+        <version>2.5</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -189,7 +189,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
+        <version>2.10.1</version>
         <configuration>
           <noqualifier>java.lang</noqualifier>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
@@ -209,7 +209,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <version>2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
