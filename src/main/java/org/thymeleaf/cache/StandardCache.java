@@ -428,18 +428,36 @@ public final class StandardCache<K, V> implements ICache<K,V> {
 
         
         private int removeWithoutTracing(final K key) {
-            // FIFO is not updated, not a real benefit in doing it.
-            this.container.remove(key);
+            // FIFO is also updated to avoid 'removed' keys remaining at FIFO (which could end up reducing cache size to 1)
+            final CacheEntry<V> removed = this.container.remove(key);
+            if (removed != null) {
+                if (this.sizeLimit && key != null) {
+                    for (int i = 0; i < this.maxSize; i++) {
+                        if (key.equals(this.fifo[i])) {
+                            this.fifo[i] = null;
+                            break;
+                        }
+                    }
+                }
+            }
             return -1;
         }
 
         
         private synchronized int removeWithTracing(final K key) {
-            // FIFO is not updated, not a real benefit in doing it.
+            // FIFO is also updated to avoid 'removed' keys remaining at FIFO (which could end up reducing cache size to 1)
             final CacheEntry<V> removed = this.container.remove(key);
             if (removed == null) {
                 // When tracing is active, this means nothing was removed
                 return -1;
+            }
+            if (this.sizeLimit && key != null) {
+                for (int i = 0; i < this.maxSize; i++) {
+                    if (key.equals(this.fifo[i])) {
+                        this.fifo[i] = null;
+                        break;
+                    }
+                }
             }
             return this.container.size();
         }
