@@ -1,16 +1,16 @@
 2.1.4
 =====
+- Fixed th:errorclass not picking the correct form property name when selected object expression
+  has more than one level.
+- Fixed bad selection of th:field processor when the "type" attribute is computed in runtime.
+- Fixed NotReadablePropertyException on conversion service called on bound bean's method
+  instead of property.
 - Set ApplicationContext to RedirectViews so that RequestDataValueProcessor can modify the
   URLs to which the application redirects.
 - Modified behavuour at ThymeleafViewResolver so that a non-View registered bean cannot be
   accidentally picked for prototyping a view object.zx
 - Made data Spring format/conversion not apply for inputs with type 'number' or 'range' to
   avoid browsers being unable to parse data because of format (e.g. percents).
-- Fixed th:errorclass not picking the correct form property name when selected object expression
-  has more than one level.
-- Fixed bad selection of th:field processor when the "type" attribute is computed in runtime.
-- Fixed NotReadablePropertyException on conversion service called on bound bean's method
-  instead of property.
 - Improved MANIFEST jar metadata.
 - Updated dependencies (slf4j 1.6.1 -> 1.6.6)
 
