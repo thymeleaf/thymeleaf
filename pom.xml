@@ -94,12 +94,12 @@
     <maven.compile.source>1.5</maven.compile.source>
     <maven.compile.target>1.5</maven.compile.target>
     <servlet-api.version>2.5</servlet-api.version>
-    <nekohtml.version>1.9.15</nekohtml.version>
-    <ognl.version>3.0.6</ognl.version>
+    <nekohtml.version>1.9.21</nekohtml.version>
+    <ognl.version>3.0.8</ognl.version>
     <javassist.version>3.16.1-GA</javassist.version>
     <attoparser.version>2.0.0.BETA2</attoparser.version>
     <unbescape.version>1.1.0.RELEASE</unbescape.version>
-    <slf4j.version>1.6.1</slf4j.version>
+    <slf4j.version>1.6.6</slf4j.version>
   </properties>
 
   <repositories>
@@ -144,7 +144,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>3.2</version>
         <configuration>
           <source>${maven.compile.source}</source>
           <target>${maven.compile.target}</target>
@@ -155,7 +155,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
+        <version>2.7</version>
         <configuration>
           <encoding>US-ASCII</encoding>
         </configuration>
@@ -164,7 +164,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
+        <version>2.5</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -186,7 +186,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
+        <version>2.10.1</version>
         <configuration>
           <show>protected</show>
           <noqualifier>java.lang</noqualifier>
@@ -207,7 +207,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <version>2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
