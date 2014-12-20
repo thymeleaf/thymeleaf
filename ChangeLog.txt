@@ -1,22 +1,22 @@
 2.1.4
 =====
-- Added new "#uris" expression utility object for performing escape operations for URI/URLs (paths,
-  path segments, query parameters and fragment identifiers).
-- Modified URI/URL escaping artifacts: now they are based on the Unbescape library [ http://www.unbescape.org ].
-- Added StandardCache.keySet() method in order to obtain the names of all the entries currently present
-  in a cache (e.g. template or expression caches).
+- Fixed expression execution exceptions being silently ignored in javascript/dart inlining.
+- Fixed second-level th:object being ignored when combined with th:remove="tag".
+- Fixed bad merging of non-element processors in dialects.
 - Fixed bad output of java.util.Date and java.sql.Date in JavaScript inlining. Now all objects of classes
   java.util.Calendar, java.util.Date and java.sql.Date are inlined as ISO8601 date string literals
   (e.g. '2013-01-01T14:30:00.000+02:00').
-- Fixed expression execution exceptions being silently ignored in javascript/dart inlining.
-- Fixed second-level th:object being ignored when combined with th:remove="tag".
+- Fixed StandardCache not dealing with SoftReferences correctly under specific get/put sequence scenarios.
+- Added new "#uris" expression utility object for performing escape operations for URI/URLs (paths,
+  path segments, query parameters and fragment identifiers).
+- Added StandardCache.keySet() method in order to obtain the names of all the entries currently present
+  in a cache (e.g. template or expression caches).
 - Improved performance of WebVariablesMap by avoiding calls to HttpServletRequest.getAttributeNames(), very slow
   and memory-inefficient in Tomcat implementations.
-- Fixed bad merging of non-element processors in dialects.
 - Improved performance of DOM tree processing during template execution.
 - Improved MANIFEST jar metadata.
+- Modified URI/URL escaping artifacts: now they are based on the Unbescape library [ http://www.unbescape.org ].
 - Updated dependencies (OGNL 3.0.6 -> 3.0.8; nekohtml 1.9.15 -> 1.9.21; slf4j 1.6.1 -> 1.6.6)
-- Fixed StandardCache not dealing with SoftReferences correctly under specific get/put sequence scenarios.
 
 
 2.1.3
