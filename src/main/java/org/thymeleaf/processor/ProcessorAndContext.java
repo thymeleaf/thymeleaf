@@ -24,7 +24,7 @@ import org.thymeleaf.util.Validate;
 
 /**
  * <p>
- *   <b>Internal use only</p>: stores a processor along with its matching context. 
+ *   <b>Internal use only</b>: stores a processor along with its matching context.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez

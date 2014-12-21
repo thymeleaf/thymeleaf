@@ -459,7 +459,7 @@ public final class Element extends NestableAttributeHolderNode {
      * </p>
      * <p>
      *   It supports both namespace prefix style (using <tt>:</tt>) and HTML5 custom element style
-     *   (using '-' as a separator). Examples: table -> table, th:block -> block, th-block -> block.
+     *   (using '-' as a separator). Examples: table -&gt; table, th:block -&gt; block, th-block -&gt; block.
      * </p>
      *
      * @param elementName the complete (prefixed, if applies) version of an element name.

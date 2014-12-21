@@ -32,7 +32,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * @author Daniel Fern&aacute;ndez
  *
  * @since 2.1.3
- * @deprecated in 2.1.4, and replaced by the use of Unbescape's <kbd>UriEscape</kbd> class.
+ * @deprecated in 2.1.4, and replaced by the use of Unbescape's <tt>UriEscape</tt> class.
  *
  */
 @Deprecated

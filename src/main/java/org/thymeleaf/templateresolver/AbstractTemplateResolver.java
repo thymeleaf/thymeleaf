@@ -294,7 +294,7 @@ public abstract class AbstractTemplateResolver
      *   this Template Resolver, so that an execution of the resource resolver is not needed.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getResolvablePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getResolvablePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param resolvablePatterns the new patterns

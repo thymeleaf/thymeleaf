@@ -88,7 +88,8 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      *   or  when processing a template (e.g. a fragment) using the {@link TemplateEngine}
      *   from a element/attribute processor.
      * </p>
-     * 
+     *
+     * @param templateEngine the template engine instance being used.
      * @param templateProcessingParameters the template processing parameters.
      * @param templateResolution the template resolution object.
      * @param templateRepository the template repository in use.
@@ -408,6 +409,7 @@ public final class Arguments extends AbstractDialectAwareProcessingContext {
      * </p>
      * 
      * @param newVariables the new variables
+     * @param selectionTarget the new selection target
      * @return the new Arguments object
      * @since 2.0.9
      */

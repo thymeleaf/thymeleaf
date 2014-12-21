@@ -266,20 +266,25 @@ public abstract class AbstractNonValidatingSAXTemplateParser implements ITemplat
     protected abstract String wrapFragment(final String fragment);
     protected abstract List<Node> unwrapFragment(final Document document);
 
-    
-    
-    
+
+
+
 
     /**
+     *
+     * @return the result
      * @since 2.0.11
      */
     protected boolean shouldAddThymeleafRootToParser() {
         return true;
     }
 
-    
-    
+
+
     /**
+     *
+     * @param reader reader
+     * @return the result
      * @since 2.0.11
      */
     protected TemplatePreprocessingReader getTemplatePreprocessingReader(final Reader reader) {

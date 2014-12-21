@@ -61,6 +61,10 @@ public final class ProcessorResult {
     
 
     /**
+     *
+     * @param processTextNodes processTextNodes
+     * @param processCommentNodes processCommentNodes
+     * @return the result
      * @since 2.0.15
      */
     public static ProcessorResult setProcessTextAndCommentNodes(final boolean processTextNodes, final boolean processCommentNodes) {
@@ -68,6 +72,11 @@ public final class ProcessorResult {
     }
     
     /**
+     * 
+     * @param localVariables localVariables
+     * @param processTextNodes processTextNodes
+     * @param processCommentNodes processCommentNodes
+     * @return the result
      * @since 2.0.15
      */
     public static ProcessorResult setLocalVariablesAndProcessTextAndCommentNodes(final Map<String,Object> localVariables, final boolean processTextNodes, final boolean processCommentNodes) {
@@ -76,6 +85,9 @@ public final class ProcessorResult {
 
     
     /**
+     * 
+     * @param processTextNodes processTextNodes
+     * @return the result
      * @since 2.0.15
      */
     public static ProcessorResult setProcessTextNodes(final boolean processTextNodes) {
@@ -83,6 +95,10 @@ public final class ProcessorResult {
     }
     
     /**
+     * 
+     * @param localVariables localVariables
+     * @param processTextNodes processTextNodes
+     * @return the result
      * @since 2.0.15
      */
     public static ProcessorResult setLocalVariablesAndProcessTextNodes(final Map<String,Object> localVariables, final boolean processTextNodes) {
@@ -91,6 +107,9 @@ public final class ProcessorResult {
 
     
     /**
+     * 
+     * @param processCommentNodes processCommentNodes
+     * @return the result
      * @since 2.0.15
      */
     public static ProcessorResult setProcessCommentNodes(final boolean processCommentNodes) {
@@ -98,6 +117,10 @@ public final class ProcessorResult {
     }
     
     /**
+     * 
+     * @param localVariables localVariables
+     * @param processCommentNodes processCommentNodes
+     * @return the result
      * @since 2.0.15
      */
     public static ProcessorResult setLocalVariablesAndProcessCommentNodes(final Map<String,Object> localVariables, final boolean processCommentNodes) {
@@ -106,6 +129,9 @@ public final class ProcessorResult {
 
     
     /**
+     * 
+     * @param selectionTarget selectionTarget
+     * @return the result
      * @since 2.0.9
      */
     public static ProcessorResult setSelectionTarget(final Object selectionTarget) {
@@ -113,6 +139,10 @@ public final class ProcessorResult {
     }
 
     /**
+     * 
+     * @param localVariables localVariables
+     * @param selectionTarget selectionTarget
+     * @return the result
      * @since 2.0.9
      */
     public static ProcessorResult setLocalVariablesAndSelectionTarget(
@@ -157,6 +187,8 @@ public final class ProcessorResult {
     
 
     /**
+     * 
+     * @return the result
      * @since 2.0.15
      */
     public boolean getProcessTextNodes() {
@@ -164,6 +196,8 @@ public final class ProcessorResult {
     }
     
     /**
+     * 
+     * @return the result
      * @since 2.0.15
      */
     public boolean isProcessTextNodesSet() {
@@ -173,6 +207,8 @@ public final class ProcessorResult {
     
     
     /**
+     * 
+     * @return the result
      * @since 2.0.15
      */
     public boolean getProcessCommentNodes() {
@@ -180,6 +216,8 @@ public final class ProcessorResult {
     }
     
     /**
+     * 
+     * @return the result
      * @since 2.0.15
      */
     public boolean isProcessCommentNodesSet() {
@@ -189,6 +227,8 @@ public final class ProcessorResult {
     
     
     /**
+     * 
+     * @return the result
      * @since 2.0.9
      */
     public Object getSelectionTarget() {
@@ -196,6 +236,8 @@ public final class ProcessorResult {
     }
     
     /**
+     * 
+     * @return the result
      * @since 2.0.9
      */
     public boolean isSelectionTargetSet() {

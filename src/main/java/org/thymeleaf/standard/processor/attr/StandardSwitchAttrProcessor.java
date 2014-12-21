@@ -23,9 +23,9 @@ package org.thymeleaf.standard.processor.attr;
  * Selects a child element for rendering if the child's <b>th:case</b>
  * expression is an exact match of this processor's expression, eg:
  * <p>
- * &lt;div th:switch="${user.role}"&gt;<br/>
- * &nbsp; &lt;p th:case="'admin'"&gt;User is an administrator&lt;/p&gt;<br/>
- * &nbsp; &lt;p th:case="#{roles.manager}"&gt;User is a manager&lt;/p&gt;<br/>
+ * &lt;div th:switch="${user.role}"&gt;<br>
+ * &nbsp; &lt;p th:case="'admin'"&gt;User is an administrator&lt;/p&gt;<br>
+ * &nbsp; &lt;p th:case="#{roles.manager}"&gt;User is a manager&lt;/p&gt;<br>
  * &lt;/div&gt;
  * <p>
  * Note that as soon as one th:case attribute is evaluated as true, every other

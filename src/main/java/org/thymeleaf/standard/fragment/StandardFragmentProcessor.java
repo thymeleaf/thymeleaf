@@ -51,6 +51,13 @@ public final class StandardFragmentProcessor {
     
 
     /**
+     * 
+     * @param configuration configuration
+     * @param processingContext processingContext
+     * @param standardFragmentSpec standardFragmentSpec
+     * @param dialectPrefix dialectPrefix
+     * @param fragmentSignatureAttributeName fragmentSignatureAttributeName
+     * @return the result
      * @since 2.1.0
      */
     public static StandardFragment computeStandardFragmentSpec(

@@ -40,6 +40,9 @@ public final class ObjectUtils {
 
 
     /**
+     * 
+     * @param condition condition
+     * @return the result
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
@@ -55,6 +58,9 @@ public final class ObjectUtils {
 
 
     /**
+     * 
+     * @param object object
+     * @return the result
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
@@ -69,6 +75,9 @@ public final class ObjectUtils {
 
 
     /**
+     * 
+     * @param value value
+     * @return the result
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
@@ -83,6 +92,9 @@ public final class ObjectUtils {
 
 
     /**
+     * 
+     * @param value value
+     * @return the result
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in
@@ -103,6 +115,9 @@ public final class ObjectUtils {
 
 
     /**
+     * 
+     * @param value value
+     * @return the result
      * @deprecated since 2.1, you should use the
      *            {@link org.thymeleaf.standard.expression.IStandardConversionService} implementation
      *            corresponding to the dialect you are using or the methods in

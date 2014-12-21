@@ -46,11 +46,6 @@ public final class StandardExpressionExecutor {
     private final IStandardVariableExpressionEvaluator expressionEvaluator;
 
 
-    /**
-     *
-     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
-     *             in Expression objects returned by parsers should be used directly.
-     */
     @Deprecated
     public StandardExpressionExecutor(final IStandardVariableExpressionEvaluator expressionEvaluator) {
         super();
@@ -61,11 +56,6 @@ public final class StandardExpressionExecutor {
 
 
 
-    /**
-     *
-     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
-     *             in Expression objects returned by parsers should be used directly.
-     */
     @Deprecated
     public Object executeExpression(final Arguments arguments, final Expression expression) {
         Validate.notNull(arguments, "Arguments cannot be null");
@@ -74,11 +64,6 @@ public final class StandardExpressionExecutor {
     }
 
     
-    /**
-     * @since 2.0.16
-     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
-     *             in Expression objects returned by parsers should be used directly.
-     */
     @Deprecated
     public Object executeExpression(final Arguments arguments, final Expression expression, final StandardExpressionExecutionContext expContext) {
         Validate.notNull(arguments, "Arguments cannot be null");
@@ -88,10 +73,6 @@ public final class StandardExpressionExecutor {
 
     
     
-    /**
-     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
-     *             in Expression objects returned by parsers should be used directly.
-     */
     @Deprecated
     public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext,
             final Expression expression) {
@@ -100,11 +81,6 @@ public final class StandardExpressionExecutor {
     }
 
     
-    /**
-     * @since 2.0.16
-     * @deprecated The StandardExpressionExecutor class has been deprecated in 2.1.0. Instead the "execute()" methods
-     *             in Expression objects returned by parsers should be used directly.
-     */
     @Deprecated
     public Object executeExpression(final Configuration configuration, final IProcessingContext processingContext,
             final Expression expression, final StandardExpressionExecutionContext expContext) {

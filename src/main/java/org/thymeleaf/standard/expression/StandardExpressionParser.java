@@ -48,6 +48,10 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
     /**
+     * 
+     * @param arguments arguments
+     * @param input input
+     * @return the result
      * @deprecated since 2.1.0. Deprecated in favour of
      *       {@link #parseExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
      *       Will be removed in 3.0.
@@ -60,6 +64,11 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     }
     
     /**
+     * 
+     * @param configuration the Configuration object for the template execution environment.
+     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param input the expression to be parsed, as an input String.
+     * @return the result
      * @since 2.0.9
      */
     public Expression parseExpression(final Configuration configuration,
@@ -73,6 +82,11 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
     /**
+     * 
+     * @param arguments arguments
+     * @param input input
+     * @param allowParametersWithoutValue allowParametersWithoutValue
+     * @return the result
      * @deprecated since 2.1.0. Deprecated in favour of
      *       {@link #parseAssignationSequence(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String, boolean)}.
      *       Will be removed in 3.0.
@@ -83,6 +97,12 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     }
     
     /**
+     * 
+     * @param configuration configuration
+     * @param processingContext processingContext
+     * @param input input
+     * @param allowParametersWithoutValue allowParametersWithoutValue
+     * @return the result
      * @since 2.0.9
      */
     public AssignationSequence parseAssignationSequence(final Configuration configuration,
@@ -93,6 +113,10 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
     /**
+     * 
+     * @param arguments arguments
+     * @param input input
+     * @return the result
      * @deprecated since 2.1.0. Deprecated in favour of
      *       {@link #parseExpressionSequence(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
      *       Will be removed in 3.0.
@@ -103,6 +127,11 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     }
     
     /**
+     * 
+     * @param configuration configuration
+     * @param processingContext processingContext
+     * @param input input
+     * @return the result
      * @since 2.0.9
      */
     public ExpressionSequence parseExpressionSequence(final Configuration configuration,
@@ -113,6 +142,10 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
     /**
+     * 
+     * @param arguments arguments
+     * @param input input
+     * @return the result
      * @deprecated since 2.1.0. Deprecated in favour of
      *       {@link #parseEach(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
      *       Will be removed in 3.0.
@@ -123,6 +156,11 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     }
     
     /**
+     * 
+     * @param configuration configuration
+     * @param processingContext processingContext
+     * @param input input
+     * @return the result
      * @since 2.0.9
      */
     public Each parseEach(final Configuration configuration,
@@ -133,6 +171,10 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
     /**
+     * 
+     * @param arguments arguments
+     * @param input input
+     * @return the result
      * @deprecated since 2.1.0. Deprecated in favour of
      *       {@link #parseFragmentSelection(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
      *       Will be removed in 3.0.
@@ -143,6 +185,11 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     }
     
     /**
+     * 
+     * @param configuration configuration
+     * @param processingContext processingContext
+     * @param input input
+     * @return the result
      * @since 2.0.9
      */
     public FragmentSelection parseFragmentSelection(
@@ -153,6 +200,11 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
     /**
+     * 
+     * @param configuration configuration
+     * @param processingContext processingContext
+     * @param input input
+     * @return the result
      * @since 2.1.0
      */
     public FragmentSignature parseFragmentSignature(

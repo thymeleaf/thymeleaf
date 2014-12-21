@@ -209,7 +209,7 @@ public final class StandardCache<K, V> implements ICache<K,V> {
      * <p>
      *   Returns all the keys contained in this cache. Note this method might return keys for entries
      *   that are already invalid, so the result of calling {@link #get(Object)} for these keys might
-     *   be <kbd>null</kbd>.
+     *   be <tt>null</tt>.
      * </p>
      *
      * @return the complete set of cache keys. Might include keys for already-invalid (non-cleaned) entries.

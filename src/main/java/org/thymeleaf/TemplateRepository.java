@@ -71,7 +71,7 @@ public final class TemplateRepository {
     
     /**
      * <p>
-     *   This constructor should only be called directly for <p>testing purposes</p>.
+     *   This constructor should only be called directly for <strong>testing purposes</strong>.
      * </p>
      * 
      * @param configuration the configuration being currently used.

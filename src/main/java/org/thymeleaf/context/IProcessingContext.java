@@ -130,7 +130,8 @@ public interface IProcessingContext {
      * <p>
      *   Returns whether a specific local variable is defined or not.
      * </p>
-     * 
+     *
+     * @param variableName the name of the local variable to be checked.
      * @return true if the variable is currently defined, false if not.
      */
     public boolean hasLocalVariable(final String variableName);
@@ -142,8 +143,8 @@ public interface IProcessingContext {
      *   Returns the value of a local variable.
      * </p>
      * 
-     * @param variableName the name of the local variable to be returned
-     * @return the value of the variable, or null if the variable does not exist (or has null value)
+     * @param variableName the name of the local variable to be returned.
+     * @return the value of the variable, or null if the variable does not exist (or has null value).
      * 
      */
     public Object getLocalVariable(final String variableName);

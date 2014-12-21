@@ -36,11 +36,6 @@ package org.thymeleaf.util;
 public final class PrefixUtils {
 
 
-    /**
-     * @deprecated The PrefixUtils class has been deprecated in 2.1.0. From then on, the
-     *             {@link org.thymeleaf.dom.Element} and {@link org.thymeleaf.dom.Attribute}
-     *             classes are responsible for managing and combining dialect prefixes as required.
-     */
     @Deprecated
     public static String getPrefix(final String name) {
         Validate.notNull(name, "Name cannot be null");
@@ -52,11 +47,6 @@ public final class PrefixUtils {
     }
 
 
-    /**
-     * @deprecated The PrefixUtils class has been deprecated in 2.1.0. From then on, the
-     *             {@link org.thymeleaf.dom.Element} and {@link org.thymeleaf.dom.Attribute}
-     *             classes are responsible for managing and combining dialect prefixes as required.
-     */
     @Deprecated
     public static String getUnprefixed(final String name) {
         Validate.notNull(name, "Name cannot be null");
@@ -68,11 +58,6 @@ public final class PrefixUtils {
     }
 
 
-    /**
-     * @deprecated The PrefixUtils class has been deprecated in 2.1.0. From then on, the
-     *             {@link org.thymeleaf.dom.Element} and {@link org.thymeleaf.dom.Attribute}
-     *             classes are responsible for managing and combining dialect prefixes as required.
-     */
     @Deprecated
     public static boolean hasPrefix(final String name) {
         Validate.notNull(name, "Name cannot be null");

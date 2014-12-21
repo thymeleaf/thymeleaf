@@ -162,7 +162,10 @@ public final class TemplatePreprocessingReader extends Reader {
 
 
     /**
-     * 
+     *
+     * @param in in
+     * @param bufferSize bufferSize
+     * @param addSyntheticRootElement addSyntheticRootElement
      * @since 2.0.11
      */
     public TemplatePreprocessingReader(final Reader in, final int bufferSize, final boolean addSyntheticRootElement) {
@@ -1066,6 +1069,8 @@ public final class TemplatePreprocessingReader extends Reader {
     
     
     /**
+     * 
+     * @return the result
      * @since 2.0.11
      */
     public Reader getInnerReader() {

@@ -92,6 +92,10 @@ public final class StringUtils {
 
 
     /**
+     * 
+     * @param first first
+     * @param second second
+     * @return the result
      * @since 2.0.16
      */
     public static Boolean equals(final Object first, final Object second) {
@@ -107,6 +111,10 @@ public final class StringUtils {
     }
 
     /**
+     * 
+     * @param first first
+     * @param second second
+     * @return the result
      * @since 2.0.16
      */
     public static Boolean equalsIgnoreCase(final Object first, final Object second) {
@@ -259,6 +267,10 @@ public final class StringUtils {
 
 
     /**
+     * 
+     * @param target target
+     * @param times times
+     * @return the result
      * @since 2.1.0
      */
     public static String repeat(final Object target, final int times) {
@@ -275,6 +287,9 @@ public final class StringUtils {
 
 
     /**
+     * 
+     * @param values values
+     * @return the result
      * @since 2.0.16
      */
     public static String concat(final Object... values) {
@@ -282,6 +297,10 @@ public final class StringUtils {
     }
 
     /**
+     * 
+     * @param nullValue nullValue
+     * @param values values
+     * @return the result
      * @since 2.0.16
      */
     public static String concatReplaceNulls(final String nullValue, final Object... values) {
@@ -315,7 +334,9 @@ public final class StringUtils {
 
 
     /**
-     *
+     * 
+     * @param target target
+     * @return the result
      * @since 2.1.0
      */
     public static boolean isEmpty(final String target) {

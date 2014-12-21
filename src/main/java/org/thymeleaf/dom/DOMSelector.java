@@ -67,7 +67,7 @@ import org.thymeleaf.util.Validate;
  *       <li><tt>/x</tt> means <i>direct children of the current node which either have name <tt>x</tt> or match
  *           reference <tt>x</tt></i>. For example: <tt>/html/body/ul/li</tt>.</li>
  *       <li><tt>//x</tt> means <i>children of the current node which either have name <tt>x</tt> or match
- *           reference <tt>x</tt>, at any depth</i>. For example: <tt>//li</tt>.</li></li>
+ *           reference <tt>x</tt>, at any depth</i>. For example: <tt>//li</tt>.</li>
  *       <li><tt>x</tt> is exactly equivalent to <tt>//x</tt>.</li>
  *       <li><tt>text()</tt> means <i>Text nodes (at the specified level)</i>. For example: <tt>//li/text()</tt>.</li>
  *     </ul>
