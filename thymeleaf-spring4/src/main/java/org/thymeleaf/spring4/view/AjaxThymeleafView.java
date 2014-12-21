@@ -50,14 +50,14 @@ import org.thymeleaf.standard.processor.attr.StandardFragmentAttrProcessor;
  * </p>
  * <p>
  *   This view searches for a comma-separated list of <i>fragment names</i> in a request
- *   parameter called <kbd>fragments</kbd>, and for each of them:
+ *   parameter called <tt>fragments</tt>, and for each of them:
  * </p>
  * <ul>
- *   <li>If it is not a DOM selector, a <kbd>th:fragment</kdb> attribute will be used
+ *   <li>If it is not a DOM selector, a <tt>th:fragment</tt> attribute will be used
  *       for designing the fragment to be rendered.</li>
  *   <li>If it is a DOM selector, it will be used for selecting the fragment to be rendered,
  *       without looking for any attributes. DOM Selectors are specified between brackets, 
- *       like <kbd>[//div[@class='changeit']]</kbd></li>
+ *       like <tt>[//div[@class='changeit']]</tt></li>
  * </ul>
 *
 * @author Daniel Fern&aacute;ndez

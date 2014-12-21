@@ -42,14 +42,18 @@ public final class Fields {
     private final IProcessingContext processingContext;
     
     /**
-     * @since 2.1.0 
+     * 
+     * @return the result
+     * @since 2.1.0
      */
     public boolean hasAnyErrors() {
         return FieldUtils.hasAnyErrors(this.configuration, this.processingContext);
     }
     
     /**
-     * @since 2.1.0 
+     * 
+     * @return the result
+     * @since 2.1.0
      */
     public boolean hasErrors() {
         return FieldUtils.hasAnyErrors(this.configuration, this.processingContext);
@@ -60,13 +64,17 @@ public final class Fields {
     }
     
     /**
-     * @since 2.1.0 
+     * 
+     * @return the result
+     * @since 2.1.0
      */
     public boolean hasGlobalErrors() {
         return FieldUtils.hasGlobalErrors(this.configuration, this.processingContext);
     }
 
     /**
+     * 
+     * @return the result
      * @since 2.1.0
      */
     public List<String> allErrors() {
@@ -74,7 +82,9 @@ public final class Fields {
     }
 
     /**
-     * @since 2.1.0 
+     * 
+     * @return the result
+     * @since 2.1.0
      */
     public List<String> errors() {
         return FieldUtils.errors(this.configuration, this.processingContext);
@@ -85,7 +95,9 @@ public final class Fields {
     }
     
     /**
-     * @since 2.1.0 
+     * 
+     * @return the result
+     * @since 2.1.0
      */
     public List<String> globalErrors() {
         return FieldUtils.globalErrors(this.configuration, this.processingContext);
@@ -99,6 +111,8 @@ public final class Fields {
 
 
     /**
+     * 
+     * @return the result
      * @since 2.1.2
      */
     public List<DetailedError> detailedErrors() {

@@ -73,7 +73,7 @@ import org.thymeleaf.standard.processor.attr.StandardValueAttrProcessor;
  * </p>
  * <ul>
  *   <li>The language used for evaluation of expressions is <b>Spring Expression Language</b> instead of OGNL.</li>
- *   <li>Expressions can use beans in the Spring Application Context like: <tt>${@myBean.doSomething()}</tt>.</li>
+ *   <li>Expressions can use beans in the Spring Application Context like: <tt>${&#64;myBean.doSomething()}</tt>.</li>
  *   <li>New attributes for form processing:
  *     <ul>
  *       <li><tt>th:field</tt> for binding form fields to attributes in form-backing beans.</li>
