@@ -58,7 +58,7 @@ public abstract class AbstractThymeleafView
      * <p>
      *   Default charset set to ISO-8859-1 for compatibility reasons with Spring's AbstractView.
      *   Value is "<tt>text/html;charset=ISO-8859-1</tt>".
-     * <p>
+     * </p>
      */
     public static final String DEFAULT_CONTENT_TYPE = "text/html;charset=ISO-8859-1";
     

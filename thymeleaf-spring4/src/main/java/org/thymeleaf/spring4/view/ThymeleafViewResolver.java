@@ -460,7 +460,8 @@ public class ThymeleafViewResolver
      *   Many HTTP 1.1 clients treat 302 just like 303, not making any difference. However, some clients 
      *   depend on 303 when redirecting after a POST request; turn this flag off in such a scenario.
      * </p>
-     *   Redirect URLs can be specified via the <tt>"redirect:"</tt> prefix. e.g.: 
+     * <p>
+     *   Redirect URLs can be specified via the <tt>"redirect:"</tt> prefix. e.g.:
      *   <tt>"redirect:myAction.do"</tt> 
      * </p>
      * 
