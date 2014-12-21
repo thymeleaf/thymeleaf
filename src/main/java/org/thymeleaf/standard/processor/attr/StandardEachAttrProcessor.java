@@ -23,9 +23,9 @@ package org.thymeleaf.standard.processor.attr;
  * Iterates through a collection of objects, repeating each of the child
  * elements for every object in that collection, eg:
  * <p>
- * &lt;tr th:each="prod : ${prods}"&gt;<br/>
- * &nbsp; &lt;td th:text="${prod.name}"&gt;Product name&lt;/td&gt;<br/>
- * &nbsp; &lt;td th:text="${prod.price}"&gt;Product price&lt;/td&gt;<br/>
+ * &lt;tr th:each="prod : ${prods}"&gt;<br>
+ * &nbsp; &lt;td th:text="${prod.name}"&gt;Product name&lt;/td&gt;<br>
+ * &nbsp; &lt;td th:text="${prod.price}"&gt;Product price&lt;/td&gt;<br>
  * &lt;/tr&gt;
  * <p>
  * That "prod : ${prods}" attribute value you see above means "for each element

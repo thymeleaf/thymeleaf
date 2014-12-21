@@ -182,7 +182,10 @@ public final class Strings {
     
     
     /**
-     * 
+     *
+     * @param first first
+     * @param second second
+     * @return the result
      * @since 2.0.16
      */
     public Boolean equals(final Object first, final Object second) {
@@ -190,7 +193,10 @@ public final class Strings {
     }
     
     /**
-     * 
+     *
+     * @param first first
+     * @param second second
+     * @return the result
      * @since 2.0.16
      */
     public Boolean equalsIgnoreCase(final Object first, final Object second) {
@@ -574,6 +580,10 @@ public final class Strings {
 
 
     /**
+     * 
+     * @param target target
+     * @param times times
+     * @return the result
      * @since 2.1.0
      */
     public String repeat(final Object target, final int times) {
@@ -591,6 +601,8 @@ public final class Strings {
     
     /**
      * 
+     * @param values values
+     * @return the result
      * @since 2.0.16
      */
     public String concat(final Object ... values) {
@@ -599,6 +611,9 @@ public final class Strings {
     
     /**
      * 
+     * @param nullValue nullValue
+     * @param values values
+     * @return the result
      * @since 2.0.16
      */
     public String concatReplaceNulls(final String nullValue, final Object ... values) {

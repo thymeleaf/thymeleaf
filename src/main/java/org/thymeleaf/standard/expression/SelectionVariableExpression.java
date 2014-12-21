@@ -63,6 +63,9 @@ public final class SelectionVariableExpression extends SimpleExpression {
 
 
     /**
+     *
+     * @param expression expression
+     * @param convertToString convertToString
      * @since 2.1.0
      */
     public SelectionVariableExpression(final String expression, final boolean convertToString) {
@@ -80,6 +83,8 @@ public final class SelectionVariableExpression extends SimpleExpression {
 
 
     /**
+     *
+     * @return the result
      * @since 2.1.0
      */
     public boolean getConvertToString() {

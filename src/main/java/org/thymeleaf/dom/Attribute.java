@@ -64,6 +64,11 @@ public final class Attribute implements Serializable {
 
 
     /**
+     *
+     * @param name name
+     * @param onlyName onlyName
+     * @param value value
+     * @param valueIsEscaped valueIsEscaped
      * @since 2.1.3
      */
     public Attribute(final String name, final boolean onlyName, final String value, final boolean valueIsEscaped) {
@@ -389,7 +394,7 @@ public final class Attribute implements Serializable {
      * </p>
      * <p>
      *   It supports both namespace prefix style (using <tt>:</tt>) and HTML5 custom attribute style
-     *   ('<tt>data-{prefix}-{name}</tt>'). Examples: src -> src, th:href -> href, data-th-class -> class.
+     *   ('<tt>data-{prefix}-{name}</tt>'). Examples: src -&gt; src, th:href -&gt; href, data-th-class -&gt; class.
      * </p>
      *
      * @param attributeName the complete (prefixed, if applies) version of an attribute name.

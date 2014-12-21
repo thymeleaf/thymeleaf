@@ -42,7 +42,7 @@ public final class ClassLoaderUtils {
      * <ol>
      *   <li>If there is a <i>thread context class loader</i>, return it.</li>
      *   <li>Else if there is a class loader related to the class passed as argument, return it.</li>
-     *   <li>Else return the <i>system class loader.</li>
+     *   <li>Else return the <i>system class loader</i>.</li>
      * </ol>
      * 
      * @param clazz the class which loader will be obtained in the second step. Can be null (that will

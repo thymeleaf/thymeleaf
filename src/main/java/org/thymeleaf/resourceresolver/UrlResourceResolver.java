@@ -33,17 +33,15 @@ import org.thymeleaf.util.Validate;
  *   Implementation of {@link IResourceResolver} that resolves
  *   resources as URLs:
  * </p>
- * <p>
- *   <tt><pre>
+ *  <pre><tt>
  *      try {
  *          final URL url = new URL(resourceName);
  *          return url.openStream();
  *      } catch (final Exception e1) {
  *          return null;
  *      }
- *   </pre></tt>
- * </p>
- * 
+ *   </tt></pre>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0

@@ -549,7 +549,7 @@ public class TemplateResolver
      *   template mode as Strings.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getXmlTemplateModePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getXmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param newXmlTemplatesModePatterns the new patterns
@@ -598,7 +598,7 @@ public class TemplateResolver
      *   template mode as Strings.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getValidXmlTemplateModePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getValidXmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param newValidXmlTemplatesModePatterns the new patterns
@@ -648,7 +648,7 @@ public class TemplateResolver
      *   template mode as Strings.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getXhtmlTemplateModePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getXhtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param newXhtmlTemplatesModePatterns the new patterns
@@ -699,7 +699,7 @@ public class TemplateResolver
      *   template mode as Strings.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getValidXhtmlTemplateModePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getValidXhtmlTemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param newValidXhtmlTemplatesModePatterns the new patterns
@@ -751,7 +751,7 @@ public class TemplateResolver
      *   template mode as Strings.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getLegacyHtml5TemplateModePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getLegacyHtml5TemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param newLegacyHtml5TemplatesModePatterns the new patterns
@@ -801,7 +801,7 @@ public class TemplateResolver
      *   template mode as Strings.
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getHtml5TemplateModePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getHtml5TemplateModePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param newHtml5TemplatesModePatterns the new patterns
@@ -868,7 +868,7 @@ public class TemplateResolver
      *   <i>non-cacheable patterns</i> have been applied. 
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getCacheablePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getCacheablePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param cacheablePatterns the new patterns
@@ -935,7 +935,7 @@ public class TemplateResolver
      *   <i>non-cacheable patterns</i> have been applied. 
      * </p>
      * <p>
-     *   This is a convenience method equivalent to {@link #getNonCacheablePatternSpec()}.setPatterns(Set<String>)
+     *   This is a convenience method equivalent to {@link #getNonCacheablePatternSpec()}.setPatterns(Set&lt;String&gt;)
      * </p>
      * 
      * @param nonCacheablePatterns the new patterns

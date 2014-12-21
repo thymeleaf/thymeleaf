@@ -44,6 +44,9 @@ public final class CDATASection extends AbstractTextNode {
 
 
     /**
+     *
+     * @param content content
+     * @param documentName documentName
      * @since 2.1.3
      */
     public CDATASection(final String content, final String documentName) {
@@ -52,6 +55,10 @@ public final class CDATASection extends AbstractTextNode {
 
 
     /**
+     *
+     * @param content content
+     * @param documentName documentName
+     * @param lineNumber lineNumber
      * @since 2.1.3
      */
     public CDATASection(final String content, final String documentName, final Integer lineNumber) {
@@ -60,6 +67,11 @@ public final class CDATASection extends AbstractTextNode {
 
 
     /**
+     *
+     * @param content content
+     * @param documentName documentName
+     * @param lineNumber lineNumber
+     * @param contentIsEscaped contentIsEscaped
      * @since 2.1.3
      */
     public CDATASection(final String content, final String documentName, final Integer lineNumber, final boolean contentIsEscaped) {
@@ -68,6 +80,9 @@ public final class CDATASection extends AbstractTextNode {
 
 
     /**
+     *
+     * @param content content
+     * @param escapeXml escapeXml
      * @deprecated Deprecated in 2.1.3. Will be removed in 3.0. Text and CDATA nodes do not perform XML-escaping anymore.
      */
     @Deprecated
@@ -77,6 +92,10 @@ public final class CDATASection extends AbstractTextNode {
 
 
     /**
+     *
+     * @param content content
+     * @param escapeXml escapeXml
+     * @param documentName documentName
      * @deprecated Deprecated in 2.1.3. Will be removed in 3.0. Text and CDATA nodes do not perform XML-escaping anymore.
      */
     @Deprecated
@@ -86,6 +105,11 @@ public final class CDATASection extends AbstractTextNode {
 
 
     /**
+     *
+     * @param content content
+     * @param escapeXml escapeXml
+     * @param documentName documentName
+     * @param lineNumber lineNumber
      * @deprecated Deprecated in 2.1.3. Will be removed in 3.0. Text and CDATA nodes do not perform XML-escaping anymore.
      */
     @Deprecated

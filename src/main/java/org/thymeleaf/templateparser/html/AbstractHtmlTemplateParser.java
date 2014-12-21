@@ -250,6 +250,8 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
     
 
     /**
+     *
+     * @return the result
      * @since 2.0.11
      */
     protected boolean shouldAddThymeleafRootToParser() {
@@ -259,6 +261,9 @@ public abstract class AbstractHtmlTemplateParser implements ITemplateParser {
     
     
     /**
+     *
+     * @param reader reader
+     * @return the result
      * @since 2.0.11
      */
     protected TemplatePreprocessingReader getTemplatePreprocessingReader(final Reader reader) {

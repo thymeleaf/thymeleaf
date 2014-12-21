@@ -34,17 +34,15 @@ import org.thymeleaf.util.Validate;
  *   Implementation of {@link IResourceResolver} that resolves
  *   resources as files in the filesystem:
  * </p>
- * <p>
- *   <tt><pre>
+ *   <pre><tt>
  *      final File resourceFile = new File(resourceName);
  *      try {
  *          return new FileInputStream(resourceFile);
  *      } catch (FileNotFoundException e) {
  *          return null;
  *      }
- *   </pre></tt>
- * </p>
- * 
+ *   </tt></pre>
+ *
  * @author Daniel Fern&aacute;ndez
  * 
  * @since 1.0

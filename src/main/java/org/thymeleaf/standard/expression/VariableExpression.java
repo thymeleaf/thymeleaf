@@ -69,6 +69,9 @@ public final class VariableExpression extends SimpleExpression {
 
 
     /**
+     * 
+     * @param expression expression
+     * @param convertToString convertToString
      * @since 2.1.0
      */
     public VariableExpression(final String expression, final boolean convertToString) {
@@ -86,6 +89,8 @@ public final class VariableExpression extends SimpleExpression {
 
 
     /**
+     * 
+     * @return the result
      * @since 2.1.0
      */
     public boolean getConvertToString() {

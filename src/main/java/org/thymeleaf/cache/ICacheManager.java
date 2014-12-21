@@ -65,7 +65,7 @@ import org.thymeleaf.dom.Node;
  * </p>
  * <p>
  *   <b>Any of these methods could return null</b>, in which case the engine will consider that
- *   no cache must be applied for that specific function</b>.
+ *   no cache must be applied for that specific function.
  * </p>
  * 
  * @author Daniel Fern&aacute;ndez
@@ -167,8 +167,10 @@ public interface ICacheManager {
      *   implementations of this interface, and they should use this method
      *   to retrieve them by their name.
      * </p>
-     * 
+     *
      * @param name the name of the needed cache
+     * @param <K> the type of the cache keys
+     * @param <V> the type of the cache values
      * @return the required cache
      */
     public <K,V> ICache<K,V> getSpecificCache(final String name);

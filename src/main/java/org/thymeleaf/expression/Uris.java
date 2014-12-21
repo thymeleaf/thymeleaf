@@ -47,36 +47,36 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI path (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ & ' ( ) * + , ; =</kbd></li>
-     *   <li><kbd>: @</kbd></li>
-     *   <li><kbd>/</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ &amp; ' ( ) * + , ; =</tt></li>
+     *   <li><tt>: @</tt></li>
+     *   <li><tt>/</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
-     *   represents them in the <kbd>UTF-8</kbd> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   represents them in the <tt>UTF-8</tt> and then representing each byte
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be escaped.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapePath(final String text) {
         return UriEscape.escapeUriPath(text);
@@ -85,31 +85,31 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use <kbd>UTF-8</kbd> in order to determine the characters specified in the
+     *   This method will use <tt>UTF-8</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be unescaped.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapePath(final String text) {
         return UriEscape.unescapeUriPath(text);
@@ -118,37 +118,37 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI path (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ & ' ( ) * + , ; =</kbd></li>
-     *   <li><kbd>: @</kbd></li>
-     *   <li><kbd>/</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ &amp; ' ( ) * + , ; =</tt></li>
+     *   <li><tt>: @</tt></li>
+     *   <li><tt>/</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
      *   represents them in the specified <em>encoding</em> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
+     * @param text the <tt>String</tt> to be escaped.
      * @param encoding the encoding to be used for unescaping.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapePath(final String text, final String encoding) {
         return UriEscape.escapeUriPath(text, encoding);
@@ -157,32 +157,32 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use the specified <kbd>encoding</kbd> in order to determine the characters specified in the
+     *   This method will use the specified <tt>encoding</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
+     * @param text the <tt>String</tt> to be unescaped.
      * @param encoding the encoding to be used for unescaping.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapePath(final String text, final String encoding) {
         return UriEscape.unescapeUriPath(text, encoding);
@@ -193,35 +193,35 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path segment <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI path segment (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ & ' ( ) * + , ; =</kbd></li>
-     *   <li><kbd>: @</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ &amp; ' ( ) * + , ; =</tt></li>
+     *   <li><tt>: @</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
-     *   represents them in the <kbd>UTF-8</kbd> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   represents them in the <tt>UTF-8</tt> and then representing each byte
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be escaped.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapePathSegment(final String text) {
         return UriEscape.escapeUriPathSegment(text);
@@ -230,31 +230,31 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path segment <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use <kbd>UTF-8</kbd> in order to determine the characters specified in the
+     *   This method will use <tt>UTF-8</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be unescaped.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapePathSegment(final String text) {
         return UriEscape.unescapeUriPathSegment(text);
@@ -263,36 +263,36 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path segment <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI path segment (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ & ' ( ) * + , ; =</kbd></li>
-     *   <li><kbd>: @</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ &amp; ' ( ) * + , ; =</tt></li>
+     *   <li><tt>: @</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
      *   represents them in the specified <em>encoding</em> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
+     * @param text the <tt>String</tt> to be escaped.
      * @param encoding the encoding to be used for escaping.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapePathSegment(final String text, final String encoding) {
         return UriEscape.escapeUriPathSegment(text, encoding);
@@ -301,32 +301,32 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI path segment <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use specified <kbd>encoding</kbd> in order to determine the characters specified in the
+     *   This method will use specified <tt>encoding</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
+     * @param text the <tt>String</tt> to be unescaped.
      * @param encoding the encoding to be used for unescaping.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapePathSegment(final String text, final String encoding) {
         return UriEscape.unescapeUriPathSegment(text, encoding);
@@ -337,36 +337,36 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI fragment identifier <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI fragment identifier (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ & ' ( ) * + , ; =</kbd></li>
-     *   <li><kbd>: @</kbd></li>
-     *   <li><kbd>/ ?</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ &amp; ' ( ) * + , ; =</tt></li>
+     *   <li><tt>: @</tt></li>
+     *   <li><tt>/ ?</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
-     *   represents them in the <kbd>UTF-8</kbd> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   represents them in the <tt>UTF-8</tt> and then representing each byte
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be escaped.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapeFragmentId(final String text) {
         return UriEscape.escapeUriFragmentId(text);
@@ -375,31 +375,31 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI fragment identifier <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use <kbd>UTF-8</kbd> in order to determine the characters specified in the
+     *   This method will use <tt>UTF-8</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be unescaped.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapeFragmentId(final String text) {
         return UriEscape.unescapeUriFragmentId(text);
@@ -408,37 +408,37 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI fragment identifier <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI fragment identifier (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ & ' ( ) * + , ; =</kbd></li>
-     *   <li><kbd>: @</kbd></li>
-     *   <li><kbd>/ ?</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ &amp; ' ( ) * + , ; =</tt></li>
+     *   <li><tt>: @</tt></li>
+     *   <li><tt>/ ?</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
      *   represents them in the specified <em>encoding</em> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
+     * @param text the <tt>String</tt> to be escaped.
      * @param encoding the encoding to be used for escaping.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapeFragmentId(final String text, final String encoding) {
         return UriEscape.escapeUriFragmentId(text, encoding);
@@ -447,32 +447,32 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI fragment identifier <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use specified <kbd>encoding</kbd> in order to determine the characters specified in the
+     *   This method will use specified <tt>encoding</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
+     * @param text the <tt>String</tt> to be unescaped.
      * @param encoding the encoding to be used for unescaping.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapeFragmentId(final String text, final String encoding) {
         return UriEscape.unescapeUriFragmentId(text, encoding);
@@ -483,36 +483,36 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI query parameter (name or value) <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI query parameter (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ ' ( ) * , ;</kbd></li>
-     *   <li><kbd>: @</kbd></li>
-     *   <li><kbd>/ ?</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ ' ( ) * , ;</tt></li>
+     *   <li><tt>: @</tt></li>
+     *   <li><tt>/ ?</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
-     *   represents them in the <kbd>UTF-8</kbd> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   represents them in the <tt>UTF-8</tt> and then representing each byte
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be escaped.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapeQueryParam(final String text) {
         return UriEscape.escapeUriQueryParam(text);
@@ -521,31 +521,31 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI query parameter (name or value) <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input using <kbd>UTF-8</kbd> as encoding.
+     *   on a <tt>String</tt> input using <tt>UTF-8</tt> as encoding.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use <kbd>UTF-8</kbd> in order to determine the characters specified in the
+     *   This method will use <tt>UTF-8</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @param text the <tt>String</tt> to be unescaped.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapeQueryParam(final String text) {
         return UriEscape.unescapeUriQueryParam(text);
@@ -554,37 +554,37 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI query parameter (name or value) <strong>escape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
      *   The following are the only allowed chars in an URI query parameter (will not be escaped):
      * </p>
      * <ul>
-     *   <li><kbd>A-Z a-z 0-9</kbd></li>
-     *   <li><kbd>- . _ ~</kbd></li>
-     *   <li><kbd>! $ ' ( ) * , ;</kbd></li>
-     *   <li><kbd>: @</kbd></li>
-     *   <li><kbd>/ ?</kbd></li>
+     *   <li><tt>A-Z a-z 0-9</tt></li>
+     *   <li><tt>- . _ ~</tt></li>
+     *   <li><tt>! $ ' ( ) * , ;</tt></li>
+     *   <li><tt>: @</tt></li>
+     *   <li><tt>/ ?</tt></li>
      * </ul>
      * <p>
      *   All other chars will be escaped by converting them to the sequence of bytes that
      *   represents them in the specified <em>encoding</em> and then representing each byte
-     *   in <kbd>%HH</kbd> syntax, being <kbd>HH</kbd> the hexadecimal representation of the byte.
+     *   in <tt>%HH</tt> syntax, being <tt>HH</tt> the hexadecimal representation of the byte.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be escaped.
+     * @param text the <tt>String</tt> to be escaped.
      * @param encoding the encoding to be used for escaping.
-     * @return The escaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no escaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The escaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no escaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String escapeQueryParam(final String text, final String encoding) {
         return UriEscape.escapeUriQueryParam(text, encoding);
@@ -593,32 +593,32 @@ public final class Uris {
     /**
      * <p>
      *   Perform am URI query parameter (name or value) <strong>unescape</strong> operation
-     *   on a <kbd>String</kbd> input.
+     *   on a <tt>String</tt> input.
      * </p>
      * <p>
-     *   This method simply calls the equivalent method in the <kbd>UriEscape</kbd> class from the
+     *   This method simply calls the equivalent method in the <tt>UriEscape</tt> class from the
      *   <a href="http://www.unbescape.org">Unbescape</a> library.
      * </p>
      * <p>
-     *   This method will unescape every percent-encoded (<kbd>%HH</kbd>) sequences present in input,
+     *   This method will unescape every percent-encoded (<tt>%HH</tt>) sequences present in input,
      *   even for those characters that do not need to be percent-encoded in this context (unreserved characters
      *   can be percent-encoded even if/when this is not required, though it is not generally considered a
      *   good practice).
      * </p>
      * <p>
-     *   This method will use specified <kbd>encoding</kbd> in order to determine the characters specified in the
+     *   This method will use specified <tt>encoding</tt> in order to determine the characters specified in the
      *   percent-encoded byte sequences.
      * </p>
      * <p>
      *   This method is <strong>thread-safe</strong>.
      * </p>
      *
-     * @param text the <kbd>String</kbd> to be unescaped.
+     * @param text the <tt>String</tt> to be unescaped.
      * @param encoding the encoding to be used for unescaping.
-     * @return The unescaped result <kbd>String</kbd>. As a memory-performance improvement, will return the exact
-     *         same object as the <kbd>text</kbd> input argument if no unescaping modifications were required (and
-     *         no additional <kbd>String</kbd> objects will be created during processing). Will
-     *         return <kbd>null</kbd> if <kbd>text</kbd> is <kbd>null</kbd>.
+     * @return The unescaped result <tt>String</tt>. As a memory-performance improvement, will return the exact
+     *         same object as the <tt>text</tt> input argument if no unescaping modifications were required (and
+     *         no additional <tt>String</tt> objects will be created during processing). Will
+     *         return <tt>null</tt> if <tt>text</tt> is <tt>null</tt>.
      */
     public String unescapeQueryParam(final String text, final String encoding) {
         return UriEscape.unescapeUriQueryParam(text, encoding);

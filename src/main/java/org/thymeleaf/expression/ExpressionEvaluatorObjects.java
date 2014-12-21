@@ -107,7 +107,12 @@ public final class ExpressionEvaluatorObjects {
     
     
     /**
-     * 
+     * <p>
+     *   Compute the map of objects to be made available in expressions.
+     * </p>
+     *
+     * @param processingContext the processing context being used.
+     * @return the map of evaluation objects.
      * @since 2.0.9
      */
     public static Map<String,Object> computeEvaluationObjects(

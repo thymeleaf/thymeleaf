@@ -165,6 +165,11 @@ public final class DOMUtils {
 
 
     /**
+     *
+     * @param ch ch
+     * @param escapeQuotes escapeQuotes
+     * @return the result
+     * @throws IOException IOException
      * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
      *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
      *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
@@ -191,6 +196,11 @@ public final class DOMUtils {
 
 
     /**
+     *
+     * @param str str
+     * @param escapeQuotes escapeQuotes
+     * @return the result
+     * @throws IOException IOException
      * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
      *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
      *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
@@ -220,6 +230,11 @@ public final class DOMUtils {
 
 
     /**
+     *
+     * @param buffer buffer
+     * @param writer writer
+     * @param escapeQuotes escapeQuotes
+     * @throws IOException IOException
      * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
      *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
      *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
@@ -235,6 +250,11 @@ public final class DOMUtils {
 
 
     /**
+     *
+     * @param buffer buffer
+     * @param writer writer
+     * @param escapeQuotes escapeQuotes
+     * @throws IOException IOException
      * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain escaped
      *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
      *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
@@ -324,6 +344,10 @@ public final class DOMUtils {
 
 
     /**
+     *
+     * @param str str
+     * @param unescapeQuotes unescapeQuotes
+     * @return the result
      * @deprecated This method has been deprecated in 2.1.3 and is no longer an adequate way to obtain unescaped
      *             HTML code. The whole of the escaping mechanism defined on top of these DOMUtils escape/unescape
      *             methods had too many drawbacks and issues, so it was completely replaced by the Unbescape library.
@@ -469,6 +493,7 @@ public final class DOMUtils {
      * 
      * @param node the node which output is to be computed
      * @param templateWriter the template writter to be used for creating the output
+     * @param templateMode the template mode to be used for creating the output
      * @return the computed output
      * @since 2.0.8
      */
@@ -513,6 +538,10 @@ public final class DOMUtils {
     
     /**
      * 
+     * @param arguments arguments
+     * @param node node
+     * @param templateWriter templateWriter
+     * @return the result
      * @since 2.0.8
      */
     public static String getOutputFor(final Arguments arguments, final Node node, 
@@ -540,8 +569,10 @@ public final class DOMUtils {
     
     /**
      *
-     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
+     * @param source source
+     * @return the result
      * @since 2.0.8
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      */
     @Deprecated
     public static Document getHtml5DOMFor(final Reader source) {
@@ -552,8 +583,10 @@ public final class DOMUtils {
     
     /**
      *
-     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
+     * @param source source
+     * @return the result
      * @since 2.0.8
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      */
     @Deprecated
     public static Document getLegacyHTML5DOMFor(final Reader source) {
@@ -564,8 +597,10 @@ public final class DOMUtils {
     
     /**
      *
-     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
+     * @param source source
+     * @return the result
      * @since 2.0.8
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      */
     @Deprecated
     public static Document getXmlDOMFor(final Reader source) {
@@ -576,8 +611,10 @@ public final class DOMUtils {
     
     /**
      *
-     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
+     * @param source source
+     * @return the result
      * @since 2.0.8
+     * @deprecated should be removed (or replaced by a getDOMFor or something similar, if applies) before 3.0 is out
      */
     @Deprecated
     public static Document getXhtmlDOMFor(final Reader source) {
@@ -589,6 +626,9 @@ public final class DOMUtils {
     
     /**
      * 
+     * @param source source
+     * @param parser parser
+     * @return the result
      * @since 2.0.8
      */
     public static Document getDOMFor(final Reader source, final ITemplateParser parser) {
@@ -611,6 +651,10 @@ public final class DOMUtils {
     
     /**
      * 
+     * @param configuration configuration
+     * @param source source
+     * @param parser parser
+     * @return the result
      * @since 2.0.8
      */
     public static Document getDOMFor(final Configuration configuration, 

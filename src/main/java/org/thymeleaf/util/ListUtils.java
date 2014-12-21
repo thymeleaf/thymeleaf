@@ -100,8 +100,9 @@ public final class ListUtils {
      * </p>
      *
      * @param list the list which content should be ordered.
+     * @param <T> the type of the list elements.
      * @return a new sorted list.
-     * @see java.util.Collections#sort(List).
+     * @see java.util.Collections#sort(List)
      */
     public static <T extends Comparable<? super T>> List<T> sort(final List<T> list) {
         Validate.notNull(list, "Cannot execute list sort: list is null");
@@ -119,8 +120,9 @@ public final class ListUtils {
      *
      * @param list the list which content should be ordered.
      * @param c the comparator.
+     * @param <T> the type of the list elements.
      * @return a new sorted list.
-     * @see java.util.Collections#sort(List, Comparator).
+     * @see java.util.Collections#sort(List, Comparator)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <T> List<T> sort(final List<T> list, final Comparator<? super T> c) {
