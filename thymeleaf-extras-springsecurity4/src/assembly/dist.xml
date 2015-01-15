@@ -12,7 +12,7 @@
   <fileSets>
     <fileSet>
       <directory>${basedir}/target/apidocs/</directory>
-      <outputDirectory>/apidocs/thymeleaf-extras-springsecurity3/</outputDirectory>
+      <outputDirectory>/apidocs/thymeleaf-extras-springsecurity4/</outputDirectory>
       <includes>
         <include>**/*</include>
       </includes>
@@ -21,9 +21,9 @@
       <directory>${basedir}/target/</directory>
       <outputDirectory>/dist</outputDirectory>
       <includes>
-        <include>thymeleaf-extras-springsecurity3-${project.version}.jar</include>
-        <include>thymeleaf-extras-springsecurity3-${project.version}-javadoc.jar</include>
-        <include>thymeleaf-extras-springsecurity3-${project.version}-sources.jar</include>
+        <include>thymeleaf-extras-springsecurity4-${project.version}.jar</include>
+        <include>thymeleaf-extras-springsecurity4-${project.version}-javadoc.jar</include>
+        <include>thymeleaf-extras-springsecurity4-${project.version}-sources.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -44,7 +44,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
-        <exclude>org.thymeleaf.extras:thymeleaf-extras-springsecurity3</exclude>
+        <exclude>org.thymeleaf.extras:thymeleaf-extras-springsecurity4</exclude>
         </excludes>
     </dependencySet>
   </dependencySets> 

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity3.dialect.processor;
+package org.thymeleaf.extras.springsecurity4.dialect.processor;
 
 import javax.servlet.ServletContext;
 
@@ -31,8 +31,8 @@ import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.extras.springsecurity3.auth.AclAuthUtils;
-import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
+import org.thymeleaf.extras.springsecurity4.auth.AclAuthUtils;
+import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
 import org.thymeleaf.standard.expression.IStandardExpression;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;

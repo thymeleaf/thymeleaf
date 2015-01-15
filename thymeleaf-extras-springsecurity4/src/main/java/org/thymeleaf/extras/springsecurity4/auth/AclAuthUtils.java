@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity3.auth;
+package org.thymeleaf.extras.springsecurity4.auth;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity3.util;
+package org.thymeleaf.extras.springsecurity4.util;
 
 import org.thymeleaf.util.ClassLoaderUtils;
 

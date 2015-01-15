@@ -1,8 +1,8 @@
 
- Building thymeleaf-extras-springsecurity3
+ Building thymeleaf-extras-springsecurity4
  -----------------------------------------
  
- To build thymeleaf-extras-springsecurity3 you will need Maven 2. You can 
+ To build thymeleaf-extras-springsecurity4 you will need Maven 2. You can
  get it at:
  
      http://maven.apache.org
@@ -12,17 +12,17 @@
  
      mvn clean:clean install
      
- And you will get a fresh target/thymeleaf-extras-springsecurity3-{version}.jar
+ And you will get a fresh target/thymeleaf-extras-springsecurity4-{version}.jar
  file. You will also get it installed in your local repository at:
  
-     $M2_REPO/org/thymeleaf/extras/thymeleaf-extras-springsecurity3/{version}/thymeleaf-extras-springsecurity3-{version}.jar
+     $M2_REPO/org/thymeleaf/extras/thymeleaf-extras-springsecurity4/{version}/thymeleaf-extras-springsecurity4-{version}.jar
 
 
 
- Generating Javadoc for thymeleaf-extras-springsecurity3
+ Generating Javadoc for thymeleaf-extras-springsecurity4
  -------------------------------------------------------
  
- If you wish to generate the javadoc for thymeleaf-extras-springsecurity3, 
+ If you wish to generate the javadoc for thymeleaf-extras-springsecurity4,
  execute this from the project root folder:
  
      mvn javadoc:javadoc

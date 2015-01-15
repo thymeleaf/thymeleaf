@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity3.auth;
+package org.thymeleaf.extras.springsecurity4.auth;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -40,11 +40,11 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
 import org.springframework.security.access.expression.ExpressionUtils;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
-import org.springframework.security.web.access.expression.WebSecurityExpressionHandler;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
@@ -179,7 +179,8 @@ public final class AuthUtils {
                         accessExpression.substring(2, accessExpression.length() - 1) :
                         accessExpression);
         
-        final WebSecurityExpressionHandler handler = getExpressionHandler(servletContext);
+        final SecurityExpressionHandler<? super FilterInvocation> handler =
+                (SecurityExpressionHandler<? super FilterInvocation>) getExpressionHandler(servletContext);
 
         Expression expressionObject = null;
         try {
@@ -255,22 +256,22 @@ public final class AuthUtils {
     
     
     
-    private static WebSecurityExpressionHandler getExpressionHandler(final ServletContext servletContext) {
+    private static SecurityExpressionHandler<?> getExpressionHandler(final ServletContext servletContext) {
 
         final ApplicationContext ctx =
                 WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
         
-        final Map<String, WebSecurityExpressionHandler> expressionHandlers = 
-                ctx.getBeansOfType(WebSecurityExpressionHandler.class);
+        final Map<String, SecurityExpressionHandler> expressionHandlers =
+                ctx.getBeansOfType(SecurityExpressionHandler.class);
 
         if (expressionHandlers.size() == 0) {
             throw new TemplateProcessingException(
-                    "No visible WebSecurityExpressionHandler instance could be found in the application " +
+                    "No visible SecurityExpressionHandler instance could be found in the application " +
                     "context. There must be at least one in order to support expressions in Spring Security " +
                     "authorization queries.");
         }
 
-        return (WebSecurityExpressionHandler) expressionHandlers.values().toArray()[0];
+        return (SecurityExpressionHandler) expressionHandlers.values().toArray()[0];
         
     }
     

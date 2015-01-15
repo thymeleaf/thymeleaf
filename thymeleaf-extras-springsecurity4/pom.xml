@@ -99,6 +99,14 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>http://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
 
@@ -108,7 +116,7 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <servlet-api.version>2.5</servlet-api.version>
     <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
-    <springsecurity.version>3.0.7.RELEASE</springsecurity.version>
+    <springsecurity.version>4.0.0.RC1</springsecurity.version>
     <slf4j.version>1.6.6</slf4j.version>
   </properties>
 
@@ -231,7 +239,7 @@
                 <descriptor>${basedir}/src/assembly/dist.xml</descriptor>
               </descriptors>
               <appendAssemblyId>true</appendAssemblyId>
-              <finalName>thymeleaf-extras-springsecurity3-${project.version}</finalName>
+              <finalName>thymeleaf-extras-springsecurity4-${project.version}</finalName>
             </configuration>
           </execution>
         </executions>

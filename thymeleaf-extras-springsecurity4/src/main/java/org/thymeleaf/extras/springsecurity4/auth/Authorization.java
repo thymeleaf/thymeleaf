@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity3.auth;
+package org.thymeleaf.extras.springsecurity4.auth;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;

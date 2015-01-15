@@ -17,12 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.extras.springsecurity3.dialect.processor;
+package org.thymeleaf.extras.springsecurity4.dialect.processor;
 
 import org.springframework.security.core.Authentication;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.dom.Element;
-import org.thymeleaf.extras.springsecurity3.auth.AuthUtils;
+import org.thymeleaf.extras.springsecurity4.auth.AuthUtils;
 import org.thymeleaf.processor.attr.AbstractTextChildModifierAttrProcessor;
 
 /**
