@@ -1,0 +1,24 @@
+2.1.2
+=====
+- Improved MANIFEST metadata.
+
+
+2.1.1
+=====
+- Generalized code depending on thymeleaf-spring3 so that thymeleaf-spring4 is also supported.
+
+
+2.1.0
+=====
+- Adapted to Thymeleaf 2.1 infrastructure.
+
+
+2.0.1
+=====
+- Removed required runtime dependency on springsecurity-acl so that applications aren't required to add this jar to
+  classpath if they don't use the ACL mechanism.
+
+
+2.0.0
+=====
+- First release of thymeleaf-extras-springsecurity3
