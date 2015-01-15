@@ -11,11 +11,11 @@
         <p>Example user: bob / demo</p>
         <p>Example user and administrator: ted / demo</p>
         <p th:if="${loginError}" class="error">Wrong user or password</p>
-        <form th:action="@{/j_spring_security_check}" method="post">
-            <label for="j_username">Username</label>:
-            <input type="text" id="j_username" name="j_username" autofocus="autofocus" /> <br />
-            <label for="j_password">Password</label>:
-            <input type="password" id="j_password" name="j_password" /> <br />
+        <form th:action="@{/login}" method="post">
+            <label for="username">Username</label>:
+            <input type="text" id="username" name="username" autofocus="autofocus" /> <br />
+            <label for="password">Password</label>:
+            <input type="password" id="password" name="password" /> <br />
             <input type="submit" value="Log in" />
         </form>
         <p><a href="../index.html" th:href="@{/index.html}">Back to home page</a></p>
