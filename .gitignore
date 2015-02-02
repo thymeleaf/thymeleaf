@@ -5,4 +5,5 @@ bin/
 .settings/
 .idea/
 *.iml
-
+nb-configuration.xml
+src/main/webapp/META-INF
