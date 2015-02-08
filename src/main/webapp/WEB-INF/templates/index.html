@@ -1,88 +1,100 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
     <head>
         <title>Rich HTML email in Spring with Thymeleaf</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+        <link rel="stylesheet" href="../../css/normalize.css" th:href="@{/css/normalize.css}" />
+        <link rel="stylesheet" href="../../css/skeleton.css" th:href="@{/css/skeleton.css}" />
+        <link rel="stylesheet" href="../../css/main.css" th:href="@{/css/main.css}" />
+        <script src="../../js/tinymce-4.1.min.js" th:src="@{/js/tinymce-4.1.min.js}"></script>
+        <script>tinymce.init({selector:'textarea'});</script>
     </head>
-    
     <body>
-    
-        <h1>Rich HTML email in Spring with Thymeleaf</h1>
-        <p>
-          This is a demo application exemplifying the use of Thymeleaf for creating
-          and sending several kinds of HTML email in a Spring application.
-        </p>
-        <p>
-          Note that, although for educational purposes this is a web application 
-          developed with <b>Spring MVC</b> and <b>HTML5</b>, these same techniques would work perfectly in 
-          a <b>standalone</b> application with no web interface at all.
-        </p>
-        
-        
-        <h2>HTML email (simple)</h2>
-        
-        <form action="sent.html" th:action="@{/sendMailSimple}" method="post">
- 
-          <fieldset>
-           
-            <label for="simpleRecipientName">To (name):</label>
-            <input type="text" id="simpleRecipientName" name="recipientName" placeholder="John Smith" required="required" /> <br />
-           
-            <label for="simpleRecipientEmail">To (email):</label>
-            <input type="email" id="simpleRecipientEmail" name="recipientEmail" placeholder="johnsmith@example.com" required="required" /> <br />
-            
-            <input type="submit" value="Send mail" />
-            
-          </fieldset>
-           
-        </form>
-        
-        
-        
-        <h2>HTML email with attachment</h2>
-        
-        <form action="sent.html" th:action="@{/sendMailWithAttachment}" method="post" enctype="multipart/form-data">
- 
-          <fieldset>
-
-            <label for="attachRecipientName">To (name):</label>
-            <input type="text" id="attachRecipientName" name="recipientName" placeholder="John Smith" required="required" /> <br />
-           
-            <label for="attachRecipientEmail">To (email):</label>
-            <input type="email" id="attachRecipientEmail" name="recipientEmail" placeholder="johnsmith@example.com" required="required" /> <br />
-            
-            <label for="attachAttachment">Attachment (max 10Mb):</label>
-            <input type="file" id="attachAttachment" name="attachment" required="required" /> <br />
-            
-            <input type="submit" value="Send mail" />
-            
-          </fieldset>
-           
-        </form>
-        
-        
-        
-        <h2>HTML email with inline image</h2>
-        
-        <form action="sent.html" th:action="@{/sendMailWithInlineImage}" method="post" enctype="multipart/form-data">
- 
-          <fieldset>
-
-            <label for="inlineRecipientName">To (name):</label>
-            <input type="text" id="inlineRecipientName" name="recipientName" placeholder="John Smith" required="required" /> <br />
-           
-            <label for="inlineRecipientEmail">To (email):</label>
-            <input type="email" id="inlineRecipientEmail" name="recipientEmail" placeholder="johnsmith@example.com" required="required" /> <br />
-            
-            <label for="inlineImage">Inlined image (max 10Mb):</label>
-            <input type="file" id="inlineImage" name="image" accept="image/*" required="required" /> <br />
-            
-            <input type="submit" value="Send mail" />
-            
-          </fieldset>
-           
-        </form>
-        
+        <div class="container">
+            <h1>Rich HTML email in Spring with Thymeleaf</h1>
+            <p>
+                This is a demo application exemplifying the use of Thymeleaf for creating
+                and sending several kinds of HTML email in a Spring application.
+            </p>
+            <p>
+                Note that, although for educational purposes this is a web application 
+                developed with <b>Spring MVC</b> and <b>HTML5</b>, these same techniques would work perfectly in 
+                a <b>standalone</b> application with no web interface at all.
+            </p>
+            <p>
+                In order to run the application to should configure your SMTP server correctly.
+                You can do this by modifying the values on <kbd>src/main/resources/configuration.properties</kbd>
+                and <kbd>src/main/resources/javamail.properties</kbd>.
+            </p>
+            <table class="u-full-width">
+                <thead>
+                    <tr>
+                        <th>Examples</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <p class="title">Simple HTML email</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send a simple HTML email with
+                                no attachments or images.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="simple.html" th:href="@{/simple.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">HTML email with attachment</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send an HTML email with
+                                a file attachment.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="attachment.html" th:href="@{/attachment.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">HTML email with inline image</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send an HTML email with
+                                an inlined image.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="inline.html" th:href="@{/inline.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <p class="title">Editable HTML email</p>
+                        </td>
+                        <td>
+                            <p>
+                                This example shows how to send an HTML email composed
+                                with a rich text editor.
+                            </p>
+                        </td>
+                        <td>
+                            <a href="editable.html" th:href="@{/editable.html}" class="button">See example</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </body>
 </html>

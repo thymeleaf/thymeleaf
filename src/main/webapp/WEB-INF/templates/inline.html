@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Rich HTML email in Spring with Thymeleaf</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+        <link rel="stylesheet" href="../../css/normalize.css" th:href="@{/css/normalize.css}" />
+        <link rel="stylesheet" href="../../css/skeleton.css" th:href="@{/css/skeleton.css}" />
+        <link rel="stylesheet" href="../../css/main.css" th:href="@{/css/main.css}" />
+        <script src="../../js/tinymce-4.1.min.js" th:src="@{/js/tinymce-4.1.min.js}"></script>
+        <script>tinymce.init({selector:'textarea'});</script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Rich HTML email in Spring with Thymeleaf</h1>
+            <h2>HTML email with inline image</h2>
+            <form action="sent.html" th:action="@{/sendMailWithInlineImage}" method="post" enctype="multipart/form-data">
+                <fieldset>
+                    <label for="inlineRecipientName">To (name):</label>
+                    <input type="text" id="inlineRecipientName" name="recipientName" placeholder="John Smith" required="required" size="60" /> <br />
+                    <label for="inlineRecipientEmail">To (email):</label>
+                    <input type="email" id="inlineRecipientEmail" name="recipientEmail" placeholder="johnsmith@example.com" required="required" size="60" /> <br />
+                    <label for="inlineImage">Inlined image (max 10Mb):</label>
+                    <input type="file" id="inlineImage" name="image" accept="image/*" required="required" /> <br />
+                    <input type="submit" value="Send mail" class="button-primary" />
+                </fieldset>
+            </form>
+            <p>
+                <a href="index.html" th:href="@{/index.html}" class="button">Back to home page</a>
+            </p>
+        </div>
+    </body>
+</html>

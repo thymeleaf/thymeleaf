@@ -8,12 +8,22 @@
         <link rel="stylesheet" href="../../css/normalize.css" th:href="@{/css/normalize.css}" />
         <link rel="stylesheet" href="../../css/skeleton.css" th:href="@{/css/skeleton.css}" />
         <link rel="stylesheet" href="../../css/main.css" th:href="@{/css/main.css}" />
+        <script src="../../js/tinymce-4.1.min.js" th:src="@{/js/tinymce-4.1.min.js}"></script>
+        <script>tinymce.init({selector:'textarea'});</script>
     </head>
     <body>
         <div class="container">
             <h1>Rich HTML email in Spring with Thymeleaf</h1>
-            <h2>Success!</h2>
-            <p>The e-mail has been sent, please check your inbox.</p>
+            <h2>HTML email (simple)</h2>
+            <form action="sent.html" th:action="@{/sendMailSimple}" method="post">
+                <fieldset>
+                    <label for="simpleRecipientName">To (name):</label>
+                    <input type="text" id="simpleRecipientName" name="recipientName" placeholder="John Smith" required="required" size="60" /> <br />
+                    <label for="simpleRecipientEmail">To (email):</label>
+                    <input type="email" id="simpleRecipientEmail" name="recipientEmail" placeholder="johnsmith@example.com" required="required" size="60" /> <br />
+                    <input type="submit" value="Send mail" class="button-primary" />
+                </fieldset>
+            </form>
             <p>
                 <a href="index.html" th:href="@{/index.html}" class="button">Back to home page</a>
             </p>

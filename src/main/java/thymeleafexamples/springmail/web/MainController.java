@@ -34,40 +34,54 @@ import org.springframework.web.multipart.MultipartFile;
 
 import thymeleafexamples.springmail.service.EmailService;
 
-
 @Controller
 public class MainController {
 
     @Autowired 
     private EmailService emailService;
 
-
-
-    
     @RequestMapping("/")
     public String root() {
         return "redirect:/index.html";
     }
-
     
     /* Home page. */
     @RequestMapping("/index.html")
     public String index() {
         return "index.html";
     }
-
+    
+    /* Simple HTML email. */
+    @RequestMapping("/simple.html")
+    public String simple() {
+        return "simple.html";
+    }
+    
+    /* HTML email with attachment. */
+    @RequestMapping("/attachment.html")
+    public String attachment() {
+        return "attachment.html";
+    }
+    
+    /* HTML email with inline image. */
+    @RequestMapping("/inline.html")
+    public String inline() {
+        return "inline.html";
+    }
+    
+    /* Editable HTML email. */
+    @RequestMapping("/editable.html")
+    public String editable() {
+        return "editable.html";
+    }
     
     /* Sending confirmation page. */
     @RequestMapping("/sent.html")
     public String sent() {
         return "sent.html";
     }
-
     
-    
-    /* 
-     * Send HTML mail (simple) 
-     */
+    /* Send HTML mail (simple) */
     @RequestMapping(value = "/sendMailSimple", method = RequestMethod.POST)
     public String sendSimpleMail(
             @RequestParam("recipientName") final String recipientName,
@@ -80,12 +94,7 @@ public class MainController {
         
     }
 
-    
-    
-    
-    /* 
-     * Send HTML mail with attachment. 
-     */
+    /* Send HTML mail with attachment. */
     @RequestMapping(value = "/sendMailWithAttachment", method = RequestMethod.POST)
     public String sendMailWithAttachment(
             @RequestParam("recipientName") final String recipientName,
@@ -100,12 +109,8 @@ public class MainController {
         return "redirect:sent.html";
         
     }
-
     
-    
-    /* 
-     * Send HTML mail with inline image
-     */
+    /* Send HTML mail with inline image */
     @RequestMapping(value = "/sendMailWithInlineImage", method = RequestMethod.POST)
     public String sendMailWithInline(
             @RequestParam("recipientName") final String recipientName,
@@ -120,8 +125,6 @@ public class MainController {
         return "redirect:sent.html";
         
     }
-
-    
     
     @ExceptionHandler(Exception.class)
     public String error() {
