@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 /**
- *  Spring beans configuration.
+ *  Spring upload support configuration.
  */
 @Configuration
 public class MultipartConfig {

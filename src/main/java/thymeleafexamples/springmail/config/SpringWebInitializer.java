@@ -1,5 +1,8 @@
 package thymeleafexamples.springmail.config;
 
+import java.util.EnumSet;
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -15,7 +18,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
  */
 public class SpringWebInitializer implements WebApplicationInitializer {
 
-    private static final String ENCODING = "UTF-8";
+    public static final String ENCODING = "UTF-8";
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
@@ -24,7 +27,7 @@ public class SpringWebInitializer implements WebApplicationInitializer {
 		context.register(MailConfig.class);
 		context.setServletContext(servletContext);
         configureSpringMvcFrontController(servletContext, context);
-        configureEncondingFilter(servletContext);
+        configureEncodingFilter(servletContext);
 	}
     
     private void configureSpringMvcFrontController(ServletContext servletContext, WebApplicationContext context) {
@@ -33,13 +36,12 @@ public class SpringWebInitializer implements WebApplicationInitializer {
 		servlet.setLoadOnStartup(1);
     }
 
-    private void configureEncondingFilter(ServletContext servletContext) {
+    private void configureEncodingFilter(ServletContext servletContext) {
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding(ENCODING);
         encodingFilter.setForceEncoding(true);
-        servletContext.addFilter("encodingFilter", encodingFilter);
-        // FIXME: set filter URL pattern 
-        //      <url-pattern>/*</url-pattern>
+        FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("encodingFilter", encodingFilter);
+        filterRegistration.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
+   }
 
-    }
 }

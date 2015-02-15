@@ -12,6 +12,7 @@ import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
+import static thymeleafexamples.springmail.config.SpringWebInitializer.ENCODING;
 
 /**
  * Spring MVC and Thymeleaf configuration.
@@ -21,10 +22,8 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @EnableWebMvc
 public class ThymeleafConfig extends WebMvcConfigurerAdapter {
 
-    private static final String ENCODING = "UTF-8";
-
     /**
-     * THYMELEAF: View Resolver - implementation of Spring's ViewResolver interface
+     * THYMELEAF: View Resolver - implementation of Spring's ViewResolver interface.
      * (we would not need this if our app was not web)
      */
 	@Bean
@@ -36,7 +35,7 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
     }
 
     /**
-     * THYMELEAF: Template Engine (Spring4-specific version)
+     * THYMELEAF: Template Engine (Spring4-specific version).
      */
 	@Bean
     public SpringTemplateEngine templateEngine() {
@@ -47,7 +46,7 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
     }
 
     /**
-     * THYMELEAF: Template Resolver for email templates
+     * THYMELEAF: Template Resolver for email templates.
      */
     private TemplateResolver emailTemplateResolver() {
         TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
@@ -57,12 +56,12 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
         templateResolver.setOrder(1);
         // Template cache is true by default. Set to false if you want 
         // templates to be automatically updated when modified.
-        templateResolver.setCacheable(true);
+        templateResolver.setCacheable(false);
         return templateResolver;
     }
     
     /**
-     * THYMELEAF: Template Resolver for webapp pages
+     * THYMELEAF: Template Resolver for webapp pages.
      * (we would not need this if our app was not web)
      */
     private TemplateResolver webTemplateResolver() {
@@ -73,12 +72,11 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
         templateResolver.setOrder(2);
         // Template cache is true by default. Set to false if you want 
         // templates to be automatically updated when modified.
-        templateResolver.setCacheable(true);
+        templateResolver.setCacheable(false);
         return templateResolver;
     }
 
     @Override
-    // FIXME: is this necessary?
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Use Spring servlet to serve static resources
 	    registry.addResourceHandler("/images/**").addResourceLocations("/images/");

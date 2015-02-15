@@ -6,10 +6,18 @@ body {
 h1 {
     background-image: url(../images/thymeleaf-logo.png);
     background-repeat: no-repeat;
-    min-height: 100px;
-    padding-left: 120px;
+    background-position: 10px 10px;
+    background-color: #D7EBAD;
+    border: solid 1px #96A479;
+    border-radius: 6px;
+    min-height: 70px;
+    padding-left: 90px;
 }
 
 p.title {
     font-weight: bold;
+}
+
+.tinymce {
+    height: 400px;
 }
