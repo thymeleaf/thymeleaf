@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ParseException;
@@ -179,8 +180,7 @@ public final class AuthUtils {
                         accessExpression.substring(2, accessExpression.length() - 1) :
                         accessExpression);
         
-        final SecurityExpressionHandler<? super FilterInvocation> handler =
-                (SecurityExpressionHandler<? super FilterInvocation>) getExpressionHandler(servletContext);
+        final SecurityExpressionHandler<FilterInvocation> handler = getExpressionHandler(servletContext);
 
         Expression expressionObject = null;
         try {
@@ -256,7 +256,8 @@ public final class AuthUtils {
     
     
     
-    private static SecurityExpressionHandler<?> getExpressionHandler(final ServletContext servletContext) {
+    @SuppressWarnings("unchecked")
+    private static SecurityExpressionHandler<FilterInvocation> getExpressionHandler(final ServletContext servletContext) {
 
         final ApplicationContext ctx =
                 WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
@@ -264,15 +265,17 @@ public final class AuthUtils {
         final Map<String, SecurityExpressionHandler> expressionHandlers =
                 ctx.getBeansOfType(SecurityExpressionHandler.class);
 
-        if (expressionHandlers.size() == 0) {
-            throw new TemplateProcessingException(
-                    "No visible SecurityExpressionHandler instance could be found in the application " +
-                    "context. There must be at least one in order to support expressions in Spring Security " +
-                    "authorization queries.");
+        for (SecurityExpressionHandler handler : expressionHandlers.values()) {
+            if (FilterInvocation.class.equals(GenericTypeResolver.resolveTypeArgument(handler.getClass(), SecurityExpressionHandler.class))) {
+                return handler;
+            }
         }
 
-        return (SecurityExpressionHandler) expressionHandlers.values().toArray()[0];
-        
+        throw new TemplateProcessingException(
+                "No visible SecurityExpressionHandler instance could be found in the application " +
+                "context. There must be at least one in order to support expressions in Spring Security " +
+                "authorization queries.");
+
     }
     
     
