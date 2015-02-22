@@ -89,11 +89,12 @@ public class SendingController {
     public String sendMailWithInline(
             @RequestParam("recipientName") final String recipientName,
             @RequestParam("recipientEmail") final String recipientEmail,
-            @RequestParam("body") final String body)
+            @RequestParam("body") final String body,
+            final Locale locale)
             throws MessagingException, IOException {
 
         this.emailService.sendEditableMail(
-                recipientName, recipientEmail, body);
+                recipientName, recipientEmail, body, locale);
         return "redirect:sent.html";
         
     }

@@ -35,6 +35,9 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.messageresolver.IMessageResolver;
+import static org.thymeleaf.templatemode.StandardTemplateModeHandlers.HTML5;
+import thymeleafexamples.springmail.tools.StaticTemplateExecutor;
 
 @Service
 public class EmailService {
@@ -51,6 +54,10 @@ public class EmailService {
     
     @Autowired 
     private TemplateEngine templateEngine;
+    
+    @Autowired
+    private IMessageResolver messageResolver;
+
     /* 
      * Send HTML mail (simple) 
      */
@@ -162,7 +169,8 @@ public class EmailService {
      * Send HTML mail with inline image
      */
     public void sendEditableMail(
-            final String recipientName, final String recipientEmail, final String htmlContent)
+            final String recipientName, final String recipientEmail, final String htmlContent,
+            final Locale locale)
             throws MessagingException {
         
         // Prepare message using a Spring helper
@@ -173,10 +181,31 @@ public class EmailService {
         message.setFrom("thymeleaf@example.com");
         message.setTo(recipientEmail);
 
-        // HTML body
-        // FIXME: process it with Thymeleaf
         // FIXME: duplicated images in src/main/resources and src/main/webapp
-        message.setText(htmlContent, true /* isHtml */);
+         // Prepare the evaluation context
+        final Context ctx = new Context(locale);
+        ctx.setVariable("name", recipientName);
+        ctx.setVariable("subscriptionDate", new Date());
+        ctx.setVariable("hobbies", Arrays.asList("Cinema", "Sports", "Music"));
+        
+        final StaticTemplateExecutor templateExecutor = new StaticTemplateExecutor(
+            ctx, messageResolver, HTML5.getTemplateModeName());
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println(htmlContent);
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        final String output = templateExecutor.processTemplateCode(htmlContent);
+        message.setText(output, true /* isHtml */);
+        System.out.println(output);
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
+        System.out.println("*******************************************");
         
         // Add the inline images, referenced from the HTML code as "cid:image-name"
         message.addInline("background", new ClassPathResource(BACKGROUND_IMAGE), PNG_MIME);

@@ -7,6 +7,8 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.messageresolver.StandardMessageResolver;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -83,5 +85,10 @@ public class ThymeleafConfig extends WebMvcConfigurerAdapter {
 	    registry.addResourceHandler("/css/**").addResourceLocations("/css/");
 	    registry.addResourceHandler("/js/**").addResourceLocations("/js/");
 	    registry.addResourceHandler("/swf/**").addResourceLocations("/swf/");
+    }
+
+    @Bean
+    public IMessageResolver messageResolver() {
+        return new StandardMessageResolver();
     }
 }
