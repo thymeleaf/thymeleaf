@@ -190,22 +190,8 @@ public class EmailService {
         
         final StaticTemplateExecutor templateExecutor = new StaticTemplateExecutor(
             ctx, messageResolver, HTML5.getTemplateModeName());
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println(htmlContent);
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
         final String output = templateExecutor.processTemplateCode(htmlContent);
         message.setText(output, true /* isHtml */);
-        System.out.println(output);
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
-        System.out.println("*******************************************");
         
         // Add the inline images, referenced from the HTML code as "cid:image-name"
         message.addInline("background", new ClassPathResource(BACKGROUND_IMAGE), PNG_MIME);
