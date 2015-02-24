@@ -25,11 +25,36 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class XmlAttributeName extends AttributeName {
+public final class XmlAttributeName extends AttributeName {
+
+    final String completeNamespacedAttributeName;
+
 
 
     XmlAttributeName(final String attributeName) {
-        super(attributeName);
+        this(null, attributeName);
+    }
+
+
+    XmlAttributeName(final String prefix, final String attributeName) {
+
+        super(prefix, attributeName);
+
+        if (this.prefix == null || this.prefix.length() == 0) {
+
+            this.completeNamespacedAttributeName = this.attributeName;
+
+            // The completeAttributeNames array is assigned correctly at the parent class in this case
+
+        } else {
+
+            this.completeNamespacedAttributeName = this.prefix + ":" + this.attributeName;
+
+            this.completeAttributeNames =
+                    new String[] { this.completeNamespacedAttributeName };
+
+        }
+
     }
 
 }

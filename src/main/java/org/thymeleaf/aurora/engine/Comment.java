@@ -19,8 +19,11 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.util.TextUtil;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -28,7 +31,7 @@ import org.thymeleaf.aurora.util.TextUtil;
  * @since 3.0.0
  * 
  */
-public final class Comment {
+public final class Comment implements Node {
 
     private static final char[] COMMENT_PREFIX = "<!--".toCharArray();
     private static final char[] COMMENT_SUFFIX = "-->".toCharArray();
@@ -45,6 +48,9 @@ public final class Comment {
     private String content;
 
     private ITextRepository textRepository;
+
+    private int line;
+    private int col;
 
 
     /*
@@ -65,7 +71,12 @@ public final class Comment {
 
 
     // Meant to be called only from within the engine
-    Comment(final ITextRepository textRepository) {
+    Comment(
+            final ITextRepository textRepository,
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col) {
 
         super();
 
@@ -75,14 +86,7 @@ public final class Comment {
 
         this.textRepository = textRepository;
 
-        this.buffer = null;
-        this.contentOffset = -1;
-        this.contentLen = -1;
-        this.outerOffset = -1;
-        this.outerLen = -1;
-
-        this.comment = null;
-        this.content = null;
+        setComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
     }
 
@@ -90,59 +94,36 @@ public final class Comment {
 
     public Comment(final String content) {
         super();
-        initializeFromContent(content);
-    }
-
-
-    public Comment(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen) {
-        super();
-        initializeFromComment(buffer, contentOffset, contentLen, outerOffset, outerLen);
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setTextRepository(final ITextRepository textRepository) {
-        if (textRepository == null) {
-            throw new IllegalArgumentException("Text Repository cannot be null");
-        }
-        this.textRepository = textRepository;
+        setContent(content);
     }
 
 
 
 
-    public char[] getBuffer() {
+    char[] getBuffer() {
         return this.buffer;
     }
 
-    public int getContentOffset() {
+    int getContentOffset() {
         return this.contentOffset;
     }
 
-    public int getContentLen() {
+    int getContentLen() {
         return this.contentLen;
     }
 
-    public int getOuterOffset() {
+    int getOuterOffset() {
         return this.outerOffset;
     }
 
-    public int getOuterLen() {
+    int getOuterLen() {
         return this.outerLen;
     }
 
 
 
-    public String getComment() {
 
-        if (this.buffer == null) {
-            // Should never happen, but just in case
-            return null;
-        }
+    public String getComment() {
 
         if (this.comment == null) {
             this.comment =
@@ -158,27 +139,14 @@ public final class Comment {
 
     public String getContent() {
 
-        if (this.buffer == null) {
-            // Should never happen, but just in case
-            return null;
-        }
-
         if (this.content == null) {
 
-            if (this.comment == null) {
+            // By calling getComment() we will compute a String for the entire Comment, so we will
+            // save some bytes in memory if we just return a substring of it (substrings don't duplicate the
+            // underlying char[])
 
-                this.content =
-                        (this.textRepository != null ?
-                                this.textRepository.getText(this.buffer, this.contentOffset, this.contentLen) :
-                                new String(this.buffer, this.contentOffset, this.contentLen));
-
-            } else {
-                // We already have a String for the entire Comment, so we will save some bytes in memory if
-                // we just return a substring of it (substrings don't duplicate the underlying char[])
-
-                this.content =
-                        this.comment.substring(COMMENT_PREFIX.length, (this.comment.length() - COMMENT_SUFFIX.length));
-            }
+            this.content =
+                    getComment().substring(COMMENT_PREFIX.length, (this.comment.length() - COMMENT_SUFFIX.length));
 
         }
 
@@ -190,33 +158,33 @@ public final class Comment {
 
 
 
-    public void setComment(
-            final char[] buffer, final int contentOffset, final int contentLen, final int outerOffset, final int outerLen) {
-        initializeFromComment(buffer, contentOffset, contentLen, outerOffset, outerLen);
+    void setComment(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col) {
+
+        // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
+
+        // No need to reset the internalBuffer as the intention is precisely to reuse it
+        this.buffer = buffer;
+        this.contentOffset = contentOffset;
+        this.contentLen = contentLen;
+        this.outerOffset = outerOffset;
+        this.outerLen = outerLen;
+
+        this.comment = null;
+        this.content = null;
+
+        this.line = line;
+        this.col = col;
+
     }
 
 
-    public void setComment(final String comment) {
-        initializeFromComment(comment);
-    }
-
-
-
-
-    public void setContent(final char[] buffer, final int contentOffset, final int contentLen) {
-        initializeFromContent(buffer, contentOffset, contentLen);
-    }
 
 
     public void setContent(final String content) {
-        initializeFromContent(content);
-    }
-
-
-
-
-
-    private void initializeFromContent(final String content) {
 
         if (content == null) {
             throw new IllegalArgumentException("Comment content cannot be null");
@@ -231,14 +199,9 @@ public final class Comment {
         if (this.internalBuffer == null || this.internalBuffer.length < commentLen) {
             // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
             this.internalBuffer = new char[commentLen];
-            // We only need to add the prefix if this is new. If not, the existing one will do. If possible, respect the existing one (preserving case)
-            if (this.buffer != null) {
-                System.arraycopy(this.buffer, 0, this.internalBuffer, 0, COMMENT_PREFIX.length);
-            } else {
-                System.arraycopy(COMMENT_PREFIX, 0, this.internalBuffer, 0, COMMENT_PREFIX.length);
-            }
         }
 
+        System.arraycopy(COMMENT_PREFIX, 0, this.internalBuffer, 0, COMMENT_PREFIX.length);
         content.getChars(0, contentLen, this.internalBuffer, COMMENT_PREFIX.length);
         System.arraycopy(COMMENT_SUFFIX, 0, this.internalBuffer, (COMMENT_PREFIX.length + contentLen), COMMENT_SUFFIX.length);
 
@@ -251,119 +214,42 @@ public final class Comment {
         this.comment = null;
         this.content = content;
 
-    }
-
-
-    private void initializeFromContent(final char[] buffer, final int contentOffset, final int contentLen) {
-
-        if (buffer == null) {
-            throw new IllegalArgumentException("Comment content buffer cannot be null");
-        }
-        if (contentOffset < 0 || contentLen < 0) {
-            throw new IllegalArgumentException("Comment content offset and len must be >= 0");
-        }
-        if (contentOffset + contentLen > buffer.length) {
-            throw new IllegalArgumentException("Comment was specified with invalid bounds. Buffer is not long enough");
-        }
-
-        // This only sets the content, therefore we need to use the internal buffer in order to
-        // construct a valid (prefixed + suffixed) Comment
-
-        final int commentLen = COMMENT_PREFIX.length + contentLen + COMMENT_SUFFIX.length;
-
-        if (this.internalBuffer == null || this.internalBuffer.length < commentLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
-            this.internalBuffer = new char[commentLen];
-            // We only need to add the prefix if this is new. If not, the existing one will do. If possible, respect the existing one (preservingcase)
-            if (this.buffer != null) {
-                System.arraycopy(this.buffer, 0, this.internalBuffer, 0, COMMENT_PREFIX.length);
-            } else {
-                System.arraycopy(COMMENT_PREFIX, 0, this.internalBuffer, 0, COMMENT_PREFIX.length);
-            }
-        }
-
-        System.arraycopy(buffer, contentOffset, this.internalBuffer, COMMENT_PREFIX.length, contentLen);
-        System.arraycopy(COMMENT_SUFFIX, 0, this.internalBuffer, (COMMENT_PREFIX.length + contentLen), COMMENT_SUFFIX.length);
-
-        this.buffer = this.internalBuffer;
-        this.contentOffset = COMMENT_PREFIX.length;
-        this.contentLen = contentLen;
-        this.outerOffset = 0;
-        this.outerLen = commentLen;
-
-        this.comment = null;
-        this.content = null;
+        this.line = -1;
+        this.col = -1;
 
     }
 
 
-    private void initializeFromComment(final String comment) {
 
-        if (comment == null) {
-            throw new IllegalArgumentException("Comment cannot be null");
-        }
 
-        // We need to check that this is a valid Comment (note there is no  need to be case insensitive)
-        if (!TextUtil.startsWith(true, comment, COMMENT_PREFIX) || !TextUtil.endsWith(true, comment, COMMENT_SUFFIX)) {
-            throw new IllegalArgumentException(
-                    "Comment must start with '" + (new String(COMMENT_PREFIX)) + "' and end with '" + (new String(COMMENT_PREFIX)) + "'");
-        }
 
-        final int commentLen = comment.length();
+    public boolean hasLocation() {
+        return (this.line != -1 && this.col != -1);
+    }
 
-        if (this.internalBuffer == null || this.internalBuffer.length < commentLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
-            this.internalBuffer = new char[commentLen];
-        }
+    public int getLine() {
+        return this.line;
+    }
 
-        comment.getChars(0, commentLen, this.internalBuffer, 0);
-
-        this.buffer = this.internalBuffer;
-        this.contentOffset = COMMENT_PREFIX.length;
-        this.contentLen = commentLen - (COMMENT_PREFIX.length + COMMENT_SUFFIX.length);
-        this.outerOffset = 0;
-        this.outerLen = commentLen;
-
-        this.comment = comment;
-        this.content = null;
-
+    public int getCol() {
+        return this.col;
     }
 
 
-    private void initializeFromComment(
-            final char[] buffer, final int contentOffset, final int contentLen, final int outerOffset, final int outerLen) {
 
-        if (buffer == null) {
-            throw new IllegalArgumentException("Comment buffer cannot be null");
-        }
-        if (contentOffset < 0 || contentLen < 0 || outerOffset < 0 || outerLen < 0) {
-            throw new IllegalArgumentException("Comment offsets and lens must be >= 0");
-        }
-        if (outerOffset + outerLen > buffer.length) {
-            throw new IllegalArgumentException("Comment was specified with invalid bounds. Buffer is not long enough");
-        }
-        if (contentOffset < outerOffset || contentLen > outerLen || contentOffset + contentLen > outerOffset + outerLen) {
-            throw new IllegalArgumentException("Comment content must be contained within the 'outer' limits");
-        }
 
-        // We need to check that this is a valid Comment (note there is no  need to be case insensitive)
-        if (!TextUtil.startsWith(true, buffer, outerOffset, outerLen, COMMENT_PREFIX, 0, COMMENT_PREFIX.length) ||
-                !TextUtil.endsWith(true, buffer, outerOffset, outerLen, COMMENT_SUFFIX, 0, COMMENT_SUFFIX.length)) {
-            throw new IllegalArgumentException(
-                    "Comment must start with '" + (new String(COMMENT_PREFIX)) + "' and end with '" + (new String(COMMENT_PREFIX)) + "'");
-        }
 
-        // Set all the data. No need to reset the internalBuffer as the intention is precisely to reuse it
-        this.buffer = buffer;
-        this.contentOffset = contentOffset;
-        this.contentLen = contentLen;
-        this.outerOffset = outerOffset;
-        this.outerLen = outerLen;
-
-        this.comment = null;
-        this.content = null;
-
+    public void write(final Writer writer) throws IOException {
+        Validate.notNull(writer, "Writer cannot be null");
+        MarkupOutput.writeComment(writer, this.buffer, this.outerOffset, this.outerLen);
     }
+
+
+
+    public String toString() {
+        return getComment();
+    }
+
 
 
 }

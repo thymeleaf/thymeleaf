@@ -196,8 +196,8 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     public void handleStandaloneElement(
             final ElementDefinition elementDefinition,
-            final String name,
-            final Attributes attributes,
+            final String elementName,
+            final ElementAttributes elementAttributes,
             final boolean minimized,
             final int line, final int col) {
 
@@ -205,79 +205,79 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
             return;
         }
 
-        this.next.handleStandaloneElement(elementDefinition, name, attributes, minimized, line, col);
+        this.next.handleStandaloneElement(elementDefinition, elementName, elementAttributes, minimized, line, col);
 
     }
 
 
     public void handleOpenElement(
             final ElementDefinition elementDefinition,
-            final String name,
-            final Attributes attributes,
+            final String elementName,
+            final ElementAttributes elementAttributes,
             final int line, final int col) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleOpenElement(elementDefinition, name, attributes, line, col);
+        this.next.handleOpenElement(elementDefinition, elementName, elementAttributes, line, col);
 
     }
 
 
     public void handleAutoOpenElement(
             final ElementDefinition elementDefinition,
-            final String name,
-            final Attributes attributes,
+            final String elementName,
+            final ElementAttributes elementAttributes,
             final int line, final int col) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleAutoOpenElement(elementDefinition, name, attributes, line, col);
+        this.next.handleAutoOpenElement(elementDefinition, elementName, elementAttributes, line, col);
 
     }
 
 
     public void handleCloseElement(
             final ElementDefinition elementDefinition,
-            final String name,
+            final String elementName,
             final int line, final int col) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleCloseElement(elementDefinition, name, line, col);
+        this.next.handleCloseElement(elementDefinition, elementName, line, col);
 
     }
 
 
     public void handleAutoCloseElement(
             final ElementDefinition elementDefinition,
-            final String name,
+            final String elementName,
             final int line, final int col) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleAutoCloseElement(elementDefinition, name, line, col);
+        this.next.handleAutoCloseElement(elementDefinition, elementName, line, col);
 
     }
 
 
     public void handleUnmatchedCloseElement(
             final ElementDefinition elementDefinition,
-            final String name,
+            final String elementName,
             final int line, final int col) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleUnmatchedCloseElement(elementDefinition, name, line, col);
+        this.next.handleUnmatchedCloseElement(elementDefinition, elementName, line, col);
 
     }
 

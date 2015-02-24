@@ -27,14 +27,15 @@ package org.thymeleaf.aurora.engine;
  */
 public abstract class AttributeName {
 
-    final String attributeName;
-    final String[] completeAttributeNames;
+    final protected String prefix;
+    final protected String attributeName;
+    protected String[] completeAttributeNames;
 
 
 
 
 
-    AttributeName(final String attributeName) {
+    protected AttributeName(final String prefix, final String attributeName) {
 
         super();
 
@@ -42,6 +43,9 @@ public abstract class AttributeName {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
 
+        // Prefix CAN be null (if the attribute is not prefixed)
+
+        this.prefix = prefix;
         this.attributeName = attributeName;
         this.completeAttributeNames = new String[] { this.attributeName };
 
@@ -52,9 +56,12 @@ public abstract class AttributeName {
         return this.attributeName;
     }
 
-
     public boolean isPrefixed() {
-        return false;
+        return this.prefix != null;
+    }
+
+    public String getPrefix() {
+        return this.prefix;
     }
 
     public String[] getCompleteAttributeNames() {
@@ -65,8 +72,15 @@ public abstract class AttributeName {
 
     @Override
     public String toString() {
-        // Reference equality is OK (and faster) in this case
-        return "{" + this.attributeName + "}";
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append('{');
+        strBuilder.append(this.completeAttributeNames[0]);
+        for (int i = 1; i < this.completeAttributeNames.length; i++) {
+            strBuilder.append(',');
+            strBuilder.append(this.completeAttributeNames[i]);
+        }
+        strBuilder.append('}');
+        return strBuilder.toString();
     }
 
 }

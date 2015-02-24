@@ -19,7 +19,13 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.thymeleaf.aurora.util.TextUtil;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -27,13 +33,13 @@ import org.thymeleaf.aurora.util.TextUtil;
  * @since 3.0.0
  * 
  */
-public final class XmlDeclaration {
+public final class XmlDeclaration implements Node {
 
     public static final String DEFAULT_KEYWORD = "xml";
 
-    private static final String ATTRIBUTE_NAME_VERSION = "version";
-    private static final String ATTRIBUTE_NAME_ENCODING = "encoding";
-    private static final String ATTRIBUTE_NAME_STANDALONE = "standalone";
+    public static final String ATTRIBUTE_NAME_VERSION = "version";
+    public static final String ATTRIBUTE_NAME_ENCODING = "encoding";
+    public static final String ATTRIBUTE_NAME_STANDALONE = "standalone";
 
     private String xmlDeclaration;
     private String keyword;
@@ -41,27 +47,30 @@ public final class XmlDeclaration {
     private String encoding;
     private String standalone;
 
+    private int line;
+    private int col;
+
 
     /*
      * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
      * should allow reducing the number of instances of this class to the minimum.
      *
-     * The 'doctype' property, which is computed from the other properties, should be computed lazily in order to avoid
+     * The 'xmlDeclaration' property, which is computed from the other properties, should be computed lazily in order to avoid
      * unnecessary creation of Strings which would use more memory than needed.
      */
 
 
     // Meant to be called only from within the engine
-    XmlDeclaration() {
+    XmlDeclaration(
+            final String xmlDeclaration,
+            final String keyword,
+            final String version,
+            final String encoding,
+            final String standalone,
+            final int line, final int col) {
 
         super();
-
-        this.keyword = null;
-        this.version = null;
-        this.encoding = null;
-        this.standalone = null;
-
-        this.xmlDeclaration = null;
+        setXmlDeclaration(xmlDeclaration, keyword, version, encoding, standalone, line, col);
 
     }
 
@@ -99,40 +108,19 @@ public final class XmlDeclaration {
 
     public String getXmlDeclaration() {
 
-        if (this.keyword == null) {
-            // Should never happen, but just in case
-            return null;
-        }
-
         if (this.xmlDeclaration == null) {
 
-            final StringBuilder strBuilder = new StringBuilder(70);
-            strBuilder.append("<?");
-            strBuilder.append(this.keyword);
-            if (this.version != null) {
-                strBuilder.append(' ');
-                strBuilder.append(ATTRIBUTE_NAME_VERSION);
-                strBuilder.append("=\"");
-                strBuilder.append(this.version);
-                strBuilder.append('"');
-            }
-            if (this.encoding != null) {
-                strBuilder.append(' ');
-                strBuilder.append(ATTRIBUTE_NAME_ENCODING);
-                strBuilder.append("=\"");
-                strBuilder.append(this.encoding);
-                strBuilder.append('"');
-            }
-            if (this.standalone != null) {
-                strBuilder.append(' ');
-                strBuilder.append(ATTRIBUTE_NAME_STANDALONE);
-                strBuilder.append("=\"");
-                strBuilder.append(this.standalone);
-                strBuilder.append('"');
-            }
-            strBuilder.append("?>");
+            final StringWriter stringWriter = new StringWriter();
 
-            this.xmlDeclaration = strBuilder.toString();
+            try {
+                MarkupOutput.writeXmlDeclaration(
+                        stringWriter, this.keyword, this.version, this.encoding, this.standalone);
+            } catch (final IOException e) {
+                // Should never happen!
+                throw new TemplateProcessingException("Error computing XML Declaration representation", e);
+            }
+
+            this.xmlDeclaration = stringWriter.toString();
 
         }
 
@@ -164,7 +152,8 @@ public final class XmlDeclaration {
             final String keyword,
             final String version,
             final String encoding,
-            final String standalone) {
+            final String standalone,
+            final int line, final int col) {
 
         this.keyword = keyword;
         this.version = version;
@@ -172,6 +161,9 @@ public final class XmlDeclaration {
         this.standalone = standalone;
 
         this.xmlDeclaration = xmlDeclaration;
+
+        this.line = line;
+        this.col = col;
 
     }
 
@@ -194,6 +186,42 @@ public final class XmlDeclaration {
 
         this.xmlDeclaration = null;
 
+        this.line = -1;
+        this.col = -1;
+
+    }
+
+
+
+
+
+
+    public boolean hasLocation() {
+        return (this.line != -1 && this.col != -1);
+    }
+
+    public int getLine() {
+        return this.line;
+    }
+
+    public int getCol() {
+        return this.col;
+    }
+
+
+
+
+
+    public void write(final Writer writer) throws IOException {
+        Validate.notNull(writer, "Writer cannot be null");
+        MarkupOutput.writeXmlDeclaration(
+                writer, this.keyword, this.version, this.encoding, this.standalone);
+    }
+
+
+
+    public String toString() {
+        return getXmlDeclaration();
     }
 
 

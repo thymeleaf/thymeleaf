@@ -19,17 +19,27 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.Validate;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public final class ProcessingInstruction {
+public final class ProcessingInstruction implements Node {
 
     private String processingInstruction;
     private String target;
     private String content;
+
+    private int line;
+    private int col;
 
 
     /*
@@ -42,14 +52,14 @@ public final class ProcessingInstruction {
 
 
     // Meant to be called only from within the engine
-    ProcessingInstruction() {
+    ProcessingInstruction(
+            final String processingInstruction,
+            final String target,
+            final String content,
+            final int line, final int col) {
 
         super();
-
-        this.target = null;
-        this.content = null;
-
-        this.processingInstruction = null;
+        setProcessingInstruction(processingInstruction, target, content, line, col);
 
     }
 
@@ -76,25 +86,20 @@ public final class ProcessingInstruction {
 
 
 
-    public String getXmlDeclaration() {
-
-        if (this.target == null) {
-            // Should never happen, but just in case
-            return null;
-        }
+    public String getProcessingInstruction() {
 
         if (this.processingInstruction == null) {
 
-            final StringBuilder strBuilder = new StringBuilder(70);
-            strBuilder.append("<?");
-            strBuilder.append(this.target);
-            if (this.content != null) {
-                strBuilder.append(' ');
-                strBuilder.append(this.content);
-            }
-            strBuilder.append("?>");
+            final StringWriter stringWriter = new StringWriter();
 
-            this.processingInstruction = strBuilder.toString();
+            try {
+                MarkupOutput.writeProcessingInstruction(stringWriter, this.target, this.content);
+            } catch (final IOException e) {
+                // Should never happen!
+                throw new TemplateProcessingException("Error computing Processing Instruction representation", e);
+            }
+
+            this.processingInstruction = stringWriter.toString();
 
         }
 
@@ -120,12 +125,16 @@ public final class ProcessingInstruction {
     void setProcessingInstruction(
             final String processingInstruction,
             final String target,
-            final String content) {
+            final String content,
+            final int line, final int col) {
 
         this.target = target;
         this.content = content;
 
         this.processingInstruction = processingInstruction;
+
+        this.line = line;
+        this.col = col;
 
     }
 
@@ -144,7 +153,41 @@ public final class ProcessingInstruction {
 
         this.processingInstruction = null;
 
+        this.line = -1;
+        this.col = -1;
+
     }
 
+
+
+
+
+
+    public boolean hasLocation() {
+        return (this.line != -1 && this.col != -1);
+    }
+
+    public int getLine() {
+        return this.line;
+    }
+
+    public int getCol() {
+        return this.col;
+    }
+
+
+
+
+
+    public void write(final Writer writer) throws IOException {
+        Validate.notNull(writer, "Writer cannot be null");
+        MarkupOutput.writeProcessingInstruction(writer, this.processingInstruction, this.content);
+    }
+
+
+
+    public String toString() {
+        return getProcessingInstruction();
+    }
 
 }

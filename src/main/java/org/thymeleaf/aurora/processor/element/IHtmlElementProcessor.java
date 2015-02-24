@@ -21,12 +21,8 @@ package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.engine.ElementName;
+import org.thymeleaf.aurora.engine.ElementAttributes;
 import org.thymeleaf.aurora.engine.HtmlAttributeName;
-import org.thymeleaf.aurora.engine.HtmlAttributes;
 import org.thymeleaf.aurora.engine.HtmlElementDefinition;
 import org.thymeleaf.aurora.engine.HtmlElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
@@ -46,7 +42,7 @@ public interface IHtmlElementProcessor extends IProcessor {
     public ElementProcessorResult processHtmlElement(
             final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
             final HtmlElementDefinition elementDefinition, final String elementName,
-            final HtmlAttributes attributes,
+            final ElementAttributes elementAttributes,
             final int line, final int col);
 
 }

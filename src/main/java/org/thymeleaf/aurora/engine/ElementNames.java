@@ -57,7 +57,7 @@ public class ElementNames {
                     return new XmlElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                return new XmlPrefixedElementName(
+                return new XmlElementName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
@@ -102,7 +102,7 @@ public class ElementNames {
                     return new HtmlElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
                 }
 
-                return new HtmlPrefixedElementName(
+                return new HtmlElementName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
@@ -113,7 +113,7 @@ public class ElementNames {
                     return new HtmlElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
 
                 }
-                return new HtmlPrefixedElementName(
+                return new HtmlElementName(
                         new String(elementNameBuffer, elementNameOffset, (i - (elementNameOffset + 1))),
                         new String(elementNameBuffer, i, (elementNameOffset + elementNameLen) - i));
             }
@@ -149,7 +149,7 @@ public class ElementNames {
                     return new XmlElementName(elementName);
                 }
 
-                return new XmlPrefixedElementName(
+                return new XmlElementName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i, elementName.length()));
             }
@@ -190,7 +190,7 @@ public class ElementNames {
                     return new HtmlElementName(elementName);
                 }
 
-                return new HtmlPrefixedElementName(
+                return new HtmlElementName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i,elementName.length()));
             }
@@ -201,7 +201,7 @@ public class ElementNames {
                     return new HtmlElementName(elementName);
 
                 }
-                return new HtmlPrefixedElementName(
+                return new HtmlElementName(
                         elementName.substring(0, i - 1),
                         elementName.substring(i, elementName.length()));
             }
@@ -221,10 +221,7 @@ public class ElementNames {
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
         }
-        if (dialectPrefix == null) {
-            return new HtmlElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
-        }
-        return new HtmlPrefixedElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return new HtmlElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
@@ -236,10 +233,7 @@ public class ElementNames {
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
         }
-        if (dialectPrefix == null) {
-            return new XmlElementName(new String(elementNameBuffer, elementNameOffset, elementNameLen));
-        }
-        return new XmlPrefixedElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        return new XmlElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
@@ -248,10 +242,7 @@ public class ElementNames {
         if (elementName == null) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
-        if (dialectPrefix == null) {
-            return new HtmlElementName(elementName);
-        }
-        return new HtmlPrefixedElementName(dialectPrefix, elementName);
+        return new HtmlElementName(dialectPrefix, elementName);
     }
 
 
@@ -260,10 +251,7 @@ public class ElementNames {
         if (elementName == null) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
-        if (dialectPrefix == null) {
-            return new XmlElementName(elementName);
-        }
-        return new XmlPrefixedElementName(dialectPrefix, elementName);
+        return new XmlElementName(dialectPrefix, elementName);
     }
 
 

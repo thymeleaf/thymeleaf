@@ -19,8 +19,11 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.util.TextUtil;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -28,7 +31,7 @@ import org.thymeleaf.aurora.util.TextUtil;
  * @since 3.0.0
  * 
  */
-public final class CDATASection {
+public final class CDATASection implements Node {
 
     private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
     private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
@@ -45,6 +48,9 @@ public final class CDATASection {
     private String content;
 
     private ITextRepository textRepository;
+
+    private int line;
+    private int col;
 
 
     /*
@@ -65,7 +71,12 @@ public final class CDATASection {
 
 
     // Meant to be called only from within the engine
-    CDATASection(final ITextRepository textRepository) {
+    CDATASection(
+            final ITextRepository textRepository,
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col) {
 
         super();
 
@@ -75,14 +86,7 @@ public final class CDATASection {
 
         this.textRepository = textRepository;
 
-        this.buffer = null;
-        this.contentOffset = -1;
-        this.contentLen = -1;
-        this.outerOffset = -1;
-        this.outerLen = -1;
-
-        this.cdataSection = null;
-        this.content = null;
+        setCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
     }
 
@@ -90,57 +94,37 @@ public final class CDATASection {
 
     public CDATASection(final String content) {
         super();
-        initializeFromContent(content);
-    }
-
-
-    public CDATASection(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen) {
-        super();
-        initializeFromCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen);
+        setContent(content);
     }
 
 
 
-    // Meant to be called only from within the engine
-    void setTextRepository(final ITextRepository textRepository) {
-        if (textRepository == null) {
-            throw new IllegalArgumentException("Text Repository cannot be null");
-        }
-        this.textRepository = textRepository;
-    }
 
 
-    public char[] getBuffer() {
+    char[] getBuffer() {
         return this.buffer;
     }
 
-    public int getContentOffset() {
+    int getContentOffset() {
         return this.contentOffset;
     }
 
-    public int getContentLen() {
+    int getContentLen() {
         return this.contentLen;
     }
 
-    public int getOuterOffset() {
+    int getOuterOffset() {
         return this.outerOffset;
     }
 
-    public int getOuterLen() {
+    int getOuterLen() {
         return this.outerLen;
     }
 
 
 
-    public String getCDATASection() {
 
-        if (this.buffer == null) {
-            // Should never happen, but just in case
-            return null;
-        }
+    public String getCDATASection() {
 
         if (this.cdataSection == null) {
             this.cdataSection =
@@ -156,27 +140,14 @@ public final class CDATASection {
 
     public String getContent() {
 
-        if (this.buffer == null) {
-            // Should never happen, but just in case
-            return null;
-        }
-
         if (this.content == null) {
 
-            if (this.cdataSection == null) {
+            // By calling getCDATASection() we will compute a String for the entire CDATA Section, so we will
+            // save some bytes in memory if we just return a substring of it (substrings don't duplicate the
+            // underlying char[])
 
-                this.content =
-                        (this.textRepository != null ?
-                                this.textRepository.getText(this.buffer, this.contentOffset, this.contentLen) :
-                                new String(this.buffer, this.contentOffset, this.contentLen));
-
-            } else {
-                // We already have a String for the entire CDATA Section, so we will save some bytes in memory if
-                // we just return a substring of it (substrings don't duplicate the underlying char[])
-
-                this.content =
-                        this.cdataSection.substring(CDATA_PREFIX.length, (this.cdataSection.length() - CDATA_SUFFIX.length));
-            }
+            this.content =
+                    getCDATASection().substring(CDATA_PREFIX.length, (this.cdataSection.length() - CDATA_SUFFIX.length));
 
         }
 
@@ -187,34 +158,33 @@ public final class CDATASection {
 
 
 
+    void setCDATASection(
+            final char[] buffer,
+            final int contentOffset, final int contentLen,
+            final int outerOffset, final int outerLen,
+            final int line, final int col) {
 
-    public void setCDATASection(
-            final char[] buffer, final int contentOffset, final int contentLen, final int outerOffset, final int outerLen) {
-        initializeFromCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen);
+        // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
+
+        // No need to reset the internalBuffer as the intention is precisely to reuse it
+        this.buffer = buffer;
+        this.contentOffset = contentOffset;
+        this.contentLen = contentLen;
+        this.outerOffset = outerOffset;
+        this.outerLen = outerLen;
+
+        this.cdataSection = null;
+        this.content = null;
+
+        this.line = line;
+        this.col = col;
+
     }
 
 
-    public void setCDATASection(final String cdataSection) {
-        initializeFromCDATASection(cdataSection);
-    }
-
-
-
-
-    public void setContent(final char[] buffer, final int contentOffset, final int contentLen) {
-        initializeFromContent(buffer, contentOffset, contentLen);
-    }
 
 
     public void setContent(final String content) {
-        initializeFromContent(content);
-    }
-
-
-
-
-
-    private void initializeFromContent(final String content) {
 
         if (content == null) {
             throw new IllegalArgumentException("CDATA Section content cannot be null");
@@ -227,14 +197,17 @@ public final class CDATASection {
         final int cdataSectionLen = CDATA_PREFIX.length + contentLen + CDATA_SUFFIX.length;
 
         if (this.internalBuffer == null || this.internalBuffer.length < cdataSectionLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
+            // We need to create a new internal buffer (note how we try to reuse the existing one if possible)
             this.internalBuffer = new char[cdataSectionLen];
-            // We only need to add the prefix if this is new. If not, the existing one will do. If possible, respect the existing one (preserving case)
-            if (this.buffer != null) {
+        }
+
+        // We only need to add the prefix if this is new. If not, the existing one will do. If possible, respect the existing one (preserving case)
+        if (this.buffer != null) {
+            if (this.buffer != this.internalBuffer) {
                 System.arraycopy(this.buffer, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
-            } else {
-                System.arraycopy(CDATA_PREFIX, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
-            }
+            } // else don't do anything, otherwise we'd overwrite the prefix already existing
+        } else {
+            System.arraycopy(CDATA_PREFIX, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
         }
 
         content.getChars(0, contentLen, this.internalBuffer, CDATA_PREFIX.length);
@@ -249,119 +222,42 @@ public final class CDATASection {
         this.cdataSection = null;
         this.content = content;
 
-    }
-
-
-    private void initializeFromContent(final char[] buffer, final int contentOffset, final int contentLen) {
-
-        if (buffer == null) {
-            throw new IllegalArgumentException("CDATA Section content buffer cannot be null");
-        }
-        if (contentOffset < 0 || contentLen < 0) {
-            throw new IllegalArgumentException("CDATA Section content offset and len must be >= 0");
-        }
-        if (contentOffset + contentLen > buffer.length) {
-            throw new IllegalArgumentException("CDATA Section was specified with invalid bounds. Buffer is not long enough");
-        }
-
-        // This only sets the content, therefore we need to use the internal buffer in order to
-        // construct a valid (prefixed + suffixed) CDATA Section
-
-        final int cdataSectionLen = CDATA_PREFIX.length + contentLen + CDATA_SUFFIX.length;
-
-        if (this.internalBuffer == null || this.internalBuffer.length < cdataSectionLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
-            this.internalBuffer = new char[cdataSectionLen];
-            // We only need to add the prefix if this is new. If not, the existing one will do. If possible, respect the existing one (preservingcase)
-            if (this.buffer != null) {
-                System.arraycopy(this.buffer, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
-            } else {
-                System.arraycopy(CDATA_PREFIX, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
-            }
-        }
-
-        System.arraycopy(buffer, contentOffset, this.internalBuffer, CDATA_PREFIX.length, contentLen);
-        System.arraycopy(CDATA_SUFFIX, 0, this.internalBuffer, (CDATA_PREFIX.length + contentLen), CDATA_SUFFIX.length);
-
-        this.buffer = this.internalBuffer;
-        this.contentOffset = CDATA_PREFIX.length;
-        this.contentLen = contentLen;
-        this.outerOffset = 0;
-        this.outerLen = cdataSectionLen;
-
-        this.cdataSection = null;
-        this.content = null;
+        this.line = -1;
+        this.col = -1;
 
     }
 
 
-    private void initializeFromCDATASection(final String cdataSection) {
 
-        if (cdataSection == null) {
-            throw new IllegalArgumentException("CDATA Section cannot be null");
-        }
 
-        // We need to check that this is a valid CDATA section (note only the prefix needs to be case insensitive)
-        if (!TextUtil.startsWith(false, cdataSection, CDATA_PREFIX) || !TextUtil.endsWith(true, cdataSection, CDATA_SUFFIX)) {
-            throw new IllegalArgumentException(
-                    "CDATA Section must start with '" + (new String(CDATA_PREFIX)) + "' and end with '" + (new String(CDATA_PREFIX)) + "'");
-        }
 
-        final int cdataSectionLen = cdataSection.length();
+    public boolean hasLocation() {
+        return (this.line != -1 && this.col != -1);
+    }
 
-        if (this.internalBuffer == null || this.internalBuffer.length < cdataSectionLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
-            this.internalBuffer = new char[cdataSectionLen];
-        }
+    public int getLine() {
+        return this.line;
+    }
 
-        cdataSection.getChars(0, cdataSectionLen, this.internalBuffer, 0);
-
-        this.buffer = this.internalBuffer;
-        this.contentOffset = CDATA_PREFIX.length;
-        this.contentLen = cdataSectionLen - (CDATA_PREFIX.length + CDATA_SUFFIX.length);
-        this.outerOffset = 0;
-        this.outerLen = cdataSectionLen;
-
-        this.cdataSection = cdataSection;
-        this.content = null;
-
+    public int getCol() {
+        return this.col;
     }
 
 
-    private void initializeFromCDATASection(
-            final char[] buffer, final int contentOffset, final int contentLen, final int outerOffset, final int outerLen) {
 
-        if (buffer == null) {
-            throw new IllegalArgumentException("CDATA Section buffer cannot be null");
-        }
-        if (contentOffset < 0 || contentLen < 0 || outerOffset < 0 || outerLen < 0) {
-            throw new IllegalArgumentException("CDATA Section offsets and lens must be >= 0");
-        }
-        if (outerOffset + outerLen > buffer.length) {
-            throw new IllegalArgumentException("CDATA Section was specified with invalid bounds. Buffer is not long enough");
-        }
-        if (contentOffset < outerOffset || contentLen > outerLen || contentOffset + contentLen > outerOffset + outerLen) {
-            throw new IllegalArgumentException("CDATA Section content must be contained within the 'outer' limits");
-        }
 
-        // We need to check that this is a valid CDATA section (note only the prefix needs to be case insensitive)
-        if (!TextUtil.startsWith(false, buffer, outerOffset, outerLen, CDATA_PREFIX, 0, CDATA_PREFIX.length) ||
-                !TextUtil.endsWith(true, buffer, outerOffset, outerLen, CDATA_SUFFIX, 0, CDATA_SUFFIX.length)) {
-            throw new IllegalArgumentException(
-                    "CDATA Section must start with '" + (new String(CDATA_PREFIX)) + "' and end with '" + (new String(CDATA_PREFIX)) + "'");
-        }
 
-        // Set all the data. No need to reset the internalBuffer as the intention is precisely to reuse it
-        this.buffer = buffer;
-        this.contentOffset = contentOffset;
-        this.contentLen = contentLen;
-        this.outerOffset = outerOffset;
-        this.outerLen = outerLen;
-
-        this.cdataSection = null;
-        this.content = null;
-
+    public void write(final Writer writer) throws IOException {
+        Validate.notNull(writer, "Writer cannot be null");
+        MarkupOutput.writeCDATASection(writer, this.buffer, this.outerOffset, this.outerLen);
     }
+
+
+
+    public String toString() {
+        return getCDATASection();
+    }
+
 
 
 }

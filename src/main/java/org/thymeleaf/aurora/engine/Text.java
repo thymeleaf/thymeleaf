@@ -19,7 +19,11 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -27,7 +31,7 @@ import org.thymeleaf.aurora.text.ITextRepository;
  * @since 3.0.0
  * 
  */
-public final class Text {
+public final class Text implements Node {
 
     private char[] internalBuffer = null;
 
@@ -38,6 +42,9 @@ public final class Text {
     private String text;
 
     private ITextRepository textRepository;
+
+    private int line;
+    private int col;
 
 
     /*
@@ -57,7 +64,10 @@ public final class Text {
 
 
     // Meant to be called only from within the engine
-    Text(final ITextRepository textRepository) {
+    Text(final ITextRepository textRepository,
+         final char[] buffer,
+         final int offset, final int len,
+         final int line, final int col) {
 
         super();
 
@@ -67,11 +77,7 @@ public final class Text {
 
         this.textRepository = textRepository;
 
-        this.buffer = null;
-        this.offset = -1;
-        this.len = -1;
-
-        this.text = null;
+        setText(buffer, offset, len, line, col);
 
     }
 
@@ -79,50 +85,28 @@ public final class Text {
 
     public Text(final String text) {
         super();
-        initializeFromText(text);
-    }
-
-
-    public Text(
-            final char[] buffer,
-            final int offset, final int len) {
-        super();
-        initializeFromText(buffer, offset, len);
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setTextRepository(final ITextRepository textRepository) {
-        if (textRepository == null) {
-            throw new IllegalArgumentException("Text Repository cannot be null");
-        }
-        this.textRepository = textRepository;
+        setText(text);
     }
 
 
 
 
-    public char[] getBuffer() {
+    char[] getBuffer() {
         return this.buffer;
     }
 
-    public int getOffset() {
+    int getOffset() {
         return this.offset;
     }
 
-    public int getLen() {
+    int getLen() {
         return this.len;
     }
 
 
 
-    public String getText() {
 
-        if (this.buffer == null) {
-            // Should never happen, but just in case
-            return null;
-        }
+    public String getText() {
 
         if (this.text == null) {
             this.text =
@@ -138,22 +122,42 @@ public final class Text {
 
 
 
-
-    public void setText(
-            final char[] buffer, final int offset, final int len) {
-        initializeFromText(buffer, offset, len);
+    public int length() {
+        return this.len;
     }
+
+
+    public char charAt(final int index) {
+
+        if (index < 0 || index >= this.len) {
+            throw new IndexOutOfBoundsException("Index out of range: " + index);
+        }
+        return this.buffer[this.offset + index];
+
+    }
+
+
+
+
+    void setText(final char[] buffer,
+                 final int offset, final int len,
+                 final int line, final int col) {
+
+        this.buffer = buffer;
+        this.offset = offset;
+        this.len = len;
+
+        this.text = null;
+
+        this.line = line;
+        this.col = col;
+
+    }
+
+
 
 
     public void setText(final String text) {
-        initializeFromText(text);
-    }
-
-
-
-
-
-    private void initializeFromText(final String text) {
 
         if (text == null) {
             throw new IllegalArgumentException("Text cannot be null");
@@ -174,29 +178,41 @@ public final class Text {
 
         this.text = text;
 
+        this.line = -1;
+        this.col = -1;
+
+    }
+
+
+
+
+    public boolean hasLocation() {
+        return (this.line != -1 && this.col != -1);
+    }
+
+    public int getLine() {
+        return this.line;
+    }
+
+    public int getCol() {
+        return this.col;
     }
 
 
-    private void initializeFromText(final char[] buffer, final int offset, final int len) {
 
-        if (buffer == null) {
-            throw new IllegalArgumentException("Text buffer cannot be null");
-        }
-        if (offset < 0 || len < 0) {
-            throw new IllegalArgumentException("Text offset and len must be >= 0");
-        }
-        if (offset + len > buffer.length) {
-            throw new IllegalArgumentException("Text was specified with invalid bounds. Buffer is not long enough");
-        }
 
-        // Set all the data. No need to reset the internalBuffer as the intention is precisely to reuse it
-        this.buffer = buffer;
-        this.offset = offset;
-        this.len = len;
 
-        this.text = null;
-
+    public void write(final Writer writer) throws IOException {
+        Validate.notNull(writer, "Writer cannot be null");
+        MarkupOutput.writeText(writer, this.buffer, this.offset, this.len);
     }
+
+
+
+    public String toString() {
+        return getText();
+    }
+
 
 
 }

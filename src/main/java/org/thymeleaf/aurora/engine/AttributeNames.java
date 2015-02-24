@@ -37,7 +37,7 @@ public class AttributeNames {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
-            throw new IllegalArgumentException("Atribute name offset and len must be equal or greater than zero");
+            throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
 
 
@@ -57,7 +57,7 @@ public class AttributeNames {
                     return new XmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                return new XmlPrefixedAttributeName(
+                return new XmlAttributeName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
@@ -76,7 +76,7 @@ public class AttributeNames {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
-            throw new IllegalArgumentException("Atribute name offset and len must be equal or greater than zero");
+            throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
 
 
@@ -103,7 +103,7 @@ public class AttributeNames {
                     return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
                 }
 
-                return new HtmlPrefixedAttributeName(
+                return new HtmlAttributeName(
                         new String(attributeNameBuffer, attributeNameOffset, (i - (attributeNameOffset + 1))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
@@ -124,7 +124,7 @@ public class AttributeNames {
                     return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
 
                 }
-                return new HtmlPrefixedAttributeName(
+                return new HtmlAttributeName(
                         new String(attributeNameBuffer, attributeNameOffset + 5, (i - (attributeNameOffset + 6))),
                         new String(attributeNameBuffer, i, (attributeNameOffset + attributeNameLen) - i));
             }
@@ -160,7 +160,7 @@ public class AttributeNames {
                     return new XmlAttributeName(attributeName);
                 }
 
-                return new XmlPrefixedAttributeName(
+                return new XmlAttributeName(
                         attributeName.substring(0, i - 1),
                         attributeName.substring(i, attributeName.length()));
             }
@@ -202,7 +202,7 @@ public class AttributeNames {
                     return new HtmlAttributeName(attributeName);
                 }
 
-                return new HtmlPrefixedAttributeName(
+                return new HtmlAttributeName(
                         attributeName.substring(0, i - 1),
                         attributeName.substring(i,attributeName.length()));
             }
@@ -223,7 +223,7 @@ public class AttributeNames {
                     return new HtmlAttributeName(attributeName);
 
                 }
-                return new HtmlPrefixedAttributeName(
+                return new HtmlAttributeName(
                         attributeName.substring(5, i - 1),
                         attributeName.substring(i, attributeName.length()));
             }
@@ -243,10 +243,7 @@ public class AttributeNames {
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
-        if (dialectPrefix == null) {
-            return new HtmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
-        }
-        return new HtmlPrefixedAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return new HtmlAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
@@ -258,10 +255,7 @@ public class AttributeNames {
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
-        if (dialectPrefix == null) {
-            return new XmlAttributeName(new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
-        }
-        return new XmlPrefixedAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        return new XmlAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
@@ -270,10 +264,7 @@ public class AttributeNames {
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
-        if (dialectPrefix == null) {
-            return new HtmlAttributeName(attributeName);
-        }
-        return new HtmlPrefixedAttributeName(dialectPrefix, attributeName);
+        return new HtmlAttributeName(dialectPrefix, attributeName);
     }
 
 
@@ -282,10 +273,7 @@ public class AttributeNames {
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
-        if (dialectPrefix == null) {
-            return new XmlAttributeName(attributeName);
-        }
-        return new XmlPrefixedAttributeName(dialectPrefix, attributeName);
+        return new XmlAttributeName(dialectPrefix, attributeName);
     }
 
 

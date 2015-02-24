@@ -25,11 +25,50 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public class HtmlAttributeName extends AttributeName {
+public final class HtmlAttributeName extends AttributeName {
+
+    final String completeNamespacedAttributeName;
+    final String completeHtml5AttributeName;
+
 
 
     HtmlAttributeName(final String attributeName) {
-        super(attributeName == null? null : attributeName.toLowerCase());
+        this(null, attributeName);
     }
+
+
+    HtmlAttributeName(final String prefix, final String attributeName) {
+
+        super(prefix == null || prefix.length() == 0? null : prefix.toLowerCase(),
+              attributeName == null || attributeName.length() == 0? null : attributeName.toLowerCase());
+
+        if (this.prefix == null || this.prefix.length() == 0) {
+
+            this.completeNamespacedAttributeName = this.attributeName;
+            this.completeHtml5AttributeName = this.attributeName;
+
+            // The completeAttributeNames array is assigned correctly at the parent class in this case
+
+        } else {
+
+            this.completeNamespacedAttributeName = this.prefix + ":" + this.attributeName;
+            this.completeHtml5AttributeName = "data-" + this.prefix + "-" + this.attributeName;
+
+            this.completeAttributeNames =
+                    new String[] { this.completeNamespacedAttributeName, this.completeHtml5AttributeName };
+
+        }
+
+    }
+
+
+    public String getCompleteNamespacedAttributeName() {
+        return this.completeNamespacedAttributeName;
+    }
+
+    public String getCompleteHtml5AttributeName() {
+        return this.completeHtml5AttributeName;
+    }
+
 
 }

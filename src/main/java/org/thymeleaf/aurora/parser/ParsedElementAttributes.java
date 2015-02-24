@@ -20,8 +20,7 @@
 package org.thymeleaf.aurora.parser;
 
 import org.thymeleaf.aurora.engine.AttributeDefinition;
-import org.thymeleaf.aurora.engine.Attributes;
-import org.thymeleaf.aurora.engine.HtmlAttributes;
+import org.thymeleaf.aurora.engine.ElementAttributes;
 
 /**
  *
@@ -29,13 +28,13 @@ import org.thymeleaf.aurora.engine.HtmlAttributes;
  * @since 3.0.0
  *
  */
-class ParsedHtmlAttributes extends HtmlAttributes {
+class ParsedElementAttributes extends ElementAttributes {
 
 
     // This class extends Attributes in order to give access to the template adapters to package-protected methods
 
 
-    ParsedHtmlAttributes() {
+    ParsedElementAttributes() {
         super();
     }
 

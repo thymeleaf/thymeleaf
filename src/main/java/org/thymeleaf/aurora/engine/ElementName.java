@@ -27,13 +27,14 @@ package org.thymeleaf.aurora.engine;
  */
 public abstract class ElementName {
 
-    final String elementName;
-    final String[] completeElementNames;
+    final protected String prefix;
+    final protected String elementName;
+    protected String[] completeElementNames;
 
 
 
 
-    ElementName(final String elementName) {
+    protected ElementName(final String prefix, final String elementName) {
 
         super();
 
@@ -41,6 +42,10 @@ public abstract class ElementName {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
+
+        // Prefix CAN be null (if the element is not prefixed)
+
+        this.prefix = prefix;
         this.elementName = elementName;
         this.completeElementNames = new String[] { this.elementName };
 
@@ -52,7 +57,11 @@ public abstract class ElementName {
     }
 
     public boolean isPrefixed() {
-        return false;
+        return this.prefix != null;
+    }
+
+    public String getPrefix() {
+        return this.prefix;
     }
 
     public String[] getCompleteElementNames() {
@@ -62,7 +71,15 @@ public abstract class ElementName {
 
     @Override
     public String toString() {
-        return "{" + this.elementName + "}";
+        final StringBuilder strBuilder = new StringBuilder();
+        strBuilder.append('{');
+        strBuilder.append(this.completeElementNames[0]);
+        for (int i = 1; i < this.completeElementNames.length; i++) {
+            strBuilder.append(',');
+            strBuilder.append(this.completeElementNames[i]);
+        }
+        strBuilder.append('}');
+        return strBuilder.toString();
     }
 
 }

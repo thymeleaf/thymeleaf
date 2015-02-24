@@ -39,12 +39,16 @@ import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.context.TemplateEngineContext;
+import org.thymeleaf.aurora.context.TemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
+import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
 import org.thymeleaf.aurora.parser.HtmlTemplateParser;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.DialectAwareProcessingContext;
@@ -1220,11 +1224,19 @@ public class TemplateEngine {
 
         final IResource templateResource = new ReaderResource(templateName, reader);
 
-        final ITemplateHandler handler = new OutputTemplateHandler(templateName, writer);
+        final ITemplateEngineContext templateEngineContext = new TemplateEngineContext();
+        final ITemplateProcessingContext processingContext = new TemplateProcessingContext(templateEngineContext, templateName, TemplateMode.HTML);
+
+        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler(processingContext);
+        final OutputTemplateHandler outputHandler = new OutputTemplateHandler(templateName, writer);
+
+        processorHandler.setNext(outputHandler);
+
+        final ITemplateHandler handlerChain = processorHandler;
 
 
 //        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        PARSER.parse(TEMPLATE_ENGINE_CONTEXT, templateResource, /* new String[] {"html//p"}, */ handler);
+        PARSER.parse(TEMPLATE_ENGINE_CONTEXT, templateResource, /* new String[] {"html//p"}, */ handlerChain);
 
 
     }

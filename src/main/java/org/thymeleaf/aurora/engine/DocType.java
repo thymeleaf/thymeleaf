@@ -19,7 +19,13 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import org.thymeleaf.aurora.util.TextUtil;
+import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -27,7 +33,7 @@ import org.thymeleaf.aurora.util.TextUtil;
  * @since 3.0.0
  * 
  */
-public final class DocType {
+public final class DocType implements Node {
 
     public static final String DEFAULT_KEYWORD = "DOCTYPE";
     public static final String DEFAULT_ELEMENT_NAME = "html";
@@ -42,6 +48,9 @@ public final class DocType {
     private String systemId;
     private String internalSubset;
 
+    private int line;
+    private int col;
+
 
     /*
      * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
@@ -53,27 +62,25 @@ public final class DocType {
 
 
     // Meant to be called only from within the engine
-    DocType() {
-
+    DocType(
+            final String docType,
+            final String keyword,
+            final String elementName,
+            final String type,
+            final String publicId,
+            final String systemId,
+            final String internalSubset,
+            final int line, final int col) {
         super();
-
-        this.keyword = null;
-        this.elementName = null;
-        this.type = null;
-        this.publicId = null;
-        this.systemId = null;
-        this.internalSubset = null;
-
-        this.docType = null;
-
+        setDocType(docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
     }
-
 
 
     public DocType(
             final String publicId, final String systemId) {
         this(DEFAULT_KEYWORD, DEFAULT_ELEMENT_NAME, computeType(publicId, systemId), publicId, systemId, null);
     }
+
 
     public DocType(
             final String keyword,
@@ -85,7 +92,6 @@ public final class DocType {
         super();
         initializeFromDocType(keyword, elementName, type, publicId, systemId, internalSubset);
     }
-
 
 
 
@@ -118,41 +124,19 @@ public final class DocType {
 
     public String getDocType() {
 
-        if (this.keyword == null) {
-            // Should never happen, but just in case
-            return null;
-        }
-
         if (this.docType == null) {
 
-            final StringBuilder strBuilder = new StringBuilder(130);
-            strBuilder.append("<!");
-            strBuilder.append(this.keyword);
-            strBuilder.append(' ');
-            strBuilder.append(this.elementName);
-            if (this.type != null) {
-                strBuilder.append(' ');
-                strBuilder.append(this.type);
-                strBuilder.append(' ');
-                if (this.publicId != null) {
-                    strBuilder.append('"');
-                    strBuilder.append(this.publicId);
-                    strBuilder.append('"');
-                    strBuilder.append(' ');
-                }
-                strBuilder.append('"');
-                strBuilder.append(this.systemId);
-                strBuilder.append('"');
-            }
-            if (this.internalSubset != null) {
-                strBuilder.append(' ');
-                strBuilder.append('[');
-                strBuilder.append(this.internalSubset);
-                strBuilder.append(']');
-            }
-            strBuilder.append('>');
+            final StringWriter stringWriter = new StringWriter();
 
-            this.docType = strBuilder.toString();
+            try {
+                MarkupOutput.writeDocType(
+                        stringWriter, this.keyword, this.elementName, this.type, this.publicId, this.systemId, this.internalSubset);
+            } catch (final IOException e) {
+                // Should never happen!
+                throw new TemplateProcessingException("Error computing DOCTYPE representation", e);
+            }
+
+            this.docType = stringWriter.toString();
 
         }
 
@@ -198,7 +182,8 @@ public final class DocType {
             final String type,
             final String publicId,
             final String systemId,
-            final String internalSubset) {
+            final String internalSubset,
+            final int line, final int col) {
 
         this.keyword = keyword;
         this.elementName = elementName;
@@ -208,6 +193,9 @@ public final class DocType {
         this.internalSubset = internalSubset;
 
         this.docType = docType;
+
+        this.line = line;
+        this.col = col;
 
     }
 
@@ -252,6 +240,9 @@ public final class DocType {
 
         this.docType = null;
 
+        this.line = -1;
+        this.col = -1;
+
     }
 
 
@@ -273,6 +264,38 @@ public final class DocType {
 
         return DEFAULT_TYPE_SYSTEM;
 
+    }
+
+
+
+
+
+    public boolean hasLocation() {
+        return (this.line != -1 && this.col != -1);
+    }
+
+    public int getLine() {
+        return this.line;
+    }
+
+    public int getCol() {
+        return this.col;
+    }
+
+
+
+
+
+    public void write(final Writer writer) throws IOException {
+        Validate.notNull(writer, "Writer cannot be null");
+        MarkupOutput.writeDocType(
+                writer, this.keyword, this.elementName, this.type, this.publicId, this.systemId, this.internalSubset);
+    }
+
+
+
+    public String toString() {
+        return getDocType();
     }
 
 }

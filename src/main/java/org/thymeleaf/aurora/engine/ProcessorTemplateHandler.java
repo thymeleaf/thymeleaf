@@ -19,10 +19,7 @@
  */
 package org.thymeleaf.aurora.engine;
 
-import java.io.Writer;
-
-import org.thymeleaf.exceptions.TemplateOutputException;
-
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 
 /**
  *
@@ -30,11 +27,10 @@ import org.thymeleaf.exceptions.TemplateOutputException;
  * @since 3.0.0
  *
  */
-public final class OutputTemplateHandler extends AbstractTemplateHandler {
+public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
-    private final String templateName;
-    private final Writer writer;
+    private final ITemplateProcessingContext processingContext;
 
 
 
@@ -43,16 +39,11 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
      *   Creates a new instance of this handler.
      * </p>
      *
-     * @param templateName the name of the template being processed
-     * @param writer the writer to which output will be written.
+     * @param processingContext the template processing context
      */
-    public OutputTemplateHandler(final String templateName, final Writer writer) {
+    public ProcessorTemplateHandler(final ITemplateProcessingContext processingContext) {
         super();
-        if (writer == null) {
-            throw new IllegalArgumentException("Writer cannot be null");
-        }
-        this.writer = writer;
-        this.templateName = templateName;
+        this.processingContext = processingContext;
     }
 
 
@@ -61,14 +52,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleText(final char[] buffer, final int offset, final int len, final int line, final int col) {
-        
-        try {
-            MarkupOutput.writeText(this.writer, buffer, offset, len);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
 
-        // Just in case someone set us a 'next'
         super.handleText(buffer, offset, len, line, col);
 
     }
@@ -82,13 +66,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final int outerOffset, final int outerLen, 
             final int line, final int col) {
         
-        try {
-            MarkupOutput.writeComment(this.writer, buffer, outerOffset, outerLen);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
     }
@@ -101,13 +78,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final int outerOffset, final int outerLen,
             final int line, final int col) {
         
-        try {
-            MarkupOutput.writeCDATASection(this.writer, buffer, outerOffset, outerLen);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
 
     }
@@ -123,13 +93,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final boolean minimized,
             final int line, final int col) {
 
-        try {
-            MarkupOutput.writeStandaloneElement(this.writer, elementName, elementAttributes, minimized);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleStandaloneElement(elementDefinition, elementName, elementAttributes, minimized, line, col);
 
     }
@@ -142,13 +105,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final ElementAttributes elementAttributes,
             final int line, final int col) {
 
-        try {
-            MarkupOutput.writeOpenElement(this.writer, elementName, elementAttributes);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleOpenElement(elementDefinition, elementName, elementAttributes, line, col);
 
     }
@@ -161,13 +117,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final ElementAttributes elementAttributes,
             final int line, final int col) {
 
-        try {
-            MarkupOutput.writeAutoOpenElement(this.writer, elementName, elementAttributes);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleAutoOpenElement(elementDefinition, elementName, elementAttributes, line, col);
 
     }
@@ -179,13 +128,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String elementName,
             final int line, final int col) {
 
-        try {
-            MarkupOutput.writeCloseElement(this.writer, elementName);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleCloseElement(elementDefinition, elementName, line, col);
 
     }
@@ -197,13 +139,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String elementName,
             final int line, final int col) {
 
-        try {
-            MarkupOutput.writeAutoCloseElement(this.writer, elementName);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleAutoCloseElement(elementDefinition, elementName, line, col);
 
     }
@@ -215,14 +150,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String elementName,
             final int line, final int col) {
 
-        // We will write exactly the same as for non-unmatched close elements, because that does not matter from the markup point
-        try {
-            MarkupOutput.writeUnmatchedCloseElement(this.writer, elementName);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleUnmatchedCloseElement(elementDefinition, elementName, line, col);
 
     }
@@ -241,13 +168,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String internalSubset,
             final int line, final int col) {
         
-        try {
-            MarkupOutput.writeDocType(this.writer, docType);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleDocType(docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
 
     }
@@ -264,13 +184,6 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String standalone,
             final int line, final int col) {
 
-        try {
-            MarkupOutput.writeXmlDeclaration(this.writer, xmlDeclaration);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleXmlDeclaration(xmlDeclaration, keyword, version, encoding, standalone, line, col);
 
     }
@@ -287,18 +200,10 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             final String content,
             final int line, final int col) {
         
-        try {
-            MarkupOutput.writeProcessingInstruction(this.writer, processingInstruction);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
-
-        // Just in case someone set us a 'next'
         super.handleProcessingInstruction(processingInstruction, target, content, line, col);
 
     }
 
 
-    
     
 }

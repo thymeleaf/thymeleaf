@@ -17,7 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.dom;
+package org.thymeleaf.aurora.engine;
+
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  *
@@ -26,5 +29,14 @@ package org.thymeleaf.aurora.dom;
  * 
  */
 public interface Node {
+
+
+
+    public boolean hasLocation();
+    public int getLine();
+    public int getCol();
+
+    public void write(final Writer writer) throws IOException;
+
 
 }

@@ -85,41 +85,41 @@ public interface ITemplateHandler {
 
     public void handleStandaloneElement(
             final ElementDefinition elementDefinition,
-            final String name,
-            final Attributes attributes,
+            final String elementName,
+            final ElementAttributes elementAttributes,
             final boolean minimized,
             final int line, final int col);
 
 
     public void handleOpenElement(
             final ElementDefinition elementDefinition,
-            final String name,
-            final Attributes attributes,
+            final String elementName,
+            final ElementAttributes elementAttributes,
             final int line, final int col);
 
 
     public void handleAutoOpenElement(
             final ElementDefinition elementDefinition,
-            final String name,
-            final Attributes attributes,
+            final String elementName,
+            final ElementAttributes elementAttributes,
             final int line, final int col);
 
 
     public void handleCloseElement(
             final ElementDefinition elementDefinition,
-            final String name,
+            final String elementName,
             final int line, final int col);
 
 
     public void handleAutoCloseElement(
             final ElementDefinition elementDefinition,
-            final String name,
+            final String elementName,
             final int line, final int col);
 
 
     public void handleUnmatchedCloseElement(
             final ElementDefinition elementDefinition,
-            final String name,
+            final String elementName,
             final int line, final int col);
 
 

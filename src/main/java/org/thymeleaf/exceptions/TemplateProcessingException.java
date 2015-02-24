@@ -74,8 +74,8 @@ public class TemplateProcessingException extends TemplateEngineException {
             final String message, final String templateName, final int line, final int col) {
         super(message);
         this.templateName = templateName;
-        this.line = Integer.valueOf(line);
-        this.col = Integer.valueOf(col);
+        this.line = (line < 0? null : Integer.valueOf(line));
+        this.col = (col < 0? null : Integer.valueOf(col));
     }
 
     /**
@@ -86,8 +86,8 @@ public class TemplateProcessingException extends TemplateEngineException {
             final String message, final String templateName, final int line, final int col, final Throwable cause) {
         super(message, cause);
         this.templateName = templateName;
-        this.line = Integer.valueOf(line);
-        this.col = Integer.valueOf(col);
+        this.line = (line < 0? null : Integer.valueOf(line));
+        this.col = (col < 0? null : Integer.valueOf(col));
     }
 
     
@@ -122,11 +122,11 @@ public class TemplateProcessingException extends TemplateEngineException {
     }
 
     public void setLine(final int line) {
-        this.line = Integer.valueOf(line);
+        this.line = (line < 0? null : Integer.valueOf(line));
     }
 
     public void setCol(final int col) {
-        this.line = Integer.valueOf(col);
+        this.col = (col < 0? null : Integer.valueOf(col));
     }
 
     
