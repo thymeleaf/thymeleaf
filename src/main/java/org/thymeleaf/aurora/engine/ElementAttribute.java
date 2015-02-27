@@ -32,10 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class ElementAttribute {
-
-
-    public enum ElementAttributeValueQuotes { DOUBLE, SINGLE, NONE }
+final class ElementAttribute {
 
 
     static final String DEFAULT_OPERATOR = "=";
@@ -47,13 +44,13 @@ public final class ElementAttribute {
      */
 
 
-    private AttributeDefinition definition = null;
+    AttributeDefinition definition = null;
     String name = null;
-    private String operator = DEFAULT_OPERATOR;
-    private String value = null;
-    private ElementAttributeValueQuotes valueQuotes = null;
-    private int line = -1;
-    private int col = -1;
+    String operator = DEFAULT_OPERATOR;
+    String value = null;
+    ElementAttributes.ValueQuotes valueQuotes = null;
+    int line = -1;
+    int col = -1;
 
 
 
@@ -62,37 +59,9 @@ public final class ElementAttribute {
     }
 
 
-    // No public constructor! Attribute instances should always be created from the corresponding Attributes
-    // instances, because these are responsible for setting the right attribute definition, name, etc.
-
-
-    public AttributeDefinition getDefinition() {
-        return this.definition;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public String getOperator() {
-        return this.operator;
-    }
-
-    public String getValue() {
-        return this.value;
-    }
-
-    public ElementAttributeValueQuotes getValueQuotes() {
-        return this.valueQuotes;
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
-    }
+    // No public constructor or getters! Attribute instances are package-protected, and should always be created
+    // and maintained from the corresponding Attributes instances, because these are responsible for setting the
+    // right attribute definition, name, etc.
 
 
 
@@ -100,14 +69,14 @@ public final class ElementAttribute {
     void setElementAttribute(
             final AttributeDefinition definition,
             final String name, final String operator, final String value,
-            final ElementAttributeValueQuotes valueQuotes,
+            final ElementAttributes.ValueQuotes valueQuotes,
             final int line, final int col) {
 
         this.definition = definition;
         this.name = name;
-        this.operator = operator;
+        this.operator = (operator == null && value != null? ElementAttribute.DEFAULT_OPERATOR : operator);
         this.value = value;
-        this.valueQuotes = valueQuotes;
+        this.valueQuotes = (valueQuotes == null? ElementAttributes.ValueQuotes.DOUBLE : valueQuotes);
         this.line = line;
         this.col = col;
 
@@ -118,19 +87,33 @@ public final class ElementAttribute {
     // Used internally, only from the engine
     void setElementAttribute(
             final String name, final String operator, final String value,
-            final ElementAttributeValueQuotes valueQuotes,
+            final ElementAttributes.ValueQuotes valueQuotes,
             final int line, final int col) {
 
         this.name = name;
-        // This method is only called for modifying existing attributes, so we will be removing the operator
-        // when someone removes the value of an attribute, as it is the most expected behaviour
-        this.operator = (this.value != null && value == null? null : operator);
-        if (this.valueQuotes == null || valueQuotes != null) {
-            // This method is only called for modifying existing attributes, so we try not to modify quotes if they
-            // already exist. Anyway, if we are setting a value for an attribute that had none, we will be
-            // initializing quotes as double
-            this.valueQuotes = (this.value == null && value != null? ElementAttributeValueQuotes.DOUBLE : valueQuotes);
+
+        if (operator != null) {
+            // Coming operator will be used unless the value is null, in which case operator should be too
+            this.operator = (value == null? null : operator);
+        } else if (this.operator == null) {
+            // No existing operator, and we are not specifically setting any either
+            this.operator = (this.value == null && value != null ? ElementAttribute.DEFAULT_OPERATOR : null);
+        } else if (value != null && value.length() == 0) {
+            // We cannot respect the existing operator if they was none and we are setting an empty string value
+            this.operator = (this.operator == null? ElementAttribute.DEFAULT_OPERATOR : this.operator);
         }
+
+        if (valueQuotes != null) {
+            // Coming quotes will be used unless the value is null, in which case quotes should be too
+            this.valueQuotes = (value == null? null : valueQuotes);
+        } else if (this.valueQuotes == null) {
+            // No existing quotes, and we are not specifically setting any either
+            this.valueQuotes = (this.value == null && value != null? ElementAttributes.ValueQuotes.DOUBLE : null);
+        } else if (value != null && value.length() == 0) {
+            // We cannot respect the existing quotes if they were none and we are setting an empty string value
+            this.valueQuotes = (ElementAttributes.ValueQuotes.NONE.equals(this.valueQuotes)? ElementAttributes.ValueQuotes.DOUBLE : this.valueQuotes);
+        }
+
         this.value = value;
         this.line = line;
         this.col = col;
@@ -138,61 +121,37 @@ public final class ElementAttribute {
     }
 
 
-    public void setValue(final String value) {
-        this.value = value;
-        // line and col are no longer valid, as the attribute no longer represents what appeared on the template
-        this.line = -1;
-        this.col = -1;
-    }
-
-    public void setValueQuotes(final ElementAttributeValueQuotes valueQuotes) {
-        // valueQuotes == null will basically be the same as NONE
-        this.valueQuotes = valueQuotes;
-        // line and col are no longer valid, as the attribute no longer represents what appeared on the template
-        this.line = -1;
-        this.col = -1;
-    }
 
 
-
-
-    public void write(final Writer writer) throws IOException {
+    void write(final Writer writer) throws IOException {
 
         Validate.notNull(writer, "Writer cannot be null");
 
         /*
          * How an attribute will be written:
-         *    - If operator == null : only the attribute name will be written.
-         *    - If operator != null AND value == null : the attribute will be written as if its value were the empty string.
+         *    - If value == null : only the attribute name will be written.
+         *    - If value != null : the attribute will be written according to its operator and quotes
          */
 
         writer.write(this.name);
-        if (this.operator != null) {
+        if (this.operator != null && this.value != null) {
             writer.write(this.operator);
             if (this.valueQuotes == null) {
-                if (this.value != null) {
-                    writer.write(this.value);
-                }
+                writer.write(this.value);
             } else {
                 switch (this.valueQuotes) {
                     case DOUBLE:
                         writer.write('"');
-                        if (this.value != null) {
-                            writer.write(this.value);
-                        }
+                        writer.write(this.value);
                         writer.write('"');
                         break;
                     case SINGLE:
                         writer.write('\'');
-                        if (this.value != null) {
-                            writer.write(this.value);
-                        }
+                        writer.write(this.value);
                         writer.write('\'');
                         break;
                     case NONE:
-                        if (this.value != null) {
-                            writer.write(this.value);
-                        }
+                        writer.write(this.value);
                         break;
                 }
             }

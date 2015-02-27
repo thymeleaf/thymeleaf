@@ -36,6 +36,8 @@ import org.thymeleaf.util.Validate;
  */
 public abstract class ElementAttributes {
 
+    public enum ValueQuotes { DOUBLE, SINGLE, NONE }
+
     private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
 
     protected ElementAttribute[] attributes = null;
@@ -51,6 +53,11 @@ public abstract class ElementAttributes {
         super();
     }
 
+
+
+    public int size() {
+        return this.attributesSize;
+    }
 
 
 
@@ -78,18 +85,21 @@ public abstract class ElementAttributes {
 
 
     public void setAttribute(final String name, final String value) {
-        setAttribute(name, ElementAttribute.DEFAULT_OPERATOR, value, null, -1, -1, true);
+        setAttribute(name, null, value, null, -1, -1, true);
     }
 
 
-    public void setAttribute(final String name, final String value, final ElementAttribute.ElementAttributeValueQuotes valueQuotes) {
-        setAttribute(name, ElementAttribute.DEFAULT_OPERATOR, value, valueQuotes, -1, -1, true);
+    public void setAttribute(final String name, final String value, final ValueQuotes valueQuotes) {
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
+                "Cannot set an empty-string value to an attribute with no quotes");
+        setAttribute(name, null, value, valueQuotes, -1, -1, true);
     }
 
 
     // Meant to be used from within the engine
     void setAttribute(
-            final String name, final String operator, final String value, final ElementAttribute.ElementAttributeValueQuotes valueQuotes,
+            final String name, final String operator, final String value, final ValueQuotes valueQuotes,
             final int line, final int col, final boolean autoWhiteSpace) {
 
         Validate.notNull(name, "Attribute name cannot be null");
@@ -177,7 +187,9 @@ public abstract class ElementAttributes {
                 // If there was a whitespace after the last attribute, this should still be kept as last whitespace,
                 // replacing the one previous to the removed attribute so that we don't end up with things like a
                 // '>' symbol appearing on a line on its own
+                final InnerWhiteSpace removedInnerWhiteSpace = this.innerWhiteSpaces[existingIdx];
                 this.innerWhiteSpaces[existingIdx] = this.innerWhiteSpaces[existingIdx + 1];
+                this.innerWhiteSpaces[existingIdx + 1] = removedInnerWhiteSpace;
                 this.innerWhiteSpacesSize--;
             } else if (existingIdx + 1 == this.innerWhiteSpacesSize) {
                 // If there was a whitespace before the last attribute but not after, we should remove that whitespace
@@ -189,14 +201,23 @@ public abstract class ElementAttributes {
 
         }
 
+        final ElementAttribute removedAttribute = this.attributes[existingIdx];
+
+        // Move all attributes after the removed one to fill the hole
         System.arraycopy(this.attributes, existingIdx + 1, this.attributes, existingIdx, (this.attributesSize - (existingIdx + 1)));
+
+        // Place the removed attribute at the end, so that it can be reused
+        this.attributes[this.attributesSize - 1] = removedAttribute;
+
 
         this.attributesSize--;
 
         // Let's see if we have to remove a corresponding whitespace (corresponding == the one after the attribute)
         // We already know it's not the last attribute, so we don't have to care about being the last whitespace or not
         if (existingIdx + 1 < this.innerWhiteSpacesSize) {
+            final InnerWhiteSpace removedInnerWhiteSpace = this.innerWhiteSpaces[existingIdx + 1];
             System.arraycopy(this.innerWhiteSpaces, existingIdx + 2, this.innerWhiteSpaces, existingIdx + 1, (this.innerWhiteSpacesSize - (existingIdx + 2)));
+            this.innerWhiteSpaces[this.innerWhiteSpacesSize - 1] = removedInnerWhiteSpace;
             this.innerWhiteSpacesSize--;
         }
 
@@ -281,7 +302,6 @@ public abstract class ElementAttributes {
         }
 
     }
-
 
 
 

@@ -495,15 +495,17 @@ public final class HtmlTemplateHandlerAdapterMarkupHandler extends AbstractMarku
                         this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
                         null);
 
-        final ElementAttribute.ElementAttributeValueQuotes valueQuotes;
-        if (value == null || valueOuterOffset == valueContentOffset) {
+        final ElementAttributes.ValueQuotes valueQuotes;
+        if (value == null) {
             valueQuotes = null;
+        } else if (valueOuterOffset == valueContentOffset) {
+            valueQuotes = ElementAttributes.ValueQuotes.NONE;
         } else if (buffer[valueOuterOffset] == '"') {
-            valueQuotes = ElementAttribute.ElementAttributeValueQuotes.DOUBLE;
+            valueQuotes = ElementAttributes.ValueQuotes.DOUBLE;
         } else if (buffer[valueOuterOffset] == '\'') {
-            valueQuotes = ElementAttribute.ElementAttributeValueQuotes.SINGLE;
+            valueQuotes = ElementAttributes.ValueQuotes.SINGLE;
         } else {
-            valueQuotes = ElementAttribute.ElementAttributeValueQuotes.NONE;
+            valueQuotes = ElementAttributes.ValueQuotes.NONE;
         }
 
         this.elementAttributes.setAttribute(attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
