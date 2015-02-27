@@ -33,86 +33,55 @@ import org.thymeleaf.util.Validate;
  */
 public final class Text implements Node {
 
-    private char[] internalBuffer = null;
+    private final ITextRepository textRepository;
 
     private char[] buffer;
     private int offset;
-    private int len;
 
     private String text;
 
-    private ITextRepository textRepository;
+    private int length;
 
     private int line;
     private int col;
 
 
     /*
-     * Object of this class will use as "single source of truth" the buffer/offset/len
-     * set of properties, which must always contain the currently valid shape of the Text that is being
-     * represented.
+     * Object of this class can contain their data both as a String and as a char[] buffer. The buffer will only
+     * be used internally to the 'engine' package, in order to avoid the creation of unnecessary String objects
+     * (most times the parsing buffer itself will be used). Computation of the String form will be performed lazily
+     * and only if specifically required.
      *
      * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
      * should allow reducing the number of instances of this class to the minimum.
-     *
-     * The String 'text' property should be computed lazily in order to avoid unnecessary conversions to String which
-     * would use more memory than needed.
-     *
-     * The internalBuffer is a reusable structure that will be used in order to allow processors to set String
-     * values for the Text.
      */
 
 
     // Meant to be called only from within the engine
-    Text(final ITextRepository textRepository,
-         final char[] buffer,
-         final int offset, final int len,
-         final int line, final int col) {
-
+    Text(final ITextRepository textRepository) {
         super();
-
-        if (textRepository == null) {
-            throw new IllegalArgumentException("Text Repository cannot be null");
-        }
-
         this.textRepository = textRepository;
-
-        setText(buffer, offset, len, line, col);
-
     }
 
 
 
     public Text(final String text) {
         super();
+        this.textRepository = null;
         setText(text);
     }
 
 
 
-
-    char[] getBuffer() {
-        return this.buffer;
-    }
-
-    int getOffset() {
-        return this.offset;
-    }
-
-    int getLen() {
-        return this.len;
-    }
-
-
-
-
     public String getText() {
+
+        // Either we have a non-null text, or a non-null buffer specification (char[],offset,len)
 
         if (this.text == null) {
             this.text =
                     (this.textRepository != null?
-                        this.textRepository.getText(this.buffer, this.offset, this.len) :
-                        new String(this.buffer, this.offset, this.len));
+                        this.textRepository.getText(this.buffer, this.offset, this.length) :
+                        new String(this.buffer, this.offset, this.length));
         }
 
         return this.text;
@@ -123,16 +92,21 @@ public final class Text implements Node {
 
 
     public int length() {
-        return this.len;
+        return this.length;
     }
 
 
     public char charAt(final int index) {
 
-        if (index < 0 || index >= this.len) {
+        if (index < 0 || index >= this.length) {
             throw new IndexOutOfBoundsException("Index out of range: " + index);
         }
-        return this.buffer[this.offset + index];
+
+        if (this.buffer != null) {
+            return this.buffer[this.offset + index];
+        }
+
+        return this.text.charAt(index);
 
     }
 
@@ -145,7 +119,8 @@ public final class Text implements Node {
 
         this.buffer = buffer;
         this.offset = offset;
-        this.len = len;
+
+        this.length = len;
 
         this.text = null;
 
@@ -163,20 +138,12 @@ public final class Text implements Node {
             throw new IllegalArgumentException("Text cannot be null");
         }
 
-        final int textLen = text.length();
-
-        if (this.internalBuffer == null || this.internalBuffer.length < textLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
-            this.internalBuffer = new char[textLen];
-        }
-
-        text.getChars(0, textLen, this.internalBuffer, 0);
-
-        this.buffer = this.internalBuffer;
-        this.offset = 0;
-        this.len = textLen;
-
         this.text = text;
+
+        this.length = text.length();
+
+        this.buffer = null;
+        this.offset = 0;
 
         this.line = -1;
         this.col = -1;
@@ -204,7 +171,13 @@ public final class Text implements Node {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        MarkupOutput.writeText(writer, this.buffer, this.offset, this.len);
+        if (this.buffer != null) {
+            // Using the 'buffer write' is the first option because it is normally faster and requires less
+            // resources than writing String objects
+            writer.write(this.buffer, this.offset, this.length);
+        } else {
+            writer.write(this.text);
+        }
     }
 
 
@@ -214,5 +187,18 @@ public final class Text implements Node {
     }
 
 
+
+    public Text cloneNode() {
+        // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
+        // package should reference a buffer.
+        final Text clone = new Text(this.textRepository);
+        clone.buffer = null;
+        clone.offset = -1;
+        clone.text = getText();
+        clone.length = this.length;
+        clone.line = this.line;
+        clone.col = this.col;
+        return clone;
+    }
 
 }

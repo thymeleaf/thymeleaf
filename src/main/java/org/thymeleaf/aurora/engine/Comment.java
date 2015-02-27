@@ -36,100 +36,69 @@ public final class Comment implements Node {
     private static final char[] COMMENT_PREFIX = "<!--".toCharArray();
     private static final char[] COMMENT_SUFFIX = "-->".toCharArray();
 
-    private char[] internalBuffer = null;
+    private final ITextRepository textRepository;
 
     private char[] buffer;
-    private int contentOffset;
-    private int contentLen;
-    private int outerOffset;
-    private int outerLen;
+    private int offset;
 
     private String comment;
     private String content;
 
-    private ITextRepository textRepository;
+    private int commentLength;
+    private int contentLength;
 
     private int line;
     private int col;
 
 
     /*
-     * Object of this class will use as "single source of truth" the buffer/contentOffset/contentLen/outerOffset/outerLen
-     * set of properties, which must always contain the currently valid shape of the Comment that is being
-     * represented.
+     * Object of this class can contain their data both as a String and as a char[] buffer. The buffer will only
+     * be used internally to the 'engine' package, in order to avoid the creation of unnecessary String objects
+     * (most times the parsing buffer itself will be used). Computation of the String form will be performed lazily
+     * and only if specifically required.
      *
      * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
      * should allow reducing the number of instances of this class to the minimum.
-     *
-     * String artifacts like the 'comment' or 'content' properties should be computed lazily in order to avoid
-     * unnecessary conversions to String which would use more memory than needed.
-     *
-     * The internalBuffer is a reusable structure that will be used in order to allow processors to set String or
-     * partial (content-only) values for the Comment -- the complete Comment structure will be constructed
-     * using this internal buffer structure.
      */
 
 
     // Meant to be called only from within the engine
-    Comment(
-            final ITextRepository textRepository,
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
-
+    Comment(final ITextRepository textRepository) {
         super();
-
-        if (textRepository == null) {
-            throw new IllegalArgumentException("Text Repository cannot be null");
-        }
-
         this.textRepository = textRepository;
-
-        setComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-
     }
 
 
 
     public Comment(final String content) {
         super();
+        this.textRepository = null;
         setContent(content);
     }
 
 
 
 
-    char[] getBuffer() {
-        return this.buffer;
-    }
-
-    int getContentOffset() {
-        return this.contentOffset;
-    }
-
-    int getContentLen() {
-        return this.contentLen;
-    }
-
-    int getOuterOffset() {
-        return this.outerOffset;
-    }
-
-    int getOuterLen() {
-        return this.outerLen;
-    }
-
-
 
 
     public String getComment() {
 
+        // Either we have a non-null comment and/or content, or a non-null buffer specification (char[],offset,len)
+
         if (this.comment == null) {
-            this.comment =
-                    (this.textRepository != null?
-                        this.textRepository.getText(this.buffer, this.outerOffset, this.outerLen) :
-                        new String(this.buffer, this.outerOffset, this.outerLen));
+            if (this.content == null) {
+                this.comment =
+                        (this.textRepository != null ?
+                                this.textRepository.getText(this.buffer, this.offset, this.commentLength) :
+                                new String(this.buffer, this.offset, this.commentLength));
+            } else {
+                final StringBuilder strBuilder =
+                        new StringBuilder(this.contentLength + COMMENT_PREFIX.length + COMMENT_SUFFIX.length);
+                strBuilder.append(COMMENT_PREFIX);
+                strBuilder.append(this.content);
+                strBuilder.append(COMMENT_SUFFIX);
+                this.comment = strBuilder.toString();
+            }
         }
 
         return this.comment;
@@ -157,21 +126,44 @@ public final class Comment implements Node {
 
 
 
+    public int length() {
+        return this.commentLength;
+    }
+
+
+    public char charAt(final int index) {
+
+        if (index < 0 || index >= this.commentLength) {
+            throw new IndexOutOfBoundsException("Index out of range: " + index);
+        }
+
+        if (this.buffer != null) {
+            return this.buffer[this.offset + index];
+        }
+
+        if (this.comment != null) {
+            return this.comment.charAt(index);
+        }
+        return getComment().charAt(index); // Force the computation of the comment property
+
+    }
+
+
+
+
 
     void setComment(
             final char[] buffer,
-            final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
             final int line, final int col) {
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
-        // No need to reset the internalBuffer as the intention is precisely to reuse it
         this.buffer = buffer;
-        this.contentOffset = contentOffset;
-        this.contentLen = contentLen;
-        this.outerOffset = outerOffset;
-        this.outerLen = outerLen;
+        this.offset = outerOffset;
+
+        this.commentLength = outerLen;
+        this.contentLength = this.commentLength - COMMENT_PREFIX.length - COMMENT_SUFFIX.length;
 
         this.comment = null;
         this.content = null;
@@ -190,29 +182,14 @@ public final class Comment implements Node {
             throw new IllegalArgumentException("Comment content cannot be null");
         }
 
-        // This only sets the content, therefore we need to use the internal buffer in order to
-        // construct a valid (prefixed + suffixed) Comment
-
-        final int contentLen = content.length();
-        final int commentLen = COMMENT_PREFIX.length + contentLen + COMMENT_SUFFIX.length;
-
-        if (this.internalBuffer == null || this.internalBuffer.length < commentLen) {
-            // We need to create a new internal buffer (note how we try to reuse the internal one if possible)
-            this.internalBuffer = new char[commentLen];
-        }
-
-        System.arraycopy(COMMENT_PREFIX, 0, this.internalBuffer, 0, COMMENT_PREFIX.length);
-        content.getChars(0, contentLen, this.internalBuffer, COMMENT_PREFIX.length);
-        System.arraycopy(COMMENT_SUFFIX, 0, this.internalBuffer, (COMMENT_PREFIX.length + contentLen), COMMENT_SUFFIX.length);
-
-        this.buffer = this.internalBuffer;
-        this.contentOffset = COMMENT_PREFIX.length;
-        this.contentLen = contentLen;
-        this.outerOffset = 0;
-        this.outerLen = commentLen;
-
-        this.comment = null;
         this.content = content;
+        this.comment = null;
+
+        this.contentLength = content.length();
+        this.commentLength = COMMENT_PREFIX.length + this.contentLength + COMMENT_SUFFIX.length;
+
+        this.buffer = null;
+        this.offset = -1;
 
         this.line = -1;
         this.col = -1;
@@ -241,13 +218,42 @@ public final class Comment implements Node {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        MarkupOutput.writeComment(writer, this.buffer, this.outerOffset, this.outerLen);
+        if (this.buffer != null) {
+            // Using the 'buffer write' is the first option because it is normally faster and requires less
+            // resources than writing String objects
+            writer.write(this.buffer, this.offset, this.commentLength);
+        } else if (this.comment != null) {
+            writer.write(this.comment);
+        } else { // this.content != null
+            writer.write(COMMENT_PREFIX);
+            writer.write(this.content);
+            writer.write(COMMENT_SUFFIX);
+        }
     }
 
 
 
     public String toString() {
         return getComment();
+    }
+
+
+
+
+
+    public Comment cloneNode() {
+        // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
+        // package should reference a buffer.
+        final Comment clone = new Comment(this.textRepository);
+        clone.buffer = null;
+        clone.offset = -1;
+        clone.comment = getComment();
+        clone.content = getContent();
+        clone.commentLength = this.commentLength;
+        clone.contentLength = this.contentLength;
+        clone.line = this.line;
+        clone.col = this.col;
+        return clone;
     }
 
 

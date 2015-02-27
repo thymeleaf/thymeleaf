@@ -30,9 +30,9 @@ public final class ElementProcessorResult {
    /*
     * Processor result = sequence of actions of these types:
     *
-    *   - ADD ATTRIBUTE TO CURRENT ELEMENT
-    *   - REMOVE ATTRIBUTE TO CURRENT ELEMENT
-    *   - MODIFY ATTRIBUTE TO CURRENT ELEMENT
+    *   - ADD ATTRIBUTE TO CURRENT ELEMENT  * (can be done directly on the Attributes object)
+    *   - REMOVE ATTRIBUTE TO CURRENT ELEMENT  * (can be done directly on the Attributes object)
+    *   - MODIFY ATTRIBUTE TO CURRENT ELEMENT  * (can be done directly on the Attributes object)
     *   - MODIFY CURRENT ELEMENT NAME
     *   - REMOVE CURRENT ELEMENT AND BODY
     *   - REMOVE CURRENT ELEMENT, LEAVE BODY

@@ -20,11 +20,9 @@
 package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.thymeleaf.aurora.util.TextUtil;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -62,17 +60,8 @@ public final class DocType implements Node {
 
 
     // Meant to be called only from within the engine
-    DocType(
-            final String docType,
-            final String keyword,
-            final String elementName,
-            final String type,
-            final String publicId,
-            final String systemId,
-            final String internalSubset,
-            final int line, final int col) {
+    DocType() {
         super();
-        setDocType(docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
     }
 
 
@@ -126,17 +115,32 @@ public final class DocType implements Node {
 
         if (this.docType == null) {
 
-            final StringWriter stringWriter = new StringWriter();
+            final StringBuilder strBuilder = new StringBuilder();
 
-            try {
-                MarkupOutput.writeDocType(
-                        stringWriter, this.keyword, this.elementName, this.type, this.publicId, this.systemId, this.internalSubset);
-            } catch (final IOException e) {
-                // Should never happen!
-                throw new TemplateProcessingException("Error computing DOCTYPE representation", e);
+            strBuilder.append("<!");
+            strBuilder.append(this.keyword);
+            strBuilder.append(' ');
+            strBuilder.append(this.elementName);
+            if (this.type != null) {
+                strBuilder.append(' ');
+                strBuilder.append(type);
+                if (this.publicId != null) {
+                    strBuilder.append(" \"");
+                    strBuilder.append(this.publicId);
+                    strBuilder.append('"');
+                }
+                strBuilder.append(" \"");
+                strBuilder.append(this.systemId);
+                strBuilder.append('"');
             }
+            if (this.internalSubset != null) {
+                strBuilder.append(" [");
+                strBuilder.append(this.internalSubset);
+                strBuilder.append(']');
+            }
+            strBuilder.append('>');
 
-            this.docType = stringWriter.toString();
+            this.docType = strBuilder.toString();
 
         }
 
@@ -288,8 +292,7 @@ public final class DocType implements Node {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        MarkupOutput.writeDocType(
-                writer, this.keyword, this.elementName, this.type, this.publicId, this.systemId, this.internalSubset);
+        writer.write(getDocType());
     }
 
 
@@ -297,5 +300,25 @@ public final class DocType implements Node {
     public String toString() {
         return getDocType();
     }
+
+
+
+
+
+
+    public DocType cloneNode() {
+        final DocType clone = new DocType();
+        clone.docType = this.docType;
+        clone.keyword = this.keyword;
+        clone.elementName = this.elementName;
+        clone.type = this.type;
+        clone.publicId = this.publicId;
+        clone.systemId = this.systemId;
+        clone.internalSubset = this.internalSubset;
+        clone.line = this.line;
+        clone.col = this.col;
+        return clone;
+    }
+
 
 }

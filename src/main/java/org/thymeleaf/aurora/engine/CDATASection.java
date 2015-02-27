@@ -36,64 +36,43 @@ public final class CDATASection implements Node {
     private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
     private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
 
-    private char[] internalBuffer = null;
+    private final ITextRepository textRepository;
 
     private char[] buffer;
-    private int contentOffset;
-    private int contentLen;
-    private int outerOffset;
-    private int outerLen;
+    private int offset;
 
     private String cdataSection;
     private String content;
 
-    private ITextRepository textRepository;
+    private int cdataSectionLength;
+    private int contentLength;
 
     private int line;
     private int col;
 
 
     /*
-     * Object of this class will use as "single source of truth" the buffer/contentOffset/contentLen/outerOffset/outerLen
-     * set of properties, which must always contain the currently valid shape of the CDATA section that is being
-     * represented.
+     * Object of this class can contain their data both as a String and as a char[] buffer. The buffer will only
+     * be used internally to the 'engine' package, in order to avoid the creation of unnecessary String objects
+     * (most times the parsing buffer itself will be used). Computation of the String form will be performed lazily
+     * and only if specifically required.
      *
      * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
      * should allow reducing the number of instances of this class to the minimum.
-     *
-     * String artifacts like the 'cdataSection' or 'content' properties should be computed lazily in order to avoid
-     * unnecessary conversions to String which would use more memory than needed.
-     *
-     * The internalBuffer is a reusable structure that will be used in order to allow processors to set String or
-     * partial (content-only) values for the CDATA Section -- the complete CDATA section structure will be constructed
-     * using this internal buffer structure.
      */
 
 
     // Meant to be called only from within the engine
-    CDATASection(
-            final ITextRepository textRepository,
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
-
+    CDATASection(final ITextRepository textRepository) {
         super();
-
-        if (textRepository == null) {
-            throw new IllegalArgumentException("Text Repository cannot be null");
-        }
-
         this.textRepository = textRepository;
-
-        setCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
-
     }
 
 
 
     public CDATASection(final String content) {
         super();
+        this.textRepository = null;
         setContent(content);
     }
 
@@ -101,36 +80,25 @@ public final class CDATASection implements Node {
 
 
 
-    char[] getBuffer() {
-        return this.buffer;
-    }
-
-    int getContentOffset() {
-        return this.contentOffset;
-    }
-
-    int getContentLen() {
-        return this.contentLen;
-    }
-
-    int getOuterOffset() {
-        return this.outerOffset;
-    }
-
-    int getOuterLen() {
-        return this.outerLen;
-    }
-
-
-
 
     public String getCDATASection() {
 
+        // Either we have a non-null cdata and/or content, or a non-null buffer specification (char[],offset,len)
+
         if (this.cdataSection == null) {
-            this.cdataSection =
-                    (this.textRepository != null?
-                        this.textRepository.getText(this.buffer, this.outerOffset, this.outerLen) :
-                        new String(this.buffer, this.outerOffset, this.outerLen));
+            if (this.content == null) {
+                this.cdataSection =
+                        (this.textRepository != null ?
+                                this.textRepository.getText(this.buffer, this.offset, this.cdataSectionLength) :
+                                new String(this.buffer, this.offset, this.cdataSectionLength));
+            } else {
+                final StringBuilder strBuilder =
+                        new StringBuilder(this.contentLength + CDATA_PREFIX.length + CDATA_SUFFIX.length);
+                strBuilder.append(CDATA_PREFIX);
+                strBuilder.append(this.content);
+                strBuilder.append(CDATA_SUFFIX);
+                this.cdataSection = strBuilder.toString();
+            }
         }
 
         return this.cdataSection;
@@ -158,20 +126,43 @@ public final class CDATASection implements Node {
 
 
 
+    public int length() {
+        return this.cdataSectionLength;
+    }
+
+
+    public char charAt(final int index) {
+
+        if (index < 0 || index >= this.cdataSectionLength) {
+            throw new IndexOutOfBoundsException("Index out of range: " + index);
+        }
+
+        if (this.buffer != null) {
+            return this.buffer[this.offset + index];
+        }
+
+        if (this.cdataSection != null) {
+            return this.cdataSection.charAt(index);
+        }
+        return getCDATASection().charAt(index); // Force the computation of the cdataSection property
+
+    }
+
+
+
+
     void setCDATASection(
             final char[] buffer,
-            final int contentOffset, final int contentLen,
             final int outerOffset, final int outerLen,
             final int line, final int col) {
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
-        // No need to reset the internalBuffer as the intention is precisely to reuse it
         this.buffer = buffer;
-        this.contentOffset = contentOffset;
-        this.contentLen = contentLen;
-        this.outerOffset = outerOffset;
-        this.outerLen = outerLen;
+        this.offset = outerOffset;
+
+        this.cdataSectionLength = outerLen;
+        this.contentLength = this.cdataSectionLength - CDATA_PREFIX.length - CDATA_SUFFIX.length;
 
         this.cdataSection = null;
         this.content = null;
@@ -190,37 +181,14 @@ public final class CDATASection implements Node {
             throw new IllegalArgumentException("CDATA Section content cannot be null");
         }
 
-        // This only sets the content, therefore we need to use the internal buffer in order to
-        // construct a valid (prefixed + suffixed) CDATA Section
-
-        final int contentLen = content.length();
-        final int cdataSectionLen = CDATA_PREFIX.length + contentLen + CDATA_SUFFIX.length;
-
-        if (this.internalBuffer == null || this.internalBuffer.length < cdataSectionLen) {
-            // We need to create a new internal buffer (note how we try to reuse the existing one if possible)
-            this.internalBuffer = new char[cdataSectionLen];
-        }
-
-        // We only need to add the prefix if this is new. If not, the existing one will do. If possible, respect the existing one (preserving case)
-        if (this.buffer != null) {
-            if (this.buffer != this.internalBuffer) {
-                System.arraycopy(this.buffer, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
-            } // else don't do anything, otherwise we'd overwrite the prefix already existing
-        } else {
-            System.arraycopy(CDATA_PREFIX, 0, this.internalBuffer, 0, CDATA_PREFIX.length);
-        }
-
-        content.getChars(0, contentLen, this.internalBuffer, CDATA_PREFIX.length);
-        System.arraycopy(CDATA_SUFFIX, 0, this.internalBuffer, (CDATA_PREFIX.length + contentLen), CDATA_SUFFIX.length);
-
-        this.buffer = this.internalBuffer;
-        this.contentOffset = CDATA_PREFIX.length;
-        this.contentLen = contentLen;
-        this.outerOffset = 0;
-        this.outerLen = cdataSectionLen;
-
-        this.cdataSection = null;
         this.content = content;
+        this.cdataSection = null;
+
+        this.contentLength = content.length();
+        this.cdataSectionLength = CDATA_PREFIX.length + this.contentLength + CDATA_SUFFIX.length;
+
+        this.buffer = null;
+        this.offset = -1;
 
         this.line = -1;
         this.col = -1;
@@ -249,7 +217,17 @@ public final class CDATASection implements Node {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        MarkupOutput.writeCDATASection(writer, this.buffer, this.outerOffset, this.outerLen);
+        if (this.buffer != null) {
+            // Using the 'buffer write' is the first option because it is normally faster and requires less
+            // resources than writing String objects
+            writer.write(this.buffer, this.offset, this.cdataSectionLength);
+        } else if (this.cdataSection != null) {
+            writer.write(this.cdataSection);
+        } else { // this.content != null
+            writer.write(CDATA_PREFIX);
+            writer.write(this.content);
+            writer.write(CDATA_SUFFIX);
+        }
     }
 
 
@@ -258,6 +236,24 @@ public final class CDATASection implements Node {
         return getCDATASection();
     }
 
+
+
+
+
+    public CDATASection cloneNode() {
+        // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
+        // package should reference a buffer.
+        final CDATASection clone = new CDATASection(this.textRepository);
+        clone.buffer = null;
+        clone.offset = -1;
+        clone.cdataSection = getCDATASection();
+        clone.content = getContent();
+        clone.cdataSectionLength = this.cdataSectionLength;
+        clone.contentLength = this.contentLength;
+        clone.line = this.line;
+        clone.col = this.col;
+        return clone;
+    }
 
 
 }

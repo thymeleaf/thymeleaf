@@ -20,10 +20,8 @@
 package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -52,15 +50,8 @@ public final class ProcessingInstruction implements Node {
 
 
     // Meant to be called only from within the engine
-    ProcessingInstruction(
-            final String processingInstruction,
-            final String target,
-            final String content,
-            final int line, final int col) {
-
+    ProcessingInstruction() {
         super();
-        setProcessingInstruction(processingInstruction, target, content, line, col);
-
     }
 
 
@@ -90,16 +81,17 @@ public final class ProcessingInstruction implements Node {
 
         if (this.processingInstruction == null) {
 
-            final StringWriter stringWriter = new StringWriter();
+            final StringBuilder strBuilder = new StringBuilder();
 
-            try {
-                MarkupOutput.writeProcessingInstruction(stringWriter, this.target, this.content);
-            } catch (final IOException e) {
-                // Should never happen!
-                throw new TemplateProcessingException("Error computing Processing Instruction representation", e);
+            strBuilder.append("<?");
+            strBuilder.append(this.target);
+            if (this.content != null) {
+                strBuilder.append(' ');
+                strBuilder.append(this.content);
             }
+            strBuilder.append("?>");
 
-            this.processingInstruction = stringWriter.toString();
+            this.processingInstruction = strBuilder.toString();
 
         }
 
@@ -181,13 +173,28 @@ public final class ProcessingInstruction implements Node {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        MarkupOutput.writeProcessingInstruction(writer, this.processingInstruction, this.content);
+        writer.write(getProcessingInstruction());
     }
 
 
 
     public String toString() {
         return getProcessingInstruction();
+    }
+
+
+
+
+
+
+    public ProcessingInstruction cloneNode() {
+        final ProcessingInstruction clone = new ProcessingInstruction();
+        clone.processingInstruction = this.processingInstruction;
+        clone.target = this.target;
+        clone.content = this.content;
+        clone.line = this.line;
+        clone.col = this.col;
+        return clone;
     }
 
 }

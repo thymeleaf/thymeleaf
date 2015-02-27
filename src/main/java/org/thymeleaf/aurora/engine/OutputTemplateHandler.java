@@ -60,55 +60,47 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleText(final char[] buffer, final int offset, final int len, final int line, final int col) {
+    public void handleText(final Text text) {
         
         try {
-            MarkupOutput.writeText(this.writer, buffer, offset, len);
+            text.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, text.getLine(), text.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleText(buffer, offset, len, line, col);
+        super.handleText(text);
 
     }
 
 
 
     @Override
-    public void handleComment(
-            final char[] buffer, 
-            final int contentOffset, final int contentLen, 
-            final int outerOffset, final int outerLen, 
-            final int line, final int col) {
+    public void handleComment(final Comment comment) {
         
         try {
-            MarkupOutput.writeComment(this.writer, buffer, outerOffset, outerLen);
+            comment.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, comment.getLine(), comment.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+        super.handleComment(comment);
 
     }
 
     
     @Override
-    public void handleCDATASection(
-            final char[] buffer, 
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
+    public void handleCDATASection(final CDATASection cdataSection) {
         
         try {
-            MarkupOutput.writeCDATASection(this.writer, buffer, outerOffset, outerLen);
+            cdataSection.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, cdataSection.getLine(), cdataSection.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+        super.handleCDATASection(cdataSection);
 
     }
 
@@ -231,24 +223,16 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocType(
-            final String docType,
-            final String keyword,
-            final String elementName,
-            final String type,
-            final String publicId,
-            final String systemId,
-            final String internalSubset,
-            final int line, final int col) {
+    public void handleDocType(final DocType docType) {
         
         try {
-            MarkupOutput.writeDocType(this.writer, docType);
+            docType.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, docType.getLine(), docType.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleDocType(docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
+        super.handleDocType(docType);
 
     }
 
@@ -256,22 +240,16 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(
-            final String xmlDeclaration,
-            final String keyword,
-            final String version,
-            final String encoding,
-            final String standalone,
-            final int line, final int col) {
+    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration) {
 
         try {
-            MarkupOutput.writeXmlDeclaration(this.writer, xmlDeclaration);
+            xmlDeclaration.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleXmlDeclaration(xmlDeclaration, keyword, version, encoding, standalone, line, col);
+        super.handleXmlDeclaration(xmlDeclaration);
 
     }
 
@@ -281,20 +259,16 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleProcessingInstruction(
-            final String processingInstruction,
-            final String target,
-            final String content,
-            final int line, final int col) {
+    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction) {
         
         try {
-            MarkupOutput.writeProcessingInstruction(this.writer, processingInstruction);
+            processingInstruction.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException("An error happened during template rendering", this.templateName, processingInstruction.getLine(), processingInstruction.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleProcessingInstruction(processingInstruction, target, content, line, col);
+        super.handleProcessingInstruction(processingInstruction);
 
     }
 

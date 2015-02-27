@@ -17,15 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.parser;
+package org.thymeleaf.aurora.engine;
 
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
-import org.thymeleaf.aurora.engine.AttributeDefinition;
-import org.thymeleaf.aurora.engine.AttributeDefinitions;
-import org.thymeleaf.aurora.engine.ElementDefinition;
-import org.thymeleaf.aurora.engine.ElementDefinitions;
-import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.text.TextRepositories;
 
@@ -35,7 +30,7 @@ import org.thymeleaf.aurora.text.TextRepositories;
  * @since 3.0.0
  * 
  */
-final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
+public final class HtmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
@@ -46,16 +41,25 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private ElementDefinition elementDefinition = null;
     private String elementName = null;
-    private ParsedElementAttributes elementAttributes = new ParsedElementAttributes();
+
     private boolean elementMinimized = false;
     private int elementLine = -1;
     private int elementCol = -1;
 
+    private final Text text;
+    private final Comment comment;
+    private final CDATASection cdataSection;
+    private final DocType docType;
+    private final ProcessingInstruction processingInstruction;
+    private final XmlDeclaration xmlDeclaration;
     
-    HtmlTemplateAdapterMarkupHandler(final ITemplateHandler templateHandler, 
-                                     final ITextRepository textRepository,
-                                     final ElementDefinitions elementDefinitions,
-                                     final AttributeDefinitions attributeDefinitions) {
+    private final HtmlElementAttributes elementAttributes;
+
+    
+    public HtmlTemplateHandlerAdapterMarkupHandler(final ITemplateHandler templateHandler,
+                                                   final ITextRepository textRepository,
+                                                   final ElementDefinitions elementDefinitions,
+                                                   final AttributeDefinitions attributeDefinitions) {
         super();
 
         if (templateHandler == null) {
@@ -77,6 +81,16 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
         this.elementDefinitions = elementDefinitions;
         this.attributeDefinitions = attributeDefinitions;
 
+        // We will be using these as objectual buffers in order to avoid creating too many objects
+        this.text = new Text(this.textRepository);
+        this.comment = new Comment(this.textRepository);
+        this.cdataSection = new CDATASection(this.textRepository);
+        this.docType = new DocType();
+        this.processingInstruction = new ProcessingInstruction();
+        this.xmlDeclaration = new XmlDeclaration();
+        this.elementAttributes = new HtmlElementAttributes(this.attributeDefinitions);
+        
+        
     }
 
 
@@ -113,7 +127,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        final String xmlDeclaration = this.textRepository.getText(buffer, outerOffset, outerLen);
+        final String fullXmlDeclaration = this.textRepository.getText(buffer, outerOffset, outerLen);
         final String keyword = this.textRepository.getText(buffer, keywordOffset, keywordLen);
         final String version =
                 (versionLen == 0? null : this.textRepository.getText(buffer, versionOffset, versionLen));
@@ -122,8 +136,9 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
         final String standalone =
                 (standaloneLen == 0? null : this.textRepository.getText(buffer, standaloneOffset, standaloneLen));
 
-        this.templateHandler.handleXmlDeclaration(
-                xmlDeclaration, keyword, version, encoding, standalone, line, col);
+        this.xmlDeclaration.setXmlDeclaration(fullXmlDeclaration, keyword, version, encoding, standalone, line, col);
+
+        this.templateHandler.handleXmlDeclaration(this.xmlDeclaration);
 
     }
 
@@ -148,7 +163,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int outerLine, final int outerCol)
             throws ParseException {
 
-        final String docType = this.textRepository.getText(buffer, outerOffset, outerLen);
+        final String fullDocType = this.textRepository.getText(buffer, outerOffset, outerLen);
         final String keyword = this.textRepository.getText(buffer, keywordOffset, keywordLen);
         final String rootElementName = this.textRepository.getText(buffer, elementNameOffset, elementNameLen);
         final String type =
@@ -160,8 +175,9 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
         final String internalSubset =
                 (internalSubsetLen == 0? null : this.textRepository.getText(buffer, internalSubsetOffset, internalSubsetLen));
 
-        this.templateHandler.handleDocType(
-                docType, keyword, rootElementName, type, publicId, systemId, internalSubset, outerLine, outerCol);
+        this.docType.setDocType(fullDocType, keyword, rootElementName, type, publicId, systemId, internalSubset, outerLine, outerCol);
+
+        this.templateHandler.handleDocType(this.docType);
 
     }
 
@@ -174,7 +190,8 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+        this.cdataSection.setCDATASection(buffer, outerOffset, outerLen, line, col);
+        this.templateHandler.handleCDATASection(this.cdataSection);
     }
 
 
@@ -186,7 +203,8 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int outerOffset, final int outerLen,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+        this.comment.setComment(buffer, outerOffset, outerLen, line, col);
+        this.templateHandler.handleComment(this.comment);
     }
 
 
@@ -197,7 +215,8 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int offset, final int len,
             final int line, final int col)
             throws ParseException {
-        this.templateHandler.handleText(buffer, offset, len, line, col);
+        this.text.setText(buffer, offset, len, line, col);
+        this.templateHandler.handleText(this.text);
     }
 
 
@@ -212,7 +231,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = minimized;
         this.elementLine = line;
         this.elementCol = col;
@@ -235,7 +254,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = null;
         this.elementName = null;
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false;
         this.elementLine = -1;
         this.elementCol = -1;
@@ -253,7 +272,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false; // does not apply
         this.elementLine = line;
         this.elementCol = col;
@@ -276,7 +295,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = null;
         this.elementName = null;
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false;
         this.elementLine = -1;
         this.elementCol = -1;
@@ -294,7 +313,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false; // does not apply
         this.elementLine = line;
         this.elementCol = col;
@@ -317,7 +336,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = null;
         this.elementName = null;
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false;
         this.elementLine = -1;
         this.elementCol = -1;
@@ -335,7 +354,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.reset(); // does not apply
+        this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
         this.elementLine = line;
         this.elementCol = col;
@@ -358,7 +377,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = null;
         this.elementName = null;
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false;
         this.elementLine = -1;
         this.elementCol = -1;
@@ -376,7 +395,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.reset(); // does not apply
+        this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
         this.elementLine = line;
         this.elementCol = col;
@@ -399,7 +418,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = null;
         this.elementName = null;
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false;
         this.elementLine = -1;
         this.elementCol = -1;
@@ -417,7 +436,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.reset(); // does not apply
+        this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
         this.elementLine = line;
         this.elementCol = col;
@@ -441,7 +460,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         this.elementDefinition = null;
         this.elementName = null;
-        this.elementAttributes.reset();
+        this.elementAttributes.clearAll();
         this.elementMinimized = false;
         this.elementLine = -1;
         this.elementCol = -1;
@@ -462,8 +481,6 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int valueLine, final int valueCol)
             throws ParseException {
 
-        final AttributeDefinition attributeDefinition = this.attributeDefinitions.forHtmlName(buffer, nameOffset, nameLen);
-
         final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
 
         final String attributeOperator =
@@ -478,13 +495,18 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
                         this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
                         null);
 
-        final boolean attributeDoubleQuoted =
-                (value != null && valueOuterOffset != valueContentOffset && buffer[valueOuterOffset] == '"');
-        final boolean attributeSingleQuoted =
-                (value != null && valueOuterOffset != valueContentOffset && buffer[valueOuterOffset] == '\'');
+        final ElementAttribute.ElementAttributeValueQuotes valueQuotes;
+        if (value == null || valueOuterOffset == valueContentOffset) {
+            valueQuotes = null;
+        } else if (buffer[valueOuterOffset] == '"') {
+            valueQuotes = ElementAttribute.ElementAttributeValueQuotes.DOUBLE;
+        } else if (buffer[valueOuterOffset] == '\'') {
+            valueQuotes = ElementAttribute.ElementAttributeValueQuotes.SINGLE;
+        } else {
+            valueQuotes = ElementAttribute.ElementAttributeValueQuotes.NONE;
+        }
 
-        this.elementAttributes.addAttribute(
-                attributeDefinition, attributeName, attributeOperator, value, attributeDoubleQuoted, attributeSingleQuoted, nameLine, nameCol);
+        this.elementAttributes.setAttribute(attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
 
     }
 
@@ -499,7 +521,7 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
 
         final String elementWhiteSpace = this.textRepository.getText(buffer, offset,len);
 
-        this.elementAttributes.addInnerWhiteSpace(elementWhiteSpace, line, col);
+        this.elementAttributes.addInnerWhiteSpace(elementWhiteSpace); // line and col are discarded for white spaces
 
     }
 
@@ -516,12 +538,13 @@ final class HtmlTemplateAdapterMarkupHandler extends AbstractMarkupHandler {
             final int line, final int col)
             throws ParseException {
 
-        final String processingInstruction = this.textRepository.getText(buffer, outerOffset, outerLen);
+        final String fullProcessingInstruction = this.textRepository.getText(buffer, outerOffset, outerLen);
         final String target = this.textRepository.getText(buffer, targetOffset, targetLen);
         final String content =
                 (contentLen == 0? null : this.textRepository.getText(buffer, contentOffset, contentLen));
 
-        this.templateHandler.handleProcessingInstruction(processingInstruction, target, content, line, col);
+        this.processingInstruction.setProcessingInstruction(fullProcessingInstruction, target, content, line, col);
+        this.templateHandler.handleProcessingInstruction(this.processingInstruction);
 
     }
     

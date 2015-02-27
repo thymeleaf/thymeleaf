@@ -20,11 +20,9 @@
 package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.thymeleaf.aurora.util.TextUtil;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -61,17 +59,8 @@ public final class XmlDeclaration implements Node {
 
 
     // Meant to be called only from within the engine
-    XmlDeclaration(
-            final String xmlDeclaration,
-            final String keyword,
-            final String version,
-            final String encoding,
-            final String standalone,
-            final int line, final int col) {
-
+    XmlDeclaration() {
         super();
-        setXmlDeclaration(xmlDeclaration, keyword, version, encoding, standalone, line, col);
-
     }
 
 
@@ -110,17 +99,34 @@ public final class XmlDeclaration implements Node {
 
         if (this.xmlDeclaration == null) {
 
-            final StringWriter stringWriter = new StringWriter();
+            final StringBuilder strBuilder = new StringBuilder();
 
-            try {
-                MarkupOutput.writeXmlDeclaration(
-                        stringWriter, this.keyword, this.version, this.encoding, this.standalone);
-            } catch (final IOException e) {
-                // Should never happen!
-                throw new TemplateProcessingException("Error computing XML Declaration representation", e);
+            strBuilder.append("<?");
+            strBuilder.append(this.keyword);
+            if (this.version != null) {
+                strBuilder.append(' ');
+                strBuilder.append(XmlDeclaration.ATTRIBUTE_NAME_VERSION);
+                strBuilder.append("=\"");
+                strBuilder.append(this.version);
+                strBuilder.append('"');
             }
+            if (this.encoding != null) {
+                strBuilder.append(' ');
+                strBuilder.append(XmlDeclaration.ATTRIBUTE_NAME_ENCODING);
+                strBuilder.append("=\"");
+                strBuilder.append(this.encoding);
+                strBuilder.append('"');
+            }
+            if (this.standalone != null) {
+                strBuilder.append(' ');
+                strBuilder.append(XmlDeclaration.ATTRIBUTE_NAME_STANDALONE);
+                strBuilder.append("=\"");
+                strBuilder.append(this.standalone);
+                strBuilder.append('"');
+            }
+            strBuilder.append("?>");
 
-            this.xmlDeclaration = stringWriter.toString();
+            this.xmlDeclaration = strBuilder.toString();
 
         }
 
@@ -214,14 +220,30 @@ public final class XmlDeclaration implements Node {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        MarkupOutput.writeXmlDeclaration(
-                writer, this.keyword, this.version, this.encoding, this.standalone);
+        writer.write(getXmlDeclaration());
     }
 
 
 
     public String toString() {
         return getXmlDeclaration();
+    }
+
+
+
+
+
+
+    public XmlDeclaration cloneNode() {
+        final XmlDeclaration clone = new XmlDeclaration();
+        clone.xmlDeclaration = this.xmlDeclaration;
+        clone.keyword = this.keyword;
+        clone.version = this.version;
+        clone.encoding = this.encoding;
+        clone.standalone = this.standalone;
+        clone.line = this.line;
+        clone.col = this.col;
+        return clone;
     }
 
 

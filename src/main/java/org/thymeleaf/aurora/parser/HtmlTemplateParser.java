@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import org.thymeleaf.aurora.engine.HtmlTemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.resource.CharArrayResource;
 import org.thymeleaf.aurora.resource.IResource;
@@ -119,7 +120,7 @@ public final class HtmlTemplateParser implements ITemplateParser {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
             IMarkupHandler handler =
-                    new HtmlTemplateAdapterMarkupHandler(
+                    new HtmlTemplateHandlerAdapterMarkupHandler(
                             templateHandler,
                             templateEngineContext.getTextRepository(),
                             templateEngineContext.getElementDefinitions(),

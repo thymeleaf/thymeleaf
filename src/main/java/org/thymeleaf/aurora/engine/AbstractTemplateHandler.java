@@ -108,88 +108,61 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleXmlDeclaration(
-            final String xmlDeclaration,
-            final String keyword,
-            final String version,
-            final String encoding,
-            final String standalone,
-            final int line, final int col) {
+    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleXmlDeclaration(
-                xmlDeclaration, keyword, version, encoding, standalone, line, col);
+        this.next.handleXmlDeclaration(xmlDeclaration);
 
     }
 
 
 
-    public void handleDocType(
-            final String docType,
-            final String keyword,
-            final String elementName,
-            final String type,
-            final String publicId,
-            final String systemId,
-            final String internalSubset,
-            final int line, final int col) {
+    public void handleDocType(final DocType docType) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleDocType(
-                docType, keyword, elementName, type, publicId, systemId, internalSubset, line, col);
+        this.next.handleDocType(docType);
 
     }
 
 
 
-    public void handleCDATASection(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
+    public void handleCDATASection(final CDATASection cdataSection) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleCDATASection(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+        this.next.handleCDATASection(cdataSection);
 
     }
 
 
 
-    public void handleComment(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
+    public void handleComment(final Comment comment) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleComment(buffer, contentOffset, contentLen, outerOffset, outerLen, line, col);
+        this.next.handleComment(comment);
 
     }
 
 
 
-    public void handleText(
-            final char[] buffer,
-            final int offset, final int len,
-            final int line, final int col) {
+    public void handleText(final Text text) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleText(buffer, offset, len, line, col);
+        this.next.handleText(text);
 
     }
 
@@ -283,18 +256,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleProcessingInstruction(
-            final String processingInstruction,
-            final String target,
-            final String content,
-            final int line, final int col) {
+    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleProcessingInstruction(
-                processingInstruction, target, content, line, col);
+        this.next.handleProcessingInstruction(processingInstruction);
 
     }
 

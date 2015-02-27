@@ -33,54 +33,19 @@ public interface ITemplateHandler {
 
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col);
 
-
-
     public void handleDocumentEnd(
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col);
 
 
+    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration);
 
-    public void handleXmlDeclaration(
-            final String xmlDeclaration,
-            final String keyword,
-            final String version,
-            final String encoding,
-            final String standalone,
-            final int line, final int col);
+    public void handleDocType(final DocType docType);
 
+    public void handleCDATASection(final CDATASection cdataSection);
 
+    public void handleComment(final Comment comment);
 
-    public void handleDocType(
-            final String docType,
-            final String keyword,
-            final String elementName,
-            final String type,
-            final String publicId,
-            final String systemId,
-            final String internalSubset,
-            final int line, final int col);
-
-
-
-    public void handleCDATASection(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col);
-
-
-
-    public void handleComment(
-            final char[] buffer,
-            final int contentOffset, final int contentLen,
-            final int outerOffset, final int outerLen,
-            final int line, final int col);
-
-
-    public void handleText(
-            final char[] buffer,
-            final int offset, final int len,
-            final int line, final int col);
+    public void handleText(final Text text);
 
 
     public void handleStandaloneElement(
@@ -124,11 +89,7 @@ public interface ITemplateHandler {
 
 
 
-    public void handleProcessingInstruction(
-            final String processingInstruction,
-            final String target,
-            final String content,
-            final int line, final int col);
+    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction);
 
 
 
