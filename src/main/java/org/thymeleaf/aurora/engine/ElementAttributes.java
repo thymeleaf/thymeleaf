@@ -40,7 +40,10 @@ public abstract class ElementAttributes {
 
     private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
 
+    private final boolean caseSensitive;
+
     protected ElementAttribute[] attributes = null;
+    protected AttributeName[] attributeNames = null;
     protected int attributesSize = 0;
 
     protected InnerWhiteSpace[] innerWhiteSpaces = null;
@@ -49,8 +52,9 @@ public abstract class ElementAttributes {
 
 
 
-    protected ElementAttributes() {
+    protected ElementAttributes(final boolean caseSensitive) {
         super();
+        this.caseSensitive = caseSensitive;
     }
 
 
@@ -61,17 +65,67 @@ public abstract class ElementAttributes {
 
 
 
-    private int searchAttribute(final String name) {
-        int i = 0;
+    private int searchAttribute(final String completeName) {
         int n = this.attributesSize;
         while (n-- != 0) {
-            if (TextUtil.equals(false, this.attributes[i].name, name)) {
-                return i;
+            final String[] completeAttributeNames = this.attributeNames[n].completeAttributeNames;
+            for (final String completeAttributeName : completeAttributeNames) {
+                if (TextUtil.equals(this.caseSensitive, completeAttributeName, completeName)) {
+                    return n;
+                }
             }
-            i++;
         }
         return -1;
     }
+
+
+    private int searchAttribute(final String prefix, final String name) {
+        int n = this.attributesSize;
+        while (n-- != 0) {
+            if (TextUtil.equals(this.caseSensitive, this.attributeNames[n].prefix, prefix) &&
+                    TextUtil.equals(this.caseSensitive, this.attributeNames[n].attributeName, name)) {
+                return n;
+            }
+        }
+        return -1;
+    }
+
+
+
+
+    public boolean hasAttribute(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        return searchAttribute(completeName) >= 0;
+    }
+
+
+    public boolean hasAttribute(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        return searchAttribute(prefix, name) >= 0;
+    }
+
+
+
+
+    public String getValue(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].value;
+    }
+
+
+    public String getValue(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].value;
+    }
+
 
 
 
@@ -108,6 +162,8 @@ public abstract class ElementAttributes {
             // We had no attributes array yet, create it
             this.attributes = new ElementAttribute[DEFAULT_ATTRIBUTES_SIZE];
             Arrays.fill(this.attributes, null);
+            this.attributeNames = new AttributeName[DEFAULT_ATTRIBUTES_SIZE];
+            Arrays.fill(this.attributeNames, null);
             this.attributesSize = 0;
         }
 
@@ -126,11 +182,19 @@ public abstract class ElementAttributes {
         // Attribute DOES NOT exist, so we have to add it
 
         if (this.attributesSize == this.attributes.length) {
-            // We've already filled the attributes array, so we need to grow it
+
+            // We've already filled the attributes array, so we need to grow it (and the attribute names array too)
+
             final ElementAttribute[] newAttributes = new ElementAttribute[this.attributes.length + DEFAULT_ATTRIBUTES_SIZE];
             Arrays.fill(newAttributes, null);
             System.arraycopy(this.attributes, 0, newAttributes, 0, this.attributesSize);
             this.attributes = newAttributes;
+
+            final AttributeName[] newAttributeNames = new AttributeName[this.attributeNames.length + DEFAULT_ATTRIBUTES_SIZE];
+            Arrays.fill(newAttributeNames, null);
+            System.arraycopy(this.attributeNames, 0, newAttributeNames, 0, this.attributesSize);
+            this.attributeNames = newAttributeNames;
+
         }
 
         // Obtain a reference to the Attribute object that we are going to fill with data
@@ -145,6 +209,8 @@ public abstract class ElementAttributes {
 
         newAttribute.setElementAttribute(
                 getAttributeDefinition(name), name, operator, value, valueQuotes, line, col);
+
+        this.attributeNames[this.attributesSize] = newAttribute.definition.getAttributeName();
 
 
         if (autoWhiteSpace) {
@@ -205,6 +271,7 @@ public abstract class ElementAttributes {
 
         // Move all attributes after the removed one to fill the hole
         System.arraycopy(this.attributes, existingIdx + 1, this.attributes, existingIdx, (this.attributesSize - (existingIdx + 1)));
+        System.arraycopy(this.attributeNames, existingIdx + 1, this.attributeNames, existingIdx, (this.attributesSize - (existingIdx + 1)));
 
         // Place the removed attribute at the end, so that it can be reused
         this.attributes[this.attributesSize - 1] = removedAttribute;
@@ -333,13 +400,17 @@ public abstract class ElementAttributes {
         if (this.attributesSize > 0) {
             clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
             Arrays.fill(clone.attributes, null);
+            clone.attributeNames = new AttributeName[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+            Arrays.fill(clone.attributeNames, null);
             int n = this.attributesSize;
             while (n-- != 0) {
                 clone.attributes[n] = this.attributes[n].cloneElementAttribute();
+                clone.attributeNames[n] = this.attributeNames[n];
             }
             clone.attributesSize = this.attributesSize;
         } else {
             clone.attributes = null;
+            clone.attributeNames = null;
             clone.attributesSize = 0;
         }
 

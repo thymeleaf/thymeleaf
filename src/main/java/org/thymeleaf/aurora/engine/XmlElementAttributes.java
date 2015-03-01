@@ -32,7 +32,7 @@ public final class XmlElementAttributes extends ElementAttributes {
 
 
     XmlElementAttributes(final AttributeDefinitions attributeDefinitions) {
-        super();
+        super(true);
         this.attributeDefinitions = attributeDefinitions;
     }
 

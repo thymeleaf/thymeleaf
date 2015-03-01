@@ -32,7 +32,7 @@ public final class HtmlElementAttributes extends ElementAttributes {
 
 
     HtmlElementAttributes(final AttributeDefinitions attributeDefinitions) {
-        super();
+        super(false);
         this.attributeDefinitions = attributeDefinitions;
     }
 
