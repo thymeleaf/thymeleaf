@@ -28,6 +28,29 @@ package org.thymeleaf.aurora.templatemode;
  */
 public enum TemplateMode {
 
-    HTML, XML, TEXT
+    HTML(true, false, false), XML(false, true, false), TEXT(false, false, true);
+
+
+    private final boolean html;
+    private final boolean xml;
+    private final boolean text;
+
+    TemplateMode(final boolean html, final boolean xml, final boolean text) {
+        this.html = html;
+        this.xml = xml;
+        this.text = text;
+    }
+
+    public boolean isHtml() {
+        return this.html;
+    }
+
+    public boolean isXml() {
+        return this.xml;
+    }
+
+    public boolean isText() {
+        return this.text;
+    }
 
 }

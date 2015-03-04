@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
@@ -39,7 +40,7 @@ public final class ElementAttributes {
 
     private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
 
-    private final boolean html;
+    private final TemplateMode templateMode;
     private final AttributeDefinitions attributeDefinitions;
 
     private ElementAttribute[] attributes = null;
@@ -52,9 +53,9 @@ public final class ElementAttributes {
 
 
 
-    protected ElementAttributes(final boolean html, final AttributeDefinitions attributeDefinitions) {
+    protected ElementAttributes(final TemplateMode templateMode, final AttributeDefinitions attributeDefinitions) {
         super();
-        this.html = html;
+        this.templateMode = templateMode;
         this.attributeDefinitions = attributeDefinitions;
     }
 
@@ -170,8 +171,8 @@ public final class ElementAttributes {
 
     public final void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && !this.html),
-                "Cannot set no-quote attributes in XML elements");
+                !(ValueQuotes.NONE.equals(valueQuotes) && !this.templateMode.isHtml()),
+                "Cannot set no-quote attributes when not in HTML mode");
         Validate.isTrue(
                 !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
@@ -186,7 +187,7 @@ public final class ElementAttributes {
 
         Validate.notNull(name, "Attribute name cannot be null");
 
-        Validate.isTrue(!(value == null && !this.html), "Cannot set null-value attributes in XML elements");
+        Validate.isTrue(value != null || this.templateMode.isHtml(), "Cannot set null-value attributes when not in HTML mode");
 
         if (this.attributes == null) {
             // We had no attributes array yet, create it
@@ -371,11 +372,11 @@ public final class ElementAttributes {
 
 
     private AttributeDefinition getAttributeDefinition(final String completeAttributeName) {
-        return (this.html? this.attributeDefinitions.forHtmlName(completeAttributeName) : this.attributeDefinitions.forXmlName(completeAttributeName));
+        return (this.templateMode.isHtml()? this.attributeDefinitions.forHtmlName(completeAttributeName) : this.attributeDefinitions.forXmlName(completeAttributeName));
     }
 
     private AttributeDefinition getAttributeDefinition(final String prefix, final String attributeName) {
-        return (this.html? this.attributeDefinitions.forHtmlName(prefix, attributeName) : this.attributeDefinitions.forXmlName(prefix, attributeName));
+        return (this.templateMode.isHtml()? this.attributeDefinitions.forHtmlName(prefix, attributeName) : this.attributeDefinitions.forXmlName(prefix, attributeName));
     }
 
 
@@ -477,7 +478,7 @@ public final class ElementAttributes {
 
     ElementAttributes cloneElementAttributes() {
 
-        final ElementAttributes clone = new ElementAttributes(this.html, this.attributeDefinitions);
+        final ElementAttributes clone = new ElementAttributes(this.templateMode, this.attributeDefinitions);
 
         if (this.attributesSize > 0) {
             clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];

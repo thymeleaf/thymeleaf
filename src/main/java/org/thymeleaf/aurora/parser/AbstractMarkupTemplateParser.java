@@ -34,13 +34,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
-import org.thymeleaf.aurora.engine.HtmlTemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.engine.XmlTemplateHandlerAdapterMarkupHandler;
+import org.thymeleaf.aurora.engine.TemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.aurora.resource.CharArrayResource;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.aurora.resource.StringResource;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.util.Validate;
 
@@ -78,22 +78,35 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
     public final void parse(
             final ITemplateEngineContext templateEngineContext,
+            final TemplateMode templateMode,
             final IResource templateResource,
             final ITemplateHandler templateHandler) {
-        parse(templateEngineContext, templateResource, null, templateHandler);
+        parse(templateEngineContext, templateMode, templateResource, null, templateHandler);
     }
 
 
 
     public final void parse(
             final ITemplateEngineContext templateEngineContext,
+            final TemplateMode templateMode,
             final IResource templateResource,
             final String[] selectors,
             final ITemplateHandler templateHandler) {
 
         Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
+        Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.notNull(templateResource, "Template Resource cannot be null");
         Validate.notNull(templateHandler, "Template Handler cannot be null");
+
+        if (templateMode.isHtml()) {
+            Validate.isTrue(this.html, "Parser is configured as XML, but HTML-mode template parsing is being requested");
+        } else if (templateMode.isXml()) {
+            Validate.isTrue(!this.html, "Parser is configured as HTML, but XML-mode template parsing is being requested");
+        } else {
+            throw new IllegalArgumentException(
+                    "Parser is configured as " + (this.html? "HTML" : "XML") + " but an unsupported template mode " +
+                    "has been specified: " + templateMode);
+        }
 
         final String documentName = templateResource.getName();
 
@@ -101,18 +114,12 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
             IMarkupHandler handler =
-                    (this.html?
-                        new HtmlTemplateHandlerAdapterMarkupHandler(
+                        new TemplateHandlerAdapterMarkupHandler(
                                 templateHandler,
                                 templateEngineContext.getTextRepository(),
                                 templateEngineContext.getElementDefinitions(),
-                                templateEngineContext.getAttributeDefinitions()) :
-                        new XmlTemplateHandlerAdapterMarkupHandler(
-                                templateHandler,
-                                templateEngineContext.getTextRepository(),
-                                templateEngineContext.getElementDefinitions(),
-                                templateEngineContext.getAttributeDefinitions()));
-
+                                templateEngineContext.getAttributeDefinitions(),
+                                templateMode);
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
             // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to

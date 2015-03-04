@@ -1224,10 +1224,9 @@ public class TemplateEngine {
 
         final IResource templateResource = new ReaderResource(templateName, reader);
 
-        final ITemplateEngineContext templateEngineContext = new TemplateEngineContext();
-        final ITemplateProcessingContext processingContext = new TemplateProcessingContext(templateEngineContext, templateName, TemplateMode.HTML);
+        final ITemplateProcessingContext templatePocessingContext = new TemplateProcessingContext(TEMPLATE_ENGINE_CONTEXT, templateName, TemplateMode.HTML);
 
-        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler(processingContext);
+        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler(templatePocessingContext);
         final OutputTemplateHandler outputHandler = new OutputTemplateHandler(templateName, writer);
 
         processorHandler.setNext(outputHandler);
@@ -1236,7 +1235,7 @@ public class TemplateEngine {
 
 
 //        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        PARSER.parse(TEMPLATE_ENGINE_CONTEXT, templateResource, /* new String[] {"html//p"}, */ handlerChain);
+        PARSER.parse(templatePocessingContext.getTemplateEngineContext(), templatePocessingContext.getTemplateMode(), templateResource, /* new String[] {"html//p"}, */ handlerChain);
 
 
     }

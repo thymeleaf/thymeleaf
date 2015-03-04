@@ -21,8 +21,10 @@ package org.thymeleaf.aurora.engine;
 
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.text.TextRepositories;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -30,7 +32,7 @@ import org.thymeleaf.aurora.text.TextRepositories;
  * @since 3.0.0
  * 
  */
-public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkupHandler {
+public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHandler {
 
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
@@ -38,6 +40,7 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
     private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
+    private final TemplateMode templateMode;
 
     private ElementDefinition elementDefinition = null;
     private String elementName = null;
@@ -52,25 +55,21 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
     private final DocType docType;
     private final ProcessingInstruction processingInstruction;
     private final XmlDeclaration xmlDeclaration;
-
+    
     private final ElementAttributes elementAttributes;
 
-
-    public XmlTemplateHandlerAdapterMarkupHandler(final ITemplateHandler templateHandler,
-                                                  final ITextRepository textRepository,
-                                                  final ElementDefinitions elementDefinitions,
-                                                  final AttributeDefinitions attributeDefinitions) {
+    
+    public TemplateHandlerAdapterMarkupHandler(final ITemplateHandler templateHandler,
+                                               final ITextRepository textRepository,
+                                               final ElementDefinitions elementDefinitions,
+                                               final AttributeDefinitions attributeDefinitions,
+                                               final TemplateMode templateMode) {
         super();
 
-        if (templateHandler == null) {
-            throw new IllegalArgumentException("Template handler cannot be null");
-        }
-        if (elementDefinitions == null) {
-            throw new IllegalArgumentException("Element Definitions repository cannot be null");
-        }
-        if (attributeDefinitions == null) {
-            throw new IllegalArgumentException("Attribute Definitions repository cannot be null");
-        }
+        Validate.notNull(templateHandler, "Template handler cannot be null");
+        Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
+        Validate.notNull(attributeDefinitions, "Attribute Definitions repository cannot be null");
+        Validate.notNull(templateMode, "Template mode cannot be null");
 
         this.templateHandler = templateHandler;
 
@@ -80,6 +79,7 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
         // These cannot be null
         this.elementDefinitions = elementDefinitions;
         this.attributeDefinitions = attributeDefinitions;
+        this.templateMode = templateMode;
 
         // We will be using these as objectual buffers in order to avoid creating too many objects
         this.text = new Text(this.textRepository);
@@ -88,7 +88,7 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
         this.docType = new DocType();
         this.processingInstruction = new ProcessingInstruction();
         this.xmlDeclaration = new XmlDeclaration();
-        this.elementAttributes = new ElementAttributes(false, this.attributeDefinitions);
+        this.elementAttributes = new ElementAttributes(this.templateMode, this.attributeDefinitions);
         
         
     }
@@ -229,7 +229,10 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition =
+                this.templateMode.isHtml()?
+                    this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
+                    this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll();
         this.elementMinimized = minimized;
@@ -270,7 +273,10 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition =
+                this.templateMode.isHtml()?
+                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll();
         this.elementMinimized = false; // does not apply
@@ -311,7 +317,10 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition =
+                this.templateMode.isHtml()?
+                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll();
         this.elementMinimized = false; // does not apply
@@ -352,7 +361,10 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition =
+                this.templateMode.isHtml()?
+                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -393,7 +405,10 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition =
+                this.templateMode.isHtml()?
+                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -434,7 +449,10 @@ public final class XmlTemplateHandlerAdapterMarkupHandler extends AbstractMarkup
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition = this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+        this.elementDefinition =
+                this.templateMode.isHtml()?
+                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply

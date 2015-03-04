@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.parser;
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.resource.IResource;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 
 /**
@@ -34,10 +35,12 @@ public interface ITemplateParser {
 
 
     public void parse(final ITemplateEngineContext templateEngineContext,
+                      final TemplateMode templateMode,
                       final IResource templateResource,
                       final ITemplateHandler handler);
 
     public void parse(final ITemplateEngineContext templateEngineContext,
+                      final TemplateMode templateMode,
                       final IResource templateResource,
                       final String[] selectors,
                       final ITemplateHandler handler);
