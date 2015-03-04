@@ -32,11 +32,16 @@ import org.thymeleaf.util.Validate;
  */
 final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorReferenceResolver {
 
-    private static TemplateFragmentMarkupReferenceResolver INSTANCE_NO_PREFIX;
-    private static ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> INSTANCES_BY_PREFIX;
+    private static TemplateFragmentMarkupReferenceResolver HTML_INSTANCE_NO_PREFIX;
+    private static ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> HTML_INSTANCES_BY_PREFIX;
+    private static TemplateFragmentMarkupReferenceResolver XML_INSTANCE_NO_PREFIX;
+    private static ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> XML_INSTANCES_BY_PREFIX;
 
-    private static String FORMAT_WITHOUT_PREFIX = "/[fragment='%s' or data-fragment='%s']";
-    private static String FORMAT_WITH_PREFIX = "/[%s:fragment='%%s' or data-%s-fragment='%%s']";
+    private static String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s' or data-fragment='%s']";
+    private static String HTML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s' or data-%s-fragment='%%s']";
+
+    private static String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s']";
+    private static String XML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s']";
 
 
     private final ConcurrentHashMap<String,String> selectorsByReference = new ConcurrentHashMap<String, String>(20);
@@ -46,33 +51,41 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
 
     static{
 
-        INSTANCE_NO_PREFIX = new TemplateFragmentMarkupReferenceResolver(null);
-        INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(2,1.0f);
+        HTML_INSTANCE_NO_PREFIX = new TemplateFragmentMarkupReferenceResolver(true, null);
+        XML_INSTANCE_NO_PREFIX = new TemplateFragmentMarkupReferenceResolver(false, null);
+        HTML_INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(2,1.0f);
+        XML_INSTANCES_BY_PREFIX = new ConcurrentHashMap<String, TemplateFragmentMarkupReferenceResolver>(2,1.0f);
 
     }
 
 
-    static TemplateFragmentMarkupReferenceResolver forPrefix(final String prefix) {
+    static TemplateFragmentMarkupReferenceResolver forPrefix(final boolean html, final String prefix) {
         if (prefix == null) {
-            return INSTANCE_NO_PREFIX;
+            return (html? HTML_INSTANCE_NO_PREFIX : XML_INSTANCE_NO_PREFIX);
         }
-        final TemplateFragmentMarkupReferenceResolver resolver = INSTANCES_BY_PREFIX.get(prefix);
+        final TemplateFragmentMarkupReferenceResolver resolver =
+                (html? HTML_INSTANCES_BY_PREFIX.get(prefix) : XML_INSTANCES_BY_PREFIX.get(prefix));
         if (resolver != null) {
             return resolver;
         }
-        final TemplateFragmentMarkupReferenceResolver newResolver = new TemplateFragmentMarkupReferenceResolver(prefix);
-        INSTANCES_BY_PREFIX.putIfAbsent(prefix, newResolver);
-        return INSTANCES_BY_PREFIX.get(prefix);
+        final TemplateFragmentMarkupReferenceResolver newResolver = new TemplateFragmentMarkupReferenceResolver(html, prefix);
+        if (html) {
+            HTML_INSTANCES_BY_PREFIX.putIfAbsent(prefix, newResolver);
+            return HTML_INSTANCES_BY_PREFIX.get(prefix);
+        } else {
+            XML_INSTANCES_BY_PREFIX.putIfAbsent(prefix, newResolver);
+            return XML_INSTANCES_BY_PREFIX.get(prefix);
+        }
     }
 
 
 
-    private TemplateFragmentMarkupReferenceResolver(final String prefix) {
+    private TemplateFragmentMarkupReferenceResolver(final boolean html, final String prefix) {
         super();
         if (prefix == null) {
-            this.resolverFormat = FORMAT_WITHOUT_PREFIX;
+            this.resolverFormat = (html? HTML_FORMAT_WITHOUT_PREFIX : XML_FORMAT_WITHOUT_PREFIX);
         } else {
-            this.resolverFormat = String.format(FORMAT_WITH_PREFIX, prefix, prefix);
+            this.resolverFormat = (html? String.format(HTML_FORMAT_WITH_PREFIX, prefix, prefix) : String.format(XML_FORMAT_WITH_PREFIX, prefix, prefix));
         }
     }
 

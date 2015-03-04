@@ -27,22 +27,15 @@ package org.thymeleaf.aurora.engine;
  */
 public final class HtmlElementDefinition extends ElementDefinition {
 
-    final HtmlElementName name;
     final HtmlElementType type;
 
 
 
     HtmlElementDefinition(final HtmlElementName name, final HtmlElementType type) {
-        super();
-        this.name = name;
+        super(name);
         this.type = type;
     }
 
-
-    @Override
-    public HtmlElementName getElementName() {
-        return this.name;
-    }
 
     public HtmlElementType getType() {
         return this.type;

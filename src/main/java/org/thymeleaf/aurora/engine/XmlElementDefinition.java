@@ -27,20 +27,12 @@ package org.thymeleaf.aurora.engine;
  */
 public final class XmlElementDefinition extends ElementDefinition {
 
-    final XmlElementName name;
-
 
 
     XmlElementDefinition(final XmlElementName name) {
-        super();
-        this.name = name;
+        super(name);
     }
 
-
-    @Override
-    public XmlElementName getElementName() {
-        return this.name;
-    }
 
 
 }

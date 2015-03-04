@@ -27,16 +27,27 @@ package org.thymeleaf.aurora.engine;
  */
 public abstract class AttributeDefinition {
 
+    protected final AttributeName attributeName;
 
-    AttributeDefinition() {
+    AttributeDefinition(final AttributeName attributeName) {
+
         super();
+
+        if (attributeName == null) {
+            throw new IllegalArgumentException("Attribute name cannot be null");
+        }
+
+        this.attributeName = attributeName;
+
     }
 
 
-    public abstract AttributeName getAttributeName();
+    public final AttributeName getAttributeName() {
+        return this.attributeName;
+    }
 
 
-    public String toString() {
+    public final String toString() {
         return getAttributeName().toString();
     }
 

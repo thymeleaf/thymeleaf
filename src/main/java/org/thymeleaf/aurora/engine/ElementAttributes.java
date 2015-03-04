@@ -24,7 +24,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 
-import org.thymeleaf.aurora.util.TextUtil;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
@@ -34,56 +33,66 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public abstract class ElementAttributes {
+public final class ElementAttributes {
 
     public enum ValueQuotes { DOUBLE, SINGLE, NONE }
 
     private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
 
-    private final boolean caseSensitive;
+    private final boolean html;
+    private final AttributeDefinitions attributeDefinitions;
 
-    protected ElementAttribute[] attributes = null;
-    protected AttributeName[] attributeNames = null;
-    protected int attributesSize = 0;
+    private ElementAttribute[] attributes = null;
+    private AttributeName[] attributeNames = null;
+    private int attributesSize = 0;
 
-    protected InnerWhiteSpace[] innerWhiteSpaces = null;
-    protected int innerWhiteSpacesSize = 0;
-
-
+    private InnerWhiteSpace[] innerWhiteSpaces = null;
+    private int innerWhiteSpacesSize = 0;
 
 
-    protected ElementAttributes(final boolean caseSensitive) {
+
+
+    protected ElementAttributes(final boolean html, final AttributeDefinitions attributeDefinitions) {
         super();
-        this.caseSensitive = caseSensitive;
+        this.html = html;
+        this.attributeDefinitions = attributeDefinitions;
     }
 
 
 
-    public int size() {
+    public final int size() {
         return this.attributesSize;
     }
 
 
 
     private int searchAttribute(final String completeName) {
+        // We will first try exact match on the names with which the attributes appear on markup, as an optimization
+        // on the base case (use the AttributeDefinition).
         int n = this.attributesSize;
         while (n-- != 0) {
-            final String[] completeAttributeNames = this.attributeNames[n].completeAttributeNames;
-            for (final String completeAttributeName : completeAttributeNames) {
-                if (TextUtil.equals(this.caseSensitive, completeAttributeName, completeName)) {
-                    return n;
-                }
+            if (this.attributes[n].name.equals(completeName)) {
+                return n;
             }
         }
-        return -1;
+        // Not found that way - before discarding, let's search using AttributeDefinitions
+        return searchAttribute(getAttributeDefinition(completeName).attributeName);
     }
 
 
     private int searchAttribute(final String prefix, final String name) {
+        if (prefix == null || prefix.length() == 0) {
+            // Optimization: searchAttribute(name) might be faster if we are able to avoid using AttributeDefinition
+            return searchAttribute(name);
+        }
+        return searchAttribute(getAttributeDefinition(prefix, name).attributeName);
+    }
+
+
+    private int searchAttribute(final AttributeName attributeName) {
         int n = this.attributesSize;
         while (n-- != 0) {
-            if (TextUtil.equals(this.caseSensitive, this.attributeNames[n].prefix, prefix) &&
-                    TextUtil.equals(this.caseSensitive, this.attributeNames[n].attributeName, name)) {
+            if (this.attributeNames[n].equals(attributeName)) {
                 return n;
             }
         }
@@ -93,21 +102,27 @@ public abstract class ElementAttributes {
 
 
 
-    public boolean hasAttribute(final String completeName) {
+    public final boolean hasAttribute(final String completeName) {
         Validate.notNull(completeName, "Attribute name cannot be null");
         return searchAttribute(completeName) >= 0;
     }
 
 
-    public boolean hasAttribute(final String prefix, final String name) {
+    public final boolean hasAttribute(final String prefix, final String name) {
         Validate.notNull(name, "Attribute name cannot be null");
         return searchAttribute(prefix, name) >= 0;
     }
 
 
+    public final boolean hasAttribute(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        return searchAttribute(attributeName) >= 0;
+    }
 
 
-    public String getValue(final String completeName) {
+
+
+    public final String getValue(final String completeName) {
         Validate.notNull(completeName, "Attribute name cannot be null");
         final int pos = searchAttribute(completeName);
         if (pos < 0) {
@@ -117,9 +132,19 @@ public abstract class ElementAttributes {
     }
 
 
-    public String getValue(final String prefix, final String name) {
+    public final String getValue(final String prefix, final String name) {
         Validate.notNull(name, "Attribute name cannot be null");
         final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].value;
+    }
+
+
+    public final String getValue(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
         if (pos < 0) {
             return null;
         }
@@ -130,7 +155,7 @@ public abstract class ElementAttributes {
 
 
 
-    public void clearAll() {
+    public final void clearAll() {
         this.attributesSize = 0;
         this.innerWhiteSpacesSize = 0;
     }
@@ -138,25 +163,30 @@ public abstract class ElementAttributes {
 
 
 
-    public void setAttribute(final String name, final String value) {
-        setAttribute(name, null, value, null, -1, -1, true);
+    public final void setAttribute(final String completeName, final String value) {
+        setAttribute(completeName, null, value, null, -1, -1, true);
     }
 
 
-    public void setAttribute(final String name, final String value, final ValueQuotes valueQuotes) {
+    public final void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
+        Validate.isTrue(
+                !(ValueQuotes.NONE.equals(valueQuotes) && !this.html),
+                "Cannot set no-quote attributes in XML elements");
         Validate.isTrue(
                 !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
                 "Cannot set an empty-string value to an attribute with no quotes");
-        setAttribute(name, null, value, valueQuotes, -1, -1, true);
+        setAttribute(completeName, null, value, valueQuotes, -1, -1, true);
     }
 
 
     // Meant to be used from within the engine
-    void setAttribute(
+    final void setAttribute(
             final String name, final String operator, final String value, final ValueQuotes valueQuotes,
             final int line, final int col, final boolean autoWhiteSpace) {
 
         Validate.notNull(name, "Attribute name cannot be null");
+
+        Validate.isTrue(!(value == null && !this.html), "Cannot set null-value attributes in XML elements");
 
         if (this.attributes == null) {
             // We had no attributes array yet, create it
@@ -228,7 +258,7 @@ public abstract class ElementAttributes {
 
 
 
-    public void removeAttribute(final String name) {
+    public final void removeAttribute(final String prefix, final String name) {
 
         Validate.notNull(name, "Attribute name cannot be null");
 
@@ -237,27 +267,74 @@ public abstract class ElementAttributes {
             return;
         }
 
-        final int existingIdx = searchAttribute(name);
-        if (existingIdx < 0) {
+        final int attrIdx = searchAttribute(prefix, name);
+        if (attrIdx < 0) {
             // Attribute does not exist. Just exit
             return;
         }
 
-        if (existingIdx + 1 == this.attributesSize) {
+        removeAttribute(attrIdx);
+
+    }
+
+
+    public final void removeAttribute(final String completeName) {
+
+        Validate.notNull(completeName, "Attribute name cannot be null");
+
+        if (this.attributes == null) {
+            // We have no attribute array, nothing to remove
+            return;
+        }
+
+        final int attrIdx = searchAttribute(completeName);
+        if (attrIdx < 0) {
+            // Attribute does not exist. Just exit
+            return;
+        }
+
+        removeAttribute(attrIdx);
+
+    }
+
+
+    public final void removeAttribute(final AttributeName attributeName) {
+
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+
+        if (this.attributes == null) {
+            // We have no attribute array, nothing to remove
+            return;
+        }
+
+        final int attrIdx = searchAttribute(attributeName);
+        if (attrIdx < 0) {
+            // Attribute does not exist. Just exit
+            return;
+        }
+
+        removeAttribute(attrIdx);
+
+    }
+
+
+    private final void removeAttribute(final int attrIdx) {
+
+        if (attrIdx + 1 == this.attributesSize) {
             // If it's the last attribute, discard it simply changing the size
 
             this.attributesSize--;
 
             // Checks on related whitespaces
-            if (existingIdx + 2 == this.innerWhiteSpacesSize) {
+            if (attrIdx + 2 == this.innerWhiteSpacesSize) {
                 // If there was a whitespace after the last attribute, this should still be kept as last whitespace,
                 // replacing the one previous to the removed attribute so that we don't end up with things like a
                 // '>' symbol appearing on a line on its own
-                final InnerWhiteSpace removedInnerWhiteSpace = this.innerWhiteSpaces[existingIdx];
-                this.innerWhiteSpaces[existingIdx] = this.innerWhiteSpaces[existingIdx + 1];
-                this.innerWhiteSpaces[existingIdx + 1] = removedInnerWhiteSpace;
+                final InnerWhiteSpace removedInnerWhiteSpace = this.innerWhiteSpaces[attrIdx];
+                this.innerWhiteSpaces[attrIdx] = this.innerWhiteSpaces[attrIdx + 1];
+                this.innerWhiteSpaces[attrIdx + 1] = removedInnerWhiteSpace;
                 this.innerWhiteSpacesSize--;
-            } else if (existingIdx + 1 == this.innerWhiteSpacesSize) {
+            } else if (attrIdx + 1 == this.innerWhiteSpacesSize) {
                 // If there was a whitespace before the last attribute but not after, we should remove that whitespace
                 // so that we don't end up with things like a '>' symbol appearing on a line on its own
                 this.innerWhiteSpacesSize--;
@@ -267,11 +344,11 @@ public abstract class ElementAttributes {
 
         }
 
-        final ElementAttribute removedAttribute = this.attributes[existingIdx];
+        final ElementAttribute removedAttribute = this.attributes[attrIdx];
 
         // Move all attributes after the removed one to fill the hole
-        System.arraycopy(this.attributes, existingIdx + 1, this.attributes, existingIdx, (this.attributesSize - (existingIdx + 1)));
-        System.arraycopy(this.attributeNames, existingIdx + 1, this.attributeNames, existingIdx, (this.attributesSize - (existingIdx + 1)));
+        System.arraycopy(this.attributes, attrIdx + 1, this.attributes, attrIdx, (this.attributesSize - (attrIdx + 1)));
+        System.arraycopy(this.attributeNames, attrIdx + 1, this.attributeNames, attrIdx, (this.attributesSize - (attrIdx + 1)));
 
         // Place the removed attribute at the end, so that it can be reused
         this.attributes[this.attributesSize - 1] = removedAttribute;
@@ -281,9 +358,9 @@ public abstract class ElementAttributes {
 
         // Let's see if we have to remove a corresponding whitespace (corresponding == the one after the attribute)
         // We already know it's not the last attribute, so we don't have to care about being the last whitespace or not
-        if (existingIdx + 1 < this.innerWhiteSpacesSize) {
-            final InnerWhiteSpace removedInnerWhiteSpace = this.innerWhiteSpaces[existingIdx + 1];
-            System.arraycopy(this.innerWhiteSpaces, existingIdx + 2, this.innerWhiteSpaces, existingIdx + 1, (this.innerWhiteSpacesSize - (existingIdx + 2)));
+        if (attrIdx + 1 < this.innerWhiteSpacesSize) {
+            final InnerWhiteSpace removedInnerWhiteSpace = this.innerWhiteSpaces[attrIdx + 1];
+            System.arraycopy(this.innerWhiteSpaces, attrIdx + 2, this.innerWhiteSpaces, attrIdx + 1, (this.innerWhiteSpacesSize - (attrIdx + 2)));
             this.innerWhiteSpaces[this.innerWhiteSpacesSize - 1] = removedInnerWhiteSpace;
             this.innerWhiteSpacesSize--;
         }
@@ -293,18 +370,24 @@ public abstract class ElementAttributes {
 
 
 
-    protected abstract AttributeDefinition getAttributeDefinition(final String name);
+    private AttributeDefinition getAttributeDefinition(final String completeAttributeName) {
+        return (this.html? this.attributeDefinitions.forHtmlName(completeAttributeName) : this.attributeDefinitions.forXmlName(completeAttributeName));
+    }
+
+    private AttributeDefinition getAttributeDefinition(final String prefix, final String attributeName) {
+        return (this.html? this.attributeDefinitions.forHtmlName(prefix, attributeName) : this.attributeDefinitions.forXmlName(prefix, attributeName));
+    }
 
 
 
 
 
-    void addInnerWhiteSpace(final String whiteSpace) {
+    final void addInnerWhiteSpace(final String whiteSpace) {
         insertInnerWhiteSpace(this.innerWhiteSpacesSize, whiteSpace);
     }
 
 
-    void insertInnerWhiteSpace(final int pos, final String whiteSpace) {
+    final void insertInnerWhiteSpace(final int pos, final String whiteSpace) {
 
         if (this.innerWhiteSpaces == null) {
             // We had no whitespace array yet, create it
@@ -346,7 +429,7 @@ public abstract class ElementAttributes {
 
 
 
-    public void write(final Writer writer) throws IOException {
+    public final void write(final Writer writer) throws IOException {
 
         int n = this.attributesSize;
         int i = 0;
@@ -392,10 +475,9 @@ public abstract class ElementAttributes {
 
 
 
-    protected abstract ElementAttributes cloneElementAttributes();
+    ElementAttributes cloneElementAttributes() {
 
-
-    protected void cloneElementAttributeProperties(final ElementAttributes clone) {
+        final ElementAttributes clone = new ElementAttributes(this.html, this.attributeDefinitions);
 
         if (this.attributesSize > 0) {
             clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
@@ -427,12 +509,14 @@ public abstract class ElementAttributes {
             clone.innerWhiteSpacesSize = 0;
         }
 
+        return clone;
+
     }
 
 
 
 
-    public String toString() {
+    public final String toString() {
         final StringWriter stringWriter = new StringWriter();
         try {
             write(stringWriter);

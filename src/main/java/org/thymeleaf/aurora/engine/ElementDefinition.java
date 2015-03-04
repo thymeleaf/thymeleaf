@@ -27,18 +27,28 @@ package org.thymeleaf.aurora.engine;
  */
 public abstract class ElementDefinition {
 
+    protected final ElementName elementName;
 
+    ElementDefinition(final ElementName elementName) {
 
-    ElementDefinition() {
         super();
+
+        if (elementName == null) {
+            throw new IllegalArgumentException("Element name cannot be null");
+        }
+
+        this.elementName = elementName;
+
     }
 
 
-    public abstract ElementName getElementName();
+    public final ElementName getElementName() {
+        return this.elementName;
+    }
 
 
 
-    public String toString() {
+    public final String toString() {
         return getElementName().toString();
     }
 

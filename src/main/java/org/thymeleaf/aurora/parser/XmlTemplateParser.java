@@ -27,25 +27,25 @@ import org.attoparser.config.ParseConfiguration;
  * @since 3.0.0
  * 
  */
-public final class HtmlTemplateParser extends AbstractMarkupTemplateParser {
+public final class XmlTemplateParser extends AbstractMarkupTemplateParser {
 
 
     static final ParseConfiguration MARKUP_PARSING_CONFIGURATION;
 
-    
-    
+
+
     static {
 
         /*
-         * We don't need the underlying parser to perform many of the available validations, but we will
-         * enable AUTO_CLOSE in order to have HTML-compliant auto-closing of tags.
+         * We will require well-formed XML, but the parser will be configured in order to allow the maximum
+         * level of flexibility regarding the parsing of just fragments of XML (and not complete XML documents)
          */
-        MARKUP_PARSING_CONFIGURATION = ParseConfiguration.htmlConfiguration();
-        MARKUP_PARSING_CONFIGURATION.setElementBalancing(ParseConfiguration.ElementBalancing.AUTO_CLOSE);
-        MARKUP_PARSING_CONFIGURATION.setCaseSensitive(false);
-        MARKUP_PARSING_CONFIGURATION.setNoUnmatchedCloseElementsRequired(false);
+        MARKUP_PARSING_CONFIGURATION = ParseConfiguration.xmlConfiguration();
+        MARKUP_PARSING_CONFIGURATION.setElementBalancing(ParseConfiguration.ElementBalancing.REQUIRE_BALANCED);
+        MARKUP_PARSING_CONFIGURATION.setCaseSensitive(true);
+        MARKUP_PARSING_CONFIGURATION.setNoUnmatchedCloseElementsRequired(true);
         MARKUP_PARSING_CONFIGURATION.setUniqueAttributesInElementRequired(true);
-        MARKUP_PARSING_CONFIGURATION.setXmlWellFormedAttributeValuesRequired(false);
+        MARKUP_PARSING_CONFIGURATION.setXmlWellFormedAttributeValuesRequired(true);
         MARKUP_PARSING_CONFIGURATION.setUniqueRootElementPresence(ParseConfiguration.UniqueRootElementPresence.NOT_VALIDATED);
         MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setDoctypePresence(ParseConfiguration.PrologPresence.ALLOWED);
         MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setRequireDoctypeKeywordsUpperCase(false);
@@ -53,14 +53,12 @@ public final class HtmlTemplateParser extends AbstractMarkupTemplateParser {
         MARKUP_PARSING_CONFIGURATION.getPrologParseConfiguration().setXmlDeclarationPresence(ParseConfiguration.PrologPresence.ALLOWED);
 
     }
-    
-    
-    
-    public HtmlTemplateParser(final int bufferPoolSize, final int bufferSize) {
+
+
+
+    public XmlTemplateParser(final int bufferPoolSize, final int bufferSize) {
         super(MARKUP_PARSING_CONFIGURATION, bufferPoolSize, bufferSize);
     }
 
-
-    
     
 }

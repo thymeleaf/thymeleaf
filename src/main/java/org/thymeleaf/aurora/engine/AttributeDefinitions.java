@@ -143,16 +143,24 @@ public final class AttributeDefinitions {
 
 
     public HtmlAttributeDefinition forHtmlName(final String attributeName) {
-        if (attributeName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (HtmlAttributeDefinition) this.htmlAttributeRepository.getAttribute(attributeName);
     }
 
 
+    public HtmlAttributeDefinition forHtmlName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (HtmlAttributeDefinition) this.htmlAttributeRepository.getAttribute(prefix, attributeName);
+    }
+
+
     public HtmlAttributeDefinition forHtmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
-        if (attributeName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (attributeName == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
@@ -163,16 +171,24 @@ public final class AttributeDefinitions {
 
 
     public XmlAttributeDefinition forXmlName(final String attributeName) {
-        if (attributeName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (XmlAttributeDefinition) this.xmlAttributeRepository.getAttribute(attributeName);
     }
 
 
+    public XmlAttributeDefinition forXmlName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (XmlAttributeDefinition) this.xmlAttributeRepository.getAttribute(prefix, attributeName);
+    }
+
+
     public XmlAttributeDefinition forXmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
-        if (attributeName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (attributeName == null || attributeNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
@@ -271,7 +287,7 @@ public final class AttributeDefinitions {
         }
 
 
-        AttributeDefinition getAttribute(final String text) {
+        AttributeDefinition getAttribute(final String completeAttributeName) {
 
             int index;
 
@@ -280,7 +296,7 @@ public final class AttributeDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, text);
+                index = binarySearch(!this.html, this.standardRepositoryNames, completeAttributeName);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -298,7 +314,7 @@ public final class AttributeDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, text);
+                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -314,7 +330,58 @@ public final class AttributeDefinitions {
              */
             this.writeLock.lock();
             try {
-                return storeAttribute(text);
+                return storeAttribute(completeAttributeName);
+            } finally {
+                this.writeLock.unlock();
+            }
+
+        }
+
+
+        AttributeDefinition getAttribute(final String prefix, final String attributeName) {
+
+            int index;
+
+            if (this.standardRepository != null) {
+                /*
+                 * We first try to find it in the repository containing the standard elements, which does not need
+                 * any synchronization.
+                 */
+                index = binarySearch(!this.html, this.standardRepositoryNames, prefix, attributeName);
+
+                if (index >= 0) {
+                    return this.standardRepository.get(index);
+                }
+            }
+
+            /*
+             * We did not find it in the repository of standard elements, so let's try in the read+write one,
+             * which does require synchronization through a readwrite lock.
+             */
+
+            this.readLock.lock();
+            try {
+
+                /*
+                 * First look for the element in the namespaced repository
+                 */
+                index = binarySearch(!this.html, this.repositoryNames, prefix, attributeName);
+
+                if (index >= 0) {
+                    return this.repository.get(index);
+                }
+
+            } finally {
+                this.readLock.unlock();
+            }
+
+
+            /*
+             * NOT FOUND. We need to obtain a write lock and store the text
+             */
+            this.writeLock.lock();
+            try {
+                return storeAttribute(prefix, attributeName);
             } finally {
                 this.writeLock.unlock();
             }
@@ -335,7 +402,7 @@ public final class AttributeDefinitions {
                             new HtmlAttributeDefinition(AttributeNames.forHtmlName(text, offset, len)) :
                             new XmlAttributeDefinition(AttributeNames.forXmlName(text, offset, len));
 
-            final String[] completeAttributeNames = attributeDefinition.getAttributeName().getCompleteAttributeNames();
+            final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
             for (final String completeAttributeName : completeAttributeNames) {
 
@@ -352,9 +419,9 @@ public final class AttributeDefinitions {
         }
 
 
-        private AttributeDefinition storeAttribute(final String text) {
+        private AttributeDefinition storeAttribute(final String attributeName) {
 
-            int index = binarySearch(!this.html, this.repositoryNames, text);
+            int index = binarySearch(!this.html, this.repositoryNames, attributeName);
             if (index >= 0) {
                 // It was already added while we were waiting for the lock!
                 return this.repository.get(index);
@@ -362,10 +429,40 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HtmlAttributeDefinition(AttributeNames.forHtmlName(text)) :
-                            new XmlAttributeDefinition(AttributeNames.forXmlName(text));
+                            new HtmlAttributeDefinition(AttributeNames.forHtmlName(attributeName)) :
+                            new XmlAttributeDefinition(AttributeNames.forXmlName(attributeName));
 
-            final String[] completeAttributeNames = attributeDefinition.getAttributeName().getCompleteAttributeNames();
+            final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
+
+            for (final String completeAttributeName : completeAttributeNames) {
+
+                index = binarySearch(!this.html, this.repositoryNames, completeAttributeName);
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryNames.add(((index + 1) * -1), completeAttributeName);
+                this.repository.add(((index + 1) * -1), attributeDefinition);
+
+            }
+
+            return attributeDefinition;
+
+        }
+
+
+        private AttributeDefinition storeAttribute(final String prefix, final String attributeName) {
+
+            int index = binarySearch(!this.html, this.repositoryNames, prefix, attributeName);
+            if (index >= 0) {
+                // It was already added while we were waiting for the lock!
+                return this.repository.get(index);
+            }
+
+            final AttributeDefinition attributeDefinition =
+                    this.html?
+                            new HtmlAttributeDefinition(AttributeNames.forHtmlName(prefix, attributeName)) :
+                            new XmlAttributeDefinition(AttributeNames.forXmlName(prefix, attributeName));
+
+            final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
             for (final String completeAttributeName : completeAttributeNames) {
 
@@ -387,7 +484,7 @@ public final class AttributeDefinitions {
             // This method will only be called from within the AttributeDefinitions class itself, during initialization of
             // standard elements.
 
-            final String[] completeAttributeNames = attributeDefinition.getAttributeName().getCompleteAttributeNames();
+            final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
             int index;
             for (final String completeAttributeName : completeAttributeNames) {
@@ -465,6 +562,92 @@ public final class AttributeDefinitions {
                 } else {
                     // Found!!
                     return mid;
+                }
+
+            }
+
+            return -(low + 1);  // Not Found!! We return (-(insertion point) - 1), to guarantee all non-founds are < 0
+
+        }
+
+
+        private static int binarySearch(final boolean caseSensitive,
+                                        final List<String> values, final String prefix, final String attributeName) {
+
+            // This method will be specialized in finding prefixed attribute names (in the prefix:name form)
+
+            if (prefix == null) {
+                return binarySearch(caseSensitive, values, attributeName);
+            }
+
+            final int prefixLen = prefix.length();
+            final int attributeNameLen = attributeName.length();
+
+            int low = 0;
+            int high = values.size() - 1;
+
+            int mid, cmp;
+            String midVal;
+            int midValLen;
+
+            while (low <= high) {
+
+                mid = (low + high) >>> 1;
+                midVal = values.get(mid);
+                midValLen = midVal.length();
+
+                if (TextUtil.startsWith(caseSensitive, midVal, prefix)) {
+
+                    // Prefix matched, but it could be a mere coincidence if the text being evaluated doesn't have
+                    // a ':' after the prefix letters, so we will make sure by comparing the next char manually
+
+                    if (midValLen <= prefixLen) {
+                        // midVal is exactly as prefix, therefore it goes first
+
+                        low = mid + 1;
+
+                    } else {
+
+                        // Compare the next char
+                        cmp = midVal.charAt(prefixLen) - ':';
+
+                        if (cmp < 0) {
+                            low = mid + 1;
+                        } else if (cmp > 0) {
+                            high = mid - 1;
+                        } else {
+
+                            // Prefix matches and we made sure midVal has a ':', so let's try the attributeName
+                            cmp = TextUtil.compareTo(caseSensitive, midVal, prefixLen + 1, (midValLen - (prefixLen + 1)), attributeName, 0, attributeNameLen);
+
+                            if (cmp < 0) {
+                                low = mid + 1;
+                            } else if (cmp > 0) {
+                                high = mid - 1;
+                            } else {
+                                // Found!!
+                                return mid;
+                            }
+
+                        }
+
+                    }
+
+                } else {
+
+                    // midVal does not start with prefix, so comparing midVal and prefix should be enough
+
+                    cmp = TextUtil.compareTo(caseSensitive, midVal, prefix);
+
+                    if (cmp < 0) {
+                        low = mid + 1;
+                    } else if (cmp > 0) {
+                        high = mid - 1;
+                    } else {
+                        // This is impossible - if they were the same, we'd have detected it already!
+                        throw new IllegalStateException("Bad comparison of midVal \"" + midVal + "\" and prefix \"" + prefix + "\"");
+                    }
+
                 }
 
             }

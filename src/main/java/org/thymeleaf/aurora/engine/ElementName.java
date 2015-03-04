@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -38,7 +40,7 @@ public abstract class ElementName {
 
         super();
 
-        if (elementName == null || elementName.length() == 0) {
+        if (elementName == null || elementName.trim().length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
@@ -67,6 +69,39 @@ public abstract class ElementName {
     public String[] getCompleteElementNames() {
         return this.completeElementNames;
     }
+
+
+
+
+    @Override
+    public boolean equals(final Object o) {
+
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ElementName)) {
+            return false;
+        }
+
+        final ElementName that = (ElementName) o;
+
+        if (!Arrays.equals(this.completeElementNames, that.completeElementNames)) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+
+
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(this.completeElementNames);
+    }
+
+
 
 
     @Override

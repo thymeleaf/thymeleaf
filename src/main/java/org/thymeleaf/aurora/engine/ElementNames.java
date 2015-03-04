@@ -33,7 +33,7 @@ public class ElementNames {
 
     public static XmlElementName forXmlName(final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
 
-        if (elementNameBuffer == null) {
+        if (elementNameBuffer == null || elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
@@ -72,7 +72,7 @@ public class ElementNames {
 
     public static HtmlElementName forHtmlName(final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
 
-        if (elementNameBuffer == null) {
+        if (elementNameBuffer == null|| elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
@@ -128,7 +128,7 @@ public class ElementNames {
 
     public static XmlElementName forXmlName(final String elementName) {
 
-        if (elementName == null) {
+        if (elementName == null|| elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
@@ -164,7 +164,7 @@ public class ElementNames {
 
     public static HtmlElementName forHtmlName(final String elementName) {
 
-        if (elementName == null) {
+        if (elementName == null|| elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
@@ -214,44 +214,56 @@ public class ElementNames {
 
 
 
-    public static HtmlElementName forHtmlName(final String dialectPrefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
-        if (elementNameBuffer == null) {
+    public static HtmlElementName forHtmlName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        if (elementNameBuffer == null|| elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
         }
-        return new HtmlElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHtmlName(elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+        return new HtmlElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
 
-    public static XmlElementName forXmlName(final String dialectPrefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
-        if (elementNameBuffer == null) {
+    public static XmlElementName forXmlName(final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+        if (elementNameBuffer == null|| elementNameLen == 0) {
             throw new IllegalArgumentException("Element name buffer cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Element name offset and len must be equal or greater than zero");
         }
-        return new XmlElementName(dialectPrefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forXmlName(elementNameBuffer, elementNameOffset, elementNameLen);
+        }
+        return new XmlElementName(prefix, new String(elementNameBuffer, elementNameOffset, elementNameLen));
     }
 
 
 
-    public static HtmlElementName forHtmlName(final String dialectPrefix, final String elementName) {
-        if (elementName == null) {
+    public static HtmlElementName forHtmlName(final String prefix, final String elementName) {
+        if (elementName == null|| elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
-        return new HtmlElementName(dialectPrefix, elementName);
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHtmlName(elementName);
+        }
+        return new HtmlElementName(prefix, elementName);
     }
 
 
 
-    public static XmlElementName forXmlName(final String dialectPrefix, final String elementName) {
-        if (elementName == null) {
+    public static XmlElementName forXmlName(final String prefix, final String elementName) {
+        if (elementName == null|| elementName.length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
-        return new XmlElementName(dialectPrefix, elementName);
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forXmlName(elementName);
+        }
+        return new XmlElementName(prefix, elementName);
     }
 
 

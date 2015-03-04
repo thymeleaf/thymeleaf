@@ -33,7 +33,7 @@ public class AttributeNames {
 
     public static XmlAttributeName forXmlName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
 
-        if (attributeNameBuffer == null) {
+        if (attributeNameBuffer == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
@@ -72,7 +72,7 @@ public class AttributeNames {
 
     public static HtmlAttributeName forHtmlName(final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
 
-        if (attributeNameBuffer == null) {
+        if (attributeNameBuffer == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
@@ -139,7 +139,7 @@ public class AttributeNames {
 
     public static XmlAttributeName forXmlName(final String attributeName) {
 
-        if (attributeName == null) {
+        if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
 
@@ -175,7 +175,7 @@ public class AttributeNames {
 
     public static HtmlAttributeName forHtmlName(final String attributeName) {
 
-        if (attributeName == null) {
+        if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
 
@@ -236,44 +236,56 @@ public class AttributeNames {
 
 
 
-    public static HtmlAttributeName forHtmlName(final String dialectPrefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
-        if (attributeNameBuffer == null) {
+    public static HtmlAttributeName forHtmlName(final String prefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeNameBuffer == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
-        return new HtmlAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHtmlName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+        return new HtmlAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
 
-    public static XmlAttributeName forXmlName(final String dialectPrefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
-        if (attributeNameBuffer == null) {
+    public static XmlAttributeName forXmlName(final String prefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+        if (attributeNameBuffer == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Attribute name buffer cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Attribute name offset and len must be equal or greater than zero");
         }
-        return new XmlAttributeName(dialectPrefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forXmlName(attributeNameBuffer, attributeNameOffset, attributeNameLen);
+        }
+        return new XmlAttributeName(prefix, new String(attributeNameBuffer, attributeNameOffset, attributeNameLen));
     }
 
 
 
-    public static HtmlAttributeName forHtmlName(final String dialectPrefix, final String attributeName) {
-        if (attributeName == null) {
+    public static HtmlAttributeName forHtmlName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
-        return new HtmlAttributeName(dialectPrefix, attributeName);
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forHtmlName(attributeName);
+        }
+        return new HtmlAttributeName(prefix, attributeName);
     }
 
 
 
-    public static XmlAttributeName forXmlName(final String dialectPrefix, final String attributeName) {
-        if (attributeName == null) {
+    public static XmlAttributeName forXmlName(final String prefix, final String attributeName) {
+        if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Attribute name cannot be null or empty");
         }
-        return new XmlAttributeName(dialectPrefix, attributeName);
+        if (prefix == null || prefix.trim().length() == 0) {
+            return forXmlName(attributeName);
+        }
+        return new XmlAttributeName(prefix, attributeName);
     }
 
 

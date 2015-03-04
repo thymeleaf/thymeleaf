@@ -223,7 +223,7 @@ public final class ElementDefinitions {
 
         Collections.sort(htmlElementDefinitionListAux, new Comparator<ElementDefinition>() {
             public int compare(final ElementDefinition o1, final ElementDefinition o2) {
-                return o1.getElementName().getElementName().compareTo(o2.getElementName().getElementName());
+                return o1.elementName.elementName.compareTo(o2.elementName.elementName);
             }
         });
 
@@ -234,7 +234,7 @@ public final class ElementDefinitions {
 
         final LinkedHashSet<String> htmlElementDefinitionNamesAux = new LinkedHashSet<String>(ALL_STANDARD_HTML_ELEMENTS.size() + 1, 1.0f);
         for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
-            for (final String completeElementName : elementDefinition.getElementName().getCompleteElementNames()) {
+            for (final String completeElementName : elementDefinition.elementName.completeElementNames) {
                 htmlElementDefinitionNamesAux.add(completeElementName);
             }
         }
@@ -266,16 +266,24 @@ public final class ElementDefinitions {
 
 
     public HtmlElementDefinition forHtmlName(final String elementName) {
-        if (elementName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (HtmlElementDefinition) this.htmlElementRepository.getElement(elementName);
     }
 
 
+    public HtmlElementDefinition forHtmlName(final String prefix, final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (HtmlElementDefinition) this.htmlElementRepository.getElement(prefix, elementName);
+    }
+
+
     public HtmlElementDefinition forHtmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
-        if (elementName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (elementName == null || elementNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
@@ -286,16 +294,24 @@ public final class ElementDefinitions {
 
 
     public XmlElementDefinition forXmlName(final String elementName) {
-        if (elementName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         return (XmlElementDefinition) this.xmlElementRepository.getElement(elementName);
     }
 
 
+    public XmlElementDefinition forXmlName(final String prefix, final String elementName) {
+        if (elementName == null || elementName.length() == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
+        }
+        return (XmlElementDefinition) this.xmlElementRepository.getElement(prefix, elementName);
+    }
+
+
     public XmlElementDefinition forXmlName(final char[] elementName, final int elementNameOffset, final int elementNameLen) {
-        if (elementName == null) {
-            throw new IllegalArgumentException("Name cannot be null");
+        if (elementName == null || elementNameLen == 0) {
+            throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (elementNameOffset < 0 || elementNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
@@ -398,7 +414,7 @@ public final class ElementDefinitions {
         }
 
 
-        ElementDefinition getElement(final String text) {
+        ElementDefinition getElement(final String completeElementName) {
 
             int index;
 
@@ -407,7 +423,7 @@ public final class ElementDefinitions {
                  * We first try to find it in the repository containing the standard elements, which does not need
                  * any synchronization.
                  */
-                index = binarySearch(!this.html, this.standardRepositoryNames, text);
+                index = binarySearch(!this.html, this.standardRepositoryNames, completeElementName);
 
                 if (index >= 0) {
                     return this.standardRepository.get(index);
@@ -425,7 +441,7 @@ public final class ElementDefinitions {
                 /*
                  * First look for the element in the namespaced repository
                  */
-                index = binarySearch(!this.html, this.repositoryNames, text);
+                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
 
                 if (index >= 0) {
                     return this.repository.get(index);
@@ -441,7 +457,58 @@ public final class ElementDefinitions {
              */
             this.writeLock.lock();
             try {
-                return storeElement(text);
+                return storeElement(completeElementName);
+            } finally {
+                this.writeLock.unlock();
+            }
+
+        }
+
+
+        ElementDefinition getElement(final String prefix, final String elementName) {
+
+            int index;
+
+            if (this.standardRepository != null) {
+                /*
+                 * We first try to find it in the repository containing the standard elements, which does not need
+                 * any synchronization.
+                 */
+                index = binarySearch(!this.html, this.standardRepositoryNames, prefix, elementName);
+
+                if (index >= 0) {
+                    return this.standardRepository.get(index);
+                }
+            }
+
+            /*
+             * We did not find it in the repository of standard elements, so let's try in the read+write one,
+             * which does require synchronization through a readwrite lock.
+             */
+
+            this.readLock.lock();
+            try {
+
+                /*
+                 * First look for the element in the namespaced repository
+                 */
+                index = binarySearch(!this.html, this.repositoryNames, prefix, elementName);
+
+                if (index >= 0) {
+                    return this.repository.get(index);
+                }
+
+            } finally {
+                this.readLock.unlock();
+            }
+
+
+            /*
+             * NOT FOUND. We need to obtain a write lock and store the text
+             */
+            this.writeLock.lock();
+            try {
+                return storeElement(prefix, elementName);
             } finally {
                 this.writeLock.unlock();
             }
@@ -462,7 +529,7 @@ public final class ElementDefinitions {
                             new HtmlElementDefinition(ElementNames.forHtmlName(text, offset, len), HtmlElementType.NORMAL) :
                             new XmlElementDefinition(ElementNames.forXmlName(text, offset, len));
 
-            final String[] completeElementNames = elementDefinition.getElementName().getCompleteElementNames();
+            final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
             for (final String completeElementName : completeElementNames) {
 
@@ -492,7 +559,37 @@ public final class ElementDefinitions {
                             new HtmlElementDefinition(ElementNames.forHtmlName(text), HtmlElementType.NORMAL) :
                             new XmlElementDefinition(ElementNames.forXmlName(text));
 
-            final String[] completeElementNames = elementDefinition.getElementName().getCompleteElementNames();
+            final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
+
+            for (final String completeElementName : completeElementNames) {
+
+                index = binarySearch(!this.html, this.repositoryNames, completeElementName);
+
+                // binary Search returned (-(insertion point) - 1)
+                this.repositoryNames.add(((index + 1) * -1), completeElementName);
+                this.repository.add(((index + 1) * -1), elementDefinition);
+
+            }
+
+            return elementDefinition;
+
+        }
+
+
+        private ElementDefinition storeElement(final String prefix, final String elementName) {
+
+            int index = binarySearch(!this.html, this.repositoryNames, prefix, elementName);
+            if (index >= 0) {
+                // It was already added while we were waiting for the lock!
+                return this.repository.get(index);
+            }
+
+            final ElementDefinition elementDefinition =
+                    this.html?
+                            new HtmlElementDefinition(ElementNames.forHtmlName(prefix, elementName), HtmlElementType.NORMAL) :
+                            new XmlElementDefinition(ElementNames.forXmlName(prefix, elementName));
+
+            final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
             for (final String completeElementName : completeElementNames) {
 
@@ -514,7 +611,7 @@ public final class ElementDefinitions {
             // This method will only be called from within the ElementDefinitions class itself, during initialization of
             // standard elements.
 
-            final String[] completeElementNames = elementDefinition.getElementName().getCompleteElementNames();
+            final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
             int index;
             for (final String completeElementName : completeElementNames) {
@@ -592,6 +689,92 @@ public final class ElementDefinitions {
                 } else {
                     // Found!!
                     return mid;
+                }
+
+            }
+
+            return -(low + 1);  // Not Found!! We return (-(insertion point) - 1), to guarantee all non-founds are < 0
+
+        }
+
+
+        private static int binarySearch(final boolean caseSensitive,
+                                        final List<String> values, final String prefix, final String elementName) {
+
+            // This method will be specialized in finding prefixed element names (in the prefix:name form)
+
+            if (prefix == null) {
+                return binarySearch(caseSensitive, values, elementName);
+            }
+
+            final int prefixLen = prefix.length();
+            final int elementNameLen = elementName.length();
+
+            int low = 0;
+            int high = values.size() - 1;
+
+            int mid, cmp;
+            String midVal;
+            int midValLen;
+
+            while (low <= high) {
+
+                mid = (low + high) >>> 1;
+                midVal = values.get(mid);
+                midValLen = midVal.length();
+
+                if (TextUtil.startsWith(caseSensitive, midVal, prefix)) {
+
+                    // Prefix matched, but it could be a mere coincidence if the text being evaluated doesn't have
+                    // a ':' after the prefix letters, so we will make sure by comparing the next char manually
+
+                    if (midValLen <= prefixLen) {
+                        // midVal is exactly as prefix, therefore it goes first
+
+                        low = mid + 1;
+
+                    } else {
+
+                        // Compare the next char
+                        cmp = midVal.charAt(prefixLen) - ':';
+
+                        if (cmp < 0) {
+                            low = mid + 1;
+                        } else if (cmp > 0) {
+                            high = mid - 1;
+                        } else {
+
+                            // Prefix matches and we made sure midVal has a ':', so let's try the elementName
+                            cmp = TextUtil.compareTo(caseSensitive, midVal, prefixLen + 1, (midValLen - (prefixLen + 1)), elementName, 0, elementNameLen);
+
+                            if (cmp < 0) {
+                                low = mid + 1;
+                            } else if (cmp > 0) {
+                                high = mid - 1;
+                            } else {
+                                // Found!!
+                                return mid;
+                            }
+
+                        }
+
+                    }
+
+                } else {
+
+                    // midVal does not start with prefix, so comparing midVal and prefix should be enough
+
+                    cmp = TextUtil.compareTo(caseSensitive, midVal, prefix);
+
+                    if (cmp < 0) {
+                        low = mid + 1;
+                    } else if (cmp > 0) {
+                        high = mid - 1;
+                    } else {
+                        // This is impossible - if they were the same, we'd have detected it already!
+                        throw new IllegalStateException("Bad comparison of midVal \"" + midVal + "\" and prefix \"" + prefix + "\"");
+                    }
+
                 }
 
             }
