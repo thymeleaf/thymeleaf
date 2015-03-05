@@ -70,9 +70,9 @@ public final class Comment implements Node {
 
 
 
-    public Comment(final String content) {
+    Comment(final ITextRepository textRepository, final String content) {
         super();
-        this.textRepository = null;
+        this.textRepository = textRepository;
         setContent(content);
     }
 
@@ -87,17 +87,14 @@ public final class Comment implements Node {
 
         if (this.comment == null) {
             if (this.content == null) {
-                this.comment =
-                        (this.textRepository != null ?
-                                this.textRepository.getText(this.buffer, this.offset, this.commentLength) :
-                                new String(this.buffer, this.offset, this.commentLength));
+                this.comment = this.textRepository.getText(this.buffer, this.offset, this.commentLength);
             } else {
                 final StringBuilder strBuilder =
                         new StringBuilder(this.contentLength + COMMENT_PREFIX.length + COMMENT_SUFFIX.length);
                 strBuilder.append(COMMENT_PREFIX);
                 strBuilder.append(this.content);
                 strBuilder.append(COMMENT_SUFFIX);
-                this.comment = strBuilder.toString();
+                this.comment = this.textRepository.getText(strBuilder);
             }
         }
 

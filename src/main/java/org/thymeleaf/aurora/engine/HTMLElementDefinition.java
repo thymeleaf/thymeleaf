@@ -25,26 +25,20 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public final class HtmlAttributeDefinition extends AttributeDefinition {
+public final class HTMLElementDefinition extends ElementDefinition {
 
-    final boolean booleanAttribute;
+    final HTMLElementType type;
 
 
-    HtmlAttributeDefinition(final HtmlAttributeName name) {
-        this(name, false);
-    }
 
-    HtmlAttributeDefinition(final HtmlAttributeName name, final boolean booleanAttribute) {
-
+    HTMLElementDefinition(final HTMLElementName name, final HTMLElementType type) {
         super(name);
-
-        this.booleanAttribute = booleanAttribute;
-
+        this.type = type;
     }
 
 
-    public boolean isBooleanAttribute() {
-        return this.booleanAttribute;
+    public HTMLElementType getType() {
+        return this.type;
     }
 
 

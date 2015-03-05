@@ -108,7 +108,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration) {
 
         if (this.next == null) {
             return;

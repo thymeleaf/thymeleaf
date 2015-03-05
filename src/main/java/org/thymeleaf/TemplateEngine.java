@@ -38,14 +38,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.aurora.context.ITemplateEngineContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.context.TemplateEngineContext;
 import org.thymeleaf.aurora.context.TemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
-import org.thymeleaf.aurora.parser.HtmlTemplateParser;
+import org.thymeleaf.aurora.parser.HTMLTemplateParser;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -1126,7 +1125,7 @@ public class TemplateEngine {
     private final ConcurrentHashMap<String,String> entireTemplatesByName = new ConcurrentHashMap<String, String>();
 
 
-    private static final org.thymeleaf.aurora.parser.ITemplateParser PARSER = new HtmlTemplateParser(40,2048);
+    private static final org.thymeleaf.aurora.parser.ITemplateParser PARSER = new HTMLTemplateParser(40,2048);
     private static final TemplateEngineContext TEMPLATE_ENGINE_CONTEXT = new TemplateEngineContext();
 
 

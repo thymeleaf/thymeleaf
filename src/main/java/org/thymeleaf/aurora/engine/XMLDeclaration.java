@@ -31,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class XmlDeclaration implements Node {
+public final class XMLDeclaration implements Node {
 
     public static final String DEFAULT_KEYWORD = "xml";
 
@@ -59,13 +59,13 @@ public final class XmlDeclaration implements Node {
 
 
     // Meant to be called only from within the engine
-    XmlDeclaration() {
+    XMLDeclaration() {
         super();
     }
 
 
 
-    public XmlDeclaration(
+    public XMLDeclaration(
             final String version,
             final String encoding,
             final String standalone) {
@@ -105,21 +105,21 @@ public final class XmlDeclaration implements Node {
             strBuilder.append(this.keyword);
             if (this.version != null) {
                 strBuilder.append(' ');
-                strBuilder.append(XmlDeclaration.ATTRIBUTE_NAME_VERSION);
+                strBuilder.append(XMLDeclaration.ATTRIBUTE_NAME_VERSION);
                 strBuilder.append("=\"");
                 strBuilder.append(this.version);
                 strBuilder.append('"');
             }
             if (this.encoding != null) {
                 strBuilder.append(' ');
-                strBuilder.append(XmlDeclaration.ATTRIBUTE_NAME_ENCODING);
+                strBuilder.append(XMLDeclaration.ATTRIBUTE_NAME_ENCODING);
                 strBuilder.append("=\"");
                 strBuilder.append(this.encoding);
                 strBuilder.append('"');
             }
             if (this.standalone != null) {
                 strBuilder.append(' ');
-                strBuilder.append(XmlDeclaration.ATTRIBUTE_NAME_STANDALONE);
+                strBuilder.append(XMLDeclaration.ATTRIBUTE_NAME_STANDALONE);
                 strBuilder.append("=\"");
                 strBuilder.append(this.standalone);
                 strBuilder.append('"');
@@ -234,8 +234,8 @@ public final class XmlDeclaration implements Node {
 
 
 
-    public XmlDeclaration cloneNode() {
-        final XmlDeclaration clone = new XmlDeclaration();
+    public XMLDeclaration cloneNode() {
+        final XMLDeclaration clone = new XMLDeclaration();
         clone.xmlDeclaration = this.xmlDeclaration;
         clone.keyword = this.keyword;
         clone.version = this.version;

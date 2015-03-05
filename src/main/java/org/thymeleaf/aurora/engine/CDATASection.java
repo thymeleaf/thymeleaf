@@ -70,9 +70,9 @@ public final class CDATASection implements Node {
 
 
 
-    public CDATASection(final String content) {
+    CDATASection(final ITextRepository textRepository, final String content) {
         super();
-        this.textRepository = null;
+        this.textRepository = textRepository;
         setContent(content);
     }
 
@@ -87,17 +87,14 @@ public final class CDATASection implements Node {
 
         if (this.cdataSection == null) {
             if (this.content == null) {
-                this.cdataSection =
-                        (this.textRepository != null ?
-                                this.textRepository.getText(this.buffer, this.offset, this.cdataSectionLength) :
-                                new String(this.buffer, this.offset, this.cdataSectionLength));
+                this.cdataSection = this.textRepository.getText(this.buffer, this.offset, this.cdataSectionLength);
             } else {
                 final StringBuilder strBuilder =
                         new StringBuilder(this.contentLength + CDATA_PREFIX.length + CDATA_SUFFIX.length);
                 strBuilder.append(CDATA_PREFIX);
                 strBuilder.append(this.content);
                 strBuilder.append(CDATA_SUFFIX);
-                this.cdataSection = strBuilder.toString();
+                this.cdataSection = this.textRepository.getText(strBuilder);
             }
         }
 

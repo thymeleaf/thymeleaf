@@ -25,21 +25,14 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public final class HtmlElementDefinition extends ElementDefinition {
-
-    final HtmlElementType type;
+public final class XMLElementDefinition extends ElementDefinition {
 
 
 
-    HtmlElementDefinition(final HtmlElementName name, final HtmlElementType type) {
+    XMLElementDefinition(final XMLElementName name) {
         super(name);
-        this.type = type;
     }
 
-
-    public HtmlElementType getType() {
-        return this.type;
-    }
 
 
 }

@@ -41,11 +41,11 @@ public enum TemplateMode {
         this.text = text;
     }
 
-    public boolean isHtml() {
+    public boolean isHTML() {
         return this.html;
     }
 
-    public boolean isXml() {
+    public boolean isXML() {
         return this.xml;
     }
 

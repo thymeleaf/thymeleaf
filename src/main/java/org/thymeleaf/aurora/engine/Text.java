@@ -65,9 +65,9 @@ public final class Text implements Node {
 
 
 
-    public Text(final String text) {
+    Text(final ITextRepository textRepository, final String text) {
         super();
-        this.textRepository = null;
+        this.textRepository = textRepository;
         setText(text);
     }
 
@@ -78,10 +78,7 @@ public final class Text implements Node {
         // Either we have a non-null text, or a non-null buffer specification (char[],offset,len)
 
         if (this.text == null) {
-            this.text =
-                    (this.textRepository != null?
-                        this.textRepository.getText(this.buffer, this.offset, this.length) :
-                        new String(this.buffer, this.offset, this.length));
+            this.text = this.textRepository.getText(this.buffer, this.offset, this.length);
         }
 
         return this.text;

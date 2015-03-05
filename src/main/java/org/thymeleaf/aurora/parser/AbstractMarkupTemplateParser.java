@@ -98,9 +98,9 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
         Validate.notNull(templateResource, "Template Resource cannot be null");
         Validate.notNull(templateHandler, "Template Handler cannot be null");
 
-        if (templateMode.isHtml()) {
+        if (templateMode.isHTML()) {
             Validate.isTrue(this.html, "Parser is configured as XML, but HTML-mode template parsing is being requested");
-        } else if (templateMode.isXml()) {
+        } else if (templateMode.isXML()) {
             Validate.isTrue(!this.html, "Parser is configured as HTML, but XML-mode template parsing is being requested");
         } else {
             throw new IllegalArgumentException(
@@ -122,7 +122,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
                                 templateMode);
 
             // If we need to select blocks, we will need a block selector here. Note this will get executed in the
-            // handler chain AFTER thymeleaf's own ThymeleafHtmlTemplateMarkupHandler, so that we will be able to
+            // handler chain AFTER thymeleaf's own TemplateHandlerAdapterMarkupHandler, so that we will be able to
             // include in selectors code inside prototype-only comments.
             if (selectors != null) {
 

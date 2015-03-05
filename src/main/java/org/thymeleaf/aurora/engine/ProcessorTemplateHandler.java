@@ -160,7 +160,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration) {
 
         super.handleXmlDeclaration(xmlDeclaration);
 

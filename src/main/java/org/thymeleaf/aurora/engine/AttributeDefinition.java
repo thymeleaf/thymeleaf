@@ -51,4 +51,32 @@ public abstract class AttributeDefinition {
         return getAttributeName().toString();
     }
 
+
+
+    @Override
+    public boolean equals(final Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (!o.getClass().equals(this.getClass())) {
+            return false;
+        }
+
+        final AttributeDefinition that = (AttributeDefinition) o;
+
+        if (!this.attributeName.equals(that.attributeName)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return attributeName.hashCode();
+    }
+
 }

@@ -240,7 +240,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration) {
 
         try {
             xmlDeclaration.write(this.writer);

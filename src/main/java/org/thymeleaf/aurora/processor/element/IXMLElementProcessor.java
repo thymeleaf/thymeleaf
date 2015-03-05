@@ -21,9 +21,10 @@ package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.Node;
-import org.thymeleaf.aurora.engine.HtmlAttributeName;
-import org.thymeleaf.aurora.engine.HtmlElementName;
+import org.thymeleaf.aurora.engine.ElementAttributes;
+import org.thymeleaf.aurora.engine.XMLAttributeName;
+import org.thymeleaf.aurora.engine.XMLElementDefinition;
+import org.thymeleaf.aurora.engine.XMLElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -32,17 +33,16 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IHtmlElementDOMProcessor extends IProcessor {
+public interface IXMLElementProcessor extends IProcessor {
 
-    public HtmlElementName getHtmlElementName();
-    public HtmlAttributeName getHtmlAttributeName();
-    public String getHtmlAttributeValue();
+    public XMLElementName getXMLElementName();
+    public XMLAttributeName getXMLAttributeName();
+    public String getXMLAttributeValue();
 
-
-    public void processHtmlElementBefore(
-            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext, final Node dom);
-
-    public void processHtmlElementAfter(
-            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext, final Node dom);
+    public ElementProcessorResult processXMLElement(
+            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
+            final XMLElementDefinition elementDefinition, final String elementName,
+            final ElementAttributes elementAttributes,
+            final int line, final int col);
 
 }

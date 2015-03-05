@@ -27,7 +27,7 @@ import org.attoparser.config.ParseConfiguration;
  * @since 3.0.0
  * 
  */
-public final class XmlTemplateParser extends AbstractMarkupTemplateParser {
+public final class XMLTemplateParser extends AbstractMarkupTemplateParser {
 
 
     static final ParseConfiguration MARKUP_PARSING_CONFIGURATION;
@@ -56,7 +56,7 @@ public final class XmlTemplateParser extends AbstractMarkupTemplateParser {
 
 
 
-    public XmlTemplateParser(final int bufferPoolSize, final int bufferSize) {
+    public XMLTemplateParser(final int bufferPoolSize, final int bufferSize) {
         super(MARKUP_PARSING_CONFIGURATION, bufferPoolSize, bufferSize);
     }
 

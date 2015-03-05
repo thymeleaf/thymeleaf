@@ -77,7 +77,7 @@ public final class ElementAttributes {
             }
         }
         // Not found that way - before discarding, let's search using AttributeDefinitions
-        return searchAttribute(getAttributeDefinition(completeName).attributeName);
+        return searchAttribute(computeAttributeDefinition(completeName).attributeName);
     }
 
 
@@ -86,7 +86,7 @@ public final class ElementAttributes {
             // Optimization: searchAttribute(name) might be faster if we are able to avoid using AttributeDefinition
             return searchAttribute(name);
         }
-        return searchAttribute(getAttributeDefinition(prefix, name).attributeName);
+        return searchAttribute(computeAttributeDefinition(prefix, name).attributeName);
     }
 
 
@@ -155,6 +155,38 @@ public final class ElementAttributes {
 
 
 
+    public final AttributeDefinition getAttributeDefinition(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].definition;
+    }
+
+
+    public final AttributeDefinition getAttributeDefinition(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].definition;
+    }
+
+
+    public final AttributeDefinition getAttributeDefinition(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].definition;
+    }
+
+
+
+
 
     public final void clearAll() {
         this.attributesSize = 0;
@@ -171,7 +203,7 @@ public final class ElementAttributes {
 
     public final void setAttribute(final String completeName, final String value, final ValueQuotes valueQuotes) {
         Validate.isTrue(
-                !(ValueQuotes.NONE.equals(valueQuotes) && !this.templateMode.isHtml()),
+                !(ValueQuotes.NONE.equals(valueQuotes) && !this.templateMode.isHTML()),
                 "Cannot set no-quote attributes when not in HTML mode");
         Validate.isTrue(
                 !(ValueQuotes.NONE.equals(valueQuotes) && value != null && value.length() == 0),
@@ -187,7 +219,7 @@ public final class ElementAttributes {
 
         Validate.notNull(name, "Attribute name cannot be null");
 
-        Validate.isTrue(value != null || this.templateMode.isHtml(), "Cannot set null-value attributes when not in HTML mode");
+        Validate.isTrue(value != null || this.templateMode.isHTML(), "Cannot set null-value attributes when not in HTML mode");
 
         if (this.attributes == null) {
             // We had no attributes array yet, create it
@@ -239,7 +271,7 @@ public final class ElementAttributes {
         }
 
         newAttribute.setElementAttribute(
-                getAttributeDefinition(name), name, operator, value, valueQuotes, line, col);
+                computeAttributeDefinition(name), name, operator, value, valueQuotes, line, col);
 
         this.attributeNames[this.attributesSize] = newAttribute.definition.getAttributeName();
 
@@ -371,12 +403,12 @@ public final class ElementAttributes {
 
 
 
-    private AttributeDefinition getAttributeDefinition(final String completeAttributeName) {
-        return (this.templateMode.isHtml()? this.attributeDefinitions.forHtmlName(completeAttributeName) : this.attributeDefinitions.forXmlName(completeAttributeName));
+    private AttributeDefinition computeAttributeDefinition(final String completeAttributeName) {
+        return (this.templateMode.isHTML()? this.attributeDefinitions.forHTMLName(completeAttributeName) : this.attributeDefinitions.forXMLName(completeAttributeName));
     }
 
-    private AttributeDefinition getAttributeDefinition(final String prefix, final String attributeName) {
-        return (this.templateMode.isHtml()? this.attributeDefinitions.forHtmlName(prefix, attributeName) : this.attributeDefinitions.forXmlName(prefix, attributeName));
+    private AttributeDefinition computeAttributeDefinition(final String prefix, final String attributeName) {
+        return (this.templateMode.isHTML()? this.attributeDefinitions.forHTMLName(prefix, attributeName) : this.attributeDefinitions.forXMLName(prefix, attributeName));
     }
 
 

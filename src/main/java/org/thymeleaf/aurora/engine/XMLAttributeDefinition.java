@@ -25,20 +25,13 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  *
  */
-public enum HtmlElementType {
+public final class XMLAttributeDefinition extends AttributeDefinition {
 
-    // See http://www.w3.org/html/wg/drafts/html/master/syntax.html#elements-0
 
-    VOID(true), RAW_TEXT(false), ESCAPABLE_RAW_TEXT(false), FOREIGN(false), NORMAL(false);
-
-    final boolean isVoid;
-
-    private HtmlElementType(final boolean voidElement) {
-        this.isVoid = voidElement;
+    XMLAttributeDefinition(final XMLAttributeName name) {
+        super(name);
     }
 
-    public boolean isVoid() {
-        return this.isVoid;
-    }
+
 
 }

@@ -108,8 +108,8 @@ public final class AttributeDefinitions {
         final List<AttributeDefinition> htmlAttributeDefinitionListAux =
                 new ArrayList<AttributeDefinition>(ALL_STANDARD_HTML_ATTRIBUTE_NAMES.size() + 1);
         for (final String attributeNameStr : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-            final HtmlAttributeDefinition attributeDefinition =
-                    new HtmlAttributeDefinition(AttributeNames.forHtmlName(attributeNameStr), htmlBooleanAttributeNameListAux.contains(attributeNameStr));
+            final HTMLAttributeDefinition attributeDefinition =
+                    new HTMLAttributeDefinition(AttributeNames.forHTMLName(attributeNameStr), htmlBooleanAttributeNameListAux.contains(attributeNameStr));
             htmlAttributeDefinitionListAux.add(attributeDefinition);
         }
 
@@ -142,58 +142,58 @@ public final class AttributeDefinitions {
 
 
 
-    public HtmlAttributeDefinition forHtmlName(final String attributeName) {
+    public HTMLAttributeDefinition forHTMLName(final String attributeName) {
         if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        return (HtmlAttributeDefinition) this.htmlAttributeRepository.getAttribute(attributeName);
+        return (HTMLAttributeDefinition) this.htmlAttributeRepository.getAttribute(attributeName);
     }
 
 
-    public HtmlAttributeDefinition forHtmlName(final String prefix, final String attributeName) {
+    public HTMLAttributeDefinition forHTMLName(final String prefix, final String attributeName) {
         if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        return (HtmlAttributeDefinition) this.htmlAttributeRepository.getAttribute(prefix, attributeName);
+        return (HTMLAttributeDefinition) this.htmlAttributeRepository.getAttribute(prefix, attributeName);
     }
 
 
-    public HtmlAttributeDefinition forHtmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+    public HTMLAttributeDefinition forHTMLName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
         if (attributeName == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
         }
-        return (HtmlAttributeDefinition) this.htmlAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+        return (HTMLAttributeDefinition) this.htmlAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
     }
 
 
 
-    public XmlAttributeDefinition forXmlName(final String attributeName) {
+    public XMLAttributeDefinition forXMLName(final String attributeName) {
         if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        return (XmlAttributeDefinition) this.xmlAttributeRepository.getAttribute(attributeName);
+        return (XMLAttributeDefinition) this.xmlAttributeRepository.getAttribute(attributeName);
     }
 
 
-    public XmlAttributeDefinition forXmlName(final String prefix, final String attributeName) {
+    public XMLAttributeDefinition forXMLName(final String prefix, final String attributeName) {
         if (attributeName == null || attributeName.length() == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
-        return (XmlAttributeDefinition) this.xmlAttributeRepository.getAttribute(prefix, attributeName);
+        return (XMLAttributeDefinition) this.xmlAttributeRepository.getAttribute(prefix, attributeName);
     }
 
 
-    public XmlAttributeDefinition forXmlName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
+    public XMLAttributeDefinition forXMLName(final char[] attributeName, final int attributeNameOffset, final int attributeNameLen) {
         if (attributeName == null || attributeNameLen == 0) {
             throw new IllegalArgumentException("Name cannot be null or empty");
         }
         if (attributeNameOffset < 0 || attributeNameLen < 0) {
             throw new IllegalArgumentException("Both name offset and length must be equal to or greater than zero");
         }
-        return (XmlAttributeDefinition) this.xmlAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
+        return (XMLAttributeDefinition) this.xmlAttributeRepository.getAttribute(attributeName, attributeNameOffset, attributeNameLen);
     }
 
 
@@ -399,8 +399,8 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HtmlAttributeDefinition(AttributeNames.forHtmlName(text, offset, len)) :
-                            new XmlAttributeDefinition(AttributeNames.forXmlName(text, offset, len));
+                            new HTMLAttributeDefinition(AttributeNames.forHTMLName(text, offset, len)) :
+                            new XMLAttributeDefinition(AttributeNames.forXMLName(text, offset, len));
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
@@ -429,8 +429,8 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HtmlAttributeDefinition(AttributeNames.forHtmlName(attributeName)) :
-                            new XmlAttributeDefinition(AttributeNames.forXmlName(attributeName));
+                            new HTMLAttributeDefinition(AttributeNames.forHTMLName(attributeName)) :
+                            new XMLAttributeDefinition(AttributeNames.forXMLName(attributeName));
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
@@ -459,8 +459,8 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HtmlAttributeDefinition(AttributeNames.forHtmlName(prefix, attributeName)) :
-                            new XmlAttributeDefinition(AttributeNames.forXmlName(prefix, attributeName));
+                            new HTMLAttributeDefinition(AttributeNames.forHTMLName(prefix, attributeName)) :
+                            new XMLAttributeDefinition(AttributeNames.forXMLName(prefix, attributeName));
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 

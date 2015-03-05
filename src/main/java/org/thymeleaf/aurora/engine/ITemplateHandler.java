@@ -37,7 +37,7 @@ public interface ITemplateHandler {
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col);
 
 
-    public void handleXmlDeclaration(final XmlDeclaration xmlDeclaration);
+    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration);
 
     public void handleDocType(final DocType docType);
 

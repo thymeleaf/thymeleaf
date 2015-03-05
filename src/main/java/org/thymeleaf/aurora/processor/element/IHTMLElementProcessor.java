@@ -22,9 +22,9 @@ package org.thymeleaf.aurora.processor.element;
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ElementAttributes;
-import org.thymeleaf.aurora.engine.HtmlAttributeName;
-import org.thymeleaf.aurora.engine.HtmlElementDefinition;
-import org.thymeleaf.aurora.engine.HtmlElementName;
+import org.thymeleaf.aurora.engine.HTMLAttributeName;
+import org.thymeleaf.aurora.engine.HTMLElementDefinition;
+import org.thymeleaf.aurora.engine.HTMLElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -33,15 +33,15 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IHtmlElementProcessor extends IProcessor {
+public interface IHTMLElementProcessor extends IProcessor {
 
-    public HtmlElementName getHtmlElementName();
-    public HtmlAttributeName getHtmlAttributeName();
-    public String getHtmlAttributeValue();
+    public HTMLElementName getHTMLElementName();
+    public HTMLAttributeName getHTMLAttributeName();
+    public String getHTMLAttributeValue();
 
-    public ElementProcessorResult processHtmlElement(
+    public ElementProcessorResult processHTMLElement(
             final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
-            final HtmlElementDefinition elementDefinition, final String elementName,
+            final HTMLElementDefinition elementDefinition, final String elementName,
             final ElementAttributes elementAttributes,
             final int line, final int col);
 

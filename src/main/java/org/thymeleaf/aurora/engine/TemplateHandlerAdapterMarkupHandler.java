@@ -54,7 +54,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private final CDATASection cdataSection;
     private final DocType docType;
     private final ProcessingInstruction processingInstruction;
-    private final XmlDeclaration xmlDeclaration;
+    private final XMLDeclaration xmlDeclaration;
     
     private final ElementAttributes elementAttributes;
 
@@ -87,7 +87,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.cdataSection = new CDATASection(this.textRepository);
         this.docType = new DocType();
         this.processingInstruction = new ProcessingInstruction();
-        this.xmlDeclaration = new XmlDeclaration();
+        this.xmlDeclaration = new XMLDeclaration();
         this.elementAttributes = new ElementAttributes(this.templateMode, this.attributeDefinitions);
         
         
@@ -230,9 +230,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.elementDefinition =
-                this.templateMode.isHtml()?
-                    this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
-                    this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+                this.templateMode.isHTML()?
+                    this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
+                    this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll();
         this.elementMinimized = minimized;
@@ -274,9 +274,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.elementDefinition =
-                this.templateMode.isHtml()?
-                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+                this.templateMode.isHTML()?
+                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll();
         this.elementMinimized = false; // does not apply
@@ -318,9 +318,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.elementDefinition =
-                this.templateMode.isHtml()?
-                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+                this.templateMode.isHTML()?
+                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll();
         this.elementMinimized = false; // does not apply
@@ -362,9 +362,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.elementDefinition =
-                this.templateMode.isHtml()?
-                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+                this.templateMode.isHTML()?
+                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -406,9 +406,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.elementDefinition =
-                this.templateMode.isHtml()?
-                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+                this.templateMode.isHTML()?
+                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply
@@ -450,9 +450,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.elementDefinition =
-                this.templateMode.isHtml()?
-                        this.elementDefinitions.forHtmlName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXmlName(buffer, nameOffset, nameLen);
+                this.templateMode.isHTML()?
+                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
+                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
         this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
         this.elementAttributes.clearAll(); // does not apply
         this.elementMinimized = false; // does not apply

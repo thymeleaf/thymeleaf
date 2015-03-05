@@ -159,7 +159,7 @@ public final class DocType implements Node {
         initializeFromDocType(this.keyword, elementName, this.type, this.publicId, this.systemId, this.internalSubset);
     }
 
-    public void setToHtml5() {
+    public void setToHTML5() {
         // This is just a convenience method with a nicer name
         setIDs(null, null);
     }

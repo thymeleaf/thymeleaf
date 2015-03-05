@@ -25,19 +25,19 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public final class HtmlAttributeName extends AttributeName {
+public final class HTMLAttributeName extends AttributeName {
 
     final String completeNamespacedAttributeName;
-    final String completeHtml5AttributeName;
+    final String completeHTML5AttributeName;
 
 
 
-    HtmlAttributeName(final String attributeName) {
+    HTMLAttributeName(final String attributeName) {
         this(null, attributeName);
     }
 
 
-    HtmlAttributeName(final String prefix, final String attributeName) {
+    HTMLAttributeName(final String prefix, final String attributeName) {
 
         super(prefix == null || prefix.length() == 0? null : prefix.toLowerCase(),
               attributeName == null || attributeName.length() == 0? null : attributeName.toLowerCase());
@@ -45,17 +45,17 @@ public final class HtmlAttributeName extends AttributeName {
         if (this.prefix == null || this.prefix.length() == 0) {
 
             this.completeNamespacedAttributeName = this.attributeName;
-            this.completeHtml5AttributeName = this.attributeName;
+            this.completeHTML5AttributeName = this.attributeName;
 
             // The completeAttributeNames array is assigned correctly at the parent class in this case
 
         } else {
 
             this.completeNamespacedAttributeName = this.prefix + ":" + this.attributeName;
-            this.completeHtml5AttributeName = "data-" + this.prefix + "-" + this.attributeName;
+            this.completeHTML5AttributeName = "data-" + this.prefix + "-" + this.attributeName;
 
             this.completeAttributeNames =
-                    new String[] { this.completeNamespacedAttributeName, this.completeHtml5AttributeName };
+                    new String[] { this.completeNamespacedAttributeName, this.completeHTML5AttributeName};
 
         }
 
@@ -66,8 +66,8 @@ public final class HtmlAttributeName extends AttributeName {
         return this.completeNamespacedAttributeName;
     }
 
-    public String getCompleteHtml5AttributeName() {
-        return this.completeHtml5AttributeName;
+    public String getCompleteHTML5AttributeName() {
+        return this.completeHTML5AttributeName;
     }
 
 

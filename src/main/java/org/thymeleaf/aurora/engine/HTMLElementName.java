@@ -25,20 +25,20 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public final class HtmlElementName extends ElementName {
+public final class HTMLElementName extends ElementName {
 
     final String completeNamespacedElementName;
-    final String completeHtml5ElementName;
+    final String completeHTML5ElementName;
 
 
 
 
-    HtmlElementName(final String elementName) {
+    HTMLElementName(final String elementName) {
         this(null, elementName);
     }
 
 
-    HtmlElementName(final String prefix, final String elementName) {
+    HTMLElementName(final String prefix, final String elementName) {
 
         super(prefix == null || prefix.length() == 0? null : prefix.toLowerCase(),
               elementName == null || elementName.length() == 0? null : elementName.toLowerCase());
@@ -46,17 +46,17 @@ public final class HtmlElementName extends ElementName {
         if (this.prefix == null || this.prefix.length() == 0) {
 
             this.completeNamespacedElementName = this.elementName;
-            this.completeHtml5ElementName = this.elementName;
+            this.completeHTML5ElementName = this.elementName;
 
             // The completeAttributeNames array is assigned correctly at the parent class in this case
 
         } else {
 
             this.completeNamespacedElementName = this.prefix + ":" + this.elementName;
-            this.completeHtml5ElementName = this.prefix + "-" + this.elementName;
+            this.completeHTML5ElementName = this.prefix + "-" + this.elementName;
 
             this.completeElementNames =
-                    new String[] { this.completeNamespacedElementName, this.completeHtml5ElementName };
+                    new String[] { this.completeNamespacedElementName, this.completeHTML5ElementName};
 
         }
 
@@ -68,8 +68,8 @@ public final class HtmlElementName extends ElementName {
         return this.completeNamespacedElementName;
     }
 
-    public String getCompleteHtml5ElementName() {
-        return this.completeHtml5ElementName;
+    public String getCompleteHTML5ElementName() {
+        return this.completeHTML5ElementName;
     }
 
 
