@@ -33,8 +33,11 @@ public final class NoCacheTextRepository implements ITextRepository {
         super();
     }
 
-    public String getText(final String text) {
-        return text;
+    public String getText(final CharSequence text) {
+        if (text == null) {
+            return null;
+        }
+        return text.toString();
     }
 
     public String getText(final char[] text, final int offset, final int len) {

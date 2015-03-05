@@ -43,7 +43,7 @@ public interface ITextRepository {
      * @param text the text to be retrieved.
      * @return the stored text.
      */
-    public String getText(final String text);
+    public String getText(final CharSequence text);
 
     /**
      * <p>

@@ -113,7 +113,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
 
 
 
-    public String getText(final String text) {
+    public String getText(final CharSequence text) {
 
         if (text == null) {
             return null;
@@ -149,7 +149,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
          */
         this.writeLock.lock();
         try {
-            return storeText(text);
+            return storeText(text.toString());
         } finally {
             this.writeLock.unlock();
         }
@@ -205,8 +205,25 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
 
 
 
-    private static boolean checkResult(final String input, final String result) {
-        return input.equals(result);
+    private static boolean checkResult(final CharSequence input, final String result) {
+
+        if (input == result) {
+            return true;
+        }
+        if (input instanceof String) {
+            return input.equals(result);
+        }
+        int n = input.length();
+        if (n == result.length()) {
+            int i = 0;
+            while (n-- != 0) {
+                if (input.charAt(i) != result.charAt(i))
+                    return false;
+                i++;
+            }
+            return true;
+        }
+        return false;
     }
 
 
