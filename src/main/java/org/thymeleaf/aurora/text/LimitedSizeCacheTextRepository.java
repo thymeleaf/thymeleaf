@@ -119,7 +119,7 @@ public final class LimitedSizeCacheTextRepository implements ITextRepository {
             return null;
         }
 
-        final int hashCode = text.hashCode();
+        final int hashCode = TextUtil.hashCode(text);
 
         this.readLock.lock();
 
