@@ -2139,6 +2139,13 @@ public final class TextUtil {
         // convert the char[] into a new String object
         // If the text to compute was already a String, it would be better to directly call
         // its 'hashCode()' method, because Strings cache their hash codes.
+        // ---------------------------------------
+        // NOTE: Even if relying on the specific implementation of String.hashCode() might seem
+        //       a potential issue for cross-platform compatibility, the fact is that the
+        //       implementation of String.hashCode() is actually a part of the Java Specification
+        //       since Java 1.2, and its internal workings are explained in the JavaDoc for the
+        //       String.hashCode() method.
+        // ---------------------------------------
         int h = 0;
         int off = textOffset;
         for (int i = 0; i < textLen; i++) {
@@ -2146,6 +2153,32 @@ public final class TextUtil {
         }
         return h;
     }
+
+
+    public static int hashCode(final CharSequence text) {
+        // This basically mimics what the String.hashCode() method does, without the need to
+        // convert the CharSequence into a new String object (unless it is a String already,
+        // in which case String.hashCode() is used directly.
+        // If the text to compute was already a String, it would be better to directly call
+        // its 'hashCode()' method, because Strings cache their hash codes.
+        // ---------------------------------------
+        // NOTE: Even if relying on the specific implementation of String.hashCode() might seem
+        //       a potential issue for cross-platform compatibility, the fact is that the
+        //       implementation of String.hashCode() is actually a part of the Java Specification
+        //       since Java 1.2, and its internal workings are explained in the JavaDoc for the
+        //       String.hashCode() method.
+        // ---------------------------------------
+        if (text instanceof String) {
+            return text.hashCode();
+        }
+        int h = 0;
+        final int textLen = text.length();
+        for (int i = 0; i < textLen; i++) {
+            h = 31*h + text.charAt(i);
+        }
+        return h;
+    }
+
 
 
 
