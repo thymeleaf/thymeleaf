@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -31,6 +32,8 @@ import org.thymeleaf.util.Validate;
  * 
  */
 public final class ProcessingInstruction implements Node {
+
+    private final ITextRepository textRepository;
 
     private String processingInstruction;
     private String target;
@@ -50,16 +53,19 @@ public final class ProcessingInstruction implements Node {
 
 
     // Meant to be called only from within the engine
-    ProcessingInstruction() {
+    ProcessingInstruction(final ITextRepository textRepository) {
         super();
+        this.textRepository = textRepository;
     }
 
 
 
-    public ProcessingInstruction(
+    ProcessingInstruction(
+            final ITextRepository textRepository,
             final String target,
             final String content) {
         super();
+        this.textRepository = textRepository;
         initializeFromProcessingInstruction(target, content);
     }
 
@@ -91,7 +97,7 @@ public final class ProcessingInstruction implements Node {
             }
             strBuilder.append("?>");
 
-            this.processingInstruction = strBuilder.toString();
+            this.processingInstruction = this.textRepository.getText(strBuilder);
 
         }
 
@@ -188,7 +194,7 @@ public final class ProcessingInstruction implements Node {
 
 
     public ProcessingInstruction cloneNode() {
-        final ProcessingInstruction clone = new ProcessingInstruction();
+        final ProcessingInstruction clone = new ProcessingInstruction(this.textRepository);
         clone.processingInstruction = this.processingInstruction;
         clone.target = this.target;
         clone.content = this.content;

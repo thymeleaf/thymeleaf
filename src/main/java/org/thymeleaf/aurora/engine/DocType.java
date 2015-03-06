@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
 import org.thymeleaf.util.Validate;
 
@@ -37,6 +38,8 @@ public final class DocType implements Node {
     public static final String DEFAULT_ELEMENT_NAME = "html";
     public static final String DEFAULT_TYPE_PUBLIC = "PUBLIC";
     public static final String DEFAULT_TYPE_SYSTEM = "SYSTEM";
+
+    private final ITextRepository textRepository;
 
     private String docType;
     private String keyword;
@@ -60,18 +63,19 @@ public final class DocType implements Node {
 
 
     // Meant to be called only from within the engine
-    DocType() {
+    DocType(final ITextRepository textRepository) {
         super();
+        this.textRepository = textRepository;
     }
 
 
-    public DocType(
-            final String publicId, final String systemId) {
-        this(DEFAULT_KEYWORD, DEFAULT_ELEMENT_NAME, computeType(publicId, systemId), publicId, systemId, null);
+    DocType(final ITextRepository textRepository, final String publicId, final String systemId) {
+        this(textRepository, DEFAULT_KEYWORD, DEFAULT_ELEMENT_NAME, computeType(publicId, systemId), publicId, systemId, null);
     }
 
 
-    public DocType(
+    DocType(
+            final ITextRepository textRepository,
             final String keyword,
             final String elementName,
             final String type,
@@ -79,6 +83,7 @@ public final class DocType implements Node {
             final String systemId,
             final String internalSubset) {
         super();
+        this.textRepository = textRepository;
         initializeFromDocType(keyword, elementName, type, publicId, systemId, internalSubset);
     }
 
@@ -140,7 +145,7 @@ public final class DocType implements Node {
             }
             strBuilder.append('>');
 
-            this.docType = strBuilder.toString();
+            this.docType = this.textRepository.getText(strBuilder);
 
         }
 
@@ -307,7 +312,7 @@ public final class DocType implements Node {
 
 
     public DocType cloneNode() {
-        final DocType clone = new DocType();
+        final DocType clone = new DocType(this.textRepository);
         clone.docType = this.docType;
         clone.keyword = this.keyword;
         clone.elementName = this.elementName;

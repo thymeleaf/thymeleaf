@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.context;
 
+import org.thymeleaf.aurora.engine.DocumentModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
@@ -34,5 +35,6 @@ public interface ITemplateProcessingContext {
     public TemplateMode getTemplateMode();
     public String getTemplateName();
 
+    public DocumentModelFactory getDocumentModelFactory();
 
 }

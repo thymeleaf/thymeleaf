@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
 import org.thymeleaf.util.Validate;
 
@@ -38,6 +39,8 @@ public final class XMLDeclaration implements Node {
     public static final String ATTRIBUTE_NAME_VERSION = "version";
     public static final String ATTRIBUTE_NAME_ENCODING = "encoding";
     public static final String ATTRIBUTE_NAME_STANDALONE = "standalone";
+
+    private final ITextRepository textRepository;
 
     private String xmlDeclaration;
     private String keyword;
@@ -59,17 +62,20 @@ public final class XMLDeclaration implements Node {
 
 
     // Meant to be called only from within the engine
-    XMLDeclaration() {
+    XMLDeclaration(final ITextRepository textRepository) {
         super();
+        this.textRepository = textRepository;
     }
 
 
 
-    public XMLDeclaration(
+    XMLDeclaration(
+            final ITextRepository textRepository,
             final String version,
             final String encoding,
             final String standalone) {
         super();
+        this.textRepository = textRepository;
         initializeFromXmlDeclaration(DEFAULT_KEYWORD, version, encoding, standalone);
     }
 
@@ -126,7 +132,7 @@ public final class XMLDeclaration implements Node {
             }
             strBuilder.append("?>");
 
-            this.xmlDeclaration = strBuilder.toString();
+            this.xmlDeclaration = this.textRepository.getText(strBuilder);
 
         }
 
@@ -235,7 +241,7 @@ public final class XMLDeclaration implements Node {
 
 
     public XMLDeclaration cloneNode() {
-        final XMLDeclaration clone = new XMLDeclaration();
+        final XMLDeclaration clone = new XMLDeclaration(this.textRepository);
         clone.xmlDeclaration = this.xmlDeclaration;
         clone.keyword = this.keyword;
         clone.version = this.version;

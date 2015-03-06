@@ -65,4 +65,55 @@ public final class DocumentModelFactory {
         return new CDATASection(this.textRepository, content);
     }
 
+
+
+
+    public Comment createComment(final String content) {
+        return new Comment(this.textRepository, content);
+    }
+
+
+
+
+    public DocType createHTML5DocType() {
+        return new DocType(this.textRepository, null, null);
+    }
+
+    public DocType createDocType(final String publicId, final String systemId) {
+        return new DocType(this.textRepository, publicId, systemId);
+    }
+
+    public DocType createDocType(
+            final String keyword,
+            final String elementName,
+            final String type,
+            final String publicId,
+            final String systemId,
+            final String internalSubset) {
+
+        return new DocType(this.textRepository, keyword, elementName, type, publicId, systemId, internalSubset);
+    }
+
+
+
+
+    public ProcessingInstruction createProcessingInstruction(final String target, final String content) {
+        return new ProcessingInstruction(this.textRepository, target, content);
+    }
+
+
+
+
+    public Text createText(final String text) {
+        return new Text(this.textRepository, text);
+    }
+
+
+
+
+    public XMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone) {
+        return new XMLDeclaration(this.textRepository, version, encoding, standalone);
+    }
+
+
 }

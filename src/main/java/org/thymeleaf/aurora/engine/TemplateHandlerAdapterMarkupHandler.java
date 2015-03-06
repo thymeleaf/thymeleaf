@@ -85,9 +85,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.text = new Text(this.textRepository);
         this.comment = new Comment(this.textRepository);
         this.cdataSection = new CDATASection(this.textRepository);
-        this.docType = new DocType();
-        this.processingInstruction = new ProcessingInstruction();
-        this.xmlDeclaration = new XMLDeclaration();
+        this.docType = new DocType(this.textRepository);
+        this.processingInstruction = new ProcessingInstruction(this.textRepository);
+        this.xmlDeclaration = new XMLDeclaration(this.textRepository);
         this.elementAttributes = new ElementAttributes(this.templateMode, this.attributeDefinitions);
         
         
