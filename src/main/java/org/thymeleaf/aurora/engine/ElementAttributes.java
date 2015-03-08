@@ -34,9 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class ElementAttributes {
-
-    public enum ValueQuotes { DOUBLE, SINGLE, NONE }
+public final class ElementAttributes implements IElementAttributes {
 
     private static final int DEFAULT_ATTRIBUTES_SIZE = 3;
 
