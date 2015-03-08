@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.aurora.engine.ModelFactory;
 import org.thymeleaf.aurora.engine.IModelFactory;
+import org.thymeleaf.aurora.engine.ModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 

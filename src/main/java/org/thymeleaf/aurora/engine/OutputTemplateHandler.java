@@ -60,7 +60,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleText(final Text text) {
+    public void handleText(final IText text) {
         
         try {
             text.write(this.writer);
@@ -76,7 +76,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleComment(final Comment comment) {
+    public void handleComment(final IComment comment) {
         
         try {
             comment.write(this.writer);
@@ -91,7 +91,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
     
     @Override
-    public void handleCDATASection(final CDATASection cdataSection) {
+    public void handleCDATASection(final ICDATASection cdataSection) {
         
         try {
             cdataSection.write(this.writer);
@@ -223,7 +223,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocType(final DocType docType) {
+    public void handleDocType(final IDocType docType) {
         
         try {
             docType.write(this.writer);
@@ -240,7 +240,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration) {
 
         try {
             xmlDeclaration.write(this.writer);
@@ -259,7 +259,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction) {
+    public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
         
         try {
             processingInstruction.write(this.writer);

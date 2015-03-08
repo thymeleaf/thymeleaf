@@ -108,7 +108,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration) {
 
         if (this.next == null) {
             return;
@@ -120,7 +120,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleDocType(final DocType docType) {
+    public void handleDocType(final IDocType docType) {
 
         if (this.next == null) {
             return;
@@ -132,7 +132,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleCDATASection(final CDATASection cdataSection) {
+    public void handleCDATASection(final ICDATASection cdataSection) {
 
         if (this.next == null) {
             return;
@@ -144,7 +144,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleComment(final Comment comment) {
+    public void handleComment(final IComment comment) {
 
         if (this.next == null) {
             return;
@@ -156,7 +156,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleText(final Text text) {
+    public void handleText(final IText text) {
 
         if (this.next == null) {
             return;
@@ -256,7 +256,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
 
-    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction) {
+    public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
 
         if (this.next == null) {
             return;

@@ -51,7 +51,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleText(final Text text) {
+    public void handleText(final IText text) {
 
         super.handleText(text);
 
@@ -60,7 +60,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleComment(final Comment comment) {
+    public void handleComment(final IComment comment) {
         
         super.handleComment(comment);
 
@@ -68,7 +68,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     
     @Override
-    public void handleCDATASection(final CDATASection cdataSection) {
+    public void handleCDATASection(final ICDATASection cdataSection) {
         
         super.handleCDATASection(cdataSection);
 
@@ -150,7 +150,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocType(final DocType docType) {
+    public void handleDocType(final IDocType docType) {
         
         super.handleDocType(docType);
 
@@ -160,7 +160,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration) {
 
         super.handleXmlDeclaration(xmlDeclaration);
 
@@ -172,7 +172,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction) {
+    public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
         
         super.handleProcessingInstruction(processingInstruction);
 

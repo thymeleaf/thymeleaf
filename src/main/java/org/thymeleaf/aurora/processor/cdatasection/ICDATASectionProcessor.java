@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.processor.cdatasection;
 
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.CDATASection;
+import org.thymeleaf.aurora.engine.ICDATASection;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -33,8 +33,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
 public interface ICDATASectionProcessor extends IProcessor {
 
     // Null result = remove structure
-    public CDATASection process(
+    public ICDATASection process(
             final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
-            final CDATASection cdataSection, final int line, final int col);
+            final ICDATASection cdataSection, final int line, final int col);
 
 }

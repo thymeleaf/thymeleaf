@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.processor.xmldeclaration;
 
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.XMLDeclaration;
+import org.thymeleaf.aurora.engine.IXMLDeclaration;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -33,8 +33,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
 public interface IXMLDeclarationProcessor extends IProcessor {
 
     // Null result = remove structure
-    public XMLDeclaration process(
+    public IXMLDeclaration process(
             final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
-            final XMLDeclaration xmlDeclaration, final int line, final int col);
+            final IXMLDeclaration xmlDeclaration, final int line, final int col);
 
 }

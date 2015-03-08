@@ -21,9 +21,9 @@ package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.INode;
 import org.thymeleaf.aurora.engine.XMLAttributeName;
 import org.thymeleaf.aurora.engine.XMLElementName;
-import org.thymeleaf.aurora.engine.INode;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**

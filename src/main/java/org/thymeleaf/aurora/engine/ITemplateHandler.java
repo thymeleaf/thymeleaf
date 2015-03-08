@@ -37,15 +37,15 @@ public interface ITemplateHandler {
             final long endTimeNanos, final long totalTimeNanos, final int line, final int col);
 
 
-    public void handleXmlDeclaration(final XMLDeclaration xmlDeclaration);
+    public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration);
 
-    public void handleDocType(final DocType docType);
+    public void handleDocType(final IDocType docType);
 
-    public void handleCDATASection(final CDATASection cdataSection);
+    public void handleCDATASection(final ICDATASection cdataSection);
 
-    public void handleComment(final Comment comment);
+    public void handleComment(final IComment comment);
 
-    public void handleText(final Text text);
+    public void handleText(final IText text);
 
 
     public void handleStandaloneElement(
@@ -89,7 +89,7 @@ public interface ITemplateHandler {
 
 
 
-    public void handleProcessingInstruction(final ProcessingInstruction processingInstruction);
+    public void handleProcessingInstruction(final IProcessingInstruction processingInstruction);
 
 
 
