@@ -31,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class CDATASection implements Node {
+public final class CDATASection implements ICDATASection {
 
     private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
     private static final char[] CDATA_SUFFIX = "]]>".toCharArray();

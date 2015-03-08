@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.aurora.context;
 
-import org.thymeleaf.aurora.engine.DocumentModelFactory;
+import org.thymeleaf.aurora.engine.ModelFactory;
+import org.thymeleaf.aurora.engine.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -34,7 +35,7 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
     private final ITemplateEngineContext templateEngineContext;
     private final String templateName;
     private final TemplateMode templateMode;
-    private final DocumentModelFactory documentModelFactory;
+    private final IModelFactory modelFactory;
 
 
     public TemplateProcessingContext(
@@ -47,8 +48,8 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
         this.templateEngineContext = templateEngineContext;
         this.templateName = templateName;
         this.templateMode = templateMode;
-        this.documentModelFactory =
-                new DocumentModelFactory(
+        this.modelFactory =
+                new ModelFactory(
                         this.templateMode, this.templateEngineContext.getTextRepository(),
                         this.templateEngineContext.getAttributeDefinitions(), this.templateEngineContext.getElementDefinitions());
     }
@@ -66,8 +67,8 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
         return this.templateMode;
     }
 
-    public DocumentModelFactory getDocumentModelFactory() {
-        return this.documentModelFactory;
+    public IModelFactory getModelFactory() {
+        return this.modelFactory;
     }
 
 }

@@ -17,10 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
+package org.thymeleaf.aurora.engine;
 
-import org.thymeleaf.aurora.engine.IModelFactory;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  *
@@ -28,13 +28,16 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateProcessingContext {
+public interface INode {
 
-    public ITemplateEngineContext getTemplateEngineContext();
 
-    public TemplateMode getTemplateMode();
-    public String getTemplateName();
 
-    public IModelFactory getModelFactory();
+    public boolean hasLocation();
+    public int getLine();
+    public int getCol();
+
+    public void write(final Writer writer) throws IOException;
+
+    public INode cloneNode();
 
 }

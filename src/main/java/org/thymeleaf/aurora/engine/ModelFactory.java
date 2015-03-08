@@ -29,7 +29,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class DocumentModelFactory {
+public class ModelFactory implements IModelFactory {
 
 
     private final TemplateMode templateMode;
@@ -40,7 +40,7 @@ public final class DocumentModelFactory {
 
 
 
-    public DocumentModelFactory(
+    public ModelFactory(
             final TemplateMode templateMode, final ITextRepository textRepository,
             final AttributeDefinitions attributeDefinitions, final ElementDefinitions elementDefinitions) {
 
@@ -61,29 +61,29 @@ public final class DocumentModelFactory {
 
 
 
-    public CDATASection createCDATASection(final String content) {
+    public ICDATASection createCDATASection(final String content) {
         return new CDATASection(this.textRepository, content);
     }
 
 
 
 
-    public Comment createComment(final String content) {
+    public IComment createComment(final String content) {
         return new Comment(this.textRepository, content);
     }
 
 
 
 
-    public DocType createHTML5DocType() {
+    public IDocType createHTML5DocType() {
         return new DocType(this.textRepository, null, null);
     }
 
-    public DocType createDocType(final String publicId, final String systemId) {
+    public IDocType createDocType(final String publicId, final String systemId) {
         return new DocType(this.textRepository, publicId, systemId);
     }
 
-    public DocType createDocType(
+    public IDocType createDocType(
             final String keyword,
             final String elementName,
             final String type,
@@ -97,21 +97,21 @@ public final class DocumentModelFactory {
 
 
 
-    public ProcessingInstruction createProcessingInstruction(final String target, final String content) {
+    public IProcessingInstruction createProcessingInstruction(final String target, final String content) {
         return new ProcessingInstruction(this.textRepository, target, content);
     }
 
 
 
 
-    public Text createText(final String text) {
+    public IText createText(final String text) {
         return new Text(this.textRepository, text);
     }
 
 
 
 
-    public XMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone) {
+    public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone) {
         return new XMLDeclaration(this.textRepository, version, encoding, standalone);
     }
 

@@ -17,10 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
-
-import org.thymeleaf.aurora.engine.IModelFactory;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+package org.thymeleaf.aurora.engine;
 
 /**
  *
@@ -28,13 +25,24 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateProcessingContext {
+public interface IDocType extends INode {
 
-    public ITemplateEngineContext getTemplateEngineContext();
 
-    public TemplateMode getTemplateMode();
-    public String getTemplateName();
+    public String getKeyword();
+    public String getElementName();
+    public String getType();
+    public String getPublicId();
+    public String getSystemId();
+    public String getInternalSubset();
+    public String getDocType();
 
-    public IModelFactory getModelFactory();
+
+    public void setKeyword(final String keyword);
+    public void setElementName(final String elementName);
+    public void setToHTML5();
+    public void setIDs(final String publicId, final String systemId);
+    public void setIDs(final String type, final String publicId, final String systemId);
+    public void setInternalSubset(final String internalSubset);
+
 
 }

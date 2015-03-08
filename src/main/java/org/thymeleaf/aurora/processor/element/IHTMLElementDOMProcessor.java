@@ -21,9 +21,9 @@ package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.context.IProcessorMatchingContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.Node;
 import org.thymeleaf.aurora.engine.HTMLAttributeName;
 import org.thymeleaf.aurora.engine.HTMLElementName;
+import org.thymeleaf.aurora.engine.INode;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -40,9 +40,9 @@ public interface IHTMLElementDOMProcessor extends IProcessor {
 
 
     public void processHTMLElementBefore(
-            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext, final Node dom);
+            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext, final INode dom);
 
     public void processHTMLElementAfter(
-            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext, final Node dom);
+            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext, final INode dom);
 
 }

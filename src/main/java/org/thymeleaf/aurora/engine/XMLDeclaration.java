@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class XMLDeclaration implements Node {
+public final class XMLDeclaration implements IXMLDeclaration {
 
     public static final String DEFAULT_KEYWORD = "xml";
 

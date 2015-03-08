@@ -17,10 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
-
-import org.thymeleaf.aurora.engine.IModelFactory;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+package org.thymeleaf.aurora.engine;
 
 /**
  *
@@ -28,13 +25,18 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-public interface ITemplateProcessingContext {
+public interface IXMLDeclaration extends INode {
 
-    public ITemplateEngineContext getTemplateEngineContext();
 
-    public TemplateMode getTemplateMode();
-    public String getTemplateName();
+    public String getKeyword();
+    public String getVersion();
+    public String getEncoding();
+    public String getStandalone();
+    public String getXmlDeclaration();
 
-    public IModelFactory getModelFactory();
+    public void setVersion(final String version);
+    public void setEncoding(final String encoding);
+    public void setStandalone(final String standalone);
+
 
 }

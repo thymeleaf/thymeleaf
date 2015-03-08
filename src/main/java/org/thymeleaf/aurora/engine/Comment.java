@@ -31,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class Comment implements Node {
+public final class Comment implements IComment {
 
     private static final char[] COMMENT_PREFIX = "<!--".toCharArray();
     private static final char[] COMMENT_SUFFIX = "-->".toCharArray();

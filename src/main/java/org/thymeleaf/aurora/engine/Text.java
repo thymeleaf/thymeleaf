@@ -31,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class Text implements Node {
+public final class Text implements IText {
 
     private final ITextRepository textRepository;
 

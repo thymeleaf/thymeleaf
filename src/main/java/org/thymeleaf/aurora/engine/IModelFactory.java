@@ -19,25 +19,34 @@
  */
 package org.thymeleaf.aurora.engine;
 
-import java.io.IOException;
-import java.io.Writer;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface Node extends Cloneable {
+public interface IModelFactory {
 
 
+    public ICDATASection createCDATASection(final String content);
 
-    public boolean hasLocation();
-    public int getLine();
-    public int getCol();
+    public IComment createComment(final String content);
 
-    public void write(final Writer writer) throws IOException;
+    public IDocType createHTML5DocType();
+    public IDocType createDocType(final String publicId, final String systemId);
+    public IDocType createDocType(
+            final String keyword,
+            final String elementName,
+            final String type,
+            final String publicId,
+            final String systemId,
+            final String internalSubset);
 
-    public Node cloneNode();
+    public IProcessingInstruction createProcessingInstruction(final String target, final String content);
+
+    public IText createText(final String text);
+
+    public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone);
+
 
 }

@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class DocType implements Node {
+public final class DocType implements IDocType {
 
     public static final String DEFAULT_KEYWORD = "DOCTYPE";
     public static final String DEFAULT_ELEMENT_NAME = "html";

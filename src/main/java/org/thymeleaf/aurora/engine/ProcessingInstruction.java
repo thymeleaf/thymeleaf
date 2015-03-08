@@ -31,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class ProcessingInstruction implements Node {
+public final class ProcessingInstruction implements IProcessingInstruction {
 
     private final ITextRepository textRepository;
 
