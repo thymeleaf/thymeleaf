@@ -62,7 +62,7 @@ public final class CDATASection implements ICDATASection {
      */
 
 
-    // Meant to be called only from within the engine
+    // Meant to be called only from the template handler adapter
     CDATASection(final ITextRepository textRepository) {
         super();
         this.textRepository = textRepository;

@@ -62,18 +62,20 @@ public final class DocType implements IDocType {
      */
 
 
-    // Meant to be called only from within the engine
+    // Meant to be called only from the template handler adapter
     DocType(final ITextRepository textRepository) {
         super();
         this.textRepository = textRepository;
     }
 
 
+    // Meant to be called only from the model factory
     DocType(final ITextRepository textRepository, final String publicId, final String systemId) {
         this(textRepository, DEFAULT_KEYWORD, DEFAULT_ELEMENT_NAME, computeType(publicId, systemId), publicId, systemId, null);
     }
 
 
+    // Meant to be called only from the model factory
     DocType(
             final ITextRepository textRepository,
             final String keyword,

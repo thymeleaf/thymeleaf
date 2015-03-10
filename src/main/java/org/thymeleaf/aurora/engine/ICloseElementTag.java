@@ -25,8 +25,8 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IOpenElementTag extends IElementAttributeHolderTag {
+public interface ICloseElementTag extends IElementTag {
 
-    public IOpenElementTag cloneElementTag();
+    public ICloseElementTag cloneElementTag();
 
 }

@@ -57,7 +57,7 @@ public final class Text implements IText {
      */
 
 
-    // Meant to be called only from within the engine
+    // Meant to be called only from the template handler adapter
     Text(final ITextRepository textRepository) {
         super();
         this.textRepository = textRepository;
@@ -65,6 +65,7 @@ public final class Text implements IText {
 
 
 
+    // Meant to be called only from the model factory
     Text(final ITextRepository textRepository, final String text) {
         super();
         this.textRepository = textRepository;

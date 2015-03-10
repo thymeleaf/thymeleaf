@@ -24,6 +24,7 @@ import org.attoparser.ParseException;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.text.TextRepositories;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -36,18 +37,12 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
     private static final String ATTRIBUTE_EQUALS_OPERATOR = "=";
 
+    private final String templateName;
     private final ITemplateHandler templateHandler;
     private final ITextRepository textRepository;
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
     private final TemplateMode templateMode;
-
-    private ElementDefinition elementDefinition = null;
-    private String elementName = null;
-
-    private boolean elementMinimized = false;
-    private int elementLine = -1;
-    private int elementCol = -1;
 
     private final Text text;
     private final Comment comment;
@@ -55,11 +50,16 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private final DocType docType;
     private final ProcessingInstruction processingInstruction;
     private final XMLDeclaration xmlDeclaration;
-    
-    private final ElementAttributes elementAttributes;
+
+    private final OpenElementTag openElementTag;
+    private final StandaloneElementTag standaloneElementTag;
+    private final CloseElementTag closeElementTag;
+
+    private IElementAttributeHolderTag attributeHolderTag;
 
     
-    public TemplateHandlerAdapterMarkupHandler(final ITemplateHandler templateHandler,
+    public TemplateHandlerAdapterMarkupHandler(final String templateName,
+                                               final ITemplateHandler templateHandler,
                                                final ITextRepository textRepository,
                                                final ElementDefinitions elementDefinitions,
                                                final AttributeDefinitions attributeDefinitions,
@@ -70,6 +70,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
         Validate.notNull(attributeDefinitions, "Attribute Definitions repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
+
+        this.templateName = templateName;
 
         this.templateHandler = templateHandler;
 
@@ -88,7 +90,12 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.docType = new DocType(this.textRepository);
         this.processingInstruction = new ProcessingInstruction(this.textRepository);
         this.xmlDeclaration = new XMLDeclaration(this.textRepository);
-        this.elementAttributes = new ElementAttributes(this.templateMode, this.attributeDefinitions);
+
+        this.openElementTag = new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
+        this.standaloneElementTag = new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
+        this.closeElementTag = new CloseElementTag(this.templateMode, this.elementDefinitions);
+
+        this.attributeHolderTag = null; // Will change depending on whether we are handling an open or standalone element tag
         
         
     }
@@ -229,15 +236,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final boolean minimized, final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition =
-                this.templateMode.isHTML()?
-                    this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
-                    this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
-        this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.clearAll();
-        this.elementMinimized = minimized;
-        this.elementLine = line;
-        this.elementCol = col;
+        this.standaloneElementTag.setStandaloneElementTag(
+                this.textRepository.getText(buffer, nameOffset,nameLen), minimized, line, col);
+        this.attributeHolderTag = this.standaloneElementTag;
 
     }
 
@@ -249,18 +250,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleStandaloneElement(
-                this.elementDefinition, this.elementName, this.elementAttributes, this.elementMinimized, this.elementLine, this.elementCol);
-
-        // We could just do nothing else, but we better clean the element buffer so that we make sure no one uses its
-        // data in the non-element events that are fired between elements
-
-        this.elementDefinition = null;
-        this.elementName = null;
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false;
-        this.elementLine = -1;
-        this.elementCol = -1;
+        this.templateHandler.handleStandaloneElement(this.standaloneElementTag);
+        this.attributeHolderTag = null;
 
     }
 
@@ -273,15 +264,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition =
-                this.templateMode.isHTML()?
-                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
-        this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false; // does not apply
-        this.elementLine = line;
-        this.elementCol = col;
+        this.openElementTag.setOpenElementTag(
+                this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.attributeHolderTag = this.openElementTag;
 
     }
 
@@ -293,18 +278,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleOpenElement(
-                this.elementDefinition, this.elementName, this.elementAttributes, this.elementLine, this.elementCol);
-
-        // We could just do nothing else, but we better clean the element buffer so that we make sure no one uses its
-        // data in the non-element events that are fired between elements
-
-        this.elementDefinition = null;
-        this.elementName = null;
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false;
-        this.elementLine = -1;
-        this.elementCol = -1;
+        this.templateHandler.handleOpenElement(this.openElementTag);
+        this.attributeHolderTag = null;
 
     }
 
@@ -317,15 +292,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition =
-                this.templateMode.isHTML()?
-                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
-        this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false; // does not apply
-        this.elementLine = line;
-        this.elementCol = col;
+        this.openElementTag.setOpenElementTag(
+                this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.attributeHolderTag = this.openElementTag;
 
     }
 
@@ -337,18 +306,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleAutoOpenElement(
-                this.elementDefinition, this.elementName, this.elementAttributes, this.elementLine, this.elementCol);
-
-        // We could just do nothing else, but we better clean the element buffer so that we make sure no one uses its
-        // data in the non-element events that are fired between elements
-
-        this.elementDefinition = null;
-        this.elementName = null;
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false;
-        this.elementLine = -1;
-        this.elementCol = -1;
+        this.templateHandler.handleAutoOpenElement(this.openElementTag);
+        this.attributeHolderTag = null;
 
     }
 
@@ -361,15 +320,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition =
-                this.templateMode.isHTML()?
-                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
-        this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.clearAll(); // does not apply
-        this.elementMinimized = false; // does not apply
-        this.elementLine = line;
-        this.elementCol = col;
+        this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.attributeHolderTag = null;
 
     }
 
@@ -381,18 +333,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleCloseElement(
-                this.elementDefinition, this.elementName, this.elementLine, this.elementCol);
-
-        // We could just do nothing else, but we better clean the element buffer so that we make sure no one uses its
-        // data in the non-element events that are fired between elements
-
-        this.elementDefinition = null;
-        this.elementName = null;
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false;
-        this.elementLine = -1;
-        this.elementCol = -1;
+        this.templateHandler.handleCloseElement(this.closeElementTag);
+        this.attributeHolderTag = null;
 
     }
 
@@ -405,15 +347,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition =
-                this.templateMode.isHTML()?
-                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
-        this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.clearAll(); // does not apply
-        this.elementMinimized = false; // does not apply
-        this.elementLine = line;
-        this.elementCol = col;
+        this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.attributeHolderTag = null;
 
     }
 
@@ -425,18 +360,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleAutoCloseElement(
-                this.elementDefinition, this.elementName, this.elementLine, this.elementCol);
-
-        // We could just do nothing else, but we better clean the element buffer so that we make sure no one uses its
-        // data in the non-element events that are fired between elements
-
-        this.elementDefinition = null;
-        this.elementName = null;
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false;
-        this.elementLine = -1;
-        this.elementCol = -1;
+        this.templateHandler.handleAutoCloseElement(this.closeElementTag);
+        this.attributeHolderTag = null;
 
     }
 
@@ -449,15 +374,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.elementDefinition =
-                this.templateMode.isHTML()?
-                        this.elementDefinitions.forHTMLName(buffer, nameOffset, nameLen) :
-                        this.elementDefinitions.forXMLName(buffer, nameOffset, nameLen);
-        this.elementName = this.textRepository.getText(buffer, nameOffset,nameLen);
-        this.elementAttributes.clearAll(); // does not apply
-        this.elementMinimized = false; // does not apply
-        this.elementLine = line;
-        this.elementCol = col;
+        this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.attributeHolderTag = null;
 
     }
 
@@ -470,18 +388,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleUnmatchedCloseElement(
-                this.elementDefinition, this.elementName, this.elementLine, this.elementCol);
-
-        // We could just do nothing else, but we better clean the element buffer so that we make sure no one uses its
-        // data in the non-element events that are fired between elements
-
-        this.elementDefinition = null;
-        this.elementName = null;
-        this.elementAttributes.clearAll();
-        this.elementMinimized = false;
-        this.elementLine = -1;
-        this.elementCol = -1;
+        this.templateHandler.handleUnmatchedCloseElement(this.closeElementTag);
+        this.attributeHolderTag = null;
 
     }
 
@@ -499,6 +407,11 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int valueLine, final int valueCol)
             throws ParseException {
 
+        if (this.attributeHolderTag == null) {
+            throw new TemplateProcessingException(
+                    "Cannot process: attribute is not related to an open/standalone tag", this.templateName, nameLine, nameCol);
+        }
+
         final String attributeName = this.textRepository.getText(buffer, nameOffset, nameLen);
 
         final String attributeOperator =
@@ -513,20 +426,21 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
                         this.textRepository.getText(buffer, valueContentOffset, valueContentLen) :
                         null);
 
-        final ElementAttributes.ValueQuotes valueQuotes;
+        final IElementAttributes.ValueQuotes valueQuotes;
         if (value == null) {
             valueQuotes = null;
         } else if (valueOuterOffset == valueContentOffset) {
-            valueQuotes = ElementAttributes.ValueQuotes.NONE;
+            valueQuotes = IElementAttributes.ValueQuotes.NONE;
         } else if (buffer[valueOuterOffset] == '"') {
-            valueQuotes = ElementAttributes.ValueQuotes.DOUBLE;
+            valueQuotes = IElementAttributes.ValueQuotes.DOUBLE;
         } else if (buffer[valueOuterOffset] == '\'') {
-            valueQuotes = ElementAttributes.ValueQuotes.SINGLE;
+            valueQuotes = IElementAttributes.ValueQuotes.SINGLE;
         } else {
-            valueQuotes = ElementAttributes.ValueQuotes.NONE;
+            valueQuotes = IElementAttributes.ValueQuotes.NONE;
         }
 
-        this.elementAttributes.setAttribute(attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
+        // We can safely cast here, because we know the specific implementation classes we are using
+        ((ElementAttributes)this.attributeHolderTag.getAttributes()).setAttribute(attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
 
     }
 
@@ -541,7 +455,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         final String elementWhiteSpace = this.textRepository.getText(buffer, offset,len);
 
-        this.elementAttributes.addInnerWhiteSpace(elementWhiteSpace); // line and col are discarded for white spaces
+        // We can safely cast here, because we know the specific implementation classes we are using
+        // Also note line and col are discarded for white spaces
+        ((ElementAttributes)this.attributeHolderTag.getAttributes()).addInnerWhiteSpace(elementWhiteSpace);
 
     }
 

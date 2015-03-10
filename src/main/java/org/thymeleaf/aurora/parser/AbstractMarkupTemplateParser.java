@@ -115,6 +115,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
             // The final step of the handler chain will be the adapter that will convert attoparser's handler chain to thymeleaf's.
             IMarkupHandler handler =
                         new TemplateHandlerAdapterMarkupHandler(
+                                documentName,
                                 templateHandler,
                                 templateEngineContext.getTextRepository(),
                                 templateEngineContext.getElementDefinitions(),

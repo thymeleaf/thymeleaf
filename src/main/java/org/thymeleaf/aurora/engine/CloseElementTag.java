@@ -31,14 +31,12 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-public final class OpenElementTag implements IOpenElementTag {
+public final class CloseElementTag implements ICloseElementTag {
 
     private final TemplateMode templateMode;
     private final ElementDefinitions elementDefinitions;
-
-    private final ElementAttributes elementAttributes;
 
     private ElementDefinition elementDefinition;
     private String elementName;
@@ -53,40 +51,35 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
     // Meant to be called only from the template handler adapter
-    OpenElementTag(
+    CloseElementTag(
             final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions) {
+            final ElementDefinitions elementDefinitions) {
         super();
         this.templateMode = templateMode;
         this.elementDefinitions = elementDefinitions;
-        this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
     }
 
 
 
     // Meant to be called only from the model factory
-    OpenElementTag(
+    CloseElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions,
             final String elementName) {
         super();
         this.templateMode = templateMode;
         this.elementDefinitions = elementDefinitions;
-        this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
-        initializeFromOpenElementTag(elementName, true);
+        initializeFromCloseElementTag(elementName);
     }
 
 
 
     // Meant to be called only from the cloneTag method
-    private OpenElementTag(
+    private CloseElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final ElementDefinition elementDefinition,
             final String elementName,
-            final ElementAttributes elementAttributes,
             final int line,
             final int col) {
         super();
@@ -94,7 +87,6 @@ public final class OpenElementTag implements IOpenElementTag {
         this.elementDefinitions = elementDefinitions;
         this.elementDefinition = elementDefinition;
         this.elementName = elementName;
-        this.elementAttributes = elementAttributes;
         this.line = line;
         this.col = col;
     }
@@ -111,21 +103,16 @@ public final class OpenElementTag implements IOpenElementTag {
     }
 
 
-    public IElementAttributes getAttributes() {
-        return this.elementAttributes;
-    }
-
-
 
     public void setElementName(final String elementName) {
-        initializeFromOpenElementTag(elementName, false);
+        initializeFromCloseElementTag(elementName);
     }
 
 
 
 
     // Meant to be called only from within the engine
-    void setOpenElementTag(
+    void setCloseElementTag(
             final String elementName,
             final int line, final int col) {
 
@@ -134,8 +121,6 @@ public final class OpenElementTag implements IOpenElementTag {
                 (this.templateMode.isHTML()?
                     this.elementDefinitions.forHTMLName(elementName) : this.elementDefinitions.forXMLName(elementName));
 
-        this.elementAttributes.clearAll();
-
         this.line = line;
         this.col = col;
 
@@ -143,30 +128,17 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
 
-    private void initializeFromOpenElementTag(
-            final String elementName, final boolean clearAttributes) {
+    private void initializeFromCloseElementTag(
+            final String elementName) {
 
         if (elementName == null || elementName.trim().length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
-        if (this.templateMode.isHTML()) {
-            final HTMLElementDefinition newHTMLElementDefinition = this.elementDefinitions.forHTMLName(elementName);
-            if (newHTMLElementDefinition.getType().isVoid()) {
-                throw new IllegalArgumentException(
-                        "Specified HTML element name \"" + elementName + "\" is void, which cannot " +
-                        "be contained in an OPEN element tag");
-            }
-            this.elementDefinition = newHTMLElementDefinition;
-        } else {
-            this.elementDefinition = this.elementDefinitions.forXMLName(elementName);
-        }
-
         this.elementName = elementName;
-
-        if (clearAttributes) {
-            this.elementAttributes.clearAll();
-        }
+        this.elementDefinition =
+                (this.templateMode.isHTML()?
+                    this.elementDefinitions.forHTMLName(elementName) : this.elementDefinitions.forXMLName(elementName));
 
         this.line = -1;
         this.col = -1;
@@ -196,9 +168,8 @@ public final class OpenElementTag implements IOpenElementTag {
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
-        writer.write('<');
+        writer.write("</");
         writer.write(this.elementName);
-        this.elementAttributes.write(writer);
         writer.write('>');
     }
 
@@ -219,10 +190,10 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
 
-    public OpenElementTag cloneElementTag() {
-        return new OpenElementTag(
+    public CloseElementTag cloneElementTag() {
+        return new CloseElementTag(
                         this.templateMode, this.elementDefinitions,
-                        this.elementDefinition, this.elementName, this.elementAttributes.cloneElementAttributes(),
+                        this.elementDefinition, this.elementName,
                         this.line, this.col);
     }
 

@@ -65,7 +65,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         try {
             text.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, text.getLine(), text.getCol(), e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, text.getLine(), text.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -81,7 +82,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         try {
             comment.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, comment.getLine(), comment.getCol(), e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, comment.getLine(), comment.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -96,7 +98,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         try {
             cdataSection.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, cdataSection.getLine(), cdataSection.getCol(), e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, cdataSection.getLine(), cdataSection.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -108,114 +111,88 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleStandaloneElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final boolean minimized,
-            final int line, final int col) {
+    public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
 
         try {
-            MarkupOutput.writeStandaloneElement(this.writer, elementName, elementAttributes, minimized);
+            standaloneElementTag.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, standaloneElementTag.getLine(), standaloneElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleStandaloneElement(elementDefinition, elementName, elementAttributes, minimized, line, col);
+        super.handleStandaloneElement(standaloneElementTag);
 
     }
 
 
     @Override
-    public void handleOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col) {
+    public void handleOpenElement(final IOpenElementTag openElementTag) {
 
         try {
-            MarkupOutput.writeOpenElement(this.writer, elementName, elementAttributes);
+            openElementTag.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, openElementTag.getLine(), openElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleOpenElement(elementDefinition, elementName, elementAttributes, line, col);
+        super.handleOpenElement(openElementTag);
 
     }
 
 
     @Override
-    public void handleAutoOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col) {
+    public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
 
-        try {
-            MarkupOutput.writeAutoOpenElement(this.writer, elementName, elementAttributes);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
+        // Nothing to be written... balanced elements were not present at the original template!
 
         // Just in case someone set us a 'next'
-        super.handleAutoOpenElement(elementDefinition, elementName, elementAttributes, line, col);
+        super.handleAutoOpenElement(openElementTag);
 
     }
 
 
     @Override
-    public void handleCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
         try {
-            MarkupOutput.writeCloseElement(this.writer, elementName);
+            closeElementTag.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, closeElementTag.getLine(), closeElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleCloseElement(elementDefinition, elementName, line, col);
+        super.handleCloseElement(closeElementTag);
 
     }
 
 
     @Override
-    public void handleAutoCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
 
-        try {
-            MarkupOutput.writeAutoCloseElement(this.writer, elementName);
-        } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
-        }
+        // Nothing to be written... balanced elements were not present at the original template!
 
         // Just in case someone set us a 'next'
-        super.handleAutoCloseElement(elementDefinition, elementName, line, col);
+        super.handleAutoCloseElement(closeElementTag);
 
     }
 
 
     @Override
-    public void handleUnmatchedCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
 
         // We will write exactly the same as for non-unmatched close elements, because that does not matter from the markup point
         try {
-            MarkupOutput.writeUnmatchedCloseElement(this.writer, elementName);
+            closeElementTag.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, line, col, e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, closeElementTag.getLine(), closeElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleUnmatchedCloseElement(elementDefinition, elementName, line, col);
+        super.handleUnmatchedCloseElement(closeElementTag);
 
     }
 
@@ -228,7 +205,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         try {
             docType.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, docType.getLine(), docType.getCol(), e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, docType.getLine(), docType.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -245,7 +223,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         try {
             xmlDeclaration.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -264,7 +243,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         try {
             processingInstruction.write(this.writer);
         } catch (final Exception e) {
-            throw new TemplateOutputException("An error happened during template rendering", this.templateName, processingInstruction.getLine(), processingInstruction.getCol(), e);
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", this.templateName, processingInstruction.getLine(), processingInstruction.getCol(), e);
         }
 
         // Just in case someone set us a 'next'

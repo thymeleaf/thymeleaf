@@ -33,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class OpenElementTag implements IOpenElementTag {
+public final class StandaloneElementTag implements IStandaloneElementTag {
 
     private final TemplateMode templateMode;
     private final ElementDefinitions elementDefinitions;
@@ -42,6 +42,7 @@ public final class OpenElementTag implements IOpenElementTag {
 
     private ElementDefinition elementDefinition;
     private String elementName;
+    private boolean minimized;
     private int line;
     private int col;
 
@@ -53,7 +54,7 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
     // Meant to be called only from the template handler adapter
-    OpenElementTag(
+    StandaloneElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions) {
@@ -66,26 +67,28 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
     // Meant to be called only from the model factory
-    OpenElementTag(
+    StandaloneElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions,
-            final String elementName) {
+            final String elementName,
+            final boolean minimized) {
         super();
         this.templateMode = templateMode;
         this.elementDefinitions = elementDefinitions;
         this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
-        initializeFromOpenElementTag(elementName, true);
+        initializeFromOpenElementTag(elementName, minimized, true);
     }
 
 
 
     // Meant to be called only from the cloneTag method
-    private OpenElementTag(
+    private StandaloneElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final ElementDefinition elementDefinition,
             final String elementName,
+            final boolean minimized,
             final ElementAttributes elementAttributes,
             final int line,
             final int col) {
@@ -94,6 +97,7 @@ public final class OpenElementTag implements IOpenElementTag {
         this.elementDefinitions = elementDefinitions;
         this.elementDefinition = elementDefinition;
         this.elementName = elementName;
+        this.minimized = minimized;
         this.elementAttributes = elementAttributes;
         this.line = line;
         this.col = col;
@@ -111,6 +115,11 @@ public final class OpenElementTag implements IOpenElementTag {
     }
 
 
+    public boolean isMinimized() {
+        return this.minimized;
+    }
+
+
     public IElementAttributes getAttributes() {
         return this.elementAttributes;
     }
@@ -118,21 +127,30 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
     public void setElementName(final String elementName) {
-        initializeFromOpenElementTag(elementName, false);
+        initializeFromOpenElementTag(elementName, this.minimized, false);
+    }
+
+    public void setElementName(final String elementName, final boolean minimized) {
+        initializeFromOpenElementTag(elementName, minimized, false);
+    }
+
+    public void setMinimized(final boolean minimized) {
+        initializeFromOpenElementTag(this.elementName, minimized, false);
     }
 
 
 
-
     // Meant to be called only from within the engine
-    void setOpenElementTag(
+    void setStandaloneElementTag(
             final String elementName,
+            final boolean minimized,
             final int line, final int col) {
 
         this.elementName = elementName;
         this.elementDefinition =
                 (this.templateMode.isHTML()?
                     this.elementDefinitions.forHTMLName(elementName) : this.elementDefinitions.forXMLName(elementName));
+        this.minimized = minimized;
 
         this.elementAttributes.clearAll();
 
@@ -144,7 +162,7 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
     private void initializeFromOpenElementTag(
-            final String elementName, final boolean clearAttributes) {
+            final String elementName, final boolean minimized, final boolean clearAttributes) {
 
         if (elementName == null || elementName.trim().length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");
@@ -152,10 +170,10 @@ public final class OpenElementTag implements IOpenElementTag {
 
         if (this.templateMode.isHTML()) {
             final HTMLElementDefinition newHTMLElementDefinition = this.elementDefinitions.forHTMLName(elementName);
-            if (newHTMLElementDefinition.getType().isVoid()) {
+            if (!newHTMLElementDefinition.getType().isVoid() && !minimized) {
                 throw new IllegalArgumentException(
-                        "Specified HTML element name \"" + elementName + "\" is void, which cannot " +
-                        "be contained in an OPEN element tag");
+                        "Specified HTML element name \"" + elementName + "\" is non-void and the 'minimized' " +
+                        "flag is set to false, which cannot be contained in a standalone element tag");
             }
             this.elementDefinition = newHTMLElementDefinition;
         } else {
@@ -163,6 +181,7 @@ public final class OpenElementTag implements IOpenElementTag {
         }
 
         this.elementName = elementName;
+        this.minimized = minimized;
 
         if (clearAttributes) {
             this.elementAttributes.clearAll();
@@ -199,7 +218,11 @@ public final class OpenElementTag implements IOpenElementTag {
         writer.write('<');
         writer.write(this.elementName);
         this.elementAttributes.write(writer);
-        writer.write('>');
+        if (this.minimized) {
+            writer.write("/>");
+        } else {
+            writer.write('>');
+        }
     }
 
 
@@ -219,10 +242,10 @@ public final class OpenElementTag implements IOpenElementTag {
 
 
 
-    public OpenElementTag cloneElementTag() {
-        return new OpenElementTag(
+    public StandaloneElementTag cloneElementTag() {
+        return new StandaloneElementTag(
                         this.templateMode, this.elementDefinitions,
-                        this.elementDefinition, this.elementName, this.elementAttributes.cloneElementAttributes(),
+                        this.elementDefinition, this.elementName, this.minimized, this.elementAttributes.cloneElementAttributes(),
                         this.line, this.col);
     }
 

@@ -78,71 +78,49 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleStandaloneElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final boolean minimized,
-            final int line, final int col) {
+    public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
 
-        super.handleStandaloneElement(elementDefinition, elementName, elementAttributes, minimized, line, col);
+        super.handleStandaloneElement(standaloneElementTag);
 
     }
 
 
     @Override
-    public void handleOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col) {
+    public void handleOpenElement(final IOpenElementTag openElementTag) {
 
-        super.handleOpenElement(elementDefinition, elementName, elementAttributes, line, col);
+        super.handleOpenElement(openElementTag);
 
     }
 
 
     @Override
-    public void handleAutoOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col) {
+    public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
 
-        super.handleAutoOpenElement(elementDefinition, elementName, elementAttributes, line, col);
+        super.handleAutoOpenElement(openElementTag);
 
     }
 
 
     @Override
-    public void handleCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
-        super.handleCloseElement(elementDefinition, elementName, line, col);
+        super.handleCloseElement(closeElementTag);
 
     }
 
 
     @Override
-    public void handleAutoCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
 
-        super.handleAutoCloseElement(elementDefinition, elementName, line, col);
+        super.handleAutoCloseElement(closeElementTag);
 
     }
 
 
     @Override
-    public void handleUnmatchedCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
 
-        super.handleUnmatchedCloseElement(elementDefinition, elementName, line, col);
+        super.handleUnmatchedCloseElement(closeElementTag);
 
     }
 

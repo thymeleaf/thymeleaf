@@ -62,7 +62,7 @@ public final class Comment implements IComment {
      */
 
 
-    // Meant to be called only from within the engine
+    // Meant to be called only from the template handler adapter
     Comment(final ITextRepository textRepository) {
         super();
         this.textRepository = textRepository;
@@ -70,6 +70,7 @@ public final class Comment implements IComment {
 
 
 
+    // Meant to be called only from the model factory
     Comment(final ITextRepository textRepository, final String content) {
         super();
         this.textRepository = textRepository;

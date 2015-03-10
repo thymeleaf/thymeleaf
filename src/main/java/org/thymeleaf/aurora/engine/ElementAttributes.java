@@ -51,7 +51,8 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
-    protected ElementAttributes(final TemplateMode templateMode, final AttributeDefinitions attributeDefinitions) {
+    // Meant to be called only from the element / element tag constructors or the corresponding cloning methods
+    ElementAttributes(final TemplateMode templateMode, final AttributeDefinitions attributeDefinitions) {
         super();
         this.templateMode = templateMode;
         this.attributeDefinitions = attributeDefinitions;
@@ -180,6 +181,134 @@ public final class ElementAttributes implements IElementAttributes {
             return null;
         }
         return this.attributes[pos].definition;
+    }
+
+
+
+
+    public final ValueQuotes getValueQuotes(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].valueQuotes;
+    }
+
+
+    public final ValueQuotes getValueQuotes(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].valueQuotes;
+    }
+
+
+    public final ValueQuotes getValueQuotes(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
+        if (pos < 0) {
+            return null;
+        }
+        return this.attributes[pos].valueQuotes;
+    }
+
+
+
+
+    public final boolean hasLocation(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return false;
+        }
+        return this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
+    }
+
+
+    public final boolean hasLocation(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return false;
+        }
+        return this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
+    }
+
+
+    public final boolean hasLocation(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
+        if (pos < 0) {
+            return false;
+        }
+        return this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
+    }
+
+
+
+
+    public final int getLine(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return -1;
+        }
+        return this.attributes[pos].line;
+    }
+
+
+    public final int getLine(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return -1;
+        }
+        return this.attributes[pos].line;
+    }
+
+
+    public final int getLine(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
+        if (pos < 0) {
+            return -1;
+        }
+        return this.attributes[pos].line;
+    }
+
+
+
+
+    public final int getCol(final String completeName) {
+        Validate.notNull(completeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(completeName);
+        if (pos < 0) {
+            return -1;
+        }
+        return this.attributes[pos].col;
+    }
+
+
+    public final int getCol(final String prefix, final String name) {
+        Validate.notNull(name, "Attribute name cannot be null");
+        final int pos = searchAttribute(prefix, name);
+        if (pos < 0) {
+            return -1;
+        }
+        return this.attributes[pos].col;
+    }
+
+
+    public final int getCol(final AttributeName attributeName) {
+        Validate.notNull(attributeName, "Attribute name cannot be null");
+        final int pos = searchAttribute(attributeName);
+        if (pos < 0) {
+            return -1;
+        }
+        return this.attributes[pos].col;
     }
 
 

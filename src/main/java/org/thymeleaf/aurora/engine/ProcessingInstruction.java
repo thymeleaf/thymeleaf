@@ -52,7 +52,7 @@ public final class ProcessingInstruction implements IProcessingInstruction {
      */
 
 
-    // Meant to be called only from within the engine
+    // Meant to be called only from the template handler adapter
     ProcessingInstruction(final ITextRepository textRepository) {
         super();
         this.textRepository = textRepository;
@@ -60,6 +60,7 @@ public final class ProcessingInstruction implements IProcessingInstruction {
 
 
 
+    // Meant to be called only from the model factory
     ProcessingInstruction(
             final ITextRepository textRepository,
             final String target,

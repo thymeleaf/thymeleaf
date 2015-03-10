@@ -25,8 +25,12 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IOpenElementTag extends IElementAttributeHolderTag {
+public interface IStandaloneElementTag extends IElementAttributeHolderTag {
 
-    public IOpenElementTag cloneElementTag();
+    public boolean isMinimized();
+
+    public void setElementName(final String elementName, final boolean minimized);
+
+    public IStandaloneElementTag cloneElementTag();
 
 }

@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.standard.expression.IStandardExpression;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -48,44 +50,17 @@ public interface ITemplateHandler {
     public void handleText(final IText text);
 
 
-    public void handleStandaloneElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final boolean minimized,
-            final int line, final int col);
+    public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag);
 
+    public void handleOpenElement(final IOpenElementTag openElementTag);
 
-    public void handleOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col);
+    public void handleAutoOpenElement(final IOpenElementTag openElementTag);
 
+    public void handleCloseElement(final ICloseElementTag closeElementTag);
 
-    public void handleAutoOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col);
+    public void handleAutoCloseElement(final ICloseElementTag closeElementTag);
 
-
-    public void handleCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col);
-
-
-    public void handleAutoCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col);
-
-
-    public void handleUnmatchedCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col);
+    public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag);
 
 
 

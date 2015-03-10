@@ -47,6 +47,22 @@ public interface IElementAttributes {
     public AttributeDefinition getAttributeDefinition(final String prefix, final String name);
     public AttributeDefinition getAttributeDefinition(final AttributeName attributeName);
 
+    public ValueQuotes getValueQuotes(final String completeName);
+    public ValueQuotes getValueQuotes(final String prefix, final String name);
+    public ValueQuotes getValueQuotes(final AttributeName attributeName);
+
+    public boolean hasLocation(final String completeName);
+    public boolean hasLocation(final String prefix, final String name);
+    public boolean hasLocation(final AttributeName attributeName);
+
+    public int getLine(final String completeName);
+    public int getLine(final String prefix, final String name);
+    public int getLine(final AttributeName attributeName);
+
+    public int getCol(final String completeName);
+    public int getCol(final String prefix, final String name);
+    public int getCol(final AttributeName attributeName);
+
     public void clearAll();
 
     public void setAttribute(final String completeName, final String value);

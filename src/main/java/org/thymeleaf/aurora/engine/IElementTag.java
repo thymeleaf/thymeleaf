@@ -19,14 +19,30 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.io.IOException;
+import java.io.Writer;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IOpenElementTag extends IElementAttributeHolderTag {
+public interface IElementTag {
 
-    public IOpenElementTag cloneElementTag();
+
+    public ElementDefinition getElementDefinition();
+    public String getElementName();
+
+    public void setElementName(final String elementName);
+
+    public boolean hasLocation();
+    public int getLine();
+    public int getCol();
+
+
+    public void write(final Writer writer) throws IOException;
+
+    public IElementTag cloneElementTag();
 
 }

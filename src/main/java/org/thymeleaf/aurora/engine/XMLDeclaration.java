@@ -61,7 +61,7 @@ public final class XMLDeclaration implements IXMLDeclaration {
      */
 
 
-    // Meant to be called only from within the engine
+    // Meant to be called only from the template handler adapter
     XMLDeclaration(final ITextRepository textRepository) {
         super();
         this.textRepository = textRepository;
@@ -69,6 +69,7 @@ public final class XMLDeclaration implements IXMLDeclaration {
 
 
 
+    // Meant to be called only from the model factory
     XMLDeclaration(
             final ITextRepository textRepository,
             final String version,

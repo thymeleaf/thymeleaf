@@ -167,90 +167,68 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-    public void handleStandaloneElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final boolean minimized,
-            final int line, final int col) {
+    public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleStandaloneElement(elementDefinition, elementName, elementAttributes, minimized, line, col);
+        this.next.handleStandaloneElement(standaloneElementTag);
 
     }
 
 
-    public void handleOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col) {
+    public void handleOpenElement(final IOpenElementTag openElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleOpenElement(elementDefinition, elementName, elementAttributes, line, col);
+        this.next.handleOpenElement(openElementTag);
 
     }
 
 
-    public void handleAutoOpenElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col) {
+    public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleAutoOpenElement(elementDefinition, elementName, elementAttributes, line, col);
+        this.next.handleAutoOpenElement(openElementTag);
 
     }
 
 
-    public void handleCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleCloseElement(elementDefinition, elementName, line, col);
+        this.next.handleCloseElement(closeElementTag);
 
     }
 
 
-    public void handleAutoCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleAutoCloseElement(elementDefinition, elementName, line, col);
+        this.next.handleAutoCloseElement(closeElementTag);
 
     }
 
 
-    public void handleUnmatchedCloseElement(
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line, final int col) {
+    public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleUnmatchedCloseElement(elementDefinition, elementName, line, col);
+        this.next.handleUnmatchedCloseElement(closeElementTag);
 
     }
 
