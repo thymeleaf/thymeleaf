@@ -135,10 +135,19 @@ public final class CloseElementTag implements ICloseElementTag {
             throw new IllegalArgumentException("Element name cannot be null or empty");
         }
 
+        if (this.templateMode.isHTML()) {
+            final HTMLElementDefinition newHTMLElementDefinition = this.elementDefinitions.forHTMLName(elementName);
+            if (newHTMLElementDefinition.getType().isVoid()) {
+                throw new IllegalArgumentException(
+                        "Specified HTML element name \"" + elementName + "\" is void, which cannot " +
+                        "be contained in an CLOSE element tag (VOID elements have no closing tags)");
+            }
+            this.elementDefinition = newHTMLElementDefinition;
+        } else {
+            this.elementDefinition = this.elementDefinitions.forXMLName(elementName);
+        }
+
         this.elementName = elementName;
-        this.elementDefinition =
-                (this.templateMode.isHTML()?
-                    this.elementDefinitions.forHTMLName(elementName) : this.elementDefinitions.forXMLName(elementName));
 
         this.line = -1;
         this.col = -1;
