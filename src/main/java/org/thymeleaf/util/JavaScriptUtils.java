@@ -173,17 +173,16 @@ public final class JavaScriptUtils {
             printCollection(output, (Collection<?>) object);
             return;
         }
-        if (object instanceof Map<?,?>) {
+        if (object instanceof Map<?, ?>) {
             printMap(output, (Map<?, ?>) object);
             return;
         }
-        if (object.getClass().isEnum()) {
+        if (object instanceof Enum) {
             printEnum(output, object);
             return;
         }
         printObject(output, object);
     }
-
 
     private static void printNull(final StringBuilder output) {
         output.append("null");
@@ -374,20 +373,19 @@ public final class JavaScriptUtils {
     }
 
 
-    
     private static void printEnum(final StringBuilder output, final Object object) {
-        
+
         final Enum<?> enumObject = (Enum<?>) object;
-        final Class<?> enumClass = object.getClass();
-        
-        final Map<String,Object> properties = new LinkedHashMap<String, Object>(3, 1.0f);
+        final Class<?> objectClass = object.getClass();
+        final Class<?> enumClass = "".equals(objectClass.getSimpleName()) ? objectClass.getSuperclass() : objectClass;
+
+        final Map<String, Object> properties = new LinkedHashMap<String, Object>(3, 1.0f);
         properties.put("$type", enumClass.getSimpleName());
         properties.put("$name", enumObject.name());
 
         printMap(output, properties);
-        
-    }
 
+    }
 
 
 
