@@ -25,7 +25,7 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IStandaloneElementTag extends IElementAttributeHolderTag {
+public interface IStandaloneElementTag extends INonClosingElementTag {
 
     public boolean isMinimized();
 

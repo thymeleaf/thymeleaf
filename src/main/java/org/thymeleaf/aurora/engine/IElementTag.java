@@ -28,8 +28,7 @@ import java.io.Writer;
  * @since 3.0.0
  * 
  */
-public interface IElementTag {
-
+public interface IElementTag extends ITemplateHandlerEvent {
 
     public ElementDefinition getElementDefinition();
     public String getElementName();

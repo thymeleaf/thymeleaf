@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.aurora.processor;
 
+import org.thymeleaf.aurora.dialect.IDialect;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -27,6 +30,10 @@ package org.thymeleaf.aurora.processor;
  */
 public interface IProcessor {
 
+    public void setDialect(final IDialect dialect);
+    public void setDialectPrefix(final String dialectPrefix);
+
+    public TemplateMode getTemplateMode();
     public int getPrecedence();
 
 }

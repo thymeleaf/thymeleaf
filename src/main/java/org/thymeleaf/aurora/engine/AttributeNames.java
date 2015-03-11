@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.util.TextUtil;
 
 /**
@@ -28,6 +29,72 @@ import org.thymeleaf.aurora.util.TextUtil;
  * 
  */
 public class AttributeNames {
+
+
+
+    public static AttributeName forName(
+            final TemplateMode templateMode, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()?
+                        forHTMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen) :
+                        forXMLName(attributeNameBuffer, attributeNameOffset, attributeNameLen));
+
+    }
+
+
+
+    public static AttributeName forName(final TemplateMode templateMode, final String attributeName) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()? forHTMLName(attributeName) : forXMLName(attributeName));
+
+    }
+
+
+
+    public static AttributeName forName(
+            final TemplateMode templateMode, final String prefix, final char[] attributeNameBuffer, final int attributeNameOffset, final int attributeNameLen) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()?
+                forHTMLName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen) :
+                forXMLName(prefix, attributeNameBuffer, attributeNameOffset, attributeNameLen));
+
+    }
+
+
+
+    public static AttributeName forName(final TemplateMode templateMode, final String prefix, final String attributeName) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Attribute Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()? forHTMLName(prefix, attributeName) : forXMLName(prefix, attributeName));
+
+    }
 
 
 

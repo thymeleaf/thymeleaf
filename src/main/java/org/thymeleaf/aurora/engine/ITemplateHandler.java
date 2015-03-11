@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.engine;
 
-import org.thymeleaf.standard.expression.IStandardExpression;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez

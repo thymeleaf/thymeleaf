@@ -33,18 +33,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.context.TemplateEngineContext;
-import org.thymeleaf.aurora.context.TemplateProcessingContext;
-import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.engine.OutputTemplateHandler;
-import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
-import org.thymeleaf.aurora.parser.HTMLTemplateParser;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -1122,11 +1114,7 @@ public class TemplateEngine {
 
 
 
-    private final ConcurrentHashMap<String,String> entireTemplatesByName = new ConcurrentHashMap<String, String>();
-
-
-    private static final org.thymeleaf.aurora.parser.ITemplateParser PARSER = new HTMLTemplateParser(40,2048);
-    private static final TemplateEngineContext TEMPLATE_ENGINE_CONTEXT = new TemplateEngineContext();
+    private static final org.thymeleaf.aurora.TemplateEngine AURORA_TEMPLATE_ENGINE = new org.thymeleaf.aurora.TemplateEngine();
 
 
     public void processTemplate2(final TemplateProcessingParameters templateProcessingParameters, final Writer writer) {
@@ -1223,19 +1211,7 @@ public class TemplateEngine {
 
         final IResource templateResource = new ReaderResource(templateName, reader);
 
-        final ITemplateProcessingContext templatePocessingContext = new TemplateProcessingContext(TEMPLATE_ENGINE_CONTEXT, templateName, TemplateMode.HTML);
-
-        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler(templatePocessingContext);
-        final OutputTemplateHandler outputHandler = new OutputTemplateHandler(templateName, writer);
-
-        processorHandler.setNext(outputHandler);
-
-        final ITemplateHandler handlerChain = processorHandler;
-
-
-//        markupEngineConfig.getParser().parse(templateResource, directOutputHandler);
-        PARSER.parse(templatePocessingContext.getTemplateEngineContext(), templatePocessingContext.getTemplateMode(), templateResource, /* new String[] {"html//p"}, */ handlerChain);
-
+        AURORA_TEMPLATE_ENGINE.process(TemplateMode.HTML, templateName, templateResource, writer);
 
     }
 

@@ -28,9 +28,7 @@ import java.io.Writer;
  * @since 3.0.0
  * 
  */
-public interface INode {
-
-
+public interface INode extends ITemplateHandlerEvent {
 
     public boolean hasLocation();
     public int getLine();

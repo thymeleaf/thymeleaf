@@ -25,16 +25,13 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IComment extends INode {
+public interface IOpenElementTagActionHandler extends INonClosingElementTagActionHandler {
 
-    public String getComment();
-    public String getContent();
 
-    public int length();
-    public char charAt(final int index);
+    public void removeTag();
 
-    public void setContent(final String content);
+    public void setBody(); // escaped (th:text)/unescaped (th:include)
 
-    public IComment cloneNode();
+    public void setInliningMode();
 
 }

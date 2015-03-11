@@ -25,16 +25,15 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IComment extends INode {
+public interface IElement extends INode {
 
-    public String getComment();
-    public String getContent();
+    public ElementDefinition getElementDefinition();
+    public String getElementName();
 
-    public int length();
-    public char charAt(final int index);
+    public void setElementName(final String elementName);
 
-    public void setContent(final String content);
+    public IElementAttributes getAttributes();
 
-    public IComment cloneNode();
+    public IElement cloneNode();
 
 }

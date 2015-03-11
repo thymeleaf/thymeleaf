@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.util.TextUtil;
 
 /**
@@ -28,6 +29,72 @@ import org.thymeleaf.aurora.util.TextUtil;
  * 
  */
 public class ElementNames {
+
+
+
+    public static ElementName forName(
+            final TemplateMode templateMode, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()?
+                forHTMLName(elementNameBuffer, elementNameOffset, elementNameLen) :
+                forXMLName(elementNameBuffer, elementNameOffset, elementNameLen));
+
+    }
+
+
+
+    public static ElementName forName(final TemplateMode templateMode, final String elementName) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()? forHTMLName(elementName) : forXMLName(elementName));
+
+    }
+
+
+
+    public static ElementName forName(
+            final TemplateMode templateMode, final String prefix, final char[] elementNameBuffer, final int elementNameOffset, final int elementNameLen) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()?
+                forHTMLName(prefix, elementNameBuffer, elementNameOffset, elementNameLen) :
+                forXMLName(prefix, elementNameBuffer, elementNameOffset, elementNameLen));
+
+    }
+
+
+
+    public static ElementName forName(final TemplateMode templateMode, final String prefix, final String elementName) {
+
+        if (templateMode == null) {
+            throw new IllegalArgumentException("Template Mode cannot be null");
+        }
+        if (!templateMode.isHTML() && !templateMode.isXML()) {
+            throw new IllegalArgumentException("Cannot create Element Name for template modes other than HTML or XML");
+        }
+
+        return (templateMode.isHTML()? forHTMLName(prefix, elementName) : forXMLName(prefix, elementName));
+
+    }
 
 
 

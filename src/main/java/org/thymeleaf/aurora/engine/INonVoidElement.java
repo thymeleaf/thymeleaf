@@ -19,22 +19,16 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.List;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public interface IComment extends INode {
+public interface INonVoidElement extends IElement {
 
-    public String getComment();
-    public String getContent();
-
-    public int length();
-    public char charAt(final int index);
-
-    public void setContent(final String content);
-
-    public IComment cloneNode();
+    public List<INode> getBody();
 
 }

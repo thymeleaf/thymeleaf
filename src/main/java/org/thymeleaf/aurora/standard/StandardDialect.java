@@ -17,18 +17,27 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.standard;
+
+import java.util.HashSet;
+
+import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface IElementAttributeHolderTag extends IElementTag {
+public class StandardDialect extends AbstractProcessorDialect {
 
-    public IElementAttributes getAttributes();
+    private static final String NAME = "Standard";
+    private static final String PREFIX = "th";
 
-    public IElementAttributeHolderTag cloneElementTag();
+
+    public StandardDialect() {
+        super(NAME, PREFIX, new HashSet<IProcessor>());
+    }
 
 }

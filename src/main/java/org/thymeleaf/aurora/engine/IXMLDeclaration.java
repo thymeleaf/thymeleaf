@@ -27,7 +27,6 @@ package org.thymeleaf.aurora.engine;
  */
 public interface IXMLDeclaration extends INode {
 
-
     public String getKeyword();
     public String getVersion();
     public String getEncoding();
@@ -38,5 +37,6 @@ public interface IXMLDeclaration extends INode {
     public void setEncoding(final String encoding);
     public void setStandalone(final String standalone);
 
+    public IXMLDeclaration cloneNode();
 
 }

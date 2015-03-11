@@ -25,16 +25,11 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IComment extends INode {
+public interface IElementTagActionHandler {
 
-    public String getComment();
-    public String getContent();
+    public void setLocalVariable();
+    public void removeLocalVariable();
 
-    public int length();
-    public char charAt(final int index);
-
-    public void setContent(final String content);
-
-    public IComment cloneNode();
+    public void setSelectionTarget();
 
 }

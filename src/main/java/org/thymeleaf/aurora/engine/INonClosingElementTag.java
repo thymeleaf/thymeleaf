@@ -17,9 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
-
-import org.thymeleaf.aurora.dialect.IProcessorDialect;
+package org.thymeleaf.aurora.engine;
 
 /**
  *
@@ -27,10 +25,10 @@ import org.thymeleaf.aurora.dialect.IProcessorDialect;
  * @since 3.0.0
  * 
  */
-public interface IProcessorMatchingContext {
+public interface INonClosingElementTag extends IElementTag {
 
-    public IProcessorDialect getDialect();
+    public IElementAttributes getAttributes();
 
-    public String getDialectPrefix();
+    public INonClosingElementTag cloneElementTag();
 
 }

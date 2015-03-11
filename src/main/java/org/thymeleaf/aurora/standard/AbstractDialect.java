@@ -17,24 +17,33 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.standard;
+
+import org.thymeleaf.aurora.dialect.IDialect;
+import org.thymeleaf.util.Validate;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface IComment extends INode {
+public class AbstractDialect implements IDialect {
 
-    public String getComment();
-    public String getContent();
 
-    public int length();
-    public char charAt(final int index);
+    private final String name;
 
-    public void setContent(final String content);
+    
+    protected AbstractDialect(final String name) {
+        super();
+        Validate.notNull(name, "Dialect name cannot be null");
+        this.name = name;
+    }
 
-    public IComment cloneNode();
-
+    public String getName() {
+        return this.name;
+    }
+    
 }

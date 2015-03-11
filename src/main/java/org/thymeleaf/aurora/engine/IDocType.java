@@ -27,7 +27,6 @@ package org.thymeleaf.aurora.engine;
  */
 public interface IDocType extends INode {
 
-
     public String getKeyword();
     public String getElementName();
     public String getType();
@@ -44,5 +43,6 @@ public interface IDocType extends INode {
     public void setIDs(final String type, final String publicId, final String systemId);
     public void setInternalSubset(final String internalSubset);
 
+    public IDocType cloneNode();
 
 }

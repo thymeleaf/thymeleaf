@@ -19,14 +19,17 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.text.TextRepositories;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -36,17 +39,23 @@ import org.thymeleaf.aurora.text.TextRepositories;
  */
 public class TemplateEngineContext implements ITemplateEngineContext {
 
+    private final Set<IDialect> dialects;
+
     private final ITextRepository textRepository;
 
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
 
 
-    public TemplateEngineContext() {
+    public TemplateEngineContext(final Set<IDialect> dialects, final ITextRepository textRepository) {
 
         super();
 
-        this.textRepository = TextRepositories.createLimitedSizeCacheRepository();
+        Validate.notNull(dialects, "Dialect list cannot be null");
+        Validate.notNull(textRepository, "Text Repository cannot be null");
+
+        this.dialects = Collections.unmodifiableSet(new LinkedHashSet<IDialect>(dialects));
+        this.textRepository = textRepository;
 
         this.elementDefinitions = new ElementDefinitions();
         this.attributeDefinitions = new AttributeDefinitions();
@@ -55,8 +64,8 @@ public class TemplateEngineContext implements ITemplateEngineContext {
 
 
 
-    public List<IDialect> getDialects() {
-        return Collections.emptyList();
+    public Set<IDialect> getDialects() {
+        return this.dialects;
     }
 
     public String getStandardDialectPrefix() {

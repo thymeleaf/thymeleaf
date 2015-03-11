@@ -17,14 +17,14 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.processor.node;
 
-import org.thymeleaf.aurora.context.IProcessorMatchingContext;
+import java.util.List;
+
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.ElementAttributes;
-import org.thymeleaf.aurora.engine.XMLAttributeName;
-import org.thymeleaf.aurora.engine.XMLElementDefinition;
-import org.thymeleaf.aurora.engine.XMLElementName;
+import org.thymeleaf.aurora.engine.AttributeName;
+import org.thymeleaf.aurora.engine.ElementName;
+import org.thymeleaf.aurora.engine.INode;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -33,16 +33,15 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IXMLElementProcessor extends IProcessor {
+public interface INodeProcessor extends IProcessor {
 
-    public XMLElementName getXMLElementName();
-    public XMLAttributeName getXMLAttributeName();
-    public String getXMLAttributeValue();
 
-    public ElementProcessorResult processXMLElement(
-            final ITemplateProcessingContext processingContext, final IProcessorMatchingContext matchingContext,
-            final XMLElementDefinition elementDefinition, final String elementName,
-            final ElementAttributes elementAttributes,
-            final int line, final int col);
+    public Class<? extends INode> getMatchingNodeClass();
+    public ElementName getMatchingElementName();
+    public AttributeName getMatchingAttributeName();
+
+
+    public List<INode> processNode(final ITemplateProcessingContext processingContext, final INode node);
+
 
 }

@@ -55,7 +55,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private final StandaloneElementTag standaloneElementTag;
     private final CloseElementTag closeElementTag;
 
-    private IElementAttributeHolderTag attributeHolderTag;
+    private ElementAttributes currentElementAttributes;
 
     
     public TemplateHandlerAdapterMarkupHandler(final String templateName,
@@ -67,6 +67,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         super();
 
         Validate.notNull(templateHandler, "Template handler cannot be null");
+        Validate.notNull(textRepository, "Text Repository cannot be null");
         Validate.notNull(elementDefinitions, "Element Definitions repository cannot be null");
         Validate.notNull(attributeDefinitions, "Attribute Definitions repository cannot be null");
         Validate.notNull(templateMode, "Template mode cannot be null");
@@ -76,7 +77,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.templateHandler = templateHandler;
 
         // We will default the text repository to a no-cache implementation
-        this.textRepository = (textRepository != null? textRepository : TextRepositories.createNoCacheRepository());
+        this.textRepository = textRepository;
 
         // These cannot be null
         this.elementDefinitions = elementDefinitions;
@@ -95,7 +96,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.standaloneElementTag = new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
         this.closeElementTag = new CloseElementTag(this.templateMode, this.elementDefinitions);
 
-        this.attributeHolderTag = null; // Will change depending on whether we are handling an open or standalone element tag
+        this.currentElementAttributes = null; // Will change as soon as we start processing an open or standalone tag
         
         
     }
@@ -238,7 +239,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.standaloneElementTag.setStandaloneElementTag(
                 this.textRepository.getText(buffer, nameOffset,nameLen), minimized, line, col);
-        this.attributeHolderTag = this.standaloneElementTag;
+        this.currentElementAttributes = (ElementAttributes) this.standaloneElementTag.getAttributes();
 
     }
 
@@ -251,7 +252,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // Call the template handler method with the gathered info
         this.templateHandler.handleStandaloneElement(this.standaloneElementTag);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -266,7 +267,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.openElementTag.setOpenElementTag(
                 this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
-        this.attributeHolderTag = this.openElementTag;
+        this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
 
@@ -279,7 +280,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // Call the template handler method with the gathered info
         this.templateHandler.handleOpenElement(this.openElementTag);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -294,7 +295,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.openElementTag.setOpenElementTag(
                 this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
-        this.attributeHolderTag = this.openElementTag;
+        this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
     }
 
@@ -307,7 +308,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // Call the template handler method with the gathered info
         this.templateHandler.handleAutoOpenElement(this.openElementTag);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -321,7 +322,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -334,7 +335,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // Call the template handler method with the gathered info
         this.templateHandler.handleCloseElement(this.closeElementTag);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -348,7 +349,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -361,7 +362,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // Call the template handler method with the gathered info
         this.templateHandler.handleAutoCloseElement(this.closeElementTag);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -375,7 +376,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -389,7 +390,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // Call the template handler method with the gathered info
         this.templateHandler.handleUnmatchedCloseElement(this.closeElementTag);
-        this.attributeHolderTag = null;
+        this.currentElementAttributes = null;
 
     }
 
@@ -407,7 +408,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int valueLine, final int valueCol)
             throws ParseException {
 
-        if (this.attributeHolderTag == null) {
+        if (this.currentElementAttributes == null) {
             throw new TemplateProcessingException(
                     "Cannot process: attribute is not related to an open/standalone tag", this.templateName, nameLine, nameCol);
         }
@@ -440,7 +441,8 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         }
 
         // We can safely cast here, because we know the specific implementation classes we are using
-        ((ElementAttributes)this.attributeHolderTag.getAttributes()).setAttribute(attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
+        this.currentElementAttributes.setAttribute(
+                attributeName, attributeOperator, value, valueQuotes, nameLine, nameCol, false);
 
     }
 
@@ -457,7 +459,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         // We can safely cast here, because we know the specific implementation classes we are using
         // Also note line and col are discarded for white spaces
-        ((ElementAttributes)this.attributeHolderTag.getAttributes()).addInnerWhiteSpace(elementWhiteSpace);
+        this.currentElementAttributes.addInnerWhiteSpace(elementWhiteSpace);
 
     }
 

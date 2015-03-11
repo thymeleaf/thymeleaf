@@ -27,7 +27,6 @@ package org.thymeleaf.aurora.engine;
  */
 public interface IProcessingInstruction extends INode {
 
-
     public String getTarget();
     public String getContent();
     public String getProcessingInstruction();
@@ -36,5 +35,6 @@ public interface IProcessingInstruction extends INode {
     public void setTarget(final String target);
     public void setContent(final String content);
 
+    public IProcessingInstruction cloneNode();
 
 }

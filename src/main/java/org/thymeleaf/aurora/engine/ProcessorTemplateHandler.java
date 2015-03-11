@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.engine;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -31,6 +32,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     private final ITemplateProcessingContext processingContext;
+    private final TemplateHandlerEventQueue eventQueue;
+
+    private int markupLevel = 0;
+
+    private int skipMarkupFromLevel = Integer.MAX_VALUE;
 
 
 
@@ -42,8 +48,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
      * @param processingContext the template processing context
      */
     public ProcessorTemplateHandler(final ITemplateProcessingContext processingContext) {
+
         super();
+
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+
         this.processingContext = processingContext;
+        this.eventQueue = new TemplateHandlerEventQueue(this);
+
     }
 
 
@@ -53,6 +65,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleText(final IText text) {
 
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleText(text);
 
     }
@@ -61,7 +79,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleComment(final IComment comment) {
-        
+
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleComment(comment);
 
     }
@@ -69,7 +93,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     
     @Override
     public void handleCDATASection(final ICDATASection cdataSection) {
-        
+
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleCDATASection(cdataSection);
 
     }
@@ -80,6 +110,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
 
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        standaloneElementTag.getAttributes().setAttribute("level", String.valueOf(this.markupLevel));
+
+        // Includes calling the next handler in the chain
         super.handleStandaloneElement(standaloneElementTag);
 
     }
@@ -88,7 +126,45 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleOpenElement(final IOpenElementTag openElementTag) {
 
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            this.markupLevel++;
+            return;
+        }
+
+        boolean replaceBody = false;
+
+        openElementTag.getAttributes().setAttribute("level", String.valueOf(this.markupLevel));
+
+        if (openElementTag.getAttributes().hasAttribute("th:text")) {
+            final IText text =
+                    this.processingContext.getModelFactory().createText("woohooo!");
+            this.eventQueue.add(text);
+            replaceBody = true;
+        }
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
         super.handleOpenElement(openElementTag);
+
+        /*
+         * INCREASE THE MARKUP LEVEL, after processing the rest of the handler chain for this element
+         */
+        this.markupLevel++;
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        this.eventQueue.processQueue();
+
+        /*
+         * SET BODY TO BE SKIPPED, if required
+         */
+        if (replaceBody) {
+            // We make sure no other nested events will be processed at all
+            this.skipMarkupFromLevel = this.markupLevel - 1;
+        }
 
     }
 
@@ -96,7 +172,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
 
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            this.markupLevel++;
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleAutoOpenElement(openElementTag);
+
+        // Note we increase the markup level after processing the rest of the chain for this element
+        this.markupLevel++;
 
     }
 
@@ -104,6 +190,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
+        this.markupLevel--;
+
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        } else if (this.markupLevel == this.skipMarkupFromLevel) {
+            // We've reached the last point where markup should be discarded, so we should reset the variable
+            this.skipMarkupFromLevel = Integer.MAX_VALUE;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleCloseElement(closeElementTag);
 
     }
@@ -112,6 +209,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
 
+        this.markupLevel--;
+
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        } else if (this.markupLevel == this.skipMarkupFromLevel) {
+            // We've reached the last point where markup should be discarded, so we should reset the variable
+            this.skipMarkupFromLevel = Integer.MAX_VALUE;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleAutoCloseElement(closeElementTag);
 
     }
@@ -120,6 +228,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
 
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Unmatched closes do not affect the markup level
+
+
+        // Includes calling the next handler in the chain
         super.handleUnmatchedCloseElement(closeElementTag);
 
     }
@@ -129,7 +246,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleDocType(final IDocType docType) {
-        
+
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleDocType(docType);
 
     }
@@ -140,6 +263,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration) {
 
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleXmlDeclaration(xmlDeclaration);
 
     }
@@ -151,7 +280,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     @Override
     public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
-        
+
+        // Check whether we just need to discard any markup in this level
+        if (this.markupLevel > this.skipMarkupFromLevel) {
+            return;
+        }
+
+        // Includes calling the next handler in the chain
         super.handleProcessingInstruction(processingInstruction);
 
     }

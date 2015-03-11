@@ -27,7 +27,6 @@ package org.thymeleaf.aurora.engine;
  */
 public interface ICDATASection extends INode {
 
-
     public String getCDATASection();
     public String getContent();
 
@@ -36,5 +35,6 @@ public interface ICDATASection extends INode {
 
     public void setContent(final String content);
 
+    public ICDATASection cloneNode();
 
 }

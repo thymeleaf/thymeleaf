@@ -27,7 +27,6 @@ package org.thymeleaf.aurora.engine;
  */
 public interface IText extends INode {
 
-
     public String getText();
 
     public int length();
@@ -35,5 +34,6 @@ public interface IText extends INode {
 
     public void setText(final String text);
 
+    public IText cloneNode();
 
 }
