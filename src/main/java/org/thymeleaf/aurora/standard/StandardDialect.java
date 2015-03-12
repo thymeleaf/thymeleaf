@@ -19,9 +19,11 @@
  */
 package org.thymeleaf.aurora.standard;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardTextProcessor;
 
 /**
  *
@@ -37,7 +39,14 @@ public class StandardDialect extends AbstractProcessorDialect {
 
 
     public StandardDialect() {
-        super(NAME, PREFIX, new HashSet<IProcessor>());
+        super(NAME, PREFIX, buildProcessorSet());
+    }
+
+
+    private static Set<IProcessor> buildProcessorSet() {
+        final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
+        processors.add(new StandardTextProcessor());
+        return processors;
     }
 
 }

@@ -19,6 +19,10 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.Set;
+
+import org.thymeleaf.aurora.processor.IProcessor;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -31,8 +35,8 @@ public final class HTMLElementDefinition extends ElementDefinition {
 
 
 
-    HTMLElementDefinition(final HTMLElementName name, final HTMLElementType type) {
-        super(name);
+    HTMLElementDefinition(final HTMLElementName name, final HTMLElementType type, final Set<IProcessor> associatedProcessors) {
+        super(name, associatedProcessors);
         this.type = type;
     }
 

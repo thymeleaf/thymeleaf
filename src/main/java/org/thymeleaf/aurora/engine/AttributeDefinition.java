@@ -19,6 +19,11 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.Collections;
+import java.util.Set;
+
+import org.thymeleaf.aurora.processor.IProcessor;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -27,17 +32,22 @@ package org.thymeleaf.aurora.engine;
  */
 public abstract class AttributeDefinition {
 
-    protected final AttributeName attributeName;
+    final AttributeName attributeName;
+    final Set<IProcessor> associatedProcessors;
 
-    AttributeDefinition(final AttributeName attributeName) {
+    AttributeDefinition(final AttributeName attributeName, final Set<IProcessor> associatedProcessors) {
 
         super();
 
         if (attributeName == null) {
             throw new IllegalArgumentException("Attribute name cannot be null");
         }
+        if (associatedProcessors == null) {
+            throw new IllegalArgumentException("Associated processors cannot be null");
+        }
 
         this.attributeName = attributeName;
+        this.associatedProcessors = Collections.unmodifiableSet(associatedProcessors);
 
     }
 
@@ -45,6 +55,13 @@ public abstract class AttributeDefinition {
     public final AttributeName getAttributeName() {
         return this.attributeName;
     }
+
+
+
+    public Set<IProcessor> getAssociatedProcessors() {
+        return this.associatedProcessors;
+    }
+
 
 
     public final String toString() {
@@ -76,7 +93,7 @@ public abstract class AttributeDefinition {
 
     @Override
     public int hashCode() {
-        return attributeName.hashCode();
+        return this.attributeName.hashCode();
     }
 
 }

@@ -17,14 +17,10 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.node;
+package org.thymeleaf.aurora.engine;
 
-import java.util.List;
+import java.util.Comparator;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.ElementName;
-import org.thymeleaf.aurora.engine.INode;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -33,17 +29,18 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface INodeProcessor extends IProcessor {
+final class PrecedenceProcessorComparator implements Comparator<IProcessor> {
 
-    public static enum MatchingNodeType { CDATA_SECTION, COMMENT, DOC_TYPE, ELEMENT, PROCESSING_INSTRUCTION, TEXT, XML_DECLARATION }
-
-
-    public MatchingNodeType getMatchingNodeType();
-    public ElementName getMatchingElementName();
-    public AttributeName getMatchingAttributeName();
+    static final PrecedenceProcessorComparator INSTANCE = new PrecedenceProcessorComparator();
 
 
-    public List<INode> processNode(final ITemplateProcessingContext processingContext, final INode node);
+    PrecedenceProcessorComparator() {
+        super();
+    }
+
+    public int compare(final IProcessor o1, final IProcessor o2) {
+        return Integer.valueOf(o1.getPrecedence()).compareTo(Integer.valueOf(o2.getPrecedence()));
+    }
 
 
 }

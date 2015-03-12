@@ -19,6 +19,10 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.Set;
+
+import org.thymeleaf.aurora.processor.IProcessor;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -28,8 +32,8 @@ package org.thymeleaf.aurora.engine;
 public final class XMLAttributeDefinition extends AttributeDefinition {
 
 
-    XMLAttributeDefinition(final XMLAttributeName name) {
-        super(name);
+    XMLAttributeDefinition(final XMLAttributeName name, final Set<IProcessor> associatedProcessors) {
+        super(name, associatedProcessors);
     }
 
 

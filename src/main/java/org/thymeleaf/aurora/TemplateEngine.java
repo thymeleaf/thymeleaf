@@ -21,9 +21,8 @@ package org.thymeleaf.aurora;
 
 import java.io.Writer;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
@@ -53,7 +52,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class TemplateEngine implements ITemplateEngine {
 
-    private static final Set<IDialect> STANDARD_DIALECT_SET;
+    private static final Map<String,IDialect> STANDARD_DIALECT_MAP;
 
     private final ITemplateEngineContext templateEngineContext;
     private final ITemplateParser htmlParser;
@@ -62,28 +61,29 @@ public final class TemplateEngine implements ITemplateEngine {
 
 
     static {
-        final Set<IDialect> newStandardDialectSet = new HashSet<IDialect>(2,1.0f);
-        newStandardDialectSet.add(new StandardDialect());
-        STANDARD_DIALECT_SET = Collections.unmodifiableSet(newStandardDialectSet);
+        final StandardDialect standardDialect = new StandardDialect();
+        final Map<String,IDialect> newStandardDialectMap = new HashMap<String,IDialect>(2,1.0f);
+        newStandardDialectMap.put(standardDialect.getPrefix(), standardDialect);
+        STANDARD_DIALECT_MAP = Collections.unmodifiableMap(newStandardDialectMap);
     }
 
 
 
     public TemplateEngine() {
-        this(STANDARD_DIALECT_SET, TextRepositories.createLimitedSizeCacheRepository());
+        this(STANDARD_DIALECT_MAP, TextRepositories.createLimitedSizeCacheRepository());
     }
 
 
-    public TemplateEngine(final Set<IDialect> dialects, final ITextRepository textRepository) {
+    public TemplateEngine(final Map<String,IDialect> dialectsByPrefix, final ITextRepository textRepository) {
 
         super();
 
-        Validate.notNull(dialects, "Dialect list cannot be null");
+        Validate.notNull(dialectsByPrefix, "Dialect map cannot be null");
 
         final ITextRepository engineTextRepository =
                 (textRepository != null? textRepository : TextRepositories.createNoCacheRepository());
 
-        this.templateEngineContext = new TemplateEngineContext(dialects, engineTextRepository);
+        this.templateEngineContext = new TemplateEngineContext(dialectsByPrefix, engineTextRepository);
         this.htmlParser = new HTMLTemplateParser(40,2048);
         this.xmlParser = new XMLTemplateParser(40, 2048);
 

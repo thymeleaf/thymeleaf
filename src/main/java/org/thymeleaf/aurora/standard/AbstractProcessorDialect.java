@@ -21,10 +21,8 @@ package org.thymeleaf.aurora.standard;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.dialect.IProcessorDialect;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.util.Validate;

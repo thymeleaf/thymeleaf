@@ -20,27 +20,9 @@
 package org.thymeleaf.aurora;
 
 import java.io.Writer;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.thymeleaf.aurora.context.ITemplateEngineContext;
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.context.TemplateEngineContext;
-import org.thymeleaf.aurora.context.TemplateProcessingContext;
-import org.thymeleaf.aurora.dialect.IDialect;
-import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.engine.OutputTemplateHandler;
-import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
-import org.thymeleaf.aurora.parser.HTMLTemplateParser;
-import org.thymeleaf.aurora.parser.ITemplateParser;
-import org.thymeleaf.aurora.parser.XMLTemplateParser;
 import org.thymeleaf.aurora.resource.IResource;
-import org.thymeleaf.aurora.standard.StandardDialect;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.text.TextRepositories;
-import org.thymeleaf.util.Validate;
 
 
 /**

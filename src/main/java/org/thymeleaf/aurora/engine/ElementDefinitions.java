@@ -20,9 +20,7 @@
 package org.thymeleaf.aurora.engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +29,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.attoparser.util.TextUtil;
+import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
@@ -41,154 +43,151 @@ import org.attoparser.util.TextUtil;
 public final class ElementDefinitions {
 
 
-
-    // Set containing all the standard elements, for possible external reference
-    public static final Set<HTMLElementDefinition> ALL_STANDARD_HTML_ELEMENTS;
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ELEMENT_NAMES;
 
 
     // Root
-    static final HTMLElementDefinition HTML = new HTMLElementDefinition(ElementNames.forHTMLName("html"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec HTML = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("html"), HTMLElementType.NORMAL);
 
     // Document metadata
-    static final HTMLElementDefinition HEAD = new HTMLElementDefinition(ElementNames.forHTMLName("head"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TITLE = new HTMLElementDefinition(ElementNames.forHTMLName("title"), HTMLElementType.ESCAPABLE_RAW_TEXT);
-    static final HTMLElementDefinition BASE = new HTMLElementDefinition(ElementNames.forHTMLName("base"), HTMLElementType.VOID);
-    static final HTMLElementDefinition LINK = new HTMLElementDefinition(ElementNames.forHTMLName("link"), HTMLElementType.VOID);
-    static final HTMLElementDefinition META = new HTMLElementDefinition(ElementNames.forHTMLName("meta"), HTMLElementType.VOID);
-    static final HTMLElementDefinition STYLE = new HTMLElementDefinition(ElementNames.forHTMLName("style"), HTMLElementType.RAW_TEXT);
+    private static final HTMLElementDefinitionSpec HEAD = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("head"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TITLE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("title"), HTMLElementType.ESCAPABLE_RAW_TEXT);
+    private static final HTMLElementDefinitionSpec BASE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("base"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec LINK = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("link"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec META = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("meta"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec STYLE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("style"), HTMLElementType.RAW_TEXT);
 
     // Scripting
-    static final HTMLElementDefinition SCRIPT = new HTMLElementDefinition(ElementNames.forHTMLName("script"), HTMLElementType.RAW_TEXT);
-    static final HTMLElementDefinition NOSCRIPT = new HTMLElementDefinition(ElementNames.forHTMLName("noscript"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SCRIPT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("script"), HTMLElementType.RAW_TEXT);
+    private static final HTMLElementDefinitionSpec NOSCRIPT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("noscript"), HTMLElementType.NORMAL);
 
     // Sections
-    static final HTMLElementDefinition BODY = new HTMLElementDefinition(ElementNames.forHTMLName("body"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition ARTICLE = new HTMLElementDefinition(ElementNames.forHTMLName("article"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SECTION = new HTMLElementDefinition(ElementNames.forHTMLName("section"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition NAV = new HTMLElementDefinition(ElementNames.forHTMLName("nav"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition ASIDE = new HTMLElementDefinition(ElementNames.forHTMLName("aside"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition H1 = new HTMLElementDefinition(ElementNames.forHTMLName("h1"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition H2 = new HTMLElementDefinition(ElementNames.forHTMLName("h2"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition H3 = new HTMLElementDefinition(ElementNames.forHTMLName("h3"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition H4 = new HTMLElementDefinition(ElementNames.forHTMLName("h4"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition H5 = new HTMLElementDefinition(ElementNames.forHTMLName("h5"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition H6 = new HTMLElementDefinition(ElementNames.forHTMLName("h6"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition HGROUP = new HTMLElementDefinition(ElementNames.forHTMLName("hgroup"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition HEADER = new HTMLElementDefinition(ElementNames.forHTMLName("header"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition FOOTER = new HTMLElementDefinition(ElementNames.forHTMLName("footer"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition ADDRESS = new HTMLElementDefinition(ElementNames.forHTMLName("address"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition MAIN = new HTMLElementDefinition(ElementNames.forHTMLName("main"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec BODY = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("body"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec ARTICLE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("article"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SECTION = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("section"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec NAV = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("nav"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec ASIDE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("aside"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec H1 = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("h1"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec H2 = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("h2"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec H3 = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("h3"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec H4 = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("h4"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec H5 = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("h5"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec H6 = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("h6"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec HGROUP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("hgroup"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec HEADER = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("header"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec FOOTER = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("footer"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec ADDRESS = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("address"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec MAIN = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("main"), HTMLElementType.NORMAL);
 
     // Grouping content
-    static final HTMLElementDefinition P = new HTMLElementDefinition(ElementNames.forHTMLName("p"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition HR = new HTMLElementDefinition(ElementNames.forHTMLName("hr"), HTMLElementType.VOID);
-    static final HTMLElementDefinition PRE = new HTMLElementDefinition(ElementNames.forHTMLName("pre"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition BLOCKQUOTE = new HTMLElementDefinition(ElementNames.forHTMLName("blockquote"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition OL = new HTMLElementDefinition(ElementNames.forHTMLName("ol"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition UL = new HTMLElementDefinition(ElementNames.forHTMLName("ul"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition LI = new HTMLElementDefinition(ElementNames.forHTMLName("li"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DL = new HTMLElementDefinition(ElementNames.forHTMLName("dl"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DT = new HTMLElementDefinition(ElementNames.forHTMLName("dt"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DD = new HTMLElementDefinition(ElementNames.forHTMLName("dd"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition FIGURE = new HTMLElementDefinition(ElementNames.forHTMLName("figure"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition FIGCAPTION = new HTMLElementDefinition(ElementNames.forHTMLName("figcaption"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DIV = new HTMLElementDefinition(ElementNames.forHTMLName("div"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec P = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("p"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec HR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("hr"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec PRE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("pre"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec BLOCKQUOTE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("blockquote"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec OL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("ol"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec UL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("ul"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec LI = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("li"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("dl"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("dt"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DD = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("dd"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec FIGURE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("figure"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec FIGCAPTION = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("figcaption"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DIV = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("div"), HTMLElementType.NORMAL);
 
     // Text-level semantics
-    static final HTMLElementDefinition A = new HTMLElementDefinition(ElementNames.forHTMLName("a"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition EM = new HTMLElementDefinition(ElementNames.forHTMLName("em"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition STRONG = new HTMLElementDefinition(ElementNames.forHTMLName("strong"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SMALL = new HTMLElementDefinition(ElementNames.forHTMLName("small"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition S = new HTMLElementDefinition(ElementNames.forHTMLName("s"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition CITE = new HTMLElementDefinition(ElementNames.forHTMLName("cite"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition G = new HTMLElementDefinition(ElementNames.forHTMLName("g"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DFN = new HTMLElementDefinition(ElementNames.forHTMLName("dfn"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition ABBR = new HTMLElementDefinition(ElementNames.forHTMLName("abbr"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TIME = new HTMLElementDefinition(ElementNames.forHTMLName("time"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition CODE = new HTMLElementDefinition(ElementNames.forHTMLName("code"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition VAR = new HTMLElementDefinition(ElementNames.forHTMLName("var"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SAMP = new HTMLElementDefinition(ElementNames.forHTMLName("samp"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition KBD = new HTMLElementDefinition(ElementNames.forHTMLName("kbd"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SUB = new HTMLElementDefinition(ElementNames.forHTMLName("sub"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SUP = new HTMLElementDefinition(ElementNames.forHTMLName("sup"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition I = new HTMLElementDefinition(ElementNames.forHTMLName("i"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition B = new HTMLElementDefinition(ElementNames.forHTMLName("b"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition U = new HTMLElementDefinition(ElementNames.forHTMLName("u"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition MARK = new HTMLElementDefinition(ElementNames.forHTMLName("mark"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition RUBY = new HTMLElementDefinition(ElementNames.forHTMLName("ruby"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition RB = new HTMLElementDefinition(ElementNames.forHTMLName("rb"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition RT = new HTMLElementDefinition(ElementNames.forHTMLName("rt"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition RTC = new HTMLElementDefinition(ElementNames.forHTMLName("rtc"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition RP = new HTMLElementDefinition(ElementNames.forHTMLName("rp"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition BDI = new HTMLElementDefinition(ElementNames.forHTMLName("bdi"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition BDO = new HTMLElementDefinition(ElementNames.forHTMLName("bdo"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SPAN = new HTMLElementDefinition(ElementNames.forHTMLName("span"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition BR = new HTMLElementDefinition(ElementNames.forHTMLName("br"), HTMLElementType.VOID);
-    static final HTMLElementDefinition WBR = new HTMLElementDefinition(ElementNames.forHTMLName("wbr"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec A = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("a"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec EM = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("em"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec STRONG = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("strong"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SMALL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("small"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec S = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("s"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec CITE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("cite"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec G = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("g"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DFN = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("dfn"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec ABBR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("abbr"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TIME = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("time"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec CODE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("code"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec VAR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("var"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SAMP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("samp"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec KBD = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("kbd"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SUB = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("sub"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SUP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("sup"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec I = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("i"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec B = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("b"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec U = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("u"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec MARK = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("mark"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec RUBY = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("ruby"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec RB = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("rb"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec RT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("rt"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec RTC = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("rtc"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec RP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("rp"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec BDI = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("bdi"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec BDO = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("bdo"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SPAN = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("span"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec BR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("br"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec WBR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("wbr"), HTMLElementType.VOID);
 
     // Edits
-    static final HTMLElementDefinition INS = new HTMLElementDefinition(ElementNames.forHTMLName("ins"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DEL = new HTMLElementDefinition(ElementNames.forHTMLName("del"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec INS = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("ins"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DEL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("del"), HTMLElementType.NORMAL);
 
     // Embedded content
-    static final HTMLElementDefinition IMG = new HTMLElementDefinition(ElementNames.forHTMLName("img"), HTMLElementType.VOID);
-    static final HTMLElementDefinition IFRAME = new HTMLElementDefinition(ElementNames.forHTMLName("iframe"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition EMBED = new HTMLElementDefinition(ElementNames.forHTMLName("embed"), HTMLElementType.VOID);
-    static final HTMLElementDefinition OBJECT = new HTMLElementDefinition(ElementNames.forHTMLName("object"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition PARAM = new HTMLElementDefinition(ElementNames.forHTMLName("param"), HTMLElementType.VOID);
-    static final HTMLElementDefinition VIDEO = new HTMLElementDefinition(ElementNames.forHTMLName("video"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition AUDIO = new HTMLElementDefinition(ElementNames.forHTMLName("audio"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SOURCE = new HTMLElementDefinition(ElementNames.forHTMLName("source"), HTMLElementType.VOID);
-    static final HTMLElementDefinition TRACK = new HTMLElementDefinition(ElementNames.forHTMLName("track"), HTMLElementType.VOID);
-    static final HTMLElementDefinition CANVAS = new HTMLElementDefinition(ElementNames.forHTMLName("canvas"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition MAP = new HTMLElementDefinition(ElementNames.forHTMLName("map"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition AREA = new HTMLElementDefinition(ElementNames.forHTMLName("area"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec IMG = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("img"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec IFRAME = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("iframe"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec EMBED = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("embed"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec OBJECT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("object"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec PARAM = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("param"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec VIDEO = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("video"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec AUDIO = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("audio"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SOURCE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("source"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec TRACK = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("track"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec CANVAS = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("canvas"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec MAP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("map"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec AREA = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("area"), HTMLElementType.VOID);
 
     // Tabular data
-    static final HTMLElementDefinition TABLE = new HTMLElementDefinition(ElementNames.forHTMLName("table"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition CAPTION = new HTMLElementDefinition(ElementNames.forHTMLName("caption"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition COLGROUP = new HTMLElementDefinition(ElementNames.forHTMLName("colgroup"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition COL = new HTMLElementDefinition(ElementNames.forHTMLName("col"), HTMLElementType.VOID);
-    static final HTMLElementDefinition TBODY = new HTMLElementDefinition(ElementNames.forHTMLName("tbody"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition THEAD = new HTMLElementDefinition(ElementNames.forHTMLName("thead"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TFOOT = new HTMLElementDefinition(ElementNames.forHTMLName("tfoot"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TR = new HTMLElementDefinition(ElementNames.forHTMLName("tr"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TD = new HTMLElementDefinition(ElementNames.forHTMLName("td"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TH = new HTMLElementDefinition(ElementNames.forHTMLName("th"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TABLE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("table"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec CAPTION = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("caption"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec COLGROUP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("colgroup"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec COL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("col"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec TBODY = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("tbody"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec THEAD = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("thead"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TFOOT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("tfoot"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("tr"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TD = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("td"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TH = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("th"), HTMLElementType.NORMAL);
 
     // Forms
-    static final HTMLElementDefinition FORM = new HTMLElementDefinition(ElementNames.forHTMLName("form"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition FIELDSET = new HTMLElementDefinition(ElementNames.forHTMLName("fieldset"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition LEGEND = new HTMLElementDefinition(ElementNames.forHTMLName("legend"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition LABEL = new HTMLElementDefinition(ElementNames.forHTMLName("label"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition INPUT = new HTMLElementDefinition(ElementNames.forHTMLName("input"), HTMLElementType.VOID);
-    static final HTMLElementDefinition BUTTON = new HTMLElementDefinition(ElementNames.forHTMLName("button"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SELECT = new HTMLElementDefinition(ElementNames.forHTMLName("select"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DATALIST = new HTMLElementDefinition(ElementNames.forHTMLName("datalist"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition OPTGROUP = new HTMLElementDefinition(ElementNames.forHTMLName("optgroup"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition OPTION = new HTMLElementDefinition(ElementNames.forHTMLName("option"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition TEXTAREA = new HTMLElementDefinition(ElementNames.forHTMLName("textarea"), HTMLElementType.ESCAPABLE_RAW_TEXT);
-    static final HTMLElementDefinition KEYGEN = new HTMLElementDefinition(ElementNames.forHTMLName("keygen"), HTMLElementType.VOID);
-    static final HTMLElementDefinition OUTPUT = new HTMLElementDefinition(ElementNames.forHTMLName("output"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition PROGRESS = new HTMLElementDefinition(ElementNames.forHTMLName("progress"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition METER = new HTMLElementDefinition(ElementNames.forHTMLName("meter"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec FORM = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("form"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec FIELDSET = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("fieldset"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec LEGEND = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("legend"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec LABEL = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("label"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec INPUT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("input"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec BUTTON = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("button"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SELECT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("select"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DATALIST = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("datalist"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec OPTGROUP = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("optgroup"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec OPTION = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("option"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TEXTAREA = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("textarea"), HTMLElementType.ESCAPABLE_RAW_TEXT);
+    private static final HTMLElementDefinitionSpec KEYGEN = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("keygen"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec OUTPUT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("output"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec PROGRESS = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("progress"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec METER = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("meter"), HTMLElementType.NORMAL);
 
     // Interactive elements
-    static final HTMLElementDefinition DETAILS = new HTMLElementDefinition(ElementNames.forHTMLName("details"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SUMMARY = new HTMLElementDefinition(ElementNames.forHTMLName("summary"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition COMMAND = new HTMLElementDefinition(ElementNames.forHTMLName("command"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition MENU = new HTMLElementDefinition(ElementNames.forHTMLName("menu"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition MENUITEM = new HTMLElementDefinition(ElementNames.forHTMLName("menuitem"), HTMLElementType.VOID);
-    static final HTMLElementDefinition DIALOG = new HTMLElementDefinition(ElementNames.forHTMLName("dialog"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DETAILS = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("details"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SUMMARY = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("summary"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec COMMAND = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("command"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec MENU = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("menu"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec MENUITEM = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("menuitem"), HTMLElementType.VOID);
+    private static final HTMLElementDefinitionSpec DIALOG = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("dialog"), HTMLElementType.NORMAL);
 
     // WebComponents
-    static final HTMLElementDefinition TEMPLATE = new HTMLElementDefinition(ElementNames.forHTMLName("template"), HTMLElementType.RAW_TEXT);
-    static final HTMLElementDefinition ELEMENT = new HTMLElementDefinition(ElementNames.forHTMLName("element"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition DECORATOR = new HTMLElementDefinition(ElementNames.forHTMLName("decorator"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition CONTENT = new HTMLElementDefinition(ElementNames.forHTMLName("content"), HTMLElementType.NORMAL);
-    static final HTMLElementDefinition SHADOW = new HTMLElementDefinition(ElementNames.forHTMLName("shadow"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec TEMPLATE = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("template"), HTMLElementType.RAW_TEXT);
+    private static final HTMLElementDefinitionSpec ELEMENT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("element"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec DECORATOR = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("decorator"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec CONTENT = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("content"), HTMLElementType.NORMAL);
+    private static final HTMLElementDefinitionSpec SHADOW = new HTMLElementDefinitionSpec(ElementNames.forHTMLName("shadow"), HTMLElementType.NORMAL);
 
 
 
@@ -197,68 +196,212 @@ public final class ElementDefinitions {
     // Besides, we don't want HTML-only element types like "VOID" or "RAW_TEXT" be applied to XML elements even if they have the same name.
     // Also, there is no need to add any 'standard elements' to XML because other than the synthetic block, there are none, and avoiding its
     // creation we save a repository query each time an element is asked for.
-    private final ElementDefinitionRepository htmlElementRepository = new ElementDefinitionRepository(true);
-    private final ElementDefinitionRepository xmlElementRepository = new ElementDefinitionRepository(false);
+    private final ElementDefinitionRepository htmlElementRepository;
+    private final ElementDefinitionRepository xmlElementRepository;
 
 
 
 
     static {
 
-        final List<HTMLElementDefinition> htmlElementDefinitionListAux =
-                new ArrayList<HTMLElementDefinition>(Arrays.asList(
-                        new HTMLElementDefinition[] {
-                                HTML, HEAD, TITLE, BASE, LINK, META, STYLE, SCRIPT, NOSCRIPT, BODY, ARTICLE,
-                                SECTION, NAV, ASIDE, H1, H2, H3, H4, H5, H6, HGROUP, HEADER, FOOTER,
-                                ADDRESS, P, HR, PRE, BLOCKQUOTE, OL, UL, LI, DL, DT, DD, FIGURE,
-                                FIGCAPTION, DIV, A, EM, STRONG, SMALL, S, CITE, G, DFN, ABBR, TIME,
-                                CODE, VAR, SAMP, KBD, SUB, SUP, I, B, U, MARK, RUBY, RB, RT, RTC,
-                                RP, BDI, BDO, SPAN, BR, WBR, INS, DEL, IMG, IFRAME, EMBED, OBJECT,
-                                PARAM, VIDEO, AUDIO, SOURCE, TRACK, CANVAS, MAP, AREA, TABLE, CAPTION,
-                                COLGROUP, COL, TBODY, THEAD, TFOOT, TR, TD, TH, FORM, FIELDSET, LEGEND, LABEL,
-                                INPUT, BUTTON, SELECT, DATALIST, OPTGROUP, OPTION, TEXTAREA, KEYGEN, OUTPUT, PROGRESS,
-                                METER, DETAILS, SUMMARY, COMMAND, MENU, MENUITEM, DIALOG, MAIN, TEMPLATE,
-                                ELEMENT, DECORATOR, CONTENT, SHADOW
-                        }));
+        /*
+         * Initialize the public static Set with all the standard HTML element names
+         */
 
-        Collections.sort(htmlElementDefinitionListAux, new Comparator<ElementDefinition>() {
-            public int compare(final ElementDefinition o1, final ElementDefinition o2) {
-                return o1.elementName.elementName.compareTo(o2.elementName.elementName);
-            }
-        });
-
-
-        ALL_STANDARD_HTML_ELEMENTS =
-                Collections.unmodifiableSet(new LinkedHashSet<HTMLElementDefinition>(htmlElementDefinitionListAux));
-
-
-        final LinkedHashSet<String> htmlElementDefinitionNamesAux = new LinkedHashSet<String>(ALL_STANDARD_HTML_ELEMENTS.size() + 1, 1.0f);
-        for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
-            for (final String completeElementName : elementDefinition.elementName.completeElementNames) {
+        final List<String> htmlElementDefinitionNamesAux = new ArrayList<String>(HTMLElementDefinitionSpec.ALL_SPECS.size() + 1);
+        for (final HTMLElementDefinitionSpec elementDefinitionSpec : HTMLElementDefinitionSpec.ALL_SPECS) {
+            for (final String completeElementName : elementDefinitionSpec.name.completeElementNames) {
                 htmlElementDefinitionNamesAux.add(completeElementName);
             }
         }
 
-        ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(htmlElementDefinitionNamesAux);
+        Collections.sort(htmlElementDefinitionNamesAux);
 
+        ALL_STANDARD_HTML_ELEMENT_NAMES = Collections.unmodifiableSet(new LinkedHashSet<String>(htmlElementDefinitionNamesAux));
 
     }
 
 
 
 
-
-
-    public ElementDefinitions() {
+    ElementDefinitions(final Set<IProcessor> processors) {
 
         super();
+
+
+        final List<HTMLElementDefinition> standardHTMLElementDefinitions =
+                new ArrayList<HTMLElementDefinition>(HTMLElementDefinitionSpec.ALL_SPECS.size() + 1);
+        for (final HTMLElementDefinitionSpec definitionSpec : HTMLElementDefinitionSpec.ALL_SPECS) {
+            standardHTMLElementDefinitions.add(
+                    buildHTMLElementDefinition(definitionSpec.name, definitionSpec.type, processors));
+        }
+
+
+        /*
+         * Initialize the repositories
+         */
+        this.htmlElementRepository = new ElementDefinitionRepository(true, processors);
+        this.xmlElementRepository = new ElementDefinitionRepository(false, processors);
+
 
         /*
          * Register the standard elements at the element repository, in order to initialize it
          */
-        for (final ElementDefinition elementDefinition : ALL_STANDARD_HTML_ELEMENTS) {
+        for (final HTMLElementDefinition elementDefinition : standardHTMLElementDefinitions) {
             this.htmlElementRepository.storeStandardElement(elementDefinition);
         }
+
+    }
+
+
+
+
+    private static HTMLElementDefinition buildHTMLElementDefinition(
+            final HTMLElementName name, final HTMLElementType type, final Set<IProcessor> processors) {
+
+        final List<IProcessor> associatedProcessorsList = new ArrayList<IProcessor>(2);
+        for (final IProcessor processor : processors) {
+
+            final TemplateMode templateMode = processor.getTemplateMode();
+
+            if (templateMode == null) {
+                throw new IllegalArgumentException("Template mode cannot be null (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (!templateMode.isHTML()) {
+                // We are creating an HTML element definition, therefore we are only interested on HTML processors
+                continue;
+            }
+
+            final ElementName matchingElementName;
+            final AttributeName matchingAttributeName;
+            if (processor instanceof IElementProcessor) {
+
+                matchingElementName = ((IElementProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((IElementProcessor)processor).getMatchingAttributeName();
+
+            } else if (processor instanceof INodeProcessor) {
+
+                final INodeProcessor.MatchingNodeType matchingNodeType = ((INodeProcessor)processor).getMatchingNodeType();
+                if (matchingNodeType == null) {
+                    throw new IllegalArgumentException("Matching node type cannot be null (processor: " + processor.getClass().getName() + ")");
+                }
+                if (!matchingNodeType.equals(INodeProcessor.MatchingNodeType.ELEMENT)) {
+                    // We are only interested in node processors matching elements
+                    continue;
+                }
+
+                matchingElementName = ((INodeProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((INodeProcessor)processor).getMatchingAttributeName();
+
+            } else {
+                // Not a kind of processor we can associated with an Element Definition
+                continue;
+            }
+
+            if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
+                    (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
+                throw new IllegalArgumentException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (matchingAttributeName != null) {
+                // This processor requires a specific attribute to be present. Given filtering by attribute is more
+                // restricted than filtering by element, we will not associate this processor with the element
+                // (will be instead associated with the attribute).
+                continue;
+            }
+
+            if (matchingElementName != null && !matchingElementName.equals(name)) {
+                // Doesn't match. This processor is not associated with this element
+                // Note that elementName == null means "apply to all processors"
+                continue;
+            }
+
+            associatedProcessorsList.add(processor);
+
+        }
+
+        // Processors associated to this element will be ordered by precedence
+        Collections.sort(associatedProcessorsList, PrecedenceProcessorComparator.INSTANCE);
+
+        // Build the final instance
+        return new HTMLElementDefinition(name, type, new LinkedHashSet<IProcessor>(associatedProcessorsList));
+
+    }
+
+
+
+
+    private static XMLElementDefinition buildXMLElementDefinition(
+            final XMLElementName name, final Set<IProcessor> processors) {
+
+        final List<IProcessor> associatedProcessorsList = new ArrayList<IProcessor>(2);
+        for (final IProcessor processor : processors) {
+
+            final TemplateMode templateMode = processor.getTemplateMode();
+
+            if (templateMode == null) {
+                throw new IllegalArgumentException("Template mode cannot be null (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (!templateMode.isXML()) {
+                // We are creating an XML element definition, therefore we are only interested on XML processors
+                continue;
+            }
+
+            final ElementName matchingElementName;
+            final AttributeName matchingAttributeName;
+            if (processor instanceof IElementProcessor) {
+
+                matchingElementName = ((IElementProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((IElementProcessor)processor).getMatchingAttributeName();
+
+            } else if (processor instanceof INodeProcessor) {
+
+                final INodeProcessor.MatchingNodeType matchingNodeType = ((INodeProcessor)processor).getMatchingNodeType();
+                if (matchingNodeType == null) {
+                    throw new IllegalArgumentException("Matching node type cannot be null (processor: " + processor.getClass().getName() + ")");
+                }
+                if (!matchingNodeType.equals(INodeProcessor.MatchingNodeType.ELEMENT)) {
+                    // We are only interested in node processors matching elements
+                    continue;
+                }
+
+                matchingElementName = ((INodeProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((INodeProcessor)processor).getMatchingAttributeName();
+
+            } else {
+                // Not a kind of processor we can associated with an Element Definition
+                continue;
+            }
+
+            if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
+                    (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
+                throw new IllegalArgumentException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (matchingAttributeName != null) {
+                // This processor requires a specific attribute to be present. Given filtering by attribute is more
+                // restricted than filtering by element, we will not associate this processor with the element
+                // (will be instead associated with the attribute).
+                continue;
+            }
+
+            if (matchingElementName != null && !matchingElementName.equals(name)) {
+                // Doesn't match. This processor is not associated with this element
+                // Note that elementName == null means "apply to all processors"
+                continue;
+            }
+
+            associatedProcessorsList.add(processor);
+
+        }
+
+        // Processors associated to this element will be ordered by precedence
+        Collections.sort(associatedProcessorsList, PrecedenceProcessorComparator.INSTANCE);
+
+        // Build the final instance
+        return new XMLElementDefinition(name, new LinkedHashSet<IProcessor>(associatedProcessorsList));
 
     }
 
@@ -336,6 +479,8 @@ public final class ElementDefinitions {
 
         private final boolean html;
 
+        private final Set<IProcessor> processors;
+
         private final List<String> standardRepositoryNames; // read-only, no sync needed
         private final List<ElementDefinition> standardRepository; // read-only, no sync needed
 
@@ -347,11 +492,12 @@ public final class ElementDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        ElementDefinitionRepository(final boolean html) {
+        ElementDefinitionRepository(final boolean html, final Set<IProcessor> processors) {
 
             super();
 
             this.html = html;
+            this.processors = processors;
 
             this.standardRepositoryNames = (html ? new ArrayList<String>(150) : null);
             this.standardRepository = (html ? new ArrayList<ElementDefinition>(150) : null);
@@ -526,8 +672,8 @@ public final class ElementDefinitions {
 
             final ElementDefinition elementDefinition =
                     this.html?
-                            new HTMLElementDefinition(ElementNames.forHTMLName(text, offset, len), HTMLElementType.NORMAL) :
-                            new XMLElementDefinition(ElementNames.forXMLName(text, offset, len));
+                            buildHTMLElementDefinition(ElementNames.forHTMLName(text, offset, len), HTMLElementType.NORMAL, this.processors) :
+                            buildXMLElementDefinition(ElementNames.forXMLName(text, offset, len), this.processors);
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
@@ -556,8 +702,8 @@ public final class ElementDefinitions {
 
             final ElementDefinition elementDefinition =
                     this.html?
-                            new HTMLElementDefinition(ElementNames.forHTMLName(text), HTMLElementType.NORMAL) :
-                            new XMLElementDefinition(ElementNames.forXMLName(text));
+                            buildHTMLElementDefinition(ElementNames.forHTMLName(text), HTMLElementType.NORMAL, this.processors) :
+                            buildXMLElementDefinition(ElementNames.forXMLName(text), this.processors);
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
@@ -586,8 +732,8 @@ public final class ElementDefinitions {
 
             final ElementDefinition elementDefinition =
                     this.html?
-                            new HTMLElementDefinition(ElementNames.forHTMLName(prefix, elementName), HTMLElementType.NORMAL) :
-                            new XMLElementDefinition(ElementNames.forXMLName(prefix, elementName));
+                            buildHTMLElementDefinition(ElementNames.forHTMLName(prefix, elementName), HTMLElementType.NORMAL, this.processors) :
+                            buildXMLElementDefinition(ElementNames.forXMLName(prefix, elementName), this.processors);
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
@@ -784,6 +930,25 @@ public final class ElementDefinitions {
         }
 
 
+    }
+
+
+
+
+    private static class HTMLElementDefinitionSpec {
+
+        static final List<HTMLElementDefinitionSpec> ALL_SPECS = new ArrayList<HTMLElementDefinitionSpec>();
+
+        HTMLElementName name;
+        HTMLElementType type;
+        
+        HTMLElementDefinitionSpec(final HTMLElementName name, final HTMLElementType type) {
+            super();
+            this.name = name;
+            this.type = type;
+            ALL_SPECS.add(this);
+        }
+        
     }
 
 }

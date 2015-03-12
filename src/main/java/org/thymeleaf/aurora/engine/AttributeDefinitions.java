@@ -31,6 +31,10 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.attoparser.util.TextUtil;
+import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
@@ -41,17 +45,16 @@ import org.attoparser.util.TextUtil;
 public final class AttributeDefinitions {
 
 
-
-    // Set containing all the standard elements, for possible external reference
-    public static final Set<AttributeDefinition> ALL_STANDARD_HTML_ATTRIBUTES;
     // Set containing all the standard element names, for possible external reference
     public static final Set<String> ALL_STANDARD_HTML_ATTRIBUTE_NAMES;
 
+    // Set containing all the names of the standard HTML attributes that are considered "boolean"
+    private static final Set<String> ALL_STANDARD_BOOLEAN_HTML_ATTRIBUTE_NAMES;
 
 
     // We need two different repositories, for HTML and XML, because one is case-sensitive and the other is not.
-    private final AttributeDefinitionRepository htmlAttributeRepository = new AttributeDefinitionRepository(true);
-    private final AttributeDefinitionRepository xmlAttributeRepository = new AttributeDefinitionRepository(false);
+    private final AttributeDefinitionRepository htmlAttributeRepository;
+    private final AttributeDefinitionRepository xmlAttributeRepository;
 
 
 
@@ -59,7 +62,7 @@ public final class AttributeDefinitions {
 
         final List<String> htmlAttributeNameListAux =
                 new ArrayList<String>(Arrays.asList(new String[]{
-                        "abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive",
+                        "abbr", "accept", "accept-charset", "accesskey", "action", "align", "alt", "archive", "async",
                         "autocomplete", "autofocus", "autoplay", "axis", "border", "cellpadding", "cellspacing",
                         "challenge", "char", "charoff", "charset", "checked", "cite", "class", "classid",
                         "codebase", "codetype", "cols", "colspan", "command", "content", "contenteditable",
@@ -69,7 +72,7 @@ public final class AttributeDefinitions {
                         "frame", "headers", "height", "hidden", "high", "href", "hreflang", "http-equiv",
                         "icon", "id", "ismap", "keytype", "kind", "label", "lang", "list", "longdesc",
                         "loop", "low", "max", "maxlength", "media", "method", "min", "multiple", "muted",
-                        "name", "nohref", "novalidate", "onabort", "onafterprint", "onbeforeprint",
+                        "name", "nohref", "novalidate", "nowrap", "onabort", "onafterprint", "onbeforeprint",
                         "onbeforeunload", "onblur", "oncanplay", "oncanplaythrough", "onchange",
                         "onclick", "oncontextmenu", "oncuechange", "ondblclick", "ondrag", "ondragend",
                         "ondragenter", "ondragleave", "ondragover", "ondragstart", "ondrop",
@@ -82,16 +85,21 @@ public final class AttributeDefinitions {
                         "onredo", "onreset", "onresize", "onscroll", "onseeked", "onseeking",
                         "onselect", "onstalled", "onstorage", "onsubmit", "onsuspend", "ontimeupdate",
                         "onundo", "onunload", "onvolumechange", "onwaiting", "open", "optimum", "pattern",
-                        "placeholder", "poster", "preload", "profile", "radiogroup", "readonly", "rel",
-                        "required", "rev", "rows", "rowspan", "rules", "scheme", "scope", "selected",
-                        "shape", "size", "span", "spellcheck", "src", "srclang", "standby", "style", "summary",
-                        "tabindex", "title", "translate", "type", "usemap", "valign", "value", "valuetype",
-                        "width", "xml:lang", "xml:space", "xmlns"
+                        "placeholder", "poster", "preload", "profile", "pubdate", "radiogroup", "readonly", "rel",
+                        "required", "rev", "reversed", "rows", "rowspan", "rules", "scheme", "scope", "scoped",
+                        "seamless", "selected", "shape", "size", "span", "spellcheck", "src", "srclang", "standby",
+                        "style", "summary", "tabindex", "title", "translate", "type", "usemap", "valign", "value",
+                        "valuetype", "width", "xml:lang", "xml:space", "xmlns"
                 }));
 
         Collections.sort(htmlAttributeNameListAux);
 
-        final Set<String> htmlBooleanAttributeNameListAux =
+
+        ALL_STANDARD_HTML_ATTRIBUTE_NAMES =
+                Collections.unmodifiableSet(new LinkedHashSet<String>(htmlAttributeNameListAux));
+
+
+        final Set<String> htmlBooleanAttributeNameSetAux =
                 new HashSet<String>(Arrays.asList(new String[]{
                         "async", "autofocus", "autoplay", "checked", "controls",
                         "declare", "default", "defer", "disabled", "formnovalidate",
@@ -100,23 +108,8 @@ public final class AttributeDefinitions {
                         "reversed", "selected", "scoped", "seamless"
                 }));
 
-
-        ALL_STANDARD_HTML_ATTRIBUTE_NAMES =
-                Collections.unmodifiableSet(new LinkedHashSet<String>(htmlAttributeNameListAux));
-
-
-        final List<AttributeDefinition> htmlAttributeDefinitionListAux =
-                new ArrayList<AttributeDefinition>(ALL_STANDARD_HTML_ATTRIBUTE_NAMES.size() + 1);
-        for (final String attributeNameStr : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
-            final HTMLAttributeDefinition attributeDefinition =
-                    new HTMLAttributeDefinition(AttributeNames.forHTMLName(attributeNameStr), htmlBooleanAttributeNameListAux.contains(attributeNameStr));
-            htmlAttributeDefinitionListAux.add(attributeDefinition);
-        }
-
-        ALL_STANDARD_HTML_ATTRIBUTES =
-                Collections.unmodifiableSet(new LinkedHashSet<AttributeDefinition>(htmlAttributeDefinitionListAux));
-
-
+        ALL_STANDARD_BOOLEAN_HTML_ATTRIBUTE_NAMES =
+                Collections.unmodifiableSet(new LinkedHashSet<String>(htmlBooleanAttributeNameSetAux));
 
     }
 
@@ -125,19 +118,200 @@ public final class AttributeDefinitions {
 
 
 
-    public AttributeDefinitions() {
+    AttributeDefinitions(final Set<IProcessor> processors) {
 
         super();
+
+
+        /*
+         * Build the list of all Standard HTML attribute definitions
+         */
+
+        final List<HTMLAttributeDefinition> standardHTMLAttributeDefinitions =
+                new ArrayList<HTMLAttributeDefinition>(ALL_STANDARD_HTML_ATTRIBUTE_NAMES.size() + 1);
+        for (final String attributeNameStr : ALL_STANDARD_HTML_ATTRIBUTE_NAMES) {
+            standardHTMLAttributeDefinitions.add(
+                    buildHTMLAttributeDefinition(
+                            AttributeNames.forHTMLName(attributeNameStr),
+                            processors));
+        }
+
+
+        /*
+         * Initialize the repositories
+         */
+        this.htmlAttributeRepository = new AttributeDefinitionRepository(true, processors);
+        this.xmlAttributeRepository = new AttributeDefinitionRepository(false, processors);
+
 
         /*
          * Register the standard elements at the element repository, in order to initialize it
          */
-        for (final AttributeDefinition attributeDefinition : ALL_STANDARD_HTML_ATTRIBUTES) {
+        for (final AttributeDefinition attributeDefinition : standardHTMLAttributeDefinitions) {
             this.htmlAttributeRepository.storeStandardAttribute(attributeDefinition);
         }
 
     }
 
+
+
+
+
+
+
+
+
+
+    private static HTMLAttributeDefinition buildHTMLAttributeDefinition(
+            final HTMLAttributeName name, final Set<IProcessor> processors) {
+
+        final List<IProcessor> associatedProcessorsList = new ArrayList<IProcessor>(2);
+        for (final IProcessor processor : processors) {
+
+            final TemplateMode templateMode = processor.getTemplateMode();
+
+            if (templateMode == null) {
+                throw new IllegalArgumentException("Template mode cannot be null (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (!templateMode.isHTML()) {
+                // We are creating an HTML element definition, therefore we are only interested on HTML processors
+                continue;
+            }
+
+            final ElementName matchingElementName;
+            final AttributeName matchingAttributeName;
+            if (processor instanceof IElementProcessor) {
+
+                matchingElementName = ((IElementProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((IElementProcessor)processor).getMatchingAttributeName();
+
+            } else if (processor instanceof INodeProcessor) {
+
+                final INodeProcessor.MatchingNodeType matchingNodeType = ((INodeProcessor)processor).getMatchingNodeType();
+                if (matchingNodeType == null) {
+                    throw new IllegalArgumentException("Matching node type cannot be null (processor: " + processor.getClass().getName() + ")");
+                }
+                if (!matchingNodeType.equals(INodeProcessor.MatchingNodeType.ELEMENT)) {
+                    // We are only interested in node processors matching elements
+                    continue;
+                }
+
+                matchingElementName = ((INodeProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((INodeProcessor)processor).getMatchingAttributeName();
+
+            } else {
+                // Not a kind of processor we can associated with an Element Definition
+                continue;
+            }
+
+            if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
+                    (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
+                throw new IllegalArgumentException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (matchingAttributeName == null) {
+                // This processor does not relate to a specific attribute - surely an element processor
+                continue;
+            }
+
+            if (!matchingAttributeName.equals(name)) {
+                // Doesn't match. This processor is not associated with this attribute
+                continue;
+            }
+
+            associatedProcessorsList.add(processor);
+
+        }
+
+        // Processors associated to this element will be ordered by precedence
+        Collections.sort(associatedProcessorsList, PrecedenceProcessorComparator.INSTANCE);
+
+        // Compute whether this attribute is to be considered boolean or not
+        boolean booleanAttribute = false;
+        for (final String completeAttributeName : name.getCompleteAttributeNames()) {
+            if (ALL_STANDARD_BOOLEAN_HTML_ATTRIBUTE_NAMES.contains(completeAttributeName)) {
+                booleanAttribute = true;
+            }
+        }
+
+        // Build the final instance
+        return new HTMLAttributeDefinition(name, booleanAttribute, new LinkedHashSet<IProcessor>(associatedProcessorsList));
+
+    }
+
+
+
+
+    private static XMLAttributeDefinition buildXMLAttributeDefinition(
+            final XMLAttributeName name, final Set<IProcessor> processors) {
+
+        final List<IProcessor> associatedProcessorsList = new ArrayList<IProcessor>(2);
+        for (final IProcessor processor : processors) {
+
+            final TemplateMode templateMode = processor.getTemplateMode();
+
+            if (templateMode == null) {
+                throw new IllegalArgumentException("Template mode cannot be null (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (!templateMode.isXML()) {
+                // We are creating an XML element definition, therefore we are only interested on XML processors
+                continue;
+            }
+
+            final ElementName matchingElementName;
+            final AttributeName matchingAttributeName;
+            if (processor instanceof IElementProcessor) {
+
+                matchingElementName = ((IElementProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((IElementProcessor)processor).getMatchingAttributeName();
+
+            } else if (processor instanceof INodeProcessor) {
+
+                final INodeProcessor.MatchingNodeType matchingNodeType = ((INodeProcessor)processor).getMatchingNodeType();
+                if (matchingNodeType == null) {
+                    throw new IllegalArgumentException("Matching node type cannot be null (processor: " + processor.getClass().getName() + ")");
+                }
+                if (!matchingNodeType.equals(INodeProcessor.MatchingNodeType.ELEMENT)) {
+                    // We are only interested in node processors matching elements
+                    continue;
+                }
+
+                matchingElementName = ((INodeProcessor)processor).getMatchingElementName();
+                matchingAttributeName = ((INodeProcessor)processor).getMatchingAttributeName();
+
+            } else {
+                // Not a kind of processor we can associated with an Element Definition
+                continue;
+            }
+
+            if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
+                    (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
+                throw new IllegalArgumentException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
+            }
+
+            if (matchingAttributeName == null) {
+                // This processor does not relate to a specific attribute - surely an element processor
+                continue;
+            }
+
+            if (!matchingAttributeName.equals(name)) {
+                // Doesn't match. This processor is not associated with this attribute
+                continue;
+            }
+
+            associatedProcessorsList.add(processor);
+
+        }
+
+        // Processors associated to this element will be ordered by precedence
+        Collections.sort(associatedProcessorsList, PrecedenceProcessorComparator.INSTANCE);
+
+        // Build the final instance
+        return new XMLAttributeDefinition(name, new LinkedHashSet<IProcessor>(associatedProcessorsList));
+
+    }
 
 
 
@@ -210,6 +384,8 @@ public final class AttributeDefinitions {
 
         private final boolean html;
 
+        private final Set<IProcessor> processors;
+
         private final List<String> standardRepositoryNames; // read-only, no sync needed
         private final List<AttributeDefinition> standardRepository; // read-only, no sync needed
 
@@ -221,11 +397,12 @@ public final class AttributeDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        AttributeDefinitionRepository(final boolean html) {
+        AttributeDefinitionRepository(final boolean html, final Set<IProcessor> processors) {
 
             super();
 
             this.html = html;
+            this.processors = processors;
 
             this.standardRepositoryNames = (html ? new ArrayList<String>(150) : null);
             this.standardRepository = (html ? new ArrayList<AttributeDefinition>(150) : null);
@@ -399,8 +576,8 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HTMLAttributeDefinition(AttributeNames.forHTMLName(text, offset, len)) :
-                            new XMLAttributeDefinition(AttributeNames.forXMLName(text, offset, len));
+                            buildHTMLAttributeDefinition(AttributeNames.forHTMLName(text, offset, len), this.processors) :
+                            buildXMLAttributeDefinition(AttributeNames.forXMLName(text, offset, len), this.processors);
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
@@ -429,8 +606,8 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HTMLAttributeDefinition(AttributeNames.forHTMLName(attributeName)) :
-                            new XMLAttributeDefinition(AttributeNames.forXMLName(attributeName));
+                            buildHTMLAttributeDefinition(AttributeNames.forHTMLName(attributeName), this.processors) :
+                            buildXMLAttributeDefinition(AttributeNames.forXMLName(attributeName), this.processors);
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 
@@ -459,8 +636,8 @@ public final class AttributeDefinitions {
 
             final AttributeDefinition attributeDefinition =
                     this.html?
-                            new HTMLAttributeDefinition(AttributeNames.forHTMLName(prefix, attributeName)) :
-                            new XMLAttributeDefinition(AttributeNames.forXMLName(prefix, attributeName));
+                            buildHTMLAttributeDefinition(AttributeNames.forHTMLName(prefix, attributeName), this.processors) :
+                            buildXMLAttributeDefinition(AttributeNames.forXMLName(prefix, attributeName), this.processors);
 
             final String[] completeAttributeNames = attributeDefinition.attributeName.completeAttributeNames;
 

@@ -23,7 +23,6 @@ import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
-import org.thymeleaf.aurora.text.TextRepositories;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 

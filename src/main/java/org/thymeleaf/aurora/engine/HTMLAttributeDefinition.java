@@ -19,6 +19,10 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.Set;
+
+import org.thymeleaf.aurora.processor.IProcessor;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -30,13 +34,10 @@ public final class HTMLAttributeDefinition extends AttributeDefinition {
     final boolean booleanAttribute;
 
 
-    HTMLAttributeDefinition(final HTMLAttributeName name) {
-        this(name, false);
-    }
+    HTMLAttributeDefinition(
+            final HTMLAttributeName name, final boolean booleanAttribute, final Set<IProcessor> associatedProcessors) {
 
-    HTMLAttributeDefinition(final HTMLAttributeName name, final boolean booleanAttribute) {
-
-        super(name);
+        super(name, associatedProcessors);
 
         this.booleanAttribute = booleanAttribute;
 
