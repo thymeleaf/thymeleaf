@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -224,7 +225,7 @@ public final class ElementDefinitions {
 
 
 
-    ElementDefinitions(final Set<IProcessor> processors) {
+    ElementDefinitions(final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode) {
 
         super();
 
@@ -233,15 +234,15 @@ public final class ElementDefinitions {
                 new ArrayList<HTMLElementDefinition>(HTMLElementDefinitionSpec.ALL_SPECS.size() + 1);
         for (final HTMLElementDefinitionSpec definitionSpec : HTMLElementDefinitionSpec.ALL_SPECS) {
             standardHTMLElementDefinitions.add(
-                    buildHTMLElementDefinition(definitionSpec.name, definitionSpec.type, processors));
+                    buildHTMLElementDefinition(definitionSpec.name, definitionSpec.type, elementProcessorsByTemplateMode.get(TemplateMode.HTML)));
         }
 
 
         /*
          * Initialize the repositories
          */
-        this.htmlElementRepository = new ElementDefinitionRepository(true, processors);
-        this.xmlElementRepository = new ElementDefinitionRepository(false, processors);
+        this.htmlElementRepository = new ElementDefinitionRepository(true, elementProcessorsByTemplateMode);
+        this.xmlElementRepository = new ElementDefinitionRepository(false, elementProcessorsByTemplateMode);
 
 
         /*
@@ -257,75 +258,66 @@ public final class ElementDefinitions {
 
 
     private static HTMLElementDefinition buildHTMLElementDefinition(
-            final HTMLElementName name, final HTMLElementType type, final Set<IProcessor> processors) {
+            final HTMLElementName name, final HTMLElementType type, final Set<IProcessor> elementProcessors) {
 
-        final List<IProcessor> associatedProcessorsList = new ArrayList<IProcessor>(2);
-        for (final IProcessor processor : processors) {
+        // No need to use a list for sorting - the elementProcessors set has already been ordered
+        final Set<IProcessor> associatedProcessors = new LinkedHashSet<IProcessor>(2);
 
-            final TemplateMode templateMode = processor.getTemplateMode();
+        if (elementProcessors != null) {
+            for (final IProcessor processor : elementProcessors) {
 
-            if (templateMode == null) {
-                throw new IllegalArgumentException("Template mode cannot be null (processor: " + processor.getClass().getName() + ")");
-            }
+                // Cannot be null -- has been previously validated
+                final TemplateMode templateMode = processor.getTemplateMode();
 
-            if (!templateMode.isHTML()) {
-                // We are creating an HTML element definition, therefore we are only interested on HTML processors
-                continue;
-            }
-
-            final ElementName matchingElementName;
-            final AttributeName matchingAttributeName;
-            if (processor instanceof IElementProcessor) {
-
-                matchingElementName = ((IElementProcessor)processor).getMatchingElementName();
-                matchingAttributeName = ((IElementProcessor)processor).getMatchingAttributeName();
-
-            } else if (processor instanceof INodeProcessor) {
-
-                final INodeProcessor.MatchingNodeType matchingNodeType = ((INodeProcessor)processor).getMatchingNodeType();
-                if (matchingNodeType == null) {
-                    throw new IllegalArgumentException("Matching node type cannot be null (processor: " + processor.getClass().getName() + ")");
-                }
-                if (!matchingNodeType.equals(INodeProcessor.MatchingNodeType.ELEMENT)) {
-                    // We are only interested in node processors matching elements
+                if (!templateMode.isHTML()) {
+                    // We are creating an HTML element definition, therefore we are only interested on HTML processors
                     continue;
                 }
 
-                matchingElementName = ((INodeProcessor)processor).getMatchingElementName();
-                matchingAttributeName = ((INodeProcessor)processor).getMatchingAttributeName();
+                final ElementName matchingElementName;
+                final AttributeName matchingAttributeName;
+                if (processor instanceof IElementProcessor) {
 
-            } else {
-                // Not a kind of processor we can associated with an Element Definition
-                continue;
+                    matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
+                    matchingAttributeName = ((IElementProcessor) processor).getMatchingAttributeName();
+
+                } else if (processor instanceof INodeProcessor) {
+
+                    // If the processor is in this set, it is an element-oriented processor -- no need to check that again
+
+                    matchingElementName = ((INodeProcessor) processor).getMatchingElementName();
+                    matchingAttributeName = ((INodeProcessor) processor).getMatchingAttributeName();
+
+                } else {
+                    // Cannot really happen, as we should be processing a set of only element processors, but anyway
+                    continue;
+                }
+
+                if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
+                        (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
+                    throw new IllegalArgumentException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
+                }
+
+                if (matchingAttributeName != null) {
+                    // This processor requires a specific attribute to be present. Given filtering by attribute is more
+                    // restricted than filtering by element, we will not associate this processor with the element
+                    // (will be instead associated with the attribute).
+                    continue;
+                }
+
+                if (matchingElementName != null && !matchingElementName.equals(name)) {
+                    // Doesn't match. This processor is not associated with this element
+                    // Note that elementName == null means "apply to all processors"
+                    continue;
+                }
+
+                associatedProcessors.add(processor);
+
             }
-
-            if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
-                    (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
-                throw new IllegalArgumentException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
-            }
-
-            if (matchingAttributeName != null) {
-                // This processor requires a specific attribute to be present. Given filtering by attribute is more
-                // restricted than filtering by element, we will not associate this processor with the element
-                // (will be instead associated with the attribute).
-                continue;
-            }
-
-            if (matchingElementName != null && !matchingElementName.equals(name)) {
-                // Doesn't match. This processor is not associated with this element
-                // Note that elementName == null means "apply to all processors"
-                continue;
-            }
-
-            associatedProcessorsList.add(processor);
-
         }
 
-        // Processors associated to this element will be ordered by precedence
-        Collections.sort(associatedProcessorsList, PrecedenceProcessorComparator.INSTANCE);
-
         // Build the final instance
-        return new HTMLElementDefinition(name, type, new LinkedHashSet<IProcessor>(associatedProcessorsList));
+        return new HTMLElementDefinition(name, type, associatedProcessors);
 
     }
 
@@ -333,75 +325,66 @@ public final class ElementDefinitions {
 
 
     private static XMLElementDefinition buildXMLElementDefinition(
-            final XMLElementName name, final Set<IProcessor> processors) {
+            final XMLElementName name, final Set<IProcessor> elementProcessors) {
 
-        final List<IProcessor> associatedProcessorsList = new ArrayList<IProcessor>(2);
-        for (final IProcessor processor : processors) {
+        // No need to use a list for sorting - the elementProcessors set has already been ordered
+        final Set<IProcessor> associatedProcessors = new LinkedHashSet<IProcessor>(2);
 
-            final TemplateMode templateMode = processor.getTemplateMode();
+        if (elementProcessors != null) {
+            for (final IProcessor processor : elementProcessors) {
 
-            if (templateMode == null) {
-                throw new IllegalArgumentException("Template mode cannot be null (processor: " + processor.getClass().getName() + ")");
-            }
+                // Cannot be null -- has been previously validated
+                final TemplateMode templateMode = processor.getTemplateMode();
 
-            if (!templateMode.isXML()) {
-                // We are creating an XML element definition, therefore we are only interested on XML processors
-                continue;
-            }
-
-            final ElementName matchingElementName;
-            final AttributeName matchingAttributeName;
-            if (processor instanceof IElementProcessor) {
-
-                matchingElementName = ((IElementProcessor)processor).getMatchingElementName();
-                matchingAttributeName = ((IElementProcessor)processor).getMatchingAttributeName();
-
-            } else if (processor instanceof INodeProcessor) {
-
-                final INodeProcessor.MatchingNodeType matchingNodeType = ((INodeProcessor)processor).getMatchingNodeType();
-                if (matchingNodeType == null) {
-                    throw new IllegalArgumentException("Matching node type cannot be null (processor: " + processor.getClass().getName() + ")");
-                }
-                if (!matchingNodeType.equals(INodeProcessor.MatchingNodeType.ELEMENT)) {
-                    // We are only interested in node processors matching elements
+                if (!templateMode.isXML()) {
+                    // We are creating an XML element definition, therefore we are only interested on XML processors
                     continue;
                 }
 
-                matchingElementName = ((INodeProcessor)processor).getMatchingElementName();
-                matchingAttributeName = ((INodeProcessor)processor).getMatchingAttributeName();
+                final ElementName matchingElementName;
+                final AttributeName matchingAttributeName;
+                if (processor instanceof IElementProcessor) {
 
-            } else {
-                // Not a kind of processor we can associated with an Element Definition
-                continue;
+                    matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
+                    matchingAttributeName = ((IElementProcessor) processor).getMatchingAttributeName();
+
+                } else if (processor instanceof INodeProcessor) {
+
+                    // If the processor is in this set, it is an element-oriented processor -- no need to check that again
+
+                    matchingElementName = ((INodeProcessor) processor).getMatchingElementName();
+                    matchingAttributeName = ((INodeProcessor) processor).getMatchingAttributeName();
+
+                } else {
+                    // Cannot really happen, as we should be processing a set of only element processors, but anyway
+                    continue;
+                }
+
+                if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
+                        (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
+                    throw new IllegalArgumentException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
+                }
+
+                if (matchingAttributeName != null) {
+                    // This processor requires a specific attribute to be present. Given filtering by attribute is more
+                    // restricted than filtering by element, we will not associate this processor with the element
+                    // (will be instead associated with the attribute).
+                    continue;
+                }
+
+                if (matchingElementName != null && !matchingElementName.equals(name)) {
+                    // Doesn't match. This processor is not associated with this element
+                    // Note that elementName == null means "apply to all processors"
+                    continue;
+                }
+
+                associatedProcessors.add(processor);
+
             }
-
-            if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
-                    (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
-                throw new IllegalArgumentException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
-            }
-
-            if (matchingAttributeName != null) {
-                // This processor requires a specific attribute to be present. Given filtering by attribute is more
-                // restricted than filtering by element, we will not associate this processor with the element
-                // (will be instead associated with the attribute).
-                continue;
-            }
-
-            if (matchingElementName != null && !matchingElementName.equals(name)) {
-                // Doesn't match. This processor is not associated with this element
-                // Note that elementName == null means "apply to all processors"
-                continue;
-            }
-
-            associatedProcessorsList.add(processor);
-
         }
 
-        // Processors associated to this element will be ordered by precedence
-        Collections.sort(associatedProcessorsList, PrecedenceProcessorComparator.INSTANCE);
-
         // Build the final instance
-        return new XMLElementDefinition(name, new LinkedHashSet<IProcessor>(associatedProcessorsList));
+        return new XMLElementDefinition(name, associatedProcessors);
 
     }
 
@@ -479,7 +462,8 @@ public final class ElementDefinitions {
 
         private final boolean html;
 
-        private final Set<IProcessor> processors;
+        // These have already been filtered previously - only element-oriented processors will be here
+        private final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode;
 
         private final List<String> standardRepositoryNames; // read-only, no sync needed
         private final List<ElementDefinition> standardRepository; // read-only, no sync needed
@@ -492,12 +476,12 @@ public final class ElementDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        ElementDefinitionRepository(final boolean html, final Set<IProcessor> processors) {
+        ElementDefinitionRepository(final boolean html, final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode) {
 
             super();
 
             this.html = html;
-            this.processors = processors;
+            this.elementProcessorsByTemplateMode = elementProcessorsByTemplateMode;
 
             this.standardRepositoryNames = (html ? new ArrayList<String>(150) : null);
             this.standardRepository = (html ? new ArrayList<ElementDefinition>(150) : null);
@@ -672,8 +656,8 @@ public final class ElementDefinitions {
 
             final ElementDefinition elementDefinition =
                     this.html?
-                            buildHTMLElementDefinition(ElementNames.forHTMLName(text, offset, len), HTMLElementType.NORMAL, this.processors) :
-                            buildXMLElementDefinition(ElementNames.forXMLName(text, offset, len), this.processors);
+                            buildHTMLElementDefinition(ElementNames.forHTMLName(text, offset, len), HTMLElementType.NORMAL, this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
+                            buildXMLElementDefinition(ElementNames.forXMLName(text, offset, len), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
@@ -702,8 +686,8 @@ public final class ElementDefinitions {
 
             final ElementDefinition elementDefinition =
                     this.html?
-                            buildHTMLElementDefinition(ElementNames.forHTMLName(text), HTMLElementType.NORMAL, this.processors) :
-                            buildXMLElementDefinition(ElementNames.forXMLName(text), this.processors);
+                            buildHTMLElementDefinition(ElementNames.forHTMLName(text), HTMLElementType.NORMAL, this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
+                            buildXMLElementDefinition(ElementNames.forXMLName(text), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 
@@ -732,8 +716,8 @@ public final class ElementDefinitions {
 
             final ElementDefinition elementDefinition =
                     this.html?
-                            buildHTMLElementDefinition(ElementNames.forHTMLName(prefix, elementName), HTMLElementType.NORMAL, this.processors) :
-                            buildXMLElementDefinition(ElementNames.forXMLName(prefix, elementName), this.processors);
+                            buildHTMLElementDefinition(ElementNames.forHTMLName(prefix, elementName), HTMLElementType.NORMAL, this.elementProcessorsByTemplateMode.get(TemplateMode.HTML)) :
+                            buildXMLElementDefinition(ElementNames.forXMLName(prefix, elementName), this.elementProcessorsByTemplateMode.get(TemplateMode.XML));
 
             final String[] completeElementNames = elementDefinition.elementName.completeElementNames;
 

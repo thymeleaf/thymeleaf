@@ -24,14 +24,8 @@ import java.util.Set;
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
-import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
-import org.thymeleaf.aurora.processor.comment.ICommentProcessor;
-import org.thymeleaf.aurora.processor.doctype.IDocTypeProcessor;
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.node.INodeProcessor;
-import org.thymeleaf.aurora.processor.processinginstruction.IProcessingInstructionProcessor;
-import org.thymeleaf.aurora.processor.text.ITextProcessor;
-import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
+import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 
 /**
@@ -49,28 +43,33 @@ public interface ITemplateEngineContext {
     public String getStandardDialectPrefix();
 
     // Cannot be null
+    public ITextRepository getTextRepository();
+
+    // Cannot be null
     public ElementDefinitions getElementDefinitions();
 
     // Cannot be null
     public AttributeDefinitions getAttributeDefinitions();
 
     // Cannot be null
-    public ITextRepository getTextRepository();
+    public Set<IProcessor> getCDATASectionProcessors(final TemplateMode templateMode);
 
-    public Set<ICDATASectionProcessor> getCDATASectionProcessors();
+    // Cannot be null
+    public Set<IProcessor> getCommentProcessors(final TemplateMode templateMode);
 
-    public Set<ICommentProcessor> getCommentProcessors();
+    // Cannot be null
+    public Set<IProcessor> getDocTypeProcessors(final TemplateMode templateMode);
 
-    public Set<IDocTypeProcessor> getDocTypeProcessors();
+    // Cannot be null
+    public Set<IProcessor> getElementProcessors(final TemplateMode templateMode);
 
-    public Set<IElementProcessor> getElementProcessors();
+    // Cannot be null
+    public Set<IProcessor> getTextProcessors(final TemplateMode templateMode);
 
-    public Set<INodeProcessor> getNodeProcessors();
+    // Cannot be null
+    public Set<IProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
 
-    public Set<ITextProcessor> getTextProcessors();
-
-    public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors();
-
-    public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors();
+    // Cannot be null
+    public Set<IProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
 
 }

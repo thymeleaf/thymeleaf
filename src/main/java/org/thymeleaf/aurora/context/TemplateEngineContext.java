@@ -27,8 +27,9 @@ import java.util.Set;
 
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
-import org.thymeleaf.aurora.engine.DialectInitialization;
+import org.thymeleaf.aurora.engine.DialectConfiguration;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.aurora.processor.comment.ICommentProcessor;
 import org.thymeleaf.aurora.processor.doctype.IDocTypeProcessor;
@@ -37,6 +38,7 @@ import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.processor.processinginstruction.IProcessingInstructionProcessor;
 import org.thymeleaf.aurora.processor.text.ITextProcessor;
 import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
@@ -53,8 +55,7 @@ public class TemplateEngineContext implements ITemplateEngineContext {
 
     private final ITextRepository textRepository;
 
-    private final ElementDefinitions elementDefinitions;
-    private final AttributeDefinitions attributeDefinitions;
+    private final DialectConfiguration dialectConfiguration;
 
 
     public TemplateEngineContext(final Map<String,IDialect> dialectsByPrefix, final ITextRepository textRepository) {
@@ -68,10 +69,7 @@ public class TemplateEngineContext implements ITemplateEngineContext {
         this.dialects = Collections.unmodifiableSet(new LinkedHashSet<IDialect>(this.dialectsByPrefix.values()));
         this.textRepository = textRepository;
 
-        final DialectInitialization dialectInitialization = DialectInitialization.build(this.dialectsByPrefix);
-
-        this.elementDefinitions = dialectInitialization.getElementDefinitions();
-        this.attributeDefinitions = dialectInitialization.getAttributeDefinitions();
+        this.dialectConfiguration = DialectConfiguration.build(this.dialectsByPrefix);
 
     }
 
@@ -85,49 +83,47 @@ public class TemplateEngineContext implements ITemplateEngineContext {
         return "th";
     }
 
-    public ElementDefinitions getElementDefinitions() {
-        return this.elementDefinitions;
-    }
-
-    public AttributeDefinitions getAttributeDefinitions() {
-        return this.attributeDefinitions;
-    }
-
     public ITextRepository getTextRepository() {
         return this.textRepository;
     }
 
 
-    public Set<ICDATASectionProcessor> getCDATASectionProcessors() {
-        return null;
+    public ElementDefinitions getElementDefinitions() {
+        return this.dialectConfiguration.getElementDefinitions();
     }
 
-    public Set<ICommentProcessor> getCommentProcessors() {
-        return null;
+
+    public AttributeDefinitions getAttributeDefinitions() {
+        return this.dialectConfiguration.getAttributeDefinitions();
     }
 
-    public Set<IDocTypeProcessor> getDocTypeProcessors() {
-        return null;
+
+    public Set<IProcessor> getCDATASectionProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getCDATASectionProcessors(templateMode);
     }
 
-    public Set<IElementProcessor> getElementProcessors() {
-        return null;
+    public Set<IProcessor> getCommentProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getCommentProcessors(templateMode);
     }
 
-    public Set<INodeProcessor> getNodeProcessors() {
-        return null;
+    public Set<IProcessor> getDocTypeProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getDocTypeProcessors(templateMode);
     }
 
-    public Set<ITextProcessor> getTextProcessors() {
-        return null;
+    public Set<IProcessor> getElementProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getElementProcessors(templateMode);
     }
 
-    public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors() {
-        return null;
+    public Set<IProcessor> getTextProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getTextProcessors(templateMode);
     }
 
-    public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors() {
-        return null;
+    public Set<IProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getProcessingInstructionProcessors(templateMode);
+    }
+
+    public Set<IProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode) {
+        return this.dialectConfiguration.getXMLDeclarationProcessors(templateMode);
     }
 
 }
