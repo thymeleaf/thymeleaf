@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.dialect;
+package org.thymeleaf.aurora.expression;
 
 import java.util.Map;
 
@@ -30,8 +30,8 @@ import org.thymeleaf.aurora.context.ITemplateProcessingContext;
  * @since 3.0.0
  *
  */
-public interface IExpresionObjectsDialect extends IDialect {
+public interface IExpressionObjectFactory {
 
-    public Map<String,Object> getExpressionObjects(final ITemplateProcessingContext processingContext);
+    public Map<String,Object> buildExpressionObjects(final ITemplateProcessingContext processingContext);
 
 }

@@ -17,30 +17,19 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.dialect;
 
-import java.util.Comparator;
+import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 
-import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-final class PrecedenceProcessorComparator implements Comparator<IProcessor> {
+public interface IExpressionObjectsDialect extends IDialect {
 
-    static final PrecedenceProcessorComparator INSTANCE = new PrecedenceProcessorComparator();
-
-
-    PrecedenceProcessorComparator() {
-        super();
-    }
-
-    public int compare(final IProcessor o1, final IProcessor o2) {
-        return Integer.valueOf(o1.getPrecedence()).compareTo(Integer.valueOf(o2.getPrecedence()));
-    }
-
+    public IExpressionObjectFactory getExpressionObjectFactory();
 
 }

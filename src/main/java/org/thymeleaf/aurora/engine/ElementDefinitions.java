@@ -34,6 +34,7 @@ import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
 import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.exceptions.ConfigurationException;
 
 /**
  *
@@ -223,9 +224,16 @@ public final class ElementDefinitions {
     }
 
 
-
-
-    ElementDefinitions(final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode) {
+    /**
+     * <strong>ONLY FOR INTERNAL USE</strong>. This constructor is meant to be called only from the
+     * {@link org.thymeleaf.aurora.context.DialectContext} class. It should never be called directly from any
+     * other classes.
+     *
+     * @param elementProcessorsByTemplateMode the processors (element and node), already ordered by precedence, which
+     *                                        might be of application to the elements which definition is to be stored
+     *                                        here.
+     */
+    public ElementDefinitions(final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode) {
 
         super();
 
@@ -295,7 +303,7 @@ public final class ElementDefinitions {
 
                 if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
                         (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
-                    throw new IllegalArgumentException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
+                    throw new ConfigurationException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
                 if (matchingAttributeName != null) {
@@ -362,7 +370,7 @@ public final class ElementDefinitions {
 
                 if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
                         (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
-                    throw new IllegalArgumentException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
+                    throw new ConfigurationException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
                 if (matchingAttributeName != null) {

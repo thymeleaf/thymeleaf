@@ -21,14 +21,12 @@ package org.thymeleaf.aurora;
 
 import java.io.Writer;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.context.TemplateEngineContext;
 import org.thymeleaf.aurora.context.TemplateProcessingContext;
-import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
@@ -52,7 +50,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class TemplateEngine implements ITemplateEngine {
 
-    private static final Map<String,IDialect> STANDARD_DIALECT_MAP;
+    private static final Set<DialectConfiguration> STANDARD_DIALECT_CONFIGURATIONS;
 
     private final ITemplateEngineContext templateEngineContext;
     private final ITemplateParser htmlParser;
@@ -62,28 +60,27 @@ public final class TemplateEngine implements ITemplateEngine {
 
     static {
         final StandardDialect standardDialect = new StandardDialect();
-        final Map<String,IDialect> newStandardDialectMap = new HashMap<String,IDialect>(2,1.0f);
-        newStandardDialectMap.put(standardDialect.getPrefix(), standardDialect);
-        STANDARD_DIALECT_MAP = Collections.unmodifiableMap(newStandardDialectMap);
+        final DialectConfiguration standardDialectConfiguration = new DialectConfiguration(standardDialect);
+        STANDARD_DIALECT_CONFIGURATIONS = Collections.singleton(standardDialectConfiguration);
     }
 
 
 
     public TemplateEngine() {
-        this(STANDARD_DIALECT_MAP, TextRepositories.createLimitedSizeCacheRepository());
+        this(STANDARD_DIALECT_CONFIGURATIONS, TextRepositories.createLimitedSizeCacheRepository());
     }
 
 
-    public TemplateEngine(final Map<String,IDialect> dialectsByPrefix, final ITextRepository textRepository) {
+    public TemplateEngine(final Set<DialectConfiguration> dialectConfigurations, final ITextRepository textRepository) {
 
         super();
 
-        Validate.notNull(dialectsByPrefix, "Dialect map cannot be null");
+        Validate.notNull(dialectConfigurations, "Dialect configuration set cannot be null");
 
         final ITextRepository engineTextRepository =
                 (textRepository != null? textRepository : TextRepositories.createNoCacheRepository());
 
-        this.templateEngineContext = new TemplateEngineContext(dialectsByPrefix, engineTextRepository);
+        this.templateEngineContext = new TemplateEngineContext(dialectConfigurations, engineTextRepository);
         this.htmlParser = new HTMLTemplateParser(40,2048);
         this.xmlParser = new XMLTemplateParser(40, 2048);
 
