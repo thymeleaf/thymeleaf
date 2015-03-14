@@ -32,16 +32,16 @@ import org.thymeleaf.util.Validate;
  */
 final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorReferenceResolver {
 
-    private static TemplateFragmentMarkupReferenceResolver HTML_INSTANCE_NO_PREFIX;
-    private static ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> HTML_INSTANCES_BY_PREFIX;
-    private static TemplateFragmentMarkupReferenceResolver XML_INSTANCE_NO_PREFIX;
-    private static ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> XML_INSTANCES_BY_PREFIX;
+    private static final TemplateFragmentMarkupReferenceResolver HTML_INSTANCE_NO_PREFIX;
+    private static final ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> HTML_INSTANCES_BY_PREFIX;
+    private static final TemplateFragmentMarkupReferenceResolver XML_INSTANCE_NO_PREFIX;
+    private static final ConcurrentHashMap<String,TemplateFragmentMarkupReferenceResolver> XML_INSTANCES_BY_PREFIX;
 
-    private static String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s' or data-fragment='%s']";
-    private static String HTML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s' or data-%s-fragment='%%s']";
+    private static final String HTML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s' or data-fragment='%s']";
+    private static final String HTML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s' or data-%s-fragment='%%s']";
 
-    private static String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s']";
-    private static String XML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s']";
+    private static final String XML_FORMAT_WITHOUT_PREFIX = "/[fragment='%s']";
+    private static final String XML_FORMAT_WITH_PREFIX = "/[%s:fragment='%%s']";
 
 
     private final ConcurrentHashMap<String,String> selectorsByReference = new ConcurrentHashMap<String, String>(20);
@@ -59,33 +59,51 @@ final class TemplateFragmentMarkupReferenceResolver implements IMarkupSelectorRe
     }
 
 
-    static TemplateFragmentMarkupReferenceResolver forPrefix(final boolean html, final String prefix) {
-        if (prefix == null) {
-            return (html? HTML_INSTANCE_NO_PREFIX : XML_INSTANCE_NO_PREFIX);
+    static TemplateFragmentMarkupReferenceResolver forPrefix(final boolean html, final String standardDialectPrefix) {
+        return html? forHTMLPrefix(standardDialectPrefix) : forXMLPrefix(standardDialectPrefix);
+    }
+
+
+    private static TemplateFragmentMarkupReferenceResolver forHTMLPrefix(final String standardDialectPrefix) {
+        if (standardDialectPrefix == null || standardDialectPrefix.length() == 0) {
+            return HTML_INSTANCE_NO_PREFIX;
         }
-        final TemplateFragmentMarkupReferenceResolver resolver =
-                (html? HTML_INSTANCES_BY_PREFIX.get(prefix) : XML_INSTANCES_BY_PREFIX.get(prefix));
+        final String prefix = standardDialectPrefix.toLowerCase();
+        final TemplateFragmentMarkupReferenceResolver resolver = HTML_INSTANCES_BY_PREFIX.get(prefix);
         if (resolver != null) {
             return resolver;
         }
-        final TemplateFragmentMarkupReferenceResolver newResolver = new TemplateFragmentMarkupReferenceResolver(html, prefix);
-        if (html) {
-            HTML_INSTANCES_BY_PREFIX.putIfAbsent(prefix, newResolver);
-            return HTML_INSTANCES_BY_PREFIX.get(prefix);
-        } else {
-            XML_INSTANCES_BY_PREFIX.putIfAbsent(prefix, newResolver);
-            return XML_INSTANCES_BY_PREFIX.get(prefix);
+        final TemplateFragmentMarkupReferenceResolver newResolver =
+                new TemplateFragmentMarkupReferenceResolver(true, prefix);
+        HTML_INSTANCES_BY_PREFIX.putIfAbsent(prefix, newResolver);
+        return HTML_INSTANCES_BY_PREFIX.get(prefix);
+    }
+
+
+    private static TemplateFragmentMarkupReferenceResolver forXMLPrefix(final String standardDialectPrefix) {
+        if (standardDialectPrefix == null || standardDialectPrefix.length() == 0) {
+            return XML_INSTANCE_NO_PREFIX;
         }
+        final TemplateFragmentMarkupReferenceResolver resolver = XML_INSTANCES_BY_PREFIX.get(standardDialectPrefix);
+        if (resolver != null) {
+            return resolver;
+        }
+        final TemplateFragmentMarkupReferenceResolver newResolver =
+                new TemplateFragmentMarkupReferenceResolver(false, standardDialectPrefix);
+        XML_INSTANCES_BY_PREFIX.putIfAbsent(standardDialectPrefix, newResolver);
+        return XML_INSTANCES_BY_PREFIX.get(standardDialectPrefix);
     }
 
 
 
-    private TemplateFragmentMarkupReferenceResolver(final boolean html, final String prefix) {
+    private TemplateFragmentMarkupReferenceResolver(final boolean html, final String standardDialectPrefix) {
         super();
-        if (prefix == null) {
+        if (standardDialectPrefix == null) {
             this.resolverFormat = (html? HTML_FORMAT_WITHOUT_PREFIX : XML_FORMAT_WITHOUT_PREFIX);
         } else {
-            this.resolverFormat = (html? String.format(HTML_FORMAT_WITH_PREFIX, prefix, prefix) : String.format(XML_FORMAT_WITH_PREFIX, prefix, prefix));
+            this.resolverFormat =
+                    (html? String.format(HTML_FORMAT_WITH_PREFIX, standardDialectPrefix, standardDialectPrefix) :
+                           String.format(XML_FORMAT_WITH_PREFIX, standardDialectPrefix, standardDialectPrefix));
         }
     }
 

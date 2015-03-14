@@ -21,6 +21,7 @@ package org.thymeleaf.aurora.context;
 
 import java.util.Set;
 
+import org.thymeleaf.aurora.DialectConfiguration;
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
@@ -35,6 +36,9 @@ import org.thymeleaf.aurora.text.ITextRepository;
  * 
  */
 public interface ITemplateEngineContext {
+
+    // Cannot be null
+    public Set<DialectConfiguration> getDialectConfigurations();
 
     // Cannot be null
     public Set<IDialect> getDialects();

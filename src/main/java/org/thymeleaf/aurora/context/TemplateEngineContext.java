@@ -57,12 +57,17 @@ public class TemplateEngineContext implements ITemplateEngineContext {
 
 
 
+
+    public Set<DialectConfiguration> getDialectConfigurations() {
+        return this.dialectContext.getDialectConfigurations();
+    }
+
     public Set<IDialect> getDialects() {
         return this.dialectContext.getDialects();
     }
 
     public String getStandardDialectPrefix() {
-        return "th";
+        return this.dialectContext.getStandardDialectPrefix();
     }
 
     public ITextRepository getTextRepository() {

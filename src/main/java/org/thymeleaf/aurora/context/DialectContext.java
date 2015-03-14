@@ -47,6 +47,7 @@ import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.processor.processinginstruction.IProcessingInstructionProcessor;
 import org.thymeleaf.aurora.processor.text.ITextProcessor;
 import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
+import org.thymeleaf.aurora.standard.StandardDialect;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.util.Validate;
@@ -61,6 +62,8 @@ public final class DialectContext {
 
     private final Set<DialectConfiguration> dialectConfigurations;
     private final Set<IDialect> dialects;
+
+    private final String standardDialectPrefix;
 
     private final Map<String,Object> executionAttributes;
 
@@ -85,6 +88,9 @@ public final class DialectContext {
 
         // This set will contain all the dialects - without any additional configuration information
         final Set<IDialect> dialects = new LinkedHashSet<IDialect>(dialectConfigurations.size());
+
+        // If we find a standard dialect among the configured ones (Standard or SpringStandard), we will report its prefix
+        String standardDialectPrefix = null;
 
         // This map will be used for merging the execution attributes of all the dialects
         final Map<String, Object> executionAttributes = new LinkedHashMap<String, Object>(10, 1.0f);
@@ -115,6 +121,10 @@ public final class DialectContext {
                 // Might be null if the dialect has been specified to use no prefix (or that is the default of such dialect)
                 final String dialectPrefix =
                         (dialectConfiguration.isPrefixSpecified()? dialectConfiguration.getPrefix() : ((IProcessorDialect) dialect).getPrefix());
+
+                if (dialect instanceof StandardDialect) {
+                    standardDialectPrefix = dialectPrefix;
+                }
 
                 final Set<IProcessor> dialectProcessors = ((IProcessorDialect) dialect).getProcessors();
                 if (dialectProcessors == null) {
@@ -294,7 +304,7 @@ public final class DialectContext {
 
 
         return new DialectContext(
-                new LinkedHashSet<DialectConfiguration>(dialectConfigurations), dialects,
+                new LinkedHashSet<DialectConfiguration>(dialectConfigurations), dialects, standardDialectPrefix,
                 executionAttributes, aggregateExpressionObjectFactory,
                 elementDefinitions, attributeDefinitions,
                 cdataSectionProcessorsByTemplateMode, commentProcessorsByTemplateMode, docTypeProcessorsByTemplateMode,
@@ -321,6 +331,7 @@ public final class DialectContext {
 
     private DialectContext(
             final Set<DialectConfiguration> dialectConfigurations, final Set<IDialect> dialects,
+            final String standardDialectPrefix,
             final Map<String, Object> executionAttributes,
             final AggregateExpressionObjectFactory expressionObjectFactory,
             final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions,
@@ -336,6 +347,7 @@ public final class DialectContext {
 
         this.dialectConfigurations = Collections.unmodifiableSet(dialectConfigurations);
         this.dialects = Collections.unmodifiableSet(dialects);
+        this.standardDialectPrefix = standardDialectPrefix;
         this.executionAttributes = Collections.unmodifiableMap(executionAttributes);
         this.expressionObjectFactory = expressionObjectFactory;
         this.elementDefinitions = elementDefinitions;
@@ -358,6 +370,10 @@ public final class DialectContext {
 
     public Set<IDialect> getDialects() {
         return this.dialects;
+    }
+
+    public String getStandardDialectPrefix() {
+        return this.standardDialectPrefix;
     }
 
     public Map<String,Object> getExecutionAttributes() {
