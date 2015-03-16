@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -29,6 +31,8 @@ public interface ITemplateHandler {
 
 
     public void setNext(final ITemplateHandler next);
+
+    public void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext);
 
 
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col);

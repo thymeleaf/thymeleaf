@@ -103,8 +103,11 @@ public final class TemplateEngine implements ITemplateEngine {
         final ITemplateProcessingContext templatePocessingContext =
                 new TemplateProcessingContext(this.templateEngineContext, templateName, templateMode);
 
-        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler(templatePocessingContext);
-        final OutputTemplateHandler outputHandler = new OutputTemplateHandler(templateName, writer);
+        final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler();
+        processorHandler.setTemplateProcessingContext(templatePocessingContext);
+
+        final OutputTemplateHandler outputHandler = new OutputTemplateHandler(writer);
+        outputHandler.setTemplateProcessingContext(templatePocessingContext);
 
         processorHandler.setNext(outputHandler);
 

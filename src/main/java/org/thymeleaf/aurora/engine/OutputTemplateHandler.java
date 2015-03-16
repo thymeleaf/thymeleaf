@@ -33,7 +33,6 @@ import org.thymeleaf.exceptions.TemplateOutputException;
 public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
-    private final String templateName;
     private final Writer writer;
 
 
@@ -43,16 +42,14 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
      *   Creates a new instance of this handler.
      * </p>
      *
-     * @param templateName the name of the template being processed
      * @param writer the writer to which output will be written.
      */
-    public OutputTemplateHandler(final String templateName, final Writer writer) {
+    public OutputTemplateHandler(final Writer writer) {
         super();
         if (writer == null) {
             throw new IllegalArgumentException("Writer cannot be null");
         }
         this.writer = writer;
-        this.templateName = templateName;
     }
 
 
@@ -66,7 +63,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             text.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, text.getLine(), text.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    text.getLine(), text.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -83,7 +81,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             comment.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, comment.getLine(), comment.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    comment.getLine(), comment.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -99,7 +98,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             cdataSection.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, cdataSection.getLine(), cdataSection.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    cdataSection.getLine(), cdataSection.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -117,7 +117,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             standaloneElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, standaloneElementTag.getLine(), standaloneElementTag.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    standaloneElementTag.getLine(), standaloneElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -133,7 +134,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             openElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, openElementTag.getLine(), openElementTag.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    openElementTag.getLine(), openElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -160,7 +162,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             closeElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, closeElementTag.getLine(), closeElementTag.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    closeElementTag.getLine(), closeElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -188,7 +191,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             closeElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, closeElementTag.getLine(), closeElementTag.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    closeElementTag.getLine(), closeElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -206,7 +210,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             docType.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, docType.getLine(), docType.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    docType.getLine(), docType.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -224,7 +229,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             xmlDeclaration.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
@@ -244,7 +250,8 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             processingInstruction.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", this.templateName, processingInstruction.getLine(), processingInstruction.getCol(), e);
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    processingInstruction.getLine(), processingInstruction.getCol(), e);
         }
 
         // Just in case someone set us a 'next'

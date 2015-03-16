@@ -19,9 +19,6 @@
  */
 package org.thymeleaf.aurora.engine;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.util.Validate;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -31,7 +28,6 @@ import org.thymeleaf.util.Validate;
 public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
-    private final ITemplateProcessingContext processingContext;
     private final TemplateHandlerEventQueue eventQueue;
 
     private int markupLevel = 0;
@@ -45,17 +41,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
      *   Creates a new instance of this handler.
      * </p>
      *
-     * @param processingContext the template processing context
      */
-    public ProcessorTemplateHandler(final ITemplateProcessingContext processingContext) {
-
+    public ProcessorTemplateHandler() {
         super();
-
-        Validate.notNull(processingContext, "Processing Context cannot be null");
-
-        this.processingContext = processingContext;
         this.eventQueue = new TemplateHandlerEventQueue(this);
-
     }
 
 
@@ -138,7 +127,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         if (openElementTag.getAttributes().hasAttribute("th:text")) {
             final IText text =
-                    this.processingContext.getModelFactory().createText("woohooo!");
+                    getTemplateProcessingContext().getModelFactory().createText("woohooo!");
             this.eventQueue.add(text);
             replaceBody = true;
         }

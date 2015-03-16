@@ -20,6 +20,9 @@
 package org.thymeleaf.aurora.engine;
 
 
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.util.Validate;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -30,6 +33,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
     private ITemplateHandler next = null;
+    private ITemplateProcessingContext templateProcessingContext = null;
 
 
     /**
@@ -60,11 +64,32 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      * <p>
      *   Set the next handler in the chain, so that events can be (optionally) delegated to it.
      * </p>
+     * <p>
+     *   This method is called when the chain of template handlers is conformed, always before
+     *   starting the parsing and processing of a template.
+     * </p>
      *
      * @param next the next handler in the chain.
      */
     public final void setNext(final ITemplateHandler next) {
         this.next = next;
+    }
+
+
+    /**
+     * <p>
+     *   Set the processing context to be used, including template name, context, and also all
+     *   kinds of template engine configuration (template engine context).
+     * </p>
+     * <p>
+     *   This method is called always before starting the parsing and processing of a template.
+     * </p>
+     *
+     * @param templateProcessingContext the next handler in the chain.
+     */
+    public final void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext) {
+        Validate.notNull(templateProcessingContext, "Template Processing Context cannot be null");
+        this.templateProcessingContext = templateProcessingContext;
     }
 
 
@@ -77,6 +102,19 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      */
     protected final ITemplateHandler getNext() {
         return this.next;
+    }
+
+
+    /**
+     * <p>
+     *   Return the template processing context corresponding to the template execution for
+     *   which the template handler instance has been created.
+     * </p>
+     *
+     * @return the template processing context
+     */
+    protected final ITemplateProcessingContext getTemplateProcessingContext() {
+        return this.templateProcessingContext;
     }
 
 

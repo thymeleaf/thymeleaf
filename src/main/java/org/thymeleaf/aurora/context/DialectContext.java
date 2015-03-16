@@ -34,9 +34,12 @@ import org.thymeleaf.aurora.DialectConfiguration;
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.dialect.IExecutionAttributesDialect;
 import org.thymeleaf.aurora.dialect.IExpressionObjectsDialect;
+import org.thymeleaf.aurora.dialect.IPostProcessorDialect;
+import org.thymeleaf.aurora.dialect.IPreProcessorDialect;
 import org.thymeleaf.aurora.dialect.IProcessorDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
@@ -79,6 +82,9 @@ public final class DialectContext {
     private final EnumMap<TemplateMode,Set<IProcessor>> textProcessorsByTemplateMode;
     private final EnumMap<TemplateMode,Set<IProcessor>> xmlDeclarationProcessorsByTemplateMode;
 
+    private final List<Class<? extends ITemplateHandler>> preProcessors;
+    private final List<Class<? extends ITemplateHandler>> postProcessors;
+
 
 
 
@@ -101,6 +107,7 @@ public final class DialectContext {
         // This allProcessors set will be used for certifying that no processor instances are repeated accross dialects
         final Set<IProcessor> allProcessors = new LinkedHashSet<IProcessor>(80);
 
+        // EnumMaps for each type of processor (depending on the structures that they can be applied to)
         final EnumMap<TemplateMode, List<IProcessor>> cdataSectionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<IProcessor>> commentProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<IProcessor>> docTypeProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
@@ -109,6 +116,13 @@ public final class DialectContext {
         final EnumMap<TemplateMode, List<IProcessor>> textProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
         final EnumMap<TemplateMode, List<IProcessor>> xmlDeclarationProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
 
+        // Lists for merging all pre and postprocessors from all dialects
+        final List<Class<? extends ITemplateHandler>> preProcessors = new ArrayList<Class<? extends ITemplateHandler>>(5);
+        final List<Class<? extends ITemplateHandler>> postProcessors = new ArrayList<Class<? extends ITemplateHandler>>(5);
+
+        /*
+         * ITERATE ALL DIALECTS, processing each one according to its features
+         */
         for (final DialectConfiguration dialectConfiguration : dialectConfigurations) {
 
             final IDialect dialect = dialectConfiguration.getDialect(); // cannot be null -- ConfigurationDialect checks this
@@ -277,6 +291,17 @@ public final class DialectContext {
 
 
             /*
+             * STEP FOUR for each dialect: aggregate pre-processors and post-processors
+             */
+            if (dialect instanceof IPreProcessorDialect) {
+                preProcessors.addAll(((IPreProcessorDialect)dialect).getPreProcessors());
+            }
+            if (dialect instanceof IPostProcessorDialect) {
+                postProcessors.addAll(((IPostProcessorDialect)dialect).getPostProcessors());
+            }
+
+
+            /*
              * LAST STEP for each dialect: add it to the dialects set
              */
             dialects.add(dialect);
@@ -308,7 +333,9 @@ public final class DialectContext {
                 executionAttributes, aggregateExpressionObjectFactory,
                 elementDefinitions, attributeDefinitions,
                 cdataSectionProcessorsByTemplateMode, commentProcessorsByTemplateMode, docTypeProcessorsByTemplateMode,
-                elementProcessorsByTemplateMode, processingInstructionProcessorsByTemplateMode, textProcessorsByTemplateMode, xmlDeclarationProcessorsByTemplateMode);
+                elementProcessorsByTemplateMode, processingInstructionProcessorsByTemplateMode,
+                textProcessorsByTemplateMode, xmlDeclarationProcessorsByTemplateMode,
+                preProcessors, postProcessors);
 
     }
 
@@ -341,7 +368,9 @@ public final class DialectContext {
             final EnumMap<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<IProcessor>> processingInstructionProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<IProcessor>> textProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> xmlDeclarationProcessorsByTemplateMode) {
+            final EnumMap<TemplateMode, Set<IProcessor>> xmlDeclarationProcessorsByTemplateMode,
+            final List<Class<? extends ITemplateHandler>> preProcessors,
+            final List<Class<? extends ITemplateHandler>> postProcessors) {
 
         super();
 
@@ -359,6 +388,8 @@ public final class DialectContext {
         this.processingInstructionProcessorsByTemplateMode = processingInstructionProcessorsByTemplateMode;
         this.textProcessorsByTemplateMode = textProcessorsByTemplateMode;
         this.xmlDeclarationProcessorsByTemplateMode = xmlDeclarationProcessorsByTemplateMode;
+        this.preProcessors = preProcessors;
+        this.postProcessors = postProcessors;
 
     }
 
@@ -458,6 +489,17 @@ public final class DialectContext {
         }
         return processors;
     }
+
+
+    public List<Class<? extends ITemplateHandler>> getPreProcessors() {
+        return this.preProcessors;
+    }
+
+
+    public List<Class<? extends ITemplateHandler>> getPostProcessors() {
+        return this.postProcessors;
+    }
+
 
     public Map<String, Object> buildExpressionObjects(final ITemplateProcessingContext processingContext) {
         return this.expressionObjectFactory.buildExpressionObjects(processingContext);
