@@ -21,7 +21,6 @@ package org.thymeleaf.aurora.context;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,6 +39,7 @@ import org.thymeleaf.aurora.dialect.IProcessorDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.aurora.engine.PrecedenceProcessorComparator;
 import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
@@ -291,13 +291,66 @@ public final class DialectContext {
 
 
             /*
-             * STEP FOUR for each dialect: aggregate pre-processors and post-processors
+             * STEP FOUR for each dialect: aggregate pre-processors (and check the correctness of the list)
              */
             if (dialect instanceof IPreProcessorDialect) {
-                preProcessors.addAll(((IPreProcessorDialect)dialect).getPreProcessors());
+                final List<Class<? extends ITemplateHandler>> dialectPreProcessors = ((IPreProcessorDialect)dialect).getPreProcessors();
+                if (dialectPreProcessors != null) {
+                    for (final Class<? extends ITemplateHandler> dialectPreProcessorClass : dialectPreProcessors) {
+                        if (dialectPreProcessorClass == null) {
+                            throw new ConfigurationException(
+                                    "Pre-Processor list for dialect " + dialect.getClass().getName() + " includes a null entry, which is forbidden.");
+                        }
+                        if (!ITemplateHandler.class.isAssignableFrom(dialectPreProcessorClass)) {
+                            throw new ConfigurationException(
+                                    "Pre-Processor class " + dialectPreProcessorClass.getName() + " specified for " +
+                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "interface " + ITemplateHandler.class.getName());
+                        }
+                        try {
+                            // Check the empty constructor is present -- we will need to use it for creating new instances
+                            dialectPreProcessorClass.getConstructor(new Class[0]);
+                        } catch (final NoSuchMethodException e) {
+                            throw new ConfigurationException(
+                                    "Pre-Processor class " + dialectPreProcessorClass.getName() + " specified for " +
+                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "zero-argument constructor.", e);
+                        }
+                        preProcessors.add(dialectPreProcessorClass);
+                    }
+                }
             }
+
+
+            /*
+             * STEP FIVE for each dialect: aggregate post-processors (and check the correctness of the list)
+             */
             if (dialect instanceof IPostProcessorDialect) {
-                postProcessors.addAll(((IPostProcessorDialect)dialect).getPostProcessors());
+                final List<Class<? extends ITemplateHandler>> dialectPostProcessors = ((IPostProcessorDialect)dialect).getPostProcessors();
+                if (dialectPostProcessors != null) {
+                    for (final Class<? extends ITemplateHandler> dialectPostProcessorClass : dialectPostProcessors) {
+                        if (dialectPostProcessorClass == null) {
+                            throw new ConfigurationException(
+                                    "Post-Processor list for dialect " + dialect.getClass().getName() + " includes a null entry, which is forbidden.");
+                        }
+                        if (!ITemplateHandler.class.isAssignableFrom(dialectPostProcessorClass)) {
+                            throw new ConfigurationException(
+                                    "Post-Processor class " + dialectPostProcessorClass.getName() + " specified for " +
+                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "interface " + ITemplateHandler.class.getName());
+                        }
+                        try {
+                            // Check the empty constructor is present -- we will need to use it for creating new instances
+                            dialectPostProcessorClass.getConstructor(new Class[0]);
+                        } catch (final NoSuchMethodException e) {
+                            throw new ConfigurationException(
+                                    "Post-Processor class " + dialectPostProcessorClass.getName() + " specified for " +
+                                    "dialect " + dialect.getClass().getName() + " does not implement required " +
+                                    "zero-argument constructor.", e);
+                        }
+                        postProcessors.add(dialectPostProcessorClass);
+                    }
+                }
             }
 
 
@@ -551,28 +604,6 @@ public final class DialectContext {
                 }
             }
             return expressionObjects;
-        }
-
-    }
-
-
-
-
-
-    /*
-     * Comparator used for ordering processors according to their precedence
-     */
-    private static final class PrecedenceProcessorComparator implements Comparator<IProcessor> {
-
-        static final PrecedenceProcessorComparator INSTANCE = new PrecedenceProcessorComparator();
-
-
-        PrecedenceProcessorComparator() {
-            super();
-        }
-
-        public int compare(final IProcessor o1, final IProcessor o2) {
-            return Integer.valueOf(o1.getPrecedence()).compareTo(Integer.valueOf(o2.getPrecedence()));
         }
 
     }

@@ -19,12 +19,14 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.List;
 import java.util.Set;
 
 import org.thymeleaf.aurora.DialectConfiguration;
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
@@ -55,25 +57,22 @@ public interface ITemplateEngineContext {
     // Cannot be null
     public AttributeDefinitions getAttributeDefinitions();
 
-    // Cannot be null
     public Set<IProcessor> getCDATASectionProcessors(final TemplateMode templateMode);
 
-    // Cannot be null
     public Set<IProcessor> getCommentProcessors(final TemplateMode templateMode);
 
-    // Cannot be null
     public Set<IProcessor> getDocTypeProcessors(final TemplateMode templateMode);
 
-    // Cannot be null
     public Set<IProcessor> getElementProcessors(final TemplateMode templateMode);
 
-    // Cannot be null
     public Set<IProcessor> getTextProcessors(final TemplateMode templateMode);
 
-    // Cannot be null
     public Set<IProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
 
-    // Cannot be null
     public Set<IProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
+
+    public List<Class<? extends ITemplateHandler>> getPreProcessors();
+
+    public List<Class<? extends ITemplateHandler>> getPostProcessors();
 
 }

@@ -21,6 +21,7 @@ package org.thymeleaf.aurora;
 
 import java.io.Writer;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
@@ -38,6 +39,7 @@ import org.thymeleaf.aurora.standard.StandardDialect;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.text.TextRepositories;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 
@@ -100,23 +102,110 @@ public final class TemplateEngine implements ITemplateEngine {
         Validate.notNull(templateResource, "Template resource cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
-        final ITemplateProcessingContext templatePocessingContext =
+
+        /*
+         * Create of the Template Processing Context instance that corresponds to this execution of the template engine
+         */
+        final ITemplateProcessingContext templateProcessingContext =
                 new TemplateProcessingContext(this.templateEngineContext, templateName, templateMode);
 
+
+        /*
+         * Declare the pair of pointers that will allow us to build the chain of template handlers
+         */
+        ITemplateHandler firstHandler = null;
+        ITemplateHandler lastHandler = null;
+
+
+        /*
+         * First type of handlers to be added: pre-processors (if any)
+         */
+        final List<Class<? extends ITemplateHandler>> preProcessors = this.templateEngineContext.getPreProcessors();
+        if (preProcessors != null) {
+            for (final Class<? extends ITemplateHandler> preProcessorClass : preProcessors) {
+                final ITemplateHandler preProcessor;
+                try {
+                    preProcessor = preProcessorClass.newInstance();
+                } catch (final Exception e) {
+                    // This should never happen - class was already checked during configuration to contain a zero-arg constructor
+                    throw new TemplateProcessingException(
+                            "An exception happened during the creation of a new instance of pre-processor " + preProcessorClass.getClass().getName(), e);
+                }
+                // Initialize the pre-processor
+                preProcessor.setTemplateProcessingContext(templateProcessingContext);
+                if (firstHandler == null) {
+                    firstHandler = preProcessor;
+                    lastHandler = preProcessor;
+                } else {
+                    lastHandler.setNext(preProcessor);
+                    lastHandler = preProcessor;
+                }
+            }
+        }
+
+
+        /*
+         * Initialize and add to the chain te Processor Handler itself, the central piece of the chain
+         */
         final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler();
-        processorHandler.setTemplateProcessingContext(templatePocessingContext);
+        processorHandler.setTemplateProcessingContext(templateProcessingContext);
+        if (firstHandler == null) {
+            firstHandler = processorHandler;
+            lastHandler = processorHandler;
+        } else {
+            lastHandler.setNext(processorHandler);
+            lastHandler = processorHandler;
+        }
 
+
+        /*
+         * After the Processor Handler, we now must add the post-processors (if any)
+         */
+        final List<Class<? extends ITemplateHandler>> postProcessors = this.templateEngineContext.getPostProcessors();
+        if (postProcessors != null) {
+            for (final Class<? extends ITemplateHandler> postProcessorClass : postProcessors) {
+                final ITemplateHandler postProcessor;
+                try {
+                    postProcessor = postProcessorClass.newInstance();
+                } catch (final Exception e) {
+                    // This should never happen - class was already checked during configuration to contain a zero-arg constructor
+                    throw new TemplateProcessingException(
+                            "An exception happened during the creation of a new instance of post-processor " + postProcessorClass.getClass().getName(), e);
+                }
+                // Initialize the pre-processor
+                postProcessor.setTemplateProcessingContext(templateProcessingContext);
+                if (firstHandler == null) {
+                    firstHandler = postProcessor;
+                    lastHandler = postProcessor;
+                } else {
+                    lastHandler.setNext(postProcessor);
+                    lastHandler = postProcessor;
+                }
+            }
+        }
+
+
+        /*
+         * Last step: the OUTPUT HANDLER
+         */
         final OutputTemplateHandler outputHandler = new OutputTemplateHandler(writer);
-        outputHandler.setTemplateProcessingContext(templatePocessingContext);
+        outputHandler.setTemplateProcessingContext(templateProcessingContext);
+        if (firstHandler == null) {
+            firstHandler = outputHandler;
+            lastHandler = outputHandler;
+        } else {
+            lastHandler.setNext(outputHandler);
+            lastHandler = outputHandler;
+        }
 
-        processorHandler.setNext(outputHandler);
 
-        final ITemplateHandler handlerChain = processorHandler;
-
+        /*
+         * Handler chain is in place - now we must use it for calling the parser and initiate the processing
+         */
         if (templateMode.isHTML()) {
-            this.htmlParser.parse(this.templateEngineContext, templateMode, templateResource, handlerChain);
+            this.htmlParser.parse(this.templateEngineContext, templateMode, templateResource, firstHandler);
         } else if (templateMode.isXML()) {
-            this.xmlParser.parse(this.templateEngineContext, templateMode, templateResource, handlerChain);
+            this.xmlParser.parse(this.templateEngineContext, templateMode, templateResource, firstHandler);
         } else {
             throw new IllegalArgumentException(
                     "Cannot process template \"" + templateName + "\" with unsupported template mode: " + templateMode);

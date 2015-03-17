@@ -22,7 +22,9 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.List;
 
+import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
@@ -39,6 +41,11 @@ public final class OpenElementTag implements IOpenElementTag {
     private final ElementDefinitions elementDefinitions;
 
     private final ElementAttributes elementAttributes;
+
+    // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
+    // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
+    // one attribute.
+    private List<IProcessor> applicableProcessors = null;
 
     private ElementDefinition elementDefinition;
     private String elementName;
@@ -136,6 +143,8 @@ public final class OpenElementTag implements IOpenElementTag {
 
         this.elementAttributes.clearAll();
 
+        this.elementAttributes.setContainerElementName(this.elementDefinition.elementName);
+
         this.line = line;
         this.col = col;
 
@@ -167,6 +176,8 @@ public final class OpenElementTag implements IOpenElementTag {
         if (clearAttributes) {
             this.elementAttributes.clearAll();
         }
+
+        this.elementAttributes.setContainerElementName(this.elementDefinition.elementName);
 
         this.line = -1;
         this.col = -1;

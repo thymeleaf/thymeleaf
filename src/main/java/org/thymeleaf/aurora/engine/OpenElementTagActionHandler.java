@@ -25,16 +25,31 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface INonClosingElementTagActionHandler extends IElementTagActionHandler {
+public final class OpenElementTagActionHandler implements IOpenElementTagActionHandler {
 
 
-    public void setBody(final String text, final boolean shouldEscape);
-//    public void setBody(final ITemplateHandlerEvent eventChain);
-//
-//    public void replaceWith(); // escaped / unescaped (th:replace)
-//
-//    public void removeElement();
-//
-//    public void iterateElement();
+    boolean setBody;
+    String setBodyText;
+    boolean setBodyShouldEscape;
+
+
+    OpenElementTagActionHandler() {
+        super();
+        reset();
+    }
+
+
+
+    public void setBody(final String text, final boolean shouldEscape) {
+        this.setBodyText = text;
+        this.setBodyShouldEscape = shouldEscape;
+        this.setBody = true;
+    }
+
+
+    public void reset() {
+        this.setBody = false;
+    }
+
 
 }

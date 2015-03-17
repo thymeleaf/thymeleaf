@@ -17,24 +17,24 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.processor.element;
+
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface INonClosingElementTagActionHandler extends IElementTagActionHandler {
+public abstract class AbstractAttributeMatchingHTMLElementProcessor extends AbstractElementProcessor {
 
 
-    public void setBody(final String text, final boolean shouldEscape);
-//    public void setBody(final ITemplateHandlerEvent eventChain);
-//
-//    public void replaceWith(); // escaped / unescaped (th:replace)
-//
-//    public void removeElement();
-//
-//    public void iterateElement();
+
+    public AbstractAttributeMatchingHTMLElementProcessor(final String attributeName, final int precedence) {
+        super(TemplateMode.HTML, null, attributeName, precedence);
+    }
+
 
 }

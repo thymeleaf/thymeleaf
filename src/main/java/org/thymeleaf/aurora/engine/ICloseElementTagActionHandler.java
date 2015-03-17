@@ -27,6 +27,6 @@ package org.thymeleaf.aurora.engine;
  */
 public interface ICloseElementTagActionHandler extends IElementTagActionHandler {
 
-    public void addMarkupAfterTag();
+//    public void addMarkupAfterTag();
 
 }

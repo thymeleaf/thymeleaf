@@ -28,10 +28,8 @@ package org.thymeleaf.aurora.engine;
 public interface IOpenElementTagActionHandler extends INonClosingElementTagActionHandler {
 
 
-    public void removeTag();
-
-    public void setBody(); // escaped (th:text)/unescaped (th:include)
-
-    public void setInliningMode();
+//    public void removeTag();
+//
+//    public void setInliningMode();
 
 }

@@ -27,9 +27,11 @@ package org.thymeleaf.aurora.engine;
  */
 public interface IElementTagActionHandler {
 
-    public void setLocalVariable();
-    public void removeLocalVariable();
+    public void reset();
 
-    public void setSelectionTarget();
+//    public void setLocalVariable();
+//    public void removeLocalVariable();
+//
+//    public void setSelectionTarget();
 
 }

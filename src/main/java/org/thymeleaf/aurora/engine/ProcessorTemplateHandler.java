@@ -35,6 +35,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
 
 
+    final OpenElementTagActionHandler openElementTagActionHandler;
+
 
     /**
      * <p>
@@ -45,6 +47,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public ProcessorTemplateHandler() {
         super();
         this.eventQueue = new TemplateHandlerEventQueue(this);
+        this.openElementTagActionHandler = new OpenElementTagActionHandler();
     }
 
 
@@ -123,7 +126,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         boolean replaceBody = false;
 
-        openElementTag.getAttributes().setAttribute("level", String.valueOf(this.markupLevel));
+        this.openElementTagActionHandler.reset();
 
         if (openElementTag.getAttributes().hasAttribute("th:text")) {
             final IText text =

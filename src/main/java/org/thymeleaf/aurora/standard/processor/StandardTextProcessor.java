@@ -20,18 +20,13 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.dialect.IDialect;
-import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.AttributeNames;
-import org.thymeleaf.aurora.engine.ElementName;
 import org.thymeleaf.aurora.engine.ICloseElementTag;
 import org.thymeleaf.aurora.engine.ICloseElementTagActionHandler;
 import org.thymeleaf.aurora.engine.IOpenElementTag;
 import org.thymeleaf.aurora.engine.IOpenElementTagActionHandler;
 import org.thymeleaf.aurora.engine.IStandaloneElementTag;
 import org.thymeleaf.aurora.engine.IStandaloneElementTagActionHandler;
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
 /**
  *
@@ -40,50 +35,27 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public class StandardTextProcessor implements IElementProcessor {
+public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
 
-    private TemplateMode templateMode = null;
-    private String dialectPrefix = null;
-    private IDialect dialect = null;
 
     public StandardTextProcessor() {
-        super();
-        this.templateMode = TemplateMode.HTML;
+        super("text", 100);
     }
 
-    public ElementName getMatchingElementName() {
+
+
+    public IStandaloneElementTag processStandaloneElementTag(
+            final ITemplateProcessingContext processingContext,
+            final IStandaloneElementTag standaloneElementTag,
+            final IStandaloneElementTagActionHandler actionHandler) {
         return null;
     }
 
-    public AttributeName getMatchingAttributeName() {
-        return AttributeNames.forName(this.templateMode, this.dialectPrefix, "text");
-    }
-
-    public IStandaloneElementTag processStandaloneElementTag(final ITemplateProcessingContext processingContext, final IStandaloneElementTag standaloneElementTag, final IStandaloneElementTagActionHandler actionHandler) {
+    public IOpenElementTag processOpenElementTag(
+            final ITemplateProcessingContext processingContext,
+            final IOpenElementTag openElementTag,
+            final IOpenElementTagActionHandler actionHandler) {
         return null;
     }
 
-    public IOpenElementTag processOpenElementTag(final ITemplateProcessingContext processingContext, final IOpenElementTag openElementTag, final IOpenElementTagActionHandler actionHandler) {
-        return null;
-    }
-
-    public ICloseElementTag processCloseElementTag(final ITemplateProcessingContext processingContext, final ICloseElementTag closeElementTag, final ICloseElementTagActionHandler actionHandler) {
-        return null;
-    }
-
-    public void setDialect(final IDialect dialect) {
-        this.dialect = dialect;
-    }
-
-    public void setDialectPrefix(final String dialectPrefix) {
-        this.dialectPrefix = dialectPrefix;
-    }
-
-    public TemplateMode getTemplateMode() {
-        return this.templateMode;
-    }
-
-    public int getPrecedence() {
-        return 100;
-    }
 }

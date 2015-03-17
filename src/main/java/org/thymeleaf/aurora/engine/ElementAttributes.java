@@ -22,8 +22,14 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
@@ -41,13 +47,20 @@ public final class ElementAttributes implements IElementAttributes {
     private final TemplateMode templateMode;
     private final AttributeDefinitions attributeDefinitions;
 
+    // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
+    // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
+    // one attribute.
+    private List<IProcessor> applicableProcessors = null;
+    boolean attributesChanged = false; // Used for determining if we need to recompute processors
+
+    private ElementName containerElementName = null;
+
     private ElementAttribute[] attributes = null;
     private AttributeName[] attributeNames = null;
     private int attributesSize = 0;
 
     private InnerWhiteSpace[] innerWhiteSpaces = null;
     private int innerWhiteSpacesSize = 0;
-
 
 
 
@@ -58,6 +71,12 @@ public final class ElementAttributes implements IElementAttributes {
         this.attributeDefinitions = attributeDefinitions;
     }
 
+
+
+    void setContainerElementName(final ElementName elementName) {
+        this.containerElementName = elementName;
+        this.attributesChanged = true; // not really the attributes what we changed, but we need a recompute of the processors
+    }
 
 
     public final int size() {
@@ -318,6 +337,11 @@ public final class ElementAttributes implements IElementAttributes {
     public final void clearAll() {
         this.attributesSize = 0;
         this.innerWhiteSpacesSize = 0;
+        this.containerElementName = null;
+        if (this.applicableProcessors != null) {
+            this.applicableProcessors.clear();
+        }
+        this.attributesChanged = false;
     }
 
 
@@ -364,6 +388,7 @@ public final class ElementAttributes implements IElementAttributes {
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
             existingAttribute.setElementAttribute(name, operator, value, valueQuotes, line, col);
+            this.attributesChanged = true;
 
             return;
 
@@ -412,6 +437,8 @@ public final class ElementAttributes implements IElementAttributes {
         }
 
         this.attributesSize++;
+
+        this.attributesChanged = true;
 
     }
 
@@ -500,6 +527,8 @@ public final class ElementAttributes implements IElementAttributes {
                 this.innerWhiteSpacesSize--;
             } // else: If we have managed white spaces properly, there should be no other possibilities
 
+            this.attributesChanged = true;
+
             return;
 
         }
@@ -524,6 +553,8 @@ public final class ElementAttributes implements IElementAttributes {
             this.innerWhiteSpaces[this.innerWhiteSpacesSize - 1] = removedInnerWhiteSpace;
             this.innerWhiteSpacesSize--;
         }
+
+        this.attributesChanged = true;
 
     }
 
@@ -587,6 +618,69 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
+    List<IProcessor> getApplicablProcessors() {
+        if (this.attributesChanged) {
+            recomputeProcessors();
+        }
+        return this.applicableProcessors;
+    }
+
+
+
+    private void recomputeProcessors() {
+
+        int n = this.attributesSize;
+        while (n-- != 0) {
+
+            if (this.attributes[n].definition.associatedProcessors.isEmpty()) {
+                continue;
+            }
+
+            if (this.applicableProcessors == null) {
+                this.applicableProcessors = new ArrayList<IProcessor>(4);
+            }
+
+            for (final IProcessor applicableProcessor : this.attributes[n].definition.associatedProcessors) {
+
+                // We should never have duplicates. The same attribute can never appear twice in an element (parser
+                // restrictions + the way this class's 'setAttribute' works), plus a specific processor instance can
+                // never appear in more than one dialect, nor be applied to more than one attribute name.
+
+                // Now for each processor, before adding it to the list, we must first determine whether it requires
+                // a specific element name and, if so, confirm that it is the same as the name of the element these
+                // attributes live at.
+                if (applicableProcessor instanceof IElementProcessor) {
+                    final ElementName matchingElementName = ((IElementProcessor)applicableProcessor).getMatchingElementName();
+                    if (matchingElementName != null && !matchingElementName.equals(this.containerElementName)) {
+                        continue;
+                    }
+                } else if (applicableProcessor instanceof INodeProcessor) {
+                    final ElementName matchingElementName = ((INodeProcessor)applicableProcessor).getMatchingElementName();
+                    if (matchingElementName != null && !matchingElementName.equals(this.containerElementName)) {
+                        continue;
+                    }
+                } else {
+                    throw new TemplateProcessingException(
+                            "Attribute Definition has been set a processor implementing an interface other than " +
+                            IElementProcessor.class + " or " + INodeProcessor.class + ", which is forbidden.");
+                }
+
+                // Just add the processor to the list
+                this.applicableProcessors.add(applicableProcessor);
+
+            }
+
+        }
+
+        if (this.applicableProcessors != null) {
+            Collections.sort(this.applicableProcessors, PrecedenceProcessorComparator.INSTANCE);
+        }
+
+        this.attributesChanged = false;
+
+    }
+
+
 
 
     public final void write(final Writer writer) throws IOException {
@@ -638,6 +732,7 @@ public final class ElementAttributes implements IElementAttributes {
     ElementAttributes cloneElementAttributes() {
 
         final ElementAttributes clone = new ElementAttributes(this.templateMode, this.attributeDefinitions);
+        clone.containerElementName = this.containerElementName;
 
         if (this.attributesSize > 0) {
             clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
@@ -672,6 +767,10 @@ public final class ElementAttributes implements IElementAttributes {
         return clone;
 
     }
+
+
+
+
 
 
 

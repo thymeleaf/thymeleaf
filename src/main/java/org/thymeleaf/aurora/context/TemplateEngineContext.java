@@ -19,12 +19,14 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.List;
 import java.util.Set;
 
 import org.thymeleaf.aurora.DialectConfiguration;
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
+import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
@@ -111,6 +113,14 @@ public class TemplateEngineContext implements ITemplateEngineContext {
 
     public Set<IProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode) {
         return this.dialectContext.getXMLDeclarationProcessors(templateMode);
+    }
+
+    public List<Class<? extends ITemplateHandler>> getPreProcessors() {
+        return this.dialectContext.getPreProcessors();
+    }
+
+    public List<Class<? extends ITemplateHandler>> getPostProcessors() {
+        return this.dialectContext.getPostProcessors();
     }
 
 }
