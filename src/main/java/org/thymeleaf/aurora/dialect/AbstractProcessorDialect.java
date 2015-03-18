@@ -17,13 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.standard;
+package org.thymeleaf.aurora.dialect;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.thymeleaf.aurora.dialect.IProcessorDialect;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.util.Validate;
 

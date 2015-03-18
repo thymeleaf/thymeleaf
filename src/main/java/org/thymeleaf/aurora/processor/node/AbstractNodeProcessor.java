@@ -17,17 +17,20 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
+package org.thymeleaf.aurora.processor.node;
+
+import java.util.Collections;
+import java.util.List;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.AttributeNames;
 import org.thymeleaf.aurora.engine.ElementName;
 import org.thymeleaf.aurora.engine.ElementNames;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
-import org.thymeleaf.aurora.engine.IProcessableElementTag;
+import org.thymeleaf.aurora.engine.INode;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -36,9 +39,10 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public abstract class AbstractElementProcessor
-        extends AbstractProcessor implements IElementProcessor {
+public abstract class AbstractNodeProcessor
+        extends AbstractProcessor implements INodeProcessor {
 
+    private final MatchingNodeType matchingNodeType;
     private final String elementName;
     private final String attributeName;
 
@@ -48,16 +52,24 @@ public abstract class AbstractElementProcessor
 
 
 
-    public AbstractElementProcessor(
-            final TemplateMode templateMode,
+    public AbstractNodeProcessor(
+            final MatchingNodeType matchingNodeType, final TemplateMode templateMode,
             final String elementName, final String attributeName,
             final int precedence) {
 
         super(templateMode, precedence);
 
+        Validate.notNull(matchingNodeType, "Matching node type cannot be null");
+
+        this.matchingNodeType = matchingNodeType;
         this.elementName = elementName;
         this.attributeName = attributeName;
 
+    }
+
+
+    public MatchingNodeType getMatchingNodeType() {
+        return this.matchingNodeType;
     }
 
 
@@ -84,11 +96,8 @@ public abstract class AbstractElementProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IProcessableElementTag process(
-            final ITemplateProcessingContext processingContext,
-            final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
-        return tag;
+    public List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
+        return Collections.singletonList(node);
     }
 
 

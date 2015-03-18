@@ -50,8 +50,8 @@ public final class ElementAttributes implements IElementAttributes {
     // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
     // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
     // one attribute.
-    private List<IProcessor> applicableProcessors = null;
-    boolean attributesChanged = false; // Used for determining if we need to recompute processors
+    List<IProcessor> associatedProcessors = null;
+    int associatedProcessorsVersion = 0; // Used for determining if we need to recompute processors from containers
 
     private ElementName containerElementName = null;
 
@@ -69,13 +69,6 @@ public final class ElementAttributes implements IElementAttributes {
         super();
         this.templateMode = templateMode;
         this.attributeDefinitions = attributeDefinitions;
-    }
-
-
-
-    void setContainerElementName(final ElementName elementName) {
-        this.containerElementName = elementName;
-        this.attributesChanged = true; // not really the attributes what we changed, but we need a recompute of the processors
     }
 
 
@@ -338,10 +331,13 @@ public final class ElementAttributes implements IElementAttributes {
         this.attributesSize = 0;
         this.innerWhiteSpacesSize = 0;
         this.containerElementName = null;
-        if (this.applicableProcessors != null) {
-            this.applicableProcessors.clear();
-        }
-        this.attributesChanged = false;
+        recomputeAssociatedProcessors();
+    }
+
+
+    final void initializeForElement(final ElementName containerElementName) {
+        this.containerElementName = containerElementName;
+        clearAll();
     }
 
 
@@ -388,7 +384,8 @@ public final class ElementAttributes implements IElementAttributes {
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
             existingAttribute.setElementAttribute(name, operator, value, valueQuotes, line, col);
-            this.attributesChanged = true;
+
+            recomputeAssociatedProcessors();
 
             return;
 
@@ -438,7 +435,7 @@ public final class ElementAttributes implements IElementAttributes {
 
         this.attributesSize++;
 
-        this.attributesChanged = true;
+        recomputeAssociatedProcessors();
 
     }
 
@@ -527,7 +524,7 @@ public final class ElementAttributes implements IElementAttributes {
                 this.innerWhiteSpacesSize--;
             } // else: If we have managed white spaces properly, there should be no other possibilities
 
-            this.attributesChanged = true;
+            recomputeAssociatedProcessors();
 
             return;
 
@@ -554,7 +551,7 @@ public final class ElementAttributes implements IElementAttributes {
             this.innerWhiteSpacesSize--;
         }
 
-        this.attributesChanged = true;
+        recomputeAssociatedProcessors();
 
     }
 
@@ -618,16 +615,12 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
-    List<IProcessor> getApplicablProcessors() {
-        if (this.attributesChanged) {
-            recomputeProcessors();
+
+    void recomputeAssociatedProcessors() {
+
+        if (this.associatedProcessors != null) {
+            this.associatedProcessors.clear();
         }
-        return this.applicableProcessors;
-    }
-
-
-
-    private void recomputeProcessors() {
 
         int n = this.attributesSize;
         while (n-- != 0) {
@@ -636,11 +629,11 @@ public final class ElementAttributes implements IElementAttributes {
                 continue;
             }
 
-            if (this.applicableProcessors == null) {
-                this.applicableProcessors = new ArrayList<IProcessor>(4);
+            if (this.associatedProcessors == null) {
+                this.associatedProcessors = new ArrayList<IProcessor>(4);
             }
 
-            for (final IProcessor applicableProcessor : this.attributes[n].definition.associatedProcessors) {
+            for (final IProcessor associatedProcessor : this.attributes[n].definition.associatedProcessors) {
 
                 // We should never have duplicates. The same attribute can never appear twice in an element (parser
                 // restrictions + the way this class's 'setAttribute' works), plus a specific processor instance can
@@ -649,13 +642,13 @@ public final class ElementAttributes implements IElementAttributes {
                 // Now for each processor, before adding it to the list, we must first determine whether it requires
                 // a specific element name and, if so, confirm that it is the same as the name of the element these
                 // attributes live at.
-                if (applicableProcessor instanceof IElementProcessor) {
-                    final ElementName matchingElementName = ((IElementProcessor)applicableProcessor).getMatchingElementName();
+                if (associatedProcessor instanceof IElementProcessor) {
+                    final ElementName matchingElementName = ((IElementProcessor)associatedProcessor).getMatchingElementName();
                     if (matchingElementName != null && !matchingElementName.equals(this.containerElementName)) {
                         continue;
                     }
-                } else if (applicableProcessor instanceof INodeProcessor) {
-                    final ElementName matchingElementName = ((INodeProcessor)applicableProcessor).getMatchingElementName();
+                } else if (associatedProcessor instanceof INodeProcessor) {
+                    final ElementName matchingElementName = ((INodeProcessor)associatedProcessor).getMatchingElementName();
                     if (matchingElementName != null && !matchingElementName.equals(this.containerElementName)) {
                         continue;
                     }
@@ -666,17 +659,17 @@ public final class ElementAttributes implements IElementAttributes {
                 }
 
                 // Just add the processor to the list
-                this.applicableProcessors.add(applicableProcessor);
+                this.associatedProcessors.add(associatedProcessor);
 
             }
 
         }
 
-        if (this.applicableProcessors != null) {
-            Collections.sort(this.applicableProcessors, PrecedenceProcessorComparator.INSTANCE);
+        if (this.associatedProcessors != null) {
+            Collections.sort(this.associatedProcessors, PrecedenceProcessorComparator.INSTANCE);
         }
 
-        this.attributesChanged = false;
+        this.associatedProcessorsVersion++;
 
     }
 
@@ -733,6 +726,8 @@ public final class ElementAttributes implements IElementAttributes {
 
         final ElementAttributes clone = new ElementAttributes(this.templateMode, this.attributeDefinitions);
         clone.containerElementName = this.containerElementName;
+        clone.associatedProcessors = (this.associatedProcessors == null? null : new ArrayList<IProcessor>(associatedProcessors));
+        clone.associatedProcessorsVersion = this.associatedProcessorsVersion;
 
         if (this.attributesSize > 0) {
             clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];

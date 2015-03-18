@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.standard;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.thymeleaf.aurora.dialect.AbstractProcessorDialect;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardTextProcessor;
 

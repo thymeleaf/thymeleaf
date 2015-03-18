@@ -22,12 +22,8 @@ package org.thymeleaf.aurora.processor.element;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.ElementName;
-import org.thymeleaf.aurora.engine.ICloseElementTag;
-import org.thymeleaf.aurora.engine.ICloseElementTagActionHandler;
-import org.thymeleaf.aurora.engine.IOpenElementTag;
-import org.thymeleaf.aurora.engine.IOpenElementTagActionHandler;
-import org.thymeleaf.aurora.engine.IStandaloneElementTag;
-import org.thymeleaf.aurora.engine.IStandaloneElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -42,16 +38,9 @@ public interface IElementProcessor extends IProcessor {
     public AttributeName getMatchingAttributeName();
 
 
-    public IStandaloneElementTag processStandaloneElementTag(
-            final ITemplateProcessingContext processingContext, final IStandaloneElementTag standaloneElementTag,
-            final IStandaloneElementTagActionHandler actionHandler);
+    public IProcessableElementTag process(
+            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
+            final IElementTagActionHandler actionHandler);
 
-    public IOpenElementTag processOpenElementTag(
-            final ITemplateProcessingContext processingContext, final IOpenElementTag openElementTag,
-            final IOpenElementTagActionHandler actionHandler);
-
-    public ICloseElementTag processCloseElementTag(
-            final ITemplateProcessingContext processingContext, final ICloseElementTag closeElementTag,
-            final ICloseElementTagActionHandler actionHandler);
 
 }

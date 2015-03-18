@@ -17,18 +17,32 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.dialect;
+
+import org.thymeleaf.util.Validate;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface INonClosingElementTag extends IElementTag {
+public class AbstractDialect implements IDialect {
 
-    public IElementAttributes getAttributes();
 
-    public INonClosingElementTag cloneElementTag();
+    private final String name;
 
+    
+    protected AbstractDialect(final String name) {
+        super();
+        Validate.notNull(name, "Dialect name cannot be null");
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+    
 }

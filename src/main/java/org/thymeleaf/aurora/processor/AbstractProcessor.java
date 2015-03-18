@@ -21,22 +21,66 @@ package org.thymeleaf.aurora.processor;
 
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.util.Validate;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface IProcessor {
+public abstract class AbstractProcessor implements IProcessor {
 
-    public IDialect getDialect();
-    public String getDialectPrefix();
+    private final int precedence;
+    private final TemplateMode templateMode;
 
-    public void setDialect(final IDialect dialect);
-    public void setDialectPrefix(final String dialectPrefix);
 
-    public TemplateMode getTemplateMode();
-    public int getPrecedence();
+    private String dialectPrefix = null;
+    private IDialect dialect = null;
+
+
+
+    public AbstractProcessor(final TemplateMode templateMode, final int precedence) {
+
+        super();
+
+        Validate.notNull(templateMode, "Template mode cannot be null");
+
+        this.templateMode = templateMode;
+        this.precedence = precedence;
+
+    }
+
+
+    public TemplateMode getTemplateMode() {
+        return this.templateMode;
+    }
+
+
+    public int getPrecedence() {
+        return this.precedence;
+    }
+
+
+    public void setDialect(final IDialect dialect) {
+        this.dialect = dialect;
+    }
+
+
+    public void setDialectPrefix(final String dialectPrefix) {
+        this.dialectPrefix = dialectPrefix;
+    }
+
+
+    public String getDialectPrefix() {
+        return dialectPrefix;
+    }
+
+
+    public IDialect getDialect() {
+        return dialect;
+    }
+
 
 }

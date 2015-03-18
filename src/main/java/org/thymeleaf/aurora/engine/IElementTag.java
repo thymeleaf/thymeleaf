@@ -33,12 +33,9 @@ public interface IElementTag extends ITemplateHandlerEvent {
     public ElementDefinition getElementDefinition();
     public String getElementName();
 
-    public void setElementName(final String elementName);
-
     public boolean hasLocation();
     public int getLine();
     public int getCol();
-
 
     public void write(final Writer writer) throws IOException;
 

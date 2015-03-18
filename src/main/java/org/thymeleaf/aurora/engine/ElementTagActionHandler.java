@@ -17,33 +17,39 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.standard;
-
-import org.thymeleaf.aurora.dialect.IDialect;
-import org.thymeleaf.util.Validate;
-
+package org.thymeleaf.aurora.engine;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
- *
  * @since 3.0.0
- *
+ * 
  */
-public class AbstractDialect implements IDialect {
+public final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
-    private final String name;
+    boolean setBody;
+    String setBodyText;
+    boolean setBodyShouldEscape;
 
-    
-    protected AbstractDialect(final String name) {
+
+    ElementTagActionHandler() {
         super();
-        Validate.notNull(name, "Dialect name cannot be null");
-        this.name = name;
+        reset();
     }
 
-    public String getName() {
-        return this.name;
+
+
+    public void setBody(final String text, final boolean shouldEscape) {
+        this.setBodyText = text;
+        this.setBodyShouldEscape = shouldEscape;
+        this.setBody = true;
     }
-    
+
+
+    public void reset() {
+        this.setBody = false;
+    }
+
+
 }

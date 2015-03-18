@@ -43,7 +43,7 @@ public interface INodeProcessor extends IProcessor {
     public AttributeName getMatchingAttributeName();
 
 
-    public List<INode> processNode(final ITemplateProcessingContext processingContext, final INode node);
+    public List<INode> process(final ITemplateProcessingContext processingContext, final INode node);
 
 
 }

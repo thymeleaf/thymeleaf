@@ -104,12 +104,6 @@ public final class CloseElementTag implements ICloseElementTag {
 
 
 
-    public void setElementName(final String elementName) {
-        initializeFromCloseElementTag(elementName);
-    }
-
-
-
 
     // Meant to be called only from within the engine
     void setCloseElementTag(
@@ -128,8 +122,7 @@ public final class CloseElementTag implements ICloseElementTag {
 
 
 
-    private void initializeFromCloseElementTag(
-            final String elementName) {
+    private void initializeFromCloseElementTag(final String elementName) {
 
         if (elementName == null || elementName.trim().length() == 0) {
             throw new IllegalArgumentException("Element name cannot be null or empty");

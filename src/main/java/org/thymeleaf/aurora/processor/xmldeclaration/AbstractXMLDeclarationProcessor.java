@@ -17,16 +17,34 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.processor.xmldeclaration;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.IXMLDeclaration;
+import org.thymeleaf.aurora.processor.AbstractProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface IOpenElementTag extends IProcessableElementTag {
+public abstract class AbstractXMLDeclarationProcessor
+        extends AbstractProcessor implements IXMLDeclarationProcessor {
 
-    public IOpenElementTag cloneElementTag();
+
+
+    public AbstractXMLDeclarationProcessor(final TemplateMode templateMode, final int precedence) {
+        super(templateMode, precedence);
+    }
+
+
+    // Default implementation - meant to be overridden by subclasses if needed
+    public IXMLDeclaration process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration) {
+        return xmlDeclaration;
+    }
+
 
 }

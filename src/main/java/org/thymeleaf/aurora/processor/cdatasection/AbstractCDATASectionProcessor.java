@@ -17,24 +17,34 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.processor.cdatasection;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ICDATASection;
+import org.thymeleaf.aurora.processor.AbstractProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface INonClosingElementTagActionHandler extends IElementTagActionHandler {
+public abstract class AbstractCDATASectionProcessor
+        extends AbstractProcessor implements ICDATASectionProcessor {
 
 
-    public void setBody(final String text, final boolean shouldEscape);
-//    public void setBody(final ITemplateHandlerEvent eventChain);
-//
-//    public void replaceWith(); // escaped / unescaped (th:replace)
-//
-//    public void removeElement();
-//
-//    public void iterateElement();
+
+    public AbstractCDATASectionProcessor(final TemplateMode templateMode, final int precedence) {
+        super(templateMode, precedence);
+    }
+
+
+    // Default implementation - meant to be overridden by subclasses if needed
+    public ICDATASection process(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection) {
+        return cdataSection;
+    }
+
 
 }

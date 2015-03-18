@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.aurora.processor.IProcessor;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -35,7 +37,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
 
 
-    final OpenElementTagActionHandler openElementTagActionHandler;
+    final ElementTagActionHandler elementTagActionHandler;
 
 
     /**
@@ -47,7 +49,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public ProcessorTemplateHandler() {
         super();
         this.eventQueue = new TemplateHandlerEventQueue(this);
-        this.openElementTagActionHandler = new OpenElementTagActionHandler();
+        this.elementTagActionHandler = new ElementTagActionHandler();
     }
 
 
@@ -126,13 +128,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         boolean replaceBody = false;
 
-        this.openElementTagActionHandler.reset();
+        this.elementTagActionHandler.reset();
 
-        if (openElementTag.getAttributes().hasAttribute("th:text")) {
-            final IText text =
-                    getTemplateProcessingContext().getModelFactory().createText("woohooo!");
-            this.eventQueue.add(text);
-            replaceBody = true;
+        if (openElementTag.hasAssociatedProcessors()) {
+
+            int count = 0;
+            for (final IProcessor processor : openElementTag.getAssociatedProcessors()) {
+                openElementTag.getAttributes().setAttribute("proc" + count, processor.getClass().getName());
+                final IText text =
+                        getTemplateProcessingContext().getModelFactory().createText("synthetic!");
+                this.eventQueue.add(text);
+                replaceBody = true;
+            }
+
         }
 
         /*

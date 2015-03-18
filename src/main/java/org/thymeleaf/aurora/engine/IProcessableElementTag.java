@@ -19,37 +19,23 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.List;
+
+import org.thymeleaf.aurora.processor.IProcessor;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  * 
  */
-public final class OpenElementTagActionHandler implements IOpenElementTagActionHandler {
+public interface IProcessableElementTag extends IElementTag {
 
+    public IElementAttributes getAttributes();
 
-    boolean setBody;
-    String setBodyText;
-    boolean setBodyShouldEscape;
+    public IProcessableElementTag cloneElementTag();
 
-
-    OpenElementTagActionHandler() {
-        super();
-        reset();
-    }
-
-
-
-    public void setBody(final String text, final boolean shouldEscape) {
-        this.setBodyText = text;
-        this.setBodyShouldEscape = shouldEscape;
-        this.setBody = true;
-    }
-
-
-    public void reset() {
-        this.setBody = false;
-    }
-
+    public boolean hasAssociatedProcessors();
+    public List<IProcessor> getAssociatedProcessors();
 
 }

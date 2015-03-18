@@ -20,12 +20,8 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.ICloseElementTag;
-import org.thymeleaf.aurora.engine.ICloseElementTagActionHandler;
-import org.thymeleaf.aurora.engine.IOpenElementTag;
-import org.thymeleaf.aurora.engine.IOpenElementTagActionHandler;
-import org.thymeleaf.aurora.engine.IStandaloneElementTag;
-import org.thymeleaf.aurora.engine.IStandaloneElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
 /**
@@ -44,18 +40,13 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
 
 
-    public IStandaloneElementTag processStandaloneElementTag(
+    public IProcessableElementTag process(
             final ITemplateProcessingContext processingContext,
-            final IStandaloneElementTag standaloneElementTag,
-            final IStandaloneElementTagActionHandler actionHandler) {
-        return null;
+            final IProcessableElementTag tag,
+            final IElementTagActionHandler actionHandler) {
+        actionHandler.setBody("Whoohooooo!", true);
+        return tag;
     }
 
-    public IOpenElementTag processOpenElementTag(
-            final ITemplateProcessingContext processingContext,
-            final IOpenElementTag openElementTag,
-            final IOpenElementTagActionHandler actionHandler) {
-        return null;
-    }
 
 }

@@ -17,16 +17,34 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.processor.comment;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.IComment;
+import org.thymeleaf.aurora.processor.AbstractProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface IStandaloneElementTagActionHandler extends INonClosingElementTagActionHandler {
+public abstract class AbstractCommentProcessor
+        extends AbstractProcessor implements ICommentProcessor {
 
-    // Nothing to be added here. Just follows the hierarchy or element tags
+
+
+    public AbstractCommentProcessor(final TemplateMode templateMode, final int precedence) {
+        super(templateMode, precedence);
+    }
+
+
+    // Default implementation - meant to be overridden by subclasses if needed
+    public IComment process(final ITemplateProcessingContext processingContext, final IComment comment) {
+        return comment;
+    }
+
 
 }

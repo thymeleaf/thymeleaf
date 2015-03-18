@@ -25,11 +25,10 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IStandaloneElementTag extends INonClosingElementTag {
+public interface IStandaloneElementTag extends IProcessableElementTag {
 
     public boolean isMinimized();
-
-    public void setElementName(final String elementName, final boolean minimized);
+    public void setMinimized(final boolean minimized);
 
     public IStandaloneElementTag cloneElementTag();
 
