@@ -17,23 +17,21 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
-
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+package org.thymeleaf.aurora.engine;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
- *
  * @since 3.0.0
  *
  */
-public abstract class AbstractAttributeMatchingHTMLElementProcessor extends AbstractElementProcessor {
+public interface ITemplateHandlerEventQueue {
 
+    public void add(final ITemplateHandlerEvent event);
+    public void addAll(final ITemplateHandlerEventQueue eventQueue);
 
-    public AbstractAttributeMatchingHTMLElementProcessor(final String attributeName, final int precedence) {
-        super(TemplateMode.HTML, null, false, attributeName, true, precedence);
-    }
+    public void process(final ITemplateHandler handler);
 
+    public void reset();
 
 }

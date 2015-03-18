@@ -44,7 +44,9 @@ public abstract class AbstractNodeProcessor
 
     private final MatchingNodeType matchingNodeType;
     private final String elementName;
+    private final boolean prefixElementName;
     private final String attributeName;
+    private final boolean prefixAttributeName;
 
 
     private ElementName matchingElementName = null;
@@ -54,7 +56,8 @@ public abstract class AbstractNodeProcessor
 
     public AbstractNodeProcessor(
             final MatchingNodeType matchingNodeType, final TemplateMode templateMode,
-            final String elementName, final String attributeName,
+            final String elementName, final boolean prefixElementName,
+            final String attributeName, final boolean prefixAttributeName,
             final int precedence) {
 
         super(templateMode, precedence);
@@ -63,7 +66,9 @@ public abstract class AbstractNodeProcessor
 
         this.matchingNodeType = matchingNodeType;
         this.elementName = elementName;
+        this.prefixElementName = prefixElementName;
         this.attributeName = attributeName;
+        this.prefixAttributeName = prefixAttributeName;
 
     }
 
@@ -86,10 +91,10 @@ public abstract class AbstractNodeProcessor
     public final void setDialectPrefix(final String dialectPrefix) {
         super.setDialectPrefix(dialectPrefix);
         if (this.elementName != null) {
-            this.matchingElementName = ElementNames.forName(getTemplateMode(), getDialectPrefix(), this.elementName);
+            this.matchingElementName = ElementNames.forName(getTemplateMode(), (this.prefixElementName? getDialectPrefix() : null), this.elementName);
         }
         if (this.attributeName != null) {
-            this.matchingAttributeName = AttributeNames.forName(getTemplateMode(), getDialectPrefix(), this.attributeName);
+            this.matchingAttributeName = AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? getDialectPrefix() : null), this.attributeName);
         }
     }
 

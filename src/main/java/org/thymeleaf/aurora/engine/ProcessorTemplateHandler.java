@@ -20,6 +20,8 @@
 package org.thymeleaf.aurora.engine;
 
 import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.aurora.processor.node.INodeProcessor;
 
 /**
  *
@@ -48,7 +50,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
      */
     public ProcessorTemplateHandler() {
         super();
-        this.eventQueue = new TemplateHandlerEventQueue(this);
+        this.eventQueue = new TemplateHandlerEventQueue();
         this.elementTagActionHandler = new ElementTagActionHandler();
     }
 
@@ -126,19 +128,34 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        boolean replaceBody = false;
-
-        this.elementTagActionHandler.reset();
+        boolean skipBody = false;
 
         if (openElementTag.hasAssociatedProcessors()) {
 
-            int count = 0;
             for (final IProcessor processor : openElementTag.getAssociatedProcessors()) {
-                openElementTag.getAttributes().setAttribute("proc" + count, processor.getClass().getName());
-                final IText text =
-                        getTemplateProcessingContext().getModelFactory().createText("synthetic!");
-                this.eventQueue.add(text);
-                replaceBody = true;
+
+                if (processor instanceof IElementProcessor) {
+
+                    this.elementTagActionHandler.reset();
+
+                    final IProcessableElementTag resultTag =
+                            ((IElementProcessor)processor).process(getTemplateProcessingContext(), openElementTag, this.elementTagActionHandler);
+
+                    if (this.elementTagActionHandler.setBodyText != null) {
+                        final IText text =
+                                getTemplateProcessingContext().getModelFactory().createText(this.elementTagActionHandler.setBodyText);
+                        this.eventQueue.add(text);
+                        skipBody = true;
+                    }
+
+                } else if (processor instanceof INodeProcessor) {
+                    throw new UnsupportedOperationException("Support for Node processors not implemented yet");
+                } else {
+                    throw new IllegalStateException(
+                            "An element has been found with an associated processor of type " + processor.getClass().getName() +
+                            " which is neither an element nor a Node processor.");
+                }
+
             }
 
         }
@@ -156,12 +173,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        this.eventQueue.processQueue();
+        this.eventQueue.processQueue(getNext());
 
         /*
          * SET BODY TO BE SKIPPED, if required
          */
-        if (replaceBody) {
+        if (skipBody) {
             // We make sure no other nested events will be processed at all
             this.skipMarkupFromLevel = this.markupLevel - 1;
         }

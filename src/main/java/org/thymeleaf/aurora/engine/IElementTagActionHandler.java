@@ -32,20 +32,20 @@ public interface IElementTagActionHandler {
 
 //    public void setLocalVariable();
 //    public void removeLocalVariable();
-//
 //    public void setSelectionTarget();
+//    public void setInliningMode();
 
     public void setBody(final String text, final boolean shouldEscape);
-//    public void setBody(final ITemplateHandlerEvent eventChain);
-//
-//    public void replaceWith(); // escaped / unescaped (th:replace)
+    public void setBody(final ITemplateHandlerEventQueue eventQueue);
+
+    public void replaceWith(final String text, final boolean shouldEscape);
+    public void replaceWith(final ITemplateHandlerEventQueue eventQueue);
+
 //
 //    public void removeElement();
+//    public void removeTag();
 //
 //    public void iterateElement();
 //
-//    public void removeTag();
-//
-//    public void setInliningMode();
 
 }

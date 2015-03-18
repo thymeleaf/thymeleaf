@@ -21,17 +21,17 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
 
+import org.thymeleaf.util.Validate;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
  *
  */
-final class TemplateHandlerEventQueue {
+public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQueue {
 
-    private static final int QUEUE_SIZE = 20;
-
-    private final ITemplateHandler handler;
+    private static final int DEFAULT_INITIAL_SIZE = 20;
 
     private int queueSize = 0;
     private ITemplateHandlerEvent[] queue;
@@ -39,23 +39,29 @@ final class TemplateHandlerEventQueue {
 
 
 
-    TemplateHandlerEventQueue(final ITemplateHandler handler) {
+    public TemplateHandlerEventQueue() {
+        this(DEFAULT_INITIAL_SIZE);
+    }
+
+
+    public TemplateHandlerEventQueue(final int initialSize) {
 
         super();
 
-        this.handler = handler;
-        this.queue = new ITemplateHandlerEvent[QUEUE_SIZE];
+        Validate.isTrue(initialSize > 0, "Queue initial size must be greater than zero");
+
+        this.queue = new ITemplateHandlerEvent[initialSize];
         Arrays.fill(this.queue, null);
 
     }
 
 
 
-    void add(final ITemplateHandlerEvent event) {
+    public void add(final ITemplateHandlerEvent event) {
 
         if (this.queue.length == this.queueSize) {
             // We need to grow the queue!
-            final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queue.length + QUEUE_SIZE];
+            final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queue.length + DEFAULT_INITIAL_SIZE];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -67,7 +73,16 @@ final class TemplateHandlerEventQueue {
     }
 
 
-    void processQueue() {
+    public void addAll(final ITemplateHandlerEventQueue eventQueue) {
+
+    }
+
+
+    public void process(final ITemplateHandler handler) {
+
+        if (handler == null) {
+            return;
+        }
 
         ITemplateHandlerEvent event;
         int n = this.queueSize;
@@ -78,7 +93,7 @@ final class TemplateHandlerEventQueue {
             event = this.queue[i++];
 
             if (event instanceof IText) {
-                this.handler.handleText((IText) event);
+                handler.handleText((IText) event);
             } else {
                 throw new UnsupportedOperationException("Still not implemented! Only support for queuing Texts has been implemented...");
             }
@@ -92,5 +107,9 @@ final class TemplateHandlerEventQueue {
     }
 
 
+    public void reset() {
+        Arrays.fill(this.queue, null);
+        this.queueSize = 0;
+    }
 
 }
