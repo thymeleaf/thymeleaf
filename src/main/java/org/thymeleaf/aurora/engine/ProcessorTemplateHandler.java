@@ -19,9 +19,13 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
 import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -31,15 +35,20 @@ import org.thymeleaf.aurora.processor.node.INodeProcessor;
  */
 public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
-
     private final TemplateHandlerEventQueue eventQueue;
+    private final ElementTagActionHandler actionHandler;
+
+    private ITemplateEngineContext templateEngineContext;
+    private ITextRepository textRepository;
+    private IModelFactory modelFactory;
 
     private int markupLevel = 0;
 
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
+    private LevelArray skipCloseTagLevels = new LevelArray(5);
 
+    private Text bufferText = null;
 
-    final ElementTagActionHandler elementTagActionHandler;
 
 
     /**
@@ -51,9 +60,29 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public ProcessorTemplateHandler() {
         super();
         this.eventQueue = new TemplateHandlerEventQueue();
-        this.elementTagActionHandler = new ElementTagActionHandler();
+        this.actionHandler = new ElementTagActionHandler();
     }
 
+
+
+
+    @Override
+    public void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext) {
+
+        super.setTemplateProcessingContext(templateProcessingContext);
+
+        this.templateEngineContext = templateProcessingContext.getTemplateEngineContext();
+        Validate.notNull(this.templateEngineContext, "Template Engine Context returned by Template Processing Context cannot be null");
+
+        this.modelFactory = templateProcessingContext.getModelFactory();
+        Validate.notNull(this.modelFactory, "Model Factory returned by Template Processing Context cannot be null");
+
+        this.textRepository = this.templateEngineContext.getTextRepository();
+        Validate.notNull(this.textRepository, "Text Repository returned by Template Engine Context cannot be null");
+
+        this.bufferText = new Text(this.textRepository);
+
+    }
 
 
 
@@ -128,6 +157,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+        boolean skipTag = false;
         boolean skipBody = false;
 
         if (openElementTag.hasAssociatedProcessors()) {
@@ -136,15 +166,25 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (processor instanceof IElementProcessor) {
 
-                    this.elementTagActionHandler.reset();
+                    this.actionHandler.reset();
 
                     final IProcessableElementTag resultTag =
-                            ((IElementProcessor)processor).process(getTemplateProcessingContext(), openElementTag, this.elementTagActionHandler);
+                            ((IElementProcessor)processor).process(getTemplateProcessingContext(), openElementTag, this.actionHandler);
 
-                    if (this.elementTagActionHandler.setBodyText != null) {
-                        final IText text =
-                                getTemplateProcessingContext().getModelFactory().createText(this.elementTagActionHandler.setBodyText);
-                        this.eventQueue.add(text);
+                    if (this.actionHandler.setBodyText) {
+                        this.bufferText.setText(this.actionHandler.setBodyTextValue);
+                        this.eventQueue.add(this.bufferText);
+                        skipBody = true;
+                    } else if(this.actionHandler.setBodyQueue) {
+
+                    } else if (this.actionHandler.replaceWithText) {
+                        this.bufferText.setText(this.actionHandler.replaceWithTextValue);
+                        this.eventQueue.add(this.bufferText);
+                        skipTag = true;
+                        skipBody = true;
+                    } else if (this.actionHandler.replaceWithQueue) {
+
+                        skipTag = true;
                         skipBody = true;
                     }
 
@@ -160,20 +200,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         }
 
+
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        super.handleOpenElement(openElementTag);
+        if (!skipTag) {
 
-        /*
-         * INCREASE THE MARKUP LEVEL, after processing the rest of the handler chain for this element
-         */
-        this.markupLevel++;
+            super.handleOpenElement(openElementTag);
+
+            /*
+             * INCREASE THE MARKUP LEVEL, after processing the rest of the handler chain for this element
+             */
+            this.markupLevel++;
+
+        }
+
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        this.eventQueue.processQueue(getNext());
+        this.eventQueue.process(getNext());
 
         /*
          * SET BODY TO BE SKIPPED, if required
@@ -181,6 +227,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (skipBody) {
             // We make sure no other nested events will be processed at all
             this.skipMarkupFromLevel = this.markupLevel - 1;
+        }
+        if (skipTag) {
+            this.skipCloseTagLevels.add(this.markupLevel - 1);
         }
 
     }
@@ -216,6 +265,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             // We've reached the last point where markup should be discarded, so we should reset the variable
             this.skipMarkupFromLevel = Integer.MAX_VALUE;
         }
+        if (this.skipCloseTagLevels.matchAndPop(this.markupLevel)) {
+            return;
+        }
 
         // Includes calling the next handler in the chain
         super.handleCloseElement(closeElementTag);
@@ -234,6 +286,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         } else if (this.markupLevel == this.skipMarkupFromLevel) {
             // We've reached the last point where markup should be discarded, so we should reset the variable
             this.skipMarkupFromLevel = Integer.MAX_VALUE;
+        }
+        if (this.skipCloseTagLevels.matchAndPop(this.markupLevel)) {
+            return;
         }
 
         // Includes calling the next handler in the chain
@@ -308,6 +363,46 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     }
 
+
+
+
+
+
+    private static class LevelArray {
+
+        private int[] array;
+        private int size;
+
+
+        LevelArray(final int initialLen) {
+            super();
+            this.array = new int[initialLen];
+            this.size = 0;
+        }
+
+
+        void add(final int level) {
+
+            if (this.array.length == this.size) {
+                // We need to grow the array!
+                final int[] newArray = new int[this.array.length + 5];
+                System.arraycopy(this.array,0,newArray,0,this.size);
+                this.array = newArray;
+            }
+
+            this.array[this.size++] = level;
+
+        }
+
+        boolean matchAndPop(final int level) {
+            if (this.size > 0 && this.array[this.size - 1] == level) {
+                this.size--;
+                return true;
+            }
+            return false;
+        }
+
+    }
 
     
 }

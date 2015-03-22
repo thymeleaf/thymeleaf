@@ -56,6 +56,18 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
     }
 
 
+    public int size() {
+        return this.queueSize;
+    }
+
+
+    public ITemplateHandlerEvent get(final int pos) {
+        if (pos >= this.queueSize) {
+            throw new IndexOutOfBoundsException("Requested position " + pos + " of event queue with size " + this.queueSize);
+        }
+        return this.queue[pos];
+    }
+
 
     public void add(final ITemplateHandlerEvent event) {
 
@@ -74,6 +86,33 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
 
     public void addAll(final ITemplateHandlerEventQueue eventQueue) {
+
+        if (eventQueue == null) {
+            return;
+        }
+
+        if (eventQueue instanceof TemplateHandlerEventQueue) {
+            // We can take some shortcuts
+            final TemplateHandlerEventQueue templateHandlerEventQueue = (TemplateHandlerEventQueue) eventQueue;
+
+            if (this.queue.length <= (this.queueSize + templateHandlerEventQueue.queueSize)) {
+                // We need to grow the queue!
+                final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queueSize + templateHandlerEventQueue.queueSize + DEFAULT_INITIAL_SIZE];
+                Arrays.fill(newQueue, null);
+                System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
+                this.queue = newQueue;
+            }
+
+            System.arraycopy(templateHandlerEventQueue, 0, this.queue, this.queueSize, templateHandlerEventQueue.queueSize);
+            this.queueSize += templateHandlerEventQueue.queueSize;
+            return;
+
+        }
+
+        final int eventQueueLen = eventQueue.size();
+        for (int i = 0 ; i < eventQueueLen; i++) {
+            eventQueue.add(eventQueue.get(i));
+        }
 
     }
 

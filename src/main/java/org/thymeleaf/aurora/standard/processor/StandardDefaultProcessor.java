@@ -17,24 +17,36 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.standard.processor;
+
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IProcessableElementTag;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
  *
  */
-public interface ITemplateHandlerEventQueue {
+public class StandardDefaultProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
 
-    public int size();
-    public ITemplateHandlerEvent get(final int pos);
 
-    public void add(final ITemplateHandlerEvent event);
-    public void addAll(final ITemplateHandlerEventQueue eventQueue);
+    public StandardDefaultProcessor() {
+        super(null, Integer.MAX_VALUE); // The latest in precedence
+    }
 
-    public void process(final ITemplateHandler handler);
 
-    public void reset();
+
+    public IProcessableElementTag process(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final IElementTagActionHandler actionHandler) {
+        tag.getAttributes().
+        return tag;
+    }
+
 
 }

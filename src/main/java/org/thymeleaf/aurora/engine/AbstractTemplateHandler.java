@@ -71,7 +71,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      *
      * @param next the next handler in the chain.
      */
-    public final void setNext(final ITemplateHandler next) {
+    public void setNext(final ITemplateHandler next) {
         this.next = next;
     }
 
@@ -87,7 +87,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
      *
      * @param templateProcessingContext the next handler in the chain.
      */
-    public final void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext) {
+    public void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext) {
         Validate.notNull(templateProcessingContext, "Template Processing Context cannot be null");
         this.templateProcessingContext = templateProcessingContext;
     }

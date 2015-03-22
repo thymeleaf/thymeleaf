@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.util.Validate;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -28,9 +30,20 @@ package org.thymeleaf.aurora.engine;
 public final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
-    boolean setBody;
-    String setBodyText;
-    boolean setBodyShouldEscape;
+    boolean setBodyText;
+    String setBodyTextValue;
+    boolean setBodyTextShouldEscape;
+
+    boolean setBodyQueue;
+    ITemplateHandlerEventQueue setBodyQueueValue;
+
+    boolean replaceWithText;
+    String replaceWithTextValue;
+    boolean replaceWithTextShouldEscape;
+
+    boolean replaceWithQueue;
+    ITemplateHandlerEventQueue replaceWithQueueValue;
+
 
 
     ElementTagActionHandler() {
@@ -41,14 +54,55 @@ public final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     public void setBody(final String text, final boolean shouldEscape) {
-        this.setBodyText = text;
-        this.setBodyShouldEscape = shouldEscape;
-        this.setBody = true;
+        reset();
+        Validate.notNull(text, "Text cannot be null");
+        this.setBodyText = true;
+        this.setBodyTextValue = text;
+        this.setBodyTextShouldEscape = shouldEscape;
+    }
+
+
+    public void setBody(final ITemplateHandlerEventQueue eventQueue) {
+        reset();
+        Validate.notNull(eventQueue, "Event Queue cannot be null");
+        this.setBodyQueue = true;
+        this.setBodyQueueValue = eventQueue;
+    }
+
+
+    public void replaceWith(final String text, final boolean shouldEscape) {
+        reset();
+        Validate.notNull(text, "Text cannot be null");
+        this.replaceWithText = true;
+        this.replaceWithTextValue = text;
+        this.replaceWithTextShouldEscape = shouldEscape;
+    }
+
+
+    public void replaceWith(final ITemplateHandlerEventQueue eventQueue) {
+        reset();
+        Validate.notNull(eventQueue, "Event Queue cannot be null");
+        this.replaceWithQueue = true;
+        this.replaceWithQueueValue = eventQueue;
     }
 
 
     public void reset() {
-        this.setBody = false;
+
+        this.setBodyText = false;
+        this.setBodyTextValue = null;
+        this.setBodyTextShouldEscape = false;
+
+        this.setBodyQueue = false;
+        this.setBodyQueueValue = null;
+
+        this.replaceWithText = false;
+        this.replaceWithTextValue = null;
+        this.replaceWithTextShouldEscape = false;
+
+        this.replaceWithQueue = false;
+        this.replaceWithQueueValue = null;
+
     }
 
 
