@@ -22,9 +22,9 @@ package org.thymeleaf.aurora.processor.node;
 import java.util.List;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.ElementName;
 import org.thymeleaf.aurora.engine.INode;
+import org.thymeleaf.aurora.engine.MatchingAttributeName;
+import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -39,8 +39,8 @@ public interface INodeProcessor extends IProcessor {
 
 
     public MatchingNodeType getMatchingNodeType();
-    public ElementName getMatchingElementName();
-    public AttributeName getMatchingAttributeName();
+    public MatchingElementName getMatchingElementName();
+    public MatchingAttributeName getMatchingAttributeName();
 
 
     public List<INode> process(final ITemplateProcessingContext processingContext, final INode node);

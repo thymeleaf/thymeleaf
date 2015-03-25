@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
-import java.util.Arrays;
-
+import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.aurora.util.TextUtil;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -31,25 +31,54 @@ import org.thymeleaf.util.Validate;
  */
 public final class MatchingElementName {
 
-    final ElementName matchingElementName;
-    final String matchingAllWithPrefix;
+    final TemplateMode templateMode;
+    private final ElementName matchingElementName;
+    private final String matchingAllElementsWithPrefix;
+    private final boolean matchingAllElements;
 
 
 
-
-    public MatchingElementName(final ElementName matchingElementName) {
-        super();
+    public static MatchingElementName forElementName(final TemplateMode templateMode, final ElementName matchingElementName) {
+        Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(matchingElementName, "Matching element name cannot be null");
-        this.matchingElementName = matchingElementName;
-        this.matchingAllWithPrefix = null;
+        if (templateMode.isHTML() && !(matchingElementName instanceof HTMLElementName)) {
+            throw new IllegalArgumentException("Element names for HTML template mode must be of class " + HTMLElementName.class.getName());
+        } else if (templateMode.isXML() && !(matchingElementName instanceof XMLElementName)) {
+            throw new IllegalArgumentException("Element names for XML template mode must be of class " + XMLElementName.class.getName());
+        }
+        return new MatchingElementName(templateMode, matchingElementName, null, false);
     }
 
 
-    public MatchingElementName(final String matchingAllWithPrefix) {
+    public static MatchingElementName forAllElementsWithPrefix(final TemplateMode templateMode, final String matchingAllElementsWithPrefix) {
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        // Prefix can actually be null -> match all elements with no prefix
+        return new MatchingElementName(templateMode, null, matchingAllElementsWithPrefix, false);
+    }
+
+
+    public static MatchingElementName forAllElements(final TemplateMode templateMode) {
+        Validate.notNull(templateMode, "Template mode cannot be null");
+        return new MatchingElementName(templateMode, null, null, true);
+    }
+
+
+
+    private MatchingElementName(
+            final TemplateMode templateMode, final ElementName matchingElementName,
+            final String matchingAllElementsWithPrefix, final boolean matchingAllElements) {
         super();
-        // Prefix can actually be null (matching all elements with no prefix)
-        this.matchingAllWithPrefix = matchingAllWithPrefix;
-        this.matchingElementName = null;
+        this.templateMode = templateMode;
+        this.matchingElementName = matchingElementName;
+        this.matchingAllElementsWithPrefix = matchingAllElementsWithPrefix;
+        this.matchingAllElements = matchingAllElements;
+    }
+
+
+
+
+    public TemplateMode getTemplateMode() {
+        return this.templateMode;
     }
 
 
@@ -58,20 +87,52 @@ public final class MatchingElementName {
     }
 
 
-    public String getMatchingAllWithPrefix() {
-        return this.matchingAllWithPrefix;
+    public String getMatchingAllElementsWithPrefix() {
+        return this.matchingAllElementsWithPrefix;
     }
 
 
+    public boolean isMatchingAllElements() {
+        return this.matchingAllElements;
+    }
+
+
+
+
     public boolean matches(final ElementName elementName) {
+
         Validate.notNull(elementName, "Element name cannot be null");
+
         if (this.matchingElementName == null) {
-            if (this.matchingAllWithPrefix == null) {
+
+            if (templateMode.isHTML() && !(elementName instanceof HTMLElementName)) {
+                return false;
+            } else if (templateMode.isXML() && !(elementName instanceof XMLElementName)) {
+                return false;
+            } else if (templateMode.isText()) {
+                // Nothing to do with text and matching elements!
+                return false;
+            }
+
+            if (this.matchingAllElements) {
+                return true;
+            }
+
+            if (this.matchingAllElementsWithPrefix == null) {
                 return elementName.getPrefix() == null;
             }
-            this.matchingAllWithPrefix.equals(elementName.getPrefix());
+
+            final String elementNamePrefix = elementName.getPrefix();
+            if (elementNamePrefix == null) {
+                return false; // we already checked we are not matching nulls
+            }
+
+            return TextUtil.equals(!this.templateMode.isHTML(), this.matchingAllElementsWithPrefix, elementNamePrefix);
+
         }
+
         return this.matchingElementName.equals(elementName);
+
     }
 
 

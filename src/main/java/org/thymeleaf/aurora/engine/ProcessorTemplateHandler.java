@@ -177,6 +177,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         skipBody = true;
                     } else if(this.actionHandler.setBodyQueue) {
 
+                        skipTag = true;
+                        skipBody = true;
                     } else if (this.actionHandler.replaceWithText) {
                         this.bufferText.setText(this.actionHandler.replaceWithTextValue);
                         this.eventQueue.add(this.bufferText);

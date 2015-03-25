@@ -282,8 +282,8 @@ public final class ElementDefinitions {
                     continue;
                 }
 
-                final ElementName matchingElementName;
-                final AttributeName matchingAttributeName;
+                final MatchingElementName matchingElementName;
+                final MatchingAttributeName matchingAttributeName;
                 if (processor instanceof IElementProcessor) {
 
                     matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
@@ -301,21 +301,20 @@ public final class ElementDefinitions {
                     continue;
                 }
 
-                if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
-                        (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
+                if ((matchingElementName != null && matchingElementName.templateMode != TemplateMode.HTML) ||
+                        (matchingAttributeName != null && matchingAttributeName.templateMode != TemplateMode.HTML)) {
                     throw new ConfigurationException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
-                if (matchingAttributeName != null) {
+                if (matchingAttributeName != null && !matchingAttributeName.isMatchingAllAttributes()) {
                     // This processor requires a specific attribute to be present. Given filtering by attribute is more
                     // restricted than filtering by element, we will not associate this processor with the element
                     // (will be instead associated with the attribute).
                     continue;
                 }
 
-                if (matchingElementName != null && !matchingElementName.equals(name)) {
-                    // Doesn't match. This processor is not associated with this element
-                    // Note that elementName == null means "apply to all processors"
+                if (matchingElementName != null && !matchingElementName.matches(name)) {
+                    // Doesn't match. This processor cannot be associated with this element
                     continue;
                 }
 
@@ -349,8 +348,8 @@ public final class ElementDefinitions {
                     continue;
                 }
 
-                final ElementName matchingElementName;
-                final AttributeName matchingAttributeName;
+                final MatchingElementName matchingElementName;
+                final MatchingAttributeName matchingAttributeName;
                 if (processor instanceof IElementProcessor) {
 
                     matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
@@ -368,19 +367,19 @@ public final class ElementDefinitions {
                     continue;
                 }
 
-                if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
-                        (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
+                if ((matchingElementName != null && matchingElementName.templateMode != TemplateMode.XML) ||
+                        (matchingAttributeName != null && matchingAttributeName.templateMode != TemplateMode.XML)) {
                     throw new ConfigurationException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
-                if (matchingAttributeName != null) {
+                if (matchingAttributeName != null && !matchingAttributeName.isMatchingAllAttributes()) {
                     // This processor requires a specific attribute to be present. Given filtering by attribute is more
                     // restricted than filtering by element, we will not associate this processor with the element
                     // (will be instead associated with the attribute).
                     continue;
                 }
 
-                if (matchingElementName != null && !matchingElementName.equals(name)) {
+                if (matchingElementName != null && !matchingElementName.matches(name)) {
                     // Doesn't match. This processor is not associated with this element
                     // Note that elementName == null means "apply to all processors"
                     continue;

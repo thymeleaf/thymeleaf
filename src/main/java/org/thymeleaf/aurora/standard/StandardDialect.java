@@ -25,6 +25,7 @@ import java.util.Set;
 import org.thymeleaf.aurora.dialect.AbstractProcessorDialect;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardClassProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardDefaultAttributesProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardRemoveProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardTextProcessor;
 
@@ -51,6 +52,7 @@ public class StandardDialect extends AbstractProcessorDialect {
         processors.add(new StandardTextProcessor());
         processors.add(new StandardRemoveProcessor());
         processors.add(new StandardClassProcessor());
+        processors.add(new StandardDefaultAttributesProcessor());
         return processors;
     }
 

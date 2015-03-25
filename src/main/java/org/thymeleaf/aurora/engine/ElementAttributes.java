@@ -643,13 +643,13 @@ public final class ElementAttributes implements IElementAttributes {
                 // a specific element name and, if so, confirm that it is the same as the name of the element these
                 // attributes live at.
                 if (associatedProcessor instanceof IElementProcessor) {
-                    final ElementName matchingElementName = ((IElementProcessor)associatedProcessor).getMatchingElementName();
-                    if (matchingElementName != null && !matchingElementName.equals(this.containerElementName)) {
+                    final MatchingElementName matchingElementName = ((IElementProcessor)associatedProcessor).getMatchingElementName();
+                    if (matchingElementName != null && !matchingElementName.matches(this.containerElementName)) {
                         continue;
                     }
                 } else if (associatedProcessor instanceof INodeProcessor) {
-                    final ElementName matchingElementName = ((INodeProcessor)associatedProcessor).getMatchingElementName();
-                    if (matchingElementName != null && !matchingElementName.equals(this.containerElementName)) {
+                    final MatchingElementName matchingElementName = ((INodeProcessor)associatedProcessor).getMatchingElementName();
+                    if (matchingElementName != null && !matchingElementName.matches(this.containerElementName)) {
                         continue;
                     }
                 } else {

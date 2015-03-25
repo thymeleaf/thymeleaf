@@ -190,8 +190,8 @@ public final class AttributeDefinitions {
                     continue;
                 }
 
-                final ElementName matchingElementName;
-                final AttributeName matchingAttributeName;
+                final MatchingElementName matchingElementName;
+                final MatchingAttributeName matchingAttributeName;
                 if (processor instanceof IElementProcessor) {
 
                     matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
@@ -209,17 +209,17 @@ public final class AttributeDefinitions {
                     continue;
                 }
 
-                if ((matchingElementName != null && !(matchingElementName instanceof HTMLElementName)) ||
-                        (matchingAttributeName != null && !(matchingAttributeName instanceof HTMLAttributeName))) {
+                if ((matchingElementName != null && matchingElementName.templateMode != TemplateMode.HTML) ||
+                        (matchingAttributeName != null && matchingAttributeName.templateMode != TemplateMode.HTML)) {
                     throw new ConfigurationException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
-                if (matchingAttributeName == null) {
+                if (matchingAttributeName == null || matchingAttributeName.isMatchingAllAttributes()) {
                     // This processor does not relate to a specific attribute - surely an element processor
                     continue;
                 }
 
-                if (!matchingAttributeName.equals(name)) {
+                if (!matchingAttributeName.matches(name)) {
                     // Doesn't match. This processor is not associated with this attribute
                     continue;
                 }
@@ -262,8 +262,8 @@ public final class AttributeDefinitions {
                     continue;
                 }
 
-                final ElementName matchingElementName;
-                final AttributeName matchingAttributeName;
+                final MatchingElementName matchingElementName;
+                final MatchingAttributeName matchingAttributeName;
                 if (processor instanceof IElementProcessor) {
 
                     matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
@@ -281,17 +281,17 @@ public final class AttributeDefinitions {
                     continue;
                 }
 
-                if ((matchingElementName != null && !(matchingElementName instanceof XMLElementName)) ||
-                        (matchingAttributeName != null && !(matchingAttributeName instanceof XMLAttributeName))) {
+                if ((matchingElementName != null && matchingElementName.templateMode != TemplateMode.XML) ||
+                        (matchingAttributeName != null && matchingAttributeName.templateMode != TemplateMode.XML)) {
                     throw new ConfigurationException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
-                if (matchingAttributeName == null) {
+                if (matchingAttributeName == null || matchingAttributeName.isMatchingAllAttributes()) {
                     // This processor does not relate to a specific attribute - surely an element processor
                     continue;
                 }
 
-                if (!matchingAttributeName.equals(name)) {
+                if (!matchingAttributeName.matches(name)) {
                     // Doesn't match. This processor is not associated with this attribute
                     continue;
                 }

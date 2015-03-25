@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.AttributeNames;
-import org.thymeleaf.aurora.engine.ElementName;
 import org.thymeleaf.aurora.engine.ElementNames;
 import org.thymeleaf.aurora.engine.INode;
+import org.thymeleaf.aurora.engine.MatchingAttributeName;
+import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -49,8 +49,8 @@ public abstract class AbstractNodeProcessor
     private final boolean prefixAttributeName;
 
 
-    private ElementName matchingElementName = null;
-    private AttributeName matchingAttributeName = null;
+    private MatchingElementName matchingElementName = null;
+    private MatchingAttributeName matchingAttributeName = null;
 
 
 
@@ -78,12 +78,12 @@ public abstract class AbstractNodeProcessor
     }
 
 
-    public final ElementName getMatchingElementName() {
+    public final MatchingElementName getMatchingElementName() {
         return this.matchingElementName;
     }
 
 
-    public final AttributeName getMatchingAttributeName() {
+    public final MatchingAttributeName getMatchingAttributeName() {
         return this.matchingAttributeName;
     }
 
@@ -91,10 +91,14 @@ public abstract class AbstractNodeProcessor
     public final void setDialectPrefix(final String dialectPrefix) {
         super.setDialectPrefix(dialectPrefix);
         if (this.elementName != null) {
-            this.matchingElementName = ElementNames.forName(getTemplateMode(), (this.prefixElementName? getDialectPrefix() : null), this.elementName);
+            this.matchingElementName =
+                    MatchingElementName.forElementName(
+                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName ? getDialectPrefix() : null), this.elementName));
         }
         if (this.attributeName != null) {
-            this.matchingAttributeName = AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? getDialectPrefix() : null), this.attributeName);
+            this.matchingAttributeName =
+                    MatchingAttributeName.forAttributeName(
+                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName ? getDialectPrefix() : null), this.attributeName));
         }
     }
 

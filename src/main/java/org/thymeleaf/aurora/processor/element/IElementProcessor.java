@@ -20,10 +20,10 @@
 package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.ElementName;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
 import org.thymeleaf.aurora.engine.IProcessableElementTag;
+import org.thymeleaf.aurora.engine.MatchingAttributeName;
+import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -34,8 +34,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface IElementProcessor extends IProcessor {
 
-    public ElementName getMatchingElementName();
-    public AttributeName getMatchingAttributeName();
+    public MatchingElementName getMatchingElementName();
+    public MatchingAttributeName getMatchingAttributeName();
 
 
     public IProcessableElementTag process(

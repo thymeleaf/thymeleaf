@@ -22,7 +22,11 @@ package org.thymeleaf.aurora.standard.processor;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
 import org.thymeleaf.aurora.engine.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.engine.MatchingAttributeName;
+import org.thymeleaf.aurora.engine.MatchingElementName;
+import org.thymeleaf.aurora.processor.AbstractProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
@@ -31,20 +35,43 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardDefaultProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardDefaultAttributesProcessor
+        extends AbstractProcessor implements IElementProcessor {
+
+    private MatchingElementName matchingElementName = null;
+    private MatchingAttributeName matchingAttributeName = null;
 
 
-    public StandardDefaultProcessor() {
-        super(null, Integer.MAX_VALUE); // The latest in precedence
+
+    public StandardDefaultAttributesProcessor() {
+        super(TemplateMode.HTML, Integer.MAX_VALUE);
+    }
+
+
+    public final MatchingElementName getMatchingElementName() {
+        return this.matchingElementName;
+    }
+
+
+    public final MatchingAttributeName getMatchingAttributeName() {
+        return this.matchingAttributeName;
+    }
+
+
+    public final void setDialectPrefix(final String dialectPrefix) {
+        super.setDialectPrefix(dialectPrefix);
+        this.matchingElementName = null;
+        this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
     }
 
 
 
+    // Default implementation - meant to be overridden by subclasses if needed
     public IProcessableElementTag process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
-        tag.getAttributes().
+        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
         return tag;
     }
 

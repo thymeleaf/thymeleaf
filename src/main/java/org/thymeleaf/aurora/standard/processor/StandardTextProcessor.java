@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
 import org.thymeleaf.aurora.engine.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
@@ -44,8 +45,15 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
+
+        // We know this will not be null, because we linked the processor to a specific attribute
+        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
+
         actionHandler.setBody("Whoohooooo!", true);
+        tag.getAttributes().removeAttribute(attributeName);
+
         return tag;
+
     }
 
 
