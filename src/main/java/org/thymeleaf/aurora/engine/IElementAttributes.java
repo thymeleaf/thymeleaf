@@ -21,6 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
 /**
  *
@@ -34,6 +35,9 @@ public interface IElementAttributes {
 
 
     public int size();
+
+    public List<String> getAllCompleteNames();
+    public List<AttributeName> getAllAttributeNames();
 
     public boolean hasAttribute(final String completeName);
     public boolean hasAttribute(final String prefix, final String name);

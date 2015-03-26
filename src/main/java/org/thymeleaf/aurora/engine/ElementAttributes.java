@@ -27,9 +27,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
@@ -47,20 +44,19 @@ public final class ElementAttributes implements IElementAttributes {
     private final TemplateMode templateMode;
     private final AttributeDefinitions attributeDefinitions;
 
-    // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
-    // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
-    // one attribute.
-    List<IProcessor> associatedProcessors = null;
-    int associatedProcessorsVersion = 0; // Used for determining if we need to recompute processors from containers
+    int version = 0; // Used for determining things like e.g. if we need to recompute processors
 
-    private ElementName containerElementName = null;
-
-    private ElementAttribute[] attributes = null;
-    private AttributeName[] attributeNames = null;
-    private int attributesSize = 0;
+    ElementAttribute[] attributes = null;
+    AttributeName[] attributeNames = null;
+    int attributesSize = 0;
 
     private InnerWhiteSpace[] innerWhiteSpaces = null;
     private int innerWhiteSpacesSize = 0;
+
+    // Meant to cache the list of attribute names
+    private List<String> allCompleteNames = null;
+    private List<AttributeName> allAttributeNames = null;
+    private int computedNamesVersion = 0;
 
 
 
@@ -74,6 +70,34 @@ public final class ElementAttributes implements IElementAttributes {
 
     public final int size() {
         return this.attributesSize;
+    }
+
+
+
+
+    private void updateNameLists() {
+        if (this.allCompleteNames == null || this.allAttributeNames == null || this.computedNamesVersion != this.version) {
+            this.allCompleteNames = new ArrayList<String>(this.attributesSize + 1);
+            this.allAttributeNames = new ArrayList<AttributeName>(this.attributesSize + 1);
+            for (int i = 0; i < this.attributesSize; i++) {
+                this.allCompleteNames.add(this.attributes[i].name);
+                this.allAttributeNames.add(this.attributes[i].definition.attributeName);
+            }
+            this.allCompleteNames = Collections.unmodifiableList(this.allCompleteNames);
+            this.allAttributeNames = Collections.unmodifiableList(this.allAttributeNames);
+            this.computedNamesVersion = this.version;
+        }
+    }
+
+
+    public List<String> getAllCompleteNames() {
+        updateNameLists();
+        return this.allCompleteNames;
+    }
+
+    public List<AttributeName> getAllAttributeNames() {
+        updateNameLists();
+        return this.allAttributeNames;
     }
 
 
@@ -233,30 +257,21 @@ public final class ElementAttributes implements IElementAttributes {
     public final boolean hasLocation(final String completeName) {
         Validate.notNull(completeName, "Attribute name cannot be null");
         final int pos = searchAttribute(completeName);
-        if (pos < 0) {
-            return false;
-        }
-        return this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
+        return pos >= 0 && this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
     }
 
 
     public final boolean hasLocation(final String prefix, final String name) {
         Validate.notNull(name, "Attribute name cannot be null");
         final int pos = searchAttribute(prefix, name);
-        if (pos < 0) {
-            return false;
-        }
-        return this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
+        return pos >= 0 && this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
     }
 
 
     public final boolean hasLocation(final AttributeName attributeName) {
         Validate.notNull(attributeName, "Attribute name cannot be null");
         final int pos = searchAttribute(attributeName);
-        if (pos < 0) {
-            return false;
-        }
-        return this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
+        return pos >= 0 && this.attributes[pos].line != -1 && this.attributes[pos].col != -1;
     }
 
 
@@ -330,14 +345,7 @@ public final class ElementAttributes implements IElementAttributes {
     public final void clearAll() {
         this.attributesSize = 0;
         this.innerWhiteSpacesSize = 0;
-        this.containerElementName = null;
-        recomputeAssociatedProcessors();
-    }
-
-
-    final void initializeForElement(final ElementName containerElementName) {
-        this.containerElementName = containerElementName;
-        clearAll();
+        this.version++;
     }
 
 
@@ -385,7 +393,7 @@ public final class ElementAttributes implements IElementAttributes {
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
             existingAttribute.setElementAttribute(name, operator, value, valueQuotes, line, col);
 
-            recomputeAssociatedProcessors();
+            this.version++;
 
             return;
 
@@ -435,7 +443,7 @@ public final class ElementAttributes implements IElementAttributes {
 
         this.attributesSize++;
 
-        recomputeAssociatedProcessors();
+        this.version++;
 
     }
 
@@ -502,7 +510,7 @@ public final class ElementAttributes implements IElementAttributes {
     }
 
 
-    private final void removeAttribute(final int attrIdx) {
+    private void removeAttribute(final int attrIdx) {
 
         if (attrIdx + 1 == this.attributesSize) {
             // If it's the last attribute, discard it simply changing the size
@@ -524,7 +532,7 @@ public final class ElementAttributes implements IElementAttributes {
                 this.innerWhiteSpacesSize--;
             } // else: If we have managed white spaces properly, there should be no other possibilities
 
-            recomputeAssociatedProcessors();
+            this.version++;
 
             return;
 
@@ -551,7 +559,7 @@ public final class ElementAttributes implements IElementAttributes {
             this.innerWhiteSpacesSize--;
         }
 
-        recomputeAssociatedProcessors();
+        this.version++;
 
     }
 
@@ -616,62 +624,6 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
-    void recomputeAssociatedProcessors() {
-
-        if (this.associatedProcessors != null) {
-            this.associatedProcessors.clear();
-        }
-
-        int n = this.attributesSize;
-        while (n-- != 0) {
-
-            if (this.attributes[n].definition.associatedProcessors.isEmpty()) {
-                continue;
-            }
-
-            if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IProcessor>(4);
-            }
-
-            for (final IProcessor associatedProcessor : this.attributes[n].definition.associatedProcessors) {
-
-                // We should never have duplicates. The same attribute can never appear twice in an element (parser
-                // restrictions + the way this class's 'setAttribute' works), plus a specific processor instance can
-                // never appear in more than one dialect, nor be applied to more than one attribute name.
-
-                // Now for each processor, before adding it to the list, we must first determine whether it requires
-                // a specific element name and, if so, confirm that it is the same as the name of the element these
-                // attributes live at.
-                if (associatedProcessor instanceof IElementProcessor) {
-                    final MatchingElementName matchingElementName = ((IElementProcessor)associatedProcessor).getMatchingElementName();
-                    if (matchingElementName != null && !matchingElementName.matches(this.containerElementName)) {
-                        continue;
-                    }
-                } else if (associatedProcessor instanceof INodeProcessor) {
-                    final MatchingElementName matchingElementName = ((INodeProcessor)associatedProcessor).getMatchingElementName();
-                    if (matchingElementName != null && !matchingElementName.matches(this.containerElementName)) {
-                        continue;
-                    }
-                } else {
-                    throw new TemplateProcessingException(
-                            "Attribute Definition has been set a processor implementing an interface other than " +
-                            IElementProcessor.class + " or " + INodeProcessor.class + ", which is forbidden.");
-                }
-
-                // Just add the processor to the list
-                this.associatedProcessors.add(associatedProcessor);
-
-            }
-
-        }
-
-        if (this.associatedProcessors != null) {
-            Collections.sort(this.associatedProcessors, PrecedenceProcessorComparator.INSTANCE);
-        }
-
-        this.associatedProcessorsVersion++;
-
-    }
 
 
 
@@ -725,9 +677,7 @@ public final class ElementAttributes implements IElementAttributes {
     ElementAttributes cloneElementAttributes() {
 
         final ElementAttributes clone = new ElementAttributes(this.templateMode, this.attributeDefinitions);
-        clone.containerElementName = this.containerElementName;
-        clone.associatedProcessors = (this.associatedProcessors == null? null : new ArrayList<IProcessor>(associatedProcessors));
-        clone.associatedProcessorsVersion = this.associatedProcessorsVersion;
+        clone.version = this.version;
 
         if (this.attributesSize > 0) {
             clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
@@ -758,6 +708,9 @@ public final class ElementAttributes implements IElementAttributes {
             clone.innerWhiteSpaces = null;
             clone.innerWhiteSpacesSize = 0;
         }
+
+        clone.allCompleteNames = this.allCompleteNames; // Can do this because it's either null or an unmodifiable list
+        clone.computedNamesVersion = this.computedNamesVersion;
 
         return clone;
 

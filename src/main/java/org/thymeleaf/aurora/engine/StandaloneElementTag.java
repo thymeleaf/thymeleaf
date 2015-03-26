@@ -20,15 +20,9 @@
 package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
-import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -37,24 +31,11 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class StandaloneElementTag implements IStandaloneElementTag {
+public final class StandaloneElementTag
+            extends AbstractProcessableElementTag implements IStandaloneElementTag {
 
-    private final TemplateMode templateMode;
-    private final ElementDefinitions elementDefinitions;
-
-    private final ElementAttributes elementAttributes;
-
-    // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
-    // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
-    // one attribute.
-    private List<IProcessor> associatedProcessors = null;
-    private int attributesAssociatedProcessorsVersion = Integer.MIN_VALUE; // This ensures a recompute will be performed immediately
-
-    private ElementDefinition elementDefinition;
-    private String elementName;
     private boolean minimized;
-    private int line;
-    private int col;
+
 
 
     /*
@@ -68,10 +49,7 @@ public final class StandaloneElementTag implements IStandaloneElementTag {
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions) {
-        super();
-        this.templateMode = templateMode;
-        this.elementDefinitions = elementDefinitions;
-        this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
+        super(templateMode, elementDefinitions, attributeDefinitions);
     }
 
 
@@ -83,61 +61,23 @@ public final class StandaloneElementTag implements IStandaloneElementTag {
             final AttributeDefinitions attributeDefinitions,
             final String elementName,
             final boolean minimized) {
-        super();
-        this.templateMode = templateMode;
-        this.elementDefinitions = elementDefinitions;
-        this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
-        initializeFromOpenElementTag(elementName, minimized);
-    }
-
-
-
-    // Meant to be called only from the cloneTag method
-    private StandaloneElementTag(
-            final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final boolean minimized,
-            final ElementAttributes elementAttributes,
-            final List<IProcessor> associatedProcessors,
-            final int attributesAssociatedProcessorsVersion,
-            final int line,
-            final int col) {
-        super();
-        this.templateMode = templateMode;
-        this.elementDefinitions = elementDefinitions;
-        this.elementDefinition = elementDefinition;
-        this.elementName = elementName;
+        super(templateMode, elementDefinitions, attributeDefinitions, elementName);
         this.minimized = minimized;
-        this.elementAttributes = elementAttributes;
-        this.associatedProcessors = associatedProcessors;
-        this.attributesAssociatedProcessorsVersion = attributesAssociatedProcessorsVersion;
-        this.line = line;
-        this.col = col;
     }
 
 
 
-    public ElementDefinition getElementDefinition() {
-        return this.elementDefinition;
+    // Meant to be called only from the cloneElementTag method
+    private StandaloneElementTag() {
+        super();
     }
 
 
-    public String getElementName() {
-        return this.elementName;
-    }
 
 
     public boolean isMinimized() {
         return this.minimized;
     }
-
-
-    public IElementAttributes getAttributes() {
-        return this.elementAttributes;
-    }
-
 
 
     public void setMinimized(final boolean minimized) {
@@ -149,65 +89,16 @@ public final class StandaloneElementTag implements IStandaloneElementTag {
 
 
 
+
     // Meant to be called only from within the engine
     void setStandaloneElementTag(
             final String elementName,
             final boolean minimized,
             final int line, final int col) {
 
-        this.elementName = elementName;
-        this.elementDefinition =
-                (this.templateMode.isHTML()?
-                    this.elementDefinitions.forHTMLName(elementName) : this.elementDefinitions.forXMLName(elementName));
+        reset(elementName, line, col);
         this.minimized = minimized;
 
-        this.elementAttributes.initializeForElement(this.elementDefinition.elementName);
-
-        this.line = line;
-        this.col = col;
-
-    }
-
-
-
-    private void initializeFromOpenElementTag(
-            final String elementName, final boolean minimized) {
-
-        if (elementName == null || elementName.trim().length() == 0) {
-            throw new IllegalArgumentException("Element name cannot be null or empty");
-        }
-
-        if (this.templateMode.isHTML()) {
-            this.elementDefinition = this.elementDefinitions.forHTMLName(elementName);
-        } else {
-            this.elementDefinition = this.elementDefinitions.forXMLName(elementName);
-        }
-
-        this.elementName = elementName;
-        this.minimized = minimized;
-
-        this.elementAttributes.initializeForElement(this.elementDefinition.elementName);
-
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-
-
-    public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
     }
 
 
@@ -228,85 +119,13 @@ public final class StandaloneElementTag implements IStandaloneElementTag {
 
 
 
-    public String toString() {
-        final StringWriter stringWriter = new StringWriter();
-        try {
-            write(stringWriter);
-        } catch (final IOException e) {
-            throw new TemplateProcessingException("Exception while creating String representation of model entity", e);
-        }
-        return stringWriter.toString();
-    }
-
-
-
-
-    public boolean hasAssociatedProcessors() {
-        if (this.elementAttributes.associatedProcessorsVersion != this.attributesAssociatedProcessorsVersion) {
-            recomputeProcessors();
-        }
-        return this.associatedProcessors != null && !this.associatedProcessors.isEmpty();
-    }
-
-
-    public List<IProcessor> getAssociatedProcessors() {
-        if (this.elementAttributes.associatedProcessorsVersion != this.attributesAssociatedProcessorsVersion) {
-            recomputeProcessors();
-        }
-        return (this.associatedProcessors != null? this.associatedProcessors : Collections.EMPTY_LIST);
-    }
-
-
-
-
-    void recomputeProcessors() {
-
-        // Something has changed (usually the processors associated with the attributes) so we need to recompute
-
-        if (this.associatedProcessors != null) {
-            this.associatedProcessors.clear();
-        }
-
-        if (!this.elementDefinition.associatedProcessors.isEmpty()) {
-
-            if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IProcessor>(4);
-            }
-
-            this.associatedProcessors.addAll(this.elementDefinition.associatedProcessors);
-
-        }
-
-        if (this.elementAttributes.associatedProcessors != null && !this.elementAttributes.associatedProcessors.isEmpty()) {
-
-            if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IProcessor>(4);
-            }
-
-            this.associatedProcessors.addAll(this.elementAttributes.associatedProcessors);
-
-        }
-
-        if (this.associatedProcessors != null) {
-            Collections.sort(this.associatedProcessors, PrecedenceProcessorComparator.INSTANCE);
-        }
-
-        this.attributesAssociatedProcessorsVersion = this.elementAttributes.associatedProcessorsVersion;
-
-    }
-
-
-
-
 
 
     public StandaloneElementTag cloneElementTag() {
-        return new StandaloneElementTag(
-                        this.templateMode, this.elementDefinitions,
-                        this.elementDefinition, this.elementName, this.minimized, this.elementAttributes.cloneElementAttributes(),
-                        (this.associatedProcessors == null? null : new ArrayList<IProcessor>(this.associatedProcessors)),
-                        this.attributesAssociatedProcessorsVersion,
-                        this.line, this.col);
+        final StandaloneElementTag clone = new StandaloneElementTag();
+        initializeProcessableElementTagClone(clone);
+        clone.minimized = this.minimized;
+        return clone;
     }
 
 }

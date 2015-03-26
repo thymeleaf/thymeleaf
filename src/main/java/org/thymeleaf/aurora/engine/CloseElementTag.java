@@ -20,11 +20,9 @@
 package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -33,15 +31,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class CloseElementTag implements ICloseElementTag {
-
-    private final TemplateMode templateMode;
-    private final ElementDefinitions elementDefinitions;
-
-    private ElementDefinition elementDefinition;
-    private String elementName;
-    private int line;
-    private int col;
+public final class CloseElementTag
+        extends AbstractElementTag implements ICloseElementTag {
 
 
     /*
@@ -54,9 +45,7 @@ public final class CloseElementTag implements ICloseElementTag {
     CloseElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions) {
-        super();
-        this.templateMode = templateMode;
-        this.elementDefinitions = elementDefinitions;
+        super(templateMode, elementDefinitions);
     }
 
 
@@ -66,40 +55,14 @@ public final class CloseElementTag implements ICloseElementTag {
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final String elementName) {
+        super(templateMode, elementDefinitions, elementName);
+    }
+
+
+
+    // Meant to be called only from the cloneElementTag method
+    private CloseElementTag() {
         super();
-        this.templateMode = templateMode;
-        this.elementDefinitions = elementDefinitions;
-        initializeFromCloseElementTag(elementName);
-    }
-
-
-
-    // Meant to be called only from the cloneTag method
-    private CloseElementTag(
-            final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final ElementDefinition elementDefinition,
-            final String elementName,
-            final int line,
-            final int col) {
-        super();
-        this.templateMode = templateMode;
-        this.elementDefinitions = elementDefinitions;
-        this.elementDefinition = elementDefinition;
-        this.elementName = elementName;
-        this.line = line;
-        this.col = col;
-    }
-
-
-
-    public ElementDefinition getElementDefinition() {
-        return this.elementDefinition;
-    }
-
-
-    public String getElementName() {
-        return this.elementName;
     }
 
 
@@ -109,59 +72,7 @@ public final class CloseElementTag implements ICloseElementTag {
     void setCloseElementTag(
             final String elementName,
             final int line, final int col) {
-
-        this.elementName = elementName;
-        this.elementDefinition =
-                (this.templateMode.isHTML()?
-                    this.elementDefinitions.forHTMLName(elementName) : this.elementDefinitions.forXMLName(elementName));
-
-        this.line = line;
-        this.col = col;
-
-    }
-
-
-
-    private void initializeFromCloseElementTag(final String elementName) {
-
-        if (elementName == null || elementName.trim().length() == 0) {
-            throw new IllegalArgumentException("Element name cannot be null or empty");
-        }
-
-        if (this.templateMode.isHTML()) {
-            final HTMLElementDefinition newHTMLElementDefinition = this.elementDefinitions.forHTMLName(elementName);
-            if (newHTMLElementDefinition.getType().isVoid()) {
-                throw new IllegalArgumentException(
-                        "Specified HTML element name \"" + elementName + "\" is void, which cannot " +
-                        "be contained in an CLOSE element tag (VOID elements have no closing tags)");
-            }
-            this.elementDefinition = newHTMLElementDefinition;
-        } else {
-            this.elementDefinition = this.elementDefinitions.forXMLName(elementName);
-        }
-
-        this.elementName = elementName;
-
-        this.line = -1;
-        this.col = -1;
-
-    }
-
-
-
-
-
-
-    public boolean hasLocation() {
-        return (this.line != -1 && this.col != -1);
-    }
-
-    public int getLine() {
-        return this.line;
-    }
-
-    public int getCol() {
-        return this.col;
+        reset(elementName, line, col);
     }
 
 
@@ -177,26 +88,12 @@ public final class CloseElementTag implements ICloseElementTag {
 
 
 
-    public String toString() {
-        final StringWriter stringWriter = new StringWriter();
-        try {
-            write(stringWriter);
-        } catch (final IOException e) {
-            throw new TemplateProcessingException("Exception while creating String representation of model entity", e);
-        }
-        return stringWriter.toString();
-    }
-
-
-
-
 
 
     public CloseElementTag cloneElementTag() {
-        return new CloseElementTag(
-                        this.templateMode, this.elementDefinitions,
-                        this.elementDefinition, this.elementName,
-                        this.line, this.col);
+        final CloseElementTag clone = new CloseElementTag();
+        initializeElementTagClone(clone);
+        return clone;
     }
 
 }

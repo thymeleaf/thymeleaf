@@ -116,4 +116,21 @@ public class ModelFactory implements IModelFactory {
     }
 
 
+
+
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized) {
+        return new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName, minimized);
+    }
+
+
+    public IOpenElementTag createOpenElementTag(final String elementName) {
+        return new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName);
+    }
+
+
+    public ICloseElementTag createCloseElementTag(final String elementName) {
+        return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName);
+    }
+
+
 }

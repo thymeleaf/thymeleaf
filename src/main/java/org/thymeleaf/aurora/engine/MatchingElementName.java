@@ -136,4 +136,20 @@ public final class MatchingElementName {
     }
 
 
+
+
+    @Override
+    public String toString() {
+        if (this.matchingElementName == null) {
+            if (this.matchingAllElements) {
+                return "*";
+            }
+            if (this.matchingAllElementsWithPrefix == null) {
+                return "[^:]*";
+            }
+            return this.matchingAllElementsWithPrefix + ":*";
+        }
+        return matchingElementName.toString();
+    }
+
 }

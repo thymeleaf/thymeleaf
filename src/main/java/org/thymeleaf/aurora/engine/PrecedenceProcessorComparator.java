@@ -38,8 +38,14 @@ public final class PrecedenceProcessorComparator implements Comparator<IProcesso
         super();
     }
 
+
     public int compare(final IProcessor o1, final IProcessor o2) {
-        return Integer.compare(o1.getPrecedence(), o2.getPrecedence());
+        return compareInts(o1.getPrecedence(), o2.getPrecedence());
+    }
+
+
+    private static int compareInts(int x, int y) {
+        return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 
 }
