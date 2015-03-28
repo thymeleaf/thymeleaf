@@ -116,7 +116,7 @@
     <project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
     <servlet-api.version>2.5</servlet-api.version>
     <thymeleaf.version>2.1.2.RELEASE</thymeleaf.version>
-    <springsecurity.version>4.0.0.RC1</springsecurity.version>
+    <springsecurity.version>4.0.0.RELEASE</springsecurity.version>
     <slf4j.version>1.6.6</slf4j.version>
   </properties>
 
