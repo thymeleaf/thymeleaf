@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +47,18 @@ abstract class AbstractProcessableElementTag
     // one attribute.
     protected List<IProcessor> associatedProcessors = null;
     protected int associatedProcessorsAttributesVersion = Integer.MIN_VALUE; // This ensures a recompute will be performed immediately
+
+
+    // This allows the implementation of a (package-protected) iteration system that allows the possibility to track which
+    // processors have been already executed and which haven't, even if we have changed the processors in the middle.
+    // This can be implemented via the getAssociatedProcessors() call, which is public, but it wouldn't be as performant as
+    // this way, which is meant to be used only from inside the engine itself.
+    private IProcessor[] processorIteratorProcessors = null;
+    private boolean[] processorIteratorVisited = null;
+    private int processorIteratorSize = 0;
+    private int processorIteratorCurrent = -1;
+    private int processorIteratorAttibutesVersion = Integer.MIN_VALUE;
+
 
 
     /*
@@ -200,6 +213,74 @@ abstract class AbstractProcessableElementTag
 
 
 
+    void processorIteratorReset() {
+
+        if (this.elementAttributes.version != this.processorIteratorAttibutesVersion) {
+            recomputeProcessorIterator();
+            this.processorIteratorAttibutesVersion = this.elementAttributes.version;
+        }
+        this.processorIteratorCurrent = 0;
+        Arrays.fill(this.processorIteratorVisited, false);
+
+    }
+
+
+
+
+    IProcessor processorIteratorNext() {
+
+        if (this.elementAttributes.version != this.processorIteratorAttibutesVersion) {
+            recomputeProcessorIterator();
+            this.processorIteratorAttibutesVersion = this.elementAttributes.version;
+        }
+
+        int n = this.processorIteratorSize;
+        int i = 0;
+        while (n-- != 0) {
+            if (!this.processorIteratorVisited[i++]) {
+                return this.processorIteratorProcessors[i - 1];
+            }
+        }
+        return null;
+
+    }
+
+
+
+    private void recomputeProcessorIterator() {
+
+        // Before recomputing the iterator itself, we have to make sure that the associated processors are up-to-date
+        if (this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
+            recomputeProcessors();
+            this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
+        }
+
+        if (this.processorIteratorProcessors == null) {
+
+            final int iteratorLen = (this.associatedProcessors == null? 0 : this.associatedProcessors.size());
+
+            this.processorIteratorProcessors = new IProcessor[iteratorLen];
+            this.processorIteratorVisited = new boolean[iteratorLen];
+            this.processorIteratorCurrent = 0;
+            this.processorIteratorSize = iteratorLen;
+
+            for (int i = 0; i < iteratorLen; i++) {
+                this.processorIteratorProcessors[i] = this.associatedProcessors.get(i);
+                this.processorIteratorVisited[i] = false;
+            }
+
+            this.processorIteratorAttibutesVersion = this.associatedProcessorsAttributesVersion;
+
+            return;
+
+        }
+
+        // Processors have changed since the last time we used the iterator (attributes changed)
+
+        this.processorIteratorCurrent = 0;
+
+
+    }
 
 
 
