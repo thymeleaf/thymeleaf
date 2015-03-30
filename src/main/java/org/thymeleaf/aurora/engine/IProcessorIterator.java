@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.engine;
 
-import java.util.List;
-
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -29,13 +27,14 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IProcessableElementTag extends IElementTag {
+public interface IProcessorIterator {
 
-    public IElementAttributes getAttributes();
 
-    public IProcessableElementTag cloneElementTag();
+    /*
+     * This is a iteration system allows the possibility to track which processors have
+     * been already executed and which haven't, even if we have changed the processors in the middle.
+     */
 
-    public boolean hasAssociatedProcessors();
-    public IProcessorIterator getAssociatedProcessorsIterator();
+    public IProcessor next();
 
 }

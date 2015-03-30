@@ -34,6 +34,8 @@ public abstract class AttributeDefinition {
 
     final AttributeName attributeName;
     final Set<IProcessor> associatedProcessors;
+    final boolean hasAssociatedProcessors;
+
 
     AttributeDefinition(final AttributeName attributeName, final Set<IProcessor> associatedProcessors) {
 
@@ -48,12 +50,20 @@ public abstract class AttributeDefinition {
 
         this.attributeName = attributeName;
         this.associatedProcessors = Collections.unmodifiableSet(associatedProcessors);
+        this.hasAssociatedProcessors = this.associatedProcessors.size() > 0;
 
     }
 
 
     public final AttributeName getAttributeName() {
         return this.attributeName;
+    }
+
+
+
+
+    public boolean hasAssociatedProcessors() {
+        return this.hasAssociatedProcessors;
     }
 
 

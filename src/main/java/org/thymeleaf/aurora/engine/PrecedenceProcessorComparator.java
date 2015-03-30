@@ -40,7 +40,19 @@ public final class PrecedenceProcessorComparator implements Comparator<IProcesso
 
 
     public int compare(final IProcessor o1, final IProcessor o2) {
-        return compareInts(o1.getPrecedence(), o2.getPrecedence());
+        if (o1 == o2) {
+            // This is the only case in which the comparison of two processors will return 0
+            return 0;
+        }
+        final int precedenceComp = compareInts(o1.getPrecedence(), o2.getPrecedence());
+        if (precedenceComp != 0) {
+            return precedenceComp;
+        }
+        final int classNameComp = o1.getClass().getName().compareTo(o2.getClass().getName());
+        if (classNameComp != 0) {
+            return classNameComp;
+        }
+        return compareInts(System.identityHashCode(o1), System.identityHashCode(o2)); // Cannot be 0
     }
 
 

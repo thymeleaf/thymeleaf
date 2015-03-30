@@ -162,7 +162,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         if (openElementTag.hasAssociatedProcessors()) {
 
-            for (final IProcessor processor : openElementTag.getAssociatedProcessors()) {
+            final IProcessorIterator iter = openElementTag.getAssociatedProcessorsIterator();
+
+            IProcessor processor;
+            while ((processor = iter.next()) != null) {
 
                 if (processor instanceof IElementProcessor) {
 

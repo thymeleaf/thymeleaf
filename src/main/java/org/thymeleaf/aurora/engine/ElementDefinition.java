@@ -34,6 +34,8 @@ public abstract class ElementDefinition {
 
     final ElementName elementName;
     final Set<IProcessor> associatedProcessors;
+    final boolean hasAssociatedProcessors;
+
 
     ElementDefinition(final ElementName elementName, final Set<IProcessor> associatedProcessors) {
 
@@ -48,12 +50,20 @@ public abstract class ElementDefinition {
 
         this.elementName = elementName;
         this.associatedProcessors = Collections.unmodifiableSet(associatedProcessors);
+        this.hasAssociatedProcessors = this.associatedProcessors.size() > 0;
 
     }
 
 
     public final ElementName getElementName() {
         return this.elementName;
+    }
+
+
+
+
+    public boolean hasAssociatedProcessors() {
+        return this.hasAssociatedProcessors;
     }
 
 

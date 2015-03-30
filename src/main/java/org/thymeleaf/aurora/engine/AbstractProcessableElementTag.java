@@ -49,17 +49,6 @@ abstract class AbstractProcessableElementTag
     protected int associatedProcessorsAttributesVersion = Integer.MIN_VALUE; // This ensures a recompute will be performed immediately
 
 
-    // This allows the implementation of a (package-protected) iteration system that allows the possibility to track which
-    // processors have been already executed and which haven't, even if we have changed the processors in the middle.
-    // This can be implemented via the getAssociatedProcessors() call, which is public, but it wouldn't be as performant as
-    // this way, which is meant to be used only from inside the engine itself.
-    private IProcessor[] processorIteratorProcessors = null;
-    private boolean[] processorIteratorVisited = null;
-    private int processorIteratorSize = 0;
-    private int processorIteratorCurrent = -1;
-    private int processorIteratorAttibutesVersion = Integer.MIN_VALUE;
-
-
 
     /*
      * Objects of this class are meant to both be reused by the engine and also created fresh by the processors. This
@@ -150,7 +139,7 @@ abstract class AbstractProcessableElementTag
             this.associatedProcessors.clear();
         }
 
-        if (!this.elementDefinition.associatedProcessors.isEmpty()) {
+        if (this.elementDefinition.hasAssociatedProcessors) {
 
             if (this.associatedProcessors == null) {
                 this.associatedProcessors = new ArrayList<IProcessor>(4);
@@ -163,7 +152,7 @@ abstract class AbstractProcessableElementTag
         int n = this.elementAttributes.attributesSize;
         while (n-- != 0) {
 
-            if (this.elementAttributes.attributes[n].definition.associatedProcessors.isEmpty()) {
+            if (!this.elementAttributes.attributes[n].definition.hasAssociatedProcessors) {
                 continue;
             }
 
@@ -212,74 +201,8 @@ abstract class AbstractProcessableElementTag
 
 
 
-
-    void processorIteratorReset() {
-
-        if (this.elementAttributes.version != this.processorIteratorAttibutesVersion) {
-            recomputeProcessorIterator();
-            this.processorIteratorAttibutesVersion = this.elementAttributes.version;
-        }
-        this.processorIteratorCurrent = 0;
-        Arrays.fill(this.processorIteratorVisited, false);
-
-    }
-
-
-
-
-    IProcessor processorIteratorNext() {
-
-        if (this.elementAttributes.version != this.processorIteratorAttibutesVersion) {
-            recomputeProcessorIterator();
-            this.processorIteratorAttibutesVersion = this.elementAttributes.version;
-        }
-
-        int n = this.processorIteratorSize;
-        int i = 0;
-        while (n-- != 0) {
-            if (!this.processorIteratorVisited[i++]) {
-                return this.processorIteratorProcessors[i - 1];
-            }
-        }
-        return null;
-
-    }
-
-
-
-    private void recomputeProcessorIterator() {
-
-        // Before recomputing the iterator itself, we have to make sure that the associated processors are up-to-date
-        if (this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
-            recomputeProcessors();
-            this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
-        }
-
-        if (this.processorIteratorProcessors == null) {
-
-            final int iteratorLen = (this.associatedProcessors == null? 0 : this.associatedProcessors.size());
-
-            this.processorIteratorProcessors = new IProcessor[iteratorLen];
-            this.processorIteratorVisited = new boolean[iteratorLen];
-            this.processorIteratorCurrent = 0;
-            this.processorIteratorSize = iteratorLen;
-
-            for (int i = 0; i < iteratorLen; i++) {
-                this.processorIteratorProcessors[i] = this.associatedProcessors.get(i);
-                this.processorIteratorVisited[i] = false;
-            }
-
-            this.processorIteratorAttibutesVersion = this.associatedProcessorsAttributesVersion;
-
-            return;
-
-        }
-
-        // Processors have changed since the last time we used the iterator (attributes changed)
-
-        this.processorIteratorCurrent = 0;
-
-
+    public IProcessorIterator getAssociatedProcessorsIterator() {
+        return new ProcessorIterator(this);
     }
 
 
@@ -292,6 +215,176 @@ abstract class AbstractProcessableElementTag
         clone.elementAttributes = this.elementAttributes.cloneElementAttributes();
         clone.associatedProcessors = (this.associatedProcessors == null? null : new ArrayList<IProcessor>(this.associatedProcessors));
         clone.associatedProcessorsAttributesVersion = this.associatedProcessorsAttributesVersion;
+    }
+
+
+
+
+
+    /*
+     * This class will take care of iterating the processors in the most optimal way possible. It allows the attributes
+     * in the tag to be modified durint iteration, taking new processors into account as soon as they appear, even if
+     * they have higher precedence than the last executed processor for the same tag.
+     */
+    private static final class ProcessorIterator implements IProcessorIterator {
+
+        private final AbstractProcessableElementTag tag;
+
+        // These are the structures used to keep track of the iterated processors, as well as whether they have
+        // been visited or not.
+        private IProcessor[] processors = null;
+        private boolean[] visited = null;
+        private int size = 0;
+
+        // These structures are used when we need to recompute already-existing structures, in order to reduce
+        // the total amount of processor arrays created during normal operation (attributes might change a lot).
+        private IProcessor[] auxProcessors = null;
+        private boolean[] auxVisited = null;
+        private int auxSize = 0;
+
+        // The version, used to keep track of the tag's attributes and knowing when we have to recompute
+        private int attributesVersion = Integer.MIN_VALUE;
+
+
+        private ProcessorIterator(final AbstractProcessableElementTag tag) {
+            super();
+            this.tag = tag;
+        }
+
+
+
+        public IProcessor next() {
+
+            if (this.tag.elementAttributes.version != this.attributesVersion) {
+                recompute();
+                this.attributesVersion = this.tag.elementAttributes.version;
+            }
+
+            // We use 'last' as a starting index in order save some iterations
+            int n = this.size;
+            int i = 0;
+            while (n-- != 0) {
+                if (!this.visited[i]) {
+                    this.visited[i] = true;
+                    return this.processors[i];
+                }
+                i++;
+            }
+            return null;
+
+        }
+
+
+        private void recompute() {
+
+            // Before recomputing the iterator itself, we have to make sure that the associated processors are up-to-date
+            if (this.tag.elementAttributes.version != this.tag.associatedProcessorsAttributesVersion) {
+                this.tag.recomputeProcessors();
+                this.tag.associatedProcessorsAttributesVersion = this.tag.elementAttributes.version;
+            }
+
+
+            if (this.tag.associatedProcessors == null || this.tag.associatedProcessors.isEmpty()) {
+                // After recompute, it seems we have no processors to be applied (we might have had before)
+
+                if (this.processors != null) {
+                    // We don't mind what we had in the arrays - setting size to 0 will invalidate them
+                    this.size = 0;
+                } // else there's nothing to do -- we had nothing precomputed, and will still have the same nothing
+
+                return;
+
+            }
+
+
+            if (this.processors == null) {
+                // We had nothing precomputed, but there are associated processors now!
+
+                this.size = this.tag.associatedProcessors.size();
+                this.processors = new IProcessor[this.size];
+                this.visited = new boolean[this.size];
+
+                this.tag.associatedProcessors.toArray(this.processors); // No need to assign to anything
+                Arrays.fill(this.visited, false);
+
+                return;
+
+            }
+
+            // Processors have changed since the last time we used the iterator (attributes changed)
+
+            this.auxSize = this.tag.associatedProcessors.size();
+            if (this.auxProcessors == null || this.auxSize > this.auxProcessors.length) {
+                // We need new aux arrays (either don't exist, or they are too small)
+                this.auxProcessors = new IProcessor[this.auxSize];
+                this.auxVisited = new boolean[this.auxSize];
+            }
+
+            this.tag.associatedProcessors.toArray(this.auxProcessors); // No need to assign to anything
+            // No pre-initialization for the visited array -- we will do it position by position
+
+            // Now we should check the matches between the new and the old iterator processors - we will build
+            // on the fact that processors are always ordered by precedence
+            int i = 0; // index for the NEW processors
+            int j = 0; // index for the OLD processors
+            while (i < this.auxSize) {
+
+                if (i >= this.size) {
+                    // We know everything in the new array from here on has to be new
+                    Arrays.fill(this.auxVisited, i, this.auxSize, false);
+                    break;
+                }
+
+                if (this.auxProcessors[i] == this.processors[j]) {
+                    this.auxVisited[i] = this.visited[j];
+                    i++;
+                    j++;
+                    continue;
+                }
+
+                // Doesn't match. Either we have a new processor, or an previous one was removed
+
+                final int comp =
+                        PrecedenceProcessorComparator.INSTANCE.compare(this.auxProcessors[i], this.processors[j]);
+
+                if (comp == 0) {
+                    // This should never happen. The comparator should make sure the only case in which comp == 0 is when
+                    // processors are the same (i.e. the object)
+
+                    throw new IllegalStateException(
+                            "Two different registered processors have returned zero as a result of their " +
+                                    "comparison, which is forbidden. Offending processors are " +
+                                    this.auxProcessors[i].getClass().getName() + " and " +
+                                    this.processors[j].getClass().getName());
+
+                } else if (comp < 0) {
+                    // The new one has higher precedence (lower value), so it's new
+
+                    this.auxVisited[i] = false; // We need to execute this for sure! (it's new)
+                    i++;
+                    continue;
+
+                } else { // comp > 0
+                    // The old one has higher precedence (lower value), so it's been removed -- just skip
+                    j++;
+                    continue;
+
+                }
+
+            }
+
+            // Finally, just swap the arrays
+            final IProcessor[] swapProcessors = this.auxProcessors;
+            final boolean[] swapVisited = this.auxVisited;
+            this.auxProcessors = this.processors;
+            this.auxVisited = this.visited;
+            this.processors = swapProcessors;
+            this.visited = swapVisited;
+            this.size = this.auxSize;
+
+        }
+
+
     }
 
 
