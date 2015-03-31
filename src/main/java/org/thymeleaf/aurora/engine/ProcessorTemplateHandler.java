@@ -47,6 +47,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
     private LevelArray skipCloseTagLevels = new LevelArray(5);
 
+    private final ProcessorIterator processorIterator = new ProcessorIterator();
     private Text bufferText = null;
 
 
@@ -162,10 +163,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         if (openElementTag.hasAssociatedProcessors()) {
 
-            final IProcessorIterator iter = openElementTag.getAssociatedProcessorsIterator();
+            this.processorIterator.reset(openElementTag);
 
             IProcessor processor;
-            while ((processor = iter.next()) != null) {
+            while ((processor = this.processorIterator.next()) != null) {
 
                 if (processor instanceof IElementProcessor) {
 
