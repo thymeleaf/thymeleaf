@@ -75,7 +75,7 @@ public final class OpenElementTag
             final String elementName,
             final int line, final int col) {
 
-        reset(elementName, line, col);
+        resetProcessableTag(elementName, line, col);
 
     }
 

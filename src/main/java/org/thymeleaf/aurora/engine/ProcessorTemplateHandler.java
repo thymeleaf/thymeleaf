@@ -180,8 +180,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         this.eventQueue.add(this.bufferText);
                         skipBody = true;
                     } else if(this.actionHandler.setBodyQueue) {
-
-                        skipTag = true;
+                        this.eventQueue.addAll(this.actionHandler.setBodyQueueValue);
                         skipBody = true;
                     } else if (this.actionHandler.replaceWithText) {
                         this.bufferText.setText(this.actionHandler.replaceWithTextValue);
@@ -189,7 +188,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         skipTag = true;
                         skipBody = true;
                     } else if (this.actionHandler.replaceWithQueue) {
-
+                        this.eventQueue.addAll(this.actionHandler.replaceWithQueueValue);
                         skipTag = true;
                         skipBody = true;
                     }

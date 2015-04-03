@@ -72,7 +72,7 @@ public final class CloseElementTag
     void setCloseElementTag(
             final String elementName,
             final int line, final int col) {
-        reset(elementName, line, col);
+        resetElementTag(elementName, line, col);
     }
 
 

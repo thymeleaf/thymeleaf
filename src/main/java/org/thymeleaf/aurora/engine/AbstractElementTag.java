@@ -69,7 +69,7 @@ abstract class AbstractElementTag implements IElementTag {
         this.templateMode = templateMode;
         this.elementDefinitions = elementDefinitions;
 
-        reset(elementName, -1, -1);
+        resetElementTag(elementName, -1, -1);
 
     }
 
@@ -94,7 +94,7 @@ abstract class AbstractElementTag implements IElementTag {
 
 
 
-    protected void reset(
+    protected void resetElementTag(
             final String elementName,
             final int line, final int col) {
 

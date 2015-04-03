@@ -96,7 +96,7 @@ public final class StandaloneElementTag
             final boolean minimized,
             final int line, final int col) {
 
-        reset(elementName, line, col);
+        resetProcessableTag(elementName, line, col);
         this.minimized = minimized;
 
     }

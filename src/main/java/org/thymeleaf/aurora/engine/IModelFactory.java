@@ -49,4 +49,9 @@ public interface IModelFactory {
     public IXMLDeclaration createXMLDeclaration(final String version, final String encoding, final String standalone);
 
 
+    public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized);
+    public IOpenElementTag createOpenElementTag(final String elementName);
+    public ICloseElementTag createCloseElementTag(final String elementName);
+
+
 }

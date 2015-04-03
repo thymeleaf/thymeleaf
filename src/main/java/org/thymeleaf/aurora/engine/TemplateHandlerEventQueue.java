@@ -103,7 +103,7 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
                 this.queue = newQueue;
             }
 
-            System.arraycopy(templateHandlerEventQueue, 0, this.queue, this.queueSize, templateHandlerEventQueue.queueSize);
+            System.arraycopy(templateHandlerEventQueue.queue, 0, this.queue, this.queueSize, templateHandlerEventQueue.queueSize);
             this.queueSize += templateHandlerEventQueue.queueSize;
             return;
 
@@ -133,8 +133,25 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
             if (event instanceof IText) {
                 handler.handleText((IText) event);
+            } else if (event instanceof IOpenElementTag) {
+                handler.handleOpenElement((IOpenElementTag) event);
+            } else if (event instanceof ICloseElementTag) {
+                handler.handleCloseElement((ICloseElementTag) event);
+            } else if (event instanceof IStandaloneElementTag) {
+                handler.handleStandaloneElement((IStandaloneElementTag) event);
+            } else if (event instanceof IDocType) {
+                handler.handleDocType((IDocType) event);
+            } else if (event instanceof IComment) {
+                handler.handleComment((IComment) event);
+            } else if (event instanceof ICDATASection) {
+                handler.handleCDATASection((ICDATASection) event);
+            } else if (event instanceof IXMLDeclaration) {
+                handler.handleXmlDeclaration((IXMLDeclaration) event);
+            } else if (event instanceof IProcessingInstruction) {
+                handler.handleProcessingInstruction((IProcessingInstruction) event);
             } else {
-                throw new UnsupportedOperationException("Still not implemented! Only support for queuing Texts has been implemented...");
+                throw new UnsupportedOperationException(
+                        "Still not implemented! cannot handle in queue event of type: " + event.getClass().getName());
             }
 
 

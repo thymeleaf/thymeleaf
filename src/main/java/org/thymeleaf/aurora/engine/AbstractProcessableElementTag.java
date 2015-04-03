@@ -74,6 +74,7 @@ abstract class AbstractProcessableElementTag
             final String elementName) {
         super(templateMode, elementDefinitions, elementName);
         this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
+        resetProcessableTag(this.elementName, this.line, this.col);
     }
 
 
@@ -94,12 +95,11 @@ abstract class AbstractProcessableElementTag
 
 
 
-    @Override
-    protected void reset(
+    protected void resetProcessableTag(
             final String elementName,
             final int line, final int col) {
 
-        super.reset(elementName, line, col);
+        resetElementTag(elementName, line, col);
         this.elementAttributes.clearAll();
 
     }
