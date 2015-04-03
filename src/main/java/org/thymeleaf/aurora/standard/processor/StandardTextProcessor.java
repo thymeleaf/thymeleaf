@@ -41,7 +41,7 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
 
 
-    public IProcessableElementTag process(
+    public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
@@ -51,8 +51,6 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
         actionHandler.setBody("Whoohooooo!", true);
         tag.getAttributes().removeAttribute(attributeName);
-
-        return tag;
 
     }
 

@@ -93,11 +93,11 @@ public abstract class AbstractElementProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IProcessableElementTag process(
+    public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
-        return tag;
+        // Nothing to do here -- empty action
     }
 
 

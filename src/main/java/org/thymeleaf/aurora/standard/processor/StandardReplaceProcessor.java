@@ -43,7 +43,7 @@ public class StandardReplaceProcessor extends AbstractAttributeMatchingHTMLEleme
 
 
 
-    public IProcessableElementTag process(
+    public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
@@ -60,8 +60,6 @@ public class StandardReplaceProcessor extends AbstractAttributeMatchingHTMLEleme
         queue.add(modelFactory.createCloseElementTag("section"));
 
         actionHandler.replaceWith(queue);
-
-        return tag;
 
     }
 

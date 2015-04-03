@@ -67,12 +67,13 @@ public class StandardDefaultAttributesProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IProcessableElementTag process(
+    public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
+
         System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
-        return tag;
+
     }
 
 

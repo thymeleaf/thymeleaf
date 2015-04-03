@@ -77,6 +77,15 @@ public final class CloseElementTag
 
 
 
+    // Meant to be called only from within the engine
+    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
+
+        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
+
+    }
+
+
+
 
 
     public void write(final Writer writer) throws IOException {

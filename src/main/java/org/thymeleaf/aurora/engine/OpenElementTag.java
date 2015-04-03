@@ -81,6 +81,13 @@ public final class OpenElementTag
 
 
 
+    // Meant to be called only from within the engine
+    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
+
+        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
+        this.elementAttributes.copyFrom(tag.getAttributes());
+
+    }
 
 
     public void write(final Writer writer) throws IOException {

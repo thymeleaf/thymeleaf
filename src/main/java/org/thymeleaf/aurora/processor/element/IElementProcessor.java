@@ -38,7 +38,7 @@ public interface IElementProcessor extends IProcessor {
     public MatchingAttributeName getMatchingAttributeName();
 
 
-    public IProcessableElementTag process(
+    public void process(
             final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler);
 

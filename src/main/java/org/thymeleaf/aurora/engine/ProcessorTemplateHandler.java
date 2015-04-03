@@ -49,6 +49,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private final ProcessorIterator processorIterator = new ProcessorIterator();
     private Text bufferText = null;
+    private OpenElementTag bufferOpenElementTag = null;
+    private CloseElementTag bufferCloseElementTag = null;
 
 
 
@@ -82,6 +84,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         Validate.notNull(this.textRepository, "Text Repository returned by Template Engine Context cannot be null");
 
         this.bufferText = new Text(this.textRepository);
+        this.bufferOpenElementTag =
+                new OpenElementTag(
+                        templateProcessingContext.getTemplateMode(),
+                        templateProcessingContext.getTemplateEngineContext().getElementDefinitions(),
+                        templateProcessingContext.getTemplateEngineContext().getAttributeDefinitions());
+        this.bufferCloseElementTag =
+                new CloseElementTag(
+                        templateProcessingContext.getTemplateMode(),
+                        templateProcessingContext.getTemplateEngineContext().getElementDefinitions());
 
     }
 
@@ -141,10 +152,89 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        standaloneElementTag.getAttributes().setAttribute("level", String.valueOf(this.markupLevel));
 
-        // Includes calling the next handler in the chain
-        super.handleStandaloneElement(standaloneElementTag);
+        boolean skipOriginalTag = false;
+
+        if (standaloneElementTag.hasAssociatedProcessors()) {
+
+            this.processorIterator.reset(standaloneElementTag);
+
+            IProcessor processor;
+            while ((processor = this.processorIterator.next()) != null) {
+
+                this.actionHandler.reset();
+
+                if (processor instanceof IElementProcessor) {
+
+                    final IElementProcessor elementProcessor = ((IElementProcessor)processor);
+                    elementProcessor.process(getTemplateProcessingContext(), standaloneElementTag, this.actionHandler);
+
+                    if (this.actionHandler.setBodyText) {
+
+                        this.bufferOpenElementTag.setFromStandaloneElementTag(standaloneElementTag);
+                        this.bufferText.setText(this.actionHandler.setBodyTextValue);
+                        this.bufferCloseElementTag.setFromStandaloneElementTag(standaloneElementTag);
+
+                        this.eventQueue.add(this.bufferOpenElementTag);
+                        this.eventQueue.add(this.bufferText);
+                        this.eventQueue.add(this.bufferCloseElementTag);
+
+                        skipOriginalTag = true;
+
+                    } else if(this.actionHandler.setBodyQueue) {
+
+                        this.bufferOpenElementTag.setFromStandaloneElementTag(standaloneElementTag);
+                        this.bufferCloseElementTag.setFromStandaloneElementTag(standaloneElementTag);
+
+                        this.eventQueue.add(this.bufferOpenElementTag);
+                        this.eventQueue.add(this.bufferCloseElementTag);
+
+                        this.eventQueue.insertAll(1, this.actionHandler.setBodyQueueValue); // Just after the open tag, before the close tag
+
+                        skipOriginalTag = true;
+
+                    } else if (this.actionHandler.replaceWithText) {
+
+                        this.bufferText.setText(this.actionHandler.replaceWithTextValue);
+                        this.eventQueue.add(this.bufferText);
+
+                        skipOriginalTag = true;
+
+                    } else if (this.actionHandler.replaceWithQueue) {
+
+                        this.eventQueue.addAll(this.actionHandler.replaceWithQueueValue);
+
+                        skipOriginalTag = true;
+
+                    }
+
+                } else if (processor instanceof INodeProcessor) {
+                    throw new UnsupportedOperationException("Support for Node processors not implemented yet");
+                } else {
+                    throw new IllegalStateException(
+                            "An element has been found with an associated processor of type " + processor.getClass().getName() +
+                                    " which is neither an element nor a Node processor.");
+                }
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!skipOriginalTag) {
+
+            super.handleStandaloneElement(standaloneElementTag);
+
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        this.eventQueue.process(getNext());
 
     }
 
@@ -158,8 +248,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        boolean skipTag = false;
-        boolean skipBody = false;
+        boolean skipOriginalTag = false;
+        boolean skipOriginalBody = false;
 
         if (openElementTag.hasAssociatedProcessors()) {
 
@@ -168,29 +258,29 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             IProcessor processor;
             while ((processor = this.processorIterator.next()) != null) {
 
+                this.actionHandler.reset();
+
                 if (processor instanceof IElementProcessor) {
 
-                    this.actionHandler.reset();
-
-                    final IProcessableElementTag resultTag =
-                            ((IElementProcessor)processor).process(getTemplateProcessingContext(), openElementTag, this.actionHandler);
+                    final IElementProcessor elementProcessor = ((IElementProcessor)processor);
+                    elementProcessor.process(getTemplateProcessingContext(), openElementTag, this.actionHandler);
 
                     if (this.actionHandler.setBodyText) {
                         this.bufferText.setText(this.actionHandler.setBodyTextValue);
                         this.eventQueue.add(this.bufferText);
-                        skipBody = true;
+                        skipOriginalBody = true;
                     } else if(this.actionHandler.setBodyQueue) {
                         this.eventQueue.addAll(this.actionHandler.setBodyQueueValue);
-                        skipBody = true;
+                        skipOriginalBody = true;
                     } else if (this.actionHandler.replaceWithText) {
                         this.bufferText.setText(this.actionHandler.replaceWithTextValue);
                         this.eventQueue.add(this.bufferText);
-                        skipTag = true;
-                        skipBody = true;
+                        skipOriginalTag = true;
+                        skipOriginalBody = true;
                     } else if (this.actionHandler.replaceWithQueue) {
                         this.eventQueue.addAll(this.actionHandler.replaceWithQueueValue);
-                        skipTag = true;
-                        skipBody = true;
+                        skipOriginalTag = true;
+                        skipOriginalBody = true;
                     }
 
                 } else if (processor instanceof INodeProcessor) {
@@ -209,7 +299,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN
          */
-        if (!skipTag) {
+        if (!skipOriginalTag) {
 
             super.handleOpenElement(openElementTag);
 
@@ -229,11 +319,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * SET BODY TO BE SKIPPED, if required
          */
-        if (skipBody) {
+        if (skipOriginalBody) {
             // We make sure no other nested events will be processed at all
             this.skipMarkupFromLevel = this.markupLevel - 1;
         }
-        if (skipTag) {
+
+        /*
+         * MAKE SURE WE SKIP THE CORRESPONDING CLOSE TAG, if required
+         */
+        if (skipOriginalTag) {
             this.skipCloseTagLevels.add(this.markupLevel - 1);
         }
 

@@ -41,7 +41,7 @@ public class StandardClassProcessor extends AbstractAttributeMatchingHTMLElement
 
 
 
-    public IProcessableElementTag process(
+    public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
@@ -50,8 +50,6 @@ public class StandardClassProcessor extends AbstractAttributeMatchingHTMLElement
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
         tag.getAttributes().setAttribute("class", tag.getAttributes().getValue(attributeName));
-
-        return tag;
 
     }
 

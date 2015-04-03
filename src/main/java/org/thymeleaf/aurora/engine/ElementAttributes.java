@@ -719,6 +719,82 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
+    void copyFrom(final IElementAttributes from) {
+
+
+        if (!(from instanceof ElementAttributes)) {
+
+            clearAll();
+
+            for (final String completeAttributeName : from.getAllCompleteNames()) {
+                this.setAttribute(completeAttributeName, from.getValue(completeAttributeName), from.getValueQuotes(completeAttributeName));
+            }
+
+            return;
+
+        }
+
+        // We know 'from' is of a known class, so we will take some shortcuts
+        final ElementAttributes eaFrom = (ElementAttributes) from;
+
+        if (eaFrom.templateMode != this.templateMode || eaFrom.attributeDefinitions != this.attributeDefinitions) {
+            throw new IllegalStateException(
+                    "Cannot copy element attributes: the ElementAttributes object to copy from does not " +
+                    "contain exactly the same TemplateMode and AttributeDefinitions objects, which should never " +
+                    "happen.");
+        }
+
+        clearAll(); // This increments version
+
+        // We WON'T do a "this.version = eaFrom.version" because 'this' is an existing object, and setting it to
+        // a version that doesn't follow the right sequence might affect related artifacts like e.g. provoking
+        // that associated processors are not recomputed.
+
+        if (eaFrom.attributesSize > 0) {
+
+            if (this.attributes == null || this.attributes.length < eaFrom.attributesSize) {
+                // We need new arrays as the 'eaFrom' attributes wouldn't fit
+                this.attributes = new ElementAttribute[Math.max(eaFrom.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                this.attributeNames = new AttributeName[Math.max(eaFrom.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+            }
+
+            // Attributes in 'eaFrom' will fit in the already existing arrays (might have been created just now)
+
+            Arrays.fill(this.attributes, null);
+            Arrays.fill(this.attributeNames, null);
+
+            int n = eaFrom.attributesSize;
+            while (n-- != 0) {
+                this.attributes[n] = eaFrom.attributes[n].cloneElementAttribute();
+                this.attributeNames[n] = eaFrom.attributeNames[n];
+            }
+            this.attributesSize = eaFrom.attributesSize;
+
+        }
+
+        if (eaFrom.innerWhiteSpacesSize > 0) {
+
+            if (this.innerWhiteSpaces == null || this.innerWhiteSpaces.length < eaFrom.innerWhiteSpacesSize) {
+                // We need new arrays as the 'eaFrom' attributes wouldn't fit
+                this.innerWhiteSpaces = new InnerWhiteSpace[Math.max(eaFrom.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
+            }
+
+            Arrays.fill(this.innerWhiteSpaces, null);
+
+            int n = eaFrom.innerWhiteSpacesSize;
+            while (n-- != 0) {
+                this.innerWhiteSpaces[n] = eaFrom.innerWhiteSpaces[n].cloneInnerWhiteSpace();
+            }
+            this.innerWhiteSpacesSize = eaFrom.innerWhiteSpacesSize;
+
+        }
+
+        this.allCompleteNames = eaFrom.allCompleteNames; // Can do this because it's either null or an unmodifiable list
+
+        // Won't set the 'computedNamesVersion' either, for the same reasons as 'this.version'
+
+    }
+
 
 
 
