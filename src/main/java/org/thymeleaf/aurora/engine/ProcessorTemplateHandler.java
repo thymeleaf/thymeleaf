@@ -157,6 +157,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         if (standaloneElementTag.hasAssociatedProcessors()) {
 
+            this.eventQueue.reset();
             this.processorIterator.reset(standaloneElementTag);
 
             IProcessor processor;
@@ -181,7 +182,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                         skipOriginalTag = true;
 
-                    } else if(this.actionHandler.setBodyQueue) {
+                    } else if (this.actionHandler.setBodyQueue) {
 
                         this.bufferOpenElementTag.setFromStandaloneElementTag(standaloneElementTag);
                         this.bufferCloseElementTag.setFromStandaloneElementTag(standaloneElementTag);
@@ -253,6 +254,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         if (openElementTag.hasAssociatedProcessors()) {
 
+            this.eventQueue.reset();
             this.processorIterator.reset(openElementTag);
 
             IProcessor processor;
@@ -269,7 +271,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         this.bufferText.setText(this.actionHandler.setBodyTextValue);
                         this.eventQueue.add(this.bufferText);
                         skipOriginalBody = true;
-                    } else if(this.actionHandler.setBodyQueue) {
+                    } else if (this.actionHandler.setBodyQueue) {
                         this.eventQueue.addAll(this.actionHandler.setBodyQueueValue);
                         skipOriginalBody = true;
                     } else if (this.actionHandler.replaceWithText) {
