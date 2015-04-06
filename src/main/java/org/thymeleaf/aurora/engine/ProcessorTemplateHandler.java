@@ -552,6 +552,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
 
+        // TODO Once engine code is completed for standalone + open, copy open here
+
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel > this.skipMarkupFromLevel) {
             this.markupLevel++;
