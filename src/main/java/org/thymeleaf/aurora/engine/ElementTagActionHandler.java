@@ -32,18 +32,23 @@ public final class ElementTagActionHandler implements IElementTagActionHandler {
 
     boolean setBodyText;
     String setBodyTextValue;
-    boolean setBodyTextShouldEscape;
+    boolean setBodyTextProcessable;
 
     boolean setBodyQueue;
     ITemplateHandlerEventQueue setBodyQueueValue;
+    boolean setBodyQueueProcessable;
 
     boolean replaceWithText;
     String replaceWithTextValue;
-    boolean replaceWithTextShouldEscape;
+    boolean replaceWithTextProcessable;
 
     boolean replaceWithQueue;
     ITemplateHandlerEventQueue replaceWithQueueValue;
+    boolean replaceWithQueueProcessable;
 
+    boolean removeElement;
+
+    boolean removeTag;
 
 
     ElementTagActionHandler() {
@@ -53,37 +58,51 @@ public final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
 
-    public void setBody(final String text, final boolean shouldEscape) {
+    public void setBody(final String text, final boolean processable) {
         reset();
         Validate.notNull(text, "Text cannot be null");
         this.setBodyText = true;
         this.setBodyTextValue = text;
-        this.setBodyTextShouldEscape = shouldEscape;
+        this.setBodyTextProcessable = processable;
     }
 
 
-    public void setBody(final ITemplateHandlerEventQueue eventQueue) {
+    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
         reset();
         Validate.notNull(eventQueue, "Event Queue cannot be null");
         this.setBodyQueue = true;
         this.setBodyQueueValue = eventQueue;
+        this.setBodyQueueProcessable = processable;
     }
 
 
-    public void replaceWith(final String text, final boolean shouldEscape) {
+    public void replaceWith(final String text, final boolean processable) {
         reset();
         Validate.notNull(text, "Text cannot be null");
         this.replaceWithText = true;
         this.replaceWithTextValue = text;
-        this.replaceWithTextShouldEscape = shouldEscape;
+        this.replaceWithTextProcessable = processable;
     }
 
 
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue) {
+    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
         reset();
         Validate.notNull(eventQueue, "Event Queue cannot be null");
         this.replaceWithQueue = true;
         this.replaceWithQueueValue = eventQueue;
+        this.replaceWithQueueProcessable = processable;
+    }
+
+
+    public void removeElement() {
+        reset();
+        this.removeElement = true;
+    }
+
+
+    public void removeTag() {
+        reset();
+        this.removeTag = true;
     }
 
 
@@ -91,17 +110,23 @@ public final class ElementTagActionHandler implements IElementTagActionHandler {
 
         this.setBodyText = false;
         this.setBodyTextValue = null;
-        this.setBodyTextShouldEscape = false;
+        this.setBodyTextProcessable = false;
 
         this.setBodyQueue = false;
         this.setBodyQueueValue = null;
+        this.setBodyQueueProcessable = false;
 
         this.replaceWithText = false;
         this.replaceWithTextValue = null;
-        this.replaceWithTextShouldEscape = false;
+        this.replaceWithTextProcessable = false;
 
         this.replaceWithQueue = false;
         this.replaceWithQueueValue = null;
+        this.replaceWithQueueProcessable = false;
+
+        this.removeElement = false;
+
+        this.removeTag = false;
 
     }
 

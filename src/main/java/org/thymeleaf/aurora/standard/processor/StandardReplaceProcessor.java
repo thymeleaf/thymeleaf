@@ -59,7 +59,7 @@ public class StandardReplaceProcessor extends AbstractAttributeMatchingHTMLEleme
         queue.add(modelFactory.createText("This is replaced text!"));
         queue.add(modelFactory.createCloseElementTag("section"));
 
-        actionHandler.replaceWith(queue);
+        actionHandler.replaceWith(queue, true);
 
     }
 

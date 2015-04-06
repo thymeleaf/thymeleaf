@@ -154,7 +154,7 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
     public void process(final ITemplateHandler handler) {
 
-        if (handler == null) {
+        if (handler == null || this.queueSize == 0) {
             return;
         }
 

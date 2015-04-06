@@ -35,17 +35,17 @@ public interface IElementTagActionHandler {
 //    public void setSelectionTarget();
 //    public void setInliningMode();
 
-    public void setBody(final String text, final boolean shouldEscape);
-    public void setBody(final ITemplateHandlerEventQueue eventQueue);
+    public void setBody(final String text, final boolean processable);
+    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
 
-    public void replaceWith(final String text, final boolean shouldEscape);
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue);
+    public void replaceWith(final String text, final boolean processable);
+    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
 
-//
-//    public void removeElement();
-//    public void removeTag();
-//
+
+    public void removeElement();
+    public void removeTag();
+
 //    public void iterateElement();
-//
 
 }
+

@@ -45,7 +45,14 @@ public class StandardRemoveProcessor extends AbstractAttributeMatchingHTMLElemen
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
 
-        actionHandler.replaceWith("[REMOVED]", false);
+        final String value = tag.getAttributes().getValue(getDialectPrefix(), "remove");
+        if ("tag".equals(value)) {
+            actionHandler.removeTag();
+        } else if ("all".equals(value)) {
+            actionHandler.removeElement();
+        } else {
+            System.err.printf("UNKNOWN VALUE FOR th:remove : " + value);
+        }
 
     }
 

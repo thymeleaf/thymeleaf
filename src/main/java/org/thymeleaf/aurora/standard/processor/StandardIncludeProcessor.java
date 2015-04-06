@@ -54,12 +54,13 @@ public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLEleme
 
         final IOpenElementTag sectionOpenTag = modelFactory.createOpenElementTag("section");
         sectionOpenTag.getAttributes().setAttribute("class", "included");
+        sectionOpenTag.getAttributes().setAttribute("th:text", "hohoh");
 
         queue.add(sectionOpenTag);
         queue.add(modelFactory.createText("This is included text!"));
         queue.add(modelFactory.createCloseElementTag("section"));
 
-        actionHandler.setBody(queue);
+        actionHandler.setBody(queue, false);
 
     }
 

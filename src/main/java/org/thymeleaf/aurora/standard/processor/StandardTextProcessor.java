@@ -49,7 +49,7 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
-        actionHandler.setBody("Whoohooooo!", true);
+        actionHandler.setBody("Whoohooooo!", false);
         tag.getAttributes().removeAttribute(attributeName);
 
     }
