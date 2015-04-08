@@ -220,7 +220,8 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         Mockito.when(request.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(attributes));
         Mockito.when(request.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(attributes));
         Mockito.doAnswer(new SetAttributeAnswer(attributes)).when(request).setAttribute(Matchers.anyString(), Matchers.anyObject());
-        
+        Mockito.doAnswer(new RemoveAttributeAnswer(attributes)).when(request).removeAttribute(Matchers.anyString());
+
         Mockito.when(request.getParameterNames()).thenAnswer(new GetVariableNamesAnswer(parameters));
         Mockito.when(request.getParameterValues(Matchers.anyString())).thenAnswer(new GetParameterValuesAnswer(parameters));
         Mockito.when(request.getParameterMap()).thenAnswer(new GetParameterMapAnswer(parameters));
@@ -242,7 +243,8 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         Mockito.when(session.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(attributes));
         Mockito.when(session.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(attributes));
         Mockito.doAnswer(new SetAttributeAnswer(attributes)).when(session).setAttribute(Matchers.anyString(), Matchers.anyObject());
-        
+        Mockito.doAnswer(new RemoveAttributeAnswer(attributes)).when(session).removeAttribute(Matchers.anyString());
+
         return session;
         
     }
@@ -264,7 +266,8 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         Mockito.when(servletContext.getAttributeNames()).thenAnswer(new GetVariableNamesAnswer(attributes));
         Mockito.when(servletContext.getAttribute(Matchers.anyString())).thenAnswer(new GetAttributeAnswer(attributes));
         Mockito.doAnswer(new SetAttributeAnswer(attributes)).when(servletContext).setAttribute(Matchers.anyString(), Matchers.anyObject());
-        
+        Mockito.doAnswer(new RemoveAttributeAnswer(attributes)).when(servletContext).removeAttribute(Matchers.anyString());
+
         Mockito.when(servletContext.getInitParameterNames()).thenReturn(new ObjectEnumeration<String>(null));
         Mockito.when(servletContext.getInitParameter(Matchers.anyString())).thenReturn(null);
         
@@ -356,7 +359,26 @@ public class WebProcessingContextBuilder implements IProcessingContextBuilder {
         }
         
     }
-    
+
+
+
+    private static class RemoveAttributeAnswer implements Answer<Object> {
+
+        private final Map<String,Object> values;
+
+        public RemoveAttributeAnswer(final Map<String,Object> values) {
+            super();
+            this.values = values;
+        }
+
+        public Object answer(final InvocationOnMock invocation) throws Throwable {
+            final String attributeName = (String) invocation.getArguments()[0];
+            this.values.remove(attributeName);
+            return null;
+        }
+
+    }
+
     
     
     private static class GetParameterValuesAnswer implements Answer<String[]> {
