@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora;
 
 import java.io.Writer;
+import java.util.Locale;
 
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -37,7 +38,7 @@ public interface ITemplateEngine {
 
     public void process(
             final TemplateMode templateMode, final String templateName, final IResource templateResource,
-            final Writer writer);
+            final Locale locale, final Writer writer);
 
     
 }

@@ -22,6 +22,7 @@ package org.thymeleaf.aurora;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.thymeleaf.aurora.context.ITemplateEngineContext;
@@ -95,11 +96,12 @@ public final class TemplateEngine implements ITemplateEngine {
 
     public void process(
             final TemplateMode templateMode, final String templateName, final IResource templateResource,
-            final Writer writer) {
+            final Locale locale, final Writer writer) {
 
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(templateName, "Template name cannot be null");
         Validate.notNull(templateResource, "Template resource cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
 
@@ -107,7 +109,7 @@ public final class TemplateEngine implements ITemplateEngine {
          * Create of the Template Processing Context instance that corresponds to this execution of the template engine
          */
         final ITemplateProcessingContext templateProcessingContext =
-                new TemplateProcessingContext(this.templateEngineContext, templateName, templateMode);
+                new TemplateProcessingContext(this.templateEngineContext, templateName, templateMode, locale, null);
 
 
         /*

@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.Locale;
+
 import org.thymeleaf.aurora.engine.IModelFactory;
 import org.thymeleaf.aurora.engine.ModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -36,22 +38,33 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
     private final String templateName;
     private final TemplateMode templateMode;
     private final IModelFactory modelFactory;
+    private final Locale locale;
+    private final IVariablesMap variablesMap;
 
 
     public TemplateProcessingContext(
             final ITemplateEngineContext templateEngineContext,
-            final String templateName, final TemplateMode templateMode) {
+            final String templateName, final TemplateMode templateMode,
+            final Locale locale, final IVariablesMap variablesMap) {
+
         super();
+
         Validate.notNull(templateEngineContext, "Template Engine Context cannot be null");
         Validate.notNull(templateName, "Template Name cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
+        Validate.notNull(locale, "Locale cannot be null");
+        Validate.notNull(variablesMap, "Variables map cannot be null");
+
         this.templateEngineContext = templateEngineContext;
         this.templateName = templateName;
         this.templateMode = templateMode;
+        this.locale = locale;
+        this.variablesMap = variablesMap;
         this.modelFactory =
                 new ModelFactory(
                         this.templateMode, this.templateEngineContext.getTextRepository(),
                         this.templateEngineContext.getAttributeDefinitions(), this.templateEngineContext.getElementDefinitions());
+
     }
 
 
@@ -69,6 +82,14 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
 
     public IModelFactory getModelFactory() {
         return this.modelFactory;
+    }
+
+    public Locale geLocale() {
+        return this.locale;
+    }
+
+    public IVariablesMap getVariables() {
+        return this.variablesMap;
     }
 
 }

@@ -34,13 +34,20 @@ import org.thymeleaf.util.Validate;
  */
 final class TemplateProcessingVariablesMap implements ITemplateProcessingVariablesMap {
 
-    private static final int DEFAULT_LEVELS_SIZE = 2;
+    private static final int DEFAULT_LEVELS_SIZE = 3;
     private static final int DEFAULT_MAP_SIZE = 5;
 
     private int level = 0;
     private int index = 0;
     private int[] levels;
     private HashMap<String,Object>[] maps;
+
+    private static final Object NON_EXISTING = new Object() {
+        @Override
+        public String toString() {
+            return "(*removed*)";
+        }
+    };
 
 
 
@@ -66,7 +73,8 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.maps[n] != null && this.maps[n].containsKey(key)) {
-                return true;
+                // The most modern entry we find for this key could be a removal --> false
+                return (this.maps[n].get(key) != NON_EXISTING);
             }
         }
         return false;
@@ -77,14 +85,18 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.maps[n] != null && this.maps[n].containsKey(key)) {
-                return this.maps[n].get(key);
+                final Object result = this.maps[n].get(key);
+                if (result == NON_EXISTING) {
+                    return null;
+                }
+                return result;
             }
         }
         return null;
     }
 
 
-    void put(final String key, final Object value) {
+    public void put(final String key, final Object value) {
 
         if (this.levels[this.index] != this.level) {
             // We need to create structures for this new level
@@ -111,12 +123,16 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
             this.maps[this.index] = new HashMap<String,Object>(DEFAULT_MAP_SIZE, 1.0f);
         }
 
-        this.maps[this.index].put(key, value);
+        if (value == NON_EXISTING && this.level == 0) {
+            this.maps[this.index].remove(key);
+        } else {
+            this.maps[this.index].put(key, value);
+        }
 
     }
 
 
-    void putAll(final Map<String, Object> map) {
+    public void putAll(final Map<String, Object> map) {
 
         if (map == null) {
             return;
@@ -152,17 +168,24 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
     }
 
 
-    int level() {
+    public void remove(final String key) {
+        if (contains(key)) {
+            put(key, NON_EXISTING);
+        }
+    }
+
+
+    public int level() {
         return this.level;
     }
 
 
-    void increaseLevel() {
+    public void increaseLevel() {
         this.level++;
     }
 
 
-    void decreaseLevel() {
+    public void decreaseLevel() {
         Validate.isTrue(this.level > 0, "Cannot decrease variables map level below 0");
         if (this.levels[this.index] == this.level) {
             this.levels[this.index] = Integer.MAX_VALUE;
@@ -191,7 +214,9 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
                 strBuilder.append(this.levels[n] + ":" + this.maps[n].toString());
             }
         }
-        strBuilder.append('}');
+        strBuilder.append("}[");
+        strBuilder.append(this.level);
+        strBuilder.append(']');
         return strBuilder.toString();
     }
 

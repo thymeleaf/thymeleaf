@@ -17,11 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.context;
 
 import java.util.Map;
-
-import org.thymeleaf.aurora.context.IVariablesMap;
 
 /**
  *
@@ -30,19 +28,21 @@ import org.thymeleaf.aurora.context.IVariablesMap;
  * @since 3.0.0
  *
  */
-interface ITemplateProcessingVariablesMap extends IVariablesMap {
+public interface IVariablesMap {
 
     /*
-     * This internal interface adds to IVariablesMap implementations the capabilities needed by the markup engine
-     * to add and remove local variables depending on the markup level.
+     * There is no need to make VariablesMap instances implement java.util.Map or extend from HashMap. Such thing
+     * would give us no advantage when expression languages execute expressions on them, because we need to
+     * specify property accessors anyway (both for SpringEL and OGNL/MVEL). And besides, we don't need write support
+     * on the variable maps (even if they have to allow local variables and also be aware of any changes performed
+     * on underlying data storage structures like HttpServletRequest).
+     *
+     * Also, note any SECURITY RESTRICTIONS (like e.g. not allowing access to request parameters from unescaped
+     * or preprocessing expressions) should be managed at the property accessors themselves.
      */
 
-    void put(final String key, final Object value);
-    void putAll(final Map<String, Object> map);
-    void remove(final String key);
 
-    int level();
-    void increaseLevel();
-    void decreaseLevel();
+    public boolean contains(final String key);
+    public Object get(final String key);
 
 }

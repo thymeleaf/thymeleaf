@@ -80,19 +80,26 @@ public final class ArrayUtils {
     
     
     public static boolean contains(final Object[] target, final Object element) {
+
         Validate.notNull(target, "Cannot execute array contains: target is null");
-        for (final Object targetElement : target) {
-            if (targetElement == null) {
-                if (element == null) {
-                    return true;
-                }
-            } else {
-                if (element != null && targetElement.equals(element)) {
+
+        if (element == null) {
+            for (final Object targetElement : target) {
+                if (targetElement == null) {
                     return true;
                 }
             }
+            return false;
         }
+
+        for (final Object targetElement : target) {
+            if (element.equals(targetElement)) {
+                return true;
+            }
+        }
+
         return false;
+
     }
     
     

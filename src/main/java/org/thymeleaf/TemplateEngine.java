@@ -1211,7 +1211,7 @@ public class TemplateEngine {
 
         final IResource templateResource = new ReaderResource(templateName, reader);
 
-        AURORA_TEMPLATE_ENGINE.process(TemplateMode.HTML, templateName, templateResource, writer);
+        AURORA_TEMPLATE_ENGINE.process(TemplateMode.HTML, templateName, templateResource, templateProcessingParameters.getContext().getLocale(), writer);
 
     }
 
