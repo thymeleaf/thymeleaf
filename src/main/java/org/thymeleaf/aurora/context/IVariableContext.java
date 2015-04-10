@@ -19,28 +19,28 @@
  */
 package org.thymeleaf.aurora.context;
 
-import java.util.Locale;
-
-import org.thymeleaf.aurora.engine.IModelFactory;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
- * 
+ *
  */
-public interface ITemplateProcessingContext {
+public interface IVariableContext {
 
-    public ITemplateEngineContext getTemplateEngineContext();
+    /*
+     * There is no need to make VariablesMap instances implement java.util.Map or extend from HashMap. Such thing
+     * would give us no advantage when expression languages execute expressions on them, because we need to
+     * specify property accessors anyway (both for SpringEL and OGNL/MVEL). And besides, we don't need write support
+     * on the variable maps (even if they have to allow local variables and also be aware of any changes performed
+     * on underlying data storage structures like HttpServletRequest).
+     *
+     * Also, note any SECURITY RESTRICTIONS (like e.g. not allowing access to request parameters from unescaped
+     * or preprocessing expressions) should be managed at the property accessors themselves.
+     */
 
-    public TemplateMode getTemplateMode();
-    public String getTemplateName();
 
-    public IModelFactory getModelFactory();
-
-    public Locale geLocale();
-
-    public IVariableContext getVariableContext();
+    public boolean contains(final String key);
+    public Object get(final String key);
 
 }

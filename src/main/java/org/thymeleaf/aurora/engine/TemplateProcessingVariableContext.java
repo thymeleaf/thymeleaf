@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.thymeleaf.util.Validate;
@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-final class TemplateProcessingVariablesMap implements ITemplateProcessingVariablesMap {
+final class TemplateProcessingVariableContext implements ITemplateProcessingVariableContext {
 
     private static final int DEFAULT_LEVELS_SIZE = 3;
     private static final int DEFAULT_MAP_SIZE = 5;
@@ -40,7 +40,7 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
     private int level = 0;
     private int index = 0;
     private int[] levels;
-    private HashMap<String,Object>[] maps;
+    private LinkedHashMap<String,Object>[] maps;
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -51,12 +51,12 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
 
 
-    TemplateProcessingVariablesMap(final Map<String,Object> variables) {
+    TemplateProcessingVariableContext(final Map<String, Object> variables) {
 
         super();
 
         this.levels = new int[DEFAULT_LEVELS_SIZE];
-        this.maps = (HashMap<String, Object>[]) new HashMap<?,?>[DEFAULT_LEVELS_SIZE];
+        this.maps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
         this.levels[0] = 0;
@@ -105,7 +105,7 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
             if (this.levels.length == this.index) {
                 final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
+                final LinkedHashMap<String,Object>[] newMaps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
@@ -120,7 +120,7 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
         if (this.maps[this.index] == null) {
             // The map for this level has not yet been created
-            this.maps[this.index] = new HashMap<String,Object>(DEFAULT_MAP_SIZE, 1.0f);
+            this.maps[this.index] = new LinkedHashMap<String,Object>(DEFAULT_MAP_SIZE, 1.0f);
         }
 
         if (value == NON_EXISTING && this.level == 0) {
@@ -145,7 +145,7 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
             if (this.levels.length == this.index) {
                 final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                final HashMap<String,Object>[] newMaps = (HashMap<String, Object>[]) new HashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
+                final LinkedHashMap<String,Object>[] newMaps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
@@ -160,7 +160,7 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
         if (this.maps[this.index] == null) {
             // The map for this level has not yet been created
-            this.maps[this.index] = new HashMap<String,Object>(Math.max(DEFAULT_MAP_SIZE, map.size() + 2), 1.0f);
+            this.maps[this.index] = new LinkedHashMap<String,Object>(Math.max(DEFAULT_MAP_SIZE, map.size() + 2), 1.0f);
         }
 
         this.maps[this.index].putAll(map);
@@ -186,7 +186,7 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
 
     public void decreaseLevel() {
-        Validate.isTrue(this.level > 0, "Cannot decrease variables map level below 0");
+        Validate.isTrue(this.level > 0, "Cannot decrease variable context level below 0");
         if (this.levels[this.index] == this.level) {
             this.levels[this.index] = Integer.MAX_VALUE;
             if (this.maps[this.index] != null) {
@@ -200,24 +200,72 @@ final class TemplateProcessingVariablesMap implements ITemplateProcessingVariabl
 
 
 
-    @Override
-    public String toString() {
+    public String getStringRepresentationByLevel() {
 
         final StringBuilder strBuilder = new StringBuilder();
         strBuilder.append('{');
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.maps[n] != null) {
+                final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
+                for (final Map.Entry<String,Object> mapEntry : this.maps[n].entrySet()) {
+                    final String name = mapEntry.getKey();
+                    final Object value = mapEntry.getValue();
+                    if (value == NON_EXISTING) {
+                        // We only have to add this if it is really removing anything
+                        int n2 = n;
+                        while (n2-- != 0) {
+                            if (this.maps[n2] != null && this.maps[n2].containsKey(name)) {
+                                if (this.maps[n2].get(name) != NON_EXISTING) {
+                                    levelVars.put(name, value);
+                                }
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                    levelVars.put(name, value);
+                }
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
-                strBuilder.append(this.levels[n] + ":" + this.maps[n].toString());
+                strBuilder.append(this.levels[n] + ":" + levelVars);
             }
         }
         strBuilder.append("}[");
         strBuilder.append(this.level);
         strBuilder.append(']');
         return strBuilder.toString();
+
     }
+
+
+
+
+    @Override
+    public String toString() {
+
+        final Map<String,Object> equivalentMap = new LinkedHashMap<String, Object>();
+        int n = this.index + 1;
+        int i = 0;
+        while (n-- != 0) {
+            if (this.maps[i] != null) {
+                for (final Map.Entry<String,Object> mapEntry : this.maps[i].entrySet()) {
+                    final String name = mapEntry.getKey();
+                    final Object value = mapEntry.getValue();
+                    if (value == NON_EXISTING) {
+                        equivalentMap.remove(name);
+                        continue;
+                    }
+                    equivalentMap.put(name, value);
+                }
+            }
+            i++;
+        }
+        return equivalentMap.toString();
+
+    }
+
+
 
 }

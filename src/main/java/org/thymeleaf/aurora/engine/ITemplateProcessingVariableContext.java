@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Map;
 
-import org.thymeleaf.aurora.context.IVariablesMap;
+import org.thymeleaf.aurora.context.IVariableContext;
 
 /**
  *
@@ -30,10 +30,10 @@ import org.thymeleaf.aurora.context.IVariablesMap;
  * @since 3.0.0
  *
  */
-interface ITemplateProcessingVariablesMap extends IVariablesMap {
+interface ITemplateProcessingVariableContext extends IVariableContext {
 
     /*
-     * This internal interface adds to IVariablesMap implementations the capabilities needed by the markup engine
+     * This internal interface adds to IVariableContext implementations the capabilities needed by the markup engine
      * to add and remove local variables depending on the markup level.
      */
 
@@ -44,5 +44,7 @@ interface ITemplateProcessingVariablesMap extends IVariablesMap {
     int level();
     void increaseLevel();
     void decreaseLevel();
+
+    String getStringRepresentationByLevel();
 
 }

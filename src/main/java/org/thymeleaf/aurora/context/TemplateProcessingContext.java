@@ -39,13 +39,13 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
     private final TemplateMode templateMode;
     private final IModelFactory modelFactory;
     private final Locale locale;
-    private final IVariablesMap variablesMap;
+    private final IVariableContext variableContext;
 
 
     public TemplateProcessingContext(
             final ITemplateEngineContext templateEngineContext,
             final String templateName, final TemplateMode templateMode,
-            final Locale locale, final IVariablesMap variablesMap) {
+            final Locale locale, final IVariableContext variableContext) {
 
         super();
 
@@ -53,13 +53,13 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
         Validate.notNull(templateName, "Template Name cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.notNull(locale, "Locale cannot be null");
-        Validate.notNull(variablesMap, "Variables map cannot be null");
+        Validate.notNull(variableContext, "Variable Context cannot be null");
 
         this.templateEngineContext = templateEngineContext;
         this.templateName = templateName;
         this.templateMode = templateMode;
         this.locale = locale;
-        this.variablesMap = variablesMap;
+        this.variableContext = variableContext;
         this.modelFactory =
                 new ModelFactory(
                         this.templateMode, this.templateEngineContext.getTextRepository(),
@@ -88,8 +88,8 @@ public class TemplateProcessingContext implements ITemplateProcessingContext {
         return this.locale;
     }
 
-    public IVariablesMap getVariables() {
-        return this.variablesMap;
+    public IVariableContext getVariableContext() {
+        return this.variableContext;
     }
 
 }

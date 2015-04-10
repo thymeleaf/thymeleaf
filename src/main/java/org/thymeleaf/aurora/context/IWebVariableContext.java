@@ -19,7 +19,10 @@
  */
 package org.thymeleaf.aurora.context;
 
-import java.util.Map;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -28,21 +31,11 @@ import java.util.Map;
  * @since 3.0.0
  *
  */
-public interface IVariablesMap {
+public interface IWebVariableContext extends IVariableContext {
 
-    /*
-     * There is no need to make VariablesMap instances implement java.util.Map or extend from HashMap. Such thing
-     * would give us no advantage when expression languages execute expressions on them, because we need to
-     * specify property accessors anyway (both for SpringEL and OGNL/MVEL). And besides, we don't need write support
-     * on the variable maps (even if they have to allow local variables and also be aware of any changes performed
-     * on underlying data storage structures like HttpServletRequest).
-     *
-     * Also, note any SECURITY RESTRICTIONS (like e.g. not allowing access to request parameters from unescaped
-     * or preprocessing expressions) should be managed at the property accessors themselves.
-     */
-
-
-    public boolean contains(final String key);
-    public Object get(final String key);
+    public HttpServletRequest getRequest();
+    public HttpServletResponse getResponse();
+    public HttpSession getSession();
+    public ServletContext getServletContext();
 
 }
