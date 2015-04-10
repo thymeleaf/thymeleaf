@@ -22,16 +22,14 @@ package org.thymeleaf.aurora;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
-import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import org.thymeleaf.aurora.context.IContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.context.TemplateEngineContext;
-import org.thymeleaf.aurora.context.TemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
+import org.thymeleaf.aurora.engine.StandardTemplateProcessingContextFactory;
 import org.thymeleaf.aurora.parser.HTMLTemplateParser;
 import org.thymeleaf.aurora.parser.ITemplateParser;
 import org.thymeleaf.aurora.parser.XMLTemplateParser;
@@ -55,7 +53,7 @@ public final class TemplateEngine implements ITemplateEngine {
 
     private static final Set<DialectConfiguration> STANDARD_DIALECT_CONFIGURATIONS;
 
-    private final ITemplateEngineContext templateEngineContext;
+    private final ITemplateEngineConfiguration configuration;
     private final ITemplateParser htmlParser;
     private final ITemplateParser xmlParser;
 
@@ -83,7 +81,7 @@ public final class TemplateEngine implements ITemplateEngine {
         final ITextRepository engineTextRepository =
                 (textRepository != null? textRepository : TextRepositories.createNoCacheRepository());
 
-        this.templateEngineContext = new TemplateEngineContext(dialectConfigurations, engineTextRepository);
+        this.configuration = new TemplateEngineConfiguration(dialectConfigurations, engineTextRepository);
         this.htmlParser = new HTMLTemplateParser(40,2048);
         this.xmlParser = new XMLTemplateParser(40, 2048);
 
@@ -96,12 +94,12 @@ public final class TemplateEngine implements ITemplateEngine {
 
     public void process(
             final TemplateMode templateMode, final String templateName, final IResource templateResource,
-            final Locale locale, final Writer writer) {
+            final IContext context, final Writer writer) {
 
         Validate.notNull(templateMode, "Template mode cannot be null");
         Validate.notNull(templateName, "Template name cannot be null");
         Validate.notNull(templateResource, "Template resource cannot be null");
-        Validate.notNull(locale, "Locale cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(writer, "Writer cannot be null");
 
 
@@ -109,7 +107,7 @@ public final class TemplateEngine implements ITemplateEngine {
          * Create of the Template Processing Context instance that corresponds to this execution of the template engine
          */
         final ITemplateProcessingContext templateProcessingContext =
-                new TemplateProcessingContext(this.templateEngineContext, templateName, templateMode, locale, null);
+                StandardTemplateProcessingContextFactory.build(this.configuration, templateName, templateMode, context);
 
 
         /*
@@ -122,7 +120,7 @@ public final class TemplateEngine implements ITemplateEngine {
         /*
          * First type of handlers to be added: pre-processors (if any)
          */
-        final List<Class<? extends ITemplateHandler>> preProcessors = this.templateEngineContext.getPreProcessors();
+        final List<Class<? extends ITemplateHandler>> preProcessors = this.configuration.getPreProcessors();
         if (preProcessors != null) {
             for (final Class<? extends ITemplateHandler> preProcessorClass : preProcessors) {
                 final ITemplateHandler preProcessor;
@@ -163,7 +161,7 @@ public final class TemplateEngine implements ITemplateEngine {
         /*
          * After the Processor Handler, we now must add the post-processors (if any)
          */
-        final List<Class<? extends ITemplateHandler>> postProcessors = this.templateEngineContext.getPostProcessors();
+        final List<Class<? extends ITemplateHandler>> postProcessors = this.configuration.getPostProcessors();
         if (postProcessors != null) {
             for (final Class<? extends ITemplateHandler> postProcessorClass : postProcessors) {
                 final ITemplateHandler postProcessor;
@@ -205,9 +203,9 @@ public final class TemplateEngine implements ITemplateEngine {
          * Handler chain is in place - now we must use it for calling the parser and initiate the processing
          */
         if (templateMode.isHTML()) {
-            this.htmlParser.parse(this.templateEngineContext, templateMode, templateResource, firstHandler);
+            this.htmlParser.parse(this.configuration, templateMode, templateResource, firstHandler);
         } else if (templateMode.isXML()) {
-            this.xmlParser.parse(this.templateEngineContext, templateMode, templateResource, firstHandler);
+            this.xmlParser.parse(this.configuration, templateMode, templateResource, firstHandler);
         } else {
             throw new IllegalArgumentException(
                     "Cannot process template \"" + templateName + "\" with unsupported template mode: " + templateMode);

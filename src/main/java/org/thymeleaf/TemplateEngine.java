@@ -37,6 +37,9 @@ import java.util.Set;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.aurora.context.AbstractContext;
+import org.thymeleaf.aurora.context.Context;
+import org.thymeleaf.aurora.context.WebContext;
 import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -45,6 +48,7 @@ import org.thymeleaf.cache.StandardCacheManager;
 import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -906,7 +910,7 @@ public class TemplateEngine {
      *         with the provided context.
      */
     public final String process(final String templateName, final IContext context) {
-        return process(templateName, context, (IFragmentSpec)null);
+        return process(templateName, context, (IFragmentSpec) null);
     }
 
 
@@ -1211,7 +1215,25 @@ public class TemplateEngine {
 
         final IResource templateResource = new ReaderResource(templateName, reader);
 
-        AURORA_TEMPLATE_ENGINE.process(TemplateMode.HTML, templateName, templateResource, templateProcessingParameters.getContext().getLocale(), writer);
+        final IContext originalContext = templateProcessingParameters.getContext();
+        final AbstractContext newContext;
+        if (originalContext instanceof IWebContext) {
+            final IWebContext originalWebContext = (IWebContext) originalContext;
+            newContext =
+                    new WebContext(
+                            originalWebContext.getHttpServletRequest(),
+                            originalWebContext.getHttpServletResponse(),
+                            originalWebContext.getServletContext(),
+                            originalContext.getLocale());
+        } else {
+            newContext = new Context(originalContext.getLocale());
+        }
+        newContext.setVariables(originalContext.getVariables());
+        newContext.removeVariable("application");
+        newContext.removeVariable("session");
+        newContext.removeVariable("param");
+
+        AURORA_TEMPLATE_ENGINE.process(TemplateMode.HTML, templateName, templateResource, newContext, writer);
 
     }
 

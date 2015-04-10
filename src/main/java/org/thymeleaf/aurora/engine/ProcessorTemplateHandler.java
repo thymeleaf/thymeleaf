@@ -21,8 +21,18 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
 
-import org.thymeleaf.aurora.context.ITemplateEngineContext;
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.model.ICDATASection;
+import org.thymeleaf.aurora.model.ICloseElementTag;
+import org.thymeleaf.aurora.model.IComment;
+import org.thymeleaf.aurora.model.IDocType;
+import org.thymeleaf.aurora.model.IModelFactory;
+import org.thymeleaf.aurora.model.IOpenElementTag;
+import org.thymeleaf.aurora.model.IProcessingInstruction;
+import org.thymeleaf.aurora.model.IStandaloneElementTag;
+import org.thymeleaf.aurora.model.IText;
+import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
 import org.thymeleaf.aurora.processor.node.INodeProcessor;
@@ -41,7 +51,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private final ElementTagActionHandler actionHandler;
 
-    private ITemplateEngineContext templateEngineContext;
+    private ITemplateEngineConfiguration configuration;
     private ITextRepository textRepository;
     private IModelFactory modelFactory;
     private TemplateMode templateMode;
@@ -85,23 +95,23 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         super.setTemplateProcessingContext(templateProcessingContext);
 
-        this.templateEngineContext = templateProcessingContext.getTemplateEngineContext();
-        Validate.notNull(this.templateEngineContext, "Template Engine Context returned by Template Processing Context cannot be null");
+        this.configuration = templateProcessingContext.getConfiguration();
+        Validate.notNull(this.configuration, "Template Engine Configuration returned by Template Processing Context cannot be null");
 
         this.modelFactory = templateProcessingContext.getModelFactory();
         Validate.notNull(this.modelFactory, "Model Factory returned by Template Processing Context cannot be null");
 
-        this.textRepository = this.templateEngineContext.getTextRepository();
-        Validate.notNull(this.textRepository, "Text Repository returned by Template Engine Context cannot be null");
+        this.textRepository = this.configuration.getTextRepository();
+        Validate.notNull(this.textRepository, "Text Repository returned by Template Engine Configuration cannot be null");
 
         this.templateMode = templateProcessingContext.getTemplateMode();
         Validate.notNull(this.templateMode, "Template Mode returned by Template Processing Context cannot be null");
 
-        this.elementDefinitions = this.templateEngineContext.getElementDefinitions();
-        Validate.notNull(this.elementDefinitions, "Element Definitions returned by Template Engine Context cannot be null");
+        this.elementDefinitions = this.configuration.getElementDefinitions();
+        Validate.notNull(this.elementDefinitions, "Element Definitions returned by Template Engine Configuration cannot be null");
 
-        this.attributeDefinitions = this.templateEngineContext.getAttributeDefinitions();
-        Validate.notNull(this.attributeDefinitions, "Attribute Definitions returned by Template Engine Context cannot be null");
+        this.attributeDefinitions = this.configuration.getAttributeDefinitions();
+        Validate.notNull(this.attributeDefinitions, "Attribute Definitions returned by Template Engine Configuration cannot be null");
 
     }
 

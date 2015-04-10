@@ -23,7 +23,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.thymeleaf.aurora.model.IElementAttributes;
+import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
 import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;

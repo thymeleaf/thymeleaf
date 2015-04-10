@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.processor.text;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IText;
+import org.thymeleaf.aurora.model.IText;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 

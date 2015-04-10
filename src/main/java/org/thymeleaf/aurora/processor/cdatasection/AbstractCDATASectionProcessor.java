@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.processor.cdatasection;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.ICDATASection;
+import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 

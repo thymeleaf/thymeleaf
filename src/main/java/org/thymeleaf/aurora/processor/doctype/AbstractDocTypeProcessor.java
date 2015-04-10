@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.processor.doctype;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IDocType;
+import org.thymeleaf.aurora.model.IDocType;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 

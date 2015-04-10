@@ -21,6 +21,15 @@ package org.thymeleaf.aurora.engine;
 
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.model.ICDATASection;
+import org.thymeleaf.aurora.model.ICloseElementTag;
+import org.thymeleaf.aurora.model.IComment;
+import org.thymeleaf.aurora.model.IDocType;
+import org.thymeleaf.aurora.model.IOpenElementTag;
+import org.thymeleaf.aurora.model.IProcessingInstruction;
+import org.thymeleaf.aurora.model.IStandaloneElementTag;
+import org.thymeleaf.aurora.model.IText;
+import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -78,8 +87,8 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     /**
      * <p>
-     *   Set the processing context to be used, including template name, context, and also all
-     *   kinds of template engine configuration (template engine context).
+     *   Set the processing context to be used, including template name, context, and also the
+     *   template engine configuration.
      * </p>
      * <p>
      *   This method is called always before starting the parsing and processing of a template.

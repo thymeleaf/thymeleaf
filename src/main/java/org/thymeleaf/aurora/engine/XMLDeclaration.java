@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
 import org.thymeleaf.util.Validate;
@@ -32,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class XMLDeclaration implements IXMLDeclaration {
+final class XMLDeclaration implements IXMLDeclaration {
 
     public static final String DEFAULT_KEYWORD = "xml";
 

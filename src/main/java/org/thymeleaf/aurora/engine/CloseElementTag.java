@@ -22,6 +22,8 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.model.ICloseElementTag;
+import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -31,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public final class CloseElementTag
+final class CloseElementTag
         extends AbstractElementTag implements ICloseElementTag {
 
 

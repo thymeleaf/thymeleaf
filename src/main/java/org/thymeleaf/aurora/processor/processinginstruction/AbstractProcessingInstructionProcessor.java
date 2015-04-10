@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.processor.processinginstruction;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IProcessingInstruction;
+import org.thymeleaf.aurora.model.IProcessingInstruction;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 

@@ -21,6 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
+import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.exceptions.TemplateProcessingException;

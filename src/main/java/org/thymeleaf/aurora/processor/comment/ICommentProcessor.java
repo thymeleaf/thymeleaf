@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.processor.comment;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IComment;
+import org.thymeleaf.aurora.model.IComment;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**

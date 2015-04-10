@@ -121,9 +121,8 @@ public final class AttributeDefinitions {
 
 
     /**
-     * <strong>ONLY FOR INTERNAL USE</strong>. This constructor is meant to be called only from the
-     * {@link org.thymeleaf.aurora.context.DialectContext} class. It should never be called directly from any
-     * other classes.
+     * <strong>ONLY FOR INTERNAL USE</strong>. This constructor is meant to be called only from inside the engine.
+     * It should never be called directly from any other classes.
      *
      * @param elementProcessorsByTemplateMode the processors (element and node), already ordered by precedence, which
      *                                        might be of application to the attributes which definition is to be stored

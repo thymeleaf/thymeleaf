@@ -21,7 +21,8 @@ package org.thymeleaf.aurora.context;
 
 import java.util.Locale;
 
-import org.thymeleaf.aurora.engine.IModelFactory;
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
@@ -32,15 +33,17 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  */
 public interface ITemplateProcessingContext {
 
-    public ITemplateEngineContext getTemplateEngineContext();
+    public ITemplateEngineConfiguration getConfiguration();
 
     public TemplateMode getTemplateMode();
     public String getTemplateName();
 
     public IModelFactory getModelFactory();
 
-    public Locale geLocale();
+    public boolean isWeb();
 
-    public IVariableContext getVariableContext();
+    public Locale getLocale();
+
+    public IVariablesMap getVariablesMap();
 
 }

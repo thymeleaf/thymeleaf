@@ -23,9 +23,9 @@ import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeNames;
 import org.thymeleaf.aurora.engine.ElementNames;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
-import org.thymeleaf.aurora.engine.IProcessableElementTag;
 import org.thymeleaf.aurora.engine.MatchingAttributeName;
 import org.thymeleaf.aurora.engine.MatchingElementName;
+import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 

@@ -27,7 +27,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class ElementTagActionHandler implements IElementTagActionHandler {
+final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     boolean setBodyText;

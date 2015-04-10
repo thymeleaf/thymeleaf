@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.processor.xmldeclaration;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IXMLDeclaration;
+import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 

@@ -20,6 +20,15 @@
 package org.thymeleaf.aurora.engine;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.model.ICDATASection;
+import org.thymeleaf.aurora.model.ICloseElementTag;
+import org.thymeleaf.aurora.model.IComment;
+import org.thymeleaf.aurora.model.IDocType;
+import org.thymeleaf.aurora.model.IOpenElementTag;
+import org.thymeleaf.aurora.model.IProcessingInstruction;
+import org.thymeleaf.aurora.model.IStandaloneElementTag;
+import org.thymeleaf.aurora.model.IText;
+import org.thymeleaf.aurora.model.IXMLDeclaration;
 
 /**
  *
