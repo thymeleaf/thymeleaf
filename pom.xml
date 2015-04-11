@@ -113,6 +113,17 @@
     </repository>
   </repositories>
 
+  <profiles>
+    <profile>
+      <id>doclint-java8-disable</id>
+      <activation>
+        <jdk>[1.8,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.opts>-Xdoclint:none</javadoc.opts>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
 
@@ -190,6 +201,7 @@
         <configuration>
           <show>protected</show>
           <noqualifier>java.lang</noqualifier>
+          <additionalparam>${javadoc.opts}</additionalparam>
           <overview>${basedir}/src/main/javadoc/overview.html</overview>
           <javadocDirectory>${basedir}/src/main/javadoc</javadocDirectory>
           <reportOutputDirectory>${project.reporting.outputDirectory}/api/${project.artifactId}/apidocs</reportOutputDirectory>
