@@ -19,6 +19,9 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -41,7 +44,8 @@ public interface IVariablesMap {
      */
 
 
-    public boolean contains(final String key);
-    public Object get(final String key);
+    public boolean containsVariable(final String key);
+    public Object getVariable(final String key);
+    public Set<String> getVariableNames();
 
 }

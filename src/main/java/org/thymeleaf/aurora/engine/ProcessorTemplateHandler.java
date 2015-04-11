@@ -21,8 +21,11 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.context.IVariablesMap;
 import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.model.ICloseElementTag;
 import org.thymeleaf.aurora.model.IComment;
@@ -49,14 +52,15 @@ import org.thymeleaf.util.Validate;
 public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
+    private static final Logger logger = LoggerFactory.getLogger(ProcessorTemplateHandler.class);
+
+
     private final ElementTagActionHandler actionHandler;
 
+    private ITemplateProcessingContext templateProcessingContext;
     private ITemplateEngineConfiguration configuration;
-    private ITextRepository textRepository;
-    private IModelFactory modelFactory;
-    private TemplateMode templateMode;
-    private ElementDefinitions elementDefinitions;
-    private AttributeDefinitions attributeDefinitions;
+
+    private ILocalVariableAwareVariablesMap variablesMap;
 
     private int markupLevel = 0;
 
@@ -95,23 +99,24 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         super.setTemplateProcessingContext(templateProcessingContext);
 
+        this.templateProcessingContext = templateProcessingContext;
+        Validate.notNull(this.templateProcessingContext, "Template Processing Context cannot be null");
+        Validate.notNull(this.templateProcessingContext.getTemplateMode(), "Template Mode returned by Template Processing Context cannot be null");
+
         this.configuration = templateProcessingContext.getConfiguration();
         Validate.notNull(this.configuration, "Template Engine Configuration returned by Template Processing Context cannot be null");
+        Validate.notNull(this.configuration.getTextRepository(), "Text Repository returned by Template Engine Configuration cannot be null");
+        Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by Template Engine Configuration cannot be null");
+        Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by Template Engine Configuration cannot be null");
 
-        this.modelFactory = templateProcessingContext.getModelFactory();
-        Validate.notNull(this.modelFactory, "Model Factory returned by Template Processing Context cannot be null");
-
-        this.textRepository = this.configuration.getTextRepository();
-        Validate.notNull(this.textRepository, "Text Repository returned by Template Engine Configuration cannot be null");
-
-        this.templateMode = templateProcessingContext.getTemplateMode();
-        Validate.notNull(this.templateMode, "Template Mode returned by Template Processing Context cannot be null");
-
-        this.elementDefinitions = this.configuration.getElementDefinitions();
-        Validate.notNull(this.elementDefinitions, "Element Definitions returned by Template Engine Configuration cannot be null");
-
-        this.attributeDefinitions = this.configuration.getAttributeDefinitions();
-        Validate.notNull(this.attributeDefinitions, "Attribute Definitions returned by Template Engine Configuration cannot be null");
+        final IVariablesMap variablesMap = templateProcessingContext.getVariablesMap();
+        Validate.notNull(variablesMap, "Variables Map returned by Template Processing Context cannot be null");
+        if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
+            this.variablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
+        } else {
+            logger.warn("Unknown implementation of the " + IVariablesMap.class.getName() + " interface: " +
+                        variablesMap.getClass().getName() + ". Local variable support will be DISABLED.");
+        }
 
     }
 
@@ -168,17 +173,22 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         if (this.textBuffers[this.handlerExecLevel] == null) {
             // Note we are not using the model factory because we need this exact implementation of the structure interface
-            this.textBuffers[this.handlerExecLevel] = new Text(this.textRepository);
+            this.textBuffers[this.handlerExecLevel] = new Text(this.configuration.getTextRepository());
         }
 
         if (this.openElementTagBuffers[this.handlerExecLevel] == null) {
             // Note we are not using the model factory because we need this exact implementation of the structure interface
-            this.openElementTagBuffers[this.handlerExecLevel] = new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
+            this.openElementTagBuffers[this.handlerExecLevel] =
+                    new OpenElementTag(
+                            this.templateProcessingContext.getTemplateMode(),
+                            this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
         }
 
         if (this.closeElementTagBuffers[this.handlerExecLevel] == null) {
             // Note we are not using the model factory because we need this exact implementation of the structure interface
-            this.closeElementTagBuffers[this.handlerExecLevel] = new CloseElementTag(this.templateMode, this.elementDefinitions);
+            this.closeElementTagBuffers[this.handlerExecLevel] =
+                    new CloseElementTag(
+                            this.templateProcessingContext.getTemplateMode(), this.configuration.getElementDefinitions());
         }
 
     }

@@ -21,7 +21,9 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.thymeleaf.util.Validate;
 
@@ -75,7 +77,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
-    public boolean contains(final String key) {
+    public boolean containsVariable(final String key) {
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.maps[n] != null && this.maps[n].containsKey(key)) {
@@ -87,7 +89,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
     }
 
 
-    public Object get(final String key) {
+    public Object getVariable(final String key) {
         int n = this.index + 1;
         while (n-- != 0) {
             if (this.maps[n] != null && this.maps[n].containsKey(key)) {
@@ -99,6 +101,28 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
             }
         }
         return null;
+    }
+
+
+    public Set<String> getVariableNames() {
+
+        final Set<String> variableNames = new LinkedHashSet<String>();
+        int n = this.index + 1;
+        int i = 0;
+        while (n-- != 0) {
+            if (this.maps[i] != null) {
+                for (final Map.Entry<String,Object> mapEntry : this.maps[i].entrySet()) {
+                    if (mapEntry.getValue() == NON_EXISTING) {
+                        variableNames.remove(mapEntry.getKey());
+                        continue;
+                    }
+                    variableNames.add(mapEntry.getKey());
+                }
+            }
+            i++;
+        }
+        return variableNames;
+
     }
 
 
@@ -175,7 +199,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
     public void remove(final String key) {
-        if (contains(key)) {
+        if (containsVariable(key)) {
             put(key, NON_EXISTING);
         }
     }

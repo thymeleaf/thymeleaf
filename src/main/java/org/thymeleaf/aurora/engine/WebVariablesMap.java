@@ -22,7 +22,9 @@ package org.thymeleaf.aurora.engine;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -120,7 +122,7 @@ final class WebVariablesMap
     }
 
 
-    public boolean contains(final String key) {
+    public boolean containsVariable(final String key) {
         if (SESSION_VARIABLE_NAME.equals(key)) {
             return this.sessionAttributesVariablesMap != null;
         }
@@ -130,11 +132,11 @@ final class WebVariablesMap
         if (APPLICATION_VARIABLE_NAME.equals(key)) {
             return true;
         }
-        return this.requestAttributesVariablesMap.contains(key);
+        return this.requestAttributesVariablesMap.containsVariable(key);
     }
 
 
-    public Object get(final String key) {
+    public Object getVariable(final String key) {
         if (SESSION_VARIABLE_NAME.equals(key)) {
             return this.sessionAttributesVariablesMap;
         }
@@ -144,7 +146,14 @@ final class WebVariablesMap
         if (APPLICATION_VARIABLE_NAME.equals(key)) {
             return this.applicationAttributesVariablesMap;
         }
-        return this.requestAttributesVariablesMap.get(key);
+        return this.requestAttributesVariablesMap.getVariable(key);
+    }
+
+
+    public Set<String> getVariableNames() {
+        // Note this set will NOT include 'param', 'session' or 'application', as they are considered special
+        // ways to access attributes/parameters in these Servlet API structures
+        return this.requestAttributesVariablesMap.getVariableNames();
     }
 
 
@@ -227,12 +236,24 @@ final class WebVariablesMap
             this.session = session;
         }
 
-        public Object get(final String key) {
+        public Object getVariable(final String key) {
             return this.session.getAttribute(key);
         }
 
-        public boolean contains(final String key) {
+        public boolean containsVariable(final String key) {
             return existsInEnumeration(this.session.getAttributeNames(), key);
+        }
+
+
+        public Set<String> getVariableNames() {
+
+            final Set<String> variableNames = new LinkedHashSet<String>();
+            final Enumeration<String> attributeNamesEnum = this.session.getAttributeNames();
+            while (attributeNamesEnum.hasMoreElements()) {
+                variableNames.add(attributeNamesEnum.nextElement());
+            }
+            return variableNames;
+
         }
 
     }
@@ -249,12 +270,24 @@ final class WebVariablesMap
             this.servletContext = servletContext;
         }
 
-        public Object get(final String key) {
+        public Object getVariable(final String key) {
             return this.servletContext.getAttribute(key);
         }
 
-        public boolean contains(final String key) {
+        public boolean containsVariable(final String key) {
             return existsInEnumeration(this.servletContext.getAttributeNames(), key);
+        }
+
+
+        public Set<String> getVariableNames() {
+
+            final Set<String> variableNames = new LinkedHashSet<String>();
+            final Enumeration<String> attributeNamesEnum = this.servletContext.getAttributeNames();
+            while (attributeNamesEnum.hasMoreElements()) {
+                variableNames.add(attributeNamesEnum.nextElement());
+            }
+            return variableNames;
+
         }
 
     }
@@ -271,12 +304,16 @@ final class WebVariablesMap
             this.request = request;
         }
 
-        public Object get(final String key) {
+        public Object getVariable(final String key) {
             return this.request.getAttribute(key);
         }
 
-        public boolean contains(final String key) {
+        public boolean containsVariable(final String key) {
             return existsInEnumeration(this.request.getAttributeNames(), key);
+        }
+
+        public Set<String> getVariableNames() {
+            return this.request.getParameterMap().keySet();
         }
 
     }
@@ -332,7 +369,7 @@ final class WebVariablesMap
 
         }
 
-        public boolean contains(final String key) {
+        public boolean containsVariable(final String key) {
 
             // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
             // keys Enumeration seems faster as a way to know if something exists (in the cases when we are checking
@@ -363,10 +400,21 @@ final class WebVariablesMap
         }
 
 
-        public Object get(final String key) {
+        public Object getVariable(final String key) {
             return this.request.getAttribute(key);
         }
 
+
+        public Set<String> getVariableNames() {
+
+            final Set<String> variableNames = new LinkedHashSet<String>();
+            final Enumeration<String> attributeNamesEnum = this.request.getAttributeNames();
+            while (attributeNamesEnum.hasMoreElements()) {
+                variableNames.add(attributeNamesEnum.nextElement());
+            }
+            return variableNames;
+
+        }
 
 
         private int searchName(final String name) {
@@ -472,7 +520,7 @@ final class WebVariablesMap
                     levelIndex = this.levelSizes[this.index]; // We will add at the end
 
                     this.names[this.index][levelIndex] = key;
-                    if (contains(key)) {
+                    if (containsVariable(key)) {
                         this.oldValues[this.index][levelIndex] = this.request.getAttribute(key);
                     } else {
                         this.oldValues[this.index][levelIndex] = NON_EXISTING;
@@ -505,7 +553,7 @@ final class WebVariablesMap
 
 
         public void remove(final String key) {
-            if (contains(key)) {
+            if (containsVariable(key)) {
                 put(key, NON_EXISTING);
             }
         }
@@ -537,7 +585,7 @@ final class WebVariablesMap
                         final Object newValue = this.newValues[this.index][n];
                         final Object oldValue = this.oldValues[this.index][n];
                         if (newValue == NON_EXISTING) {
-                            if (!contains(name)) {
+                            if (!containsVariable(name)) {
                                 // Only if not contained, in order to avoid modifying values that have been set directly
                                 // into the request.
                                 if (oldValue != NON_EXISTING) {
@@ -588,7 +636,7 @@ final class WebVariablesMap
                             // This means that, either the value in the request is the same as the newValue, or it was modified
                             // directly at the request and we need to discard this entry.
                             if (newValue == NON_EXISTING) {
-                                if (contains(name)) {
+                                if (containsVariable(name)) {
                                     continue;
                                 }
                             } else {
