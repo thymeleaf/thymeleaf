@@ -19,6 +19,11 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import org.thymeleaf.util.Validate;
 
 /**
@@ -49,6 +54,13 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     boolean removeElement;
 
     boolean removeTag;
+
+    boolean setLocalVariable;
+    Map<String,Object> addedLocalVariables = new LinkedHashMap<String, Object>(3);
+
+    boolean removeLocalVariable;
+    Set<String> removedLocalVariableNames = new LinkedHashSet<String>(3);
+
 
 
     ElementTagActionHandler() {
@@ -106,6 +118,22 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     }
 
 
+    public void removeLocalVariable(final String name) {
+        // Can be combined with others, no need to reset
+        this.removeLocalVariable = true;
+        this.removedLocalVariableNames.add(name);
+    }
+
+
+    public void setLocalVariable(final String name, final Object value) {
+        // Can be combined with others, no need to reset
+        this.setLocalVariable = true;
+        this.addedLocalVariables.put(name, value);
+    }
+
+
+
+
     public void reset() {
 
         this.setBodyText = false;
@@ -127,6 +155,12 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
         this.removeElement = false;
 
         this.removeTag = false;
+
+        this.setLocalVariable = false;
+        this.addedLocalVariables.clear();
+
+        this.removeLocalVariable = false;
+        this.removedLocalVariableNames.clear();
 
     }
 

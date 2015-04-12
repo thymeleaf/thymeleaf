@@ -281,6 +281,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * are available for the rest of the processors as well as the body of the tag
+         */
+        if (this.variablesMap != null) {
+            this.variablesMap.increaseLevel();
+        }
+
+
+        /*
          * EXECUTE PROCESSORS
          */
         IProcessor processor;
@@ -294,6 +303,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 final IElementProcessor elementProcessor = ((IElementProcessor)processor);
                 elementProcessor.process(getTemplateProcessingContext(), standaloneElementTag, this.actionHandler);
+
+                if (this.actionHandler.setLocalVariable) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.putAll(this.actionHandler.addedLocalVariables);
+                    }
+                }
+
+                if (this.actionHandler.removeLocalVariable) {
+                    if (this.variablesMap != null) {
+                        for (final String variableName : this.actionHandler.removedLocalVariableNames) {
+                            this.variablesMap.remove(variableName);
+                        }
+                    }
+                }
 
                 if (this.actionHandler.setBodyText) {
 
@@ -390,6 +413,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * DECREASE THE VARIABLES MAP LEVEL once we have executed all the processors (and maybe a body if we added
+         * one to the tag converting it into an open tag)
+         */
+        if (this.variablesMap != null) {
+            this.variablesMap.decreaseLevel();
+        }
+
+
+        /*
          * PROCESS THE REST OF THE HANDLER CHAIN (for the close tag) in the case we DID reshape the tag to non-void
          */
         if (!tagRemoved && tagBodyAdded) {
@@ -416,6 +448,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (this.markupLevel > this.skipMarkupFromLevel) {
             this.markupLevel++;
+            if (this.variablesMap != null) {
+                this.variablesMap.increaseLevel();
+            }
             return;
         }
 
@@ -426,6 +461,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (!openElementTag.hasAssociatedProcessors()) {
             super.handleOpenElement(openElementTag);
             this.markupLevel++;
+            if (this.variablesMap != null) {
+                this.variablesMap.increaseLevel();
+            }
             return;
         }
 
@@ -445,6 +483,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * are available for the rest of the processors as well as the body of the tag
+         */
+        if (this.variablesMap != null) {
+            this.variablesMap.increaseLevel();
+        }
+
+
+        /*
          * EXECUTE PROCESSORS
          */
         IProcessor processor;
@@ -458,6 +505,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 final IElementProcessor elementProcessor = ((IElementProcessor)processor);
                 elementProcessor.process(getTemplateProcessingContext(), openElementTag, this.actionHandler);
+
+                if (this.actionHandler.setLocalVariable) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.putAll(this.actionHandler.addedLocalVariables);
+                    }
+                }
+
+                if (this.actionHandler.removeLocalVariable) {
+                    if (this.variablesMap != null) {
+                        for (final String variableName : this.actionHandler.removedLocalVariableNames) {
+                            this.variablesMap.remove(variableName);
+                        }
+                    }
+                }
 
                 if (this.actionHandler.setBodyText) {
 
@@ -562,6 +623,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          */
         if (tagRemoved) {
             this.skipCloseTagLevels.add(this.markupLevel - 1);
+            // We cannot decrease here the variables map level because we aren't actually decreasing the markup
+            // level until we find the corresponding close tag
         }
 
     }
@@ -577,6 +640,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel > this.skipMarkupFromLevel) {
             this.markupLevel++;
+            if (this.variablesMap != null) {
+                this.variablesMap.increaseLevel();
+            }
             return;
         }
 
@@ -585,6 +651,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         // Note we increase the markup level after processing the rest of the chain for this element
         this.markupLevel++;
+        if (this.variablesMap != null) {
+            this.variablesMap.increaseLevel();
+        }
 
     }
 
@@ -595,6 +664,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleCloseElement(final ICloseElementTag closeElementTag) {
 
         this.markupLevel--;
+        if (this.variablesMap != null) {
+            this.variablesMap.decreaseLevel();
+        }
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel > this.skipMarkupFromLevel) {
@@ -619,6 +691,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
 
         this.markupLevel--;
+        if (this.variablesMap != null) {
+            this.variablesMap.decreaseLevel();
+        }
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel > this.skipMarkupFromLevel) {
