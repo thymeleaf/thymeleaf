@@ -36,8 +36,10 @@ public interface ITemplateHandlerEventQueue {
     public void insert(final int pos, final ITemplateHandlerEvent event);
     public void insertAll(final int pos, final ITemplateHandlerEventQueue eventQueue);
 
-    public void process(final ITemplateHandler handler);
+    public void process(final ITemplateHandler handler, final boolean reset);
 
     public void reset();
+
+    public ITemplateHandlerEventQueue cloneQueue(final boolean deep);
 
 }

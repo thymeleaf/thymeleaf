@@ -63,7 +63,7 @@ final class CloseElementTag
 
 
     // Meant to be called only from the cloneElementTag method
-    private CloseElementTag() {
+    protected CloseElementTag() {
         super();
     }
 
@@ -80,10 +80,15 @@ final class CloseElementTag
 
 
     // Meant to be called only from within the engine
-    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
-
+    final void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
         resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
+    }
 
+
+
+    // Meant to be called only from within the engine
+    void setFromCloseElementTag(final ICloseElementTag tag) {
+        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
     }
 
 

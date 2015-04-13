@@ -226,6 +226,22 @@ final class XMLDeclaration implements IXMLDeclaration {
 
 
 
+    // Meant to be called only from within the engine
+    void setFromXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
+
+        this.xmlDeclaration = xmlDeclaration.getXmlDeclaration();
+        this.keyword = xmlDeclaration.getKeyword();
+        this.version = xmlDeclaration.getVersion();
+        this.encoding = xmlDeclaration.getEncoding();
+        this.standalone = xmlDeclaration.getStandalone();
+        this.line = xmlDeclaration.getLine();
+        this.col = xmlDeclaration.getCol();
+
+    }
+
+
+
+
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getXmlDeclaration());

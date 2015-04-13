@@ -22,9 +22,8 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.model.IStandaloneElementTag;
+import org.thymeleaf.aurora.model.IAutoOpenElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -32,11 +31,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class StandaloneElementTag
-            extends AbstractProcessableElementTag implements IStandaloneElementTag {
-
-    private boolean minimized;
-
+final class AutoOpenElementTag extends AbstractProcessableElementTag implements IAutoOpenElementTag {
 
 
     /*
@@ -46,7 +41,7 @@ final class StandaloneElementTag
 
 
     // Meant to be called only from the template handler adapter
-    StandaloneElementTag(
+    AutoOpenElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions) {
@@ -56,87 +51,55 @@ final class StandaloneElementTag
 
 
     // Meant to be called only from the model factory
-    StandaloneElementTag(
+    AutoOpenElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
             final AttributeDefinitions attributeDefinitions,
-            final String elementName,
-            final boolean minimized) {
+            final String elementName) {
         super(templateMode, elementDefinitions, attributeDefinitions, elementName);
-        this.minimized = minimized;
     }
 
 
 
     // Meant to be called only from the cloneElementTag method
-    private StandaloneElementTag() {
+    private AutoOpenElementTag() {
         super();
     }
 
 
 
 
-    public boolean isMinimized() {
-        return this.minimized;
-    }
-
-
-    public void setMinimized(final boolean minimized) {
-        if (this.templateMode.isXML() && !minimized) {
-            throw new IllegalArgumentException("Standalone tag cannot be un-minimized when in XML template mode.");
-        }
-        this.minimized = minimized; // No need to do anything else
-    }
-
-
-
-
     // Meant to be called only from within the engine
-    void setStandaloneElementTag(
+    void setAutoOpenElementTag(
             final String elementName,
-            final boolean minimized,
             final int line, final int col) {
 
         resetProcessableTag(elementName, line, col);
-        this.minimized = minimized;
 
     }
 
 
 
     // Meant to be called only from within the engine
-    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
+    void setFromAutoOpenElementTag(final IAutoOpenElementTag tag) {
 
         resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.minimized = tag.isMinimized();
         this.elementAttributes.copyFrom(tag.getAttributes());
 
     }
 
 
 
-
-
     public void write(final Writer writer) throws IOException {
-        Validate.notNull(writer, "Writer cannot be null");
-        writer.write('<');
-        writer.write(this.elementName);
-        this.elementAttributes.write(writer);
-        if (this.minimized) {
-            writer.write("/>");
-        } else {
-            writer.write('>');
-        }
+        // Nothing to be written... balanced elements were not present at the original template!
     }
 
 
 
 
-
-    public StandaloneElementTag cloneElementTag() {
-        final StandaloneElementTag clone = new StandaloneElementTag();
+    public AutoOpenElementTag cloneElementTag() {
+        final AutoOpenElementTag clone = new AutoOpenElementTag();
         initializeProcessableElementTagClone(clone);
-        clone.minimized = this.minimized;
         return clone;
     }
 

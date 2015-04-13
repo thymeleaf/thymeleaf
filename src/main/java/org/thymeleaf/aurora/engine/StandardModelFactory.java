@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import org.thymeleaf.aurora.model.IAutoCloseElementTag;
+import org.thymeleaf.aurora.model.IAutoOpenElementTag;
 import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.model.ICloseElementTag;
 import org.thymeleaf.aurora.model.IComment;
@@ -28,6 +30,7 @@ import org.thymeleaf.aurora.model.IOpenElementTag;
 import org.thymeleaf.aurora.model.IProcessingInstruction;
 import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.model.IText;
+import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
@@ -138,8 +141,23 @@ public class StandardModelFactory implements IModelFactory {
     }
 
 
+    public IAutoOpenElementTag createAutoOpenElementTag(final String elementName) {
+        return new AutoOpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions, elementName);
+    }
+
+
     public ICloseElementTag createCloseElementTag(final String elementName) {
         return new CloseElementTag(this.templateMode, this.elementDefinitions, elementName);
+    }
+
+
+    public IAutoCloseElementTag createAutoCloseElementTag(final String elementName) {
+        return new AutoCloseElementTag(this.templateMode, this.elementDefinitions, elementName);
+    }
+
+
+    public IUnmatchedCloseElementTag createUnmatchedCloseElementTag(final String elementName) {
+        return new UnmatchedCloseElementTag(this.templateMode, this.elementDefinitions, elementName);
     }
 
 

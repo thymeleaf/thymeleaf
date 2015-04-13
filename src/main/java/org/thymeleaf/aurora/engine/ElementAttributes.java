@@ -753,20 +753,35 @@ public final class ElementAttributes implements IElementAttributes {
 
         if (eaFrom.attributesSize > 0) {
 
-            if (this.attributes == null || this.attributes.length < eaFrom.attributesSize) {
+            if (this.attributes == null) {
                 // We need new arrays as the 'eaFrom' attributes wouldn't fit
+
                 this.attributes = new ElementAttribute[Math.max(eaFrom.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
                 this.attributeNames = new AttributeName[Math.max(eaFrom.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                Arrays.fill(this.attributes, null);
+                Arrays.fill(this.attributeNames, null);
+
+            } else if (this.attributes.length < eaFrom.attributesSize) {
+                // We need to adjust the size of our arrays
+
+                final ElementAttribute[] newAttributes = new ElementAttribute[eaFrom.attributesSize];
+                final AttributeName[] newAttributeNames = new AttributeName[eaFrom.attributesSize];
+                Arrays.fill(newAttributes, null);
+                Arrays.fill(newAttributeNames, null);
+                System.arraycopy(this.attributes, 0, newAttributes, 0, this.attributes.length);
+                // No need to copy the names - they're immutable (sort of)
+                this.attributes = newAttributes;
+                this.attributeNames = newAttributeNames;
+
             }
-
-            // Attributes in 'eaFrom' will fit in the already existing arrays (might have been created just now)
-
-            Arrays.fill(this.attributes, null);
-            Arrays.fill(this.attributeNames, null);
 
             int n = eaFrom.attributesSize;
             while (n-- != 0) {
-                this.attributes[n] = eaFrom.attributes[n].cloneElementAttribute();
+                if (this.attributes[n] == null) {
+                    this.attributes[n] = eaFrom.attributes[n].cloneElementAttribute();
+                } else {
+                    this.attributes[n].copyFrom(eaFrom.attributes[n]);
+                }
                 this.attributeNames[n] = eaFrom.attributeNames[n];
             }
             this.attributesSize = eaFrom.attributesSize;
@@ -775,16 +790,29 @@ public final class ElementAttributes implements IElementAttributes {
 
         if (eaFrom.innerWhiteSpacesSize > 0) {
 
-            if (this.innerWhiteSpaces == null || this.innerWhiteSpaces.length < eaFrom.innerWhiteSpacesSize) {
+            if (this.innerWhiteSpaces == null) {
                 // We need new arrays as the 'eaFrom' attributes wouldn't fit
-                this.innerWhiteSpaces = new InnerWhiteSpace[Math.max(eaFrom.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
-            }
 
-            Arrays.fill(this.innerWhiteSpaces, null);
+                this.innerWhiteSpaces = new InnerWhiteSpace[Math.max(eaFrom.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                Arrays.fill(this.innerWhiteSpaces, null);
+
+            } else if (this.innerWhiteSpaces.length < eaFrom.innerWhiteSpacesSize) {
+                // We need to adjust the size of our arrays
+
+                final InnerWhiteSpace[] newInnerWhiteSpaces = new InnerWhiteSpace[eaFrom.innerWhiteSpacesSize];
+                Arrays.fill(newInnerWhiteSpaces, null);
+                System.arraycopy(this.innerWhiteSpaces, 0, newInnerWhiteSpaces, 0, this.innerWhiteSpaces.length);
+                this.innerWhiteSpaces = newInnerWhiteSpaces;
+
+            }
 
             int n = eaFrom.innerWhiteSpacesSize;
             while (n-- != 0) {
-                this.innerWhiteSpaces[n] = eaFrom.innerWhiteSpaces[n].cloneInnerWhiteSpace();
+                if (this.innerWhiteSpaces[n] == null) {
+                    this.innerWhiteSpaces[n] = eaFrom.innerWhiteSpaces[n].cloneInnerWhiteSpace();
+                } else {
+                    this.innerWhiteSpaces[n].whiteSpace = eaFrom.innerWhiteSpaces[n].whiteSpace;
+                }
             }
             this.innerWhiteSpacesSize = eaFrom.innerWhiteSpacesSize;
 

@@ -213,6 +213,23 @@ final class CDATASection implements ICDATASection {
 
 
 
+    // Meant to be called only from within the engine
+    void setFromCDATASection(final ICDATASection cdataSection) {
+
+        this.buffer = null;
+        this.offset = -1;
+        this.cdataSection = cdataSection.getCDATASection();
+        this.content = cdataSection.getContent();
+        this.cdataSectionLength = this.cdataSection.length();
+        this.contentLength = this.content.length();
+        this.line = cdataSection.getLine();
+        this.col = cdataSection.getCol();
+
+    }
+
+
+
+
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         if (this.buffer != null) {

@@ -51,7 +51,10 @@ public interface IModelFactory {
 
     public IStandaloneElementTag createStandaloneElementTag(final String elementName, final boolean minimized);
     public IOpenElementTag createOpenElementTag(final String elementName);
+    public IAutoOpenElementTag createAutoOpenElementTag(final String elementName);
     public ICloseElementTag createCloseElementTag(final String elementName);
+    public IAutoCloseElementTag createAutoCloseElementTag(final String elementName);
+    public IUnmatchedCloseElementTag createUnmatchedCloseElementTag(final String elementName);
 
 
 }

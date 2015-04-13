@@ -161,6 +161,18 @@ final class ElementAttribute {
     }
 
 
+    void copyFrom(final ElementAttribute elementAttribute) {
+        this.definition = elementAttribute.definition;
+        this.name = elementAttribute.name;
+        this.operator = elementAttribute.operator;
+        this.value = elementAttribute.value;
+        this.valueQuotes = elementAttribute.valueQuotes;
+        this.line = elementAttribute.line;
+        this.col = elementAttribute.col;
+    }
+
+
+
     ElementAttribute cloneElementAttribute() {
         final ElementAttribute clone = new ElementAttribute();
         clone.definition = this.definition;

@@ -21,6 +21,8 @@ package org.thymeleaf.aurora.engine;
 
 import java.io.Writer;
 
+import org.thymeleaf.aurora.model.IAutoCloseElementTag;
+import org.thymeleaf.aurora.model.IAutoOpenElementTag;
 import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.model.ICloseElementTag;
 import org.thymeleaf.aurora.model.IComment;
@@ -29,6 +31,7 @@ import org.thymeleaf.aurora.model.IOpenElementTag;
 import org.thymeleaf.aurora.model.IProcessingInstruction;
 import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.model.IText;
+import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.exceptions.TemplateOutputException;
 
@@ -154,12 +157,18 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
+    public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
 
-        // Nothing to be written... balanced elements were not present at the original template!
+        try {
+            autoOpenElementTag.write(this.writer);
+        } catch (final Exception e) {
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    autoOpenElementTag.getLine(), autoOpenElementTag.getCol(), e);
+        }
 
         // Just in case someone set us a 'next'
-        super.handleAutoOpenElement(openElementTag);
+        super.handleAutoOpenElement(autoOpenElementTag);
 
     }
 
@@ -182,30 +191,35 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
+    public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
 
-        // Nothing to be written... balanced elements were not present at the original template!
+        try {
+            autoCloseElementTag.write(this.writer);
+        } catch (final Exception e) {
+            throw new TemplateOutputException(
+                    "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
+                    autoCloseElementTag.getLine(), autoCloseElementTag.getCol(), e);
+        }
 
         // Just in case someone set us a 'next'
-        super.handleAutoCloseElement(closeElementTag);
+        super.handleAutoCloseElement(autoCloseElementTag);
 
     }
 
 
     @Override
-    public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
+    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
 
-        // We will write exactly the same as for non-unmatched close elements, because that does not matter from the markup point
         try {
-            closeElementTag.write(this.writer);
+            unmatchedCloseElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
                     "An error happened during template rendering", getTemplateProcessingContext().getTemplateName(),
-                    closeElementTag.getLine(), closeElementTag.getCol(), e);
+                    unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol(), e);
         }
 
         // Just in case someone set us a 'next'
-        super.handleUnmatchedCloseElement(closeElementTag);
+        super.handleUnmatchedCloseElement(unmatchedCloseElementTag);
 
     }
 

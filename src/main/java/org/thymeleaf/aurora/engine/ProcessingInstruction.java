@@ -179,6 +179,20 @@ public final class ProcessingInstruction implements IProcessingInstruction {
 
 
 
+    // Meant to be called only from within the engine
+    void setFromProcessingInstruction(final IProcessingInstruction processingInstruction) {
+
+        this.processingInstruction = processingInstruction.getProcessingInstruction();
+        this.target = processingInstruction.getTarget();
+        this.content = processingInstruction.getContent();
+        this.line = processingInstruction.getLine();
+        this.col = processingInstruction.getCol();
+
+    }
+
+
+
+
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getProcessingInstruction());

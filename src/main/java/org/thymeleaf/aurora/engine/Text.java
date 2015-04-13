@@ -168,6 +168,21 @@ final class Text implements IText {
 
 
 
+    // Meant to be called only from within the engine
+    void setFromText(final IText text) {
+
+        this.buffer = null;
+        this.offset = -1;
+        this.text = text.getText();
+        this.length = this.text.length();
+        this.line = text.getLine();
+        this.col = text.getCol();
+
+    }
+
+
+
+
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         if (this.buffer != null) {

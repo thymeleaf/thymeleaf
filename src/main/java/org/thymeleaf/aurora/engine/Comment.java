@@ -215,6 +215,23 @@ final class Comment implements IComment {
 
 
 
+    // Meant to be called only from within the engine
+    void setFromComment(final IComment comment) {
+
+        this.buffer = null;
+        this.offset = -1;
+        this.comment = comment.getComment();
+        this.content = comment.getContent();
+        this.commentLength = this.comment.length();
+        this.contentLength = this.content.length();
+        this.line = comment.getLine();
+        this.col = comment.getCol();
+
+    }
+
+
+
+
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         if (this.buffer != null) {

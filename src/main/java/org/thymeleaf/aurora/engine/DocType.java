@@ -298,6 +298,24 @@ final class DocType implements IDocType {
 
 
 
+    // Meant to be called only from within the engine
+    void setFromDocType(final IDocType docType) {
+
+        this.docType = docType.getDocType();
+        this.keyword = docType.getKeyword();
+        this.elementName = docType.getElementName();
+        this.type = docType.getType();
+        this.publicId = docType.getPublicId();
+        this.systemId = docType.getSystemId();
+        this.internalSubset = docType.getInternalSubset();
+        this.line = docType.getLine();
+        this.col = docType.getCol();
+
+    }
+
+
+
+
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getDocType());

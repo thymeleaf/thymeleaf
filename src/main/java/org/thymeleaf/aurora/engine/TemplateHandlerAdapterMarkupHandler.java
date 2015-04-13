@@ -54,6 +54,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
     private final OpenElementTag openElementTag;
     private final StandaloneElementTag standaloneElementTag;
     private final CloseElementTag closeElementTag;
+    private final AutoOpenElementTag autoOpenElementTag;
+    private final AutoCloseElementTag autoCloseElementTag;
+    private final UnmatchedCloseElementTag unmatchedCloseElementTag;
 
     private ElementAttributes currentElementAttributes;
 
@@ -95,6 +98,9 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
         this.openElementTag = new OpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
         this.standaloneElementTag = new StandaloneElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
         this.closeElementTag = new CloseElementTag(this.templateMode, this.elementDefinitions);
+        this.autoOpenElementTag = new AutoOpenElementTag(this.templateMode, this.elementDefinitions, this.attributeDefinitions);
+        this.autoCloseElementTag = new AutoCloseElementTag(this.templateMode, this.elementDefinitions);
+        this.unmatchedCloseElementTag = new UnmatchedCloseElementTag(this.templateMode, this.elementDefinitions);
 
         this.currentElementAttributes = null; // Will change as soon as we start processing an open or standalone tag
         
@@ -293,7 +299,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.openElementTag.setOpenElementTag(
+        this.autoOpenElementTag.setAutoOpenElementTag(
                 this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
         this.currentElementAttributes = (ElementAttributes) this.openElementTag.getAttributes();
 
@@ -307,7 +313,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleAutoOpenElement(this.openElementTag);
+        this.templateHandler.handleAutoOpenElement(this.autoOpenElementTag);
         this.currentElementAttributes = null;
 
     }
@@ -348,7 +354,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.autoCloseElementTag.setAutoCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
         this.currentElementAttributes = null;
 
     }
@@ -361,7 +367,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleAutoCloseElement(this.closeElementTag);
+        this.templateHandler.handleAutoCloseElement(this.autoCloseElementTag);
         this.currentElementAttributes = null;
 
     }
@@ -375,7 +381,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             final int line, final int col)
             throws ParseException {
 
-        this.closeElementTag.setCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
+        this.unmatchedCloseElementTag.setUnmatchedCloseElementTag(this.textRepository.getText(buffer, nameOffset,nameLen), line, col);
         this.currentElementAttributes = null;
 
     }
@@ -389,7 +395,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
             throws ParseException {
 
         // Call the template handler method with the gathered info
-        this.templateHandler.handleUnmatchedCloseElement(this.closeElementTag);
+        this.templateHandler.handleUnmatchedCloseElement(this.unmatchedCloseElementTag);
         this.currentElementAttributes = null;
 
     }

@@ -21,6 +21,8 @@ package org.thymeleaf.aurora.engine;
 
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.model.IAutoCloseElementTag;
+import org.thymeleaf.aurora.model.IAutoOpenElementTag;
 import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.model.ICloseElementTag;
 import org.thymeleaf.aurora.model.IComment;
@@ -29,6 +31,7 @@ import org.thymeleaf.aurora.model.IOpenElementTag;
 import org.thymeleaf.aurora.model.IProcessingInstruction;
 import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.model.IText;
+import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.util.Validate;
 
@@ -236,13 +239,13 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-    public void handleAutoOpenElement(final IOpenElementTag openElementTag) {
+    public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleAutoOpenElement(openElementTag);
+        this.next.handleAutoOpenElement(autoOpenElementTag);
 
     }
 
@@ -258,24 +261,24 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     }
 
 
-    public void handleAutoCloseElement(final ICloseElementTag closeElementTag) {
+    public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleAutoCloseElement(closeElementTag);
+        this.next.handleAutoCloseElement(autoCloseElementTag);
 
     }
 
 
-    public void handleUnmatchedCloseElement(final ICloseElementTag closeElementTag) {
+    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
 
         if (this.next == null) {
             return;
         }
 
-        this.next.handleUnmatchedCloseElement(closeElementTag);
+        this.next.handleUnmatchedCloseElement(unmatchedCloseElementTag);
 
     }
 

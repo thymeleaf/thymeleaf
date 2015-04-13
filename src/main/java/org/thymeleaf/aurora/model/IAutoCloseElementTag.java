@@ -17,9 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
-
-import java.util.Iterator;
+package org.thymeleaf.aurora.model;
 
 /**
  *
@@ -27,27 +25,8 @@ import java.util.Iterator;
  * @since 3.0.0
  * 
  */
-public interface IElementTagActionHandler {
+public interface IAutoCloseElementTag extends IElementTag {
 
-
-    public void reset();
-
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-//    public void setSelectionTarget();
-//    public void setInliningMode();
-
-    public void setBody(final String text, final boolean processable);
-    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
-
-    public void replaceWith(final String text, final boolean processable);
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
-
-
-    public void removeElement();
-    public void removeTag();
-
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Iterator<?> iterator);
+    public IAutoCloseElementTag cloneElementTag();
 
 }
-

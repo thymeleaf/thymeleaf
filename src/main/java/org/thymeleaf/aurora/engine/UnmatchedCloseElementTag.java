@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.model.IStandaloneElementTag;
+import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -30,13 +30,9 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-final class StandaloneElementTag
-            extends AbstractProcessableElementTag implements IStandaloneElementTag {
-
-    private boolean minimized;
-
+final class UnmatchedCloseElementTag extends AbstractElementTag implements IUnmatchedCloseElementTag {
 
 
     /*
@@ -46,71 +42,44 @@ final class StandaloneElementTag
 
 
     // Meant to be called only from the template handler adapter
-    StandaloneElementTag(
+    UnmatchedCloseElementTag(
             final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions) {
-        super(templateMode, elementDefinitions, attributeDefinitions);
+            final ElementDefinitions elementDefinitions) {
+        super(templateMode, elementDefinitions);
     }
 
 
 
     // Meant to be called only from the model factory
-    StandaloneElementTag(
+    UnmatchedCloseElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions,
-            final String elementName,
-            final boolean minimized) {
-        super(templateMode, elementDefinitions, attributeDefinitions, elementName);
-        this.minimized = minimized;
+            final String elementName) {
+        super(templateMode, elementDefinitions, elementName);
     }
 
 
 
     // Meant to be called only from the cloneElementTag method
-    private StandaloneElementTag() {
+    private UnmatchedCloseElementTag() {
         super();
     }
 
 
 
 
-    public boolean isMinimized() {
-        return this.minimized;
-    }
-
-
-    public void setMinimized(final boolean minimized) {
-        if (this.templateMode.isXML() && !minimized) {
-            throw new IllegalArgumentException("Standalone tag cannot be un-minimized when in XML template mode.");
-        }
-        this.minimized = minimized; // No need to do anything else
-    }
-
-
-
-
     // Meant to be called only from within the engine
-    void setStandaloneElementTag(
+    void setUnmatchedCloseElementTag(
             final String elementName,
-            final boolean minimized,
             final int line, final int col) {
-
-        resetProcessableTag(elementName, line, col);
-        this.minimized = minimized;
-
+        resetElementTag(elementName, line, col);
     }
 
 
 
     // Meant to be called only from within the engine
-    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.minimized = tag.isMinimized();
-        this.elementAttributes.copyFrom(tag.getAttributes());
-
+    void setFromUnmatchedCloseElementTag(final IUnmatchedCloseElementTag tag) {
+        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
     }
 
 
@@ -118,25 +87,20 @@ final class StandaloneElementTag
 
 
     public void write(final Writer writer) throws IOException {
+        // We will write exactly the same as for non-unmatched close elements, because that does not matter from the markup point
         Validate.notNull(writer, "Writer cannot be null");
-        writer.write('<');
+        writer.write("</");
         writer.write(this.elementName);
-        this.elementAttributes.write(writer);
-        if (this.minimized) {
-            writer.write("/>");
-        } else {
-            writer.write('>');
-        }
+        writer.write('>');
     }
 
 
 
 
 
-    public StandaloneElementTag cloneElementTag() {
-        final StandaloneElementTag clone = new StandaloneElementTag();
-        initializeProcessableElementTagClone(clone);
-        clone.minimized = this.minimized;
+    public UnmatchedCloseElementTag cloneElementTag() {
+        final UnmatchedCloseElementTag clone = new UnmatchedCloseElementTag();
+        initializeElementTagClone(clone);
         return clone;
     }
 

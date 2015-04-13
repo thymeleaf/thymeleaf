@@ -22,19 +22,16 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.model.IOpenElementTag;
-import org.thymeleaf.aurora.model.IStandaloneElementTag;
+import org.thymeleaf.aurora.model.IAutoCloseElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.util.Validate;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  * @since 3.0.0
- * 
+ *
  */
-final class OpenElementTag
-        extends AbstractProcessableElementTag implements IOpenElementTag {
+final class AutoCloseElementTag extends AbstractElementTag implements IAutoCloseElementTag {
 
 
     /*
@@ -44,28 +41,26 @@ final class OpenElementTag
 
 
     // Meant to be called only from the template handler adapter
-    OpenElementTag(
+    AutoCloseElementTag(
             final TemplateMode templateMode,
-            final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions) {
-        super(templateMode, elementDefinitions, attributeDefinitions);
+            final ElementDefinitions elementDefinitions) {
+        super(templateMode, elementDefinitions);
     }
 
 
 
     // Meant to be called only from the model factory
-    OpenElementTag(
+    AutoCloseElementTag(
             final TemplateMode templateMode,
             final ElementDefinitions elementDefinitions,
-            final AttributeDefinitions attributeDefinitions,
             final String elementName) {
-        super(templateMode, elementDefinitions, attributeDefinitions, elementName);
+        super(templateMode, elementDefinitions, elementName);
     }
 
 
 
     // Meant to be called only from the cloneElementTag method
-    protected OpenElementTag() {
+    private AutoCloseElementTag() {
         super();
     }
 
@@ -73,49 +68,33 @@ final class OpenElementTag
 
 
     // Meant to be called only from within the engine
-    void setOpenElementTag(
+    final void setAutoCloseElementTag(
             final String elementName,
             final int line, final int col) {
-
-        resetProcessableTag(elementName, line, col);
-
+        resetElementTag(elementName, line, col);
     }
 
 
 
     // Meant to be called only from within the engine
-    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.elementAttributes.copyFrom(tag.getAttributes());
-
+    void setFromAutoCloseElementTag(final IAutoCloseElementTag tag) {
+        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
     }
 
 
 
-    // Meant to be called only from within the engine
-    void setFromOpenElementTag(final IOpenElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.elementAttributes.copyFrom(tag.getAttributes());
-
-    }
 
 
     public void write(final Writer writer) throws IOException {
-        Validate.notNull(writer, "Writer cannot be null");
-        writer.write('<');
-        writer.write(this.elementName);
-        this.elementAttributes.write(writer);
-        writer.write('>');
+        // Nothing to be written... balanced elements were not present at the original template!
     }
 
 
 
 
-    public OpenElementTag cloneElementTag() {
-        final OpenElementTag clone = new OpenElementTag();
-        initializeProcessableElementTagClone(clone);
+    public AutoCloseElementTag cloneElementTag() {
+        final AutoCloseElementTag clone = new AutoCloseElementTag();
+        initializeElementTagClone(clone);
         return clone;
     }
 

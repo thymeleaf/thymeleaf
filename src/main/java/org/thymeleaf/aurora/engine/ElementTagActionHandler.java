@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.aurora.engine;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -61,6 +62,10 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     boolean removeLocalVariable;
     Set<String> removedLocalVariableNames = new LinkedHashSet<String>(3);
 
+    boolean iterateElement;
+    String iterVariableName;
+    String iterStatusVariableName;
+    Iterator<?> iterator;
 
 
     ElementTagActionHandler() {
@@ -71,7 +76,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     public void setBody(final String text, final boolean processable) {
-        reset();
+        resetAllButLocalVariables();
         Validate.notNull(text, "Text cannot be null");
         this.setBodyText = true;
         this.setBodyTextValue = text;
@@ -80,7 +85,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
-        reset();
+        resetAllButLocalVariables();
         Validate.notNull(eventQueue, "Event Queue cannot be null");
         this.setBodyQueue = true;
         this.setBodyQueueValue = eventQueue;
@@ -89,7 +94,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     public void replaceWith(final String text, final boolean processable) {
-        reset();
+        resetAllButLocalVariables();
         Validate.notNull(text, "Text cannot be null");
         this.replaceWithText = true;
         this.replaceWithTextValue = text;
@@ -98,7 +103,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable) {
-        reset();
+        resetAllButLocalVariables();
         Validate.notNull(eventQueue, "Event Queue cannot be null");
         this.replaceWithQueue = true;
         this.replaceWithQueueValue = eventQueue;
@@ -107,13 +112,13 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
     public void removeElement() {
-        reset();
+        resetAllButLocalVariables();
         this.removeElement = true;
     }
 
 
     public void removeTag() {
-        reset();
+        resetAllButLocalVariables();
         this.removeTag = true;
     }
 
@@ -132,9 +137,34 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     }
 
 
+    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Iterator<?> iterator) {
+        Validate.notNull(iterVariableName, "Iteration variable name cannot be null");
+        Validate.notNull(iterStatusVariableName, "Iteration status variable name cannot be null");
+        Validate.notNull(iterator, "Iterator cannot be null");
+        resetAllButLocalVariables();
+        this.iterateElement = true;
+        this.iterVariableName = iterVariableName;
+        this.iterStatusVariableName = iterStatusVariableName;
+        this.iterator = iterator;
+    }
+
+
 
 
     public void reset() {
+
+        resetAllButLocalVariables();
+
+        this.setLocalVariable = false;
+        this.addedLocalVariables.clear();
+
+        this.removeLocalVariable = false;
+        this.removedLocalVariableNames.clear();
+
+    }
+
+
+    public void resetAllButLocalVariables() {
 
         this.setBodyText = false;
         this.setBodyTextValue = null;
@@ -156,11 +186,10 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
         this.removeTag = false;
 
-        this.setLocalVariable = false;
-        this.addedLocalVariables.clear();
-
-        this.removeLocalVariable = false;
-        this.removedLocalVariableNames.clear();
+        this.iterateElement = false;
+        this.iterVariableName = null;
+        this.iterStatusVariableName = null;
+        this.iterator = null;
 
     }
 

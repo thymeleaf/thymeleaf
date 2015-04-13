@@ -19,6 +19,8 @@
  */
 package org.thymeleaf.aurora.standard.processor;
 
+import java.util.Arrays;
+
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
@@ -32,11 +34,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
 
 
-    public StandardTextProcessor() {
-        super("text", 100);
+    public StandardEachProcessor() {
+        super("each", 100);
     }
 
 
@@ -49,22 +51,8 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
-        final Object localIterValue = processingContext.getVariablesMap().getVariable("iter");
-        if (localIterValue != null) {
-
-            actionHandler.setBody(localIterValue.toString(), false);
-
-        } else {
-
-            final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
-
-            if (localVarValue != null) {
-                actionHandler.setBody("*Whoohooooo!*", false);
-            } else {
-                actionHandler.setBody("Whoohooooo!", false);
-            }
-
-        }
+        final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
+        actionHandler.iterateElement("iter", "iterStat", Arrays.asList(values).iterator());
 
         tag.getAttributes().removeAttribute(attributeName);
 
