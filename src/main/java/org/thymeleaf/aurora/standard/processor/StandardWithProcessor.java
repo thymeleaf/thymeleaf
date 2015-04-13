@@ -32,11 +32,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardWithProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
 
 
-    public StandardTextProcessor() {
-        super("text", 100);
+    public StandardWithProcessor() {
+        super("with", 10);
     }
 
 
@@ -48,16 +48,9 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-
-        final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
-
-        if (localVarValue != null) {
-            actionHandler.setBody("*Whoohooooo!*", false);
-        } else {
-            actionHandler.setBody("Whoohooooo!", false);
-        }
-
         tag.getAttributes().removeAttribute(attributeName);
+
+        actionHandler.setLocalVariable("one", "a value");
 
     }
 
