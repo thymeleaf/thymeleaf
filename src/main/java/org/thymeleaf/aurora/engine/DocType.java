@@ -298,23 +298,6 @@ final class DocType implements IDocType {
 
 
 
-    // Meant to be called only from within the engine
-    void setFromDocType(final IDocType docType) {
-
-        this.docType = docType.getDocType();
-        this.keyword = docType.getKeyword();
-        this.elementName = docType.getElementName();
-        this.type = docType.getType();
-        this.publicId = docType.getPublicId();
-        this.systemId = docType.getSystemId();
-        this.internalSubset = docType.getInternalSubset();
-        this.line = docType.getLine();
-        this.col = docType.getCol();
-
-    }
-
-
-
 
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
@@ -334,16 +317,25 @@ final class DocType implements IDocType {
 
     public DocType cloneNode() {
         final DocType clone = new DocType(this.textRepository);
-        clone.docType = this.docType;
-        clone.keyword = this.keyword;
-        clone.elementName = this.elementName;
-        clone.type = this.type;
-        clone.publicId = this.publicId;
-        clone.systemId = this.systemId;
-        clone.internalSubset = this.internalSubset;
-        clone.line = this.line;
-        clone.col = this.col;
+        clone.setFromDocType(this);
         return clone;
+    }
+
+
+
+    // Meant to be called only from within the engine
+    void setFromDocType(final IDocType docType) {
+
+        this.docType = docType.getDocType();
+        this.keyword = docType.getKeyword();
+        this.elementName = docType.getElementName();
+        this.type = docType.getType();
+        this.publicId = docType.getPublicId();
+        this.systemId = docType.getSystemId();
+        this.internalSubset = docType.getInternalSubset();
+        this.line = docType.getLine();
+        this.col = docType.getCol();
+
     }
 
 

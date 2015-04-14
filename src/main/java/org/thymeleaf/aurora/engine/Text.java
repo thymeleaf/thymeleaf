@@ -142,7 +142,7 @@ final class Text implements IText {
         this.length = text.length();
 
         this.buffer = null;
-        this.offset = 0;
+        this.offset = -1;
 
         this.line = -1;
         this.col = -1;
@@ -162,22 +162,6 @@ final class Text implements IText {
 
     public int getCol() {
         return this.col;
-    }
-
-
-
-
-
-    // Meant to be called only from within the engine
-    void setFromText(final IText text) {
-
-        this.buffer = null;
-        this.offset = -1;
-        this.text = text.getText();
-        this.length = this.text.length();
-        this.line = text.getLine();
-        this.col = text.getCol();
-
     }
 
 
@@ -206,13 +190,22 @@ final class Text implements IText {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final Text clone = new Text(this.textRepository);
-        clone.buffer = null;
-        clone.offset = -1;
-        clone.text = getText();
-        clone.length = this.length;
-        clone.line = this.line;
-        clone.col = this.col;
+        clone.setFromText(this);
         return clone;
     }
+
+
+    // Meant to be called only from within the engine
+    void setFromText(final IText text) {
+
+        this.buffer = null;
+        this.offset = -1;
+        this.text = text.getText();
+        this.length = this.text.length();
+        this.line = text.getLine();
+        this.col = text.getCol();
+
+    }
+
 
 }

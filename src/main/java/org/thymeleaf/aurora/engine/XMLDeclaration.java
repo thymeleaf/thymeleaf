@@ -226,20 +226,6 @@ final class XMLDeclaration implements IXMLDeclaration {
 
 
 
-    // Meant to be called only from within the engine
-    void setFromXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
-
-        this.xmlDeclaration = xmlDeclaration.getXmlDeclaration();
-        this.keyword = xmlDeclaration.getKeyword();
-        this.version = xmlDeclaration.getVersion();
-        this.encoding = xmlDeclaration.getEncoding();
-        this.standalone = xmlDeclaration.getStandalone();
-        this.line = xmlDeclaration.getLine();
-        this.col = xmlDeclaration.getCol();
-
-    }
-
-
 
 
     public void write(final Writer writer) throws IOException {
@@ -260,15 +246,23 @@ final class XMLDeclaration implements IXMLDeclaration {
 
     public XMLDeclaration cloneNode() {
         final XMLDeclaration clone = new XMLDeclaration(this.textRepository);
-        clone.xmlDeclaration = this.xmlDeclaration;
-        clone.keyword = this.keyword;
-        clone.version = this.version;
-        clone.encoding = this.encoding;
-        clone.standalone = this.standalone;
-        clone.line = this.line;
-        clone.col = this.col;
+        clone.setFromXMLDeclaration(this);
         return clone;
     }
 
+
+
+    // Meant to be called only from within the engine
+    void setFromXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
+
+        this.xmlDeclaration = xmlDeclaration.getXmlDeclaration();
+        this.keyword = xmlDeclaration.getKeyword();
+        this.version = xmlDeclaration.getVersion();
+        this.encoding = xmlDeclaration.getEncoding();
+        this.standalone = xmlDeclaration.getStandalone();
+        this.line = xmlDeclaration.getLine();
+        this.col = xmlDeclaration.getCol();
+
+    }
 
 }

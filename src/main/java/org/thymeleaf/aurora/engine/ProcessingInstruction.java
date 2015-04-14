@@ -179,20 +179,6 @@ public final class ProcessingInstruction implements IProcessingInstruction {
 
 
 
-    // Meant to be called only from within the engine
-    void setFromProcessingInstruction(final IProcessingInstruction processingInstruction) {
-
-        this.processingInstruction = processingInstruction.getProcessingInstruction();
-        this.target = processingInstruction.getTarget();
-        this.content = processingInstruction.getContent();
-        this.line = processingInstruction.getLine();
-        this.col = processingInstruction.getCol();
-
-    }
-
-
-
-
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         writer.write(getProcessingInstruction());
@@ -211,12 +197,20 @@ public final class ProcessingInstruction implements IProcessingInstruction {
 
     public ProcessingInstruction cloneNode() {
         final ProcessingInstruction clone = new ProcessingInstruction(this.textRepository);
-        clone.processingInstruction = this.processingInstruction;
-        clone.target = this.target;
-        clone.content = this.content;
-        clone.line = this.line;
-        clone.col = this.col;
+        clone.setFromProcessingInstruction(this);
         return clone;
+    }
+
+
+    // Meant to be called only from within the engine
+    void setFromProcessingInstruction(final IProcessingInstruction processingInstruction) {
+
+        this.processingInstruction = processingInstruction.getProcessingInstruction();
+        this.target = processingInstruction.getTarget();
+        this.content = processingInstruction.getContent();
+        this.line = processingInstruction.getLine();
+        this.col = processingInstruction.getCol();
+
     }
 
 }

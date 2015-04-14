@@ -214,24 +214,6 @@ final class Comment implements IComment {
 
 
 
-
-    // Meant to be called only from within the engine
-    void setFromComment(final IComment comment) {
-
-        this.buffer = null;
-        this.offset = -1;
-        this.comment = comment.getComment();
-        this.content = comment.getContent();
-        this.commentLength = this.comment.length();
-        this.contentLength = this.content.length();
-        this.line = comment.getLine();
-        this.col = comment.getCol();
-
-    }
-
-
-
-
     public void write(final Writer writer) throws IOException {
         Validate.notNull(writer, "Writer cannot be null");
         if (this.buffer != null) {
@@ -261,17 +243,24 @@ final class Comment implements IComment {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final Comment clone = new Comment(this.textRepository);
-        clone.buffer = null;
-        clone.offset = -1;
-        clone.comment = getComment();
-        clone.content = getContent();
-        clone.commentLength = this.commentLength;
-        clone.contentLength = this.contentLength;
-        clone.line = this.line;
-        clone.col = this.col;
+        clone.setFromComment(this);
         return clone;
     }
 
+
+    // Meant to be called only from within the engine
+    void setFromComment(final IComment comment) {
+
+        this.buffer = null;
+        this.offset = -1;
+        this.comment = comment.getComment();
+        this.content = comment.getContent();
+        this.commentLength = this.comment.length();
+        this.contentLength = this.content.length();
+        this.line = comment.getLine();
+        this.col = comment.getCol();
+
+    }
 
 
 }
