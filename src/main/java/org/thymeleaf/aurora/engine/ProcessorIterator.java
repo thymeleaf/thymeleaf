@@ -113,20 +113,25 @@ final class ProcessorIterator {
             this.tag = tag;
             this.size = 0;
             this.last = -1;
+            this.attributesVersion = Integer.MIN_VALUE;
         }
 
 
         public IProcessor next() {
 
-            if (this.tag.elementAttributes.version != this.attributesVersion) {
+            if (this.attributesVersion == Integer.MIN_VALUE || this.tag.elementAttributes.version != this.attributesVersion) {
                 recompute();
                 this.attributesVersion = this.tag.elementAttributes.version;
                 this.last = -1;
             }
 
+            if (this.processors == null) {
+                return null;
+            }
+
             // We use 'last' as a starting index in order save some iterations (except after recomputes)
-            int n = this.size;
             int i = this.last + 1;
+            int n = this.size - i;
             while (n-- != 0) {
                 if (!this.visited[i]) {
                     this.visited[i] = true;
@@ -144,7 +149,7 @@ final class ProcessorIterator {
         private void recompute() {
 
             // Before recomputing the iterator itself, we have to make sure that the associated processors are up-to-date
-            if (this.tag.elementAttributes.version != this.tag.associatedProcessorsAttributesVersion) {
+            if (this.tag.associatedProcessorsAttributesVersion == Integer.MIN_VALUE || this.tag.elementAttributes.version != this.tag.associatedProcessorsAttributesVersion) {
                 this.tag.recomputeProcessors();
                 this.tag.associatedProcessorsAttributesVersion = this.tag.elementAttributes.version;
             }

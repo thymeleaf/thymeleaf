@@ -104,6 +104,7 @@ abstract class AbstractProcessableElementTag
 
         resetElementTag(elementName, line, col);
         this.elementAttributes.clearAll();
+        this.associatedProcessorsAttributesVersion = Integer.MIN_VALUE;
 
     }
 
@@ -114,7 +115,7 @@ abstract class AbstractProcessableElementTag
 
 
     public final boolean hasAssociatedProcessors() {
-        if (this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
+        if (this.associatedProcessorsAttributesVersion == Integer.MIN_VALUE || this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
             recomputeProcessors();
             this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
         }
@@ -123,7 +124,7 @@ abstract class AbstractProcessableElementTag
 
 
     public final List<IProcessor> getAssociatedProcessorsInOrder() {
-        if (this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
+        if (this.associatedProcessorsAttributesVersion == Integer.MIN_VALUE || this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
             recomputeProcessors();
             this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
         }
