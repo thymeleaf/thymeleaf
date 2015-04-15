@@ -379,7 +379,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementProcessor) {
 
                 final IElementProcessor elementProcessor = ((IElementProcessor)processor);
-                elementProcessor.process(getTemplateProcessingContext(), standaloneElementTag, this.actionHandler);
+                elementProcessor.process(this.templateProcessingContext, standaloneElementTag, this.actionHandler);
 
                 if (this.actionHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
@@ -698,7 +698,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementProcessor) {
 
                 final IElementProcessor elementProcessor = ((IElementProcessor)processor);
-                elementProcessor.process(getTemplateProcessingContext(), openElementTag, this.actionHandler);
+                elementProcessor.process(this.templateProcessingContext, openElementTag, this.actionHandler);
 
                 if (this.actionHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
