@@ -21,8 +21,11 @@ package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IAutoOpenElementTag;
+import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
@@ -31,7 +34,9 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  * 
  */
-final class AutoOpenElementTag extends AbstractProcessableElementTag implements IAutoOpenElementTag {
+final class AutoOpenElementTag
+            extends AbstractProcessableElementTag
+            implements IAutoOpenElementTag, IEngineTemplateHandlerEvent {
 
 
     /*
@@ -70,21 +75,10 @@ final class AutoOpenElementTag extends AbstractProcessableElementTag implements 
 
 
     // Meant to be called only from within the engine
-    void setAutoOpenElementTag(
-            final String elementName,
-            final int line, final int col) {
+    void reset(final String elementName,
+               final int line, final int col) {
 
-        resetProcessableTag(elementName, line, col);
-
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setFromAutoOpenElementTag(final IAutoOpenElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.elementAttributes.copyFrom(tag.getAttributes());
+        resetProcessableElementTag(elementName, line, col);
 
     }
 
@@ -99,8 +93,46 @@ final class AutoOpenElementTag extends AbstractProcessableElementTag implements 
 
     public AutoOpenElementTag cloneElementTag() {
         final AutoOpenElementTag clone = new AutoOpenElementTag();
-        initializeProcessableElementTagClone(clone);
+        clone.resetAsCloneOf(this);
         return clone;
+    }
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final AutoOpenElementTag original) {
+        super.resetAsCloneOfProcessableElementTag(original);
+    }
+
+
+    // Meant to be called only from within the engine
+    static AutoOpenElementTag asEngineAutoOpenElementTag(
+            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final IAutoOpenElementTag autoOpenElementTag, final boolean cloneAlways) {
+
+        if (autoOpenElementTag instanceof AutoOpenElementTag) {
+            if (cloneAlways) {
+                return ((AutoOpenElementTag) autoOpenElementTag).cloneElementTag();
+            }
+            return (AutoOpenElementTag) autoOpenElementTag;
+        }
+
+        final AutoOpenElementTag newInstance = new AutoOpenElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
+
+        newInstance.reset(autoOpenElementTag.getElementName(), autoOpenElementTag.getLine(), autoOpenElementTag.getCol());
+
+        final IElementAttributes attributes = autoOpenElementTag.getAttributes();
+        if (attributes != null) {
+            // We have to do this by iterating because we don't know the specific instance of the tag's attributes, and
+            // in fact we also don't want a complete clone (versioning, etc.). We are just copying the attributes
+            final List<String> attributeCompleteNames = attributes.getAllCompleteNames();
+            for (final String attributeCompleteName : attributeCompleteNames) {
+                newInstance.elementAttributes.setAttribute(
+                        attributeCompleteName, attributes.getValue(attributeCompleteName), attributes.getValueQuotes(attributeCompleteName));
+            }
+        }
+
+        return newInstance;
+
     }
 
 }

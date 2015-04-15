@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -32,7 +33,9 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-final class UnmatchedCloseElementTag extends AbstractElementTag implements IUnmatchedCloseElementTag {
+final class UnmatchedCloseElementTag
+            extends AbstractElementTag
+            implements IUnmatchedCloseElementTag, IEngineTemplateHandlerEvent {
 
 
     /*
@@ -77,13 +80,6 @@ final class UnmatchedCloseElementTag extends AbstractElementTag implements IUnma
 
 
 
-    // Meant to be called only from within the engine
-    void setFromUnmatchedCloseElementTag(final IUnmatchedCloseElementTag tag) {
-        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
-    }
-
-
-
 
 
     public void write(final Writer writer) throws IOException {
@@ -100,8 +96,35 @@ final class UnmatchedCloseElementTag extends AbstractElementTag implements IUnma
 
     public UnmatchedCloseElementTag cloneElementTag() {
         final UnmatchedCloseElementTag clone = new UnmatchedCloseElementTag();
-        initializeElementTagClone(clone);
+        clone.resetAsCloneOf(this);
         return clone;
+    }
+
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final UnmatchedCloseElementTag from) {
+        super.resetAsCloneOfElementTag(from);
+    }
+
+
+
+    // Meant to be called only from within the engine
+    static UnmatchedCloseElementTag asEngineUnmatchedCloseElementTag(
+            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final IUnmatchedCloseElementTag unmatchedCloseElementTag, final boolean cloneAlways) {
+
+        if (unmatchedCloseElementTag instanceof UnmatchedCloseElementTag) {
+            if (cloneAlways) {
+                return ((UnmatchedCloseElementTag) unmatchedCloseElementTag).cloneElementTag();
+            }
+            return (UnmatchedCloseElementTag) unmatchedCloseElementTag;
+        }
+
+        final UnmatchedCloseElementTag newInstance = new UnmatchedCloseElementTag(templateMode, configuration.getElementDefinitions());
+        newInstance.setUnmatchedCloseElementTag(unmatchedCloseElementTag.getElementName(), unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol());
+        return newInstance;
+
     }
 
 }

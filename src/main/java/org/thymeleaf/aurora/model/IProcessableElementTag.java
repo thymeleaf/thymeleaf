@@ -35,6 +35,7 @@ public interface IProcessableElementTag extends IElementTag {
 
     public IProcessableElementTag cloneElementTag();
 
+    public void precomputeAssociatedProcessors();
     public boolean hasAssociatedProcessors();
     public List<IProcessor> getAssociatedProcessorsInOrder();
 

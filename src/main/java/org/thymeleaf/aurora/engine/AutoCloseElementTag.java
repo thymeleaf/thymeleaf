@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IAutoCloseElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
@@ -31,7 +32,9 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-final class AutoCloseElementTag extends AbstractElementTag implements IAutoCloseElementTag {
+final class AutoCloseElementTag
+            extends AbstractElementTag
+            implements IAutoCloseElementTag, IEngineTemplateHandlerEvent {
 
 
     /*
@@ -68,17 +71,9 @@ final class AutoCloseElementTag extends AbstractElementTag implements IAutoClose
 
 
     // Meant to be called only from within the engine
-    final void setAutoCloseElementTag(
-            final String elementName,
-            final int line, final int col) {
+    void reset(final String elementName,
+               final int line, final int col) {
         resetElementTag(elementName, line, col);
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setFromAutoCloseElementTag(final IAutoCloseElementTag tag) {
-        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
     }
 
 
@@ -94,8 +89,35 @@ final class AutoCloseElementTag extends AbstractElementTag implements IAutoClose
 
     public AutoCloseElementTag cloneElementTag() {
         final AutoCloseElementTag clone = new AutoCloseElementTag();
-        initializeElementTagClone(clone);
+        clone.resetAsCloneOf(this);
         return clone;
+    }
+
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final AutoCloseElementTag original) {
+        super.resetAsCloneOfElementTag(original);
+    }
+
+
+
+    // Meant to be called only from within the engine
+    static AutoCloseElementTag asEngineAutoCloseElementTag(
+            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final IAutoCloseElementTag autoCloseElementTag, final boolean cloneAlways) {
+
+        if (autoCloseElementTag instanceof AutoCloseElementTag) {
+            if (cloneAlways) {
+                return ((AutoCloseElementTag) autoCloseElementTag).cloneElementTag();
+            }
+            return (AutoCloseElementTag) autoCloseElementTag;
+        }
+
+        final AutoCloseElementTag newInstance = new AutoCloseElementTag(templateMode, configuration.getElementDefinitions());
+        newInstance.reset(autoCloseElementTag.getElementName(), autoCloseElementTag.getLine(), autoCloseElementTag.getCol());
+        return newInstance;
+
     }
 
 }

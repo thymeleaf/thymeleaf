@@ -21,7 +21,10 @@ package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
@@ -33,7 +36,8 @@ import org.thymeleaf.util.Validate;
  * 
  */
 final class StandaloneElementTag
-            extends AbstractProcessableElementTag implements IStandaloneElementTag {
+            extends AbstractProcessableElementTag
+            implements IStandaloneElementTag, IEngineTemplateHandlerEvent {
 
     private boolean minimized;
 
@@ -92,24 +96,12 @@ final class StandaloneElementTag
 
 
     // Meant to be called only from within the engine
-    void setStandaloneElementTag(
-            final String elementName,
-            final boolean minimized,
-            final int line, final int col) {
+    void reset(final String elementName,
+               final boolean minimized,
+               final int line, final int col) {
 
-        resetProcessableTag(elementName, line, col);
+        resetProcessableElementTag(elementName, line, col);
         this.minimized = minimized;
-
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.minimized = tag.isMinimized();
-        this.elementAttributes.copyFrom(tag.getAttributes());
 
     }
 
@@ -135,9 +127,47 @@ final class StandaloneElementTag
 
     public StandaloneElementTag cloneElementTag() {
         final StandaloneElementTag clone = new StandaloneElementTag();
-        initializeProcessableElementTagClone(clone);
-        clone.minimized = this.minimized;
+        clone.resetAsCloneOf(this);
         return clone;
+    }
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final StandaloneElementTag original) {
+        super.resetAsCloneOfProcessableElementTag(original);
+        this.minimized = original.minimized;
+    }
+
+
+    // Meant to be called only from within the engine
+    static StandaloneElementTag asEngineStandaloneElementTag(
+            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final IStandaloneElementTag standaloneElementTag, final boolean cloneAlways) {
+
+        if (standaloneElementTag instanceof StandaloneElementTag) {
+            if (cloneAlways) {
+                return ((StandaloneElementTag) standaloneElementTag).cloneElementTag();
+            }
+            return (StandaloneElementTag) standaloneElementTag;
+        }
+
+        final StandaloneElementTag newInstance = new StandaloneElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
+
+        newInstance.reset(standaloneElementTag.getElementName(), standaloneElementTag.isMinimized(), standaloneElementTag.getLine(), standaloneElementTag.getCol());
+
+        final IElementAttributes attributes = standaloneElementTag.getAttributes();
+        if (attributes != null) {
+            // We have to do this by iterating because we don't know the specific instance of the tag's attributes, and
+            // in fact we also don't want a complete clone (versioning, etc.). We are just copying the attributes
+            final List<String> attributeCompleteNames = attributes.getAllCompleteNames();
+            for (final String attributeCompleteName : attributeCompleteNames) {
+                newInstance.elementAttributes.setAttribute(
+                        attributeCompleteName, attributes.getValue(attributeCompleteName), attributes.getValueQuotes(attributeCompleteName));
+            }
+        }
+
+        return newInstance;
+
     }
 
 }

@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
@@ -33,7 +34,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class XMLDeclaration implements IXMLDeclaration {
+final class XMLDeclaration
+            implements IXMLDeclaration, IEngineTemplateHandlerEvent {
 
     public static final String DEFAULT_KEYWORD = "xml";
 
@@ -161,13 +163,12 @@ final class XMLDeclaration implements IXMLDeclaration {
 
 
     // Meant to be called only from within the engine - removes the need to validate compute the 'xmlDeclaration' field
-    void setXmlDeclaration(
-            final String xmlDeclaration,
-            final String keyword,
-            final String version,
-            final String encoding,
-            final String standalone,
-            final int line, final int col) {
+    void reset(final String xmlDeclaration,
+               final String keyword,
+               final String version,
+               final String encoding,
+               final String standalone,
+               final int line, final int col) {
 
         this.keyword = keyword;
         this.version = version;
@@ -246,22 +247,46 @@ final class XMLDeclaration implements IXMLDeclaration {
 
     public XMLDeclaration cloneNode() {
         final XMLDeclaration clone = new XMLDeclaration(this.textRepository);
-        clone.setFromXMLDeclaration(this);
+        clone.resetAsCloneOf(this);
         return clone;
     }
 
 
 
     // Meant to be called only from within the engine
-    void setFromXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
+    void resetAsCloneOf(final XMLDeclaration original) {
 
-        this.xmlDeclaration = xmlDeclaration.getXmlDeclaration();
-        this.keyword = xmlDeclaration.getKeyword();
-        this.version = xmlDeclaration.getVersion();
-        this.encoding = xmlDeclaration.getEncoding();
-        this.standalone = xmlDeclaration.getStandalone();
-        this.line = xmlDeclaration.getLine();
-        this.col = xmlDeclaration.getCol();
+        this.xmlDeclaration = original.xmlDeclaration;
+        this.keyword = original.keyword;
+        this.version = original.version;
+        this.encoding = original.encoding;
+        this.standalone = original.standalone;
+        this.line = original.line;
+        this.col = original.col;
+
+    }
+
+
+    // Meant to be called only from within the engine
+    static XMLDeclaration asEngineXMLDeclaration(
+            final ITemplateEngineConfiguration configuration, final IXMLDeclaration xmlDeclaration, final boolean cloneAlways) {
+
+        if (xmlDeclaration instanceof XMLDeclaration) {
+            if (cloneAlways) {
+                return ((XMLDeclaration) xmlDeclaration).cloneNode();
+            }
+            return (XMLDeclaration) xmlDeclaration;
+        }
+
+        final XMLDeclaration newInstance = new XMLDeclaration(configuration.getTextRepository());
+        newInstance.xmlDeclaration = xmlDeclaration.getXmlDeclaration();
+        newInstance.keyword = xmlDeclaration.getKeyword();
+        newInstance.version = xmlDeclaration.getVersion();
+        newInstance.encoding = xmlDeclaration.getEncoding();
+        newInstance.standalone = xmlDeclaration.getStandalone();
+        newInstance.line = xmlDeclaration.getLine();
+        newInstance.col = xmlDeclaration.getCol();
+        return newInstance;
 
     }
 

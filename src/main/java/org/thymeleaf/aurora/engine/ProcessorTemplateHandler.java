@@ -46,6 +46,7 @@ import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
 import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -66,6 +67,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private ITemplateProcessingContext templateProcessingContext;
     private ITemplateEngineConfiguration configuration;
+    private TemplateMode templateMode;
 
     private ILocalVariableAwareVariablesMap variablesMap;
 
@@ -80,17 +82,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private int handlerExecLevel = -1;
 
     // These structures will be indexed by the handlerExecLevel, which allows structures to be used across different levels of nesting
-    private TemplateHandlerEventQueue[] eventQueues = null;
+    private EngineEventQueue[] eventQueues = null;
     private Text[] textBuffers = null;
-    private IterationSpec[] iterationSpecs = null;
 
-    // Flags used during the processing of tags
-    private boolean tagRemoved = false;
-    private boolean bodyRemoved = false;
-    private boolean queueProcessable = false;
-
-    // Flag used for suspending the execution of a tag and replacing it for a different event (perhaps after building a queue)
+    // Used for suspending the execution of a tag and replacing it for a different event (perhaps after building a
+    // queue) or iterating the suspended event and its body.
     private boolean suspended = false;
+    private SuspensionSpec suspensionSpec; // Will be initialized once we have the processing context
+    private boolean gatheringIteration = false;
+    private IterationSpec iterationSpec;
 
 
 
@@ -123,6 +123,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by Template Engine Configuration cannot be null");
         Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by Template Engine Configuration cannot be null");
 
+        this.templateMode = this.templateProcessingContext.getTemplateMode(); // Just a way to avoid doing the call each time
+
         final IVariablesMap variablesMap = templateProcessingContext.getVariablesMap();
         Validate.notNull(variablesMap, "Variables Map returned by Template Processing Context cannot be null");
         if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
@@ -131,6 +133,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             logger.warn("Unknown implementation of the " + IVariablesMap.class.getName() + " interface: " +
                         variablesMap.getClass().getName() + ". Local variable support will be DISABLED.");
         }
+
+        this.suspensionSpec = new SuspensionSpec(this.templateMode, this.configuration);
+        this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
 
     }
 
@@ -144,19 +149,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.eventQueues == null) {
             // No arrays created yet - must create
 
-            this.eventQueues = new TemplateHandlerEventQueue[3];
+            this.eventQueues = new EngineEventQueue[3];
             Arrays.fill(this.eventQueues, null);
             this.textBuffers = new Text[3];
             Arrays.fill(this.textBuffers, null);
-            this.iterationSpecs = new IterationSpec[3];
-            Arrays.fill(this.iterationSpecs, null);
 
         }
 
         if (this.eventQueues.length == this.handlerExecLevel) {
             // We need to grow the arrays
 
-            final TemplateHandlerEventQueue[] newEventQueues = new TemplateHandlerEventQueue[this.handlerExecLevel + 3];
+            final EngineEventQueue[] newEventQueues = new EngineEventQueue[this.handlerExecLevel + 3];
             Arrays.fill(newEventQueues, null);
             System.arraycopy(this.eventQueues, 0, newEventQueues, 0, this.handlerExecLevel);
             this.eventQueues = newEventQueues;
@@ -166,19 +169,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             System.arraycopy(this.textBuffers, 0, newTextBuffers, 0, this.handlerExecLevel);
             this.textBuffers = newTextBuffers;
 
-            final IterationSpec[] newIterationSpecs = new IterationSpec[this.handlerExecLevel + 3];
-            Arrays.fill(newIterationSpecs, null);
-            System.arraycopy(this.iterationSpecs, 0, newIterationSpecs, 0, this.handlerExecLevel);
-            this.iterationSpecs = newIterationSpecs;
-
         }
 
         if (this.eventQueues[this.handlerExecLevel] == null) {
-            this.eventQueues[this.handlerExecLevel] =
-                    new TemplateHandlerEventQueue(
-                            10, this.configuration.getTextRepository(),
-                            this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions(),
-                            this.templateProcessingContext.getTemplateMode());
+            this.eventQueues[this.handlerExecLevel] = new EngineEventQueue(this.templateMode, this.configuration);
         } else {
             this.eventQueues[this.handlerExecLevel].reset();
         }
@@ -186,12 +180,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.textBuffers[this.handlerExecLevel] == null) {
             // Note we are not using the model factory because we need this exact implementation of the structure interface
             this.textBuffers[this.handlerExecLevel] = new Text(this.configuration.getTextRepository());
-        }
-
-        if (this.iterationSpecs[this.handlerExecLevel] == null) {
-            this.iterationSpecs[this.handlerExecLevel] = new IterationSpec();
-        } else {
-            this.iterationSpecs[this.handlerExecLevel].reset();
         }
 
     }
@@ -223,7 +211,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleText(final IText text) {
+    public void handleText(final IText itext) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -231,20 +219,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(text.cloneNode());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(Text.asEngineText(this.configuration, itext, true));
             return;
         }
 
         // Includes calling the next handler in the chain
-        super.handleText(text);
+        super.handleText(itext);
 
     }
 
 
 
     @Override
-    public void handleComment(final IComment comment) {
+    public void handleComment(final IComment icomment) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -252,19 +240,19 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(comment.cloneNode());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(Comment.asEngineComment(this.configuration, icomment, true));
             return;
         }
 
         // Includes calling the next handler in the chain
-        super.handleComment(comment);
+        super.handleComment(icomment);
 
     }
 
     
     @Override
-    public void handleCDATASection(final ICDATASection cdataSection) {
+    public void handleCDATASection(final ICDATASection icdataSection) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -272,13 +260,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(cdataSection.cloneNode());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true));
             return;
         }
 
         // Includes calling the next handler in the chain
-        super.handleCDATASection(cdataSection);
+        super.handleCDATASection(icdataSection);
 
     }
 
@@ -286,7 +274,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleStandaloneElement(final IStandaloneElementTag standaloneElementTag) {
+    public void handleStandaloneElement(final IStandaloneElementTag istandaloneElementTag) {
 
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
@@ -299,60 +287,83 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(standaloneElementTag.cloneElementTag());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    StandaloneElementTag.asEngineStandaloneElementTag(
+                            this.templateMode, this.configuration, istandaloneElementTag, true));
             return;
         }
 
+/**/ /* NOTE THIS HAS TO BE REMOVED FOR BENCHMARKING AS ITS FORCING UNNECESARY PROCESSOR RECOMPUTATIONS IN CASE EVENTS COME FROM THE CACHE */
+        istandaloneElementTag.getAttributes().setAttribute("markupLevel", Integer.valueOf(this.markupLevel).toString());
+        istandaloneElementTag.getAttributes().setAttribute("execLevel", Integer.valueOf(this.handlerExecLevel).toString());
+        istandaloneElementTag.getAttributes().setAttribute("variablesMapLevel", Integer.valueOf(this.variablesMap.level()).toString());
 /**/
-        standaloneElementTag.getAttributes().setAttribute("markupLevel", Integer.valueOf(this.markupLevel).toString());
-        standaloneElementTag.getAttributes().setAttribute("execLevel", Integer.valueOf(this.handlerExecLevel).toString());
-        standaloneElementTag.getAttributes().setAttribute("variablesMapLevel", Integer.valueOf(this.variablesMap.level()).toString());
-/**/
+
+
+        /*
+         * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
+         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
+         */
+        if (!this.suspended && !istandaloneElementTag.hasAssociatedProcessors()) {
+            super.handleStandaloneElement(istandaloneElementTag);
+            return;
+        }
+
+
+        /*
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         */
+        final StandaloneElementTag standaloneElementTag =
+                StandaloneElementTag.asEngineStandaloneElementTag(this.templateMode, this.configuration, istandaloneElementTag, false);
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * are available for the rest of the processors as well as the body of the tag
+         */
+        if (this.variablesMap != null) {
+            this.variablesMap.increaseLevel();
+        }
+
 
         /*
          * INITIALIZE THE EXECUTION LEVEL depending on whether we have a suspended a previous execution or not
          */
-        final TemplateHandlerEventQueue queue;
         if (!this.suspended) {
-
-            /*
-             * CHECK WHETHER WE ACTUALLY HAVE ANYTHING TO PROCESS, quickly delegating to 'next' if not
-             */
-            if (!standaloneElementTag.hasAssociatedProcessors()) {
-                super.handleStandaloneElement(standaloneElementTag);
-                return;
-            }
 
             /*
              * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
              */
-            this.processorIterator.reset(standaloneElementTag);
-
-            /*
-             * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
-             */
-            increaseHandlerExecLevel();
-            queue = this.eventQueues[this.handlerExecLevel];
-
-            /*
-             * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
-             * are available for the rest of the processors as well as the body of the tag
-             */
-            if (this.variablesMap != null) {
-                this.variablesMap.increaseLevel();
-            }
+            this.processorIterator.reset();
 
         } else {
             // Execution of a tag was suspended, we need to recover the data
 
             /*
-             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes
-             * Note also that we should not reset the processorIterator in this case, as we would lose information
-             * about the processors already executed
+             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
              */
-            queue = this.eventQueues[this.handlerExecLevel];
+            queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
+            queueProcessable = this.suspensionSpec.queueProcessable;
+            this.processorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
+            this.suspensionSpec.reset();
+
+            // Note we will not increase the VariablesMap level here, as are keeping the level from the suspended execution
 
         }
 
@@ -361,7 +372,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * EXECUTE PROCESSORS
          */
         IProcessor processor;
-        while (!this.tagRemoved && (processor = this.processorIterator.next()) != null) {
+        while (!tagRemoved && (processor = this.processorIterator.next(standaloneElementTag)) != null) {
 
             this.actionHandler.reset();
 
@@ -386,16 +397,27 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (this.actionHandler.iterateElement) {
 
-                    this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel = this.markupLevel + 1;
-                    this.iterationSpecs[this.handlerExecLevel].iterVariableName = this.actionHandler.iterVariableName;
-                    this.iterationSpecs[this.handlerExecLevel].iterStatusVariableName = this.actionHandler.iterStatusVariableName;
-                    this.iterationSpecs[this.handlerExecLevel].iteratedObject = this.actionHandler.iteratedObject;
+                    this.gatheringIteration = true;
+                    this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.iterationSpec.iterVariableName = this.actionHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.actionHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.actionHandler.iteratedObject;
+                    this.iterationSpec.iterationQueue.reset();
 
-                    // This this standalone tag to the queue
-                    queue.add(standaloneElementTag.cloneElementTag());
-
-                    // Suspend the execution, so that each of the iterations starts exactly where this left
+                    // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
+                    this.suspensionSpec.bodyRemoved = false;
+                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+
+                    // Add this standalone tag to the iteration queue
+                    this.iterationSpec.iterationQueue.add(standaloneElementTag.cloneElementTag());
+
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
 
                     // Process the queue by iterating it
                     processIteration();
@@ -405,28 +427,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         this.variablesMap.decreaseLevel();
                     }
 
-                    // Decrease the handler exec level (which we hadn't done when we opened the iteration)
-                    decreaseHandlerExecLevel();
-
-                    // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
-                    // Note we are not even decreasing the handlerExecLevel (we need the iterator information there!)
                     return;
 
                 } else if (this.actionHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    this.queueProcessable = this.actionHandler.setBodyTextProcessable;
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
-                            new OpenElementTag(
-                                    this.templateProcessingContext.getTemplateMode(),
+                            new OpenElementTag(this.templateMode,
                                     this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
                     final CloseElementTag closeTag =
-                            new CloseElementTag(
-                                    this.templateProcessingContext.getTemplateMode(), this.configuration.getElementDefinitions());
-                    openTag.setFromStandaloneElementTag(standaloneElementTag);
-                    closeTag.setFromStandaloneElementTag(standaloneElementTag);
+                            new CloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
+                    openTag.resetAsCloneOf(standaloneElementTag);
+                    closeTag.resetAsCloneOf(standaloneElementTag);
 
                     // Prepare the text node that will be added to the queue (that we will suspend)
                     this.textBuffers[this.handlerExecLevel].setText(this.actionHandler.setBodyTextValue);
@@ -434,38 +448,63 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
+                    this.suspensionSpec.bodyRemoved = false;
+                    this.suspensionSpec.queueProcessable = this.actionHandler.setBodyTextProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
                     handleOpenElement(openTag);
                     handleCloseElement(closeTag);
+
+                    // Decrease the variables map level
+                    if (this.variablesMap != null) {
+                        this.variablesMap.decreaseLevel();
+                    }
 
                     return;
 
                 } else if (this.actionHandler.setBodyQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    this.queueProcessable = this.actionHandler.setBodyTextProcessable;
 
                     // Prepare the now-equivalent open and close tags
                     final OpenElementTag openTag =
-                            new OpenElementTag(
-                                    this.templateProcessingContext.getTemplateMode(),
+                            new OpenElementTag(this.templateMode,
                                     this.configuration.getElementDefinitions(), this.configuration.getAttributeDefinitions());
                     final CloseElementTag closeTag =
-                            new CloseElementTag(
-                                    this.templateProcessingContext.getTemplateMode(), this.configuration.getElementDefinitions());
-                    openTag.setFromStandaloneElementTag(standaloneElementTag);
-                    closeTag.setFromStandaloneElementTag(standaloneElementTag);
+                            new CloseElementTag(this.templateMode, this.configuration.getElementDefinitions());
+                    openTag.resetAsCloneOf(standaloneElementTag);
+                    closeTag.resetAsCloneOf(standaloneElementTag);
 
                     // Prepare the queue (that we will suspend)
-                    queue.addAll(this.actionHandler.setBodyQueueValue.cloneQueue(true));
+                    queue.addQueue(this.actionHandler.setBodyQueueValue, true); // we need to clone the queue!
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
+                    this.suspensionSpec.bodyRemoved = false;
+                    this.suspensionSpec.queueProcessable = this.actionHandler.setBodyQueueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- we need the variables stored there, if any
 
                     // Fire the now-equivalent events. Note the handleOpenElement event will take care of the suspended queue
                     handleOpenElement(openTag);
                     handleCloseElement(closeTag);
+
+                    // Decrease the variables map level
+                    if (this.variablesMap != null) {
+                        this.variablesMap.decreaseLevel();
+                    }
 
                     return;
 
@@ -478,28 +517,28 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     queue.add(this.textBuffers[this.handlerExecLevel]);
 
-                    this.tagRemoved = true;
+                    tagRemoved = true;
 
                 } else if (this.actionHandler.replaceWithQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
                     queueProcessable = this.actionHandler.replaceWithQueueProcessable;
 
-                    queue.addAll(this.actionHandler.replaceWithQueueValue.cloneQueue(true));
+                    queue.addQueue(this.actionHandler.replaceWithQueueValue, true); // we need to clone the queue!
 
-                    this.tagRemoved = true;
+                    tagRemoved = true;
 
                 } else if (this.actionHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
-                    this.tagRemoved = true;
+                    tagRemoved = true;
 
                 } else if (this.actionHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    this.tagRemoved = true;
+                    tagRemoved = true;
 
                 }
 
@@ -517,17 +556,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN in the case we DID NOT reshape the tag to non-void
          */
-        if (!this.tagRemoved) {
+        if (!tagRemoved) {
             super.handleStandaloneElement(standaloneElementTag);
         }
-        this.tagRemoved = false;
 
 
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(this.queueProcessable ? this : getNext(), true);
-        this.queueProcessable = false;
+        queue.process(queueProcessable ? this : getNext(), true);
 
 
         /*
@@ -550,7 +587,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleOpenElement(final IOpenElementTag openElementTag) {
+    public void handleOpenElement(final IOpenElementTag iopenElementTag) {
 
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
@@ -564,65 +601,88 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(openElementTag.cloneElementTag());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, true));
             this.markupLevel++;
             return;
         }
 
+/**/ /* NOTE THIS HAS TO BE REMOVED FOR BENCHMARKING AS ITS FORCING UNNECESARY PROCESSOR RECOMPUTATIONS IN CASE EVENTS COME FROM THE CACHE */
+        iopenElementTag.getAttributes().setAttribute("markupLevel", Integer.valueOf(this.markupLevel).toString());
+        iopenElementTag.getAttributes().setAttribute("execLevel", Integer.valueOf(this.handlerExecLevel).toString());
+        iopenElementTag.getAttributes().setAttribute("variablesMapLevel", Integer.valueOf(this.variablesMap.level()).toString());
 /**/
-        openElementTag.getAttributes().setAttribute("markupLevel", Integer.valueOf(this.markupLevel).toString());
-        openElementTag.getAttributes().setAttribute("execLevel", Integer.valueOf(this.handlerExecLevel).toString());
-        openElementTag.getAttributes().setAttribute("variablesMapLevel", Integer.valueOf(this.variablesMap.level()).toString());
-/**/
+
+        /*
+         * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
+         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
+         */
+        if (!this.suspended && !iopenElementTag.hasAssociatedProcessors()) {
+            super.handleOpenElement(iopenElementTag);
+            this.markupLevel++;
+            if (this.variablesMap != null) {
+                this.variablesMap.increaseLevel();
+            }
+            return;
+        }
+
+
+        /*
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         */
+        final OpenElementTag openElementTag =
+                OpenElementTag.asEngineOpenElementTag(this.templateMode, this.configuration, iopenElementTag, false);
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+        boolean bodyRemoved = false; // If the body of this tag should be removed, we must signal it accordingly at the engine
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * are available for the rest of the processors as well as the body of the tag
+         */
+        if (this.variablesMap != null) {
+            this.variablesMap.increaseLevel();
+        }
+
 
         /*
          * INITIALIZE THE EXECUTION LEVEL depending on whether we have a suspended a previous execution or not
          */
-        final TemplateHandlerEventQueue queue;
         if (!this.suspended) {
-
-            /*
-             * CHECK WHETHER WE ACTUALLY HAVE ANYTHING TO PROCESS, quickly delegating to 'next' if not
-             */
-            if (!openElementTag.hasAssociatedProcessors()) {
-                super.handleOpenElement(openElementTag);
-                this.markupLevel++;
-                if (this.variablesMap != null) {
-                    this.variablesMap.increaseLevel();
-                }
-                return;
-            }
 
             /*
              * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
              */
-            this.processorIterator.reset(openElementTag);
-
-            /*
-             * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
-             */
-            increaseHandlerExecLevel();
-            queue = this.eventQueues[this.handlerExecLevel];
-
-            /*
-             * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
-             * are available for the rest of the processors as well as the body of the tag
-             */
-            if (this.variablesMap != null) {
-                this.variablesMap.increaseLevel();
-            }
+            this.processorIterator.reset();
 
         } else {
             // Execution of a tag was suspended, we need to recover the data
 
             /*
-             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes
-             * Note also that we should not reset the processorIterator in this case, as we would lose information
-             * about the processors already executed
+             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
              */
-            queue = this.eventQueues[this.handlerExecLevel];
+            queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
+            queueProcessable = this.suspensionSpec.queueProcessable;
+            bodyRemoved = this.suspensionSpec.bodyRemoved;
+            this.processorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
+            this.suspensionSpec.reset();
+
+            // Note we will not increase the VariablesMap level here, as are keeping the level from the suspended execution
 
         }
 
@@ -631,7 +691,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
          * EXECUTE PROCESSORS
          */
         IProcessor processor;
-        while (!this.tagRemoved && (processor = this.processorIterator.next()) != null) {
+        while (!tagRemoved && (processor = this.processorIterator.next(openElementTag)) != null) {
 
             this.actionHandler.reset();
 
@@ -656,77 +716,88 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 if (this.actionHandler.iterateElement) {
 
-                    this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel = this.markupLevel + 1;
-                    this.iterationSpecs[this.handlerExecLevel].iterVariableName = this.actionHandler.iterVariableName;
-                    this.iterationSpecs[this.handlerExecLevel].iterStatusVariableName = this.actionHandler.iterStatusVariableName;
-                    this.iterationSpecs[this.handlerExecLevel].iteratedObject = this.actionHandler.iteratedObject;
+                    this.gatheringIteration = true;
+                    this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.iterationSpec.iterVariableName = this.actionHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.actionHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.actionHandler.iteratedObject;
+                    this.iterationSpec.iterationQueue.reset();
 
-                    queue.insert(0, openElementTag.cloneElementTag()); // We put the open tag at the beginning of whatever is already on the queue
-
-                    // Suspend the execution, so that each of the iterations starts exactly where this left
+                    // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
+                    this.suspensionSpec.bodyRemoved = bodyRemoved;
+                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+
+                    // The first event in the new iteration query
+                    this.iterationSpec.iterationQueue.add(openElementTag.cloneElementTag());
 
                     // Increase markup level, as normal with open tags
                     this.markupLevel++;
 
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
-                    // Note we are not even decreasing the handlerExecLevel (we need the iterator information there!)
                     return;
 
                 } else if (this.actionHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    this.queueProcessable = this.actionHandler.setBodyTextProcessable;
+                    queueProcessable = this.actionHandler.setBodyTextProcessable;
 
                     this.textBuffers[this.handlerExecLevel].setText(this.actionHandler.setBodyTextValue);
 
                     queue.add(this.textBuffers[this.handlerExecLevel]);
 
-                    this.bodyRemoved = true;
+                    bodyRemoved = true;
 
                 } else if (this.actionHandler.setBodyQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    this.queueProcessable = this.actionHandler.setBodyQueueProcessable;
+                    queueProcessable = this.actionHandler.setBodyQueueProcessable;
 
-                    queue.addAll(this.actionHandler.setBodyQueueValue.cloneQueue(true));
+                    queue.addQueue(this.actionHandler.setBodyQueueValue, true); // we need to clone the queue!
 
-                    this.bodyRemoved = true;
+                    bodyRemoved = true;
 
                 } else if (this.actionHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    this.queueProcessable = this.actionHandler.replaceWithTextProcessable;
+                    queueProcessable = this.actionHandler.replaceWithTextProcessable;
 
                     this.textBuffers[this.handlerExecLevel].setText(this.actionHandler.setBodyTextValue);
 
                     queue.add(this.textBuffers[this.handlerExecLevel]);
 
-                    this.tagRemoved = true;
-                    this.bodyRemoved = true;
+                    tagRemoved = true;
+                    bodyRemoved = true;
 
                 } else if (this.actionHandler.replaceWithQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    this.queueProcessable = this.actionHandler.replaceWithQueueProcessable;
+                    queueProcessable = this.actionHandler.replaceWithQueueProcessable;
 
-                    queue.addAll(this.actionHandler.replaceWithQueueValue.cloneQueue(true));
+                    queue.addQueue(this.actionHandler.replaceWithQueueValue, true); // we need to clone the queue!
 
-                    this.tagRemoved = true;
-                    this.bodyRemoved = true;
+                    tagRemoved = true;
+                    bodyRemoved = true;
 
                 } else if (this.actionHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
-                    this.tagRemoved = true;
-                    this.bodyRemoved = true;
+                    tagRemoved = true;
+                    bodyRemoved = true;
 
                 } else if (this.actionHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
-                    this.tagRemoved = true;
+                    tagRemoved = true;
 
                 }
 
@@ -744,7 +815,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MARKUP LEVEL RIGHT AFTERWARDS
          */
-        if (!this.tagRemoved) {
+        if (!tagRemoved) {
             super.handleOpenElement(openElementTag);
         }
 
@@ -758,28 +829,26 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * PROCESS THE QUEUE, launching all the queued events
          */
-        queue.process(this.queueProcessable ? this : getNext(), true);
+        queue.process(queueProcessable ? this : getNext(), true);
 
 
         /*
          * SET BODY TO BE SKIPPED, if required
          */
-        if (this.bodyRemoved) {
+        if (bodyRemoved) {
             // We make sure no other nested events will be processed at all
             this.skipMarkupFromLevel = this.markupLevel;
         }
-        this.bodyRemoved = false;
 
 
         /*
          * MAKE SURE WE SKIP THE CORRESPONDING CLOSE TAG, if required
          */
-        if (this.tagRemoved) {
+        if (tagRemoved) {
             this.skipCloseTagLevels.add(this.markupLevel - 1);
             // We cannot decrease here the variables map level because we aren't actually decreasing the markup
             // level until we find the corresponding close tag
         }
-        this.tagRemoved = false;
 
 
         /*
@@ -793,7 +862,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleAutoOpenElement(final IAutoOpenElementTag autoOpenElementTag) {
+    public void handleAutoOpenElement(final IAutoOpenElementTag iautoOpenElementTag) {
 
         // TODO Once engine code is completed for standalone + open, copy open here
 
@@ -807,7 +876,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Includes calling the next handler in the chain
-        super.handleAutoOpenElement(autoOpenElementTag);
+        super.handleAutoOpenElement(iautoOpenElementTag);
 
         // Note we increase the markup level after processing the rest of the chain for this element
         this.markupLevel++;
@@ -821,7 +890,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleCloseElement(final ICloseElementTag closeElementTag) {
+    public void handleCloseElement(final ICloseElementTag icloseElementTag) {
 
         /*
          * DECREASE THE MARKUP LEVEL, as only the body of elements should be considered in a higher level
@@ -838,18 +907,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(closeElementTag.cloneElementTag());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
             return;
         }
 
         /*
          * CHECK WHETHER WE ARE JUST CLOSING AN ITERATION, and in such case, process it
          */
-        if (this.markupLevel + 1 == this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
+        if (this.gatheringIteration && this.markupLevel + 1 == this.iterationSpec.fromMarkupLevel) {
 
             // Add the last tag: the closing one
-            this.eventQueues[this.handlerExecLevel].add(closeElementTag);
+            this.iterationSpec.iterationQueue.add(
+                    CloseElementTag.asEngineCloseElementTag(this.templateMode, this.configuration, icloseElementTag, true));
 
             // Process the queue by iterating it
             processIteration();
@@ -858,9 +929,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.variablesMap != null) {
                 this.variablesMap.decreaseLevel();
             }
-
-            // Decrease the handler exec level (which we hadn't done when we opened the iteration)
-            decreaseHandlerExecLevel();
 
             return;
 
@@ -891,7 +959,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CALL THE NEXT HANDLER in the chain
          */
-        super.handleCloseElement(closeElementTag);
+        super.handleCloseElement(icloseElementTag);
 
     }
 
@@ -899,7 +967,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleAutoCloseElement(final IAutoCloseElementTag autoCloseElementTag) {
+    public void handleAutoCloseElement(final IAutoCloseElementTag iautoCloseElementTag) {
 
         /*
          * DECREASE THE MARKUP LEVEL, as only the body of elements should be considered in a higher level
@@ -916,18 +984,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
          */
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(autoCloseElementTag.cloneElementTag());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, iautoCloseElementTag, true));
             return;
         }
 
         /*
          * CHECK WHETHER WE ARE JUST CLOSING AN ITERATION, and in such case, process it
          */
-        if (this.markupLevel + 1 == this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
+        if (this.gatheringIteration && this.markupLevel + 1 == this.iterationSpec.fromMarkupLevel) {
 
             // Add the last tag: the closing one
-            this.eventQueues[this.handlerExecLevel].add(autoCloseElementTag);
+            this.iterationSpec.iterationQueue.add(
+                    AutoCloseElementTag.asEngineAutoCloseElementTag(this.templateMode, this.configuration, iautoCloseElementTag, true));
 
             // Process the queue by iterating it
             processIteration();
@@ -936,9 +1006,6 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (this.variablesMap != null) {
                 this.variablesMap.decreaseLevel();
             }
-
-            // Decrease the handler exec level (which we hadn't done when we opened the iteration)
-            decreaseHandlerExecLevel();
 
             return;
 
@@ -969,7 +1036,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * CALL THE NEXT HANDLER in the chain
          */
-        super.handleAutoCloseElement(autoCloseElementTag);
+        super.handleAutoCloseElement(iautoCloseElementTag);
 
     }
 
@@ -977,7 +1044,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag unmatchedCloseElementTag) {
+    public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag iunmatchedCloseElementTag) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -985,8 +1052,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(unmatchedCloseElementTag.cloneElementTag());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, iunmatchedCloseElementTag, true));
             return;
         }
 
@@ -994,7 +1062,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         // Includes calling the next handler in the chain
-        super.handleUnmatchedCloseElement(unmatchedCloseElementTag);
+        super.handleUnmatchedCloseElement(iunmatchedCloseElementTag);
 
     }
 
@@ -1002,7 +1070,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleDocType(final IDocType docType) {
+    public void handleDocType(final IDocType idocType) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -1010,13 +1078,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(docType.cloneNode());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(DocType.asEngineDocType(this.configuration, idocType, true));
             return;
         }
 
         // Includes calling the next handler in the chain
-        super.handleDocType(docType);
+        super.handleDocType(idocType);
 
     }
 
@@ -1024,7 +1092,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration) {
+    public void handleXmlDeclaration(final IXMLDeclaration ixmlDeclaration) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -1032,13 +1100,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(xmlDeclaration.cloneNode());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true));
             return;
         }
 
         // Includes calling the next handler in the chain
-        super.handleXmlDeclaration(xmlDeclaration);
+        super.handleXmlDeclaration(ixmlDeclaration);
 
     }
 
@@ -1048,7 +1117,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void handleProcessingInstruction(final IProcessingInstruction processingInstruction) {
+    public void handleProcessingInstruction(final IProcessingInstruction iprocessingInstruction) {
 
         // Check whether we just need to discard any markup in this level
         if (this.markupLevel >= this.skipMarkupFromLevel) {
@@ -1056,13 +1125,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
-        if (this.markupLevel >= this.iterationSpecs[this.handlerExecLevel].fromMarkupLevel) {
-            this.eventQueues[this.handlerExecLevel].add(processingInstruction.cloneNode());
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true));
             return;
         }
 
         // Includes calling the next handler in the chain
-        super.handleProcessingInstruction(processingInstruction);
+        super.handleProcessingInstruction(iprocessingInstruction);
 
     }
 
@@ -1080,33 +1150,52 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     "Use " + StandardTemplateProcessingContextFactory.class.getName() + " in order to avoid this.");
         }
 
-        final String iterVariableName = this.iterationSpecs[this.handlerExecLevel].iterVariableName;
-        String iterStatusVariableName = this.iterationSpecs[this.handlerExecLevel].iterStatusVariableName;
+
+        /*
+         * FIX THE ITERATION-RELATED VARIABLES
+         */
+
+        final String iterVariableName = this.iterationSpec.iterVariableName;
+        String iterStatusVariableName = this.iterationSpec.iterStatusVariableName;
         if (StringUtils.isEmptyOrWhitespace(iterStatusVariableName)) {
             // If no name has been specified for the status variable, we will use the same as the iter var + "Stat"
             iterStatusVariableName = iterVariableName + DEFAULT_STATUS_VAR_SUFFIX;
         }
-        final Object iteratedObject = this.iterationSpecs[this.handlerExecLevel].iteratedObject;
-
-        // We need to reset it or we might obtain an infinite loop!
-        this.iterationSpecs[this.handlerExecLevel].reset();
+        final Object iteratedObject = this.iterationSpec.iteratedObject;
+        final EngineEventQueue iterationQueue = this.iterationSpec.iterationQueue.cloneEventQueue();
 
         /*
          * Depending on the class of the iterated object, we will iterate it in one way or another. And also we
          * might have a "size" value for the stat variable or not.
          */
-        final Iterator<?> iterator = computeIterator(iteratedObject);
+        final Iterator<?> iterator = computeIteratedObjectIterator(iteratedObject);
 
         final IterationStatusVar status = new IterationStatusVar();
         status.index = 0;
-        status.size = computeIteratedSize(iteratedObject);
+        status.size = computeIteratedObjectSize(iteratedObject);
 
-        // TODO Correctly deal with the queue now we might have suspended execution (and therefore we won't increase execLevel
+        // We need to reset it or we won't be able to reuse it in nested iterations
+        this.iterationSpec.reset();
+        this.gatheringIteration = false;
 
-        final boolean originalSuspended = this.suspended;
-        final boolean originalQueueProcessable = this.queueProcessable;
-        final boolean originalBodyRemoved = this.bodyRemoved;
-        final boolean originalTagRemoved = this.tagRemoved;
+
+        /*
+         * FIX THE SUSPENSION-RELATED VARIABLES
+         */
+
+        final boolean suspendedBodyRemoved = this.suspensionSpec.bodyRemoved;
+        final boolean suspendedQueueProcessable = this.suspensionSpec.queueProcessable;
+        final EngineEventQueue suspendedQueue = this.suspensionSpec.suspendedQueue.cloneEventQueue();
+        final ProcessorIterator suspendedProcessorIterator = this.suspensionSpec.suspendedIterator.cloneIterator();
+
+        // We need to reset it or we won't be able to reuse it in nested executions
+        this.suspensionSpec.reset();
+        this.suspended = false;
+
+
+        /*
+         * PERFORM THE ITERATION
+         */
 
         while (iterator.hasNext()) {
 
@@ -1117,7 +1206,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.variablesMap.put(iterVariableName, status.current);
             this.variablesMap.put(iterStatusVariableName, status);
 
-            this.eventQueues[this.handlerExecLevel].process(this, false);
+            // We will initialize the suspension artifacts just as if we had just suspended it
+            this.suspensionSpec.bodyRemoved = suspendedBodyRemoved;
+            this.suspensionSpec.queueProcessable = suspendedQueueProcessable;
+            this.suspensionSpec.suspendedQueue.resetAsCloneOf(suspendedQueue);
+            this.suspensionSpec.suspendedIterator.resetAsCloneOf(suspendedProcessorIterator);
+            this.suspended = true;
+
+            iterationQueue.process(this, false);
 
             this.variablesMap.decreaseLevel();
 
@@ -1125,7 +1221,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         }
 
-        this.eventQueues[this.handlerExecLevel].reset();
+        // Finally, clean just in case --even if the queued events should have already cleaned this
+        this.suspensionSpec.reset();
+        this.suspended = false;
 
     }
 
@@ -1135,7 +1233,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
 
-    private static Integer computeIteratedSize(final Object iteratedObject) {
+    private static Integer computeIteratedObjectSize(final Object iteratedObject) {
         if (iteratedObject == null) {
             return 0;
         }
@@ -1158,7 +1256,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     }
 
 
-    private static Iterator<?> computeIterator(final Object iteratedObject) {
+    private static Iterator<?> computeIteratedObjectIterator(final Object iteratedObject) {
         if (iteratedObject == null) {
             return Collections.EMPTY_LIST.iterator();
         }
@@ -1252,9 +1350,11 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         private String iterVariableName;
         private String iterStatusVariableName;
         private Object iteratedObject;
+        final EngineEventQueue iterationQueue;
 
-        IterationSpec() {
+        IterationSpec(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
             super();
+            this.iterationQueue = new EngineEventQueue(templateMode, configuration);
             reset();
         }
 
@@ -1263,6 +1363,30 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterVariableName = null;
             this.iterStatusVariableName = null;
             this.iteratedObject = null;
+            this.iterationQueue.reset();
+        }
+
+    }
+
+
+    private static class SuspensionSpec {
+
+        boolean bodyRemoved;
+        boolean queueProcessable;
+        final EngineEventQueue suspendedQueue;
+        final ProcessorIterator suspendedIterator;
+
+        SuspensionSpec(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
+            super();
+            this.suspendedQueue = new EngineEventQueue(templateMode, configuration);
+            this.suspendedIterator = new ProcessorIterator();
+        }
+
+        void reset() {
+            this.bodyRemoved = false;
+            this.queueProcessable = false;
+            this.suspendedQueue.reset();
+            this.suspendedIterator.reset();
         }
 
     }

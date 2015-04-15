@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.aurora.standard.processor;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
@@ -48,6 +47,8 @@ public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementP
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
+
+        System.out.println("EXECUTING EACH FOR TAG: " + tag);
 
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();

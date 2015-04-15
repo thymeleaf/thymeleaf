@@ -38,6 +38,4 @@ public interface ITemplateHandlerEventQueue {
 
     public void reset();
 
-    public ITemplateHandlerEventQueue cloneQueue(final boolean deep);
-
 }

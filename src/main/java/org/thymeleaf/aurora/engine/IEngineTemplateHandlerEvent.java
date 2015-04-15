@@ -25,27 +25,8 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IElementTagActionHandler {
+interface IEngineTemplateHandlerEvent extends ITemplateHandlerEvent {
 
-
-    public void reset();
-
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-//    public void setSelectionTarget();
-//    public void setInliningMode();
-
-    public void setBody(final String text, final boolean processable);
-    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
-
-    public void replaceWith(final String text, final boolean processable);
-    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
-
-
-    public void removeElement();
-    public void removeTag();
-
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
+    // Nothing to add. Just a marker interface grouping all internal event implementations
 
 }
-

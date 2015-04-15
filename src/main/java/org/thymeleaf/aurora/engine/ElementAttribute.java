@@ -67,11 +67,10 @@ final class ElementAttribute {
 
 
     // Used internally, only from the engine
-    void setElementAttribute(
-            final AttributeDefinition definition,
-            final String name, final String operator, final String value,
-            final IElementAttributes.ValueQuotes valueQuotes,
-            final int line, final int col) {
+    void reset(final AttributeDefinition definition,
+               final String name, final String operator, final String value,
+               final IElementAttributes.ValueQuotes valueQuotes,
+               final int line, final int col) {
 
         this.definition = definition;
         this.name = name;
@@ -86,10 +85,9 @@ final class ElementAttribute {
 
 
     // Used internally, only from the engine
-    void setElementAttribute(
-            final String name, final String operator, final String value,
-            final IElementAttributes.ValueQuotes valueQuotes,
-            final int line, final int col) {
+    void reset(final String name, final String operator, final String value,
+               final IElementAttributes.ValueQuotes valueQuotes,
+               final int line, final int col) {
 
         this.name = name;
 
@@ -161,28 +159,22 @@ final class ElementAttribute {
     }
 
 
-    void copyFrom(final ElementAttribute elementAttribute) {
-        this.definition = elementAttribute.definition;
-        this.name = elementAttribute.name;
-        this.operator = elementAttribute.operator;
-        this.value = elementAttribute.value;
-        this.valueQuotes = elementAttribute.valueQuotes;
-        this.line = elementAttribute.line;
-        this.col = elementAttribute.col;
-    }
-
-
 
     ElementAttribute cloneElementAttribute() {
         final ElementAttribute clone = new ElementAttribute();
-        clone.definition = this.definition;
-        clone.name = this.name;
-        clone.operator = this.operator;
-        clone.value = this.value;
-        clone.valueQuotes = this.valueQuotes;
-        clone.line = this.line;
-        clone.col = this.col;
+        clone.resetAsCloneOf(this);
         return clone;
+    }
+
+
+    void resetAsCloneOf(final ElementAttribute original) {
+        this.definition = original.definition;
+        this.name = original.name;
+        this.operator = original.operator;
+        this.value = original.value;
+        this.valueQuotes = original.valueQuotes;
+        this.line = original.line;
+        this.col = original.col;
     }
 
 

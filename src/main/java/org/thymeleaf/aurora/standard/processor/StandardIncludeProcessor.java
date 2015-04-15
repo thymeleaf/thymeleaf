@@ -48,6 +48,8 @@ public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLEleme
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
 
+        System.out.println("EXECUTING INCLUDE FOR TAG: " + tag);
+
         final IModelFactory modelFactory = processingContext.getModelFactory();
 
         final TemplateHandlerEventQueue queue = new TemplateHandlerEventQueue();

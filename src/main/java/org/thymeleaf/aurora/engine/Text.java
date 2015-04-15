@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IText;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -32,7 +33,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class Text implements IText {
+final class Text
+            implements IText, IEngineTemplateHandlerEvent {
 
     private final ITextRepository textRepository;
 
@@ -112,9 +114,9 @@ final class Text implements IText {
 
 
 
-    void setText(final char[] buffer,
-                 final int offset, final int len,
-                 final int line, final int col) {
+    void reset(final char[] buffer,
+               final int offset, final int len,
+               final int line, final int col) {
 
         this.buffer = buffer;
         this.offset = offset;
@@ -190,20 +192,43 @@ final class Text implements IText {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final Text clone = new Text(this.textRepository);
-        clone.setFromText(this);
+        clone.resetAsCloneOf(this);
         return clone;
     }
 
 
     // Meant to be called only from within the engine
-    void setFromText(final IText text) {
+    void resetAsCloneOf(final Text original) {
 
         this.buffer = null;
         this.offset = -1;
-        this.text = text.getText();
+        this.text = original.getText(); // Need to call the method in order to force computing -- no buffer cloning!
         this.length = this.text.length();
-        this.line = text.getLine();
-        this.col = text.getCol();
+        this.line = original.line;
+        this.col = original.col;
+
+    }
+
+
+    // Meant to be called only from within the engine
+    static Text asEngineText(
+            final ITemplateEngineConfiguration configuration, final IText text, final boolean cloneAlways) {
+
+        if (text instanceof Text) {
+            if (cloneAlways) {
+                return ((Text) text).cloneNode();
+            }
+            return (Text) text;
+        }
+
+        final Text newInstance = new Text(configuration.getTextRepository());
+        newInstance.buffer = null;
+        newInstance.offset = -1;
+        newInstance.text = text.getText();
+        newInstance.length = newInstance.text.length();
+        newInstance.line = text.getLine();
+        newInstance.col = text.getCol();
+        return newInstance;
 
     }
 

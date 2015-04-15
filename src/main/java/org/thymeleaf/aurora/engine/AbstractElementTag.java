@@ -142,14 +142,15 @@ abstract class AbstractElementTag implements IElementTag {
 
 
 
-    protected final void initializeElementTagClone(final AbstractElementTag clone) {
-        clone.templateMode = this.templateMode;
-        clone.elementDefinitions = this.elementDefinitions;
-        clone.elementDefinition = this.elementDefinition;
-        clone.elementName = this.elementName;
-        clone.line = this.line;
-        clone.col = col;
-    }
 
+    protected void resetAsCloneOfElementTag(final AbstractElementTag original) {
+        this.templateMode = original.templateMode;
+        this.templateMode = original.templateMode;
+        this.elementDefinitions = original.elementDefinitions;
+        this.elementDefinition = original.elementDefinition;
+        this.elementName = original.elementName;
+        this.line = original.line;
+        this.col = original.col;
+    }
 
 }

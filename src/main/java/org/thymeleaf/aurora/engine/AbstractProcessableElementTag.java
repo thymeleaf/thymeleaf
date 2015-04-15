@@ -77,7 +77,6 @@ abstract class AbstractProcessableElementTag
             final String elementName) {
         super(templateMode, elementDefinitions, elementName);
         this.elementAttributes = new ElementAttributes(this.templateMode, attributeDefinitions);
-        resetProcessableTag(this.elementName, this.line, this.col);
     }
 
 
@@ -98,20 +97,15 @@ abstract class AbstractProcessableElementTag
 
 
 
-    protected void resetProcessableTag(
-            final String elementName,
-            final int line, final int col) {
 
-        resetElementTag(elementName, line, col);
-        this.elementAttributes.clearAll();
-        this.associatedProcessorsAttributesVersion = Integer.MIN_VALUE;
 
+
+    public final void precomputeAssociatedProcessors() {
+        if (this.associatedProcessorsAttributesVersion == Integer.MIN_VALUE || this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
+            recomputeProcessors();
+            this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
+        }
     }
-
-
-
-
-
 
 
     public final boolean hasAssociatedProcessors() {
@@ -203,13 +197,30 @@ abstract class AbstractProcessableElementTag
 
 
 
+    protected void resetProcessableElementTag(
+            final String elementName,
+            final int line, final int col) {
+
+        resetElementTag(elementName, line, col);
+        this.elementAttributes.clearAll();
+        this.associatedProcessorsAttributesVersion = Integer.MIN_VALUE;
+
+    }
 
 
-    protected final void initializeProcessableElementTagClone(final AbstractProcessableElementTag clone) {
-        initializeElementTagClone(clone);
-        clone.elementAttributes = this.elementAttributes.cloneElementAttributes();
-        clone.associatedProcessors = (this.associatedProcessors == null? null : new ArrayList<IProcessor>(this.associatedProcessors));
-        clone.associatedProcessorsAttributesVersion = this.associatedProcessorsAttributesVersion;
+
+
+
+    protected void resetAsCloneOfProcessableElementTag(final AbstractProcessableElementTag original) {
+        super.resetAsCloneOfElementTag(original);
+        if (this.elementAttributes == null) {
+            this.elementAttributes = original.elementAttributes.cloneElementAttributes();
+        } else {
+            this.elementAttributes.resetAsCloneOf(original.elementAttributes); // not the same as cloning the ElementAttributes object, because we want
+        }
+        this.associatedProcessors =
+                (original.associatedProcessors == null ? null : new ArrayList<IProcessor>(original.associatedProcessors)); // It's mutable, so we have to copy the list
+        this.associatedProcessorsAttributesVersion = original.associatedProcessorsAttributesVersion;
     }
 
 

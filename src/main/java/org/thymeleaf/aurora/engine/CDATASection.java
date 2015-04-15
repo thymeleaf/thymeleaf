@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -32,7 +33,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class CDATASection implements ICDATASection {
+final class CDATASection
+            implements ICDATASection, IEngineTemplateHandlerEvent {
 
     private static final char[] CDATA_PREFIX = "<![CDATA[".toCharArray();
     private static final char[] CDATA_SUFFIX = "]]>".toCharArray();
@@ -149,10 +151,9 @@ final class CDATASection implements ICDATASection {
 
 
 
-    void setCDATASection(
-            final char[] buffer,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
+    void reset(final char[] buffer,
+               final int outerOffset, final int outerLen,
+               final int line, final int col) {
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
@@ -241,23 +242,49 @@ final class CDATASection implements ICDATASection {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final CDATASection clone = new CDATASection(this.textRepository);
-        clone.setFromCDATASection(this);
+        clone.resetAsCloneOf(this);
         return clone;
     }
 
 
     // Meant to be called only from within the engine
-    void setFromCDATASection(final ICDATASection cdataSection) {
+    void resetAsCloneOf(final CDATASection original) {
 
         this.buffer = null;
         this.offset = -1;
-        this.cdataSection = cdataSection.getCDATASection();
-        this.content = cdataSection.getContent();
-        this.cdataSectionLength = this.cdataSection.length();
-        this.contentLength = this.content.length();
-        this.line = cdataSection.getLine();
-        this.col = cdataSection.getCol();
+        this.cdataSection = original.getCDATASection(); // Need to call the method in order to force computing -- no buffer cloning!
+        this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
+        this.cdataSectionLength = original.cdataSectionLength;
+        this.contentLength = original.contentLength;
+        this.line = original.line;
+        this.col = original.col;
 
     }
+
+
+    // Meant to be called only from within the engine
+    static CDATASection asEngineCDATASection(
+            final ITemplateEngineConfiguration configuration, final ICDATASection cdataSection, final boolean cloneAlways) {
+
+        if (cdataSection instanceof CDATASection) {
+            if (cloneAlways) {
+                return ((CDATASection) cdataSection).cloneNode();
+            }
+            return (CDATASection) cdataSection;
+        }
+
+        final CDATASection newInstance = new CDATASection(configuration.getTextRepository());
+        newInstance.buffer = null;
+        newInstance.offset = -1;
+        newInstance.cdataSection = cdataSection.getCDATASection();
+        newInstance.content = cdataSection.getContent();
+        newInstance.cdataSectionLength = newInstance.cdataSection.length();
+        newInstance.contentLength = newInstance.content.length();
+        newInstance.line = cdataSection.getLine();
+        newInstance.col = cdataSection.getCol();
+        return newInstance;
+
+    }
+
 
 }

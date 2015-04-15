@@ -22,8 +22,8 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.ICloseElementTag;
-import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -34,7 +34,8 @@ import org.thymeleaf.util.Validate;
  *
  */
 final class CloseElementTag
-        extends AbstractElementTag implements ICloseElementTag {
+            extends AbstractElementTag
+            implements ICloseElementTag, IEngineTemplateHandlerEvent {
 
 
     /*
@@ -71,25 +72,12 @@ final class CloseElementTag
 
 
     // Meant to be called only from within the engine
-    void setCloseElementTag(
-            final String elementName,
-            final int line, final int col) {
+    void reset(final String elementName,
+               final int line, final int col) {
         resetElementTag(elementName, line, col);
     }
 
 
-
-    // Meant to be called only from within the engine
-    final void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
-        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setFromCloseElementTag(final ICloseElementTag tag) {
-        resetElementTag(tag.getElementName(), tag.getLine(), tag.getCol());
-    }
 
 
 
@@ -108,8 +96,42 @@ final class CloseElementTag
 
     public CloseElementTag cloneElementTag() {
         final CloseElementTag clone = new CloseElementTag();
-        initializeElementTagClone(clone);
+        clone.resetAsCloneOf(this);
         return clone;
     }
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final CloseElementTag original) {
+        super.resetAsCloneOfElementTag(original);
+    }
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final StandaloneElementTag original) {
+        // It's exactly the same as with open tags - even the processors, because processors don't apply depending on
+        // whether the tag is open or standalone...
+        super.resetAsCloneOfElementTag(original);
+    }
+
+
+    // Meant to be called only from within the engine
+    static CloseElementTag asEngineCloseElementTag(
+            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final ICloseElementTag closeElementTag, final boolean cloneAlways) {
+
+        if (closeElementTag instanceof CloseElementTag) {
+            if (cloneAlways) {
+                return ((CloseElementTag) closeElementTag).cloneElementTag();
+            }
+            return (CloseElementTag) closeElementTag;
+        }
+
+        final CloseElementTag newInstance = new CloseElementTag(templateMode, configuration.getElementDefinitions());
+        newInstance.reset(closeElementTag.getElementName(), closeElementTag.getLine(), closeElementTag.getCol());
+        return newInstance;
+
+    }
+
 
 }

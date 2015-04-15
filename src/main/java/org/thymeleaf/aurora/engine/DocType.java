@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IDocType;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
@@ -33,7 +34,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class DocType implements IDocType {
+final class DocType
+            implements IDocType, IEngineTemplateHandlerEvent {
 
     public static final String DEFAULT_KEYWORD = "DOCTYPE";
     public static final String DEFAULT_ELEMENT_NAME = "html";
@@ -187,15 +189,14 @@ final class DocType implements IDocType {
 
 
     // Meant to be called only from within the engine - removes the need to validate compute the 'docType' field
-    void setDocType(
-            final String docType,
-            final String keyword,
-            final String elementName,
-            final String type,
-            final String publicId,
-            final String systemId,
-            final String internalSubset,
-            final int line, final int col) {
+    void reset(final String docType,
+               final String keyword,
+               final String elementName,
+               final String type,
+               final String publicId,
+               final String systemId,
+               final String internalSubset,
+               final int line, final int col) {
 
         this.keyword = keyword;
         this.elementName = elementName;
@@ -317,24 +318,51 @@ final class DocType implements IDocType {
 
     public DocType cloneNode() {
         final DocType clone = new DocType(this.textRepository);
-        clone.setFromDocType(this);
+        clone.resetAsCloneOf(this);
         return clone;
     }
 
 
 
     // Meant to be called only from within the engine
-    void setFromDocType(final IDocType docType) {
+    void resetAsCloneOf(final DocType original) {
 
-        this.docType = docType.getDocType();
-        this.keyword = docType.getKeyword();
-        this.elementName = docType.getElementName();
-        this.type = docType.getType();
-        this.publicId = docType.getPublicId();
-        this.systemId = docType.getSystemId();
-        this.internalSubset = docType.getInternalSubset();
-        this.line = docType.getLine();
-        this.col = docType.getCol();
+        this.docType = original.docType;
+        this.keyword = original.keyword;
+        this.elementName = original.elementName;
+        this.type = original.type;
+        this.publicId = original.publicId;
+        this.systemId = original.systemId;
+        this.internalSubset = original.internalSubset;
+        this.line = original.line;
+        this.col = original.col;
+
+    }
+
+
+
+    // Meant to be called only from within the engine
+    static DocType asEngineDocType(
+            final ITemplateEngineConfiguration configuration, final IDocType docType, final boolean cloneAlways) {
+
+        if (docType instanceof DocType) {
+            if (cloneAlways) {
+                return ((DocType) docType).cloneNode();
+            }
+            return (DocType) docType;
+        }
+
+        final DocType newInstance = new DocType(configuration.getTextRepository());
+        newInstance.docType = docType.getDocType();
+        newInstance.keyword = docType.getKeyword();
+        newInstance.elementName = docType.getElementName();
+        newInstance.type = docType.getType();
+        newInstance.publicId = docType.getPublicId();
+        newInstance.systemId = docType.getSystemId();
+        newInstance.internalSubset = docType.getInternalSubset();
+        newInstance.line = docType.getLine();
+        newInstance.col = docType.getCol();
+        return newInstance;
 
     }
 

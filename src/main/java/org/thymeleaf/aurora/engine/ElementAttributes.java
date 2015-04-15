@@ -392,7 +392,7 @@ public final class ElementAttributes implements IElementAttributes {
             // Attribute already exists! Must simply change its properties (might include a name case change!)
 
             final ElementAttribute existingAttribute = this.attributes[existingIdx];
-            existingAttribute.setElementAttribute(name, operator, value, valueQuotes, line, col);
+            existingAttribute.reset(name, operator, value, valueQuotes, line, col);
 
             this.version++;
 
@@ -428,7 +428,7 @@ public final class ElementAttributes implements IElementAttributes {
 
         }
 
-        newAttribute.setElementAttribute(
+        newAttribute.reset(
                 computeAttributeDefinition(name), name, operator, value, valueQuotes, line, col);
 
         this.attributeNames[this.attributesSize] = newAttribute.definition.getAttributeName();
@@ -666,8 +666,12 @@ public final class ElementAttributes implements IElementAttributes {
 
         InnerWhiteSpace cloneInnerWhiteSpace() {
             final InnerWhiteSpace clone = new InnerWhiteSpace();
-            clone.whiteSpace = this.whiteSpace;
+            clone.resetAsCloneOf(this);
             return clone;
+        }
+
+        void resetAsCloneOf(final InnerWhiteSpace from) {
+            this.whiteSpace = from.whiteSpace;
         }
 
     }
@@ -678,41 +682,7 @@ public final class ElementAttributes implements IElementAttributes {
     ElementAttributes cloneElementAttributes() {
 
         final ElementAttributes clone = new ElementAttributes(this.templateMode, this.attributeDefinitions);
-        clone.version = this.version;
-
-        if (this.attributesSize > 0) {
-            clone.attributes = new ElementAttribute[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
-            Arrays.fill(clone.attributes, null);
-            clone.attributeNames = new AttributeName[Math.max(this.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
-            Arrays.fill(clone.attributeNames, null);
-            int n = this.attributesSize;
-            while (n-- != 0) {
-                clone.attributes[n] = this.attributes[n].cloneElementAttribute();
-                clone.attributeNames[n] = this.attributeNames[n];
-            }
-            clone.attributesSize = this.attributesSize;
-        } else {
-            clone.attributes = null;
-            clone.attributeNames = null;
-            clone.attributesSize = 0;
-        }
-
-        if (this.innerWhiteSpacesSize > 0) {
-            clone.innerWhiteSpaces = new InnerWhiteSpace[Math.max(this.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
-            Arrays.fill(clone.innerWhiteSpaces, null);
-            int n = this.innerWhiteSpacesSize;
-            while (n-- != 0) {
-                clone.innerWhiteSpaces[n] = this.innerWhiteSpaces[n].cloneInnerWhiteSpace();
-            }
-            clone.innerWhiteSpacesSize = this.innerWhiteSpacesSize;
-        } else {
-            clone.innerWhiteSpaces = null;
-            clone.innerWhiteSpacesSize = 0;
-        }
-
-        clone.allCompleteNames = this.allCompleteNames; // Can do this because it's either null or an unmodifiable list
-        clone.computedNamesVersion = this.computedNamesVersion;
-
+        clone.resetAsCloneOf(this);
         return clone;
 
     }
@@ -720,52 +690,36 @@ public final class ElementAttributes implements IElementAttributes {
 
 
 
-    void copyFrom(final IElementAttributes from) {
+    void resetAsCloneOf(final ElementAttributes from) {
 
+        /*
+         * This can only be called for the ElementAttributes implementation, and not for the IElementAttributes
+         * interface, because it needs to access the internal structures. In any other cases, clone should be used.
+         */
 
-        if (!(from instanceof ElementAttributes)) {
-
-            clearAll();
-
-            for (final String completeAttributeName : from.getAllCompleteNames()) {
-                this.setAttribute(completeAttributeName, from.getValue(completeAttributeName), from.getValueQuotes(completeAttributeName));
-            }
-
-            return;
-
-        }
-
-        // We know 'from' is of a known class, so we will take some shortcuts
-        final ElementAttributes eaFrom = (ElementAttributes) from;
-
-        if (eaFrom.templateMode != this.templateMode || eaFrom.attributeDefinitions != this.attributeDefinitions) {
+        if (from.templateMode != this.templateMode || from.attributeDefinitions != this.attributeDefinitions) {
             throw new IllegalStateException(
                     "Cannot copy element attributes: the ElementAttributes object to copy from does not " +
                     "contain exactly the same TemplateMode and AttributeDefinitions objects, which should never " +
                     "happen.");
         }
 
-        clearAll(); // This increments version
-
-        // We WON'T do a "this.version = eaFrom.version" because 'this' is an existing object, and setting it to
-        // a version that doesn't follow the right sequence might affect related artifacts like e.g. provoking
-        // that associated processors are not recomputed.
-
-        if (eaFrom.attributesSize > 0) {
+        this.attributesSize = from.attributesSize;
+        if (from.attributesSize > 0) {
 
             if (this.attributes == null) {
-                // We need new arrays as the 'eaFrom' attributes wouldn't fit
+                // We need new arrays as the 'from' attributes wouldn't fit
 
-                this.attributes = new ElementAttribute[Math.max(eaFrom.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
-                this.attributeNames = new AttributeName[Math.max(eaFrom.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                this.attributes = new ElementAttribute[Math.max(from.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                this.attributeNames = new AttributeName[Math.max(from.attributesSize, DEFAULT_ATTRIBUTES_SIZE)];
                 Arrays.fill(this.attributes, null);
                 Arrays.fill(this.attributeNames, null);
 
-            } else if (this.attributes.length < eaFrom.attributesSize) {
+            } else if (this.attributes.length < from.attributesSize) {
                 // We need to adjust the size of our arrays
 
-                final ElementAttribute[] newAttributes = new ElementAttribute[eaFrom.attributesSize];
-                final AttributeName[] newAttributeNames = new AttributeName[eaFrom.attributesSize];
+                final ElementAttribute[] newAttributes = new ElementAttribute[from.attributesSize];
+                final AttributeName[] newAttributeNames = new AttributeName[from.attributesSize];
                 Arrays.fill(newAttributes, null);
                 Arrays.fill(newAttributeNames, null);
                 System.arraycopy(this.attributes, 0, newAttributes, 0, this.attributes.length);
@@ -775,55 +729,59 @@ public final class ElementAttributes implements IElementAttributes {
 
             }
 
-            int n = eaFrom.attributesSize;
+            int n = from.attributesSize;
             while (n-- != 0) {
                 if (this.attributes[n] == null) {
-                    this.attributes[n] = eaFrom.attributes[n].cloneElementAttribute();
+                    this.attributes[n] = from.attributes[n].cloneElementAttribute();
                 } else {
-                    this.attributes[n].copyFrom(eaFrom.attributes[n]);
+                    this.attributes[n].resetAsCloneOf(from.attributes[n]);
                 }
-                this.attributeNames[n] = eaFrom.attributeNames[n];
+                this.attributeNames[n] = from.attributeNames[n];
             }
-            this.attributesSize = eaFrom.attributesSize;
 
         }
 
-        if (eaFrom.innerWhiteSpacesSize > 0) {
+
+        this.innerWhiteSpacesSize = from.innerWhiteSpacesSize;
+        if (from.innerWhiteSpacesSize > 0) {
 
             if (this.innerWhiteSpaces == null) {
-                // We need new arrays as the 'eaFrom' attributes wouldn't fit
+                // We need new arrays as the 'from' attributes wouldn't fit
 
-                this.innerWhiteSpaces = new InnerWhiteSpace[Math.max(eaFrom.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
+                this.innerWhiteSpaces = new InnerWhiteSpace[Math.max(from.innerWhiteSpacesSize, DEFAULT_ATTRIBUTES_SIZE)];
                 Arrays.fill(this.innerWhiteSpaces, null);
 
-            } else if (this.innerWhiteSpaces.length < eaFrom.innerWhiteSpacesSize) {
+            } else if (this.innerWhiteSpaces.length < from.innerWhiteSpacesSize) {
                 // We need to adjust the size of our arrays
 
-                final InnerWhiteSpace[] newInnerWhiteSpaces = new InnerWhiteSpace[eaFrom.innerWhiteSpacesSize];
+                final InnerWhiteSpace[] newInnerWhiteSpaces = new InnerWhiteSpace[from.innerWhiteSpacesSize];
                 Arrays.fill(newInnerWhiteSpaces, null);
                 System.arraycopy(this.innerWhiteSpaces, 0, newInnerWhiteSpaces, 0, this.innerWhiteSpaces.length);
                 this.innerWhiteSpaces = newInnerWhiteSpaces;
 
             }
 
-            int n = eaFrom.innerWhiteSpacesSize;
+            int n = from.innerWhiteSpacesSize;
             while (n-- != 0) {
                 if (this.innerWhiteSpaces[n] == null) {
-                    this.innerWhiteSpaces[n] = eaFrom.innerWhiteSpaces[n].cloneInnerWhiteSpace();
+                    this.innerWhiteSpaces[n] = from.innerWhiteSpaces[n].cloneInnerWhiteSpace();
                 } else {
-                    this.innerWhiteSpaces[n].whiteSpace = eaFrom.innerWhiteSpaces[n].whiteSpace;
+                    this.innerWhiteSpaces[n].resetAsCloneOf(from.innerWhiteSpaces[n]);
                 }
             }
-            this.innerWhiteSpacesSize = eaFrom.innerWhiteSpacesSize;
 
         }
 
-        this.allCompleteNames = eaFrom.allCompleteNames; // Can do this because it's either null or an unmodifiable list
+        this.allCompleteNames = from.allCompleteNames; // Can do this because it's either null or an unmodifiable list
+        this.allAttributeNames = from.allAttributeNames; // Can do this because it's either null or an unmodifiable list
 
-        // Won't set the 'computedNamesVersion' either, for the same reasons as 'this.version'
+        // We will set the versions to the same as the from in the understanding that this method will only be called
+        // internally from methods that perform a complete copy/cloning of the containing tags, therefore copying also
+        // the versions living in the tags themselves (and other related structures like e.g. iterators)
+        this.version = from.version;
+        this.computedNamesVersion = from.computedNamesVersion;
 
     }
-
 
 
 

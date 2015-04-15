@@ -21,9 +21,11 @@ package org.thymeleaf.aurora.engine;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.model.IOpenElementTag;
-import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
@@ -34,7 +36,8 @@ import org.thymeleaf.util.Validate;
  * 
  */
 final class OpenElementTag
-        extends AbstractProcessableElementTag implements IOpenElementTag {
+            extends AbstractProcessableElementTag
+            implements IOpenElementTag, IEngineTemplateHandlerEvent {
 
 
     /*
@@ -73,33 +76,12 @@ final class OpenElementTag
 
 
     // Meant to be called only from within the engine
-    void setOpenElementTag(
-            final String elementName,
-            final int line, final int col) {
-
-        resetProcessableTag(elementName, line, col);
-
+    void reset(final String elementName,
+               final int line, final int col) {
+        resetProcessableElementTag(elementName, line, col);
     }
 
 
-
-    // Meant to be called only from within the engine
-    void setFromStandaloneElementTag(final IStandaloneElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.elementAttributes.copyFrom(tag.getAttributes());
-
-    }
-
-
-
-    // Meant to be called only from within the engine
-    void setFromOpenElementTag(final IOpenElementTag tag) {
-
-        resetProcessableTag(tag.getElementName(), tag.getLine(), tag.getCol());
-        this.elementAttributes.copyFrom(tag.getAttributes());
-
-    }
 
 
     public void write(final Writer writer) throws IOException {
@@ -115,8 +97,54 @@ final class OpenElementTag
 
     public OpenElementTag cloneElementTag() {
         final OpenElementTag clone = new OpenElementTag();
-        initializeProcessableElementTagClone(clone);
+        clone.resetAsCloneOf(this);
         return clone;
+    }
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final OpenElementTag original) {
+        super.resetAsCloneOfProcessableElementTag(original);
+    }
+
+
+    // Meant to be called only from within the engine
+    void resetAsCloneOf(final StandaloneElementTag original) {
+        // It's exactly the same as with open tags - even the processors, because processors don't apply depending on
+        // whether the tag is open or standalone...
+        super.resetAsCloneOfProcessableElementTag(original);
+    }
+
+
+    // Meant to be called only from within the engine
+    static OpenElementTag asEngineOpenElementTag(
+            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final IOpenElementTag openElementTag, final boolean cloneAlways) {
+
+        if (openElementTag instanceof OpenElementTag) {
+            if (cloneAlways) {
+                return ((OpenElementTag) openElementTag).cloneElementTag();
+            }
+            return (OpenElementTag) openElementTag;
+        }
+
+        final OpenElementTag newInstance = new OpenElementTag(templateMode, configuration.getElementDefinitions(), configuration.getAttributeDefinitions());
+
+        newInstance.reset(openElementTag.getElementName(), openElementTag.getLine(), openElementTag.getCol());
+
+        final IElementAttributes attributes = openElementTag.getAttributes();
+        if (attributes != null) {
+            // We have to do this by iterating because we don't know the specific instance of the tag's attributes, and
+            // in fact we also don't want a complete clone (versioning, etc.). We are just copying the attributes
+            final List<String> attributeCompleteNames = attributes.getAllCompleteNames();
+            for (final String attributeCompleteName : attributeCompleteNames) {
+                newInstance.elementAttributes.setAttribute(
+                        attributeCompleteName, attributes.getValue(attributeCompleteName), attributes.getValueQuotes(attributeCompleteName));
+            }
+        }
+
+        return newInstance;
+
     }
 
 }

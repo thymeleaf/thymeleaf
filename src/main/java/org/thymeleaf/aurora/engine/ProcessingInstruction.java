@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IProcessingInstruction;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -32,7 +33,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class ProcessingInstruction implements IProcessingInstruction {
+public final class ProcessingInstruction
+            implements IProcessingInstruction, IEngineTemplateHandlerEvent {
 
     private final ITextRepository textRepository;
 
@@ -122,11 +124,10 @@ public final class ProcessingInstruction implements IProcessingInstruction {
 
 
     // Meant to be called only from within the engine - removes the need to validate compute the 'processingInstruction' field
-    void setProcessingInstruction(
-            final String processingInstruction,
-            final String target,
-            final String content,
-            final int line, final int col) {
+    void reset(final String processingInstruction,
+               final String target,
+               final String content,
+               final int line, final int col) {
 
         this.target = target;
         this.content = content;
@@ -197,20 +198,43 @@ public final class ProcessingInstruction implements IProcessingInstruction {
 
     public ProcessingInstruction cloneNode() {
         final ProcessingInstruction clone = new ProcessingInstruction(this.textRepository);
-        clone.setFromProcessingInstruction(this);
+        clone.resetAsCloneOf(this);
         return clone;
     }
 
 
     // Meant to be called only from within the engine
-    void setFromProcessingInstruction(final IProcessingInstruction processingInstruction) {
+    void resetAsCloneOf(final ProcessingInstruction original) {
 
-        this.processingInstruction = processingInstruction.getProcessingInstruction();
-        this.target = processingInstruction.getTarget();
-        this.content = processingInstruction.getContent();
-        this.line = processingInstruction.getLine();
-        this.col = processingInstruction.getCol();
+        this.processingInstruction = original.processingInstruction;
+        this.target = original.target;
+        this.content = original.content;
+        this.line = original.line;
+        this.col = original.col;
 
     }
+
+
+    // Meant to be called only from within the engine
+    static ProcessingInstruction asEngineProcessingInstruction(
+            final ITemplateEngineConfiguration configuration, final IProcessingInstruction processingInstruction, final boolean cloneAlways) {
+
+        if (processingInstruction instanceof ProcessingInstruction) {
+            if (cloneAlways) {
+                return ((ProcessingInstruction) processingInstruction).cloneNode();
+            }
+            return (ProcessingInstruction) processingInstruction;
+        }
+
+        final ProcessingInstruction newInstance = new ProcessingInstruction(configuration.getTextRepository());
+        newInstance.processingInstruction = processingInstruction.getProcessingInstruction();
+        newInstance.target = processingInstruction.getTarget();
+        newInstance.content = processingInstruction.getContent();
+        newInstance.line = processingInstruction.getLine();
+        newInstance.col = processingInstruction.getCol();
+        return newInstance;
+
+    }
+
 
 }

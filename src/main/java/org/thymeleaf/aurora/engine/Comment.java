@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
+import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IComment;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -32,7 +33,8 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class Comment implements IComment {
+final class Comment
+            implements IComment, IEngineTemplateHandlerEvent {
 
     private static final char[] COMMENT_PREFIX = "<!--".toCharArray();
     private static final char[] COMMENT_SUFFIX = "-->".toCharArray();
@@ -151,10 +153,9 @@ final class Comment implements IComment {
 
 
 
-    void setComment(
-            final char[] buffer,
-            final int outerOffset, final int outerLen,
-            final int line, final int col) {
+    void reset(final char[] buffer,
+               final int outerOffset, final int outerLen,
+               final int line, final int col) {
 
         // This is only meant to be called internally, so no need to perform a lot of checks on the input validity
 
@@ -243,22 +244,47 @@ final class Comment implements IComment {
         // When cloning we will protect the buffer as only the instances used themselves as buffers in the 'engine'
         // package should reference a buffer.
         final Comment clone = new Comment(this.textRepository);
-        clone.setFromComment(this);
+        clone.resetAsCloneOf(this);
         return clone;
     }
 
 
     // Meant to be called only from within the engine
-    void setFromComment(final IComment comment) {
+    void resetAsCloneOf(final Comment original) {
 
         this.buffer = null;
         this.offset = -1;
-        this.comment = comment.getComment();
-        this.content = comment.getContent();
-        this.commentLength = this.comment.length();
-        this.contentLength = this.content.length();
-        this.line = comment.getLine();
-        this.col = comment.getCol();
+        this.comment = original.getComment(); // Need to call the method in order to force computing -- no buffer cloning!
+        this.content = original.getContent(); // Need to call the method in order to force computing -- no buffer cloning!
+        this.commentLength = original.commentLength;
+        this.contentLength = original.contentLength;
+        this.line = original.line;
+        this.col = original.col;
+
+    }
+
+
+    // Meant to be called only from within the engine
+    static Comment asEngineComment(
+            final ITemplateEngineConfiguration configuration, final IComment comment, final boolean cloneAlways) {
+
+        if (comment instanceof Comment) {
+            if (cloneAlways) {
+                return ((Comment) comment).cloneNode();
+            }
+            return (Comment) comment;
+        }
+
+        final Comment newInstance = new Comment(configuration.getTextRepository());
+        newInstance.buffer = null;
+        newInstance.offset = -1;
+        newInstance.comment = comment.getComment();
+        newInstance.content = comment.getContent();
+        newInstance.commentLength = newInstance.comment.length();
+        newInstance.contentLength = newInstance.content.length();
+        newInstance.line = comment.getLine();
+        newInstance.col = comment.getCol();
+        return newInstance;
 
     }
 
