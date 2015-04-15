@@ -36,7 +36,7 @@ public class StandardWithProcessor extends AbstractAttributeMatchingHTMLElementP
 
 
     public StandardWithProcessor() {
-        super("with", 10);
+        super("with", 600);
     }
 
 

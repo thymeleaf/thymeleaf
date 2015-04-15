@@ -81,7 +81,7 @@ public abstract class AbstractIterationElementProcessor
         final String statusVar = iterationSpec.getStatusVarName();
         final Object iteratedObject = iterationSpec.getIteratedObject();
 
-        final List<?> list = EvaluationUtil.evaluateAsIterable(iteratedObject);
+        final List<?> list = EvaluationUtil.evaluateAsList(iteratedObject);
 
         final int size = list.size();
         int index = 0;

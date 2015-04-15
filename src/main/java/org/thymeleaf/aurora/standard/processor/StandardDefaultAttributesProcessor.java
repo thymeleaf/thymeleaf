@@ -72,7 +72,7 @@ public class StandardDefaultAttributesProcessor
             final IProcessableElementTag tag,
             final IElementTagActionHandler actionHandler) {
 
-        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
+//        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
 
     }
 

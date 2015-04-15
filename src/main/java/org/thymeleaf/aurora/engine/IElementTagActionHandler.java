@@ -47,7 +47,7 @@ public interface IElementTagActionHandler {
     public void removeElement();
     public void removeTag();
 
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Iterator<?> iterator);
+    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
 
 }
 

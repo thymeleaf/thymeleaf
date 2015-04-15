@@ -36,7 +36,7 @@ public class StandardClassProcessor extends AbstractAttributeMatchingHTMLElement
 
 
     public StandardClassProcessor() {
-        super("class", 100);
+        super("class", 1000);
     }
 
 

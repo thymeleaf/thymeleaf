@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
@@ -38,7 +39,7 @@ public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementP
 
 
     public StandardEachProcessor() {
-        super("each", 100);
+        super("each", 200);
     }
 
 
@@ -52,7 +53,25 @@ public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementP
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
         final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
-        actionHandler.iterateElement("iter", "iterStat", Arrays.asList(values).iterator());
+//        actionHandler.iterateElement("iter", "iterStat", values);
+//        actionHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
+        actionHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
+
+            private int i = 0;
+
+            public boolean hasNext() {
+                return i < 10;
+            }
+
+            public String next() {
+                return "Iteration " + i++;
+            }
+
+            public void remove() {
+
+            }
+
+        });
 
         tag.getAttributes().removeAttribute(attributeName);
 

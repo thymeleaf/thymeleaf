@@ -65,7 +65,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     boolean iterateElement;
     String iterVariableName;
     String iterStatusVariableName;
-    Iterator<?> iterator;
+    Object iteratedObject;
 
 
     ElementTagActionHandler() {
@@ -137,15 +137,15 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     }
 
 
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Iterator<?> iterator) {
-        Validate.notNull(iterVariableName, "Iteration variable name cannot be null");
-        Validate.notNull(iterStatusVariableName, "Iteration status variable name cannot be null");
-        Validate.notNull(iterator, "Iterator cannot be null");
+    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject) {
+        Validate.notEmpty(iterVariableName, "Iteration variable name cannot be null");
+        // Iteration status variable name CAN be null
+        // IteratedObject CAN be null
         resetAllButLocalVariables();
         this.iterateElement = true;
         this.iterVariableName = iterVariableName;
         this.iterStatusVariableName = iterStatusVariableName;
-        this.iterator = iterator;
+        this.iteratedObject = iteratedObject;
     }
 
 
@@ -189,7 +189,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
         this.iterateElement = false;
         this.iterVariableName = null;
         this.iterStatusVariableName = null;
-        this.iterator = null;
+        this.iteratedObject = null;
 
     }
 

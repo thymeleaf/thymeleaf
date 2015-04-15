@@ -38,7 +38,7 @@ public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLEleme
 
 
     public StandardIncludeProcessor() {
-        super("include", 20);
+        super("include", 100);
     }
 
 

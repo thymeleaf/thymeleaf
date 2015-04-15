@@ -86,7 +86,7 @@ public final class ObjectUtils {
      */
     @Deprecated
     public static List<Object> convertToIterable(final Object value) {
-        return EvaluationUtil.evaluateAsIterable(value);
+        return EvaluationUtil.evaluateAsList(value);
     }
 
 
@@ -108,7 +108,7 @@ public final class ObjectUtils {
             // as the current EvaluationUtil.convertToList() method.
             return Collections.singletonList(null);
         }
-        return EvaluationUtil.evaluateAsIterable(value);
+        return EvaluationUtil.evaluateAsList(value);
     }
 
 

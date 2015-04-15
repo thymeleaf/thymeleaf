@@ -113,7 +113,7 @@ public final class EvaluationUtil {
 
 
 
-    public static List<Object> evaluateAsIterable(final Object value) {
+    public static List<Object> evaluateAsList(final Object value) {
         // Iterating on null should be the same as iterating an empty list
         // (for example, <c:forEach>)
         if (value == null) {

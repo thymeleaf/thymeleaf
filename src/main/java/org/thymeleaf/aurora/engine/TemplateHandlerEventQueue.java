@@ -272,7 +272,7 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
 
 
-    public void process(final ITemplateHandler handler, final boolean reset) {
+    void process(final ITemplateHandler handler, final boolean reset) {
         if (this.buffersEnabled) {
             processWithBuffers(handler, reset);
         } else {

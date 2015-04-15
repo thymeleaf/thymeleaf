@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.standard.processor;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IterationStatusVar;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
@@ -36,7 +37,7 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
 
     public StandardTextProcessor() {
-        super("text", 100);
+        super("text", 1300);
     }
 
 
@@ -52,7 +53,8 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
         final Object localIterValue = processingContext.getVariablesMap().getVariable("iter");
         if (localIterValue != null) {
 
-            actionHandler.setBody(localIterValue.toString(), false);
+            final IterationStatusVar stat = (IterationStatusVar) processingContext.getVariablesMap().getVariable("iterStat");
+            actionHandler.setBody(localIterValue.toString() + " [" + stat.getCount() + (stat.getSize() != null? (" of " + stat.getSize()) : "") + "]", false);
 
         } else {
 

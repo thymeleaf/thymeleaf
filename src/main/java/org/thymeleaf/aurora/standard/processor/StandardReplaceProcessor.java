@@ -38,7 +38,7 @@ public class StandardReplaceProcessor extends AbstractAttributeMatchingHTMLEleme
 
 
     public StandardReplaceProcessor() {
-        super("replace", 20);
+        super("replace", 100);
     }
 
 

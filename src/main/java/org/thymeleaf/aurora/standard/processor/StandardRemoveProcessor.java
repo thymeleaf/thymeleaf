@@ -35,7 +35,7 @@ public class StandardRemoveProcessor extends AbstractAttributeMatchingHTMLElemen
 
 
     public StandardRemoveProcessor() {
-        super("remove", 90);
+        super("remove", 1600);
     }
 
 
