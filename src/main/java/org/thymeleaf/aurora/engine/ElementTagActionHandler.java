@@ -61,10 +61,15 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     boolean removeLocalVariable;
     Set<String> removedLocalVariableNames = new LinkedHashSet<String>(3);
 
+    boolean setSelectionTarget;
+    Object selectionTargetObject;
+
     boolean iterateElement;
     String iterVariableName;
     String iterStatusVariableName;
     Object iteratedObject;
+
+
 
 
     ElementTagActionHandler() {
@@ -136,6 +141,13 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     }
 
 
+    public void setSelectionTarget(final Object selectionTarget) {
+        // Can be combined with others, no need to reset
+        this.setSelectionTarget = true;
+        this.selectionTargetObject = selectionTarget;
+    }
+
+
     public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject) {
         Validate.notEmpty(iterVariableName, "Iteration variable name cannot be null");
         // Iteration status variable name CAN be null
@@ -160,10 +172,13 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
         this.removeLocalVariable = false;
         this.removedLocalVariableNames.clear();
 
+        this.setSelectionTarget = false;
+        this.selectionTargetObject = null;
+
     }
 
 
-    public void resetAllButLocalVariables() {
+    private void resetAllButLocalVariables() {
 
         this.setBodyText = false;
         this.setBodyTextValue = null;

@@ -32,7 +32,9 @@ public interface IElementTagActionHandler {
 
     public void setLocalVariable(final String name, final Object value);
     public void removeLocalVariable(final String name);
-//    public void setSelectionTarget();
+
+    public void setSelectionTarget(final Object selectionTarget);
+
 //    public void setInliningMode();
 
     public void setBody(final String text, final boolean processable);

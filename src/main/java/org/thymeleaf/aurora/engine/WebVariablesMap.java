@@ -192,6 +192,24 @@ final class WebVariablesMap
 
 
 
+
+    public boolean hasSelectionTarget() {
+        return this.requestAttributesVariablesMap.hasSelectionTarget();
+    }
+
+
+    public Object getSelectionTarget() {
+        return this.requestAttributesVariablesMap.getSelectionTarget();
+    }
+
+
+    public void setSelectionTarget(final Object selectionTarget) {
+        this.requestAttributesVariablesMap.setSelectionTarget(selectionTarget);
+    }
+
+
+
+
     public int level() {
         return this.requestAttributesVariablesMap.level();
     }
@@ -256,6 +274,14 @@ final class WebVariablesMap
 
         }
 
+        public boolean hasSelectionTarget() {
+            return false;
+        }
+
+        public Object getSelectionTarget() {
+            return null;
+        }
+
     }
 
 
@@ -290,6 +316,14 @@ final class WebVariablesMap
 
         }
 
+        public boolean hasSelectionTarget() {
+            return false;
+        }
+
+        public Object getSelectionTarget() {
+            return null;
+        }
+
     }
 
 
@@ -316,6 +350,14 @@ final class WebVariablesMap
             return this.request.getParameterMap().keySet();
         }
 
+        public boolean hasSelectionTarget() {
+            return false;
+        }
+
+        public Object getSelectionTarget() {
+            return null;
+        }
+
     }
 
 
@@ -336,6 +378,7 @@ final class WebVariablesMap
         private Object[][] oldValues;
         private Object[][] newValues;
         private int[] levelSizes;
+        private SelectionTarget[] selectionTargets;
 
         private static final Object NON_EXISTING = new Object() {
             @Override
@@ -356,11 +399,13 @@ final class WebVariablesMap
             this.oldValues = new Object[DEFAULT_LEVELS_SIZE][];
             this.newValues = new Object[DEFAULT_LEVELS_SIZE][];
             this.levelSizes = new int[DEFAULT_LEVELS_SIZE];
+            this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
             Arrays.fill(this.levels, Integer.MAX_VALUE);
             Arrays.fill(this.names, null);
             Arrays.fill(this.oldValues, null);
             Arrays.fill(this.newValues, null);
             Arrays.fill(this.levelSizes, 0);
+            Arrays.fill(this.selectionTargets, null);
             this.levels[0] = 0;
 
             if (variables != null) {
@@ -440,56 +485,10 @@ final class WebVariablesMap
 
         public void put(final String key, final Object value) {
 
-            if (this.levels[this.index] != this.level) {
-                // We need to create structures for this new level
-
-                this.index++;
-
-                if (this.levels.length == this.index) {
-                    final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                    final String[][] newNames = new String[this.names.length + DEFAULT_LEVELS_SIZE][];
-                    final Object[][] newNewValues = new Object[this.newValues.length + DEFAULT_LEVELS_SIZE][];
-                    final Object[][] newOldValues = new Object[this.oldValues.length + DEFAULT_LEVELS_SIZE][];
-                    final int[] newLevelSizes = new int[this.levelSizes.length + DEFAULT_LEVELS_SIZE];
-                    Arrays.fill(newLevels, Integer.MAX_VALUE);
-                    Arrays.fill(newNames, null);
-                    Arrays.fill(newNewValues, null);
-                    Arrays.fill(newOldValues, null);
-                    Arrays.fill(newLevelSizes, 0);
-                    System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
-                    System.arraycopy(this.names, 0, newNames, 0, this.names.length);
-                    System.arraycopy(this.newValues, 0, newNewValues, 0, this.newValues.length);
-                    System.arraycopy(this.oldValues, 0, newOldValues, 0, this.oldValues.length);
-                    System.arraycopy(this.levelSizes, 0, newLevelSizes, 0, this.levelSizes.length);
-                    this.levels = newLevels;
-                    this.names = newNames;
-                    this.newValues = newNewValues;
-                    this.oldValues = newOldValues;
-                    this.levelSizes = newLevelSizes;
-                }
-
-                this.levels[this.index] = this.level;
-
-            }
+            ensureLevelInitialized();
 
             if (this.level > 0) {
                 // We will only take care of new/old values if we are not on level 0
-
-                if (this.names[this.index] == null) {
-                    // the arrays for this level have still not ben created
-
-                    this.names[this.index] = new String[DEFAULT_LEVELARRAYS_SIZE];
-                    Arrays.fill(this.names[this.index], null);
-
-                    this.newValues[this.index] = new Object[DEFAULT_LEVELARRAYS_SIZE];
-                    Arrays.fill(this.newValues[this.index], null);
-
-                    this.oldValues[this.index] = new Object[DEFAULT_LEVELARRAYS_SIZE];
-                    Arrays.fill(this.oldValues[this.index], null);
-
-                    this.levelSizes[this.index] = 0;
-
-                }
 
                 int levelIndex = searchName(key);
                 if (levelIndex != -1) {
@@ -560,6 +559,106 @@ final class WebVariablesMap
 
 
 
+
+        public boolean hasSelectionTarget() {
+            int n = this.index + 1;
+            while (n-- != 0) {
+                if (this.selectionTargets[n] != null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        public Object getSelectionTarget() {
+            int n = this.index + 1;
+            while (n-- != 0) {
+                if (this.selectionTargets[n] != null) {
+                    return this.selectionTargets[n].selectionTarget;
+                }
+            }
+            return null;
+        }
+
+
+        public void setSelectionTarget(final Object selectionTarget) {
+
+            ensureLevelInitialized();
+
+            this.selectionTargets[this.index] = new SelectionTarget(selectionTarget);
+
+        }
+
+
+
+
+        private void ensureLevelInitialized() {
+
+            // First, check if the current index already signals the current level (in which case, everything is OK)
+            if (this.levels[this.index] != this.level) {
+
+                // The current level still had no index assigned -- we must do it, and maybe even grow structures
+
+                this.index++; // This new index will be the one for our level
+
+                if (this.levels.length == this.index) {
+                    final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
+                    final String[][] newNames = new String[this.names.length + DEFAULT_LEVELS_SIZE][];
+                    final Object[][] newNewValues = new Object[this.newValues.length + DEFAULT_LEVELS_SIZE][];
+                    final Object[][] newOldValues = new Object[this.oldValues.length + DEFAULT_LEVELS_SIZE][];
+                    final int[] newLevelSizes = new int[this.levelSizes.length + DEFAULT_LEVELS_SIZE];
+                    final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
+                    Arrays.fill(newLevels, Integer.MAX_VALUE);
+                    Arrays.fill(newNames, null);
+                    Arrays.fill(newNewValues, null);
+                    Arrays.fill(newOldValues, null);
+                    Arrays.fill(newLevelSizes, 0);
+                    Arrays.fill(newSelectionTargets, null);
+                    System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
+                    System.arraycopy(this.names, 0, newNames, 0, this.names.length);
+                    System.arraycopy(this.newValues, 0, newNewValues, 0, this.newValues.length);
+                    System.arraycopy(this.oldValues, 0, newOldValues, 0, this.oldValues.length);
+                    System.arraycopy(this.levelSizes, 0, newLevelSizes, 0, this.levelSizes.length);
+                    System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
+                    this.levels = newLevels;
+                    this.names = newNames;
+                    this.newValues = newNewValues;
+                    this.oldValues = newOldValues;
+                    this.levelSizes = newLevelSizes;
+                    this.selectionTargets = newSelectionTargets;
+                }
+
+                this.levels[this.index] = this.level;
+
+            }
+
+            if (this.level > 0) {
+                // We will only take care of new/old values if we are not on level 0
+
+                if (this.names[this.index] == null) {
+                    // the arrays for this level have still not ben created
+
+                    this.names[this.index] = new String[DEFAULT_LEVELARRAYS_SIZE];
+                    Arrays.fill(this.names[this.index], null);
+
+                    this.newValues[this.index] = new Object[DEFAULT_LEVELARRAYS_SIZE];
+                    Arrays.fill(this.newValues[this.index], null);
+
+                    this.oldValues[this.index] = new Object[DEFAULT_LEVELARRAYS_SIZE];
+                    Arrays.fill(this.oldValues[this.index], null);
+
+                    this.levelSizes[this.index] = 0;
+
+                }
+
+            }
+
+        }
+
+
+
+
         public int level() {
             return this.level;
         }
@@ -606,6 +705,8 @@ final class WebVariablesMap
 
                 }
 
+                this.selectionTargets[this.index] = null;
+
                 this.index--;
 
             }
@@ -622,8 +723,8 @@ final class WebVariablesMap
             final Map<String,Object> oldValuesSum = new LinkedHashMap<String, Object>();
             int n = this.index + 1;
             while (n-- != 1) {
+                final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
                 if (this.names[n] != null && this.levelSizes[n] > 0) {
-                    final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
                     for (int i = 0; i < this.levelSizes[n]; i++) {
                         final String name = this.names[n][i];
                         final Object newValue = this.newValues[n][i];
@@ -654,10 +755,12 @@ final class WebVariablesMap
                         levelVars.put(name, newValue);
                         oldValuesSum.put(name, oldValue);
                     }
+                }
+                if (!levelVars.isEmpty() || this.selectionTargets[n] != null) {
                     if (strBuilder.length() > 1) {
                         strBuilder.append(',');
                     }
-                    strBuilder.append(this.levels[n] + ":" + levelVars.toString());
+                    strBuilder.append(this.levels[n] + ":" + (!levelVars.isEmpty()? levelVars : "") + (this.selectionTargets[n] != null? "<" + this.selectionTargets[n].selectionTarget + ">" : ""));
                 }
             }
             final Map<String,Object> requestAttributes = new LinkedHashMap<String, Object>();
@@ -686,7 +789,7 @@ final class WebVariablesMap
             if (strBuilder.length() > 1) {
                 strBuilder.append(',');
             }
-            strBuilder.append("0:" + requestAttributes.toString());
+            strBuilder.append("0:" + requestAttributes.toString() + (this.selectionTargets[0] != null? "<" + this.selectionTargets[0].selectionTarget + ">" : ""));
             strBuilder.append("}[");
             strBuilder.append(this.level);
             strBuilder.append(']');
@@ -706,7 +809,25 @@ final class WebVariablesMap
                 final String name = attributeNamesEnum.nextElement();
                 equivalentMap.put(name, this.request.getAttribute(name));
             }
-            return equivalentMap.toString();
+            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "");
+
+        }
+
+
+
+
+        /*
+         * This class works as a wrapper for the selection target, in order to differentiate whether we
+         * have set a selection target, we have not, or we have set it but it's null
+         */
+        private static class SelectionTarget {
+
+            final Object selectionTarget;
+
+            SelectionTarget(final Object selectionTarget) {
+                super();
+                this.selectionTarget = selectionTarget;
+            }
 
         }
 

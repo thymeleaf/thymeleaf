@@ -49,6 +49,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private int index = 0;
     private int[] levels;
     private LinkedHashMap<String,Object>[] maps;
+    private SelectionTarget[] selectionTargets;
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -65,8 +66,10 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
         this.levels = new int[DEFAULT_LEVELS_SIZE];
         this.maps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[DEFAULT_LEVELS_SIZE];
+        this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
+        Arrays.fill(this.selectionTargets, null);
         this.levels[0] = 0;
 
         if (variables != null) {
@@ -128,30 +131,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
     public void put(final String key, final Object value) {
 
-        if (this.levels[this.index] != this.level) {
-            // We need to create structures for this new level
-
-            this.index++;
-
-            if (this.levels.length == this.index) {
-                final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
-                final LinkedHashMap<String,Object>[] newMaps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
-                Arrays.fill(newLevels, Integer.MAX_VALUE);
-                Arrays.fill(newMaps, null);
-                System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
-                System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
-                this.levels = newLevels;
-                this.maps = newMaps;
-            }
-
-            this.levels[this.index] = this.level;
-
-        }
-
-        if (this.maps[this.index] == null) {
-            // The map for this level has not yet been created
-            this.maps[this.index] = new LinkedHashMap<String,Object>(DEFAULT_MAP_SIZE, 1.0f);
-        }
+        ensureLevelInitialized(DEFAULT_MAP_SIZE);
 
         if (value == NON_EXISTING && this.level == 0) {
             this.maps[this.index].remove(key);
@@ -168,20 +148,79 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
             return;
         }
 
-        if (this.levels[this.index] != this.level) {
-            // We need to create structures for this new level
+        ensureLevelInitialized(Math.max(DEFAULT_MAP_SIZE, map.size() + 2));
 
-            this.index++;
+        this.maps[this.index].putAll(map);
+
+    }
+
+
+
+
+    public void remove(final String key) {
+        if (containsVariable(key)) {
+            put(key, NON_EXISTING);
+        }
+    }
+
+
+
+
+    public boolean hasSelectionTarget() {
+        int n = this.index + 1;
+        while (n-- != 0) {
+            if (this.selectionTargets[n] != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public Object getSelectionTarget() {
+        int n = this.index + 1;
+        while (n-- != 0) {
+            if (this.selectionTargets[n] != null) {
+                return this.selectionTargets[n].selectionTarget;
+            }
+        }
+        return null;
+    }
+
+
+    public void setSelectionTarget(final Object selectionTarget) {
+
+        ensureLevelInitialized(DEFAULT_MAP_SIZE);
+
+        this.selectionTargets[this.index] = new SelectionTarget(selectionTarget);
+
+    }
+
+
+
+
+    private void ensureLevelInitialized(final int requiredSize) {
+
+        // First, check if the current index already signals the current level (in which case, everything is OK)
+        if (this.levels[this.index] != this.level) {
+
+            // The current level still had no index assigned -- we must do it, and maybe even grow structures
+
+            this.index++; // This new index will be the one for our level
 
             if (this.levels.length == this.index) {
                 final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
                 final LinkedHashMap<String,Object>[] newMaps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
+                final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
+                Arrays.fill(newSelectionTargets, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                 System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
+                System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
                 this.levels = newLevels;
                 this.maps = newMaps;
+                this.selectionTargets = newSelectionTargets;
             }
 
             this.levels[this.index] = this.level;
@@ -190,19 +229,12 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
         if (this.maps[this.index] == null) {
             // The map for this level has not yet been created
-            this.maps[this.index] = new LinkedHashMap<String,Object>(Math.max(DEFAULT_MAP_SIZE, map.size() + 2), 1.0f);
+            this.maps[this.index] = new LinkedHashMap<String,Object>(requiredSize, 1.0f);
         }
-
-        this.maps[this.index].putAll(map);
 
     }
 
 
-    public void remove(final String key) {
-        if (containsVariable(key)) {
-            put(key, NON_EXISTING);
-        }
-    }
 
 
     public int level() {
@@ -222,12 +254,11 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
             if (this.maps[this.index] != null) {
                 this.maps[this.index].clear();
             }
+            this.selectionTargets[this.index] = null;
             this.index--;
         }
         this.level--;
     }
-
-
 
 
     public String getStringRepresentationByLevel() {
@@ -236,8 +267,8 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
         strBuilder.append('{');
         int n = this.index + 1;
         while (n-- != 0) {
+            final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
             if (this.maps[n] != null) {
-                final Map<String,Object> levelVars = new LinkedHashMap<String, Object>();
                 for (final Map.Entry<String,Object> mapEntry : this.maps[n].entrySet()) {
                     final String name = mapEntry.getKey();
                     final Object value = mapEntry.getValue();
@@ -256,10 +287,12 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
                     }
                     levelVars.put(name, value);
                 }
+            }
+            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null) {
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
-                strBuilder.append(this.levels[n] + ":" + levelVars);
+                strBuilder.append(this.levels[n] + ":" + (!levelVars.isEmpty() || n == 0? levelVars : "") + (this.selectionTargets[n] != null? "<" + this.selectionTargets[n].selectionTarget + ">" : ""));
             }
         }
         strBuilder.append("}[");
@@ -292,10 +325,27 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
             }
             i++;
         }
-        return equivalentMap.toString();
+        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "");
 
     }
 
+
+
+
+    /*
+     * This class works as a wrapper for the selection target, in order to differentiate whether we
+     * have set a selection target, we have not, or we have set it but it's null
+     */
+    private static class SelectionTarget {
+
+        final Object selectionTarget;
+
+        SelectionTarget(final Object selectionTarget) {
+            super();
+            this.selectionTarget = selectionTarget;
+        }
+
+    }
 
 
 }

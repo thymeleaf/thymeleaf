@@ -47,4 +47,7 @@ public interface IVariablesMap {
     public Object getVariable(final String key);
     public Set<String> getVariableNames();
 
+    public boolean hasSelectionTarget();
+    public Object getSelectionTarget();
+
 }

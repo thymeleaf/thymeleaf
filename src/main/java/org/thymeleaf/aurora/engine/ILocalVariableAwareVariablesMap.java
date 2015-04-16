@@ -48,6 +48,8 @@ interface ILocalVariableAwareVariablesMap extends IVariablesMap {
     void increaseLevel();
     void decreaseLevel();
 
+    void setSelectionTarget(final Object selectionTarget);
+
     String getStringRepresentationByLevel();
 
 }

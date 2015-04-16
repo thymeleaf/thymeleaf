@@ -58,12 +58,22 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
         } else {
 
-            final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
+            if (processingContext.getVariablesMap().hasSelectionTarget()) {
 
-            if (localVarValue != null) {
-                actionHandler.setBody("*Whoohooooo!*", false);
+                final Object selectionTarget = processingContext.getVariablesMap().getSelectionTarget();
+
+                actionHandler.setBody(selectionTarget.toString(), false);
+
             } else {
-                actionHandler.setBody("Whoohooooo!", false);
+
+                final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
+
+                if (localVarValue != null) {
+                    actionHandler.setBody("*Whoohooooo!*", false);
+                } else {
+                    actionHandler.setBody("Whoohooooo!", false);
+                }
+
             }
 
         }

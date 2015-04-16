@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.standard.processor;
 
-import java.util.Iterator;
-
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementTagActionHandler;
@@ -34,11 +32,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardObjectProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
 
 
-    public StandardEachProcessor() {
-        super("each", 200);
+    public StandardObjectProcessor() {
+        super("object", 500);
     }
 
 
@@ -50,29 +48,39 @@ public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementP
 
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-
-        final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
-//        actionHandler.iterateElement("iter", "iterStat", values);
-//        actionHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
-        actionHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
-
-            private int i = 0;
-
-            public boolean hasNext() {
-                return i < 10;
-            }
-
-            public String next() {
-                return "Iteration " + i++;
-            }
-
-            public void remove() {
-
-            }
-
-        });
-
         tag.getAttributes().removeAttribute(attributeName);
+
+        actionHandler.setSelectionTarget(new UserForm("Mark", "Lettuce"));
+
+    }
+
+
+    private static class UserForm {
+
+        private final String name;
+        private final String surname;
+
+        public UserForm(final String name, final String surname) {
+            super();
+            this.name = name;
+            this.surname = surname;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        public String getSurname() {
+            return this.surname;
+        }
+
+        @Override
+        public String toString() {
+            return "UserForm{" +
+                    "name='" + this.name + '\'' +
+                    ", surname='" + this.surname + '\'' +
+                    '}';
+        }
 
     }
 
