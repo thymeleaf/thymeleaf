@@ -50,6 +50,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private int[] levels;
     private LinkedHashMap<String,Object>[] maps;
     private SelectionTarget[] selectionTargets;
+    private Boolean[] textInliningActivations;
 
     private static final Object NON_EXISTING = new Object() {
         @Override
@@ -67,10 +68,13 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
         this.levels = new int[DEFAULT_LEVELS_SIZE];
         this.maps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[DEFAULT_LEVELS_SIZE];
         this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
+        this.textInliningActivations = new Boolean[DEFAULT_LEVELS_SIZE];
         Arrays.fill(this.levels, Integer.MAX_VALUE);
         Arrays.fill(this.maps, null);
         Arrays.fill(this.selectionTargets, null);
+        Arrays.fill(this.textInliningActivations, null);
         this.levels[0] = 0;
+        this.textInliningActivations[0] = Boolean.TRUE; // Active by default
 
         if (variables != null) {
             putAll(variables);
@@ -189,11 +193,27 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
     public void setSelectionTarget(final Object selectionTarget) {
-
         ensureLevelInitialized(DEFAULT_MAP_SIZE);
-
         this.selectionTargets[this.index] = new SelectionTarget(selectionTarget);
+    }
 
+
+
+
+    public boolean isTextInliningActive() {
+        int n = this.index + 1;
+        while (n-- != 0) {
+            if (this.textInliningActivations[n] != null) {
+                return this.textInliningActivations[n].booleanValue();
+            }
+        }
+        return false;
+    }
+
+
+    public void setTextInliningActive(final boolean active) {
+        ensureLevelInitialized(DEFAULT_MAP_SIZE);
+        this.textInliningActivations[this.index] = Boolean.valueOf(active);
     }
 
 
@@ -212,15 +232,19 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 final int[] newLevels = new int[this.levels.length + DEFAULT_LEVELS_SIZE];
                 final LinkedHashMap<String,Object>[] newMaps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[this.maps.length + DEFAULT_LEVELS_SIZE];
                 final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
+                final Boolean[] newTextInliningActivations = new Boolean[this.textInliningActivations.length + DEFAULT_LEVELS_SIZE];
                 Arrays.fill(newLevels, Integer.MAX_VALUE);
                 Arrays.fill(newMaps, null);
                 Arrays.fill(newSelectionTargets, null);
+                Arrays.fill(newTextInliningActivations, null);
                 System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                 System.arraycopy(this.maps, 0, newMaps, 0, this.maps.length);
                 System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
+                System.arraycopy(this.textInliningActivations, 0, newTextInliningActivations, 0, this.textInliningActivations.length);
                 this.levels = newLevels;
                 this.maps = newMaps;
                 this.selectionTargets = newSelectionTargets;
+                this.textInliningActivations = newTextInliningActivations;
             }
 
             this.levels[this.index] = this.level;
@@ -255,6 +279,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
                 this.maps[this.index].clear();
             }
             this.selectionTargets[this.index] = null;
+            this.textInliningActivations[this.index] = null;
             this.index--;
         }
         this.level--;
@@ -288,11 +313,20 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
                     levelVars.put(name, value);
                 }
             }
-            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null) {
+            if (n == 0 || !levelVars.isEmpty() || this.selectionTargets[n] != null || this.textInliningActivations[n] != null) {
                 if (strBuilder.length() > 1) {
                     strBuilder.append(',');
                 }
-                strBuilder.append(this.levels[n] + ":" + (!levelVars.isEmpty() || n == 0? levelVars : "") + (this.selectionTargets[n] != null? "<" + this.selectionTargets[n].selectionTarget + ">" : ""));
+                strBuilder.append(this.levels[n] + ":");
+                if (!levelVars.isEmpty() || n == 0) {
+                    strBuilder.append(levelVars);
+                }
+                if (this.selectionTargets[n] != null) {
+                    strBuilder.append("<" + this.selectionTargets[n].selectionTarget + ">");
+                }
+                if (this.textInliningActivations[n] != null) {
+                    strBuilder.append("[" + this.textInliningActivations[n] + "]");
+                }
             }
         }
         strBuilder.append("}[");
@@ -325,7 +359,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
             }
             i++;
         }
-        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "");
+        return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + "[" + isTextInliningActive() + "]";
 
     }
 

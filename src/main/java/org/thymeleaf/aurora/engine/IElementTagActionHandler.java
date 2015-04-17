@@ -35,7 +35,7 @@ public interface IElementTagActionHandler {
 
     public void setSelectionTarget(final Object selectionTarget);
 
-//    public void setInliningMode();
+    public void setTextInliningActive(final boolean active);
 
     public void setBody(final String text, final boolean processable);
     public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable);

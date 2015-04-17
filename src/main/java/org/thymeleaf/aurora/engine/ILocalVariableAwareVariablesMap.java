@@ -30,7 +30,7 @@ import org.thymeleaf.aurora.context.IVariablesMap;
  * @since 3.0.0
  *
  */
-interface ILocalVariableAwareVariablesMap extends IVariablesMap {
+public interface ILocalVariableAwareVariablesMap extends IVariablesMap {
 
     /*
      * This package-internal interface is used for allowing the processor template handler to modify the
@@ -50,6 +50,7 @@ interface ILocalVariableAwareVariablesMap extends IVariablesMap {
 
     void setSelectionTarget(final Object selectionTarget);
 
-    String getStringRepresentationByLevel();
+    void setTextInliningActive(final boolean active);
+
 
 }

@@ -64,6 +64,9 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     boolean setSelectionTarget;
     Object selectionTargetObject;
 
+    boolean setTextInliningActive;
+    boolean setTextInliningActiveValue;
+
     boolean iterateElement;
     String iterVariableName;
     String iterStatusVariableName;
@@ -148,6 +151,12 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
     }
 
 
+    public void setTextInliningActive(final boolean active) {
+        this.setTextInliningActive = true;
+        this.setTextInliningActiveValue = active;
+    }
+
+
     public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject) {
         Validate.notEmpty(iterVariableName, "Iteration variable name cannot be null");
         // Iteration status variable name CAN be null
@@ -174,6 +183,9 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
         this.setSelectionTarget = false;
         this.selectionTargetObject = null;
+
+        this.setTextInliningActive = false;
+        this.setTextInliningActiveValue = false;
 
     }
 

@@ -210,6 +210,17 @@ final class WebVariablesMap
 
 
 
+    public boolean isTextInliningActive() {
+        return this.requestAttributesVariablesMap.isTextInliningActive();
+    }
+
+    public void setTextInliningActive(final boolean active) {
+        this.requestAttributesVariablesMap.setTextInliningActive(active);
+    }
+
+
+
+
     public int level() {
         return this.requestAttributesVariablesMap.level();
     }
@@ -282,6 +293,10 @@ final class WebVariablesMap
             return null;
         }
 
+        public boolean isTextInliningActive() {
+            return false;
+        }
+
     }
 
 
@@ -324,6 +339,10 @@ final class WebVariablesMap
             return null;
         }
 
+        public boolean isTextInliningActive() {
+            return false;
+        }
+
     }
 
 
@@ -358,6 +377,10 @@ final class WebVariablesMap
             return null;
         }
 
+        public boolean isTextInliningActive() {
+            return false;
+        }
+
     }
 
 
@@ -379,6 +402,7 @@ final class WebVariablesMap
         private Object[][] newValues;
         private int[] levelSizes;
         private SelectionTarget[] selectionTargets;
+        private Boolean[] textInliningActivations;
 
         private static final Object NON_EXISTING = new Object() {
             @Override
@@ -400,13 +424,16 @@ final class WebVariablesMap
             this.newValues = new Object[DEFAULT_LEVELS_SIZE][];
             this.levelSizes = new int[DEFAULT_LEVELS_SIZE];
             this.selectionTargets = new SelectionTarget[DEFAULT_LEVELS_SIZE];
+            this.textInliningActivations = new Boolean[DEFAULT_LEVELS_SIZE];
             Arrays.fill(this.levels, Integer.MAX_VALUE);
             Arrays.fill(this.names, null);
             Arrays.fill(this.oldValues, null);
             Arrays.fill(this.newValues, null);
             Arrays.fill(this.levelSizes, 0);
             Arrays.fill(this.selectionTargets, null);
+            Arrays.fill(this.textInliningActivations, null);
             this.levels[0] = 0;
+            this.textInliningActivations[0] = Boolean.TRUE; // Active by default
 
             if (variables != null) {
                 putAll(variables);
@@ -583,11 +610,27 @@ final class WebVariablesMap
 
 
         public void setSelectionTarget(final Object selectionTarget) {
-
             ensureLevelInitialized();
-
             this.selectionTargets[this.index] = new SelectionTarget(selectionTarget);
+        }
 
+
+
+
+        public boolean isTextInliningActive() {
+            int n = this.index + 1;
+            while (n-- != 0) {
+                if (this.textInliningActivations[n] != null) {
+                    return this.textInliningActivations[n].booleanValue();
+                }
+            }
+            return false;
+        }
+
+
+        public void setTextInliningActive(final boolean active) {
+            ensureLevelInitialized();
+            this.textInliningActivations[this.index] = Boolean.valueOf(active);
         }
 
 
@@ -609,24 +652,28 @@ final class WebVariablesMap
                     final Object[][] newOldValues = new Object[this.oldValues.length + DEFAULT_LEVELS_SIZE][];
                     final int[] newLevelSizes = new int[this.levelSizes.length + DEFAULT_LEVELS_SIZE];
                     final SelectionTarget[] newSelectionTargets = new SelectionTarget[this.selectionTargets.length + DEFAULT_LEVELS_SIZE];
+                    final Boolean[] newTextInliningActivations = new Boolean[this.textInliningActivations.length + DEFAULT_LEVELS_SIZE];
                     Arrays.fill(newLevels, Integer.MAX_VALUE);
                     Arrays.fill(newNames, null);
                     Arrays.fill(newNewValues, null);
                     Arrays.fill(newOldValues, null);
                     Arrays.fill(newLevelSizes, 0);
                     Arrays.fill(newSelectionTargets, null);
+                    Arrays.fill(newTextInliningActivations, null);
                     System.arraycopy(this.levels, 0, newLevels, 0, this.levels.length);
                     System.arraycopy(this.names, 0, newNames, 0, this.names.length);
                     System.arraycopy(this.newValues, 0, newNewValues, 0, this.newValues.length);
                     System.arraycopy(this.oldValues, 0, newOldValues, 0, this.oldValues.length);
                     System.arraycopy(this.levelSizes, 0, newLevelSizes, 0, this.levelSizes.length);
                     System.arraycopy(this.selectionTargets, 0, newSelectionTargets, 0, this.selectionTargets.length);
+                    System.arraycopy(this.textInliningActivations, 0, newTextInliningActivations, 0, this.textInliningActivations.length);
                     this.levels = newLevels;
                     this.names = newNames;
                     this.newValues = newNewValues;
                     this.oldValues = newOldValues;
                     this.levelSizes = newLevelSizes;
                     this.selectionTargets = newSelectionTargets;
+                    this.textInliningActivations = newTextInliningActivations;
                 }
 
                 this.levels[this.index] = this.level;
@@ -706,6 +753,7 @@ final class WebVariablesMap
                 }
 
                 this.selectionTargets[this.index] = null;
+                this.textInliningActivations[this.index] = null;
 
                 this.index--;
 
@@ -756,11 +804,20 @@ final class WebVariablesMap
                         oldValuesSum.put(name, oldValue);
                     }
                 }
-                if (!levelVars.isEmpty() || this.selectionTargets[n] != null) {
+                if (!levelVars.isEmpty() || this.selectionTargets[n] != null || this.textInliningActivations[n] != null) {
                     if (strBuilder.length() > 1) {
                         strBuilder.append(',');
                     }
-                    strBuilder.append(this.levels[n] + ":" + (!levelVars.isEmpty()? levelVars : "") + (this.selectionTargets[n] != null? "<" + this.selectionTargets[n].selectionTarget + ">" : ""));
+                    strBuilder.append(this.levels[n] + ":");
+                    if (!levelVars.isEmpty() || n == 0) {
+                        strBuilder.append(levelVars);
+                    }
+                    if (this.selectionTargets[n] != null) {
+                        strBuilder.append("<" + this.selectionTargets[n].selectionTarget + ">");
+                    }
+                    if (this.textInliningActivations[n] != null) {
+                        strBuilder.append("[" + this.textInliningActivations[n] + "]");
+                    }
                 }
             }
             final Map<String,Object> requestAttributes = new LinkedHashMap<String, Object>();
@@ -789,7 +846,14 @@ final class WebVariablesMap
             if (strBuilder.length() > 1) {
                 strBuilder.append(',');
             }
-            strBuilder.append("0:" + requestAttributes.toString() + (this.selectionTargets[0] != null? "<" + this.selectionTargets[0].selectionTarget + ">" : ""));
+            strBuilder.append(this.levels[n] + ":");
+            strBuilder.append(requestAttributes.toString());
+            if (this.selectionTargets[0] != null) {
+                strBuilder.append("<" + this.selectionTargets[0].selectionTarget + ">");
+            }
+            if (this.textInliningActivations[0] != null) {
+                strBuilder.append("[" + this.textInliningActivations[0] + "]");
+            }
             strBuilder.append("}[");
             strBuilder.append(this.level);
             strBuilder.append(']');
@@ -809,7 +873,7 @@ final class WebVariablesMap
                 final String name = attributeNamesEnum.nextElement();
                 equivalentMap.put(name, this.request.getAttribute(name));
             }
-            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "");
+            return equivalentMap.toString() + (hasSelectionTarget()? "<" + getSelectionTarget() + ">" : "") + "[" + isTextInliningActive() + "]";
 
         }
 

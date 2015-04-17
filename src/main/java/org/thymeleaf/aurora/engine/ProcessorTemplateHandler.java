@@ -145,7 +145,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.variablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
         } else {
             logger.warn("Unknown implementation of the " + IVariablesMap.class.getName() + " interface: " +
-                        variablesMap.getClass().getName() + ". Local variable support will be DISABLED.");
+                        variablesMap.getClass().getName() + ". Local variable support will be DISABLED (this " +
+                        "includes iteration, target selection and inlining)");
         }
 
         this.textBodyReplacementBuffer = new Text(this.configuration.getTextRepository());
@@ -433,6 +434,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 if (this.actionHandler.setSelectionTarget) {
                     if (this.variablesMap != null) {
                         this.variablesMap.setSelectionTarget(this.actionHandler.selectionTargetObject);
+                    }
+                }
+
+                if (this.actionHandler.setTextInliningActive) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setTextInliningActive(this.actionHandler.setTextInliningActiveValue);
                     }
                 }
 
@@ -769,6 +776,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 if (this.actionHandler.setSelectionTarget) {
                     if (this.variablesMap != null) {
                         this.variablesMap.setSelectionTarget(this.actionHandler.selectionTargetObject);
+                    }
+                }
+
+                if (this.actionHandler.setTextInliningActive) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setTextInliningActive(this.actionHandler.setTextInliningActiveValue);
                     }
                 }
 
@@ -1218,8 +1231,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.variablesMap == null) {
             throw new TemplateProcessingException(
                     "Iteration is not supported because local variable support is DISABLED. This is due to " +
-                    "the use of an unknown implementation of the " + IVariablesMap.class.getName() + " interface. " +
-                    "Use " + StandardTemplateProcessingContextFactory.class.getName() + " in order to avoid this.");
+                    "the use of implementation of the " + IVariablesMap.class.getName() + " interface that does" +
+                    "not provide local-variable support. It's recommended to use " +
+                    StandardTemplateProcessingContextFactory.class.getName() + " in order to avoid this.");
         }
 
 

@@ -47,7 +47,13 @@ public interface IVariablesMap {
     public Object getVariable(final String key);
     public Set<String> getVariableNames();
 
+    // Selection target works as a local variable, but is used so often that it has its own methods in order to allow
+    // specific performance improvements to be designed for them
     public boolean hasSelectionTarget();
     public Object getSelectionTarget();
+
+    // Text inlining works as a local variable, but is used so often that it has its own methods in order to allow
+    // specific performance improvements to be designed for them
+    public boolean isTextInliningActive();
 
 }
