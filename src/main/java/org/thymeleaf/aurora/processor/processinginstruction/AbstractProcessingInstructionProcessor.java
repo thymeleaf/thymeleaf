@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.processinginstruction;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.IProcessingInstructionStructureHandler;
 import org.thymeleaf.aurora.model.IProcessingInstruction;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -42,8 +43,9 @@ public abstract class AbstractProcessingInstructionProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IProcessingInstruction process(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction) {
-        return processingInstruction;
+    public void process(final ITemplateProcessingContext processingContext, final IProcessingInstruction processingInstruction,
+                        final IProcessingInstructionStructureHandler structureHandler) {
+        // Nothing to do
     }
 
 

@@ -46,7 +46,6 @@ import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.aurora.processor.comment.ICommentProcessor;
 import org.thymeleaf.aurora.processor.doctype.IDocTypeProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.node.INodeProcessor;
 import org.thymeleaf.aurora.processor.processinginstruction.IProcessingInstructionProcessor;
 import org.thymeleaf.aurora.processor.text.ITextProcessor;
 import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
@@ -74,13 +73,13 @@ final class DialectSetConfiguration {
 
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
-    private final EnumMap<TemplateMode,Set<IProcessor>> cdataSectionProcessorsByTemplateMode;
-    private final EnumMap<TemplateMode,Set<IProcessor>> commentProcessorsByTemplateMode;
-    private final EnumMap<TemplateMode,Set<IProcessor>> docTypeProcessorsByTemplateMode;
-    private final EnumMap<TemplateMode,Set<IProcessor>> elementProcessorsByTemplateMode;
-    private final EnumMap<TemplateMode,Set<IProcessor>> processingInstructionProcessorsByTemplateMode;
-    private final EnumMap<TemplateMode,Set<IProcessor>> textProcessorsByTemplateMode;
-    private final EnumMap<TemplateMode,Set<IProcessor>> xmlDeclarationProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<ICommentProcessor>> commentProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<IDocTypeProcessor>> docTypeProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<IElementProcessor>> elementProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<IProcessingInstructionProcessor>> processingInstructionProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<ITextProcessor>> textProcessorsByTemplateMode;
+    private final EnumMap<TemplateMode,Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode;
 
     private final List<Class<? extends ITemplateHandler>> preProcessors;
     private final List<Class<? extends ITemplateHandler>> postProcessors;
@@ -108,13 +107,13 @@ final class DialectSetConfiguration {
         final Set<IProcessor> allProcessors = new LinkedHashSet<IProcessor>(80);
 
         // EnumMaps for each type of processor (depending on the structures that they can be applied to)
-        final EnumMap<TemplateMode, List<IProcessor>> cdataSectionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
-        final EnumMap<TemplateMode, List<IProcessor>> commentProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
-        final EnumMap<TemplateMode, List<IProcessor>> docTypeProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
-        final EnumMap<TemplateMode, List<IProcessor>> elementProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
-        final EnumMap<TemplateMode, List<IProcessor>> processingInstructionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
-        final EnumMap<TemplateMode, List<IProcessor>> textProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
-        final EnumMap<TemplateMode, List<IProcessor>> xmlDeclarationProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<ICDATASectionProcessor>> cdataSectionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ICDATASectionProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<ICommentProcessor>> commentProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ICommentProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<IDocTypeProcessor>> docTypeProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IDocTypeProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<IElementProcessor>> elementProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IElementProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<IProcessingInstructionProcessor>> processingInstructionProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IProcessingInstructionProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<ITextProcessor>> textProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<ITextProcessor>>(TemplateMode.class);
+        final EnumMap<TemplateMode, List<IXMLDeclarationProcessor>> xmlDeclarationProcessorListsByTemplateMode = new EnumMap<TemplateMode, List<IXMLDeclarationProcessor>>(TemplateMode.class);
 
         // Lists for merging all pre and postprocessors from all dialects
         final List<Class<? extends ITemplateHandler>> preProcessors = new ArrayList<Class<? extends ITemplateHandler>>(5);
@@ -174,78 +173,75 @@ final class DialectSetConfiguration {
                         throw new ConfigurationException("Template mode cannot be null (processor: " + dialectProcessor.getClass().getName() + ")");
                     }
 
-                    final INodeProcessor.MatchingNodeType matchingNodeType =
-                            (dialectProcessor instanceof INodeProcessor ? ((INodeProcessor) dialectProcessor).getMatchingNodeType() : null);
+                    if (dialectProcessor instanceof IElementProcessor) { // can be either a tag processor or a node one
 
-                    if (dialectProcessor instanceof IElementProcessor || INodeProcessor.MatchingNodeType.ELEMENT == matchingNodeType) {
-
-                        List<IProcessor> processorsForTemplateMode = elementProcessorListsByTemplateMode.get(templateMode);
+                        List<IElementProcessor> processorsForTemplateMode = elementProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<IElementProcessor>(5);
                             elementProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((IElementProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
 
-                    } else if (dialectProcessor instanceof ICDATASectionProcessor || INodeProcessor.MatchingNodeType.CDATA_SECTION == matchingNodeType) {
+                    } else if (dialectProcessor instanceof ICDATASectionProcessor) {
 
-                        List<IProcessor> processorsForTemplateMode = cdataSectionProcessorListsByTemplateMode.get(templateMode);
+                        List<ICDATASectionProcessor> processorsForTemplateMode = cdataSectionProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<ICDATASectionProcessor>(5);
                             cdataSectionProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((ICDATASectionProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
-                    } else if (dialectProcessor instanceof ICommentProcessor || INodeProcessor.MatchingNodeType.COMMENT == matchingNodeType) {
+                    } else if (dialectProcessor instanceof ICommentProcessor) {
 
-                        List<IProcessor> processorsForTemplateMode = commentProcessorListsByTemplateMode.get(templateMode);
+                        List<ICommentProcessor> processorsForTemplateMode = commentProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<ICommentProcessor>(5);
                             commentProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((ICommentProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
-                    } else if (dialectProcessor instanceof IDocTypeProcessor || INodeProcessor.MatchingNodeType.DOC_TYPE == matchingNodeType) {
+                    } else if (dialectProcessor instanceof IDocTypeProcessor) {
 
-                        List<IProcessor> processorsForTemplateMode = docTypeProcessorListsByTemplateMode.get(templateMode);
+                        List<IDocTypeProcessor> processorsForTemplateMode = docTypeProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<IDocTypeProcessor>(5);
                             docTypeProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((IDocTypeProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
-                    } else if (dialectProcessor instanceof IProcessingInstructionProcessor || INodeProcessor.MatchingNodeType.PROCESSING_INSTRUCTION == matchingNodeType) {
+                    } else if (dialectProcessor instanceof IProcessingInstructionProcessor) {
 
-                        List<IProcessor> processorsForTemplateMode = processingInstructionProcessorListsByTemplateMode.get(templateMode);
+                        List<IProcessingInstructionProcessor> processorsForTemplateMode = processingInstructionProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<IProcessingInstructionProcessor>(5);
                             processingInstructionProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((IProcessingInstructionProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
-                    } else if (dialectProcessor instanceof ITextProcessor || INodeProcessor.MatchingNodeType.TEXT == matchingNodeType) {
+                    } else if (dialectProcessor instanceof ITextProcessor) {
 
-                        List<IProcessor> processorsForTemplateMode = textProcessorListsByTemplateMode.get(templateMode);
+                        List<ITextProcessor> processorsForTemplateMode = textProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<ITextProcessor>(5);
                             textProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((ITextProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
-                    } else if (dialectProcessor instanceof IXMLDeclarationProcessor || INodeProcessor.MatchingNodeType.XML_DECLARATION == matchingNodeType) {
+                    } else if (dialectProcessor instanceof IXMLDeclarationProcessor) {
 
-                        List<IProcessor> processorsForTemplateMode = xmlDeclarationProcessorListsByTemplateMode.get(templateMode);
+                        List<IXMLDeclarationProcessor> processorsForTemplateMode = xmlDeclarationProcessorListsByTemplateMode.get(templateMode);
                         if (processorsForTemplateMode == null) {
-                            processorsForTemplateMode = new ArrayList<IProcessor>(5);
+                            processorsForTemplateMode = new ArrayList<IXMLDeclarationProcessor>(5);
                             xmlDeclarationProcessorListsByTemplateMode.put(templateMode, processorsForTemplateMode);
                         }
-                        processorsForTemplateMode.add(dialectProcessor);
+                        processorsForTemplateMode.add((IXMLDeclarationProcessor)dialectProcessor);
                         Collections.sort(processorsForTemplateMode, PrecedenceProcessorComparator.INSTANCE);
 
                     }
@@ -364,13 +360,13 @@ final class DialectSetConfiguration {
 
 
         // Time to turn the list-based structures into sets -- we needed the lists because we needed a way to order them using Collections.sort()
-        final EnumMap<TemplateMode, Set<IProcessor>> cdataSectionProcessorsByTemplateMode = listMapToSetMap(cdataSectionProcessorListsByTemplateMode);
-        final EnumMap<TemplateMode, Set<IProcessor>> commentProcessorsByTemplateMode = listMapToSetMap(commentProcessorListsByTemplateMode);
-        final EnumMap<TemplateMode, Set<IProcessor>> docTypeProcessorsByTemplateMode = listMapToSetMap(docTypeProcessorListsByTemplateMode);
-        final EnumMap<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode = listMapToSetMap(elementProcessorListsByTemplateMode);
-        final EnumMap<TemplateMode, Set<IProcessor>> processingInstructionProcessorsByTemplateMode = listMapToSetMap(processingInstructionProcessorListsByTemplateMode);
-        final EnumMap<TemplateMode, Set<IProcessor>> textProcessorsByTemplateMode = listMapToSetMap(textProcessorListsByTemplateMode);
-        final EnumMap<TemplateMode, Set<IProcessor>> xmlDeclarationProcessorsByTemplateMode = listMapToSetMap(xmlDeclarationProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode = listMapToSetMap(cdataSectionProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<ICommentProcessor>> commentProcessorsByTemplateMode = listMapToSetMap(commentProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<IDocTypeProcessor>> docTypeProcessorsByTemplateMode = listMapToSetMap(docTypeProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode = listMapToSetMap(elementProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<IProcessingInstructionProcessor>> processingInstructionProcessorsByTemplateMode = listMapToSetMap(processingInstructionProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<ITextProcessor>> textProcessorsByTemplateMode = listMapToSetMap(textProcessorListsByTemplateMode);
+        final EnumMap<TemplateMode, Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode = listMapToSetMap(xmlDeclarationProcessorListsByTemplateMode);
 
 
         // Initialize the ElementDefinitions and AttributeDefinitions structures -- they need the element processors so that these
@@ -394,10 +390,10 @@ final class DialectSetConfiguration {
 
 
 
-    private static EnumMap<TemplateMode, Set<IProcessor>> listMapToSetMap(final EnumMap<TemplateMode, List<IProcessor>> map) {
-        final EnumMap<TemplateMode, Set<IProcessor>> newMap = new EnumMap<TemplateMode, Set<IProcessor>>(TemplateMode.class);
-        for (final Map.Entry<TemplateMode, List<IProcessor>> entry : map.entrySet()) {
-            newMap.put(entry.getKey(), new LinkedHashSet<IProcessor>(entry.getValue()));
+    private static <T extends IProcessor> EnumMap<TemplateMode, Set<T>> listMapToSetMap(final EnumMap<TemplateMode, List<T>> map) {
+        final EnumMap<TemplateMode, Set<T>> newMap = new EnumMap<TemplateMode, Set<T>>(TemplateMode.class);
+        for (final Map.Entry<TemplateMode, List<T>> entry : map.entrySet()) {
+            newMap.put(entry.getKey(), new LinkedHashSet<T>(entry.getValue()));
         }
         return newMap;
     }
@@ -415,13 +411,13 @@ final class DialectSetConfiguration {
             final Map<String, Object> executionAttributes,
             final AggregateExpressionObjectFactory expressionObjectFactory,
             final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions,
-            final EnumMap<TemplateMode, Set<IProcessor>> cdataSectionProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> commentProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> docTypeProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> processingInstructionProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> textProcessorsByTemplateMode,
-            final EnumMap<TemplateMode, Set<IProcessor>> xmlDeclarationProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<ICommentProcessor>> commentProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<IDocTypeProcessor>> docTypeProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<IProcessingInstructionProcessor>> processingInstructionProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<ITextProcessor>> textProcessorsByTemplateMode,
+            final EnumMap<TemplateMode, Set<IXMLDeclarationProcessor>> xmlDeclarationProcessorsByTemplateMode,
             final List<Class<? extends ITemplateHandler>> preProcessors,
             final List<Class<? extends ITemplateHandler>> postProcessors) {
 
@@ -480,63 +476,63 @@ final class DialectSetConfiguration {
         return this.attributeDefinitions;
     }
 
-    public Set<IProcessor> getCDATASectionProcessors(final TemplateMode templateMode) {
+    public Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.cdataSectionProcessorsByTemplateMode.get(templateMode);
+        final Set<ICDATASectionProcessor> processors = this.cdataSectionProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
         return processors;
     }
 
-    public Set<IProcessor> getCommentProcessors(final TemplateMode templateMode) {
+    public Set<ICommentProcessor> getCommentProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.commentProcessorsByTemplateMode.get(templateMode);
+        final Set<ICommentProcessor> processors = this.commentProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
         return processors;
     }
 
-    public Set<IProcessor> getDocTypeProcessors(final TemplateMode templateMode) {
+    public Set<IDocTypeProcessor> getDocTypeProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.docTypeProcessorsByTemplateMode.get(templateMode);
+        final Set<IDocTypeProcessor> processors = this.docTypeProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
         return processors;
     }
 
-    public Set<IProcessor> getElementProcessors(final TemplateMode templateMode) {
+    public Set<IElementProcessor> getElementProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.elementProcessorsByTemplateMode.get(templateMode);
+        final Set<IElementProcessor> processors = this.elementProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
         return processors;
     }
 
-    public Set<IProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode) {
+    public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.processingInstructionProcessorsByTemplateMode.get(templateMode);
+        final Set<IProcessingInstructionProcessor> processors = this.processingInstructionProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
         return processors;
     }
 
-    public Set<IProcessor> getTextProcessors(final TemplateMode templateMode) {
+    public Set<ITextProcessor> getTextProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.textProcessorsByTemplateMode.get(templateMode);
+        final Set<ITextProcessor> processors = this.textProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }
         return processors;
     }
 
-    public Set<IProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode) {
+    public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode) {
         Validate.notNull(templateMode, "Template mode cannot be null");
-        final Set<IProcessor> processors = this.xmlDeclarationProcessorsByTemplateMode.get(templateMode);
+        final Set<IXMLDeclarationProcessor> processors = this.xmlDeclarationProcessorsByTemplateMode.get(templateMode);
         if (processors == null) {
             return Collections.EMPTY_SET;
         }

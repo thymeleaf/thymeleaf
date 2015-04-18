@@ -25,7 +25,7 @@ import org.thymeleaf.aurora.engine.TemplateHandlerEventQueue;
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.model.IOpenElementTag;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -34,11 +34,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardReplaceTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardIncludeProcessor() {
-        super("include", 100);
+    public StandardReplaceTagProcessor() {
+        super("replace", 100);
     }
 
 
@@ -54,13 +54,12 @@ public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLEleme
 
         final IOpenElementTag sectionOpenTag = modelFactory.createOpenElementTag("section");
         sectionOpenTag.getAttributes().setAttribute("class", "included");
-        sectionOpenTag.getAttributes().setAttribute("th:text", "hohoh");
 
         queue.add(sectionOpenTag);
-        queue.add(modelFactory.createText("This is included text!"));
+        queue.add(modelFactory.createText("This is replaced text!"));
         queue.add(modelFactory.createCloseElementTag("section"));
 
-        structureHandler.setBody(queue, false);
+        structureHandler.replaceWith(queue, true);
 
     }
 

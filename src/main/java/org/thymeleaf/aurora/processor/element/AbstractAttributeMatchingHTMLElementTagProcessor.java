@@ -28,10 +28,10 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public abstract class AbstractAttributeMatchingHTMLElementProcessor extends AbstractElementProcessor {
+public abstract class AbstractAttributeMatchingHTMLElementTagProcessor extends AbstractElementTagProcessor {
 
 
-    public AbstractAttributeMatchingHTMLElementProcessor(final String attributeName, final int precedence) {
+    public AbstractAttributeMatchingHTMLElementTagProcessor(final String attributeName, final int precedence) {
         super(TemplateMode.HTML, null, false, attributeName, true, precedence);
     }
 

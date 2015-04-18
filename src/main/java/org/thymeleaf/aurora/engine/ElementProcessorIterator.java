@@ -21,8 +21,8 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
 
-import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
 
 /**
  *
@@ -30,7 +30,7 @@ import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
  * @since 3.0.0
  *
  */
-final class ProcessorIterator {
+final class ElementProcessorIterator {
 
     /*
      * This class will take care of iterating the processors in the most optimal way possible. It allows the attributes
@@ -43,13 +43,13 @@ final class ProcessorIterator {
 
     // These are the structures used to keep track of the iterated processors, as well as whether they have
     // been visited or not.
-    private IProcessor[] processors = null;
+    private IElementProcessor[] processors = null;
     private boolean[] visited = null;
     private int size = 0;
 
     // These structures are used when we need to recompute already-existing structures, in order to reduce
     // the total amount of processor arrays created during normal operation (attributes might change a lot).
-    private IProcessor[] auxProcessors = null;
+    private IElementProcessor[] auxProcessors = null;
     private boolean[] auxVisited = null;
     private int auxSize = 0;
 
@@ -59,7 +59,7 @@ final class ProcessorIterator {
 
 
 
-    ProcessorIterator() {
+    ElementProcessorIterator() {
         super();
     }
 
@@ -72,7 +72,7 @@ final class ProcessorIterator {
     }
 
 
-    public IProcessor next(final AbstractProcessableElementTag tag) {
+    public IElementProcessor next(final AbstractProcessableElementTag tag) {
 
         if (this.attributesVersion == Integer.MIN_VALUE || tag.elementAttributes.version != this.attributesVersion) {
             recompute(tag);
@@ -127,7 +127,7 @@ final class ProcessorIterator {
             // We had nothing precomputed, but there are associated processors now!
 
             this.size = tag.associatedProcessors.size();
-            this.processors = new IProcessor[Math.max(this.size, 4)]; // minimum size = 4
+            this.processors = new IElementProcessor[Math.max(this.size, 4)]; // minimum size = 4
             this.visited = new boolean[Math.max(this.size, 4)]; // minimum size = 4
 
             tag.associatedProcessors.toArray(this.processors); // No need to assign to anything
@@ -143,7 +143,7 @@ final class ProcessorIterator {
         this.auxSize = tag.associatedProcessors.size();
         if (this.auxProcessors == null || this.auxSize > this.auxProcessors.length) {
             // We need new aux arrays (either don't exist, or they are too small)
-            this.auxProcessors = new IProcessor[Math.max(this.auxSize, 4)];
+            this.auxProcessors = new IElementProcessor[Math.max(this.auxSize, 4)];
             this.auxVisited = new boolean[Math.max(this.auxSize, 4)];
         }
 
@@ -203,7 +203,7 @@ final class ProcessorIterator {
         }
 
         // Finally, just swap the arrays
-        final IProcessor[] swapProcessors = this.auxProcessors;
+        final IElementProcessor[] swapProcessors = this.auxProcessors;
         final boolean[] swapVisited = this.auxVisited;
         this.auxProcessors = this.processors;
         this.auxVisited = this.visited;
@@ -215,14 +215,14 @@ final class ProcessorIterator {
 
 
 
-    ProcessorIterator cloneIterator() {
-        final ProcessorIterator clone = new ProcessorIterator();
+    ElementProcessorIterator cloneIterator() {
+        final ElementProcessorIterator clone = new ElementProcessorIterator();
         clone.resetAsCloneOf(this);
         return clone;
     }
 
 
-    void resetAsCloneOf(final ProcessorIterator original) {
+    void resetAsCloneOf(final ElementProcessorIterator original) {
 
         this.size = original.size;
         this.last = original.last;
@@ -230,7 +230,7 @@ final class ProcessorIterator {
 
         if (original.processors != null) {
             if (this.processors == null || this.processors.length < original.size) {
-                this.processors = new IProcessor[original.size];
+                this.processors = new IElementProcessor[original.size];
                 this.visited = new boolean[original.size];
             }
             System.arraycopy(original.processors, 0, this.processors, 0, original.size);

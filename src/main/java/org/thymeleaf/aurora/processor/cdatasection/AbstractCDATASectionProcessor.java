@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.cdatasection;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ICDATASectionStructureHandler;
 import org.thymeleaf.aurora.model.ICDATASection;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -42,8 +43,9 @@ public abstract class AbstractCDATASectionProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public ICDATASection process(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection) {
-        return cdataSection;
+    public void process(final ITemplateProcessingContext processingContext, final ICDATASection cdataSection,
+                        final ICDATASectionStructureHandler structureHandler) {
+        // Nothing to do
     }
 
 

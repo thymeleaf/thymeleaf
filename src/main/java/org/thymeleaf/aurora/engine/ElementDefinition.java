@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.util.Collections;
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
 
 /**
  *
@@ -33,11 +33,11 @@ import org.thymeleaf.aurora.processor.IProcessor;
 public abstract class ElementDefinition {
 
     final ElementName elementName;
-    final Set<IProcessor> associatedProcessors;
+    final Set<IElementProcessor> associatedProcessors;
     final boolean hasAssociatedProcessors;
 
 
-    ElementDefinition(final ElementName elementName, final Set<IProcessor> associatedProcessors) {
+    ElementDefinition(final ElementName elementName, final Set<IElementProcessor> associatedProcessors) {
 
         super();
 
@@ -68,7 +68,7 @@ public abstract class ElementDefinition {
 
 
 
-    public Set<IProcessor> getAssociatedProcessors() {
+    public Set<IElementProcessor> getAssociatedProcessors() {
         return this.associatedProcessors;
     }
 

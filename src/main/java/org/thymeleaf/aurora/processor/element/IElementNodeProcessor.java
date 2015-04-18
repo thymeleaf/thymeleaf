@@ -17,15 +17,12 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.node;
+package org.thymeleaf.aurora.processor.element;
 
 import java.util.List;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.MatchingAttributeName;
-import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.model.INode;
-import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
  *
@@ -33,14 +30,7 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface INodeProcessor extends IProcessor {
-
-    public static enum MatchingNodeType { CDATA_SECTION, COMMENT, DOC_TYPE, ELEMENT, PROCESSING_INSTRUCTION, TEXT, XML_DECLARATION }
-
-
-    public MatchingNodeType getMatchingNodeType();
-    public MatchingElementName getMatchingElementName();
-    public MatchingAttributeName getMatchingAttributeName();
+public interface IElementNodeProcessor extends IElementProcessor {
 
 
     public List<INode> process(final ITemplateProcessingContext processingContext, final INode node);

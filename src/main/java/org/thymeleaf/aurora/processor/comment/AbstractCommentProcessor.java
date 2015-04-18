@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.comment;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ICommentStructureHandler;
 import org.thymeleaf.aurora.model.IComment;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -42,8 +43,9 @@ public abstract class AbstractCommentProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IComment process(final ITemplateProcessingContext processingContext, final IComment comment) {
-        return comment;
+    public void process(final ITemplateProcessingContext processingContext, final IComment comment,
+                        final ICommentStructureHandler structureHandler) {
+        // Nothing to do
     }
 
 

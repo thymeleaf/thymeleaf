@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +44,10 @@ import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.model.IText;
 import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementNodeProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.processor.element.IElementTagProcessor;
+import org.thymeleaf.aurora.processor.text.ITextProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
@@ -82,7 +84,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
     private LevelArray skipCloseTagLevels = new LevelArray(5);
 
-    private final ProcessorIterator processorIterator = new ProcessorIterator();
+    private final ElementProcessorIterator elementProcessorIterator = new ElementProcessorIterator();
 
     // This should only be modified by means of the 'increaseHandlerExecLevel' and 'decreaseHandlerExecLevel' methods
     private int handlerExecLevel = -1;
@@ -290,6 +292,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
         boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
 
+        final Set<ITextProcessor> processors = this.configuration.getTextProcessors(this.templateMode);
 
 
         // Includes calling the next handler in the chain
@@ -421,7 +424,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             /*
              * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
              */
-            this.processorIterator.reset();
+            this.elementProcessorIterator.reset();
 
         } else {
             // Execution of a tag was suspended, we need to recover the data
@@ -431,7 +434,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
              */
             queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
             queueProcessable = this.suspensionSpec.queueProcessable;
-            this.processorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
+            this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
             this.suspensionSpec.reset();
 
@@ -443,14 +446,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        IProcessor processor;
-        while (!tagRemoved && (processor = this.processorIterator.next(standaloneElementTag)) != null) {
+        IElementProcessor processor;
+        while (!tagRemoved && (processor = this.elementProcessorIterator.next(standaloneElementTag)) != null) {
 
             this.elementStructureHandler.reset();
 
-            if (processor instanceof IElementProcessor) {
+            if (processor instanceof IElementTagProcessor) {
 
-                final IElementProcessor elementProcessor = ((IElementProcessor)processor);
+                final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.templateProcessingContext, standaloneElementTag, this.elementStructureHandler);
 
                 if (this.elementStructureHandler.setLocalVariable) {
@@ -494,7 +497,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.bodyRemoved = false;
                     this.suspensionSpec.queueProcessable = queueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Add this standalone tag to the iteration queue
                     this.iterationSpec.iterationQueue.add(standaloneElementTag.cloneElementTag());
@@ -543,7 +546,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.bodyRemoved = false;
                     this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -586,7 +589,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.bodyRemoved = false;
                     this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // Decrease the handler execution level (all important bits are already in suspensionSpec)
                     decreaseHandlerExecLevel();
@@ -642,12 +645,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 }
 
-            } else if (processor instanceof INodeProcessor) {
+            } else if (processor instanceof IElementNodeProcessor) {
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
             } else {
                 throw new IllegalStateException(
                         "An element has been found with an associated processor of type " + processor.getClass().getName() +
-                                " which is neither an element nor a Node processor.");
+                        " which is neither an element nor a Node processor.");
             }
 
         }
@@ -762,7 +765,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             /*
              * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
              */
-            this.processorIterator.reset();
+            this.elementProcessorIterator.reset();
 
         } else {
             // Execution of a tag was suspended, we need to recover the data
@@ -773,7 +776,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
             queueProcessable = this.suspensionSpec.queueProcessable;
             bodyRemoved = this.suspensionSpec.bodyRemoved;
-            this.processorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
+            this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
             this.suspended = false;
             this.suspensionSpec.reset();
 
@@ -785,14 +788,14 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        IProcessor processor;
-        while (!tagRemoved && (processor = this.processorIterator.next(openElementTag)) != null) {
+        IElementProcessor processor;
+        while (!tagRemoved && (processor = this.elementProcessorIterator.next(openElementTag)) != null) {
 
             this.elementStructureHandler.reset();
 
-            if (processor instanceof IElementProcessor) {
+            if (processor instanceof IElementTagProcessor) {
 
-                final IElementProcessor elementProcessor = ((IElementProcessor)processor);
+                final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
                 elementProcessor.process(this.templateProcessingContext, openElementTag, this.elementStructureHandler);
 
                 if (this.elementStructureHandler.setLocalVariable) {
@@ -845,7 +848,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     this.suspensionSpec.bodyRemoved = bodyRemoved;
                     this.suspensionSpec.queueProcessable = queueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
-                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
 
                     // The first event in the new iteration query
                     this.iterationSpec.iterationQueue.add(openElementTag.cloneElementTag());
@@ -922,7 +925,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                 }
 
-            } else if (processor instanceof INodeProcessor) {
+            } else if (processor instanceof IElementNodeProcessor) {
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
             } else {
                 throw new IllegalStateException(
@@ -1344,7 +1347,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final boolean suspendedBodyRemoved = this.suspensionSpec.bodyRemoved;
         final boolean suspendedQueueProcessable = this.suspensionSpec.queueProcessable;
         iterArtifacts.suspendedQueue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
-        iterArtifacts.suspendedProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
+        iterArtifacts.suspendedElementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
 
         // We need to reset it or we won't be able to reuse it in nested executions
         this.suspensionSpec.reset();
@@ -1368,7 +1371,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.suspensionSpec.bodyRemoved = suspendedBodyRemoved;
             this.suspensionSpec.queueProcessable = suspendedQueueProcessable;
             this.suspensionSpec.suspendedQueue.resetAsCloneOf(iterArtifacts.suspendedQueue);
-            this.suspensionSpec.suspendedIterator.resetAsCloneOf(iterArtifacts.suspendedProcessorIterator);
+            this.suspensionSpec.suspendedIterator.resetAsCloneOf(iterArtifacts.suspendedElementProcessorIterator);
             this.suspended = true;
 
             iterArtifacts.iterationQueue.process(this, false);
@@ -1535,12 +1538,12 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         boolean bodyRemoved;
         boolean queueProcessable;
         final EngineEventQueue suspendedQueue;
-        final ProcessorIterator suspendedIterator;
+        final ElementProcessorIterator suspendedIterator;
 
         SuspensionSpec(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
             super();
             this.suspendedQueue = new EngineEventQueue(templateMode, configuration);
-            this.suspendedIterator = new ProcessorIterator();
+            this.suspendedIterator = new ElementProcessorIterator();
         }
 
         void reset() {
@@ -1557,13 +1560,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         final EngineEventQueue iterationQueue;
         final EngineEventQueue suspendedQueue;
-        final ProcessorIterator suspendedProcessorIterator;
+        final ElementProcessorIterator suspendedElementProcessorIterator;
 
         IterationArtifacts(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
             super();
             this.iterationQueue = new EngineEventQueue(templateMode, configuration);
             this.suspendedQueue = new EngineEventQueue(templateMode, configuration);
-            this.suspendedProcessorIterator = new ProcessorIterator();
+            this.suspendedElementProcessorIterator = new ElementProcessorIterator();
         }
 
     }

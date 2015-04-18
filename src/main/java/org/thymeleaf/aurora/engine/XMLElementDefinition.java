@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
 
 /**
  *
@@ -33,7 +33,7 @@ public final class XMLElementDefinition extends ElementDefinition {
 
 
 
-    XMLElementDefinition(final XMLElementName name, final Set<IProcessor> associatedProcessors) {
+    XMLElementDefinition(final XMLElementName name, final Set<IElementProcessor> associatedProcessors) {
         super(name, associatedProcessors);
     }
 

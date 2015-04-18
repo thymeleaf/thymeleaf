@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.xmldeclaration;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.IXMLDeclarationStructureHandler;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -42,8 +43,9 @@ public abstract class AbstractXMLDeclarationProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IXMLDeclaration process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration) {
-        return xmlDeclaration;
+    public void process(final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
+                        final IXMLDeclarationStructureHandler structureHandler) {
+        // Nothing to do
     }
 
 

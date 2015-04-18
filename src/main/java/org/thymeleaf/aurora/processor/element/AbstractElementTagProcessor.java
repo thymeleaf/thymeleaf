@@ -17,20 +17,15 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.node;
-
-import java.util.Collections;
-import java.util.List;
+package org.thymeleaf.aurora.processor.element;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeNames;
 import org.thymeleaf.aurora.engine.ElementNames;
-import org.thymeleaf.aurora.engine.MatchingAttributeName;
-import org.thymeleaf.aurora.engine.MatchingElementName;
-import org.thymeleaf.aurora.model.INode;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
+import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.util.Validate;
 
 /**
  *
@@ -39,10 +34,9 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-public abstract class AbstractNodeProcessor
-        extends AbstractProcessor implements INodeProcessor {
+public abstract class AbstractElementTagProcessor
+        extends AbstractProcessor implements IElementTagProcessor {
 
-    private final MatchingNodeType matchingNodeType;
     private final String elementName;
     private final boolean prefixElementName;
     private final String attributeName;
@@ -54,27 +48,19 @@ public abstract class AbstractNodeProcessor
 
 
 
-    public AbstractNodeProcessor(
-            final MatchingNodeType matchingNodeType, final TemplateMode templateMode,
+    public AbstractElementTagProcessor(
+            final TemplateMode templateMode,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
             final int precedence) {
 
         super(templateMode, precedence);
 
-        Validate.notNull(matchingNodeType, "Matching node type cannot be null");
-
-        this.matchingNodeType = matchingNodeType;
         this.elementName = elementName;
         this.prefixElementName = prefixElementName;
         this.attributeName = attributeName;
         this.prefixAttributeName = prefixAttributeName;
 
-    }
-
-
-    public MatchingNodeType getMatchingNodeType() {
-        return this.matchingNodeType;
     }
 
 
@@ -93,20 +79,23 @@ public abstract class AbstractNodeProcessor
         if (this.elementName != null) {
             this.matchingElementName =
                     MatchingElementName.forElementName(
-                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName ? getDialectPrefix() : null), this.elementName));
+                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName? getDialectPrefix() : null), this.elementName));
         }
         if (this.attributeName != null) {
             this.matchingAttributeName =
                     MatchingAttributeName.forAttributeName(
-                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName ? getDialectPrefix() : null), this.attributeName));
+                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? getDialectPrefix() : null), this.attributeName));
         }
     }
 
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
-        return Collections.singletonList(node);
+    public void process(
+            final ITemplateProcessingContext processingContext,
+            final IProcessableElementTag tag,
+            final IElementStructureHandler structureHandler) {
+        // Nothing to do here -- empty action
     }
 
 

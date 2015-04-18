@@ -25,12 +25,10 @@ import java.util.List;
 
 import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.processor.element.MatchingElementName;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.exceptions.TemplateProcessingException;
 
 /**
  *
@@ -47,7 +45,7 @@ abstract class AbstractProcessableElementTag
     // Should actually be a set, but given we will need to sort it very often, a list is more handy. Dialect constraints
     // ensure anyway that we will never have duplicates here, because the same processor can never be applied to more than
     // one attribute.
-    protected List<IProcessor> associatedProcessors = null;
+    protected List<IElementProcessor> associatedProcessors = null;
     protected int associatedProcessorsAttributesVersion = Integer.MIN_VALUE; // This ensures a recompute will be performed immediately
 
 
@@ -117,7 +115,7 @@ abstract class AbstractProcessableElementTag
     }
 
 
-    public final List<IProcessor> getAssociatedProcessorsInOrder() {
+    public final List<IElementProcessor> getAssociatedProcessorsInOrder() {
         if (this.associatedProcessorsAttributesVersion == Integer.MIN_VALUE || this.elementAttributes.version != this.associatedProcessorsAttributesVersion) {
             recomputeProcessors();
             this.associatedProcessorsAttributesVersion = this.elementAttributes.version;
@@ -139,7 +137,7 @@ abstract class AbstractProcessableElementTag
         if (this.elementDefinition.hasAssociatedProcessors) {
 
             if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IProcessor>(4);
+                this.associatedProcessors = new ArrayList<IElementProcessor>(4);
             }
 
             this.associatedProcessors.addAll(this.elementDefinition.associatedProcessors);
@@ -154,10 +152,10 @@ abstract class AbstractProcessableElementTag
             }
 
             if (this.associatedProcessors == null) {
-                this.associatedProcessors = new ArrayList<IProcessor>(4);
+                this.associatedProcessors = new ArrayList<IElementProcessor>(4);
             }
 
-            for (final IProcessor associatedProcessor : this.elementAttributes.attributes[n].definition.associatedProcessors) {
+            for (final IElementProcessor associatedProcessor : this.elementAttributes.attributes[n].definition.associatedProcessors) {
 
                 // We should never have duplicates. The same attribute can never appear twice in an element (parser
                 // restrictions + the way this class's 'setAttribute' works), plus a specific processor instance can
@@ -166,20 +164,9 @@ abstract class AbstractProcessableElementTag
                 // Now for each processor, before adding it to the list, we must first determine whether it requires
                 // a specific element name and, if so, confirm that it is the same as the name of the element these
                 // attributes live at.
-                if (associatedProcessor instanceof IElementProcessor) {
-                    final MatchingElementName matchingElementName = ((IElementProcessor)associatedProcessor).getMatchingElementName();
-                    if (matchingElementName != null && !matchingElementName.matches(this.elementDefinition.elementName)) {
-                        continue;
-                    }
-                } else if (associatedProcessor instanceof INodeProcessor) {
-                    final MatchingElementName matchingElementName = ((INodeProcessor)associatedProcessor).getMatchingElementName();
-                    if (matchingElementName != null && !matchingElementName.matches(this.elementDefinition.elementName)) {
-                        continue;
-                    }
-                } else {
-                    throw new TemplateProcessingException(
-                            "Attribute Definition has been set a processor implementing an interface other than " +
-                                    IElementProcessor.class + " or " + INodeProcessor.class + ", which is forbidden.");
+                final MatchingElementName matchingElementName = associatedProcessor.getMatchingElementName();
+                if (matchingElementName != null && !matchingElementName.matches(this.elementDefinition.elementName)) {
+                    continue;
                 }
 
                 // Just add the processor to the list
@@ -219,7 +206,7 @@ abstract class AbstractProcessableElementTag
             this.elementAttributes.resetAsCloneOf(original.elementAttributes); // not the same as cloning the ElementAttributes object, because we want
         }
         this.associatedProcessors =
-                (original.associatedProcessors == null ? null : new ArrayList<IProcessor>(original.associatedProcessors)); // It's mutable, so we have to copy the list
+                (original.associatedProcessors == null ? null : new ArrayList<IElementProcessor>(original.associatedProcessors)); // It's mutable, so we have to copy the list
         this.associatedProcessorsAttributesVersion = original.associatedProcessorsAttributesVersion;
     }
 

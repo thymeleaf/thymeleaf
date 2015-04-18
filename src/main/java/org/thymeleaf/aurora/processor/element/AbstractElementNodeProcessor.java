@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.aurora.processor.element;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeNames;
 import org.thymeleaf.aurora.engine.ElementNames;
-import org.thymeleaf.aurora.engine.IElementStructureHandler;
-import org.thymeleaf.aurora.engine.MatchingAttributeName;
-import org.thymeleaf.aurora.engine.MatchingElementName;
-import org.thymeleaf.aurora.model.IProcessableElementTag;
+import org.thymeleaf.aurora.model.INode;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
@@ -36,8 +36,8 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public abstract class AbstractElementProcessor
-        extends AbstractProcessor implements IElementProcessor {
+public abstract class AbstractElementNodeProcessor
+        extends AbstractProcessor implements IElementNodeProcessor {
 
     private final String elementName;
     private final boolean prefixElementName;
@@ -50,7 +50,7 @@ public abstract class AbstractElementProcessor
 
 
 
-    public AbstractElementProcessor(
+    public AbstractElementNodeProcessor(
             final TemplateMode templateMode,
             final String elementName, final boolean prefixElementName,
             final String attributeName, final boolean prefixAttributeName,
@@ -81,23 +81,20 @@ public abstract class AbstractElementProcessor
         if (this.elementName != null) {
             this.matchingElementName =
                     MatchingElementName.forElementName(
-                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName? getDialectPrefix() : null), this.elementName));
+                            getTemplateMode(), ElementNames.forName(getTemplateMode(), (this.prefixElementName ? getDialectPrefix() : null), this.elementName));
         }
         if (this.attributeName != null) {
             this.matchingAttributeName =
                     MatchingAttributeName.forAttributeName(
-                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName? getDialectPrefix() : null), this.attributeName));
+                            getTemplateMode(), AttributeNames.forName(getTemplateMode(), (this.prefixAttributeName ? getDialectPrefix() : null), this.attributeName));
         }
     }
 
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public void process(
-            final ITemplateProcessingContext processingContext,
-            final IProcessableElementTag tag,
-            final IElementStructureHandler structureHandler) {
-        // Nothing to do here -- empty action
+    public List<INode> process(final ITemplateProcessingContext processingContext, final INode node) {
+        return Collections.singletonList(node);
     }
 
 

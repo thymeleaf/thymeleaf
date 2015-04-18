@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.model;
 
 import java.util.List;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
 
 /**
  *
@@ -37,6 +37,6 @@ public interface IProcessableElementTag extends IElementTag {
 
     public void precomputeAssociatedProcessors();
     public boolean hasAssociatedProcessors();
-    public List<IProcessor> getAssociatedProcessorsInOrder();
+    public List<IElementProcessor> getAssociatedProcessorsInOrder();
 
 }

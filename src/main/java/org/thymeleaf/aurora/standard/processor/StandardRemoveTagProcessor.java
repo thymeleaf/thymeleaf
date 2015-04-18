@@ -20,10 +20,9 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -32,11 +31,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardInlineProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardRemoveTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardInlineProcessor() {
-        super("inline", 1000);
+    public StandardRemoveTagProcessor() {
+        super("remove", 1600);
     }
 
 
@@ -46,12 +45,14 @@ public class StandardInlineProcessor extends AbstractAttributeMatchingHTMLElemen
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        // We know this will not be null, because we linked the processor to a specific attribute
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
-
-        structureHandler.setTextInliningActive(Boolean.valueOf(tag.getAttributes().getValue(attributeName)));
-
-        tag.getAttributes().removeAttribute(attributeName);
+        final String value = tag.getAttributes().getValue(getDialectPrefix(), "remove");
+        if ("tag".equals(value)) {
+            structureHandler.removeTag();
+        } else if ("all".equals(value)) {
+            structureHandler.removeElement();
+        } else {
+            System.err.printf("UNKNOWN VALUE FOR th:remove : " + value);
+        }
 
     }
 

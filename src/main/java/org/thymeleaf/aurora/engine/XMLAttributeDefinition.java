@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
 
 /**
  *
@@ -32,7 +32,7 @@ import org.thymeleaf.aurora.processor.IProcessor;
 public final class XMLAttributeDefinition extends AttributeDefinition {
 
 
-    XMLAttributeDefinition(final XMLAttributeName name, final Set<IProcessor> associatedProcessors) {
+    XMLAttributeDefinition(final XMLAttributeName name, final Set<IElementProcessor> associatedProcessors) {
         super(name, associatedProcessors);
     }
 

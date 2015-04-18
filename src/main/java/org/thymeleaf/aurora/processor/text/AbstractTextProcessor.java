@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.text;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ITextStructureHandler;
 import org.thymeleaf.aurora.model.IText;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -42,8 +43,9 @@ public abstract class AbstractTextProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IText process(final ITemplateProcessingContext processingContext, final IText text) {
-        return text;
+    public void process(final ITemplateProcessingContext processingContext, final IText text,
+                        final ITextStructureHandler structureHandler) {
+        // Nothing to do
     }
 
 

@@ -26,7 +26,13 @@ import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
+import org.thymeleaf.aurora.processor.comment.ICommentProcessor;
+import org.thymeleaf.aurora.processor.doctype.IDocTypeProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.aurora.processor.processinginstruction.IProcessingInstructionProcessor;
+import org.thymeleaf.aurora.processor.text.ITextProcessor;
+import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -86,31 +92,31 @@ public class TemplateEngineConfiguration implements ITemplateEngineConfiguration
     }
 
 
-    public Set<IProcessor> getCDATASectionProcessors(final TemplateMode templateMode) {
+    public Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getCDATASectionProcessors(templateMode);
     }
 
-    public Set<IProcessor> getCommentProcessors(final TemplateMode templateMode) {
+    public Set<ICommentProcessor> getCommentProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getCommentProcessors(templateMode);
     }
 
-    public Set<IProcessor> getDocTypeProcessors(final TemplateMode templateMode) {
+    public Set<IDocTypeProcessor> getDocTypeProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getDocTypeProcessors(templateMode);
     }
 
-    public Set<IProcessor> getElementProcessors(final TemplateMode templateMode) {
+    public Set<IElementProcessor> getElementProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getElementProcessors(templateMode);
     }
 
-    public Set<IProcessor> getTextProcessors(final TemplateMode templateMode) {
+    public Set<ITextProcessor> getTextProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getTextProcessors(templateMode);
     }
 
-    public Set<IProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode) {
+    public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getProcessingInstructionProcessors(templateMode);
     }
 
-    public Set<IProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode) {
+    public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode) {
         return this.dialectSetConfiguration.getXMLDeclarationProcessors(templateMode);
     }
 

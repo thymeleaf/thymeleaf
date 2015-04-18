@@ -19,11 +19,6 @@
  */
 package org.thymeleaf.aurora.processor.element;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IElementStructureHandler;
-import org.thymeleaf.aurora.engine.MatchingAttributeName;
-import org.thymeleaf.aurora.engine.MatchingElementName;
-import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.IProcessor;
 
 /**
@@ -36,11 +31,5 @@ public interface IElementProcessor extends IProcessor {
 
     public MatchingElementName getMatchingElementName();
     public MatchingAttributeName getMatchingAttributeName();
-
-
-    public void process(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-            final IElementStructureHandler structureHandler);
-
 
 }

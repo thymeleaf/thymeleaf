@@ -19,13 +19,13 @@
  */
 package org.thymeleaf.aurora.standard.processor;
 
-import java.util.Iterator;
-
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
+import org.thymeleaf.aurora.engine.TemplateHandlerEventQueue;
+import org.thymeleaf.aurora.model.IModelFactory;
+import org.thymeleaf.aurora.model.IOpenElementTag;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -34,11 +34,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardIncludeTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardEachProcessor() {
-        super("each", 200);
+    public StandardIncludeTagProcessor() {
+        super("include", 100);
     }
 
 
@@ -48,31 +48,19 @@ public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementP
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        // We know this will not be null, because we linked the processor to a specific attribute
-        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
+        final IModelFactory modelFactory = processingContext.getModelFactory();
 
-        final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
-//        structureHandler.iterateElement("iter", "iterStat", values);
-//        structureHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
-        structureHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
+        final TemplateHandlerEventQueue queue = new TemplateHandlerEventQueue();
 
-            private int i = 0;
+        final IOpenElementTag sectionOpenTag = modelFactory.createOpenElementTag("section");
+        sectionOpenTag.getAttributes().setAttribute("class", "included");
+        sectionOpenTag.getAttributes().setAttribute("th:text", "hohoh");
 
-            public boolean hasNext() {
-                return i < 10;
-            }
+        queue.add(sectionOpenTag);
+        queue.add(modelFactory.createText("This is included text!"));
+        queue.add(modelFactory.createCloseElementTag("section"));
 
-            public String next() {
-                return "Iteration " + i++;
-            }
-
-            public void remove() {
-
-            }
-
-        });
-
-        tag.getAttributes().removeAttribute(attributeName);
+        structureHandler.setBody(queue, false);
 
     }
 

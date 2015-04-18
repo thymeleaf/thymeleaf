@@ -22,7 +22,11 @@ package org.thymeleaf.aurora.standard.processor;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.AbstractProcessor;
+import org.thymeleaf.aurora.processor.element.IElementTagProcessor;
+import org.thymeleaf.aurora.processor.element.MatchingAttributeName;
+import org.thymeleaf.aurora.processor.element.MatchingElementName;
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
@@ -31,28 +35,44 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardRemoveProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardDefaultAttributesTagProcessor
+        extends AbstractProcessor implements IElementTagProcessor {
+
+    private MatchingElementName matchingElementName = null;
+    private MatchingAttributeName matchingAttributeName = null;
 
 
-    public StandardRemoveProcessor() {
-        super("remove", 1600);
+
+    public StandardDefaultAttributesTagProcessor() {
+        super(TemplateMode.HTML, Integer.MAX_VALUE);
+    }
+
+
+    public final MatchingElementName getMatchingElementName() {
+        return this.matchingElementName;
+    }
+
+
+    public final MatchingAttributeName getMatchingAttributeName() {
+        return this.matchingAttributeName;
+    }
+
+
+    public final void setDialectPrefix(final String dialectPrefix) {
+        super.setDialectPrefix(dialectPrefix);
+        this.matchingElementName = null;
+        this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
     }
 
 
 
+    // Default implementation - meant to be overridden by subclasses if needed
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        final String value = tag.getAttributes().getValue(getDialectPrefix(), "remove");
-        if ("tag".equals(value)) {
-            structureHandler.removeTag();
-        } else if ("all".equals(value)) {
-            structureHandler.removeElement();
-        } else {
-            System.err.printf("UNKNOWN VALUE FOR th:remove : " + value);
-        }
+//        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
 
     }
 

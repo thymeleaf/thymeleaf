@@ -20,13 +20,10 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
-import org.thymeleaf.aurora.engine.MatchingAttributeName;
-import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.AbstractProcessor;
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -35,44 +32,24 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
  * @since 3.0.0
  *
  */
-public class StandardDefaultAttributesProcessor
-        extends AbstractProcessor implements IElementProcessor {
-
-    private MatchingElementName matchingElementName = null;
-    private MatchingAttributeName matchingAttributeName = null;
+public class StandardClassTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-
-    public StandardDefaultAttributesProcessor() {
-        super(TemplateMode.HTML, Integer.MAX_VALUE);
-    }
-
-
-    public final MatchingElementName getMatchingElementName() {
-        return this.matchingElementName;
-    }
-
-
-    public final MatchingAttributeName getMatchingAttributeName() {
-        return this.matchingAttributeName;
-    }
-
-
-    public final void setDialectPrefix(final String dialectPrefix) {
-        super.setDialectPrefix(dialectPrefix);
-        this.matchingElementName = null;
-        this.matchingAttributeName = MatchingAttributeName.forAllAttributesWithPrefix(getTemplateMode(), dialectPrefix);
+    public StandardClassTagProcessor() {
+        super("class", 1000);
     }
 
 
 
-    // Default implementation - meant to be overridden by subclasses if needed
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-//        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
+        // We know this will not be null, because we linked the processor to a specific attribute
+        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
+
+        tag.getAttributes().setAttribute("class", tag.getAttributes().getValue(attributeName));
 
     }
 

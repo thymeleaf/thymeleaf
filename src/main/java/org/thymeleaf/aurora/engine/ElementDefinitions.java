@@ -30,9 +30,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.attoparser.util.TextUtil;
-import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.node.INodeProcessor;
+import org.thymeleaf.aurora.processor.element.MatchingAttributeName;
+import org.thymeleaf.aurora.processor.element.MatchingElementName;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.ConfigurationException;
 
@@ -232,7 +232,7 @@ public final class ElementDefinitions {
      *                                        might be of application to the elements which definition is to be stored
      *                                        here.
      */
-    public ElementDefinitions(final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode) {
+    public ElementDefinitions(final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode) {
 
         super();
 
@@ -265,13 +265,13 @@ public final class ElementDefinitions {
 
 
     private static HTMLElementDefinition buildHTMLElementDefinition(
-            final HTMLElementName name, final HTMLElementType type, final Set<IProcessor> elementProcessors) {
+            final HTMLElementName name, final HTMLElementType type, final Set<IElementProcessor> elementProcessors) {
 
         // No need to use a list for sorting - the elementProcessors set has already been ordered
-        final Set<IProcessor> associatedProcessors = new LinkedHashSet<IProcessor>(2);
+        final Set<IElementProcessor> associatedProcessors = new LinkedHashSet<IElementProcessor>(2);
 
         if (elementProcessors != null) {
-            for (final IProcessor processor : elementProcessors) {
+            for (final IElementProcessor processor : elementProcessors) {
 
                 // Cannot be null -- has been previously validated
                 final TemplateMode templateMode = processor.getTemplateMode();
@@ -281,27 +281,11 @@ public final class ElementDefinitions {
                     continue;
                 }
 
-                final MatchingElementName matchingElementName;
-                final MatchingAttributeName matchingAttributeName;
-                if (processor instanceof IElementProcessor) {
+                final MatchingElementName matchingElementName = processor.getMatchingElementName();
+                final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
 
-                    matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
-                    matchingAttributeName = ((IElementProcessor) processor).getMatchingAttributeName();
-
-                } else if (processor instanceof INodeProcessor) {
-
-                    // If the processor is in this set, it is an element-oriented processor -- no need to check that again
-
-                    matchingElementName = ((INodeProcessor) processor).getMatchingElementName();
-                    matchingAttributeName = ((INodeProcessor) processor).getMatchingAttributeName();
-
-                } else {
-                    // Cannot really happen, as we should be processing a set of only element processors, but anyway
-                    continue;
-                }
-
-                if ((matchingElementName != null && matchingElementName.templateMode != TemplateMode.HTML) ||
-                        (matchingAttributeName != null && matchingAttributeName.templateMode != TemplateMode.HTML)) {
+                if ((matchingElementName != null && matchingElementName.getTemplateMode() != TemplateMode.HTML) ||
+                        (matchingAttributeName != null && matchingAttributeName.getTemplateMode() != TemplateMode.HTML)) {
                     throw new ConfigurationException("HTML processors must return HTML element names and HTML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
@@ -331,13 +315,13 @@ public final class ElementDefinitions {
 
 
     private static XMLElementDefinition buildXMLElementDefinition(
-            final XMLElementName name, final Set<IProcessor> elementProcessors) {
+            final XMLElementName name, final Set<IElementProcessor> elementProcessors) {
 
         // No need to use a list for sorting - the elementProcessors set has already been ordered
-        final Set<IProcessor> associatedProcessors = new LinkedHashSet<IProcessor>(2);
+        final Set<IElementProcessor> associatedProcessors = new LinkedHashSet<IElementProcessor>(2);
 
         if (elementProcessors != null) {
-            for (final IProcessor processor : elementProcessors) {
+            for (final IElementProcessor processor : elementProcessors) {
 
                 // Cannot be null -- has been previously validated
                 final TemplateMode templateMode = processor.getTemplateMode();
@@ -347,27 +331,11 @@ public final class ElementDefinitions {
                     continue;
                 }
 
-                final MatchingElementName matchingElementName;
-                final MatchingAttributeName matchingAttributeName;
-                if (processor instanceof IElementProcessor) {
+                final MatchingElementName matchingElementName = processor.getMatchingElementName();
+                final MatchingAttributeName matchingAttributeName = processor.getMatchingAttributeName();
 
-                    matchingElementName = ((IElementProcessor) processor).getMatchingElementName();
-                    matchingAttributeName = ((IElementProcessor) processor).getMatchingAttributeName();
-
-                } else if (processor instanceof INodeProcessor) {
-
-                    // If the processor is in this set, it is an element-oriented processor -- no need to check that again
-
-                    matchingElementName = ((INodeProcessor) processor).getMatchingElementName();
-                    matchingAttributeName = ((INodeProcessor) processor).getMatchingAttributeName();
-
-                } else {
-                    // Cannot really happen, as we should be processing a set of only element processors, but anyway
-                    continue;
-                }
-
-                if ((matchingElementName != null && matchingElementName.templateMode != TemplateMode.XML) ||
-                        (matchingAttributeName != null && matchingAttributeName.templateMode != TemplateMode.XML)) {
+                if ((matchingElementName != null && matchingElementName.getTemplateMode() != TemplateMode.XML) ||
+                        (matchingAttributeName != null && matchingAttributeName.getTemplateMode() != TemplateMode.XML)) {
                     throw new ConfigurationException("XML processors must return XML element names and XML attribute names (processor: " + processor.getClass().getName() + ")");
                 }
 
@@ -469,7 +437,7 @@ public final class ElementDefinitions {
         private final boolean html;
 
         // These have already been filtered previously - only element-oriented processors will be here
-        private final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode;
+        private final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode;
 
         private final List<String> standardRepositoryNames; // read-only, no sync needed
         private final List<ElementDefinition> standardRepository; // read-only, no sync needed
@@ -482,7 +450,7 @@ public final class ElementDefinitions {
         private final Lock writeLock = this.lock.writeLock();
 
 
-        ElementDefinitionRepository(final boolean html, final Map<TemplateMode, Set<IProcessor>> elementProcessorsByTemplateMode) {
+        ElementDefinitionRepository(final boolean html, final Map<TemplateMode, Set<IElementProcessor>> elementProcessorsByTemplateMode) {
 
             super();
 

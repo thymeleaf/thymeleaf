@@ -20,12 +20,10 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
-import org.thymeleaf.aurora.engine.TemplateHandlerEventQueue;
-import org.thymeleaf.aurora.model.IModelFactory;
-import org.thymeleaf.aurora.model.IOpenElementTag;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -34,11 +32,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardReplaceProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardInlineTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardReplaceProcessor() {
-        super("replace", 100);
+    public StandardInlineTagProcessor() {
+        super("inline", 1000);
     }
 
 
@@ -48,18 +46,12 @@ public class StandardReplaceProcessor extends AbstractAttributeMatchingHTMLEleme
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        final IModelFactory modelFactory = processingContext.getModelFactory();
+        // We know this will not be null, because we linked the processor to a specific attribute
+        final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
-        final TemplateHandlerEventQueue queue = new TemplateHandlerEventQueue();
+        structureHandler.setTextInliningActive(Boolean.valueOf(tag.getAttributes().getValue(attributeName)));
 
-        final IOpenElementTag sectionOpenTag = modelFactory.createOpenElementTag("section");
-        sectionOpenTag.getAttributes().setAttribute("class", "included");
-
-        queue.add(sectionOpenTag);
-        queue.add(modelFactory.createText("This is replaced text!"));
-        queue.add(modelFactory.createCloseElementTag("section"));
-
-        structureHandler.replaceWith(queue, true);
+        tag.getAttributes().removeAttribute(attributeName);
 
     }
 

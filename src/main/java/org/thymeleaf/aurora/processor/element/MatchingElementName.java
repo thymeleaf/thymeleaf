@@ -17,8 +17,11 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.processor.element;
 
+import org.thymeleaf.aurora.engine.ElementName;
+import org.thymeleaf.aurora.engine.HTMLElementName;
+import org.thymeleaf.aurora.engine.XMLElementName;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.util.TextUtil;
 import org.thymeleaf.util.Validate;
@@ -31,7 +34,7 @@ import org.thymeleaf.util.Validate;
  */
 public final class MatchingElementName {
 
-    final TemplateMode templateMode;
+    private final TemplateMode templateMode;
     private final ElementName matchingElementName;
     private final String matchingAllElementsWithPrefix;
     private final boolean matchingAllElements;

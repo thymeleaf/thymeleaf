@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.doctype;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.IDocTypeStructureHandler;
 import org.thymeleaf.aurora.model.IDocType;
 import org.thymeleaf.aurora.processor.AbstractProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -42,8 +43,9 @@ public abstract class AbstractDocTypeProcessor
 
 
     // Default implementation - meant to be overridden by subclasses if needed
-    public IDocType process(final ITemplateProcessingContext processingContext, final IDocType docType) {
-        return docType;
+    public void process(final ITemplateProcessingContext processingContext, final IDocType docType,
+                        final IDocTypeStructureHandler structureHandler) {
+        // Nothing to do
     }
 
 

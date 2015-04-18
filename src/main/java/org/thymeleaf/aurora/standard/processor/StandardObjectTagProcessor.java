@@ -23,7 +23,7 @@ import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -32,10 +32,10 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardObjectProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardObjectTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardObjectProcessor() {
+    public StandardObjectTagProcessor() {
         super("object", 500);
     }
 

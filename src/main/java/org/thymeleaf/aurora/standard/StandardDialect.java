@@ -24,16 +24,16 @@ import java.util.Set;
 
 import org.thymeleaf.aurora.dialect.AbstractProcessorDialect;
 import org.thymeleaf.aurora.processor.IProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardClassProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardDefaultAttributesProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardEachProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardIncludeProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardInlineProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardObjectProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardRemoveProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardReplaceProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardTextProcessor;
-import org.thymeleaf.aurora.standard.processor.StandardWithProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardClassTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardDefaultAttributesTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardEachTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardIncludeTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardInlineTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardObjectTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardRemoveTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardReplaceTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardTextTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardWithTagProcessor;
 
 /**
  *
@@ -55,16 +55,16 @@ public class StandardDialect extends AbstractProcessorDialect {
 
     private static Set<IProcessor> buildProcessorSet() {
         final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
-        processors.add(new StandardTextProcessor());
-        processors.add(new StandardRemoveProcessor());
-        processors.add(new StandardClassProcessor());
-        processors.add(new StandardDefaultAttributesProcessor());
-        processors.add(new StandardIncludeProcessor());
-        processors.add(new StandardReplaceProcessor());
-        processors.add(new StandardWithProcessor());
-        processors.add(new StandardEachProcessor());
-        processors.add(new StandardObjectProcessor());
-        processors.add(new StandardInlineProcessor());
+        processors.add(new StandardTextTagProcessor());
+        processors.add(new StandardRemoveTagProcessor());
+        processors.add(new StandardClassTagProcessor());
+        processors.add(new StandardDefaultAttributesTagProcessor());
+        processors.add(new StandardIncludeTagProcessor());
+        processors.add(new StandardReplaceTagProcessor());
+        processors.add(new StandardWithTagProcessor());
+        processors.add(new StandardEachTagProcessor());
+        processors.add(new StandardObjectTagProcessor());
+        processors.add(new StandardInlineTagProcessor());
         return processors;
     }
 

@@ -19,12 +19,13 @@
  */
 package org.thymeleaf.aurora.standard.processor;
 
+import java.util.Iterator;
+
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
-import org.thymeleaf.aurora.engine.IterationStatusVar;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
+import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
 
 /**
  *
@@ -33,11 +34,11 @@ import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLEleme
  * @since 3.0.0
  *
  */
-public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementProcessor {
+public class StandardEachTagProcessor extends AbstractAttributeMatchingHTMLElementTagProcessor {
 
 
-    public StandardTextProcessor() {
-        super("text", 1300);
+    public StandardEachTagProcessor() {
+        super("each", 200);
     }
 
 
@@ -50,36 +51,26 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
-        final Object localIterValue = processingContext.getVariablesMap().getVariable("iter");
-        if (localIterValue != null) {
+        final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
+//        structureHandler.iterateElement("iter", "iterStat", values);
+//        structureHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
+        structureHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
 
-            final IterationStatusVar stat = (IterationStatusVar) processingContext.getVariablesMap().getVariable("iterStat");
-            structureHandler.setBody(localIterValue.toString() + " [" + stat.getCount() + (stat.getSize() != null? (" of " + stat.getSize()) : "") + "]", false);
+            private int i = 0;
 
-        } else {
+            public boolean hasNext() {
+                return i < 10;
+            }
 
-            final boolean inlining = processingContext.getVariablesMap().isTextInliningActive();
+            public String next() {
+                return "Iteration " + i++;
+            }
 
-            if (processingContext.getVariablesMap().hasSelectionTarget()) {
-
-                final Object selectionTarget = processingContext.getVariablesMap().getSelectionTarget();
-
-                structureHandler.setBody((inlining? "" : "$") + selectionTarget.toString(), false);
-
-            } else {
-
-
-                final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
-
-                if (localVarValue != null) {
-                    structureHandler.setBody((inlining? "" : "$") + "*Whoohooooo!*", false);
-                } else {
-                    structureHandler.setBody((inlining? "" : "$") + "Whoohooooo!", false);
-                }
+            public void remove() {
 
             }
 
-        }
+        });
 
         tag.getAttributes().removeAttribute(attributeName);
 

@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.processor.element.IElementProcessor;
 
 /**
  *
@@ -35,7 +35,7 @@ public final class HTMLAttributeDefinition extends AttributeDefinition {
 
 
     HTMLAttributeDefinition(
-            final HTMLAttributeName name, final boolean booleanAttribute, final Set<IProcessor> associatedProcessors) {
+            final HTMLAttributeName name, final boolean booleanAttribute, final Set<IElementProcessor> associatedProcessors) {
 
         super(name, associatedProcessors);
 
