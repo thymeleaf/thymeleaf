@@ -246,7 +246,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final IXMLDeclaration xmlDeclaration) {
+    public void handleXMLDeclaration(final IXMLDeclaration xmlDeclaration) {
 
         try {
             xmlDeclaration.write(this.writer);
@@ -257,7 +257,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
         }
 
         // Just in case someone set us a 'next'
-        super.handleXmlDeclaration(xmlDeclaration);
+        super.handleXMLDeclaration(xmlDeclaration);
 
     }
 

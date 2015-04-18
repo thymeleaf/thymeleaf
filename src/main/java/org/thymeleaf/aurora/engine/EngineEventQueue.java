@@ -282,7 +282,7 @@ final class EngineEventQueue {
             } else if (event instanceof CDATASection) {
                 handler.handleCDATASection(bufferize((CDATASection) event));
             } else if (event instanceof XMLDeclaration) {
-                handler.handleXmlDeclaration(bufferize((XMLDeclaration) event));
+                handler.handleXMLDeclaration(bufferize((XMLDeclaration) event));
             } else if (event instanceof ProcessingInstruction) {
                 handler.handleProcessingInstruction(bufferize((ProcessingInstruction) event));
             } else {

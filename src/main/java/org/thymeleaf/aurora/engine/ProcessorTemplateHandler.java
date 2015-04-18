@@ -79,6 +79,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private ILocalVariableAwareVariablesMap variablesMap;
 
+    private boolean hasCDATASectionProcessors = false;
+    private boolean hasCommentProcessors = false;
+    private boolean hasDocTypeProcessors = false;
+    private boolean hasProcessingInstructionProcessors = false;
+    private boolean hasTextProcessors = false;
+    private boolean hasXMLDeclarationProcessors = false;
+
     private int markupLevel = 0;
 
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
@@ -163,10 +170,21 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                         "includes iteration, target selection and inlining)");
         }
 
+        // Buffer used for text-shaped body replacement in tags (very common operation)
         this.textBodyReplacementBuffer = new Text(this.configuration.getTextRepository());
 
+        // Specs containing all the info required for suspending the execution of a processor in order to e.g. change
+        // handling method (standalone -> open) or start caching an iteration
         this.suspensionSpec = new SuspensionSpec(this.templateMode, this.configuration);
         this.iterationSpec = new IterationSpec(this.templateMode, this.configuration);
+
+        // Flags used for quickly determining if a non-element structure might have to be processed or not
+        this.hasCDATASectionProcessors = !this.configuration.getCDATASectionProcessors(this.templateMode).isEmpty();
+        this.hasCommentProcessors = !this.configuration.getCommentProcessors(this.templateMode).isEmpty();
+        this.hasDocTypeProcessors = !this.configuration.getDocTypeProcessors(this.templateMode).isEmpty();
+        this.hasProcessingInstructionProcessors = !this.configuration.getProcessingInstructionProcessors(this.templateMode).isEmpty();
+        this.hasTextProcessors = !this.configuration.getTextProcessors(this.templateMode).isEmpty();
+        this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
 
     }
 
@@ -287,16 +305,74 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasTextProcessors) {
+            super.handleText(itext);
+            return;
+        }
+
+
+        /*
          * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
          */
         boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
         boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
 
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
         final Set<ITextProcessor> processors = this.configuration.getTextProcessors(this.templateMode);
+        for (final ITextProcessor processor : processors) {
+
+            processor.process(this.templateProcessingContext, itext, this.textStructureHandler);
+
+            if (this.textStructureHandler.replaceWithQueue) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.textStructureHandler.replaceWithQueueProcessable;
+
+                queue.addQueue(this.textStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                structureRemoved = true;
+
+            } else if (this.textStructureHandler.removeText) {
+
+                queue.reset(); // Remove any previous results on the queue
+
+                structureRemoved = true;
+
+            }
+
+        }
 
 
-        // Includes calling the next handler in the chain
-        super.handleText(itext);
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!structureRemoved) {
+            super.handleText(itext);
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
@@ -320,6 +396,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterationSpec.iterationQueue.add(Comment.asEngineComment(this.configuration, icomment, true));
             return;
         }
+
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasCommentProcessors) {
+            super.handleComment(icomment);
+            return;
+        }
+
 
         // Includes calling the next handler in the chain
         super.handleComment(icomment);
@@ -345,6 +431,16 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             this.iterationSpec.iterationQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true));
             return;
         }
+
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasCDATASectionProcessors) {
+            super.handleCDATASection(icdataSection);
+            return;
+        }
+
 
         // Includes calling the next handler in the chain
         super.handleCDATASection(icdataSection);
@@ -657,7 +753,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
         /*
-         * PROCESS THE REST OF THE HANDLER CHAIN in the case we DID NOT reshape the tag to non-void
+         * PROCESS THE REST OF THE HANDLER CHAIN
          */
         if (!tagRemoved) {
             super.handleStandaloneElement(standaloneElementTag);
@@ -1217,6 +1313,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasDocTypeProcessors) {
+            super.handleDocType(idocType);
+            return;
+        }
+
         // Includes calling the next handler in the chain
         super.handleDocType(idocType);
 
@@ -1226,7 +1331,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     
     
     @Override
-    public void handleXmlDeclaration(final IXMLDeclaration ixmlDeclaration) {
+    public void handleXMLDeclaration(final IXMLDeclaration ixmlDeclaration) {
 
         /*
          * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
@@ -1245,8 +1350,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasXMLDeclarationProcessors) {
+            super.handleXMLDeclaration(ixmlDeclaration);
+            return;
+        }
+
         // Includes calling the next handler in the chain
-        super.handleXmlDeclaration(ixmlDeclaration);
+        super.handleXMLDeclaration(ixmlDeclaration);
 
     }
 
@@ -1269,6 +1383,15 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
                     ProcessingInstruction.asEngineProcessingInstruction(this.configuration, iprocessingInstruction, true));
+            return;
+        }
+
+
+        /*
+         * FAIL FAST in case this structure has no associated processors.
+         */
+        if (!this.hasProcessingInstructionProcessors) {
+            super.handleProcessingInstruction(iprocessingInstruction);
             return;
         }
 

@@ -152,7 +152,7 @@ public final class TemplateHandlerAdapterMarkupHandler extends AbstractMarkupHan
 
         this.xmlDeclaration.reset(fullXmlDeclaration, keyword, version, encoding, standalone, line, col);
 
-        this.templateHandler.handleXmlDeclaration(this.xmlDeclaration);
+        this.templateHandler.handleXMLDeclaration(this.xmlDeclaration);
 
     }
 
