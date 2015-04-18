@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
@@ -43,13 +43,13 @@ public class StandardRemoveProcessor extends AbstractAttributeMatchingHTMLElemen
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
 
         final String value = tag.getAttributes().getValue(getDialectPrefix(), "remove");
         if ("tag".equals(value)) {
-            actionHandler.removeTag();
+            structureHandler.removeTag();
         } else if ("all".equals(value)) {
-            actionHandler.removeElement();
+            structureHandler.removeElement();
         } else {
             System.err.printf("UNKNOWN VALUE FOR th:remove : " + value);
         }

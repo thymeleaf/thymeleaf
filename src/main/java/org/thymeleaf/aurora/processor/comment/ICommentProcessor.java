@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.processor.comment;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.engine.ICommentStructureHandler;
 import org.thymeleaf.aurora.model.IComment;
 import org.thymeleaf.aurora.processor.IProcessor;
 
@@ -31,8 +32,8 @@ import org.thymeleaf.aurora.processor.IProcessor;
  */
 public interface ICommentProcessor extends IProcessor {
 
-    // Null result = remove structure
-    public IComment process(
-            final ITemplateProcessingContext processingContext, final IComment comment);
+    public void process(
+            final ITemplateProcessingContext processingContext, final IComment comment,
+            final ICommentStructureHandler structureHandler);
 
 }

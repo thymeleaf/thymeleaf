@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.engine.TemplateHandlerEventQueue;
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.model.IOpenElementTag;
@@ -46,7 +46,7 @@ public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLEleme
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
 
         final IModelFactory modelFactory = processingContext.getModelFactory();
 
@@ -60,7 +60,7 @@ public class StandardIncludeProcessor extends AbstractAttributeMatchingHTMLEleme
         queue.add(modelFactory.createText("This is included text!"));
         queue.add(modelFactory.createCloseElementTag("section"));
 
-        actionHandler.setBody(queue, false);
+        structureHandler.setBody(queue, false);
 
     }
 

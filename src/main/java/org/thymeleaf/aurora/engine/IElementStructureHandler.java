@@ -17,14 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.element;
-
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IElementStructureHandler;
-import org.thymeleaf.aurora.engine.MatchingAttributeName;
-import org.thymeleaf.aurora.engine.MatchingElementName;
-import org.thymeleaf.aurora.model.IProcessableElementTag;
-import org.thymeleaf.aurora.processor.IProcessor;
+package org.thymeleaf.aurora.engine;
 
 /**
  *
@@ -32,15 +25,29 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IElementProcessor extends IProcessor {
-
-    public MatchingElementName getMatchingElementName();
-    public MatchingAttributeName getMatchingAttributeName();
+public interface IElementStructureHandler {
 
 
-    public void process(
-            final ITemplateProcessingContext processingContext, final IProcessableElementTag tag,
-            final IElementStructureHandler structureHandler);
+    public void reset();
 
+    public void setLocalVariable(final String name, final Object value);
+    public void removeLocalVariable(final String name);
+
+    public void setSelectionTarget(final Object selectionTarget);
+
+    public void setTextInliningActive(final boolean active);
+
+    public void setBody(final String text, final boolean processable);
+    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
+
+    public void replaceWith(final String text, final boolean processable);
+    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
+
+
+    public void removeElement();
+    public void removeTag();
+
+    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
 
 }
+

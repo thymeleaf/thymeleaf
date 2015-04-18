@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
@@ -44,7 +44,7 @@ public class StandardClassProcessor extends AbstractAttributeMatchingHTMLElement
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
 
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();

@@ -23,7 +23,7 @@ import java.util.Iterator;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
 
@@ -46,15 +46,15 @@ public class StandardEachProcessor extends AbstractAttributeMatchingHTMLElementP
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
 
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
 
         final String[] values = new String[] { "Iteration One", "Iteration Two", "Iteration Three" };
-//        actionHandler.iterateElement("iter", "iterStat", values);
-//        actionHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
-        actionHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
+//        structureHandler.iterateElement("iter", "iterStat", values);
+//        structureHandler.iterateElement("iter", "iterStat", new int[] { 12, 3, 123, 512311, 23, 3, 3, 123, 231, 2311});
+        structureHandler.iterateElement("iter", "iterStat", new Iterator<String>() {
 
             private int i = 0;
 

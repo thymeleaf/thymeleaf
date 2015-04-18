@@ -17,12 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.processor.xmldeclaration;
-
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IXMLDeclarationStructureHandler;
-import org.thymeleaf.aurora.model.IXMLDeclaration;
-import org.thymeleaf.aurora.processor.IProcessor;
+package org.thymeleaf.aurora.engine;
 
 /**
  *
@@ -30,10 +25,14 @@ import org.thymeleaf.aurora.processor.IProcessor;
  * @since 3.0.0
  * 
  */
-public interface IXMLDeclarationProcessor extends IProcessor {
+public interface ICDATASectionStructureHandler {
 
-    public void process(
-            final ITemplateProcessingContext processingContext, final IXMLDeclaration xmlDeclaration,
-            final IXMLDeclarationStructureHandler structureHandler);
+
+    public void reset();
+
+    public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
+
+    public void removeCDATASection();
 
 }
+

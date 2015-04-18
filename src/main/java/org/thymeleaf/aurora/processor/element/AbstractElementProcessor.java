@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.processor.element;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeNames;
 import org.thymeleaf.aurora.engine.ElementNames;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.engine.MatchingAttributeName;
 import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
@@ -96,7 +96,7 @@ public abstract class AbstractElementProcessor
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
         // Nothing to do here -- empty action
     }
 

@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.engine.IterationStatusVar;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementProcessor;
@@ -45,7 +45,7 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
 
         // We know this will not be null, because we linked the processor to a specific attribute
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
@@ -54,7 +54,7 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
         if (localIterValue != null) {
 
             final IterationStatusVar stat = (IterationStatusVar) processingContext.getVariablesMap().getVariable("iterStat");
-            actionHandler.setBody(localIterValue.toString() + " [" + stat.getCount() + (stat.getSize() != null? (" of " + stat.getSize()) : "") + "]", false);
+            structureHandler.setBody(localIterValue.toString() + " [" + stat.getCount() + (stat.getSize() != null? (" of " + stat.getSize()) : "") + "]", false);
 
         } else {
 
@@ -64,7 +64,7 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
 
                 final Object selectionTarget = processingContext.getVariablesMap().getSelectionTarget();
 
-                actionHandler.setBody((inlining? "" : "$") + selectionTarget.toString(), false);
+                structureHandler.setBody((inlining? "" : "$") + selectionTarget.toString(), false);
 
             } else {
 
@@ -72,9 +72,9 @@ public class StandardTextProcessor extends AbstractAttributeMatchingHTMLElementP
                 final Object localVarValue = processingContext.getVariablesMap().getVariable("one");
 
                 if (localVarValue != null) {
-                    actionHandler.setBody((inlining? "" : "$") + "*Whoohooooo!*", false);
+                    structureHandler.setBody((inlining? "" : "$") + "*Whoohooooo!*", false);
                 } else {
-                    actionHandler.setBody((inlining? "" : "$") + "Whoohooooo!", false);
+                    structureHandler.setBody((inlining? "" : "$") + "Whoohooooo!", false);
                 }
 
             }

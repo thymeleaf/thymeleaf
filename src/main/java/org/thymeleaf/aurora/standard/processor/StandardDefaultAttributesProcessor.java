@@ -20,7 +20,7 @@
 package org.thymeleaf.aurora.standard.processor;
 
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.engine.IElementTagActionHandler;
+import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.engine.MatchingAttributeName;
 import org.thymeleaf.aurora.engine.MatchingElementName;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
@@ -70,7 +70,7 @@ public class StandardDefaultAttributesProcessor
     public void process(
             final ITemplateProcessingContext processingContext,
             final IProcessableElementTag tag,
-            final IElementTagActionHandler actionHandler) {
+            final IElementStructureHandler structureHandler) {
 
 //        System.out.println("DEFAULT ACTING ON ELEMENT: " + tag.toString());
 

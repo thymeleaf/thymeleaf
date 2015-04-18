@@ -25,29 +25,14 @@ package org.thymeleaf.aurora.engine;
  * @since 3.0.0
  * 
  */
-public interface IElementTagActionHandler {
+public interface IXMLDeclarationStructureHandler {
 
 
     public void reset();
 
-    public void setLocalVariable(final String name, final Object value);
-    public void removeLocalVariable(final String name);
-
-    public void setSelectionTarget(final Object selectionTarget);
-
-    public void setTextInliningActive(final boolean active);
-
-    public void setBody(final String text, final boolean processable);
-    public void setBody(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
-
-    public void replaceWith(final String text, final boolean processable);
     public void replaceWith(final ITemplateHandlerEventQueue eventQueue, final boolean processable);
 
-
-    public void removeElement();
-    public void removeTag();
-
-    public void iterateElement(final String iterVariableName, final String iterStatusVariableName, final Object iteratedObject);
+    public void removeXMLDeclaration();
 
 }
 

@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-final class ElementTagActionHandler implements IElementTagActionHandler {
+final class ElementStructureHandler implements IElementStructureHandler {
 
 
     boolean setBodyText;
@@ -75,7 +75,7 @@ final class ElementTagActionHandler implements IElementTagActionHandler {
 
 
 
-    ElementTagActionHandler() {
+    ElementStructureHandler() {
         super();
         reset();
     }

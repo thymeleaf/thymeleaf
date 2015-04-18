@@ -63,7 +63,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
 
-    private final ElementTagActionHandler actionHandler;
+    private final ElementStructureHandler elementStructureHandler;
+    private final CDATASectionStructureHandler cdataSectionStructureHandler;
+    private final CommentStructureHandler commentStructureHandler;
+    private final DocTypeStructureHandler docTypeStructureHandler;
+    private final ProcessingInstructionStructureHandler processingInstructionStructureHandler;
+    private final TextStructureHandler textStructureHandler;
+    private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
     private ITemplateProcessingContext templateProcessingContext;
     private ITemplateEngineConfiguration configuration;
@@ -116,7 +122,13 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
      */
     public ProcessorTemplateHandler() {
         super();
-        this.actionHandler = new ElementTagActionHandler();
+        this.elementStructureHandler = new ElementStructureHandler();
+        this.cdataSectionStructureHandler = new CDATASectionStructureHandler();
+        this.commentStructureHandler = new CommentStructureHandler();
+        this.docTypeStructureHandler = new DocTypeStructureHandler();
+        this.processingInstructionStructureHandler = new ProcessingInstructionStructureHandler();
+        this.textStructureHandler = new TextStructureHandler();
+        this.xmlDeclarationStructureHandler = new XMLDeclarationStructureHandler();
     }
 
 
@@ -255,16 +267,30 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleText(final IText itext) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
 
-        // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(Text.asEngineText(this.configuration, itext, true));
             return;
         }
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
 
         // Includes calling the next handler in the chain
         super.handleText(itext);
@@ -276,12 +302,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleComment(final IComment icomment) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
 
-        // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(Comment.asEngineComment(this.configuration, icomment, true));
             return;
@@ -296,12 +327,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleCDATASection(final ICDATASection icdataSection) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
 
-        // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(CDATASection.asEngineCDATASection(this.configuration, icdataSection, true));
             return;
@@ -410,47 +446,47 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         IProcessor processor;
         while (!tagRemoved && (processor = this.processorIterator.next(standaloneElementTag)) != null) {
 
-            this.actionHandler.reset();
+            this.elementStructureHandler.reset();
 
             if (processor instanceof IElementProcessor) {
 
                 final IElementProcessor elementProcessor = ((IElementProcessor)processor);
-                elementProcessor.process(this.templateProcessingContext, standaloneElementTag, this.actionHandler);
+                elementProcessor.process(this.templateProcessingContext, standaloneElementTag, this.elementStructureHandler);
 
-                if (this.actionHandler.setLocalVariable) {
+                if (this.elementStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.actionHandler.addedLocalVariables);
+                        this.variablesMap.putAll(this.elementStructureHandler.addedLocalVariables);
                     }
                 }
 
-                if (this.actionHandler.removeLocalVariable) {
+                if (this.elementStructureHandler.removeLocalVariable) {
                     if (this.variablesMap != null) {
-                        for (final String variableName : this.actionHandler.removedLocalVariableNames) {
+                        for (final String variableName : this.elementStructureHandler.removedLocalVariableNames) {
                             this.variablesMap.remove(variableName);
                         }
                     }
                 }
 
-                if (this.actionHandler.setSelectionTarget) {
+                if (this.elementStructureHandler.setSelectionTarget) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.actionHandler.selectionTargetObject);
+                        this.variablesMap.setSelectionTarget(this.elementStructureHandler.selectionTargetObject);
                     }
                 }
 
-                if (this.actionHandler.setTextInliningActive) {
+                if (this.elementStructureHandler.setTextInliningActive) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliningActive(this.actionHandler.setTextInliningActiveValue);
+                        this.variablesMap.setTextInliningActive(this.elementStructureHandler.setTextInliningActiveValue);
                     }
                 }
 
-                if (this.actionHandler.iterateElement) {
+                if (this.elementStructureHandler.iterateElement) {
 
                     // Set the iteration info in order to start gathering all iterated events
                     this.gatheringIteration = true;
                     this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
-                    this.iterationSpec.iterVariableName = this.actionHandler.iterVariableName;
-                    this.iterationSpec.iterStatusVariableName = this.actionHandler.iterStatusVariableName;
-                    this.iterationSpec.iteratedObject = this.actionHandler.iteratedObject;
+                    this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
 
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
@@ -478,7 +514,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     return;
 
-                } else if (this.actionHandler.setBodyText) {
+                } else if (this.elementStructureHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -496,7 +532,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // best option is take one from our own, specialized standalone-oriented buffer in order to limit
                     // the amount of objects created in these cases
                     final Text text = this.standaloneTextBuffers[this.standaloneTagBuffersIndex];
-                    text.setText(this.actionHandler.setBodyTextValue);
+                    text.setText(this.elementStructureHandler.setBodyTextValue);
                     queue.add(text);
 
                     // We are done with using the standalone buffers, so increase the index
@@ -505,7 +541,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
                     this.suspensionSpec.bodyRemoved = false;
-                    this.suspensionSpec.queueProcessable = this.actionHandler.setBodyTextProcessable;
+                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
 
@@ -528,7 +564,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     return;
 
-                } else if (this.actionHandler.setBodyQueue) {
+                } else if (this.elementStructureHandler.setBodyQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
 
@@ -540,7 +576,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     closeTag.resetAsCloneOf(standaloneElementTag);
 
                     // Prepare the queue (that we will suspend)
-                    queue.addQueue(this.actionHandler.setBodyQueueValue, true); // we need to clone the queue!
+                    queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
 
                     // We are done with using the standalone buffers, so increase the index
                     this.standaloneTagBuffersIndex++;
@@ -548,7 +584,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Suspend the queue - execution will be restarted by the handleOpenElement event
                     this.suspended = true;
                     this.suspensionSpec.bodyRemoved = false;
-                    this.suspensionSpec.queueProcessable = this.actionHandler.setBodyQueueProcessable;
+                    this.suspensionSpec.queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
                     this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
                     this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.processorIterator);
 
@@ -571,34 +607,34 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
                     return;
 
-                } else if (this.actionHandler.replaceWithText) {
+                } else if (this.elementStructureHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.actionHandler.replaceWithTextProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBodyReplacementBuffer.setText(this.actionHandler.replaceWithTextValue);
+                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
                     queue.add(this.textBodyReplacementBuffer);
 
                     tagRemoved = true;
 
-                } else if (this.actionHandler.replaceWithQueue) {
+                } else if (this.elementStructureHandler.replaceWithQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.actionHandler.replaceWithQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithQueueProcessable;
 
-                    queue.addQueue(this.actionHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                    queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
 
-                } else if (this.actionHandler.removeElement) {
+                } else if (this.elementStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
                     tagRemoved = true;
 
-                } else if (this.actionHandler.removeTag) {
+                } else if (this.elementStructureHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
@@ -752,47 +788,47 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         IProcessor processor;
         while (!tagRemoved && (processor = this.processorIterator.next(openElementTag)) != null) {
 
-            this.actionHandler.reset();
+            this.elementStructureHandler.reset();
 
             if (processor instanceof IElementProcessor) {
 
                 final IElementProcessor elementProcessor = ((IElementProcessor)processor);
-                elementProcessor.process(this.templateProcessingContext, openElementTag, this.actionHandler);
+                elementProcessor.process(this.templateProcessingContext, openElementTag, this.elementStructureHandler);
 
-                if (this.actionHandler.setLocalVariable) {
+                if (this.elementStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.putAll(this.actionHandler.addedLocalVariables);
+                        this.variablesMap.putAll(this.elementStructureHandler.addedLocalVariables);
                     }
                 }
 
-                if (this.actionHandler.removeLocalVariable) {
+                if (this.elementStructureHandler.removeLocalVariable) {
                     if (this.variablesMap != null) {
-                        for (final String variableName : this.actionHandler.removedLocalVariableNames) {
+                        for (final String variableName : this.elementStructureHandler.removedLocalVariableNames) {
                             this.variablesMap.remove(variableName);
                         }
                     }
                 }
 
-                if (this.actionHandler.setSelectionTarget) {
+                if (this.elementStructureHandler.setSelectionTarget) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setSelectionTarget(this.actionHandler.selectionTargetObject);
+                        this.variablesMap.setSelectionTarget(this.elementStructureHandler.selectionTargetObject);
                     }
                 }
 
-                if (this.actionHandler.setTextInliningActive) {
+                if (this.elementStructureHandler.setTextInliningActive) {
                     if (this.variablesMap != null) {
-                        this.variablesMap.setTextInliningActive(this.actionHandler.setTextInliningActiveValue);
+                        this.variablesMap.setTextInliningActive(this.elementStructureHandler.setTextInliningActiveValue);
                     }
                 }
 
-                if (this.actionHandler.iterateElement) {
+                if (this.elementStructureHandler.iterateElement) {
 
                     // Set the iteration info in order to start gathering all iterated events
                     this.gatheringIteration = true;
                     this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
-                    this.iterationSpec.iterVariableName = this.actionHandler.iterVariableName;
-                    this.iterationSpec.iterStatusVariableName = this.actionHandler.iterStatusVariableName;
-                    this.iterationSpec.iteratedObject = this.actionHandler.iteratedObject;
+                    this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
                     this.iterationSpec.iterationQueue.reset();
 
                     // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
@@ -825,60 +861,60 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                     // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
                     return;
 
-                } else if (this.actionHandler.setBodyText) {
+                } else if (this.elementStructureHandler.setBodyText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.actionHandler.setBodyTextProcessable;
+                    queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
 
                     // For now we will not be cloning the buffer and just hoping it will be executed as is. This is
                     // the most common case (th:text) and this will save us a good number of Text nodes. But note that
                     // if this element is iterated AFTER we set this, we will need to clone this node before suspending
                     // the queue, or we might have nasting interactions with each of the subsequent iterations
-                    this.textBodyReplacementBuffer.setText(this.actionHandler.setBodyTextValue);
+                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.setBodyTextValue);
                     queue.add(this.textBodyReplacementBuffer);
 
                     bodyRemoved = true;
 
-                } else if (this.actionHandler.setBodyQueue) {
+                } else if (this.elementStructureHandler.setBodyQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.actionHandler.setBodyQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
 
-                    queue.addQueue(this.actionHandler.setBodyQueueValue, true); // we need to clone the queue!
+                    queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
 
                     bodyRemoved = true;
 
-                } else if (this.actionHandler.replaceWithText) {
+                } else if (this.elementStructureHandler.replaceWithText) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.actionHandler.replaceWithTextProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithTextProcessable;
 
                     // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
                     // (containing only the text node) immediately. No further processors are to be executed
-                    this.textBodyReplacementBuffer.setText(this.actionHandler.replaceWithTextValue);
+                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
                     queue.add(this.textBodyReplacementBuffer);
 
                     tagRemoved = true;
                     bodyRemoved = true;
 
-                } else if (this.actionHandler.replaceWithQueue) {
+                } else if (this.elementStructureHandler.replaceWithQueue) {
 
                     queue.reset(); // Remove any previous results on the queue
-                    queueProcessable = this.actionHandler.replaceWithQueueProcessable;
+                    queueProcessable = this.elementStructureHandler.replaceWithQueueProcessable;
 
-                    queue.addQueue(this.actionHandler.replaceWithQueueValue, true); // we need to clone the queue!
+                    queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
 
                     tagRemoved = true;
                     bodyRemoved = true;
 
-                } else if (this.actionHandler.removeElement) {
+                } else if (this.elementStructureHandler.removeElement) {
 
                     queue.reset(); // Remove any previous results on the queue
 
                     tagRemoved = true;
                     bodyRemoved = true;
 
-                } else if (this.actionHandler.removeTag) {
+                } else if (this.elementStructureHandler.removeTag) {
 
                     // No modifications to the queue - it's just the tag that will be removed, not its possible contents
 
@@ -1131,12 +1167,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleUnmatchedCloseElement(final IUnmatchedCloseElementTag iunmatchedCloseElementTag) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
 
-        // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
                     UnmatchedCloseElementTag.asEngineUnmatchedCloseElementTag(this.templateMode, this.configuration, iunmatchedCloseElementTag, true));
@@ -1157,12 +1198,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleDocType(final IDocType idocType) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
 
-        // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(DocType.asEngineDocType(this.configuration, idocType, true));
             return;
@@ -1179,12 +1225,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleXmlDeclaration(final IXMLDeclaration ixmlDeclaration) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
 
-        // Check whether we are in the middle of an iteration and we just need to cache this to the queue (for now)
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
         if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
             this.iterationSpec.iterationQueue.add(
                     XMLDeclaration.asEngineXMLDeclaration(this.configuration, ixmlDeclaration, true));
@@ -1204,7 +1255,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleProcessingInstruction(final IProcessingInstruction iprocessingInstruction) {
 
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
             return;
         }
