@@ -99,9 +99,9 @@ final class Text
 
     public char charAt(final int index) {
 
-        if (index < 0 || index >= this.length) {
-            throw new IndexOutOfBoundsException("Index out of range: " + index);
-        }
+        // no need to perform index bounds checking: it would slow down traversing operations a lot, and
+        // it would be exactly the same exception we'd obtain by basically trying to access that index, so let's do
+        // it directly instead
 
         if (this.buffer != null) {
             return this.buffer[this.offset + index];

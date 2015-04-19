@@ -29,6 +29,7 @@ import org.thymeleaf.aurora.standard.processor.StandardDefaultAttributesTagProce
 import org.thymeleaf.aurora.standard.processor.StandardEachTagProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardIncludeTagProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardInlineTagProcessor;
+import org.thymeleaf.aurora.standard.processor.StandardInliningTextProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardObjectTagProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardRemoveTagProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardReplaceTagProcessor;
@@ -65,6 +66,7 @@ public class StandardDialect extends AbstractProcessorDialect {
         processors.add(new StandardEachTagProcessor());
         processors.add(new StandardObjectTagProcessor());
         processors.add(new StandardInlineTagProcessor());
+        processors.add(new StandardInliningTextProcessor());
         return processors;
     }
 

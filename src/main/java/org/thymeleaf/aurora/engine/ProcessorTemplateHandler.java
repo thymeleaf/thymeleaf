@@ -44,10 +44,15 @@ import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.model.IText;
 import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
+import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
+import org.thymeleaf.aurora.processor.comment.ICommentProcessor;
+import org.thymeleaf.aurora.processor.doctype.IDocTypeProcessor;
 import org.thymeleaf.aurora.processor.element.IElementNodeProcessor;
 import org.thymeleaf.aurora.processor.element.IElementProcessor;
 import org.thymeleaf.aurora.processor.element.IElementTagProcessor;
+import org.thymeleaf.aurora.processor.processinginstruction.IProcessingInstructionProcessor;
 import org.thymeleaf.aurora.processor.text.ITextProcessor;
+import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
@@ -65,6 +70,9 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
     private static final String DEFAULT_STATUS_VAR_SUFFIX = "Stat";
 
+    // Structure handlers are reusable objects that will be used by processors in order to instruct the engine to
+    // do things with the processed structures themselves (things that cannot be directly done from the processors like
+    // removing structures or iterating elements)
     private final ElementStructureHandler elementStructureHandler;
     private final CDATASectionStructureHandler cdataSectionStructureHandler;
     private final CommentStructureHandler commentStructureHandler;
@@ -91,7 +99,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private int skipMarkupFromLevel = Integer.MAX_VALUE;
     private LevelArray skipCloseTagLevels = new LevelArray(5);
 
+    // We will have just one (reusable) instance of the element processor iterator, which will take into account the
+    // fact that the processors applicable to an element might change during the execution of other processors, because
+    // the applicability of an element processor is based on its attributes, and these might change in runtime
     private final ElementProcessorIterator elementProcessorIterator = new ElementProcessorIterator();
+    // These arrays will be initialized with all the registered processors for the different kind of non-element
+    // processors. This is done so because non-element processors will not change during the execution of the engine
+    // (whereas element processors can). And they are kept in the form of an array because they will be faster to
+    // iterate than asking everytime the configuration object for the Set of processors and creating an iterator for it
+    private ICDATASectionProcessor[] cdataSectionProcessors = null;
+    private ICommentProcessor[] commentProcessors = null;
+    private IDocTypeProcessor[] docTypeProcessors = null;
+    private IProcessingInstructionProcessor[] processingInstructionProcessors = null;
+    private ITextProcessor[] textProcessors = null;
+    private IXMLDeclarationProcessor[] xmlDeclarationProcessors = null;
 
     // This should only be modified by means of the 'increaseHandlerExecLevel' and 'decreaseHandlerExecLevel' methods
     private int handlerExecLevel = -1;
@@ -185,6 +206,20 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         this.hasProcessingInstructionProcessors = !this.configuration.getProcessingInstructionProcessors(this.templateMode).isEmpty();
         this.hasTextProcessors = !this.configuration.getTextProcessors(this.templateMode).isEmpty();
         this.hasXMLDeclarationProcessors = !this.configuration.getXMLDeclarationProcessors(this.templateMode).isEmpty();
+
+        // Initialize arrays containing the processors for all the non-element structures (do not change during execution)
+        final Set<ICDATASectionProcessor> cdataSectionProcessorSet = this.configuration.getCDATASectionProcessors(this.templateMode);
+        final Set<ICommentProcessor> commentProcessorSet = this.configuration.getCommentProcessors(this.templateMode);
+        final Set<IDocTypeProcessor> docTypeProcessorSet = this.configuration.getDocTypeProcessors(this.templateMode);
+        final Set<IProcessingInstructionProcessor> processingInstructionProcessorSet = this.configuration.getProcessingInstructionProcessors(this.templateMode);
+        final Set<ITextProcessor> textProcessorSet = this.configuration.getTextProcessors(this.templateMode);
+        final Set<IXMLDeclarationProcessor> xmlDeclarationProcessorSet = this.configuration.getXMLDeclarationProcessors(this.templateMode);
+        this.cdataSectionProcessors = cdataSectionProcessorSet.toArray(new ICDATASectionProcessor[cdataSectionProcessorSet.size()]);
+        this.commentProcessors = commentProcessorSet.toArray(new ICommentProcessor[commentProcessorSet.size()]);
+        this.docTypeProcessors = docTypeProcessorSet.toArray(new IDocTypeProcessor[docTypeProcessorSet.size()]);
+        this.processingInstructionProcessors = processingInstructionProcessorSet.toArray(new IProcessingInstructionProcessor[processingInstructionProcessorSet.size()]);
+        this.textProcessors = textProcessorSet.toArray(new ITextProcessor[textProcessorSet.size()]);
+        this.xmlDeclarationProcessors = xmlDeclarationProcessorSet.toArray(new IXMLDeclarationProcessor[xmlDeclarationProcessorSet.size()]);
 
     }
 
@@ -330,10 +365,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         /*
          * EXECUTE PROCESSORS
          */
-        final Set<ITextProcessor> processors = this.configuration.getTextProcessors(this.templateMode);
-        for (final ITextProcessor processor : processors) {
+        final int processorsLen = this.textProcessors.length;
+        for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            processor.process(this.templateProcessingContext, itext, this.textStructureHandler);
+            this.textProcessors[i].process(this.templateProcessingContext, itext, this.textStructureHandler);
 
             if (this.textStructureHandler.replaceWithQueue) {
 
@@ -407,8 +442,66 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
 
-        // Includes calling the next handler in the chain
-        super.handleComment(icomment);
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.commentProcessors.length;
+        for (int i = 0; !structureRemoved && i < processorsLen; i++) {
+
+            this.commentProcessors[i].process(this.templateProcessingContext, icomment, this.commentStructureHandler);
+
+            if (this.commentStructureHandler.replaceWithQueue) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.commentStructureHandler.replaceWithQueueProcessable;
+
+                queue.addQueue(this.commentStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                structureRemoved = true;
+
+            } else if (this.commentStructureHandler.removeComment) {
+
+                queue.reset(); // Remove any previous results on the queue
+
+                structureRemoved = true;
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!structureRemoved) {
+            super.handleComment(icomment);
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
@@ -442,8 +535,66 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
 
-        // Includes calling the next handler in the chain
-        super.handleCDATASection(icdataSection);
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.cdataSectionProcessors.length;
+        for (int i = 0; !structureRemoved && i < processorsLen; i++) {
+
+            this.cdataSectionProcessors[i].process(this.templateProcessingContext, icdataSection, this.cdataSectionStructureHandler);
+
+            if (this.cdataSectionStructureHandler.replaceWithQueue) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.cdataSectionStructureHandler.replaceWithQueueProcessable;
+
+                queue.addQueue(this.cdataSectionStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                structureRemoved = true;
+
+            } else if (this.cdataSectionStructureHandler.removeCDATASection) {
+
+                queue.reset(); // Remove any previous results on the queue
+
+                structureRemoved = true;
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!structureRemoved) {
+            super.handleCDATASection(icdataSection);
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
@@ -1022,6 +1173,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
                 }
 
             } else if (processor instanceof IElementNodeProcessor) {
+                // TODO Implement Node processors and Node DOM structure handling, and copy those to the "autoOpen" events
                 throw new UnsupportedOperationException("Support for Node processors not implemented yet");
             } else {
                 throw new IllegalStateException(
@@ -1084,10 +1236,32 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     @Override
     public void handleAutoOpenElement(final IAutoOpenElementTag iautoOpenElementTag) {
 
-        // TODO Once engine code is completed for standalone + open, copy open here
-
-        // Check whether we just need to discard any markup in this level
+        /*
+         * CHECK WHETHER THIS MARKUP REGION SHOULD BE DISCARDED, for example, as a part of a skipped body
+         */
         if (this.markupLevel >= this.skipMarkupFromLevel) {
+            this.markupLevel++;
+            return;
+        }
+
+
+        /*
+         * CHECK WHETHER WE ARE IN THE MIDDLE OF AN ITERATION and we just need to cache this to the queue (for now)
+         */
+        if (this.gatheringIteration && this.markupLevel >= this.iterationSpec.fromMarkupLevel) {
+            this.iterationSpec.iterationQueue.add(
+                    AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, iautoOpenElementTag, true));
+            this.markupLevel++;
+            return;
+        }
+
+
+        /*
+         * FAIL FAST in case this tag has no associated processors and we have no reason to pay attention to it
+         * anyway (because of being suspended). This avoids cast to engine-specific implementation for most cases.
+         */
+        if (!this.suspended && !iautoOpenElementTag.hasAssociatedProcessors()) {
+            super.handleAutoOpenElement(iautoOpenElementTag);
             this.markupLevel++;
             if (this.variablesMap != null) {
                 this.variablesMap.increaseLevel();
@@ -1095,14 +1269,261 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        // Includes calling the next handler in the chain
-        super.handleAutoOpenElement(iautoOpenElementTag);
 
-        // Note we increase the markup level after processing the rest of the chain for this element
-        this.markupLevel++;
+        /*
+         * CAST (WITHOUT CLONING) TO ENGINE-SPECIFIC IMPLEMENTATION, which will ease the handling of the structure during processing
+         */
+        final AutoOpenElementTag autoOpenElementTag =
+                AutoOpenElementTag.asEngineAutoOpenElementTag(this.templateMode, this.configuration, iautoOpenElementTag, false);
+
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean tagRemoved = false; // If the tag is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+        boolean bodyRemoved = false; // If the body of this tag should be removed, we must signal it accordingly at the engine
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * INCREASE THE VARIABLES MAP LEVEL so that all local variables created during the execution of processors
+         * are available for the rest of the processors as well as the body of the tag
+         */
         if (this.variablesMap != null) {
             this.variablesMap.increaseLevel();
         }
+
+
+        /*
+         * INITIALIZE THE EXECUTION LEVEL depending on whether we have a suspended a previous execution or not
+         */
+        if (!this.suspended) {
+
+            /*
+             * INITIALIZE THE PROCESSOR ITERATOR that will be used for executing all the processors
+             */
+            this.elementProcessorIterator.reset();
+
+        } else {
+            // Execution of a tag was suspended, we need to recover the data
+
+            /*
+             * RETRIEVE THE QUEUE TO BE USED, potentially already containing some nodes. And also the flags.
+             */
+            queue.resetAsCloneOf(this.suspensionSpec.suspendedQueue);
+            queueProcessable = this.suspensionSpec.queueProcessable;
+            bodyRemoved = this.suspensionSpec.bodyRemoved;
+            this.elementProcessorIterator.resetAsCloneOf(this.suspensionSpec.suspendedIterator);
+            this.suspended = false;
+            this.suspensionSpec.reset();
+
+            // Note we will not increase the VariablesMap level here, as are keeping the level from the suspended execution
+
+        }
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        IElementProcessor processor;
+        while (!tagRemoved && (processor = this.elementProcessorIterator.next(autoOpenElementTag)) != null) {
+
+            this.elementStructureHandler.reset();
+
+            if (processor instanceof IElementTagProcessor) {
+
+                final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
+                elementProcessor.process(this.templateProcessingContext, autoOpenElementTag, this.elementStructureHandler);
+
+                if (this.elementStructureHandler.setLocalVariable) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.putAll(this.elementStructureHandler.addedLocalVariables);
+                    }
+                }
+
+                if (this.elementStructureHandler.removeLocalVariable) {
+                    if (this.variablesMap != null) {
+                        for (final String variableName : this.elementStructureHandler.removedLocalVariableNames) {
+                            this.variablesMap.remove(variableName);
+                        }
+                    }
+                }
+
+                if (this.elementStructureHandler.setSelectionTarget) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setSelectionTarget(this.elementStructureHandler.selectionTargetObject);
+                    }
+                }
+
+                if (this.elementStructureHandler.setTextInliningActive) {
+                    if (this.variablesMap != null) {
+                        this.variablesMap.setTextInliningActive(this.elementStructureHandler.setTextInliningActiveValue);
+                    }
+                }
+
+                if (this.elementStructureHandler.iterateElement) {
+
+                    // Set the iteration info in order to start gathering all iterated events
+                    this.gatheringIteration = true;
+                    this.iterationSpec.fromMarkupLevel = this.markupLevel + 1;
+                    this.iterationSpec.iterVariableName = this.elementStructureHandler.iterVariableName;
+                    this.iterationSpec.iterStatusVariableName = this.elementStructureHandler.iterStatusVariableName;
+                    this.iterationSpec.iteratedObject = this.elementStructureHandler.iteratedObject;
+                    this.iterationSpec.iterationQueue.reset();
+
+                    // Before suspending the queue, we have to check if it is the result of a "setBodyText", in
+                    // which case it will contain only one non-cloned node: the text buffer. And we will need
+                    // to clone that buffer before suspending the queue to avoid nasty interactions during iteration
+                    if (queue.size() == 1 && queue.get(0) == this.textBodyReplacementBuffer) {
+                        // Replace the text buffer with a clone
+                        queue.reset();
+                        queue.add(this.textBodyReplacementBuffer.cloneNode());
+                    }
+
+                    // Suspend the queue - execution will be restarted by the handleOpenElement event
+                    this.suspended = true;
+                    this.suspensionSpec.bodyRemoved = bodyRemoved;
+                    this.suspensionSpec.queueProcessable = queueProcessable;
+                    this.suspensionSpec.suspendedQueue.resetAsCloneOf(queue);
+                    this.suspensionSpec.suspendedIterator.resetAsCloneOf(this.elementProcessorIterator);
+
+                    // The first event in the new iteration query
+                    this.iterationSpec.iterationQueue.add(autoOpenElementTag.cloneElementTag());
+
+                    // Increase markup level, as normal with open tags
+                    this.markupLevel++;
+
+                    // Decrease the handler execution level (all important bits are already in suspensionSpec)
+                    decreaseHandlerExecLevel();
+
+                    // Note we DO NOT DECREASE THE VARIABLES MAP LEVEL -- that's the responsibility of the close event
+
+                    // Nothing else to be done by this handler... let's just queue the rest of the events to be iterated
+                    return;
+
+                } else if (this.elementStructureHandler.setBodyText) {
+
+                    queue.reset(); // Remove any previous results on the queue
+                    queueProcessable = this.elementStructureHandler.setBodyTextProcessable;
+
+                    // For now we will not be cloning the buffer and just hoping it will be executed as is. This is
+                    // the most common case (th:text) and this will save us a good number of Text nodes. But note that
+                    // if this element is iterated AFTER we set this, we will need to clone this node before suspending
+                    // the queue, or we might have nasting interactions with each of the subsequent iterations
+                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.setBodyTextValue);
+                    queue.add(this.textBodyReplacementBuffer);
+
+                    bodyRemoved = true;
+
+                } else if (this.elementStructureHandler.setBodyQueue) {
+
+                    queue.reset(); // Remove any previous results on the queue
+                    queueProcessable = this.elementStructureHandler.setBodyQueueProcessable;
+
+                    queue.addQueue(this.elementStructureHandler.setBodyQueueValue, true); // we need to clone the queue!
+
+                    bodyRemoved = true;
+
+                } else if (this.elementStructureHandler.replaceWithText) {
+
+                    queue.reset(); // Remove any previous results on the queue
+                    queueProcessable = this.elementStructureHandler.replaceWithTextProcessable;
+
+                    // No need to clone the text buffer because, as we are removing the tag, we will execute the queue
+                    // (containing only the text node) immediately. No further processors are to be executed
+                    this.textBodyReplacementBuffer.setText(this.elementStructureHandler.replaceWithTextValue);
+                    queue.add(this.textBodyReplacementBuffer);
+
+                    tagRemoved = true;
+                    bodyRemoved = true;
+
+                } else if (this.elementStructureHandler.replaceWithQueue) {
+
+                    queue.reset(); // Remove any previous results on the queue
+                    queueProcessable = this.elementStructureHandler.replaceWithQueueProcessable;
+
+                    queue.addQueue(this.elementStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                    tagRemoved = true;
+                    bodyRemoved = true;
+
+                } else if (this.elementStructureHandler.removeElement) {
+
+                    queue.reset(); // Remove any previous results on the queue
+
+                    tagRemoved = true;
+                    bodyRemoved = true;
+
+                } else if (this.elementStructureHandler.removeTag) {
+
+                    // No modifications to the queue - it's just the tag that will be removed, not its possible contents
+
+                    tagRemoved = true;
+
+                }
+
+            } else if (processor instanceof IElementNodeProcessor) {
+                // TODO Implement Node processors and Node DOM structure handling, and copy those to the "autoOpen" events
+                throw new UnsupportedOperationException("Support for Node processors not implemented yet");
+            } else {
+                throw new IllegalStateException(
+                        "An element has been found with an associated processor of type " + processor.getClass().getName() +
+                                " which is neither an element nor a Node processor.");
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN and INCREASE THE MARKUP LEVEL RIGHT AFTERWARDS
+         */
+        if (!tagRemoved) {
+            super.handleAutoOpenElement(autoOpenElementTag);
+        }
+
+
+        /*
+         * INCREASE THE MARKUP LEVEL to the value that will be applied to the tag's bodies
+         */
+        this.markupLevel++;
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * SET BODY TO BE SKIPPED, if required
+         */
+        if (bodyRemoved) {
+            // We make sure no other nested events will be processed at all
+            this.skipMarkupFromLevel = this.markupLevel;
+        }
+
+
+        /*
+         * MAKE SURE WE SKIP THE CORRESPONDING CLOSE TAG, if required
+         */
+        if (tagRemoved) {
+            this.skipCloseTagLevels.add(this.markupLevel - 1);
+            // We cannot decrease here the variables map level because we aren't actually decreasing the markup
+            // level until we find the corresponding close tag
+        }
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
@@ -1283,10 +1704,17 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        // Unmatched closes do not affect the markup level
+
+        /*
+         * -------------------------------------------------------------------------------------------------
+         * THERE IS NOTHING ELSE THAT SHOULD BE DONE WITH AN UNMATCHED CLOSE ELEMENT. No processors apply...
+         * -------------------------------------------------------------------------------------------------
+         */
 
 
-        // Includes calling the next handler in the chain
+        /*
+         * CALL THE NEXT HANDLER in the chain
+         */
         super.handleUnmatchedCloseElement(iunmatchedCloseElementTag);
 
     }
@@ -1322,8 +1750,67 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        // Includes calling the next handler in the chain
-        super.handleDocType(idocType);
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.docTypeProcessors.length;
+        for (int i = 0; !structureRemoved && i < processorsLen; i++) {
+
+            this.docTypeProcessors[i].process(this.templateProcessingContext, idocType, this.docTypeStructureHandler);
+
+            if (this.docTypeStructureHandler.replaceWithQueue) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.docTypeStructureHandler.replaceWithQueueProcessable;
+
+                queue.addQueue(this.docTypeStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                structureRemoved = true;
+
+            } else if (this.docTypeStructureHandler.removeDocType) {
+
+                queue.reset(); // Remove any previous results on the queue
+
+                structureRemoved = true;
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!structureRemoved) {
+            super.handleDocType(idocType);
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
@@ -1359,8 +1846,67 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        // Includes calling the next handler in the chain
-        super.handleXMLDeclaration(ixmlDeclaration);
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.xmlDeclarationProcessors.length;
+        for (int i = 0; !structureRemoved && i < processorsLen; i++) {
+
+            this.xmlDeclarationProcessors[i].process(this.templateProcessingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
+
+            if (this.xmlDeclarationStructureHandler.replaceWithQueue) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.xmlDeclarationStructureHandler.replaceWithQueueProcessable;
+
+                queue.addQueue(this.xmlDeclarationStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                structureRemoved = true;
+
+            } else if (this.xmlDeclarationStructureHandler.removeXMLDeclaration) {
+
+                queue.reset(); // Remove any previous results on the queue
+
+                structureRemoved = true;
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!structureRemoved) {
+            super.handleXMLDeclaration(ixmlDeclaration);
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
@@ -1395,8 +1941,67 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             return;
         }
 
-        // Includes calling the next handler in the chain
-        super.handleProcessingInstruction(iprocessingInstruction);
+
+        /*
+         * DECLARE THE FLAGS NEEDED DURING THE EXECUTION OF PROCESSORS
+         */
+        boolean structureRemoved = false; // If the structure is removed, we have to immediately stop the execution of processors
+        boolean queueProcessable = false; // When elements are added to a queue, we need to know whether it is processable or not
+
+
+        /*
+         * REGISTER A NEW EXEC LEVEL, and allow the corresponding structures to be created just in case they are needed
+         */
+        increaseHandlerExecLevel();
+        final EngineEventQueue queue = this.eventQueues[this.handlerExecLevel];
+
+
+        /*
+         * EXECUTE PROCESSORS
+         */
+        final int processorsLen = this.processingInstructionProcessors.length;
+        for (int i = 0; !structureRemoved && i < processorsLen; i++) {
+
+            this.processingInstructionProcessors[i].process(this.templateProcessingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
+
+            if (this.processingInstructionStructureHandler.replaceWithQueue) {
+
+                queue.reset(); // Remove any previous results on the queue
+                queueProcessable = this.processingInstructionStructureHandler.replaceWithQueueProcessable;
+
+                queue.addQueue(this.processingInstructionStructureHandler.replaceWithQueueValue, true); // we need to clone the queue!
+
+                structureRemoved = true;
+
+            } else if (this.processingInstructionStructureHandler.removeProcessingInstruction) {
+
+                queue.reset(); // Remove any previous results on the queue
+
+                structureRemoved = true;
+
+            }
+
+        }
+
+
+        /*
+         * PROCESS THE REST OF THE HANDLER CHAIN
+         */
+        if (!structureRemoved) {
+            super.handleProcessingInstruction(iprocessingInstruction);
+        }
+
+
+        /*
+         * PROCESS THE QUEUE, launching all the queued events
+         */
+        queue.process(queueProcessable ? this : getNext(), true);
+
+
+        /*
+         * DECREASE THE EXEC LEVEL, so that the structures can be reused
+         */
+        decreaseHandlerExecLevel();
 
     }
 
