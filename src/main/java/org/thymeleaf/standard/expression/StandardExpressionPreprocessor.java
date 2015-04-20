@@ -22,15 +22,14 @@ package org.thymeleaf.standard.expression;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 final class StandardExpressionPreprocessor {
@@ -44,15 +43,14 @@ final class StandardExpressionPreprocessor {
 
 
 
-    static String preprocess(final Configuration configuration,
-            final IProcessingContext processingContext, final String input) {
+    static String preprocess(final IProcessingContext processingContext, final String input) {
 
         if (input.indexOf(PREPROCESS_DELIMITER) == -1) {
             // Fail quick
             return input;
         }
 
-        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(processingContext.getConfiguration());
         if (!(expressionParser instanceof StandardExpressionParser)) {
             // Preprocess will be only available for the StandardExpressionParser, because the preprocessor
             // depends on this specific implementation of the parser.
@@ -76,13 +74,12 @@ final class StandardExpressionPreprocessor {
                 strBuilder.append(previousText);
                 
                 final IStandardExpression expression =
-                        StandardExpressionParser.parseExpression(configuration, processingContext, expressionText, false);
+                        StandardExpressionParser.parseExpression(processingContext, expressionText, false);
                 if (expression == null) {
                     return null;
                 }
                 
-                final Object result =
-                    expression.execute(configuration, processingContext, StandardExpressionExecutionContext.PREPROCESSING);
+                final Object result = expression.execute(processingContext, StandardExpressionExecutionContext.PREPROCESSING);
                 
                 strBuilder.append(result);
                 

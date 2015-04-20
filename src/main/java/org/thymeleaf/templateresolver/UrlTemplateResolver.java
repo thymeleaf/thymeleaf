@@ -21,7 +21,8 @@ package org.thymeleaf.templateresolver;
 
 import java.util.regex.Pattern;
 
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.resourceresolver.UrlResourceResolver;
@@ -78,8 +79,8 @@ public class UrlTemplateResolver
 
 
     @Override
-    protected ITemplateResolutionValidity computeValidity(final TemplateProcessingParameters templateProcessingParameters) {
-        final String templateName = templateProcessingParameters.getTemplateName();
+    protected ITemplateResolutionValidity computeValidity(
+            final IEngineConfiguration configuration, final IContext context, final String templateName) {
         /*
          * This check is made so that we don't fill the cache with entries for the same
          * template with different jsessionid values.
@@ -87,7 +88,7 @@ public class UrlTemplateResolver
         if (JSESSIONID_PATTERN.matcher(templateName.toLowerCase()).matches()) {
             return NonCacheableTemplateResolutionValidity.INSTANCE;
         }
-        return super.computeValidity(templateProcessingParameters);
+        return super.computeValidity(configuration, context, templateName);
     }
     
     

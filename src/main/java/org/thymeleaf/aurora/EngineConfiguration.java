@@ -19,7 +19,12 @@
  */
 package org.thymeleaf.aurora;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.aurora.dialect.IDialect;
@@ -35,6 +40,9 @@ import org.thymeleaf.aurora.processor.text.ITextProcessor;
 import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -43,23 +51,62 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public class TemplateEngineConfiguration implements ITemplateEngineConfiguration {
-
+public class EngineConfiguration implements IEngineConfiguration {
 
     private final DialectSetConfiguration dialectSetConfiguration;
     private final ITextRepository textRepository;
+    private final Set<ITemplateResolver> templateResolvers;
+    private final Set<IMessageResolver> messageResolvers;
+    private final ICacheManager cacheManager;
 
 
-    public TemplateEngineConfiguration(final Set<DialectConfiguration> dialectConfigurations, final ITextRepository textRepository) {
+    public EngineConfiguration(
+            final Set<ITemplateResolver> templateResolvers,
+            final Set<IMessageResolver> messageResolvers,
+            final Set<DialectConfiguration> dialectConfigurations,
+            final ICacheManager cacheManager,
+            final ITextRepository textRepository) {
 
         super();
 
+        Validate.notNull(templateResolvers, "Template Reolver set cannot be null");
+        Validate.isTrue(templateResolvers.size() > 0, "Template Reolver set cannot be empty");
+        Validate.containsNoNulls(templateResolvers, "Template Reolver set cannot contain any nulls");
+        Validate.notNull(messageResolvers, "Message Resolver set cannot be null");
         Validate.notNull(dialectConfigurations, "Dialect configuration set cannot be null");
+        // Cache Manager CAN be null
         Validate.notNull(textRepository, "Text Repository cannot be null");
+
+        final List<ITemplateResolver> templateResolversList = new ArrayList<ITemplateResolver>(templateResolvers);
+        Collections.sort(templateResolversList, TemplateResolverComparator.INSTANCE);
+        this.templateResolvers = Collections.unmodifiableSet(new LinkedHashSet<ITemplateResolver>(templateResolversList));
+
+        final List<IMessageResolver> messageResolversList = new ArrayList<IMessageResolver>(messageResolvers);
+        Collections.sort(messageResolversList, MessageResolverComparator.INSTANCE);
+        this.messageResolvers = Collections.unmodifiableSet(new LinkedHashSet<IMessageResolver>(messageResolversList));
+
+        this.cacheManager = cacheManager;
 
         this.dialectSetConfiguration = DialectSetConfiguration.build(dialectConfigurations);
         this.textRepository = textRepository;
 
+    }
+
+
+
+
+    public Set<ITemplateResolver> getTemplateResolvers() {
+        return this.templateResolvers;
+    }
+
+    public Set<IMessageResolver> getMessageResolvers() {
+        return this.messageResolvers;
+    }
+
+
+
+    public ICacheManager getCacheManager() {
+        return this.cacheManager;
     }
 
 
@@ -126,6 +173,65 @@ public class TemplateEngineConfiguration implements ITemplateEngineConfiguration
 
     public List<Class<? extends ITemplateHandler>> getPostProcessors() {
         return this.dialectSetConfiguration.getPostProcessors();
+    }
+
+
+
+    public Map<String, Object> getExecutionAttributes() {
+        return this.dialectSetConfiguration.getExecutionAttributes();
+    }
+
+
+
+
+
+
+
+
+
+
+
+    private static class TemplateResolverComparator implements Comparator<ITemplateResolver> {
+
+        private static TemplateResolverComparator INSTANCE = new TemplateResolverComparator();
+
+        TemplateResolverComparator() {
+            super();
+        }
+
+        public int compare(final ITemplateResolver o1, final ITemplateResolver o2) {
+            if (o1.getOrder() == null) {
+                return -1;
+            }
+            if (o2.getOrder() == null) {
+                return 1;
+            }
+            return o1.getOrder().compareTo(o2.getOrder());
+        }
+
+    }
+
+
+
+
+    private static class MessageResolverComparator implements Comparator<IMessageResolver> {
+
+        private static MessageResolverComparator INSTANCE = new MessageResolverComparator();
+
+        MessageResolverComparator() {
+            super();
+        }
+
+        public int compare(final IMessageResolver o1, final IMessageResolver o2) {
+            if (o1.getOrder() == null) {
+                return -1;
+            }
+            if (o2.getOrder() == null) {
+                return 1;
+            }
+            return o1.getOrder().compareTo(o2.getOrder());
+        }
+
     }
 
 }

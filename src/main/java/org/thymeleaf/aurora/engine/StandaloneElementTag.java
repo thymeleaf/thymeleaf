@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.model.IStandaloneElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -141,7 +141,7 @@ final class StandaloneElementTag
 
     // Meant to be called only from within the engine
     static StandaloneElementTag asEngineStandaloneElementTag(
-            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final TemplateMode templateMode, final IEngineConfiguration configuration,
             final IStandaloneElementTag standaloneElementTag, final boolean cloneAlways) {
 
         if (standaloneElementTag instanceof StandaloneElementTag) {

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.context;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -34,7 +34,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-final class VariablesMap implements ILocalVariableAwareVariablesMap {
+public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
     /*
      * This class is in charge of managing the map of variables in place at each moment in the template processing,
@@ -61,7 +61,7 @@ final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
-    VariablesMap(final Map<String, Object> variables) {
+    public VariablesMap(final Map<String, Object> variables) {
 
         super();
 

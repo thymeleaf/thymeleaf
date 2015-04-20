@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.engine;
 
 import java.util.Arrays;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IAutoCloseElementTag;
 import org.thymeleaf.aurora.model.IAutoOpenElementTag;
 import org.thymeleaf.aurora.model.ICDATASection;
@@ -60,7 +60,7 @@ final class EngineEventQueue {
     private IEngineTemplateHandlerEvent[] queue; // We use the interface, but not all implementations will be allowed
 
     private final TemplateMode templateMode;
-    private final ITemplateEngineConfiguration configuration;
+    private final IEngineConfiguration configuration;
 
     private Text textBuffer = null;
     private Comment commentBuffer = null;
@@ -79,7 +79,7 @@ final class EngineEventQueue {
 
 
     EngineEventQueue(final TemplateMode templateMode,
-                     final ITemplateEngineConfiguration configuration) {
+                     final IEngineConfiguration configuration) {
 
         super();
 

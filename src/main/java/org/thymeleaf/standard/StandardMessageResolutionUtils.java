@@ -25,8 +25,8 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.resourceresolver.IResourceResolver;
@@ -39,7 +39,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class StandardMessageResolutionUtils {
@@ -62,16 +62,16 @@ public final class StandardMessageResolutionUtils {
     
     
     public static String resolveMessageForTemplate(
-            final Arguments arguments, final String key, final Object[] messageParameters, 
+            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters,
             final Properties defaultMessages) {
         
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(arguments.getContext().getLocale(), "Locale in context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(processingContext.getLocale(), "Locale returned by Processing Context cannot be null");
         Validate.notNull(key, "Message key cannot be null");
         
-        final Locale locale = arguments.getContext().getLocale();
+        final Locale locale = processingContext.getLocale();
 
-        final String templateName = arguments.getTemplateResolution().getTemplateName();
+        final String templateName = processingContext.getTemplateName();
         final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + '_' + locale.toString();
 
         Properties properties = null;

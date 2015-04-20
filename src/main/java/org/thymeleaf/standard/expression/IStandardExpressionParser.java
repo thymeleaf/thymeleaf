@@ -19,8 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 
 /**
  * <p>
@@ -35,7 +34,7 @@ import org.thymeleaf.context.IProcessingContext;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 public interface IStandardExpressionParser {
@@ -45,12 +44,10 @@ public interface IStandardExpressionParser {
      *   Parse the specified expression.
      * </p>
      *
-     * @param configuration the Configuration object for the template execution environment.
-     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param processingContext the processing context.
      * @param input the expression to be parsed, as an input String.
      * @return the expression object resulting from parsing the expression.
      */
-    public IStandardExpression parseExpression(
-            final Configuration configuration, final IProcessingContext processingContext, final String input);
+    public IStandardExpression parseExpression(final IProcessingContext processingContext, final String input);
 
 }

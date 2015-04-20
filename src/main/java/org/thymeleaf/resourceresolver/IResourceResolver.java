@@ -19,9 +19,9 @@
  */
 package org.thymeleaf.resourceresolver;
 
-import java.io.InputStream;
-
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IContext;
+import org.thymeleaf.aurora.resource.IResource;
 
 /**
  * <p>
@@ -38,7 +38,7 @@ import org.thymeleaf.TemplateProcessingParameters;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public interface IResourceResolver {
@@ -60,11 +60,16 @@ public interface IResourceResolver {
      * <p>
      *   If the resource cannot be resolved, this method should return null.
      * </p>
-     * 
-     * @param templateProcessingParameters the {@link TemplateProcessingParameters} object being used for template processing
-     * @param resourceName the resource name to be resolved/read
+     *
+     * @param configuration the engine configuration.
+     * @param context the context being applied to the template execution.
+     * @param templateName the name of the template to be resolved.
+     * @param resourceName the name of the resource to be obtained (corresponding with the template name).
+     * @param characterEncoding the character encoding to be used for reading the resource.
      * @return an InputStream on the resource
      */
-    public InputStream getResourceAsStream(final TemplateProcessingParameters templateProcessingParameters, final String resourceName);
+    public IResource getResource(
+            final IEngineConfiguration configuration, final IContext context, final String templateName,
+            final String resourceName, final String characterEncoding);
     
 }

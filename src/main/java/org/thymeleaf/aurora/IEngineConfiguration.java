@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.aurora.dialect.IDialect;
@@ -35,6 +36,9 @@ import org.thymeleaf.aurora.processor.text.ITextProcessor;
 import org.thymeleaf.aurora.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.aurora.text.ITextRepository;
+import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.messageresolver.IMessageResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
  *
@@ -42,42 +46,34 @@ import org.thymeleaf.aurora.text.ITextRepository;
  * @since 3.0.0
  * 
  */
-public interface ITemplateEngineConfiguration {
+public interface IEngineConfiguration {
 
-    // Cannot be null
+    public Set<ITemplateResolver> getTemplateResolvers();
+    public Set<IMessageResolver> getMessageResolvers();
+
+    public ICacheManager getCacheManager();
+
     public Set<DialectConfiguration> getDialectConfigurations();
-
-    // Cannot be null
     public Set<IDialect> getDialects();
-
-    // Might be null if no standard dialect has been registered
     public String getStandardDialectPrefix();
 
-    // Cannot be null
     public ITextRepository getTextRepository();
 
-    // Cannot be null
     public ElementDefinitions getElementDefinitions();
-
-    // Cannot be null
     public AttributeDefinitions getAttributeDefinitions();
 
     public Set<ICDATASectionProcessor> getCDATASectionProcessors(final TemplateMode templateMode);
-
     public Set<ICommentProcessor> getCommentProcessors(final TemplateMode templateMode);
-
     public Set<IDocTypeProcessor> getDocTypeProcessors(final TemplateMode templateMode);
-
     public Set<IElementProcessor> getElementProcessors(final TemplateMode templateMode);
-
     public Set<ITextProcessor> getTextProcessors(final TemplateMode templateMode);
-
     public Set<IProcessingInstructionProcessor> getProcessingInstructionProcessors(final TemplateMode templateMode);
-
     public Set<IXMLDeclarationProcessor> getXMLDeclarationProcessors(final TemplateMode templateMode);
 
     public List<Class<? extends ITemplateHandler>> getPreProcessors();
-
     public List<Class<? extends ITemplateHandler>> getPostProcessors();
+
+    public Map<String,Object> getExecutionAttributes();
+
 
 }

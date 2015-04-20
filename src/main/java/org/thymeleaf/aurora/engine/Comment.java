@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IComment;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -266,7 +266,7 @@ final class Comment
 
     // Meant to be called only from within the engine
     static Comment asEngineComment(
-            final ITemplateEngineConfiguration configuration, final IComment comment, final boolean cloneAlways) {
+            final IEngineConfiguration configuration, final IComment comment, final boolean cloneAlways) {
 
         if (comment instanceof Comment) {
             if (cloneAlways) {

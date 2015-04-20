@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IXMLDeclaration;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
@@ -269,7 +269,7 @@ final class XMLDeclaration
 
     // Meant to be called only from within the engine
     static XMLDeclaration asEngineXMLDeclaration(
-            final ITemplateEngineConfiguration configuration, final IXMLDeclaration xmlDeclaration, final boolean cloneAlways) {
+            final IEngineConfiguration configuration, final IXMLDeclaration xmlDeclaration, final boolean cloneAlways) {
 
         if (xmlDeclaration instanceof XMLDeclaration) {
             if (cloneAlways) {

@@ -19,31 +19,21 @@
  */
 package org.thymeleaf.aurora.context;
 
-import java.util.Locale;
-
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
  * 
  */
-public interface ITemplateProcessingContext {
-
-    public ITemplateEngineConfiguration getConfiguration();
+public interface ITemplateProcessingContext extends IProcessingContext {
 
     public TemplateMode getTemplateMode();
     public String getTemplateName();
 
     public IModelFactory getModelFactory();
-
-    public boolean isWeb();
-
-    public Locale getLocale();
-
-    public IVariablesMap getVariablesMap();
 
 }

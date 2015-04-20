@@ -19,8 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 
 
 /**
@@ -37,7 +36,7 @@ import org.thymeleaf.context.IProcessingContext;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 public interface IStandardExpression {
@@ -56,25 +55,22 @@ public interface IStandardExpression {
      *   Execute the expression.
      * </p>
      *
-     * @param configuration the Configuration object for the template execution environment.
-     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param processingContext the processing context.
      * @return the result of executing the expression.
      */
-    public Object execute(
-            final Configuration configuration, final IProcessingContext processingContext);
+    public Object execute(final IProcessingContext processingContext);
 
     /**
      * <p>
      *   Execute the expression.
      * </p>
      *
-     * @param configuration the Configuration object for the template execution environment.
-     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param processingContext the processing context object.
      * @param expContext the expression execution context to be applied (preprocessing, etc.)
      * @return the result of executing the expression.
      */
     public Object execute(
-            final Configuration configuration, final IProcessingContext processingContext,
+            final IProcessingContext processingContext,
             final StandardExpressionExecutionContext expContext);
 
 }

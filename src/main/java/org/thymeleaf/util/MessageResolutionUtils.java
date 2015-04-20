@@ -31,9 +31,9 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -50,7 +50,7 @@ import org.thymeleaf.resourceresolver.IResourceResolver;
  * @author Daniel Fern&aacute;ndez
  * @author Guven Demir
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class MessageResolutionUtils {
@@ -66,26 +66,26 @@ public final class MessageResolutionUtils {
 
     
     public static String resolveMessageForTemplate(
-            final Arguments arguments, final String messageKey, final Object[] messageParameters) {
-        return resolveMessageForTemplate(arguments, messageKey, messageParameters, true);
+            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters) {
+        return resolveMessageForTemplate(processingContext, messageKey, messageParameters, true);
     }
     
     public static String resolveMessageForTemplate(
-            final Arguments arguments, final String messageKey, final Object[] messageParameters, 
+            final ITemplateProcessingContext processingContext, final String messageKey, final Object[] messageParameters,
             final boolean returnStringAlways) {
 
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(arguments.getContext(), "Context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(processingContext.getVariablesMap(), "Variables Map returned by Processing Context cannot be null");
         Validate.notNull(messageKey, "Message key cannot be null");
         
         final Set<IMessageResolver> messageResolvers = 
-            arguments.getConfiguration().getMessageResolvers();
+            processingContext.getConfiguration().getMessageResolvers();
         
         MessageResolution messageResolution = null;
         for (final IMessageResolver messageResolver : messageResolvers) {
             if (messageResolution == null) {
                 messageResolution =
-                    messageResolver.resolveMessage(arguments, messageKey, messageParameters);
+                    messageResolver.resolveMessage(processingContext, messageKey, messageParameters);
             }
         }
         
@@ -95,7 +95,7 @@ public final class MessageResolutionUtils {
                 return null;
             }
             
-            return getAbsentMessageRepresentation(messageKey, arguments.getContext().getLocale());
+            return getAbsentMessageRepresentation(messageKey, processingContext.getLocale());
             
         }
         
@@ -107,7 +107,7 @@ public final class MessageResolutionUtils {
     
     
     public static String resolveMessageForClass(
-            final Configuration configuration, 
+            final IEngineConfiguration configuration,
             final Class<?> targetClass, final Locale locale,
             final String messageKey, final Object[] messageParameters) {
         return resolveMessageForClass(configuration, targetClass, locale, messageKey, messageParameters, true);
@@ -116,7 +116,7 @@ public final class MessageResolutionUtils {
     
     
     public static String resolveMessageForClass(
-            final Configuration configuration, 
+            final IEngineConfiguration configuration,
             final Class<?> targetClass, final Locale locale,
             final String messageKey, final Object[] messageParameters, 
             final boolean returnStringAlways) {

@@ -17,7 +17,7 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.context;
 
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -31,8 +31,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.aurora.context.IVariablesMap;
-import org.thymeleaf.aurora.context.IWebVariablesMap;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -42,7 +40,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  *
  */
-final class WebVariablesMap
+public final class WebVariablesMap
         implements IWebVariablesMap, ILocalVariableAwareVariablesMap {
 
     /*
@@ -77,7 +75,7 @@ final class WebVariablesMap
 
 
 
-    WebVariablesMap(
+    public WebVariablesMap(
             final HttpServletRequest request, final HttpServletResponse response,
             final ServletContext servletContext, final Map<String, Object> variables) {
 

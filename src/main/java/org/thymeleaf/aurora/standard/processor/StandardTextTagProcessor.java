@@ -19,12 +19,15 @@
  */
 package org.thymeleaf.aurora.standard.processor;
 
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.engine.AttributeName;
 import org.thymeleaf.aurora.engine.IElementStructureHandler;
 import org.thymeleaf.aurora.engine.IterationStatusVar;
 import org.thymeleaf.aurora.model.IProcessableElementTag;
 import org.thymeleaf.aurora.processor.element.AbstractAttributeMatchingHTMLElementTagProcessor;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 
 /**
  *
@@ -47,8 +50,21 @@ public class StandardTextTagProcessor extends AbstractAttributeMatchingHTMLEleme
             final IProcessableElementTag tag,
             final IElementStructureHandler structureHandler) {
 
-        // We know this will not be null, because we linked the processor to a specific attribute
+
         final AttributeName attributeName = getMatchingAttributeName().getMatchingAttributeName();
+        final String attributeValue = tag.getAttributes().getValue(attributeName);
+
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        final IStandardExpressionParser expressionParser = StandardExpressions.getExpressionParser(configuration);
+//
+//        final IStandardExpression expression = expressionParser.parseExpression(configuration, arguments, attributeValue);
+//
+//        final Object result = expression.execute(configuration, arguments);
+//
+//        return (result == null? "" : result.toString());
+
+
+
 
         final Object localIterValue = processingContext.getVariablesMap().getVariable("iter");
         if (localIterValue != null) {

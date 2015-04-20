@@ -40,7 +40,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class PatternSpec {
@@ -49,8 +49,6 @@ public final class PatternSpec {
     private final LinkedHashSet<String> patternStrs = new LinkedHashSet<String>(3);
     private final LinkedHashSet<Pattern> patterns = new LinkedHashSet<Pattern>(3);
 
-    private volatile boolean initialized;
-    
     
     
                    
@@ -59,29 +57,6 @@ public final class PatternSpec {
     }
 
     
-    
-    private boolean isInitialized() {
-        return this.initialized;
-    }
-
-    
-    public synchronized void initialize() {
-        
-        if (!isInitialized()) {
-            this.initialized = true;
-        }
-        
-    }
-    
-    
-    private void checkNotInitialized() {
-        if (isInitialized()) {
-            throw new AlreadyInitializedException(
-                    "Cannot modify template resolver when it has already been initialized");
-        }
-    }
-    
-
 
     
     public Set<String> getPatterns() {
@@ -90,7 +65,6 @@ public final class PatternSpec {
 
 
     public void setPatterns(final Set<String> newPatterns) {
-        checkNotInitialized();
         if (newPatterns != null) {
             this.patternStrs.addAll(newPatterns);
             for (final String pattern : newPatterns) {
@@ -101,7 +75,6 @@ public final class PatternSpec {
     
     
     public void addPattern(final String pattern) {
-        checkNotInitialized();
         Validate.notEmpty(pattern, "Pattern cannot be null or empty");
         this.patternStrs.add(pattern);
         this.patterns.add(PatternUtils.strPatternToPattern(pattern));
@@ -109,7 +82,6 @@ public final class PatternSpec {
 
     
     public void clearPatterns() {
-        checkNotInitialized();
         this.patternStrs.clear();
         this.patterns.clear();
     }

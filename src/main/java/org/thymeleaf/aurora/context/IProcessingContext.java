@@ -20,28 +20,29 @@
 package org.thymeleaf.aurora.context;
 
 import java.util.Locale;
-import java.util.Map;
+
+import org.thymeleaf.aurora.IEngineConfiguration;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 1.0 (reimplemented in 3.0.0)
- *
+ * @since 2.0.9 (reimplemented in 3.0.0)
+ * 
  */
-public final class Context extends AbstractContext {
+public interface IProcessingContext {
 
+    /*
+     * This interface is similar to its child ITemplateProcessingContext, but it is non-template-execution bound.
+     * The reason this exists is that some parts of the engine like e.g. the Thymeleaf Expression engine might
+     * need to be executing outside the context of the execution of a template. For example, when resolving a
+     * template fragment expression as the result of a SpringMVC controller or a Tiles attribute.
+     */
 
-    public Context() {
-        super();
-    }
+    public IEngineConfiguration getConfiguration();
 
-    public Context(final Locale locale) {
-        super(locale);
-    }
+    public Locale getLocale();
 
-    public Context(final Locale locale, final Map<String, Object> variables) {
-        super(locale, variables);
-    }
+    public IVariablesMap getVariablesMap();
 
 }

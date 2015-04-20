@@ -21,7 +21,7 @@ package org.thymeleaf.aurora.expression;
 
 import java.util.Map;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 
 
 /**
@@ -32,6 +32,6 @@ import org.thymeleaf.aurora.context.ITemplateProcessingContext;
  */
 public interface IExpressionObjectFactory {
 
-    public Map<String,Object> buildExpressionObjects(final ITemplateProcessingContext processingContext);
+    public Map<String,Object> buildExpressionObjects(final IProcessingContext processingContext);
 
 }

@@ -23,9 +23,8 @@ import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtil;
 
@@ -34,7 +33,7 @@ import org.thymeleaf.util.EvaluationUtil;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class OrExpression extends BinaryOperationExpression {
@@ -99,14 +98,14 @@ public final class OrExpression extends BinaryOperationExpression {
     
 
     
-    static Object executeOr(final Configuration configuration, final IProcessingContext processingContext, 
+    static Object executeOr(final IProcessingContext processingContext,
             final OrExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating OR expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        final Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
+        final Object leftValue = expression.getLeft().execute(processingContext, expContext);
 
         // Short circuit
         final boolean leftBooleanValue = EvaluationUtil.evaluateAsBoolean(leftValue);
@@ -114,7 +113,7 @@ public final class OrExpression extends BinaryOperationExpression {
             return Boolean.TRUE;
         }
 
-        final Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
+        final Object rightValue = expression.getRight().execute(processingContext, expContext);
 
         final boolean rightBooleanValue = EvaluationUtil.evaluateAsBoolean(rightValue);
         return Boolean.valueOf(rightBooleanValue);

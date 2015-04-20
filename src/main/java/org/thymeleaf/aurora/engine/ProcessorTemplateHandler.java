@@ -29,7 +29,8 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.ILocalVariableAwareVariablesMap;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.aurora.context.IVariablesMap;
 import org.thymeleaf.aurora.model.IAutoCloseElementTag;
@@ -81,8 +82,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
     private final TextStructureHandler textStructureHandler;
     private final XMLDeclarationStructureHandler xmlDeclarationStructureHandler;
 
-    private ITemplateProcessingContext templateProcessingContext;
-    private ITemplateEngineConfiguration configuration;
+    private ITemplateProcessingContext processingContext;
+    private IEngineConfiguration configuration;
     private TemplateMode templateMode;
 
     private ILocalVariableAwareVariablesMap variablesMap;
@@ -165,24 +166,24 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
 
     @Override
-    public void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext) {
+    public void setProcessingContext(final ITemplateProcessingContext processingContext) {
 
-        super.setTemplateProcessingContext(templateProcessingContext);
+        super.setProcessingContext(processingContext);
 
-        this.templateProcessingContext = templateProcessingContext;
-        Validate.notNull(this.templateProcessingContext, "Template Processing Context cannot be null");
-        Validate.notNull(this.templateProcessingContext.getTemplateMode(), "Template Mode returned by Template Processing Context cannot be null");
+        this.processingContext = processingContext;
+        Validate.notNull(this.processingContext, "Processing Context cannot be null");
+        Validate.notNull(this.processingContext.getTemplateMode(), "Template Mode returned by Processing Context cannot be null");
 
-        this.configuration = templateProcessingContext.getConfiguration();
-        Validate.notNull(this.configuration, "Template Engine Configuration returned by Template Processing Context cannot be null");
-        Validate.notNull(this.configuration.getTextRepository(), "Text Repository returned by Template Engine Configuration cannot be null");
-        Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by Template Engine Configuration cannot be null");
-        Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by Template Engine Configuration cannot be null");
+        this.configuration = processingContext.getConfiguration();
+        Validate.notNull(this.configuration, "Engine Configuration returned by Processing Context cannot be null");
+        Validate.notNull(this.configuration.getTextRepository(), "Text Repository returned by the Engine Configuration cannot be null");
+        Validate.notNull(this.configuration.getElementDefinitions(), "Element Definitions returned by the Engine Configuration cannot be null");
+        Validate.notNull(this.configuration.getAttributeDefinitions(), "Attribute Definitions returned by the Engine Configuration cannot be null");
 
-        this.templateMode = this.templateProcessingContext.getTemplateMode(); // Just a way to avoid doing the call each time
+        this.templateMode = this.processingContext.getTemplateMode(); // Just a way to avoid doing the call each time
 
-        final IVariablesMap variablesMap = templateProcessingContext.getVariablesMap();
-        Validate.notNull(variablesMap, "Variables Map returned by Template Processing Context cannot be null");
+        final IVariablesMap variablesMap = processingContext.getVariablesMap();
+        Validate.notNull(variablesMap, "Variables Map returned by Processing Context cannot be null");
         if (variablesMap instanceof ILocalVariableAwareVariablesMap) {
             this.variablesMap = (ILocalVariableAwareVariablesMap) variablesMap;
         } else {
@@ -368,7 +369,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.textProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            this.textProcessors[i].process(this.templateProcessingContext, itext, this.textStructureHandler);
+            this.textProcessors[i].process(this.processingContext, itext, this.textStructureHandler);
 
             if (this.textStructureHandler.replaceWithQueue) {
 
@@ -462,7 +463,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.commentProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            this.commentProcessors[i].process(this.templateProcessingContext, icomment, this.commentStructureHandler);
+            this.commentProcessors[i].process(this.processingContext, icomment, this.commentStructureHandler);
 
             if (this.commentStructureHandler.replaceWithQueue) {
 
@@ -555,7 +556,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.cdataSectionProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            this.cdataSectionProcessors[i].process(this.templateProcessingContext, icdataSection, this.cdataSectionStructureHandler);
+            this.cdataSectionProcessors[i].process(this.processingContext, icdataSection, this.cdataSectionStructureHandler);
 
             if (this.cdataSectionStructureHandler.replaceWithQueue) {
 
@@ -701,7 +702,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.templateProcessingContext, standaloneElementTag, this.elementStructureHandler);
+                elementProcessor.process(this.processingContext, standaloneElementTag, this.elementStructureHandler);
 
                 if (this.elementStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
@@ -1043,7 +1044,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.templateProcessingContext, openElementTag, this.elementStructureHandler);
+                elementProcessor.process(this.processingContext, openElementTag, this.elementStructureHandler);
 
                 if (this.elementStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
@@ -1340,7 +1341,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
             if (processor instanceof IElementTagProcessor) {
 
                 final IElementTagProcessor elementProcessor = ((IElementTagProcessor)processor);
-                elementProcessor.process(this.templateProcessingContext, autoOpenElementTag, this.elementStructureHandler);
+                elementProcessor.process(this.processingContext, autoOpenElementTag, this.elementStructureHandler);
 
                 if (this.elementStructureHandler.setLocalVariable) {
                     if (this.variablesMap != null) {
@@ -1771,7 +1772,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.docTypeProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            this.docTypeProcessors[i].process(this.templateProcessingContext, idocType, this.docTypeStructureHandler);
+            this.docTypeProcessors[i].process(this.processingContext, idocType, this.docTypeStructureHandler);
 
             if (this.docTypeStructureHandler.replaceWithQueue) {
 
@@ -1867,7 +1868,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.xmlDeclarationProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            this.xmlDeclarationProcessors[i].process(this.templateProcessingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
+            this.xmlDeclarationProcessors[i].process(this.processingContext, ixmlDeclaration, this.xmlDeclarationStructureHandler);
 
             if (this.xmlDeclarationStructureHandler.replaceWithQueue) {
 
@@ -1962,7 +1963,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final int processorsLen = this.processingInstructionProcessors.length;
         for (int i = 0; !structureRemoved && i < processorsLen; i++) {
 
-            this.processingInstructionProcessors[i].process(this.templateProcessingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
+            this.processingInstructionProcessors[i].process(this.processingContext, iprocessingInstruction, this.processingInstructionStructureHandler);
 
             if (this.processingInstructionStructureHandler.replaceWithQueue) {
 
@@ -2015,9 +2016,10 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         if (this.variablesMap == null) {
             throw new TemplateProcessingException(
                     "Iteration is not supported because local variable support is DISABLED. This is due to " +
-                    "the use of implementation of the " + IVariablesMap.class.getName() + " interface that does" +
-                    "not provide local-variable support. It's recommended to use " +
-                    StandardTemplateProcessingContextFactory.class.getName() + " in order to avoid this.");
+                    "the use of an implementation of the " + IVariablesMap.class.getName() + " interface that does " +
+                    "not provide local-variable support. In order to have local-variable support, the variables map " +
+                    "implementation should also implement the " + ILocalVariableAwareVariablesMap.class.getName() +
+                    " interface");
         }
 
 
@@ -2244,7 +2246,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         private Object iteratedObject;
         final EngineEventQueue iterationQueue;
 
-        IterationSpec(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
+        IterationSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
             this.iterationQueue = new EngineEventQueue(templateMode, configuration);
             reset();
@@ -2268,7 +2270,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final EngineEventQueue suspendedQueue;
         final ElementProcessorIterator suspendedIterator;
 
-        SuspensionSpec(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
+        SuspensionSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
             this.suspendedQueue = new EngineEventQueue(templateMode, configuration);
             this.suspendedIterator = new ElementProcessorIterator();
@@ -2290,7 +2292,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         final EngineEventQueue suspendedQueue;
         final ElementProcessorIterator suspendedElementProcessorIterator;
 
-        IterationArtifacts(final TemplateMode templateMode, final ITemplateEngineConfiguration configuration) {
+        IterationArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
             this.iterationQueue = new EngineEventQueue(templateMode, configuration);
             this.suspendedQueue = new EngineEventQueue(templateMode, configuration);

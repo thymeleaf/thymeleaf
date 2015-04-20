@@ -19,9 +19,8 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
@@ -34,7 +33,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class StandardExpressionParser implements IStandardExpressionParser {
@@ -49,167 +48,82 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
     /**
      * 
-     * @param arguments arguments
-     * @param input input
-     * @return the result
-     * @deprecated since 2.1.0. Deprecated in favour of
-     *       {@link #parseExpression(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
-     *       Will be removed in 3.0.
-     */
-    @Deprecated
-    public Expression parseExpression(final Arguments arguments, final String input) {
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(input, "Input cannot be null");
-        return (Expression) parseExpression(arguments.getConfiguration(), arguments, input, true);
-    }
-    
-    /**
-     * 
-     * @param configuration the Configuration object for the template execution environment.
-     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param processingContext the processing context object.
      * @param input the expression to be parsed, as an input String.
      * @return the result
-     * @since 2.0.9
+     * @since 3.0.0
      */
-    public Expression parseExpression(final Configuration configuration,
-                                      final IProcessingContext processingContext, final String input) {
-        Validate.notNull(configuration, "Configuration cannot be null");
+    public Expression parseExpression(final IProcessingContext processingContext, final String input) {
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return (Expression) parseExpression(configuration, processingContext, input, true);
+        return (Expression) parseExpression(processingContext, input, true);
     }
-
-
 
     /**
      * 
-     * @param arguments arguments
-     * @param input input
-     * @param allowParametersWithoutValue allowParametersWithoutValue
-     * @return the result
-     * @deprecated since 2.1.0. Deprecated in favour of
-     *       {@link #parseAssignationSequence(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String, boolean)}.
-     *       Will be removed in 3.0.
-     */
-    @Deprecated
-    public AssignationSequence parseAssignationSequence(final Arguments arguments, final String input, final boolean allowParametersWithoutValue) {
-        return parseAssignationSequence(arguments.getConfiguration(), arguments, input, allowParametersWithoutValue);
-    }
-    
-    /**
-     * 
-     * @param configuration configuration
      * @param processingContext processingContext
      * @param input input
      * @param allowParametersWithoutValue allowParametersWithoutValue
      * @return the result
-     * @since 2.0.9
+     * @since 3.0.0
      */
-    public AssignationSequence parseAssignationSequence(final Configuration configuration,
-                                                        final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
-        return AssignationUtils.parseAssignationSequence(configuration, processingContext, input, allowParametersWithoutValue);
+    public AssignationSequence parseAssignationSequence(
+            final IProcessingContext processingContext, final String input, final boolean allowParametersWithoutValue) {
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return AssignationUtils.parseAssignationSequence(processingContext, input, allowParametersWithoutValue);
     }
-
-
 
     /**
      * 
-     * @param arguments arguments
-     * @param input input
-     * @return the result
-     * @deprecated since 2.1.0. Deprecated in favour of
-     *       {@link #parseExpressionSequence(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
-     *       Will be removed in 3.0.
-     */
-    @Deprecated
-    public ExpressionSequence parseExpressionSequence(final Arguments arguments, final String input) {
-        return parseExpressionSequence(arguments.getConfiguration(), arguments, input);
-    }
-    
-    /**
-     * 
-     * @param configuration configuration
      * @param processingContext processingContext
      * @param input input
      * @return the result
-     * @since 2.0.9
+     * @since 3.0.0
      */
-    public ExpressionSequence parseExpressionSequence(final Configuration configuration,
-                                                      final IProcessingContext processingContext, final String input) {
-        return ExpressionSequenceUtils.parseExpressionSequence(configuration, processingContext, input);
+    public ExpressionSequence parseExpressionSequence(final IProcessingContext processingContext, final String input) {
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return ExpressionSequenceUtils.parseExpressionSequence(processingContext, input);
     }
-
-
 
     /**
      * 
-     * @param arguments arguments
-     * @param input input
-     * @return the result
-     * @deprecated since 2.1.0. Deprecated in favour of
-     *       {@link #parseEach(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
-     *       Will be removed in 3.0.
-     */
-    @Deprecated
-    public Each parseEach(final Arguments arguments, final String input) {
-        return parseEach(arguments.getConfiguration(), arguments, input);
-    }
-    
-    /**
-     * 
-     * @param configuration configuration
      * @param processingContext processingContext
      * @param input input
      * @return the result
-     * @since 2.0.9
+     * @since 3.0.0
      */
-    public Each parseEach(final Configuration configuration,
-                          final IProcessingContext processingContext, final String input) {
-        return EachUtils.parseEach(configuration, processingContext, input);
+    public Each parseEach(final IProcessingContext processingContext, final String input) {
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return EachUtils.parseEach(processingContext, input);
     }
-
-
 
     /**
      * 
-     * @param arguments arguments
-     * @param input input
-     * @return the result
-     * @deprecated since 2.1.0. Deprecated in favour of
-     *       {@link #parseFragmentSelection(org.thymeleaf.Configuration, org.thymeleaf.context.IProcessingContext, String)}.
-     *       Will be removed in 3.0.
-     */
-    @Deprecated
-    public FragmentSelection parseFragmentSelection(final Arguments arguments, final String input) {
-        return parseFragmentSelection(arguments.getConfiguration(), arguments, input);
-    }
-    
-    /**
-     * 
-     * @param configuration configuration
      * @param processingContext processingContext
      * @param input input
      * @return the result
-     * @since 2.0.9
+     * @since 3.0.0
      */
-    public FragmentSelection parseFragmentSelection(
-            final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        return FragmentSelectionUtils.parseFragmentSelection(configuration, processingContext, input);
+    public FragmentSelection parseFragmentSelection(final IProcessingContext processingContext, final String input) {
+        return FragmentSelectionUtils.parseFragmentSelection(processingContext, input);
     }
 
 
 
     /**
      * 
-     * @param configuration configuration
      * @param processingContext processingContext
      * @param input input
      * @return the result
-     * @since 2.1.0
+     * @since 3.0.0
      */
-    public FragmentSignature parseFragmentSignature(
-            final Configuration configuration, final IProcessingContext processingContext, final String input) {
-        return FragmentSignatureUtils.parseFragmentSignature(configuration, input);
+    public FragmentSignature parseFragmentSignature(final IProcessingContext processingContext, final String input) {
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(input, "Input cannot be null");
+        return FragmentSignatureUtils.parseFragmentSignature(processingContext, input);
     }
 
 
@@ -218,30 +132,30 @@ public final class StandardExpressionParser implements IStandardExpressionParser
 
 
 
-    static IStandardExpression parseExpression(final Configuration configuration,
-               final IProcessingContext processingContext, final String input, final boolean preprocess) {
+    static IStandardExpression parseExpression(final IProcessingContext processingContext, final String input, final boolean preprocess) {
+
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+        if (configuration == null) {
+            throw new IllegalArgumentException("Engine Configuration returned by Processing Context returned null, which is forbidden");
+        }
 
         final String preprocessedInput =
-            (preprocess? StandardExpressionPreprocessor.preprocess(configuration, processingContext, input) : input);
+            (preprocess? StandardExpressionPreprocessor.preprocess(processingContext, input) : input);
 
-        if (configuration != null) {
-            final IStandardExpression cachedExpression =
-                    ExpressionCache.getExpressionFromCache(configuration, preprocessedInput);
-            if (cachedExpression != null) {
-                return cachedExpression;
-            }
+        final IStandardExpression cachedExpression =
+                ExpressionCache.getExpressionFromCache(configuration, preprocessedInput);
+        if (cachedExpression != null) {
+            return cachedExpression;
         }
-        
+
         final Expression expression = Expression.parse(preprocessedInput.trim());
         
         if (expression == null) {
             throw new TemplateProcessingException("Could not parse as expression: \"" + input + "\"");
         }
         
-        if (configuration != null) {
-            ExpressionCache.putExpressionIntoCache(configuration, preprocessedInput, expression);
-        }
-        
+        ExpressionCache.putExpressionIntoCache(configuration, preprocessedInput, expression);
+
         return expression;
         
     }

@@ -44,7 +44,7 @@ public interface ITemplateHandler {
 
     public void setNext(final ITemplateHandler next);
 
-    public void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext);
+    public void setProcessingContext(final ITemplateProcessingContext processingContext);
 
 
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col);

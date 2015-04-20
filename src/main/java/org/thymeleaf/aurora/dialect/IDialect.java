@@ -22,7 +22,8 @@ package org.thymeleaf.aurora.dialect;
 /**
  *
  * @author Daniel Fern&aacute;ndez
- * @since 3.0.0
+ *
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public interface IDialect {

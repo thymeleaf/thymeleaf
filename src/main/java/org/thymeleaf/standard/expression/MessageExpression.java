@@ -24,10 +24,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.StringUtils;
@@ -39,7 +37,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class MessageExpression extends SimpleExpression {
@@ -206,7 +204,7 @@ public final class MessageExpression extends SimpleExpression {
     
     
 
-    static Object executeMessage(final Configuration configuration,
+    static Object executeMessage(
             final IProcessingContext processingContext, final MessageExpression expression, 
             final StandardExpressionExecutionContext expContext) {
 

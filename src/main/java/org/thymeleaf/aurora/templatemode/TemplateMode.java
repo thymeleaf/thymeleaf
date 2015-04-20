@@ -19,6 +19,11 @@
  */
 package org.thymeleaf.aurora.templatemode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.thymeleaf.Template;
+import org.thymeleaf.TemplateEngine;
+
 /**
  *
  * @author Daniel Fern&aacute;ndez
@@ -28,7 +33,12 @@ package org.thymeleaf.aurora.templatemode;
  */
 public enum TemplateMode {
 
+
     HTML(true, false, false), XML(false, true, false), TEXT(false, false, true);
+
+
+
+    private static Logger logger = LoggerFactory.getLogger(TemplateMode.class);
 
 
     private final boolean html;
@@ -51,6 +61,41 @@ public enum TemplateMode {
 
     public boolean isText() {
         return this.text;
+    }
+
+
+    public static TemplateMode parse(final String mode) {
+        if (mode == null || mode.trim().length() == 0) {
+            throw new IllegalArgumentException("Template mode cannot be null or empty");
+        }
+        if ("HTML".equalsIgnoreCase(mode)) {
+            return HTML;
+        }
+        if ("XML".equalsIgnoreCase(mode)) {
+            return XML;
+        }
+        if ("TEXT".equalsIgnoreCase(mode)) {
+            return TEXT;
+        }
+        // Legacy template modes are automatically converted here
+        // This code should probably be removed at some point in the distant future after Thymeleaf v3
+        if ("HTML5".equalsIgnoreCase(mode) || "XHTML".equalsIgnoreCase(mode) ||
+                "VALIDXHTML".equalsIgnoreCase(mode) || "LEGACYHTML5".equalsIgnoreCase(mode)) {
+            logger.warn(String.format(
+                    "[THYMELEAF][{}] Template Mode '{}' is deprecated. Using Template Mode '{}' instead.",
+                    new Object[]{TemplateEngine.threadIndex(), mode, HTML}));
+            return HTML;
+        }
+        if ("VALIDXML".equalsIgnoreCase(mode)) {
+            logger.warn(String.format(
+                    "[THYMELEAF][{}] Template Mode '{}' is deprecated. Using Template Mode '{}' instead.",
+                    new Object[]{TemplateEngine.threadIndex(), mode, XML}));
+            return XML;
+        }
+        logger.warn(String.format(
+                "[THYMELEAF][{}] Unknown Template Mode '{}'. Using default Template Mode '{}'.",
+                new Object[]{TemplateEngine.threadIndex(), mode, HTML}));
+        return HTML;
     }
 
 }

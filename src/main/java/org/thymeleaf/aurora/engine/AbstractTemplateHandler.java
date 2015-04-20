@@ -45,7 +45,7 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
 
     private ITemplateHandler next = null;
-    private ITemplateProcessingContext templateProcessingContext = null;
+    private ITemplateProcessingContext processingContext = null;
 
 
     /**
@@ -91,17 +91,17 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
     /**
      * <p>
      *   Set the processing context to be used, including template name, context, and also the
-     *   template engine configuration.
+     *   engine configuration.
      * </p>
      * <p>
      *   This method is called always before starting the parsing and processing of a template.
      * </p>
      *
-     * @param templateProcessingContext the next handler in the chain.
+     * @param processingContext the processing context.
      */
-    public void setTemplateProcessingContext(final ITemplateProcessingContext templateProcessingContext) {
-        Validate.notNull(templateProcessingContext, "Template Processing Context cannot be null");
-        this.templateProcessingContext = templateProcessingContext;
+    public void setProcessingContext(final ITemplateProcessingContext processingContext) {
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        this.processingContext = processingContext;
     }
 
 
@@ -119,14 +119,14 @@ public abstract class AbstractTemplateHandler implements ITemplateHandler {
 
     /**
      * <p>
-     *   Return the template processing context corresponding to the template execution for
+     *   Return the processing context corresponding to the template execution for
      *   which the template handler instance has been created.
      * </p>
      *
-     * @return the template processing context
+     * @return the processing context
      */
-    protected final ITemplateProcessingContext getTemplateProcessingContext() {
-        return this.templateProcessingContext;
+    protected final ITemplateProcessingContext getProcessingContext() {
+        return this.processingContext;
     }
 
 

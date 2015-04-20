@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IText;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.util.Validate;
@@ -212,7 +212,7 @@ final class Text
 
     // Meant to be called only from within the engine
     static Text asEngineText(
-            final ITemplateEngineConfiguration configuration, final IText text, final boolean cloneAlways) {
+            final IEngineConfiguration configuration, final IText text, final boolean cloneAlways) {
 
         if (text instanceof Text) {
             if (cloneAlways) {

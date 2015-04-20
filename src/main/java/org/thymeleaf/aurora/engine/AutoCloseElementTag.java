@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IAutoCloseElementTag;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
@@ -104,7 +104,7 @@ final class AutoCloseElementTag
 
     // Meant to be called only from within the engine
     static AutoCloseElementTag asEngineAutoCloseElementTag(
-            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final TemplateMode templateMode, final IEngineConfiguration configuration,
             final IAutoCloseElementTag autoCloseElementTag, final boolean cloneAlways) {
 
         if (autoCloseElementTag instanceof AutoCloseElementTag) {

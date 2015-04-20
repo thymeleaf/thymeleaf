@@ -21,8 +21,7 @@ package org.thymeleaf.standard.expression;
 
 import java.io.Serializable;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
@@ -32,7 +31,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public abstract class Expression implements IStandardExpression, Serializable {
@@ -95,17 +94,15 @@ public abstract class Expression implements IStandardExpression, Serializable {
     
     
     
-    static Object execute(final Configuration configuration, final IProcessingContext processingContext, 
+    static Object execute(final IProcessingContext processingContext,
             final Expression expression, final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof SimpleExpression) {
-            return SimpleExpression.executeSimple(
-                    configuration, processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
+            return SimpleExpression.executeSimple(processingContext, (SimpleExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof ComplexExpression) {
-            return ComplexExpression.executeComplex(
-                    configuration, processingContext, (ComplexExpression)expression, expContext);
+            return ComplexExpression.executeComplex(processingContext, (ComplexExpression)expression, expContext);
         }
 
         throw new TemplateProcessingException("Unrecognized expression: " + expression.getClass().getName());
@@ -116,21 +113,20 @@ public abstract class Expression implements IStandardExpression, Serializable {
 
 
 
-    public Object execute(final Configuration configuration, final IProcessingContext processingContext) {
-        return execute(configuration, processingContext, StandardExpressionExecutionContext.NORMAL);
+    public Object execute(final IProcessingContext processingContext) {
+        return execute(processingContext, StandardExpressionExecutionContext.NORMAL);
     }
 
 
-    public Object execute(final Configuration configuration, final IProcessingContext processingContext,
-                        final StandardExpressionExecutionContext expContext) {
+    public Object execute(final IProcessingContext processingContext, final StandardExpressionExecutionContext expContext) {
 
-        Validate.notNull(configuration, "Configuration cannot be null");
-        Validate.notNull(processingContext, "Processing context cannot be null");
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        Validate.notNull(processingContext.getConfiguration(), "Engine Configuration returned by Processing Context cannot be null");
 
         final IStandardVariableExpressionEvaluator variableExpressionEvaluator =
-                StandardExpressions.getVariableExpressionEvaluator(configuration);
+                StandardExpressions.getVariableExpressionEvaluator(processingContext.getConfiguration());
 
-        final Object result = execute(configuration, processingContext, this, variableExpressionEvaluator, expContext);
+        final Object result = execute(processingContext, this, variableExpressionEvaluator, expContext);
         return LiteralValue.unwrap(result);
 
     }

@@ -31,7 +31,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 3.0.0 (replaces interface with the same name existing since 1.0)
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class WebContext extends AbstractContext implements IWebContext {

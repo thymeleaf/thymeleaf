@@ -26,10 +26,10 @@ import java.util.Set;
 
 import org.thymeleaf.aurora.context.IContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.context.TemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
-import org.thymeleaf.aurora.engine.StandardTemplateProcessingContextFactory;
 import org.thymeleaf.aurora.parser.HTMLTemplateParser;
 import org.thymeleaf.aurora.parser.ITemplateParser;
 import org.thymeleaf.aurora.parser.XMLTemplateParser;
@@ -46,14 +46,14 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 3.0.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class TemplateEngine implements ITemplateEngine {
 
     private static final Set<DialectConfiguration> STANDARD_DIALECT_CONFIGURATIONS;
 
-    private final ITemplateEngineConfiguration configuration;
+    private final IEngineConfiguration configuration;
     private final ITemplateParser htmlParser;
     private final ITemplateParser xmlParser;
 
@@ -81,7 +81,7 @@ public final class TemplateEngine implements ITemplateEngine {
         final ITextRepository engineTextRepository =
                 (textRepository != null? textRepository : TextRepositories.createNoCacheRepository());
 
-        this.configuration = new TemplateEngineConfiguration(dialectConfigurations, engineTextRepository);
+        this.configuration = new EngineConfiguration(dialectConfigurations, engineTextRepository);
         this.htmlParser = new HTMLTemplateParser(40,2048);
         this.xmlParser = new XMLTemplateParser(40, 2048);
 
@@ -104,10 +104,10 @@ public final class TemplateEngine implements ITemplateEngine {
 
 
         /*
-         * Create of the Template Processing Context instance that corresponds to this execution of the template engine
+         * Create the Processing Context instance that corresponds to this execution of the template engine
          */
-        final ITemplateProcessingContext templateProcessingContext =
-                StandardTemplateProcessingContextFactory.build(this.configuration, templateName, templateMode, context);
+        final ITemplateProcessingContext processingContext =
+                new TemplateProcessingContext(this.configuration, templateName, templateMode, context);
 
 
         /*
@@ -132,7 +132,7 @@ public final class TemplateEngine implements ITemplateEngine {
                             "An exception happened during the creation of a new instance of pre-processor " + preProcessorClass.getClass().getName(), e);
                 }
                 // Initialize the pre-processor
-                preProcessor.setTemplateProcessingContext(templateProcessingContext);
+                preProcessor.setProcessingContext(processingContext);
                 if (firstHandler == null) {
                     firstHandler = preProcessor;
                     lastHandler = preProcessor;
@@ -148,7 +148,7 @@ public final class TemplateEngine implements ITemplateEngine {
          * Initialize and add to the chain te Processor Handler itself, the central piece of the chain
          */
         final ProcessorTemplateHandler processorHandler = new ProcessorTemplateHandler();
-        processorHandler.setTemplateProcessingContext(templateProcessingContext);
+        processorHandler.setProcessingContext(processingContext);
         if (firstHandler == null) {
             firstHandler = processorHandler;
             lastHandler = processorHandler;
@@ -173,7 +173,7 @@ public final class TemplateEngine implements ITemplateEngine {
                             "An exception happened during the creation of a new instance of post-processor " + postProcessorClass.getClass().getName(), e);
                 }
                 // Initialize the pre-processor
-                postProcessor.setTemplateProcessingContext(templateProcessingContext);
+                postProcessor.setProcessingContext(processingContext);
                 if (firstHandler == null) {
                     firstHandler = postProcessor;
                     lastHandler = postProcessor;
@@ -189,7 +189,7 @@ public final class TemplateEngine implements ITemplateEngine {
          * Last step: the OUTPUT HANDLER
          */
         final OutputTemplateHandler outputHandler = new OutputTemplateHandler(writer);
-        outputHandler.setTemplateProcessingContext(templateProcessingContext);
+        outputHandler.setProcessingContext(processingContext);
         if (firstHandler == null) {
             firstHandler = outputHandler;
             lastHandler = outputHandler;

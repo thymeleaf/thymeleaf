@@ -21,7 +21,10 @@ package org.thymeleaf.resourceresolver;
 
 import java.io.InputStream;
 
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IContext;
+import org.thymeleaf.aurora.resource.IResource;
+import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.Validate;
 
@@ -53,11 +56,17 @@ public final class ClassLoaderResourceResolver
     public String getName() {
         return NAME; 
     }
-    
-    
-    public InputStream getResourceAsStream(final TemplateProcessingParameters templateProcessingParameters, final String resourceName) {
+
+
+    public IResource getResource(
+            final IEngineConfiguration configuration, final IContext context, final String templateName, final String resourceName) {
+
         Validate.notNull(resourceName, "Resource name cannot be null");
-        return ClassLoaderUtils.getClassLoader(ClassLoaderResourceResolver.class).getResourceAsStream(resourceName);
+
+        final InputStream inputStream =
+                ClassLoaderUtils.getClassLoader(ClassLoaderResourceResolver.class).getResourceAsStream(resourceName);
+
+        return new ReaderResource();
     }
     
 }

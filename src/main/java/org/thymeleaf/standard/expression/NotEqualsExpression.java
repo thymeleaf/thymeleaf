@@ -23,9 +23,8 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.util.EvaluationUtil;
 
 
@@ -33,7 +32,7 @@ import org.thymeleaf.util.EvaluationUtil;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class NotEqualsExpression extends EqualsNotEqualsExpression {
@@ -61,11 +60,11 @@ public final class NotEqualsExpression extends EqualsNotEqualsExpression {
 
     
     @SuppressWarnings({"unchecked","null"})
-    static Object executeNotEquals(final Configuration configuration, final IProcessingContext processingContext, 
+    static Object executeNotEquals(final IProcessingContext processingContext,
             final NotEqualsExpression expression, final StandardExpressionExecutionContext expContext) {
 
-        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
-        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
+        Object leftValue = expression.getLeft().execute(processingContext, expContext);
+        Object rightValue = expression.getRight().execute(processingContext, expContext);
 
         leftValue = LiteralValue.unwrap(leftValue);
         rightValue = LiteralValue.unwrap(rightValue);

@@ -21,9 +21,8 @@ package org.thymeleaf.standard.expression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -33,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class DefaultExpression extends ComplexExpression {
@@ -144,7 +143,7 @@ public final class DefaultExpression extends ComplexExpression {
 
     
     
-    static Object executeDefault(final Configuration configuration, final IProcessingContext processingContext, 
+    static Object executeDefault(final IProcessingContext processingContext,
             final DefaultExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
@@ -152,10 +151,10 @@ public final class DefaultExpression extends ComplexExpression {
         }
         
         final Object queriedValue =
-                expression.getQueriedExpression().execute(configuration, processingContext, expContext);
+                expression.getQueriedExpression().execute(processingContext, expContext);
         
         if (queriedValue == null) {
-            return expression.getDefaultExpression().execute(configuration, processingContext, expContext);
+            return expression.getDefaultExpression().execute(processingContext, expContext);
         }
         return queriedValue;
         

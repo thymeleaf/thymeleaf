@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IAutoOpenElementTag;
 import org.thymeleaf.aurora.model.IElementAttributes;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
@@ -106,7 +106,7 @@ final class AutoOpenElementTag
 
     // Meant to be called only from within the engine
     static AutoOpenElementTag asEngineAutoOpenElementTag(
-            final TemplateMode templateMode, final ITemplateEngineConfiguration configuration,
+            final TemplateMode templateMode, final IEngineConfiguration configuration,
             final IAutoOpenElementTag autoOpenElementTag, final boolean cloneAlways) {
 
         if (autoOpenElementTag instanceof AutoOpenElementTag) {

@@ -19,6 +19,7 @@
  */
 package org.thymeleaf.templateresolver;
 
+import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.util.Validate;
 
@@ -58,7 +59,7 @@ public final class TemplateResolution {
     private final String resourceName;
     private final IResourceResolver resourceResolver;
     private final String characterEncoding;
-    private final String templateMode;
+    private final TemplateMode templateMode;
     private final ITemplateResolutionValidity validity;
 
 
@@ -66,7 +67,7 @@ public final class TemplateResolution {
     public TemplateResolution(
             final String templateName, final String resourceName, 
             final IResourceResolver resourceResolver, final String characterEncoding, 
-            final String templateMode,
+            final TemplateMode templateMode,
             final ITemplateResolutionValidity validity) {
         super();
         Validate.notNull(templateName, "Template name cannot be null");
@@ -151,14 +152,12 @@ public final class TemplateResolution {
 
     /**
      * <p>
-     *   Returns the template mode to be applied. This template mode should be
-     *   resolvable to a configured Template Mode Handler 
-     *   ({@link org.thymeleaf.templatemode.ITemplateModeHandler}).
+     *   Returns the template mode to be applied.
      * </p>
      * 
      * @return the template mode.
      */
-    public String getTemplateMode() {
+    public TemplateMode getTemplateMode() {
         return this.templateMode;
     }
 

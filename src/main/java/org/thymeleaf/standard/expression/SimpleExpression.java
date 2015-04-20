@@ -19,8 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
@@ -29,7 +28,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public abstract class SimpleExpression extends Expression {
@@ -52,14 +51,14 @@ public abstract class SimpleExpression extends Expression {
     
     
     
-    static Object executeSimple(final Configuration configuration, final IProcessingContext processingContext, final SimpleExpression expression, 
+    static Object executeSimple(final IProcessingContext processingContext, final SimpleExpression expression,
             final IStandardVariableExpressionEvaluator expressionEvaluator, final StandardExpressionExecutionContext expContext) {
         
         if (expression instanceof VariableExpression) {
-            return VariableExpression.executeVariable(configuration, processingContext, (VariableExpression)expression, expressionEvaluator, expContext);
+            return VariableExpression.executeVariable(processingContext, (VariableExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof MessageExpression) {
-            return MessageExpression.executeMessage(configuration, processingContext, (MessageExpression)expression, expContext);
+            return MessageExpression.executeMessage(processingContext, (MessageExpression)expression, expContext);
         }
         if (expression instanceof TextLiteralExpression) {
             return TextLiteralExpression.executeTextLiteral(processingContext, (TextLiteralExpression)expression, expContext);
@@ -74,10 +73,10 @@ public abstract class SimpleExpression extends Expression {
             return NullTokenExpression.executeNullToken(processingContext, (NullTokenExpression) expression, expContext);
         }
         if (expression instanceof LinkExpression) {
-            return LinkExpression.executeLink(configuration, processingContext, (LinkExpression)expression, expContext);
+            return LinkExpression.executeLink(processingContext, (LinkExpression)expression, expContext);
         }
         if (expression instanceof SelectionVariableExpression) {
-            return SelectionVariableExpression.executeSelectionVariable(configuration, processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
+            return SelectionVariableExpression.executeSelectionVariable(processingContext, (SelectionVariableExpression)expression, expressionEvaluator, expContext);
         }
         if (expression instanceof GenericTokenExpression) {
             return GenericTokenExpression.executeGenericToken(processingContext, (GenericTokenExpression) expression, expContext);

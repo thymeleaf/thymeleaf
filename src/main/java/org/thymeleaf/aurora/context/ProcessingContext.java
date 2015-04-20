@@ -17,33 +17,39 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.context;
 
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.aurora.IEngineConfiguration;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
- * @since 3.0.0
+ *
+ * @since 2.0.9 (reimplemented in 3.0.0)
  * 
  */
-final class WebTemplateProcessingContext extends AbstractTemplateProcessingContext {
+public final class ProcessingContext extends AbstractProcessingContext {
 
-    WebTemplateProcessingContext(
-            final ITemplateEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
-            final Locale locale,
-            final HttpServletRequest request, final HttpServletResponse response, final ServletContext servletContext,
-            final Map<String,Object> variables) {
-        super(configuration, templateName, templateMode, true, locale, new WebVariablesMap(request, response, servletContext, variables));
+
+
+    public ProcessingContext(
+            final IEngineConfiguration configuration, final Locale locale, final Map<String, Object> variables) {
+        super(configuration, locale, variables);
+    }
+
+
+    public ProcessingContext(
+            final IEngineConfiguration configuration, final IContext context) {
+        super(configuration, context);
+    }
+
+
+    protected ProcessingContext(
+            final IEngineConfiguration configuration, final Locale locale, final IVariablesMap variablesMap) {
+        super(configuration, locale, variablesMap);
     }
 
 }

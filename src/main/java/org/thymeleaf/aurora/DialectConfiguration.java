@@ -40,8 +40,8 @@ import org.thymeleaf.util.Validate;
  * </p>
  *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 3.0.0 (existed since 1.0 with different API and purpose -- mainly internal)
+ *
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class DialectConfiguration {

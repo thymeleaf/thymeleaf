@@ -23,9 +23,8 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.EvaluationUtil;
 
@@ -34,7 +33,7 @@ import org.thymeleaf.util.EvaluationUtil;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class MultiplicationExpression extends MultiplicationDivisionRemainderExpression {
@@ -63,15 +62,15 @@ public final class MultiplicationExpression extends MultiplicationDivisionRemain
     
         
     
-    static Object executeMultiplication(final Configuration configuration, final IProcessingContext processingContext, 
+    static Object executeMultiplication(final IProcessingContext processingContext,
             final MultiplicationExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
             logger.trace("[THYMELEAF][{}] Evaluating multiplication expression: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
         
-        Object leftValue = expression.getLeft().execute(configuration, processingContext, expContext);
-        Object rightValue = expression.getRight().execute(configuration, processingContext, expContext);
+        Object leftValue = expression.getLeft().execute(processingContext, expContext);
+        Object rightValue = expression.getRight().execute(processingContext, expContext);
 
         if (leftValue == null) {
             leftValue = "null";

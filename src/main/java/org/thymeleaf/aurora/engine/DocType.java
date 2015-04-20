@@ -22,7 +22,7 @@ package org.thymeleaf.aurora.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.model.IDocType;
 import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.aurora.util.TextUtil;
@@ -343,7 +343,7 @@ final class DocType
 
     // Meant to be called only from within the engine
     static DocType asEngineDocType(
-            final ITemplateEngineConfiguration configuration, final IDocType docType, final boolean cloneAlways) {
+            final IEngineConfiguration configuration, final IDocType docType, final boolean cloneAlways) {
 
         if (docType instanceof DocType) {
             if (cloneAlways) {

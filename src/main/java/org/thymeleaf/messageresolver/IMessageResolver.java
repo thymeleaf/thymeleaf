@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.messageresolver;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ import org.thymeleaf.Arguments;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public interface IMessageResolver {
@@ -67,24 +67,12 @@ public interface IMessageResolver {
      *   If the message cannot be resolved, this method should return null.
      * </p>
      * 
-     * @param arguments the {@link Arguments} object being used for template processing
+     * @param processingContext the {@link ITemplateProcessingContext} object being used for template processing
      * @param key the message key
      * @param messageParameters the (optional) message parameters
      * @return a {@link MessageResolution} object containing the resolved message.
      */
     public MessageResolution resolveMessage(
-            final Arguments arguments, final String key, final Object[] messageParameters);
-    
-    
-    /**
-     * <p>
-     *   Initialize the Message Resolver. Once initialized, none of its configuration
-     *   parameters should be allowed to change.
-     * </p>
-     * <p>
-     *   This method is called by TemplateEngine. <b>Do not use directly in your code</b>.
-     * </p>
-     */
-    public void initialize();
-    
+            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters);
+
 }

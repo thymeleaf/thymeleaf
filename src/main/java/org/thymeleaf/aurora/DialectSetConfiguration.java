@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.dialect.IExecutionAttributesDialect;
 import org.thymeleaf.aurora.dialect.IExpressionObjectsDialect;
@@ -550,7 +550,7 @@ final class DialectSetConfiguration {
     }
 
 
-    public Map<String, Object> buildExpressionObjects(final ITemplateProcessingContext processingContext) {
+    public Map<String, Object> buildExpressionObjects(final IProcessingContext processingContext) {
         return this.expressionObjectFactory.buildExpressionObjects(processingContext);
     }
 
@@ -559,7 +559,7 @@ final class DialectSetConfiguration {
 
     /*
      * This class serves the purpose of aggregating all the registered expression object factories so that
-     * obtaining all the objects from an ITemplateProcessingContext implementation is easier.
+     * obtaining all the objects from an IProcessingContext implementation is easier.
      */
     static class AggregateExpressionObjectFactory implements IExpressionObjectFactory {
 
@@ -574,7 +574,7 @@ final class DialectSetConfiguration {
             this.expressionObjectFactories.add(factory);
         }
 
-        public Map<String, Object> buildExpressionObjects(final ITemplateProcessingContext processingContext) {
+        public Map<String, Object> buildExpressionObjects(final IProcessingContext processingContext) {
             if (this.expressionObjectFactories.size() == 0) {
                 return Collections.EMPTY_MAP;
             }

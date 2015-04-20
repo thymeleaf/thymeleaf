@@ -22,14 +22,14 @@ package org.thymeleaf.standard.expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 
 
 /**
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 public final class BooleanTokenExpression extends Token {

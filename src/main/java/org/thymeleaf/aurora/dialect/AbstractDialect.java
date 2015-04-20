@@ -26,7 +26,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 3.0.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public class AbstractDialect implements IDialect {

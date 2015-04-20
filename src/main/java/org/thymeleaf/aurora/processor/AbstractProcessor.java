@@ -27,7 +27,7 @@ import org.thymeleaf.util.Validate;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 3.0.0
+ * @since 2.0.0 (reimplemented in 3.0.0)
  *
  */
 public abstract class AbstractProcessor implements IProcessor {

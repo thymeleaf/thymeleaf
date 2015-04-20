@@ -34,11 +34,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IWebContext;
+import org.thymeleaf.aurora.context.IWebVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -49,7 +48,7 @@ import org.unbescape.uri.UriEscape;
  * 
  * @author Daniel Fern&aacute;ndez
  * @author Josh Long
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class LinkExpression extends SimpleExpression {
@@ -228,8 +227,8 @@ public final class LinkExpression extends SimpleExpression {
     
 
 
-    static Object executeLink(final Configuration configuration,
-            final IProcessingContext processingContext, final LinkExpression expression, 
+    static Object executeLink(
+            final IProcessingContext processingContext, final LinkExpression expression,
             final StandardExpressionExecutionContext expContext) {
 
         /*
@@ -251,7 +250,7 @@ public final class LinkExpression extends SimpleExpression {
         }
 
         final IStandardExpression baseExpression = expression.getBase();
-        Object base = baseExpression.execute(configuration, processingContext, expContext);
+        Object base = baseExpression.execute(processingContext, expContext);
 
         base = LiteralValue.unwrap(base);
         if (base != null && !(base instanceof String)) {
@@ -263,17 +262,16 @@ public final class LinkExpression extends SimpleExpression {
 
         String linkBase = (String) base;
         
-        if (!isWebContext(processingContext.getContext()) && !isLinkBaseAbsolute(linkBase) && !isLinkBaseServerRelative(linkBase)) {
+        if (!isWebContext(processingContext) && !isLinkBaseAbsolute(linkBase) && !isLinkBaseServerRelative(linkBase)) {
             throw new TemplateProcessingException(
-                    "Link base \"" + linkBase + "\" cannot be context relative (/) or page relative unless you implement the " + 
-                    IWebContext.class.getName() + " interface (context is of class: " +
-                    processingContext.getContext().getClass().getName() + ")");
+                    "Link base \"" + linkBase + "\" cannot be context relative (/) or page relative unless the context " +
+                    "used for executing the engine implements the " + IWebContext.class.getName() + " interface");
         }
         
         @SuppressWarnings("unchecked")
         final Map<String,List<Object>> parameters =
             (expression.hasParameters()?
-                    resolveParameters(configuration, processingContext, expression, expContext) :
+                    resolveParameters(processingContext, expression, expContext) :
                     (Map<String,List<Object>>) Collections.EMPTY_MAP);
         
         /*
@@ -333,7 +331,7 @@ public final class LinkExpression extends SimpleExpression {
         /*
          * Context is not web: URLs can only be absolute or server-relative
          */
-        if (!isWebContext(processingContext.getContext())) {
+        if (!isWebContext(processingContext)) {
             
             if (isLinkBaseAbsolute(linkBase)) {
                 return linkBase + parametersBuilder + urlFragment;
@@ -348,10 +346,10 @@ public final class LinkExpression extends SimpleExpression {
          * Context is web 
          */
         
-        final IWebContext webContext = (IWebContext) processingContext.getContext();
+        final IWebVariablesMap webVariablesMap = (IWebVariablesMap) processingContext.getVariablesMap();
         
-        final HttpServletRequest request = webContext.getHttpServletRequest();
-        final HttpServletResponse response = webContext.getHttpServletResponse();
+        final HttpServletRequest request = webVariablesMap.getRequest();
+        final HttpServletResponse response = webVariablesMap.getResponse();
 
         String url = null;
         
@@ -382,8 +380,8 @@ public final class LinkExpression extends SimpleExpression {
     
 
     
-    private static boolean isWebContext(final IContext context) {
-        return context instanceof IWebContext;
+    private static boolean isWebContext(final IProcessingContext context) {
+        return context.getVariablesMap() instanceof IWebVariablesMap;
     }
     
     
@@ -405,8 +403,8 @@ public final class LinkExpression extends SimpleExpression {
     
     
     private static Map<String,List<Object>> resolveParameters(
-            final Configuration configuration, final IProcessingContext processingContext, 
-            final LinkExpression expression, final StandardExpressionExecutionContext expContext) {
+            final IProcessingContext processingContext, final LinkExpression expression,
+            final StandardExpressionExecutionContext expContext) {
 
         final AssignationSequence assignationValues = expression.getParameters();
 
@@ -417,7 +415,7 @@ public final class LinkExpression extends SimpleExpression {
             final IStandardExpression parameterValueExpr = assignationValue.getRight();
 
             // We know parameterNameExpr cannot be null (the Assignation class would not allow it)
-            final Object parameterNameValue = parameterNameExpr.execute(configuration, processingContext, expContext);
+            final Object parameterNameValue = parameterNameExpr.execute(processingContext, expContext);
             final String parameterName = (parameterNameValue == null? null : parameterNameValue.toString());
 
             if (StringUtils.isEmptyOrWhitespace(parameterName)) {
@@ -439,7 +437,7 @@ public final class LinkExpression extends SimpleExpression {
                 currentParameterValues.add(URL_PARAM_NO_VALUE);
             } else {
                 final Object value =
-                        parameterValueExpr.execute(configuration, processingContext, expContext);
+                        parameterValueExpr.execute(processingContext, expContext);
                 if (value == null) {
                     // Not the same as not specifying a value!
                     currentParameterValues.add("");

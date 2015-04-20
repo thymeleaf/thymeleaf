@@ -17,11 +17,9 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.context;
 
 import java.util.Map;
-
-import org.thymeleaf.aurora.context.IVariablesMap;
 
 /**
  *
@@ -33,24 +31,24 @@ import org.thymeleaf.aurora.context.IVariablesMap;
 public interface ILocalVariableAwareVariablesMap extends IVariablesMap {
 
     /*
-     * This package-internal interface is used for allowing the processor template handler to modify the
+     * This interface is used for allowing the processor template handler to modify the
      * local variables in place at each moment. It is meant for internal use only so that processors (potentially
      * custom processors) cannot modify the available variables other than using the local variables mechanism,
      * or either acting directly on the HttpServletRequest object, which should have different effects
      * (request attributes managed directly on the request should not be considered markup-block-local).
      */
 
-    void put(final String key, final Object value);
-    void putAll(final Map<String, Object> map);
-    void remove(final String key);
+    public void put(final String key, final Object value);
+    public void putAll(final Map<String, Object> map);
+    public void remove(final String key);
 
-    int level();
-    void increaseLevel();
-    void decreaseLevel();
+    public int level();
+    public void increaseLevel();
+    public void decreaseLevel();
 
-    void setSelectionTarget(final Object selectionTarget);
+    public void setSelectionTarget(final Object selectionTarget);
 
-    void setTextInliningActive(final boolean active);
+    public void setTextInliningActive(final boolean active);
 
 
 }

@@ -17,27 +17,43 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.engine;
+package org.thymeleaf.aurora.context;
 
 import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
+ *
  * @since 3.0.0
  * 
  */
-final class TemplateProcessingContext extends AbstractTemplateProcessingContext {
+public final class TemplateProcessingContext extends AbstractTemplateProcessingContext {
 
-    TemplateProcessingContext(
-            final ITemplateEngineConfiguration configuration,
+
+    public TemplateProcessingContext(
+            final IEngineConfiguration configuration,
             final String templateName, final TemplateMode templateMode,
-            final Locale locale, final Map<String,Object> variables) {
-        super(configuration, templateName, templateMode, false, locale, new VariablesMap(variables));
+            final Locale locale, final IVariablesMap variablesMap) {
+        super(configuration, templateName, templateMode, locale, variablesMap);
+    }
+
+    public TemplateProcessingContext(
+            final IEngineConfiguration configuration,
+            final String templateName, final TemplateMode templateMode,
+            final Locale locale, final Map<String, Object> variables) {
+        super(configuration, templateName, templateMode, locale, variables);
+    }
+
+    public TemplateProcessingContext(
+            final IEngineConfiguration configuration,
+            final String templateName, final TemplateMode templateMode,
+            final IContext context) {
+        super(configuration, templateName, templateMode, context);
     }
 
 }

@@ -19,7 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
-import org.thymeleaf.TemplateProcessingParameters;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IContext;
 
 /**
  * <p>
@@ -35,7 +36,7 @@ import org.thymeleaf.TemplateProcessingParameters;
  *       returned Resource Resolver in order to read the template.</li>
  *   <li>The Resource Resolver (implementation of {@link org.thymeleaf.resourceresolver.IResourceResolver})
  *       to be used for trying to read this template.</li>
- *   <li>The Template Mode to be applied to this template: XML, VALIDXML, XHTML, VALIDXHTML, HTML5 or LEGACYHTML5.</li>
+ *   <li>The Template Mode to be applied to this template: {@link org.thymeleaf.aurora.templatemode.TemplateMode}</li>
  *   <li>The character encoding to be used when reading this template.</li>
  *   <li>Whether the template can be cached or not.</li>
  *   <li>If the template can be cached, (optionally) the time it will live in cache.</li>
@@ -49,7 +50,7 @@ import org.thymeleaf.TemplateProcessingParameters;
  *   Note that it is allowed for a Template Resolver to return a result even if a template
  *   will not be resolvable by its Resource Resolver in the end. Many times it is not 
  *   possible to know whether a template can be effectively resolved by a template 
- *   resolver until the template <i>resource</i> is actually read into an InputStream so, 
+ *   resolver until a read on the template <i>resource</i> is actually attempted so,
  *   in order to avoid two read operations for each template, many times Template Resolvers 
  *   will return a result but Resource Resolvers will return none once executed.
  * </p>
@@ -62,7 +63,7 @@ import org.thymeleaf.TemplateProcessingParameters;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public interface ITemplateResolver {
@@ -94,7 +95,7 @@ public interface ITemplateResolver {
      *   Tries to resolve a template.
      * </p>
      * <p>
-     *   The <tt>templateProcessingParameters</tt> parameter contains all the info needed for trying to
+     *   The method arguments contain all the info needed for trying to
      *   resolve the template (esp. the <i>template name</i>). The Template Resolver
      *   will apply its configuration (prefixes/suffixes, template mode patterns,
      *   cache configurations, etc) and return a {@link TemplateResolution} object.
@@ -111,26 +112,12 @@ public interface ITemplateResolver {
      *   a Template Resolver or not.
      * </p>
      * 
-     * @param templateProcessingParameters the information required to resolve a template
+     * @param configuration the engine configuration.
+     * @param context the context being applied to the template execution.
+     * @param templateName the name of the template to be resolved.
      * @return a TemplateResolution object containing (maybe valid) resource resolution
      *         info for the template, or null.
      */
-    /*
-     * Templates are resolved by String name (templateProcessingParameters.getTemplateName())
-     * Will return null if template cannot be handled by this template resolver.
-     */
-    public TemplateResolution resolveTemplate(final TemplateProcessingParameters templateProcessingParameters);
-    
-    
-    /**
-     * <p>
-     *   Initialize the Template Resolver. Once initialized, none of its configuration
-     *   parameters should be allowed to change.
-     * </p>
-     * <p>
-     *   This method is called by TemplateEngine. <b>Do not use directly in your code</b>.
-     * </p>
-     */
-    public void initialize();
-    
+    public TemplateResolution resolveTemplate(final IEngineConfiguration configuration, final IContext context, final String templateName);
+
 }

@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 
 
@@ -31,7 +31,7 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
  *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.1.0
+ * @since 2.1.0 (reimplemented in 3.0.0)
  *
  */
 public final class StandardExpressions {
@@ -72,7 +72,7 @@ public final class StandardExpressions {
      * @param configuration the configuration object for the current template execution environment.
      * @return the parser object.
      */
-    public static IStandardExpressionParser getExpressionParser(final Configuration configuration) {
+    public static IStandardExpressionParser getExpressionParser(final IEngineConfiguration configuration) {
         final Object parser =
                 configuration.getExecutionAttributes().get(STANDARD_EXPRESSION_PARSER_ATTRIBUTE_NAME);
         if (parser == null || (!(parser instanceof IStandardExpressionParser))) {
@@ -102,7 +102,7 @@ public final class StandardExpressions {
      * @param configuration the configuration object for the current template execution environment.
      * @return the variable expression evaluator object.
      */
-    public static IStandardVariableExpressionEvaluator getVariableExpressionEvaluator(final Configuration configuration) {
+    public static IStandardVariableExpressionEvaluator getVariableExpressionEvaluator(final IEngineConfiguration configuration) {
         final Object expressionEvaluator =
                 configuration.getExecutionAttributes().get(STANDARD_VARIABLE_EXPRESSION_EVALUATOR_ATTRIBUTE_NAME);
         if (expressionEvaluator == null || (!(expressionEvaluator instanceof IStandardVariableExpressionEvaluator))) {
@@ -130,7 +130,7 @@ public final class StandardExpressions {
      * @param configuration the configuration object for the current template execution environment.
      * @return the conversion service object.
      */
-    public static IStandardConversionService getConversionService(final Configuration configuration) {
+    public static IStandardConversionService getConversionService(final IEngineConfiguration configuration) {
         final Object conversionService =
                 configuration.getExecutionAttributes().get(STANDARD_CONVERSION_SERVICE_ATTRIBUTE_NAME);
         if (conversionService == null || (!(conversionService instanceof IStandardConversionService))) {

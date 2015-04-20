@@ -23,9 +23,8 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.util.EvaluationUtil;
 
 
@@ -33,7 +32,7 @@ import org.thymeleaf.util.EvaluationUtil;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.1
+ * @since 1.1 (reimplemented in 3.0.0)
  *
  */
 public final class AdditionExpression extends AdditionSubtractionExpression {
@@ -60,7 +59,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
     
     
     
-    static Object executeAddition(final Configuration configuration, final IProcessingContext processingContext, 
+    static Object executeAddition(final IProcessingContext processingContext,
             final AdditionExpression expression, final StandardExpressionExecutionContext expContext) {
 
         if (logger.isTraceEnabled()) {
@@ -68,7 +67,7 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         }
 
         final IStandardVariableExpressionEvaluator expressionEvaluator =
-                StandardExpressions.getVariableExpressionEvaluator(configuration);
+                StandardExpressions.getVariableExpressionEvaluator(processingContext.getConfiguration());
 
         final IStandardExpression leftExpr = expression.getLeft();
         final IStandardExpression rightExpr = expression.getRight();
@@ -79,20 +78,16 @@ public final class AdditionExpression extends AdditionSubtractionExpression {
         Object leftValue;
         if (leftExpr instanceof Expression) {
             // This avoids literal-unwrap
-            leftValue =
-                    Expression.execute(
-                            configuration, processingContext, (Expression)leftExpr, expressionEvaluator, expContext);
+            leftValue = Expression.execute(processingContext, (Expression)leftExpr, expressionEvaluator, expContext);
         } else{
-            leftValue = leftExpr.execute(configuration, processingContext, expContext);
+            leftValue = leftExpr.execute(processingContext, expContext);
         }
         Object rightValue;
         if (rightExpr instanceof Expression) {
             // This avoids literal-unwrap
-            rightValue =
-                    Expression.execute(
-                            configuration, processingContext, (Expression)rightExpr, expressionEvaluator, expContext);
+            rightValue = Expression.execute(processingContext, (Expression)rightExpr, expressionEvaluator, expContext);
         } else{
-            rightValue = rightExpr.execute(configuration, processingContext, expContext);
+            rightValue = rightExpr.execute(processingContext, expContext);
         }
 
         if (leftValue == null) {

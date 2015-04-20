@@ -33,7 +33,7 @@ import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.aurora.ITemplateEngineConfiguration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.TemplateHandlerAdapterMarkupHandler;
 import org.thymeleaf.aurora.resource.CharArrayResource;
@@ -77,7 +77,7 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
     public final void parse(
-            final ITemplateEngineConfiguration configuration,
+            final IEngineConfiguration configuration,
             final TemplateMode templateMode,
             final IResource templateResource,
             final ITemplateHandler templateHandler) {
@@ -87,13 +87,13 @@ public abstract class AbstractMarkupTemplateParser implements ITemplateParser {
 
 
     public final void parse(
-            final ITemplateEngineConfiguration configuration,
+            final IEngineConfiguration configuration,
             final TemplateMode templateMode,
             final IResource templateResource,
             final String[] selectors,
             final ITemplateHandler templateHandler) {
 
-        Validate.notNull(configuration, "Template Engine Configuration cannot be null");
+        Validate.notNull(configuration, "Engine Configuration cannot be null");
         Validate.notNull(templateMode, "Template Mode cannot be null");
         Validate.notNull(templateResource, "Template Resource cannot be null");
         Validate.notNull(templateHandler, "Template Handler cannot be null");
