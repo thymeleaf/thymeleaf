@@ -28,7 +28,7 @@ import java.util.Set;
  * @since 3.0.0
  *
  */
-public interface IVariablesMap {
+public interface IVariablesMap extends IContext {
 
     /*
      * There is no need to make VariablesMap instances implement java.util.Map or extend from HashMap. Such thing
@@ -42,10 +42,6 @@ public interface IVariablesMap {
      * PropertyAccessors have a 'canRead' method that is the point where these restrictions should be applied).
      */
 
-
-    public boolean containsVariable(final String key);
-    public Object getVariable(final String key);
-    public Set<String> getVariableNames();
 
     // Selection target works as a local variable, but is used so often that it has its own methods in order to allow
     // specific performance improvements to be designed for them

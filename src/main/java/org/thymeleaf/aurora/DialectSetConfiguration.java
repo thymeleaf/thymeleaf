@@ -550,8 +550,8 @@ final class DialectSetConfiguration {
     }
 
 
-    public Map<String, Object> buildExpressionObjects(final IProcessingContext processingContext) {
-        return this.expressionObjectFactory.buildExpressionObjects(processingContext);
+    public IExpressionObjectFactory getExpressionObjectFactory() {
+        return this.expressionObjectFactory;
     }
 
 
@@ -563,15 +563,25 @@ final class DialectSetConfiguration {
      */
     static class AggregateExpressionObjectFactory implements IExpressionObjectFactory {
 
+        private final Map<String,String> expressionObjectDefinitions;
         private final List<IExpressionObjectFactory> expressionObjectFactories;
 
         AggregateExpressionObjectFactory() {
             super();
             this.expressionObjectFactories = new ArrayList<IExpressionObjectFactory>(3);
+            this.expressionObjectDefinitions = new LinkedHashMap<String, String>(8);
         }
 
         void add(final IExpressionObjectFactory factory) {
             this.expressionObjectFactories.add(factory);
+            final Map<String,String> objectDefinitions = factory.getObjectDefinitions();
+            if (objectDefinitions != null) {
+                this.expressionObjectDefinitions.putAll(objectDefinitions);
+            }
+        }
+
+        public Map<String, String> getObjectDefinitions() {
+            return this.expressionObjectDefinitions;
         }
 
         public Map<String, Object> buildExpressionObjects(final IProcessingContext processingContext) {

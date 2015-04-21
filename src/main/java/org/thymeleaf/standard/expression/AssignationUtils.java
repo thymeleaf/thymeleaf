@@ -22,8 +22,8 @@ package org.thymeleaf.standard.expression;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -42,15 +42,16 @@ public final class AssignationUtils {
 
 
     public static AssignationSequence parseAssignationSequence(
-            final Configuration configuration, final IProcessingContext processingContext, final String input,
+            final IProcessingContext processingContext, final String input,
             final boolean allowParametersWithoutValue) {
 
-        Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
 
         final String preprocessedInput =
-                    StandardExpressionPreprocessor.preprocess(configuration, processingContext, input);
+                    StandardExpressionPreprocessor.preprocess(processingContext, input);
+
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
 
         if (configuration != null) {
             final AssignationSequence cachedAssignationSequence =

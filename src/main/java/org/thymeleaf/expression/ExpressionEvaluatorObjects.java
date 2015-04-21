@@ -24,8 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.thymeleaf.Arguments;
-import org.thymeleaf.Configuration;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
@@ -93,8 +93,8 @@ public final class ExpressionEvaluatorObjects {
 
     private static final ConcurrentHashMap<Locale, Map<String,Object>> BASE_OBJECTS_BY_LOCALE_CACHE =
             new ConcurrentHashMap<Locale, Map<String, Object>>(5, 1.0f, 3);
-    private static final ConcurrentHashMap<Configuration, Map<String,Object>> BASE_OBJECTS_BY_CONFIGURATION_CACHE =
-            new ConcurrentHashMap<Configuration, Map<String, Object>>(5, 1.0f, 3);
+    private static final ConcurrentHashMap<IEngineConfiguration, Map<String,Object>> BASE_OBJECTS_BY_CONFIGURATION_CACHE =
+            new ConcurrentHashMap<IEngineConfiguration, Map<String, Object>>(5, 1.0f, 3);
 
     
     
@@ -151,17 +151,17 @@ public final class ExpressionEvaluatorObjects {
             variables.put(SELECTION_VARIABLE_NAME, evaluationRoot);
         }
 
-        if (processingContext instanceof Arguments) {
+        if (processingContext instanceof ITemplateProcessingContext) {
             
-            final Arguments arguments = (Arguments) processingContext;
+            final ITemplateProcessingContext templateProcessingContext = (ITemplateProcessingContext) processingContext;
 
-            final Messages messages = new Messages(arguments);
+            final Messages messages = new Messages(templateProcessingContext);
             variables.put(MESSAGES_EVALUATION_VARIABLE_NAME, messages);
 
-            final Ids ids = new Ids(arguments);
+            final Ids ids = new Ids(templateProcessingContext);
             variables.put(IDS_EVALUATION_VARIABLE_NAME, ids);
 
-            final Conversions conversions = new Conversions(arguments.getConfiguration(), arguments);
+            final Conversions conversions = new Conversions(templateProcessingContext.getConfiguration(), templateProcessingContext);
             variables.put(CONVERSIONS_EVALUATION_VARIABLE_NAME, conversions);
 
         }

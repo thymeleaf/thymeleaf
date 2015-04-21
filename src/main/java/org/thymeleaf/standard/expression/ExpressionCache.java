@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 
@@ -47,7 +47,7 @@ final class ExpressionCache {
     
 
     
-    private static Object getFromCache(final Configuration configuration, final String input, final String prefix) {
+    private static Object getFromCache(final IEngineConfiguration configuration, final String input, final String prefix) {
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
@@ -59,7 +59,7 @@ final class ExpressionCache {
     }
 
     
-    private static <V> void putIntoCache(final Configuration configuration, final String input, final V value, final String prefix) {
+    private static <V> void putIntoCache(final IEngineConfiguration configuration, final String input, final V value, final String prefix) {
         final ICacheManager cacheManager = configuration.getCacheManager();
         if (cacheManager != null) {
             final ICache<String,Object> cache = cacheManager.getExpressionCache();
@@ -73,61 +73,61 @@ final class ExpressionCache {
     
     
     
-    static IStandardExpression getExpressionFromCache(final Configuration configuration, final String input) {
+    static IStandardExpression getExpressionFromCache(final IEngineConfiguration configuration, final String input) {
         return (IStandardExpression) getFromCache(configuration, input, EXPRESSION_CACHE_PREFIX);
     }
 
-    static void putExpressionIntoCache(final Configuration configuration, final String input, final IStandardExpression value) {
+    static void putExpressionIntoCache(final IEngineConfiguration configuration, final String input, final IStandardExpression value) {
         putIntoCache(configuration, input, value, EXPRESSION_CACHE_PREFIX);
     }
 
 
 
-    static AssignationSequence getAssignationSequenceFromCache(final Configuration configuration, final String input) {
+    static AssignationSequence getAssignationSequenceFromCache(final IEngineConfiguration configuration, final String input) {
         return (AssignationSequence) getFromCache(configuration, input, ASSIGNATION_SEQUENCE_CACHE_PREFIX);
     }
 
-    static void putAssignationSequenceIntoCache(final Configuration configuration, final String input, final AssignationSequence value) {
+    static void putAssignationSequenceIntoCache(final IEngineConfiguration configuration, final String input, final AssignationSequence value) {
         putIntoCache(configuration, input, value, ASSIGNATION_SEQUENCE_CACHE_PREFIX);
     }
 
 
 
-    static ExpressionSequence getExpressionSequenceFromCache(final Configuration configuration, final String input) {
+    static ExpressionSequence getExpressionSequenceFromCache(final IEngineConfiguration configuration, final String input) {
         return (ExpressionSequence) getFromCache(configuration, input, EXPRESSION_SEQUENCE_CACHE_PREFIX);
     }
 
-    static void putExpressionSequenceIntoCache(final Configuration configuration, final String input, final ExpressionSequence value) {
+    static void putExpressionSequenceIntoCache(final IEngineConfiguration configuration, final String input, final ExpressionSequence value) {
         putIntoCache(configuration, input, value, EXPRESSION_SEQUENCE_CACHE_PREFIX);
     }
 
 
 
-    static Each getEachFromCache(final Configuration configuration, final String input) {
+    static Each getEachFromCache(final IEngineConfiguration configuration, final String input) {
         return (Each) getFromCache(configuration, input, EACH_CACHE_PREFIX);
     }
 
-    static void putEachIntoCache(final Configuration configuration, final String input, final Each value) {
+    static void putEachIntoCache(final IEngineConfiguration configuration, final String input, final Each value) {
         putIntoCache(configuration, input, value, EACH_CACHE_PREFIX);
     }
 
 
 
-    static FragmentSelection getFragmentSelectionFromCache(final Configuration configuration, final String input) {
+    static FragmentSelection getFragmentSelectionFromCache(final IEngineConfiguration configuration, final String input) {
         return (FragmentSelection) getFromCache(configuration, input, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
 
-    static void putFragmentSelectionIntoCache(final Configuration configuration, final String input, final FragmentSelection value) {
+    static void putFragmentSelectionIntoCache(final IEngineConfiguration configuration, final String input, final FragmentSelection value) {
         putIntoCache(configuration, input, value, FRAGMENT_SELECTION_CACHE_PREFIX);
     }
 
 
 
-    static FragmentSignature getFragmentSignatureFromCache(final Configuration configuration, final String input) {
+    static FragmentSignature getFragmentSignatureFromCache(final IEngineConfiguration configuration, final String input) {
         return (FragmentSignature) getFromCache(configuration, input, FRAGMENT_SIGNATURE_CACHE_PREFIX);
     }
 
-    static void putFragmentSignatureIntoCache(final Configuration configuration, final String input, final FragmentSignature value) {
+    static void putFragmentSignatureIntoCache(final IEngineConfiguration configuration, final String input, final FragmentSignature value) {
         putIntoCache(configuration, input, value, FRAGMENT_SIGNATURE_CACHE_PREFIX);
     }
 

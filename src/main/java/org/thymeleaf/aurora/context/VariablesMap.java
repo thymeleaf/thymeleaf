@@ -22,6 +22,7 @@ package org.thymeleaf.aurora.context;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,6 +46,8 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
     private static final int DEFAULT_LEVELS_SIZE = 3;
     private static final int DEFAULT_MAP_SIZE = 5;
 
+    private final Locale locale;
+
     private int level = 0;
     private int index = 0;
     private int[] levels;
@@ -61,9 +64,17 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
-    public VariablesMap(final Map<String, Object> variables) {
+    /*
+     * There is no reason for a user to directly create an instance of this - they should create Context or
+     * WebContext instances instead.
+     */
+    VariablesMap(final Locale locale, final Map<String, Object> variables) {
 
         super();
+
+        Validate.notNull(locale, "Locale cannot be null in web variables map");
+
+        this.locale = locale;
 
         this.levels = new int[DEFAULT_LEVELS_SIZE];
         this.maps = (LinkedHashMap<String, Object>[]) new LinkedHashMap<?,?>[DEFAULT_LEVELS_SIZE];
@@ -80,6 +91,11 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
             putAll(variables);
         }
 
+    }
+
+
+    public Locale getLocale() {
+        return this.locale;
     }
 
 

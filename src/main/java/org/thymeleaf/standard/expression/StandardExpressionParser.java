@@ -123,7 +123,7 @@ public final class StandardExpressionParser implements IStandardExpressionParser
     public FragmentSignature parseFragmentSignature(final IProcessingContext processingContext, final String input) {
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
-        return FragmentSignatureUtils.parseFragmentSignature(processingContext, input);
+        return FragmentSignatureUtils.parseFragmentSignature(processingContext.getConfiguration(), input);
     }
 
 

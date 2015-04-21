@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -62,6 +63,8 @@ public final class WebVariablesMap
     private static final String SESSION_VARIABLE_NAME = "session";
     private static final String APPLICATION_VARIABLE_NAME = "application";
 
+    private final Locale locale;
+
     private final HttpServletRequest request;
     private final HttpServletResponse response;
     private final HttpSession session;
@@ -75,26 +78,39 @@ public final class WebVariablesMap
 
 
 
-    public WebVariablesMap(
+    /*
+     * There is no reason for a user to directly create an instance of this - they should create Context or
+     * WebContext instances instead.
+     */
+    WebVariablesMap(
             final HttpServletRequest request, final HttpServletResponse response,
-            final ServletContext servletContext, final Map<String, Object> variables) {
+            final ServletContext servletContext,
+            final Locale locale, final Map<String, Object> variables) {
 
         super();
 
         Validate.notNull(request, "Request cannot be null in web variables map");
         Validate.notNull(response, "Response cannot be null in web variables map");
         Validate.notNull(servletContext, "Servlet Context cannot be null in web variables map");
+        Validate.notNull(locale, "Locale cannot be null in web variables map");
+
+        this.locale = locale;
 
         this.request = request;
         this.response = response;
         this.session = request.getSession(false);
         this.servletContext = servletContext;
 
-        this.requestAttributesVariablesMap = new RequestAttributesVariablesMap(this.request, variables);
-        this.requestParametersVariablesMap = new RequestParametersVariablesMap(this.request);
-        this.applicationAttributesVariablesMap = new ServletContextAttributesVariablesMap(this.servletContext);
-        this.sessionAttributesVariablesMap = (this.session == null ? null : new SessionAttributesVariablesMap(this.session));
+        this.requestAttributesVariablesMap = new RequestAttributesVariablesMap(this.request, this.locale, variables);
+        this.requestParametersVariablesMap = new RequestParametersVariablesMap(this.request, this.locale);
+        this.applicationAttributesVariablesMap = new ServletContextAttributesVariablesMap(this.servletContext, this.locale);
+        this.sessionAttributesVariablesMap = (this.session == null ? null : new SessionAttributesVariablesMap(this.session, this.locale));
 
+    }
+
+
+    public Locale getLocale() {
+        return this.locale;
     }
 
 
@@ -257,10 +273,16 @@ public final class WebVariablesMap
     private static final class SessionAttributesVariablesMap implements IVariablesMap {
 
         private final HttpSession session;
+        private final Locale locale;
 
-        SessionAttributesVariablesMap(final HttpSession session) {
+        SessionAttributesVariablesMap(final HttpSession session, final Locale locale) {
             super();
             this.session = session;
+            this.locale = locale;
+        }
+
+        public Locale getLocale() {
+            return this.locale;
         }
 
         public Object getVariable(final String key) {
@@ -303,10 +325,16 @@ public final class WebVariablesMap
     private static final class ServletContextAttributesVariablesMap implements IVariablesMap {
 
         private final ServletContext servletContext;
+        private final Locale locale;
 
-        ServletContextAttributesVariablesMap(final ServletContext servletContext) {
+        ServletContextAttributesVariablesMap(final ServletContext servletContext, final Locale locale) {
             super();
             this.servletContext = servletContext;
+            this.locale = locale;
+        }
+
+        public Locale getLocale() {
+            return this.locale;
         }
 
         public Object getVariable(final String key) {
@@ -349,10 +377,16 @@ public final class WebVariablesMap
     private static final class RequestParametersVariablesMap implements IVariablesMap {
 
         private final HttpServletRequest request;
+        private final Locale locale;
 
-        RequestParametersVariablesMap(final HttpServletRequest request) {
+        RequestParametersVariablesMap(final HttpServletRequest request, final Locale locale) {
             super();
             this.request = request;
+            this.locale = locale;
+        }
+
+        public Locale getLocale() {
+            return this.locale;
         }
 
         public Object getVariable(final String key) {
@@ -389,6 +423,8 @@ public final class WebVariablesMap
         private static final int DEFAULT_LEVELS_SIZE = 3;
         private static final int DEFAULT_LEVELARRAYS_SIZE = 5;
 
+        private final Locale locale;
+
         private final HttpServletRequest request;
 
         private int level = 0;
@@ -410,11 +446,12 @@ public final class WebVariablesMap
         };
 
 
-        RequestAttributesVariablesMap(final HttpServletRequest request, final Map<String, Object> variables) {
+        RequestAttributesVariablesMap(final HttpServletRequest request, final Locale locale, final Map<String, Object> variables) {
 
             super();
 
             this.request = request;
+            this.locale = locale;
 
             this.levels = new int[DEFAULT_LEVELS_SIZE];
             this.names = new String[DEFAULT_LEVELS_SIZE][];
@@ -437,6 +474,10 @@ public final class WebVariablesMap
                 putAll(variables);
             }
 
+        }
+
+        public Locale getLocale() {
+            return this.locale;
         }
 
         public boolean containsVariable(final String key) {

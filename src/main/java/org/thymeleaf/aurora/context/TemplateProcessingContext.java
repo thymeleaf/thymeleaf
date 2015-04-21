@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  *
@@ -37,23 +38,16 @@ public final class TemplateProcessingContext extends AbstractTemplateProcessingC
 
     public TemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
-            final Locale locale, final IVariablesMap variablesMap) {
-        super(configuration, templateName, templateMode, locale, variablesMap);
-    }
-
-    public TemplateProcessingContext(
-            final IEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
+            final TemplateResolution templateResolution,
             final Locale locale, final Map<String, Object> variables) {
-        super(configuration, templateName, templateMode, locale, variables);
+        super(configuration, templateResolution, locale, variables);
     }
 
     public TemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
+            final TemplateResolution templateResolution,
             final IContext context) {
-        super(configuration, templateName, templateMode, context);
+        super(configuration, templateResolution, context);
     }
 
 }

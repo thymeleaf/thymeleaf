@@ -63,13 +63,12 @@ public interface IResourceResolver {
      *
      * @param configuration the engine configuration.
      * @param context the context being applied to the template execution.
-     * @param templateName the name of the template to be resolved.
      * @param resourceName the name of the resource to be obtained (corresponding with the template name).
      * @param characterEncoding the character encoding to be used for reading the resource.
      * @return an InputStream on the resource
      */
     public IResource getResource(
-            final IEngineConfiguration configuration, final IContext context, final String templateName,
+            final IEngineConfiguration configuration, final IContext context,
             final String resourceName, final String characterEncoding);
     
 }

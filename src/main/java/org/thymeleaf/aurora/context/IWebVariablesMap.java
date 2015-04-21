@@ -31,11 +31,8 @@ import javax.servlet.http.HttpSession;
  * @since 3.0.0
  *
  */
-public interface IWebVariablesMap extends IVariablesMap {
+public interface IWebVariablesMap extends IVariablesMap, IWebContext {
 
-    public HttpServletRequest getRequest();
-    public HttpServletResponse getResponse();
-    public HttpSession getSession();
-    public ServletContext getServletContext();
+    // Just an aggregation interface, adding the IWebContext methods to the ones coming from IVariablesMap
 
 }

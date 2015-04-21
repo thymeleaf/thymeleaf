@@ -24,7 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -40,7 +40,7 @@ public class Messages {
     private static final String[] NO_PARAMETERS = new String[0];
     
     
-    private final Arguments arguments;
+    private final ITemplateProcessingContext processingContext;
     
     
     public String msg(final String messageKey) {
@@ -61,7 +61,7 @@ public class Messages {
     
     public String msgWithParams(final String messageKey, final Object[] messageParameters) {
         return MessageResolutionUtils.resolveMessageForTemplate(
-                this.arguments, messageKey, messageParameters, true);
+                this.processingContext, messageKey, messageParameters, true);
     }
 
     
@@ -85,7 +85,7 @@ public class Messages {
     
     public String msgOrNullWithParams(final String messageKey, final Object[] messageParameters) {
         return MessageResolutionUtils.resolveMessageForTemplate(
-                this.arguments, messageKey, messageParameters, false);
+                this.processingContext, messageKey, messageParameters, false);
     }
 
     
@@ -115,7 +115,7 @@ public class Messages {
         for (int i = 0; i < messageKeys.length; i++) {
             result[i] = 
                 MessageResolutionUtils.resolveMessageForTemplate(
-                    this.arguments, (String)messageKeys[i], messageParameters, true);
+                    this.processingContext, (String)messageKeys[i], messageParameters, true);
         }
         return result;
     }
@@ -146,7 +146,7 @@ public class Messages {
         for (int i = 0; i < messageKeys.length; i++) {
             result[i] = 
                 MessageResolutionUtils.resolveMessageForTemplate(
-                    this.arguments, (String)messageKeys[i], messageParameters, false);
+                    this.processingContext, (String)messageKeys[i], messageParameters, false);
         }
         return result;
     }
@@ -265,7 +265,7 @@ public class Messages {
         for (final String messageKey : messageKeys) {
             result.add(
                     MessageResolutionUtils.resolveMessageForTemplate(
-                        this.arguments, messageKey, messageParameters, returnStringAlways));
+                        this.processingContext, messageKey, messageParameters, returnStringAlways));
         }
         return result;
     }
@@ -273,10 +273,10 @@ public class Messages {
     
 
     
-    public Messages(final Arguments arguments) {
+    public Messages(final ITemplateProcessingContext processingContext) {
         super();
-        Validate.notNull(arguments, "Arguments cannot be null");
-        this.arguments = arguments;
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        this.processingContext = processingContext;
     }
     
 }

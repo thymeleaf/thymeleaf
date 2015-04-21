@@ -24,7 +24,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.thymeleaf.exceptions.AlreadyInitializedException;
 import org.thymeleaf.util.PatternUtils;
 import org.thymeleaf.util.Validate;
 

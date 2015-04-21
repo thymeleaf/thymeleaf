@@ -19,13 +19,16 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.engine.StandardModelFactory;
+import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -38,74 +41,55 @@ public abstract class AbstractTemplateProcessingContext
             extends AbstractProcessingContext
             implements ITemplateProcessingContext {
 
-    private final String templateName;
+    private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
     private final IModelFactory modelFactory;
-
+    private final IDSequences idSequences;
 
 
 
     public AbstractTemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
-            final Locale locale, final IVariablesMap variablesMap) {
-
-        super(configuration, locale, variablesMap);
-
-        Validate.notNull(templateName, "Template Name cannot be null");
-        Validate.notNull(templateMode, "Template Mode cannot be null");
-
-        this.templateName = templateName;
-        this.templateMode = templateMode;
-        this.modelFactory =
-                new StandardModelFactory(
-                        this.templateMode, getConfiguration().getTextRepository(),
-                        getConfiguration().getAttributeDefinitions(), getConfiguration().getElementDefinitions());
-
-    }
-
-    public AbstractTemplateProcessingContext(
-            final IEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
+            final TemplateResolution templateResolution,
             final IContext context) {
 
         super(configuration, context);
 
-        Validate.notNull(templateName, "Template Name cannot be null");
-        Validate.notNull(templateMode, "Template Mode cannot be null");
+        Validate.notNull(templateResolution, "Template Resolution object cannot be null");
 
-        this.templateName = templateName;
-        this.templateMode = templateMode;
+        this.templateResolution = templateResolution;
+        this.templateMode = this.templateResolution.getTemplateMode();
         this.modelFactory =
                 new StandardModelFactory(
                         this.templateMode, getConfiguration().getTextRepository(),
                         getConfiguration().getAttributeDefinitions(), getConfiguration().getElementDefinitions());
+        this.idSequences = new IDSequences();
 
     }
 
     public AbstractTemplateProcessingContext(
             final IEngineConfiguration configuration,
-            final String templateName, final TemplateMode templateMode,
+            final TemplateResolution templateResolution,
             final Locale locale, final Map<String, Object> variables) {
 
         super(configuration, locale, variables);
 
-        Validate.notNull(templateName, "Template Name cannot be null");
-        Validate.notNull(templateMode, "Template Mode cannot be null");
+        Validate.notNull(templateResolution, "Template Resolution object cannot be null");
 
-        this.templateName = templateName;
-        this.templateMode = templateMode;
+        this.templateResolution = templateResolution;
+        this.templateMode = this.templateResolution.getTemplateMode();
         this.modelFactory =
                 new StandardModelFactory(
                         this.templateMode, getConfiguration().getTextRepository(),
                         getConfiguration().getAttributeDefinitions(), getConfiguration().getElementDefinitions());
+        this.idSequences = new IDSequences();
 
     }
 
 
 
-    public final String getTemplateName() {
-        return this.templateName;
+    public final TemplateResolution getTemplateResolution() {
+        return this.templateResolution;
     }
 
     public final TemplateMode getTemplateMode() {
@@ -116,5 +100,8 @@ public abstract class AbstractTemplateProcessingContext
         return this.modelFactory;
     }
 
+    public IDSequences getIDSequences() {
+        return this.idSequences;
+    }
 
 }

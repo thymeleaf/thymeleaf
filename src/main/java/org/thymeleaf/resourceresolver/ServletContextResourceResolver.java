@@ -20,13 +20,20 @@
 package org.thymeleaf.resourceresolver;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.servlet.ServletContext;
 
-import org.thymeleaf.TemplateProcessingParameters;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IWebContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IContext;
+import org.thymeleaf.aurora.context.IWebContext;
+import org.thymeleaf.aurora.resource.IResource;
+import org.thymeleaf.aurora.resource.ReaderResource;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -39,14 +46,20 @@ import org.thymeleaf.util.Validate;
  *     servletContext.getResourceAsStream(resourceName)
  *   </tt>
  * </p>
- * 
+ *  <p>
+ *    (Note that a {@link java.io.Reader} will be created on top of the
+ *    input stream, and the result will be encapsulated into a {@link ReaderResource}.
+ *  </p>
+ *
  * @author Daniel Fern&aacute;ndez
- * 
- * @since 1.0
+ *
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
 public final class ServletContextResourceResolver 
         implements IResourceResolver {
+
+    private static final Logger logger = LoggerFactory.getLogger(ServletContextResourceResolver.class);
 
     public static final String NAME = "SERVLETCONTEXT";
     
@@ -61,31 +74,76 @@ public final class ServletContextResourceResolver
         return NAME; 
     }
 
-    
-    
 
-    public InputStream getResourceAsStream(final TemplateProcessingParameters templateProcessingParameters, final String resourceName) {
+
+
+    public IResource getResource(
+            final IEngineConfiguration configuration, final IContext context,
+            final String resourceName, final String characterEncoding) {
         
-        Validate.notNull(templateProcessingParameters, "Template Processing Parameters cannot be null");
+        Validate.notNull(context, "Context cannot be null");
         Validate.notNull(resourceName, "Resource name cannot be null");
         
-        final IContext context = templateProcessingParameters.getContext();
         if (!(context instanceof IWebContext)) {
             throw new TemplateProcessingException(
                     "Resource resolution by ServletContext with " +
                     this.getClass().getName() + " can only be performed " +
                     "when context implements " + IWebContext.class.getName() + 
-                    " [current context: " + context.getClass().getName() + "]");
+                    " [current context is of class: " + context.getClass().getName() + "]");
         }
         
-        final ServletContext servletContext = 
-            ((IWebContext)context).getServletContext();
+        final ServletContext servletContext = ((IWebContext)context).getServletContext();
         if (servletContext == null) {
             throw new TemplateProcessingException("Thymeleaf context returned a null ServletContext");
         }
-        
-        return servletContext.getResourceAsStream(resourceName);
-        
+
+        try {
+
+            final InputStream inputStream = servletContext.getResourceAsStream(resourceName);
+            if (inputStream == null) {
+                return null;
+            }
+
+            final InputStreamReader reader;
+            if (!StringUtils.isEmptyOrWhitespace(characterEncoding)) {
+                reader = new InputStreamReader(inputStream, characterEncoding);
+            } else {
+                reader = new InputStreamReader(inputStream);
+            }
+
+            return new ReaderResource(resourceName, reader);
+
+        } catch (final Throwable t) {
+            showException(resourceName, t);
+            return null;
+        }
+
+
+    }
+
+
+
+    private static void showException(final String resourceName, final Throwable t) {
+        if (logger.isDebugEnabled()) {
+            if (logger.isTraceEnabled()) {
+                logger.trace(
+                        String.format(
+                                "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                        "maybe this resource is not intended to be resolved by this resolver. " +
+                                        "Exception is provided for tracing purposes: ",
+                                TemplateEngine.threadIndex(), resourceName),
+                        t);
+            } else {
+                logger.debug(
+                        String.format(
+                                "[THYMELEAF][%s] Resource \"%s\" could not be resolved. This can be normal as " +
+                                        "maybe this resource is not intended to be resolved by this resolver. " +
+                                        "Exception message is provided (set the log to TRACE for the entire trace): " +
+                                        "%s: %s",
+                                TemplateEngine.threadIndex(), resourceName,
+                                t.getClass().getName(), t.getMessage()));
+            }
+        }
     }
 
     

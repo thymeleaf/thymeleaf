@@ -29,5 +29,6 @@ public interface IResource {
 
 
     public String getName();
+    public String readFully();
 
 }

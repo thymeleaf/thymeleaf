@@ -19,8 +19,11 @@
  */
 package org.thymeleaf.aurora.context;
 
+import java.util.Map;
+
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**
  *
@@ -32,8 +35,11 @@ import org.thymeleaf.aurora.templatemode.TemplateMode;
 public interface ITemplateProcessingContext extends IProcessingContext {
 
     public TemplateMode getTemplateMode();
-    public String getTemplateName();
+
+    public TemplateResolution getTemplateResolution();
 
     public IModelFactory getModelFactory();
+
+    public IDSequences getIDSequences();
 
 }

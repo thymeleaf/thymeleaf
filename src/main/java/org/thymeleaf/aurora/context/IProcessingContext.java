@@ -20,6 +20,7 @@
 package org.thymeleaf.aurora.context;
 
 import java.util.Locale;
+import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
 
@@ -40,6 +41,10 @@ public interface IProcessingContext {
      */
 
     public IEngineConfiguration getConfiguration();
+
+    public Map<String,Object> getExpressionObjects();
+
+    public boolean isWeb();
 
     public Locale getLocale();
 

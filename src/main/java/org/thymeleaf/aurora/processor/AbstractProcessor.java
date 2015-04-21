@@ -40,6 +40,8 @@ public abstract class AbstractProcessor implements IProcessor {
     private IDialect dialect = null;
 
 
+    // TODO Add the "getMessage()" methods in the old AbstractProcessor that allow processors to easily access the i18n infrastructure... or maybe they should go to the processing context?
+
 
     public AbstractProcessor(final TemplateMode templateMode, final int precedence) {
 

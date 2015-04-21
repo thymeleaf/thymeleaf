@@ -24,9 +24,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.Validate;
 
@@ -125,7 +124,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
     
     
     
-    static Object executeSelectionVariable(final Configuration configuration, 
+    static Object executeSelectionVariable(
             final IProcessingContext processingContext, final SelectionVariableExpression expression, 
             final IStandardVariableExpressionEvaluator expressionEvaluator,
             final StandardExpressionExecutionContext expContext) {
@@ -143,7 +142,7 @@ public final class SelectionVariableExpression extends SimpleExpression {
         final StandardExpressionExecutionContext evalExpContext =
                 (expression.getConvertToString()? expContext.withTypeConversion() : expContext.withoutTypeConversion());
 
-        return expressionEvaluator.evaluate(configuration, processingContext, exp, evalExpContext, true);
+        return expressionEvaluator.evaluate(processingContext, exp, evalExpContext, true);
         
     }
     

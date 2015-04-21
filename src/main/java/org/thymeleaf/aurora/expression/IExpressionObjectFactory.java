@@ -34,4 +34,6 @@ public interface IExpressionObjectFactory {
 
     public Map<String,Object> buildExpressionObjects(final IProcessingContext processingContext);
 
+    public Map<String,String> getObjectDefinitions();
+
 }

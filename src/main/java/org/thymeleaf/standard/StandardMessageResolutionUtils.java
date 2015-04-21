@@ -71,13 +71,13 @@ public final class StandardMessageResolutionUtils {
         
         final Locale locale = processingContext.getLocale();
 
-        final String templateName = processingContext.getTemplateName();
+        final String templateName = processingContext.getTemplateResolution().getTemplateName();
         final String cacheKey = TEMPLATE_CACHE_PREFIX + templateName + '_' + locale.toString();
 
         Properties properties = null;
         ICache<String,Properties> messagesCache = null;
         
-        final ICacheManager cacheManager = arguments.getConfiguration().getCacheManager();
+        final ICacheManager cacheManager = processingContext.getConfiguration().getCacheManager();
         if (cacheManager != null) {
             messagesCache = cacheManager.getMessageCache();
             if (messagesCache != null) {
@@ -89,7 +89,7 @@ public final class StandardMessageResolutionUtils {
             if (logger.isDebugEnabled()) {
                 logger.debug("[THYMELEAF][{}] Resolving uncached messages for template \"{}\" and locale \"{}\". Messages will be retrieved from files", new Object[] {TemplateEngine.threadIndex(), templateName, locale});
             }
-            properties = loadMessagesForTemplate(arguments, defaultMessages);
+            properties = loadMessagesForTemplate(processingContext, defaultMessages);
             if (messagesCache != null) {
                 messagesCache.put(cacheKey, properties);
             }
@@ -115,19 +115,17 @@ public final class StandardMessageResolutionUtils {
     
     
     private static Properties loadMessagesForTemplate(
-            final Arguments arguments, final Properties defaultMessages) {
+            final ITemplateProcessingContext processingContext, final Properties defaultMessages) {
 
-        Validate.notNull(arguments, "Arguments cannot be null");
-        Validate.notNull(arguments.getContext().getLocale(), "Locale in context cannot be null");
-        
-        final String resourceName = arguments.getTemplateResolution().getResourceName();
-        final IResourceResolver resourceResolver = arguments.getTemplateResolution().getResourceResolver();
-        final Locale locale = arguments.getContext().getLocale();
+        final String resourceName = processingContext.getTemplateResolution().getResourceName();
+        final IResourceResolver resourceResolver = processingContext.getTemplateResolution().getResourceResolver();
+        final Locale locale = processingContext.getLocale();
         
         final String templateBaseName = getTemplateFileNameBase(resourceName);
         
         return MessageResolutionUtils.loadCombinedMessagesFilesFromBaseName(
-                arguments, resourceResolver, templateBaseName, locale, defaultMessages);
+                processingContext.getConfiguration(), processingContext.getVariablesMap(),
+                resourceResolver, templateBaseName, locale, defaultMessages);
         
     }
     

@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.util;
 
-import java.io.InputStream;
+import java.io.ByteArrayInputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IContext;
 import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.aurora.resource.IResource;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.TemplateInputException;
@@ -198,12 +200,12 @@ public final class MessageResolutionUtils {
         Class<?> currentClass = targetClass;
         
         String base = getClassNameBase(currentClass);
-        properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
+        properties.add(loadCombinedMessagesFilesFromBaseName(null, null, null, base, locale, null));
         
         while (!currentClass.getSuperclass().equals(Object.class)) {
             currentClass = currentClass.getSuperclass();
             base = getClassNameBase(currentClass);
-            properties.add(loadCombinedMessagesFilesFromBaseName(null, null, base, locale, null));
+            properties.add(loadCombinedMessagesFilesFromBaseName(null, null, null, base, locale, null));
         }
         
         return combineMessages(properties, null);
@@ -215,7 +217,7 @@ public final class MessageResolutionUtils {
     
     
     public static Properties loadCombinedMessagesFilesFromBaseName(
-            final Arguments arguments, final IResourceResolver resourceResolver,
+            final IEngineConfiguration configuration, final IContext context, final IResourceResolver resourceResolver,
             final String baseName, final Locale locale, final Properties defaultMessages) {
 
         /*
@@ -233,10 +235,10 @@ public final class MessageResolutionUtils {
         
         final List<Properties> messages = new ArrayList<Properties>(10);
         for (final String messageResourceName : messageResourceNames) {
-            final InputStream messageFileInputStream =
-                usedResourceResolver.getResourceAsStream((arguments == null? null : arguments.getTemplateProcessingParameters()), messageResourceName);
-            if (messageFileInputStream != null) {
-                messages.add(loadMessages(messageFileInputStream));
+            final IResource messageFileResource =
+                usedResourceResolver.getResource(configuration, context, messageResourceName, null);
+            if (messageFileResource != null) {
+                messages.add(loadMessages(messageFileResource));
                 if (logger.isDebugEnabled()) {
                     logger.debug("[THYMELEAF][{}] Loading messages for locale \"{}\" from processed file: {}", new Object[] {TemplateEngine.threadIndex(), locale, messageResourceName});
                 }
@@ -275,21 +277,20 @@ public final class MessageResolutionUtils {
     
     
     
-    private static Properties loadMessages(final InputStream propertiesIS) {
-        if (propertiesIS == null) {
+    private static Properties loadMessages(final IResource propertiesResource) {
+        if (propertiesResource == null) {
             return null;
         }
         final Properties properties = new Properties();
+        // This is not as efficient as it could be, but we avoid using the Properties.load(Reader) method
+        // because it was added in Java 6. Thus we have to do quite complicated and memory-hungry things to
+        // obtain an InputStream from the IResource. Luckily, this is cached most of the times.
+        final String propertiesResourceStr = propertiesResource.readFully();
         try {
-            properties.load(propertiesIS);
+            properties.load(new ByteArrayInputStream(propertiesResourceStr.getBytes("ISO8859-1")));
+            // No need to close this input stream - just iterating a byte[]
         } catch (final Exception e) {
             throw new TemplateInputException("Exception loading messages file", e);
-        } finally {
-            try {
-                propertiesIS.close();
-            } catch (final Exception e) {
-                // ignored
-            }
         }
         return properties;
     }

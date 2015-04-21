@@ -56,4 +56,8 @@ public final class StringResource implements IResource, Serializable {
         return this.content;
     }
 
+    public String readFully() {
+        return this.content;
+    }
+
 }

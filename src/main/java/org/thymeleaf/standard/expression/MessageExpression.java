@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.context.IProcessingContext;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.MessageResolutionUtils;
 import org.thymeleaf.util.StringUtils;
@@ -212,18 +213,18 @@ public final class MessageExpression extends SimpleExpression {
             logger.trace("[THYMELEAF][{}] Evaluating message: \"{}\"", TemplateEngine.threadIndex(), expression.getStringRepresentation());
         }
 
-        if (!(processingContext instanceof Arguments)) {
+        if (!(processingContext instanceof ITemplateProcessingContext)) {
             throw new TemplateProcessingException(
                     "Cannot evaluate expression \"" + expression + "\". Message externalization expressions " +
                     "can only be evaluated in a template-processing environment (as a part of an in-template expression) " +
-                    "where evaluation context is an " + Arguments.class.getClass() + " instance instead of an instance of " +
-                    processingContext.getClass().getName());
+                    "where processing context is an implementation of " + ITemplateProcessingContext.class.getClass() + ", which it isn't (" +
+                    processingContext.getClass().getName() + ")");
         }
         
-        final Arguments arguments = (Arguments) processingContext;
+        final ITemplateProcessingContext templateProcessingContext = (ITemplateProcessingContext) processingContext;
 
         final IStandardExpression baseExpression = expression.getBase();
-        Object messageKey = baseExpression.execute(configuration, arguments, expContext);
+        Object messageKey = baseExpression.execute(templateProcessingContext, expContext);
         messageKey = LiteralValue.unwrap(messageKey);
         if (messageKey != null && !(messageKey instanceof String)) {
             messageKey = messageKey.toString();
@@ -239,13 +240,13 @@ public final class MessageExpression extends SimpleExpression {
         if (expression.hasParameters()) {
             int parIndex = 0;
             for (final IStandardExpression parameter  : expression.getParameters()) {
-                final Object result = parameter.execute(configuration, arguments, expContext);
+                final Object result = parameter.execute(templateProcessingContext, expContext);
                 messageParameters[parIndex++] = LiteralValue.unwrap(result);
             }
         }
 
         return MessageResolutionUtils.resolveMessageForTemplate(
-                arguments, (String)messageKey, messageParameters);
+                templateProcessingContext, (String)messageKey, messageParameters);
         
     }
 

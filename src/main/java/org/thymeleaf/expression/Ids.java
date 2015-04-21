@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.expression;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -32,33 +32,33 @@ import org.thymeleaf.util.Validate;
 public class Ids {
 
     
-    private final Arguments arguments;
+    private final ITemplateProcessingContext processingContext;
     
     
     public String seq(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.arguments.getAndIncrementIDSeq(str);
+        return str + this.processingContext.getIDSequences().getAndIncrementIDSeq(str);
     }
     
     public String next(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.arguments.getNextIDSeq(str);
+        return str + this.processingContext.getIDSequences().getNextIDSeq(str);
     }
     
     public String prev(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.arguments.getPreviousIDSeq(str);
+        return str + this.processingContext.getIDSequences().getPreviousIDSeq(str);
     }
     
 
     
-    public Ids(final Arguments arguments) {
+    public Ids(final ITemplateProcessingContext processingContext) {
         super();
-        Validate.notNull(arguments, "Arguments cannot be null");
-        this.arguments = arguments;
+        Validate.notNull(processingContext, "Processing Context cannot be null");
+        this.processingContext = processingContext;
     }
     
 }

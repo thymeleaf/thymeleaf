@@ -19,8 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IProcessingContext;
 
 /**
  * <p>
@@ -38,7 +37,7 @@ import org.thymeleaf.context.IProcessingContext;
  *
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.9
+ * @since 2.0.9 (reimplemented in 3.0.0)
  *
  */
 public interface IStandardVariableExpressionEvaluator {
@@ -48,8 +47,7 @@ public interface IStandardVariableExpressionEvaluator {
      *   Evaluate the variable expression.
      * </p>
      *
-     * @param configuration the Configuration object for the template execution environment.
-     * @param processingContext the processing context object containing the variables to be applied to the expression.
+     * @param processingContext the processing context object.
      * @param expression the expression to be evaluated (as a String).
      * @param expContext the expression execution context to be applied (preprocessing, etc.)
      * @param useSelectionAsRoot specify whether this is a <i>variable expression</i> (<tt>${...}</tt>, false) or a
@@ -57,7 +55,7 @@ public interface IStandardVariableExpressionEvaluator {
      * @return the result of evaluating the expression.
      */
     public Object evaluate(
-            final Configuration configuration, final IProcessingContext processingContext, 
+            final IProcessingContext processingContext,
             final String expression, final StandardExpressionExecutionContext expContext, 
             final boolean useSelectionAsRoot);
     

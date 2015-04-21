@@ -78,4 +78,9 @@ public final class CharArrayResource implements IResource, Serializable {
     public int getLen() {
         return this.len;
     }
+
+    public String readFully() {
+        return new String(this.content, this.offset, this.len);
+    }
+
 }

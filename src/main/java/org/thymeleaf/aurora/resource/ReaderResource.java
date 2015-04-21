@@ -19,7 +19,10 @@
  */
 package org.thymeleaf.aurora.resource;
 
+import java.io.IOException;
 import java.io.Reader;
+
+import org.thymeleaf.exceptions.TemplateInputException;
 
 /**
  *
@@ -54,6 +57,33 @@ public final class ReaderResource implements IResource {
 
     public Reader getContent() {
         return this.content;
+    }
+
+
+    public String readFully() {
+        try {
+
+            final StringBuilder strBuilder = new StringBuilder(2048); // at least 2K
+            final char[] buffer = new char[2048];
+            int charsRead = 0;
+            while (charsRead >= 0) {
+                charsRead = this.content.read(buffer, 0, buffer.length);
+                if (charsRead >= 0) { // !EOF
+                    strBuilder.append(buffer, 0, charsRead);
+                }
+            }
+            return strBuilder.toString();
+
+        } catch (final IOException e) {
+            throw new TemplateInputException("Exception reading resource: " + this.name, e);
+        } finally {
+            try {
+                // Note the reader will be closed after this!
+                this.content.close();
+            } catch (final Exception ignored) {
+                // ignored
+            }
+        }
     }
 
 }

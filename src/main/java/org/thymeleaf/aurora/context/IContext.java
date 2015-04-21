@@ -33,6 +33,7 @@ public interface IContext {
 
     public Locale getLocale();
 
+    public boolean containsVariable(final String key);
     public Set<String> getVariableNames();
     public Object getVariable(final String name);
 

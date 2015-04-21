@@ -34,7 +34,6 @@ import org.thymeleaf.aurora.IEngineConfiguration;
 public final class ProcessingContext extends AbstractProcessingContext {
 
 
-
     public ProcessingContext(
             final IEngineConfiguration configuration, final Locale locale, final Map<String, Object> variables) {
         super(configuration, locale, variables);
@@ -44,12 +43,6 @@ public final class ProcessingContext extends AbstractProcessingContext {
     public ProcessingContext(
             final IEngineConfiguration configuration, final IContext context) {
         super(configuration, context);
-    }
-
-
-    protected ProcessingContext(
-            final IEngineConfiguration configuration, final Locale locale, final IVariablesMap variablesMap) {
-        super(configuration, locale, variablesMap);
     }
 
 }

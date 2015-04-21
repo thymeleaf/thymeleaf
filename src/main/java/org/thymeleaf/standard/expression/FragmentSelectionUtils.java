@@ -24,8 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.thymeleaf.Configuration;
-import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -50,7 +50,7 @@ public final class FragmentSelectionUtils {
 
     public static boolean hasSyntheticParameters(
             final FragmentSelection fragmentSelection,
-            final Configuration configuration, final IProcessingContext processingContext,
+            final IProcessingContext processingContext,
             final StandardExpressionExecutionContext expContext) {
 
         // The parameter sequence will be considered "synthetically named" if its variable names are all synthetic
@@ -65,7 +65,7 @@ public final class FragmentSelectionUtils {
         for (final Assignation assignation : fragmentSelectionParameters.getAssignations()) {
 
             final IStandardExpression variableNameExpr = assignation.getLeft();
-            final Object variableNameValue = variableNameExpr.execute(configuration, processingContext, expContext);
+            final Object variableNameValue = variableNameExpr.execute(processingContext, expContext);
 
             final String variableName = (variableNameValue == null? null : variableNameValue.toString());
 
@@ -82,14 +82,15 @@ public final class FragmentSelectionUtils {
 
 
     public static FragmentSelection parseFragmentSelection(
-            final Configuration configuration, final IProcessingContext processingContext, final String input) {
+            final IProcessingContext processingContext, final String input) {
 
-        Validate.notNull(configuration, "Configuration cannot be null");
         Validate.notNull(processingContext, "Processing Context cannot be null");
         Validate.notNull(input, "Input cannot be null");
 
+        final IEngineConfiguration configuration = processingContext.getConfiguration();
+
         final String preprocessedInput =
-                StandardExpressionPreprocessor.preprocess(configuration, processingContext, input);
+                StandardExpressionPreprocessor.preprocess(processingContext, input);
 
         if (configuration != null) {
             final FragmentSelection cachedFragmentSelection =

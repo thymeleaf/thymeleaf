@@ -75,7 +75,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             text.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     text.getLine(), text.getCol(), e);
         }
 
@@ -93,7 +93,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             comment.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     comment.getLine(), comment.getCol(), e);
         }
 
@@ -110,7 +110,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             cdataSection.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     cdataSection.getLine(), cdataSection.getCol(), e);
         }
 
@@ -129,7 +129,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             standaloneElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     standaloneElementTag.getLine(), standaloneElementTag.getCol(), e);
         }
 
@@ -146,7 +146,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             openElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     openElementTag.getLine(), openElementTag.getCol(), e);
         }
 
@@ -163,7 +163,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             autoOpenElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     autoOpenElementTag.getLine(), autoOpenElementTag.getCol(), e);
         }
 
@@ -180,7 +180,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             closeElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     closeElementTag.getLine(), closeElementTag.getCol(), e);
         }
 
@@ -197,7 +197,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             autoCloseElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     autoCloseElementTag.getLine(), autoCloseElementTag.getCol(), e);
         }
 
@@ -214,7 +214,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             unmatchedCloseElementTag.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     unmatchedCloseElementTag.getLine(), unmatchedCloseElementTag.getCol(), e);
         }
 
@@ -233,7 +233,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             docType.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     docType.getLine(), docType.getCol(), e);
         }
 
@@ -252,7 +252,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             xmlDeclaration.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     xmlDeclaration.getLine(), xmlDeclaration.getCol(), e);
         }
 
@@ -273,7 +273,7 @@ public final class OutputTemplateHandler extends AbstractTemplateHandler {
             processingInstruction.write(this.writer);
         } catch (final Exception e) {
             throw new TemplateOutputException(
-                    "An error happened during template rendering", getProcessingContext().getTemplateName(),
+                    "An error happened during template rendering", getProcessingContext().getTemplateResolution().getTemplateName(),
                     processingInstruction.getLine(), processingInstruction.getCol(), e);
         }
 

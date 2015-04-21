@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -37,38 +38,45 @@ import org.thymeleaf.util.Validate;
 public abstract class AbstractProcessingContext implements IProcessingContext {
 
     private final IEngineConfiguration configuration;
-    private final Locale locale;
     private final IVariablesMap variablesMap;
+    private final boolean web;
+    private final Map<String,Object> expressionObjects;
 
 
 
     protected AbstractProcessingContext(
             final IEngineConfiguration configuration,
             final Locale locale, final Map<String, Object> variables) {
-        this(configuration, locale, new VariablesMap(variables));
+
+        super();
+
+        Validate.notNull(configuration, "Engine Configuration cannot be null");
+
+        this.configuration = configuration;
+        this.variablesMap = new VariablesMap(locale, variables);
+        this.web = false;
+
+        final IExpressionObjectFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
+        this.expressionObjects = Collections.unmodifiableMap(expressionObjectFactory.buildExpressionObjects(this));
+
     }
 
 
     protected AbstractProcessingContext(
             final IEngineConfiguration configuration,
             final IContext context) {
-        this(configuration, (context != null? context.getLocale() : null), buildVariablesMap(context));
-    }
-
-
-    protected AbstractProcessingContext(
-            final IEngineConfiguration configuration,
-            final Locale locale, final IVariablesMap variablesMap) {
 
         super();
 
         Validate.notNull(configuration, "Engine Configuration cannot be null");
-        Validate.notNull(locale, "Locale cannot be null");
-        Validate.notNull(variablesMap, "Variables Map cannot be null");
+        Validate.notNull(context, "Context cannot be null");
 
         this.configuration = configuration;
-        this.locale = locale;
-        this.variablesMap = variablesMap;
+        this.variablesMap = buildVariablesMap(context);
+        this.web = this.variablesMap instanceof IWebVariablesMap;
+
+        final IExpressionObjectFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
+        this.expressionObjects = Collections.unmodifiableMap(expressionObjectFactory.buildExpressionObjects(this));
 
     }
 
@@ -79,8 +87,17 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         return this.configuration;
     }
 
+
+    public Map<String, Object> getExpressionObjects() {
+        return this.expressionObjects;
+    }
+
     public final Locale getLocale() {
-        return this.locale;
+        return this.variablesMap.getLocale();
+    }
+
+    public final boolean isWeb() {
+        return this.web;
     }
 
     public final IVariablesMap getVariablesMap() {
@@ -92,26 +109,27 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
 
 
     private static IVariablesMap buildVariablesMap(final IContext context) {
-        if (context == null) {
-            throw new IllegalArgumentException("Context cannot be null");
-        }
+
         final Set<String> variableNames = context.getVariableNames();
         if (variableNames == null || variableNames.isEmpty()) {
             if (context instanceof IWebContext) {
                 final IWebContext webContext = (IWebContext)context;
-                return new WebVariablesMap(webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(), Collections.EMPTY_MAP);
+                return new WebVariablesMap(webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(), webContext.getLocale(), Collections.EMPTY_MAP);
             }
-            return new VariablesMap(Collections.EMPTY_MAP);
+            return new VariablesMap(context.getLocale(), Collections.EMPTY_MAP);
         }
+
         final Map<String,Object> variables = new LinkedHashMap<String, Object>(variableNames.size() + 1, 1.0f);
         for (final String variableName : variableNames) {
             variables.put(variableName, context.getVariable(variableName));
         }
         if (context instanceof IWebContext) {
             final IWebContext webContext = (IWebContext)context;
-            return new WebVariablesMap(webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(), variables);
+            return new WebVariablesMap(webContext.getRequest(), webContext.getResponse(), webContext.getServletContext(), webContext.getLocale(), variables);
         }
-        return new VariablesMap(variables);
+
+        return new VariablesMap(context.getLocale(), variables);
+
     }
 
 

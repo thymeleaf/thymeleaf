@@ -27,6 +27,7 @@ import org.thymeleaf.aurora.dialect.IDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.aurora.processor.comment.ICommentProcessor;
 import org.thymeleaf.aurora.processor.doctype.IDocTypeProcessor;
@@ -75,5 +76,6 @@ public interface IEngineConfiguration {
 
     public Map<String,Object> getExecutionAttributes();
 
+    public IExpressionObjectFactory getExpressionObjectFactory();
 
 }

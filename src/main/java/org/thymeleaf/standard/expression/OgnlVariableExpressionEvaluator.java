@@ -31,14 +31,11 @@ import ognl.Ognl;
 import ognl.OgnlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Configuration;
 import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.context.IProcessingContext;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.context.IContextVariableRestriction;
-import org.thymeleaf.context.IProcessingContext;
-import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.expression.ExpressionEvaluatorObjects;
 import org.thymeleaf.util.ClassLoaderUtils;
@@ -65,8 +62,8 @@ public class OgnlVariableExpressionEvaluator
     
     
     
-    public final Object evaluate(final Configuration configuration, 
-            final IProcessingContext processingContext, final String expression, 
+    public final Object evaluate(
+            final IProcessingContext processingContext, final String expression,
             final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
        
         try {
@@ -75,6 +72,7 @@ public class OgnlVariableExpressionEvaluator
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
             }
 
+            final IEngineConfiguration configuration = processingContext.getConfiguration();
             
             Object expressionTree = null;
             ICache<String, Object> cache = null;
@@ -96,7 +94,6 @@ public class OgnlVariableExpressionEvaluator
                 }
             }
 
-            
             final Map<String,Object> contextVariables = processingContext.getExpressionObjects();
 
             final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
@@ -106,8 +103,8 @@ public class OgnlVariableExpressionEvaluator
             
             final Object evaluationRoot = 
                     (useSelectionAsRoot?
-                            processingContext.getExpressionSelectionEvaluationRoot() :
-                            processingContext.getExpressionEvaluationRoot());
+                            processingContext.getVariablesMap().getSelectionTarget() :
+                            processingContext.getVariablesMap());
 
             setVariableRestrictions(expContext, evaluationRoot, contextVariables);
 
@@ -120,7 +117,7 @@ public class OgnlVariableExpressionEvaluator
             final IStandardConversionService conversionService =
                     StandardExpressions.getConversionService(configuration);
 
-            return conversionService.convert(configuration, processingContext, result, String.class);
+            return conversionService.convert(processingContext, result, String.class);
             
         } catch (final OgnlException e) {
             throw new TemplateProcessingException(

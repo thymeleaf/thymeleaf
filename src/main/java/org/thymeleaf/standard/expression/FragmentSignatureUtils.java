@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.thymeleaf.Configuration;
+import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
@@ -50,7 +50,7 @@ public final class FragmentSignatureUtils {
 
 
 
-    public static FragmentSignature parseFragmentSignature(final Configuration configuration, final String input) {
+    public static FragmentSignature parseFragmentSignature(final IEngineConfiguration configuration, final String input) {
 
         Validate.notNull(configuration, "Configuration cannot be null");
         // Processing context CAN (and many times will, in fact) be null! - no variables can be used in signatures.

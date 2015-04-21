@@ -64,6 +64,9 @@ public abstract class AbstractContext implements IContext {
         return this.locale;
     }
 
+    public final boolean containsVariable(final String key) {
+        return this.variables.containsKey(key);
+    }
 
     public final Set<String> getVariableNames() {
         return this.variables.keySet();
