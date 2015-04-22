@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.aurora.expression.IExpressionObjects;
 
 /**
  *
@@ -42,7 +43,7 @@ public interface IProcessingContext {
 
     public IEngineConfiguration getConfiguration();
 
-    public Map<String,Object> getExpressionObjects();
+    public IExpressionObjects getExpressionObjects();
 
     public boolean isWeb();
 

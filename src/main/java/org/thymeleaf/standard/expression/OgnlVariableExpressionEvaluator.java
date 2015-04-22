@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +33,11 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.context.IProcessingContext;
+import org.thymeleaf.aurora.expression.IExpressionObjects;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.aurora.standard.expression.StandardExpressionObjects;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.EvaluationUtil;
 
@@ -48,13 +48,13 @@ import org.thymeleaf.util.EvaluationUtil;
  * @since 2.0.9
  *
  */
-public class OgnlVariableExpressionEvaluator 
+public final class OGNLVariableExpressionEvaluator
         implements IStandardVariableExpressionEvaluator {
     
     
-    private static final Logger logger = LoggerFactory.getLogger(OgnlVariableExpressionEvaluator.class);
+    private static final Logger logger = LoggerFactory.getLogger(OGNLVariableExpressionEvaluator.class);
 
-    public static final OgnlVariableExpressionEvaluator INSTANCE = new OgnlVariableExpressionEvaluator();
+    public static final OGNLVariableExpressionEvaluator INSTANCE = new OGNLVariableExpressionEvaluator();
     private static final String OGNL_CACHE_PREFIX = "{ognl}";
 
 
@@ -94,14 +94,12 @@ public class OgnlVariableExpressionEvaluator
                 }
             }
 
-            final Map<String,Object> contextVariables = processingContext.getExpressionObjects();
+            // TODO This cannot be a simple map, must be some kind of object containing most expression objects
+            // and updated here to set the latest selection target, making sure that the #vars and #object names
+            // point to the correct objects
+            final IExpressionObjects contextVariables = processingContext.getExpressionObjects();
 
-            final Map<String,Object> additionalContextVariables = computeAdditionalContextVariables(processingContext);
-            if (additionalContextVariables != null) {
-                contextVariables.putAll(additionalContextVariables);
-            }
-            
-            final Object evaluationRoot = 
+            final Object evaluationRoot =
                     (useSelectionAsRoot?
                             processingContext.getVariablesMap().getSelectionTarget() :
                             processingContext.getVariablesMap());
@@ -128,15 +126,7 @@ public class OgnlVariableExpressionEvaluator
 
 
 
-    
-    /*
-     * Meant to be overwritten
-     */
-    protected Map<String,Object> computeAdditionalContextVariables(
-            @SuppressWarnings("unused") final IProcessingContext processingContext) {
-        return Collections.emptyMap();
-    }
-    
+
     
     protected void setVariableRestrictions(final StandardExpressionExecutionContext expContext, 
             final Object evaluationRoot, final Map<String,Object> contextVariables) {
@@ -145,7 +135,7 @@ public class OgnlVariableExpressionEvaluator
                 (expContext.getForbidRequestParameters()? 
                         StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
         
-        final Object context = contextVariables.get(ExpressionEvaluatorObjects.CONTEXT_VARIABLE_NAME);
+        final Object context = contextVariables.get(StandardExpressionObjects.CONTEXT_EXPRESSION_OBJECT_NAME);
         if (context != null && context instanceof IContext) {
             final VariablesMap<?,?> variablesMap = ((IContext)context).getVariables();
             variablesMap.setRestrictions(restrictions);
@@ -160,7 +150,7 @@ public class OgnlVariableExpressionEvaluator
     
     
     
-    protected OgnlVariableExpressionEvaluator() {
+    protected OGNLVariableExpressionEvaluator() {
         super();
         if (!booleanFixApplied && shouldApplyOgnlBooleanFix()) {
             applyOgnlBooleanFix();
@@ -200,7 +190,7 @@ public class OgnlVariableExpressionEvaluator
         try {
             
             final ClassLoader classLoader = 
-                    ClassLoaderUtils.getClassLoader(OgnlVariableExpressionEvaluator.class);
+                    ClassLoaderUtils.getClassLoader(OGNLVariableExpressionEvaluator.class);
             
             final ClassPool pool = new ClassPool(true);
             pool.insertClassPath(new LoaderClassPath(classLoader));
@@ -211,7 +201,7 @@ public class OgnlVariableExpressionEvaluator
             // the latter would cause the class to be loaded and therefore it would not be
             // possible to modify it.
             final CtClass ognlClass = pool.get("ognl.OgnlOps");
-            final CtClass fixClass = pool.get(OgnlVariableExpressionEvaluator.class.getName());
+            final CtClass fixClass = pool.get(OGNLVariableExpressionEvaluator.class.getName());
             
             final CtMethod ognlMethod = 
                     ognlClass.getDeclaredMethod("booleanValue", params);

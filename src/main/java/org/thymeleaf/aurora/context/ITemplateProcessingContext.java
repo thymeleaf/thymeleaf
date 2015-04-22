@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.context;
 
-import java.util.Map;
-
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -40,6 +38,6 @@ public interface ITemplateProcessingContext extends IProcessingContext {
 
     public IModelFactory getModelFactory();
 
-    public IDSequences getIDSequences();
+    public IdentifierSequences getIdentifierSequences();
 
 }

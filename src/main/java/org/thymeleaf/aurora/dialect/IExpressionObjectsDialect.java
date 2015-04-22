@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.aurora.dialect;
 
-import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
+import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
 
 
 /**
@@ -30,6 +30,6 @@ import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
  */
 public interface IExpressionObjectsDialect extends IDialect {
 
-    public IExpressionObjectFactory getExpressionObjectFactory();
+    public IExpressionObjectsFactory getExpressionObjectsFactory();
 
 }

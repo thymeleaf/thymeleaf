@@ -100,12 +100,12 @@ public final class VariablesMap implements ILocalVariableAwareVariablesMap {
 
 
 
-    public boolean containsVariable(final String key) {
+    public boolean containsVariable(final String name) {
         int n = this.index + 1;
         while (n-- != 0) {
-            if (this.maps[n] != null && this.maps[n].containsKey(key)) {
+            if (this.maps[n] != null && this.maps[n].containsKey(name)) {
                 // The most modern entry we find for this key could be a removal --> false
-                return (this.maps[n].get(key) != NON_EXISTING);
+                return (this.maps[n].get(name) != NON_EXISTING);
             }
         }
         return false;

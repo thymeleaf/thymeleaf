@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
+import org.thymeleaf.aurora.expression.IExpressionObjects;
+import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
 import org.thymeleaf.util.Validate;
 
 /**
@@ -40,7 +41,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     private final IEngineConfiguration configuration;
     private final IVariablesMap variablesMap;
     private final boolean web;
-    private final Map<String,Object> expressionObjects;
+    private final IExpressionObjects expressionObjects;
 
 
 
@@ -56,8 +57,8 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.variablesMap = new VariablesMap(locale, variables);
         this.web = false;
 
-        final IExpressionObjectFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
-        this.expressionObjects = Collections.unmodifiableMap(expressionObjectFactory.buildExpressionObjects(this));
+        final IExpressionObjectsFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
+        this.expressionObjects = expressionObjectFactory.buildExpressionObjects(this);
 
     }
 
@@ -75,8 +76,8 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
         this.variablesMap = buildVariablesMap(context);
         this.web = this.variablesMap instanceof IWebVariablesMap;
 
-        final IExpressionObjectFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
-        this.expressionObjects = Collections.unmodifiableMap(expressionObjectFactory.buildExpressionObjects(this));
+        final IExpressionObjectsFactory expressionObjectFactory = getConfiguration().getExpressionObjectFactory();
+        this.expressionObjects = expressionObjectFactory.buildExpressionObjects(this);
 
     }
 
@@ -88,7 +89,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     }
 
 
-    public Map<String, Object> getExpressionObjects() {
+    public IExpressionObjects getExpressionObjects() {
         return this.expressionObjects;
     }
 

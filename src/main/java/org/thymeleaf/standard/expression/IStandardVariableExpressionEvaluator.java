@@ -28,7 +28,7 @@ import org.thymeleaf.aurora.context.IProcessingContext;
  * </p>
  * <p>
  *   The basic implementation of this interface evaluates expressions using OGNL
- *   {@link OgnlVariableExpressionEvaluator}, but a SpringEL version also exists in the Thymeleaf + Spring
+ *   {@link OGNLVariableExpressionEvaluator}, but a SpringEL version also exists in the Thymeleaf + Spring
  *   integration package.
  * </p>
  * <p>

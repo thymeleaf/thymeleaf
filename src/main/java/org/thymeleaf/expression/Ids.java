@@ -38,19 +38,19 @@ public class Ids {
     public String seq(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.processingContext.getIDSequences().getAndIncrementIDSeq(str);
+        return str + this.processingContext.getIdentifierSequences().getAndIncrementIDSeq(str);
     }
     
     public String next(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.processingContext.getIDSequences().getNextIDSeq(str);
+        return str + this.processingContext.getIdentifierSequences().getNextIDSeq(str);
     }
     
     public String prev(final Object id) {
         Validate.notNull(id, "ID cannot be null");
         final String str = id.toString();
-        return str + this.processingContext.getIDSequences().getPreviousIDSeq(str);
+        return str + this.processingContext.getIdentifierSequences().getPreviousIDSeq(str);
     }
     
 

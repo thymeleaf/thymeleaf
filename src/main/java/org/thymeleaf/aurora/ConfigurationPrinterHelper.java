@@ -35,7 +35,7 @@ import org.thymeleaf.aurora.dialect.IPostProcessorDialect;
 import org.thymeleaf.aurora.dialect.IPreProcessorDialect;
 import org.thymeleaf.aurora.dialect.IProcessorDialect;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
+import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
@@ -186,7 +186,7 @@ final class ConfigurationPrinterHelper {
 
             final IExpressionObjectsDialect dialect = (IExpressionObjectsDialect)idialect;
 
-            final IExpressionObjectFactory expressionObjectFactory = dialect.getExpressionObjectFactory();
+            final IExpressionObjectsFactory expressionObjectFactory = dialect.getExpressionObjectsFactory();
             if (expressionObjectFactory != null) {
 
                 final Map<String,String> expressionObjectDefinitions = expressionObjectFactory.getObjectDefinitions();

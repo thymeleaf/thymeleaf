@@ -21,10 +21,6 @@ package org.thymeleaf.standard.expression;
 
 
 
-
-
-
-
 /**
  * <p>
  *   Context class that contains several conditions that might be of interest to the

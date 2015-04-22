@@ -17,24 +17,23 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
+package org.thymeleaf.aurora.expression;
 
-import java.util.Locale;
-import java.util.Set;
+import java.util.Map;
+
+import org.thymeleaf.aurora.context.IProcessingContext;
+
 
 /**
  *
  * @author Daniel Fern&aacute;ndez
- *
- * @since 1.0 (reimplemented in 3.0.0)
+ * @since 3.0.0
  *
  */
-public interface IContext {
+public interface IExpressionObjectsFactory {
 
-    public Locale getLocale();
+    public IExpressionObjects buildExpressionObjects(final IProcessingContext processingContext);
 
-    public boolean containsVariable(final String name);
-    public Set<String> getVariableNames();
-    public Object getVariable(final String name);
+    public Map<String,String> getObjectDefinitions();
 
 }

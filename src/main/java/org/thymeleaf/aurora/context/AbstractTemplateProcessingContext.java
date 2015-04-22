@@ -19,13 +19,11 @@
  */
 package org.thymeleaf.aurora.context;
 
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.engine.StandardModelFactory;
-import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
 import org.thymeleaf.aurora.model.IModelFactory;
 import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
@@ -44,7 +42,7 @@ public abstract class AbstractTemplateProcessingContext
     private final TemplateResolution templateResolution;
     private final TemplateMode templateMode;
     private final IModelFactory modelFactory;
-    private final IDSequences idSequences;
+    private final IdentifierSequences identifierSequences;
 
 
 
@@ -63,7 +61,7 @@ public abstract class AbstractTemplateProcessingContext
                 new StandardModelFactory(
                         this.templateMode, getConfiguration().getTextRepository(),
                         getConfiguration().getAttributeDefinitions(), getConfiguration().getElementDefinitions());
-        this.idSequences = new IDSequences();
+        this.identifierSequences = new IdentifierSequences();
 
     }
 
@@ -82,7 +80,7 @@ public abstract class AbstractTemplateProcessingContext
                 new StandardModelFactory(
                         this.templateMode, getConfiguration().getTextRepository(),
                         getConfiguration().getAttributeDefinitions(), getConfiguration().getElementDefinitions());
-        this.idSequences = new IDSequences();
+        this.identifierSequences = new IdentifierSequences();
 
     }
 
@@ -100,8 +98,8 @@ public abstract class AbstractTemplateProcessingContext
         return this.modelFactory;
     }
 
-    public IDSequences getIDSequences() {
-        return this.idSequences;
+    public IdentifierSequences getIdentifierSequences() {
+        return this.identifierSequences;
     }
 
 }

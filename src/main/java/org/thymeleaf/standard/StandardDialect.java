@@ -37,7 +37,7 @@ import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.OGNLVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionExecutor;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
@@ -127,7 +127,7 @@ import org.thymeleaf.util.Validate;
  *   <li><b>Execution attributes</b> (accessed through {@link StandardExpressions}):
  *         <ul>
  *           <li>"StandardVariableExpressionEvaluator": {@link IStandardVariableExpressionEvaluator},
- *               implemented by an object of type {@link OgnlVariableExpressionEvaluator}
+ *               implemented by an object of type {@link OGNLVariableExpressionEvaluator}
  *               (<tt>OGNL</tt> expression language).</li>
  *           <li>"StandardExpressionParser": {@link IStandardExpressionParser},
  *               implemented by an object of type {@link StandardExpressionParser}.</li>
@@ -513,7 +513,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
      *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
      * </p>
      * <p>
-     *   This will be {@link OgnlVariableExpressionEvaluator} by default. When using the Spring Standard
+     *   This will be {@link OGNLVariableExpressionEvaluator} by default. When using the Spring Standard
      *   Dialect, this will be a SpringEL-based implementation.
      * </p>
      *
@@ -522,7 +522,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
      */
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
         if (this.variableExpressionEvaluator == null) {
-            return OgnlVariableExpressionEvaluator.INSTANCE;
+            return OGNLVariableExpressionEvaluator.INSTANCE;
         }
         return this.variableExpressionEvaluator;
     }
@@ -537,7 +537,7 @@ public class StandardDialect extends AbstractXHTMLEnabledDialect {
      *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
      * </p>
      * <p>
-     *   This will be {@link OgnlVariableExpressionEvaluator#INSTANCE} by default. When using the Spring Standard
+     *   This will be {@link OGNLVariableExpressionEvaluator#INSTANCE} by default. When using the Spring Standard
      *   Dialect, this will be a SpringEL-based implementation.
      * </p>
      * <p>

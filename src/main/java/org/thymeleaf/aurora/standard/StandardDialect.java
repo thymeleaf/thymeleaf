@@ -26,7 +26,10 @@ import java.util.Set;
 
 import org.thymeleaf.aurora.dialect.AbstractProcessorDialect;
 import org.thymeleaf.aurora.dialect.IExecutionAttributesDialect;
+import org.thymeleaf.aurora.dialect.IExpressionObjectsDialect;
+import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
 import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.aurora.standard.expression.StandardExpressionObjectsFactory;
 import org.thymeleaf.aurora.standard.processor.StandardClassTagProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardDefaultAttributesTagProcessor;
 import org.thymeleaf.aurora.standard.processor.StandardEachTagProcessor;
@@ -41,7 +44,7 @@ import org.thymeleaf.aurora.standard.processor.StandardWithTagProcessor;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardExpressionParser;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.OgnlVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.OGNLVariableExpressionEvaluator;
 import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionParser;
 import org.thymeleaf.standard.expression.StandardExpressions;
@@ -58,7 +61,7 @@ import org.thymeleaf.util.Validate;
  */
 public class StandardDialect
             extends AbstractProcessorDialect
-            implements IExecutionAttributesDialect {
+            implements IExecutionAttributesDialect, IExpressionObjectsDialect {
 
     private static final String NAME = "Standard";
     private static final String PREFIX = "th";
@@ -88,7 +91,7 @@ public class StandardDialect
      *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
      * </p>
      * <p>
-     *   This will be {@link OgnlVariableExpressionEvaluator} by default. When using the Spring Standard
+     *   This will be {@link OGNLVariableExpressionEvaluator} by default. When using the Spring Standard
      *   Dialect, this will be a SpringEL-based implementation.
      * </p>
      *
@@ -97,7 +100,7 @@ public class StandardDialect
      */
     public IStandardVariableExpressionEvaluator getVariableExpressionEvaluator() {
         if (this.variableExpressionEvaluator == null) {
-            return OgnlVariableExpressionEvaluator.INSTANCE;
+            return OGNLVariableExpressionEvaluator.INSTANCE;
         }
         return this.variableExpressionEvaluator;
     }
@@ -112,7 +115,7 @@ public class StandardDialect
      *   This is used for executing all ${...} and *{...} expressions in Thymeleaf Standard Expressions.
      * </p>
      * <p>
-     *   This will be {@link OgnlVariableExpressionEvaluator#INSTANCE} by default. When using the Spring Standard
+     *   This will be {@link OGNLVariableExpressionEvaluator#INSTANCE} by default. When using the Spring Standard
      *   Dialect, this will be a SpringEL-based implementation.
      * </p>
      * <p>
@@ -237,6 +240,11 @@ public class StandardDialect
     }
 
 
+
+
+    public IExpressionObjectsFactory getExpressionObjectsFactory() {
+        return new StandardExpressionObjectsFactory();
+    }
 
 
 

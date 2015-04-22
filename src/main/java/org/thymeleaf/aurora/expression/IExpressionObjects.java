@@ -17,24 +17,32 @@
  * 
  * =============================================================================
  */
-package org.thymeleaf.aurora.context;
+package org.thymeleaf.aurora.expression;
 
-import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
+
 /**
+ * <p>
+ *   Container object for all the expression utility objects to be made available in expressions. The aim of objects
+ *   implementing this interface is to keep most expression utility objects instanced for the complete execution of
+ *   a template, always being able to update themselves at any moment in time by means of a reference to the
+ *   {@link org.thymeleaf.aurora.context.IProcessingContext} that is using them.
+ * </p>
  *
  * @author Daniel Fern&aacute;ndez
- *
- * @since 1.0 (reimplemented in 3.0.0)
+ * 
+ * @since 3.0.0
  *
  */
-public interface IContext {
+public interface IExpressionObjects {
 
-    public Locale getLocale();
 
-    public boolean containsVariable(final String name);
-    public Set<String> getVariableNames();
-    public Object getVariable(final String name);
+    public boolean containsObject(final String name);
+    public Set<String> getObjectNames();
+    public Object getObject(final String name);
+
+    public Map<String,Object> buildMap();
 
 }

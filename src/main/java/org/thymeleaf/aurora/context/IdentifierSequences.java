@@ -32,7 +32,7 @@ import org.thymeleaf.util.Validate;
  * @since 3.0.0
  * 
  */
-public final class IDSequences {
+public final class IdentifierSequences {
 
 
     private final Map<String,Integer> idCounts;
@@ -40,7 +40,7 @@ public final class IDSequences {
 
 
 
-    public IDSequences() {
+    public IdentifierSequences() {
         super();
         this.idCounts = new HashMap<String,Integer>(1,1.0f);
     }

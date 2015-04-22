@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.aurora.standard.expression.StandardExpressionObjects;
 import org.thymeleaf.util.Validate;
 
 
@@ -116,7 +116,7 @@ public abstract class AbstractProcessingContext implements IProcessingContext {
     
     
     protected Map<String,Object> computeExpressionObjects() {
-        return ExpressionEvaluatorObjects.computeEvaluationObjects(this);
+        return StandardExpressionObjects.computeEvaluationObjects(this);
     }
     
 

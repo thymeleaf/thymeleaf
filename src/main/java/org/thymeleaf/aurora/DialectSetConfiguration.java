@@ -22,7 +22,6 @@ package org.thymeleaf.aurora;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +38,8 @@ import org.thymeleaf.aurora.dialect.IProcessorDialect;
 import org.thymeleaf.aurora.engine.AttributeDefinitions;
 import org.thymeleaf.aurora.engine.ElementDefinitions;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
-import org.thymeleaf.aurora.expression.IExpressionObjectFactory;
+import org.thymeleaf.aurora.expression.IExpressionObjects;
+import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
 import org.thymeleaf.aurora.processor.IProcessor;
 import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
 import org.thymeleaf.aurora.processor.cdatasection.ICDATASectionProcessor;
@@ -69,7 +69,7 @@ final class DialectSetConfiguration {
 
     private final Map<String,Object> executionAttributes;
 
-    private final AggregateExpressionObjectFactory expressionObjectFactory;
+    private final AggregateExpressionObjectsFactory expressionObjectFactory;
 
     private final ElementDefinitions elementDefinitions;
     private final AttributeDefinitions attributeDefinitions;
@@ -101,7 +101,7 @@ final class DialectSetConfiguration {
         final Map<String, Object> executionAttributes = new LinkedHashMap<String, Object>(10, 1.0f);
 
         // This will aggregate all the expression object factories provided by the different dialects
-        final AggregateExpressionObjectFactory aggregateExpressionObjectFactory = new AggregateExpressionObjectFactory();
+        final AggregateExpressionObjectsFactory aggregateExpressionObjectFactory = new AggregateExpressionObjectsFactory();
 
         // This allProcessors set will be used for certifying that no processor instances are repeated accross dialects
         final Set<IProcessor> allProcessors = new LinkedHashSet<IProcessor>(80);
@@ -278,7 +278,7 @@ final class DialectSetConfiguration {
              */
             if (dialect instanceof IExpressionObjectsDialect) {
 
-                final IExpressionObjectFactory factory = ((IExpressionObjectsDialect) dialect).getExpressionObjectFactory();
+                final IExpressionObjectsFactory factory = ((IExpressionObjectsDialect) dialect).getExpressionObjectsFactory();
                 if (factory != null) {
                     aggregateExpressionObjectFactory.add(factory);
                 }
@@ -409,7 +409,7 @@ final class DialectSetConfiguration {
             final Set<DialectConfiguration> dialectConfigurations, final Set<IDialect> dialects,
             final String standardDialectPrefix,
             final Map<String, Object> executionAttributes,
-            final AggregateExpressionObjectFactory expressionObjectFactory,
+            final AggregateExpressionObjectsFactory expressionObjectFactory,
             final ElementDefinitions elementDefinitions, final AttributeDefinitions attributeDefinitions,
             final EnumMap<TemplateMode, Set<ICDATASectionProcessor>> cdataSectionProcessorsByTemplateMode,
             final EnumMap<TemplateMode, Set<ICommentProcessor>> commentProcessorsByTemplateMode,
@@ -550,7 +550,7 @@ final class DialectSetConfiguration {
     }
 
 
-    public IExpressionObjectFactory getExpressionObjectFactory() {
+    public IExpressionObjectsFactory getExpressionObjectFactory() {
         return this.expressionObjectFactory;
     }
 
@@ -561,18 +561,20 @@ final class DialectSetConfiguration {
      * This class serves the purpose of aggregating all the registered expression object factories so that
      * obtaining all the objects from an IProcessingContext implementation is easier.
      */
-    static class AggregateExpressionObjectFactory implements IExpressionObjectFactory {
+    static class AggregateExpressionObjectsFactory implements IExpressionObjectsFactory {
 
         private final Map<String,String> expressionObjectDefinitions;
-        private final List<IExpressionObjectFactory> expressionObjectFactories;
+        private final List<IExpressionObjectsFactory> expressionObjectFactories;
 
-        AggregateExpressionObjectFactory() {
+
+        AggregateExpressionObjectsFactory() {
             super();
-            this.expressionObjectFactories = new ArrayList<IExpressionObjectFactory>(3);
+            this.expressionObjectFactories = new ArrayList<IExpressionObjectsFactory>(3);
             this.expressionObjectDefinitions = new LinkedHashMap<String, String>(8);
         }
 
-        void add(final IExpressionObjectFactory factory) {
+
+        void add(final IExpressionObjectsFactory factory) {
             this.expressionObjectFactories.add(factory);
             final Map<String,String> objectDefinitions = factory.getObjectDefinitions();
             if (objectDefinitions != null) {
@@ -580,37 +582,91 @@ final class DialectSetConfiguration {
             }
         }
 
+
         public Map<String, String> getObjectDefinitions() {
             return this.expressionObjectDefinitions;
         }
 
-        public Map<String, Object> buildExpressionObjects(final IProcessingContext processingContext) {
-            if (this.expressionObjectFactories.size() == 0) {
-                return Collections.EMPTY_MAP;
-            }
-            if (this.expressionObjectFactories.size() == 1) {
-                return this.expressionObjectFactories.get(0).buildExpressionObjects(processingContext);
-            }
-            // HashMap, not LinkedHashMap -- order does not seem important in this, and given this building operation
-            // will be done for each template being processed, we might benefit from a slight performance gain
-            final Map<String,Object> expressionObjects = new HashMap<String,Object>(30);
-            for (final IExpressionObjectFactory factory : this.expressionObjectFactories) {
-                final Map<String,Object> expressionObjectsForFactory = factory.buildExpressionObjects(processingContext);
-                if (expressionObjects.isEmpty()) {
-                    expressionObjects.putAll(expressionObjectsForFactory);
-                } else {
-                    for (final Map.Entry<String, Object> entry : expressionObjectsForFactory.entrySet()) {
-                        final String expressionObjectName = entry.getKey();
-                        if (expressionObjects.containsKey(expressionObjectName)) {
-                            throw new ConfigurationException(
-                                    "Configured dialects tried to register duplicate expression object: \"" + expressionObjectName + "\"");
-                        }
-                        expressionObjects.put(expressionObjectName, entry.getValue());
-                    }
-                }
+
+        public IExpressionObjects buildExpressionObjects(final IProcessingContext processingContext) {
+
+            final AggregateExpressionObjects expressionObjects = new AggregateExpressionObjects();
+            for (final IExpressionObjectsFactory factory : this.expressionObjectFactories) {
+                expressionObjects.addExpressionObjects(factory.buildExpressionObjects(processingContext));
             }
             return expressionObjects;
+
         }
+
+
+
+        static class AggregateExpressionObjects implements IExpressionObjects {
+
+            private final List<IExpressionObjects> expressionObjectsList = new ArrayList<IExpressionObjects>(2);
+
+            AggregateExpressionObjects() {
+                super();
+            }
+
+            void addExpressionObjects(final IExpressionObjects expressionObjects) {
+                this.expressionObjectsList.add(expressionObjects);
+            }
+
+
+            public boolean containsObject(final String name) {
+                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
+                    if (expressionObjects.containsObject(name)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public Set<String> getObjectNames() {
+                if (this.expressionObjectsList.size() == 0) {
+                    return Collections.EMPTY_SET;
+                }
+                if (this.expressionObjectsList.size() == 1) {
+                    return this.expressionObjectsList.get(0).getObjectNames();
+                }
+                final Set<String> objectNames = new LinkedHashSet<String>(30);
+                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
+                    objectNames.addAll(expressionObjects.getObjectNames());
+                }
+                return objectNames;
+            }
+
+            public Object getObject(final String name) {
+                if (this.expressionObjectsList.size() == 0) {
+                    return Collections.EMPTY_SET;
+                }
+                if (this.expressionObjectsList.size() == 1) {
+                    return this.expressionObjectsList.get(0).getObject(name);
+                }
+                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
+                    if (expressionObjects.containsObject(name)) {
+                        return expressionObjects.getObject(name);
+                    }
+                }
+                return null;
+            }
+
+            public Map<String, Object> buildMap() {
+                if (this.expressionObjectsList.size() == 0) {
+                    return Collections.EMPTY_MAP;
+                }
+                if (this.expressionObjectsList.size() == 1) {
+                    return this.expressionObjectsList.get(0).buildMap();
+                }
+                final Map<String,Object> map = new LinkedHashMap<String, Object>(30);
+                for (final IExpressionObjects expressionObjects : this.expressionObjectsList) {
+                    map.putAll(expressionObjects.buildMap());
+                }
+                return map;
+            }
+
+        }
+
 
     }
 

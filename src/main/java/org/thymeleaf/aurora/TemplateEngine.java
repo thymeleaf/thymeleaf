@@ -30,6 +30,7 @@ import org.thymeleaf.aurora.context.TemplateProcessingContext;
 import org.thymeleaf.aurora.engine.ITemplateHandler;
 import org.thymeleaf.aurora.engine.OutputTemplateHandler;
 import org.thymeleaf.aurora.engine.ProcessorTemplateHandler;
+import org.thymeleaf.aurora.expression.OGNLVariablesMapPropertyAccessor;
 import org.thymeleaf.aurora.parser.HTMLTemplateParser;
 import org.thymeleaf.aurora.parser.ITemplateParser;
 import org.thymeleaf.aurora.parser.XMLTemplateParser;
@@ -60,9 +61,25 @@ public final class TemplateEngine implements ITemplateEngine {
 
 
     static {
+
         final StandardDialect standardDialect = new StandardDialect();
         final DialectConfiguration standardDialectConfiguration = new DialectConfiguration(standardDialect);
         STANDARD_DIALECT_CONFIGURATIONS = Collections.singleton(standardDialectConfiguration);
+
+        try {
+
+            Class.forName("ognl.OgnlRuntime");
+            OGNLVariablesMapPropertyAccessor.initialize();
+
+        } catch (final ClassNotFoundException ignored) {
+            // Nothing bad. We simply don't have OGNL in our classpath. We're probably using Spring.
+        } catch (final Exception e) {
+            // We will not ignore this: there's a problem creating an instance of the new property accessor!
+            throw new TemplateProcessingException("Exception while configuring OGNL variables map property accessor", e);
+        }
+
+
+
     }
 
 

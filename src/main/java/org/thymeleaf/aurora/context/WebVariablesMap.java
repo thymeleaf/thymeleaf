@@ -136,17 +136,17 @@ public final class WebVariablesMap
     }
 
 
-    public boolean containsVariable(final String key) {
-        if (SESSION_VARIABLE_NAME.equals(key)) {
+    public boolean containsVariable(final String name) {
+        if (SESSION_VARIABLE_NAME.equals(name)) {
             return this.sessionAttributesVariablesMap != null;
         }
-        if (PARAM_VARIABLE_NAME.equals(key)) {
+        if (PARAM_VARIABLE_NAME.equals(name)) {
             return true;
         }
-        if (APPLICATION_VARIABLE_NAME.equals(key)) {
+        if (APPLICATION_VARIABLE_NAME.equals(name)) {
             return true;
         }
-        return this.requestAttributesVariablesMap.containsVariable(key);
+        return this.requestAttributesVariablesMap.containsVariable(name);
     }
 
 
@@ -289,8 +289,8 @@ public final class WebVariablesMap
             return this.session.getAttribute(key);
         }
 
-        public boolean containsVariable(final String key) {
-            return existsInEnumeration(this.session.getAttributeNames(), key);
+        public boolean containsVariable(final String name) {
+            return existsInEnumeration(this.session.getAttributeNames(), name);
         }
 
 
@@ -341,8 +341,8 @@ public final class WebVariablesMap
             return this.servletContext.getAttribute(key);
         }
 
-        public boolean containsVariable(final String key) {
-            return existsInEnumeration(this.servletContext.getAttributeNames(), key);
+        public boolean containsVariable(final String name) {
+            return existsInEnumeration(this.servletContext.getAttributeNames(), name);
         }
 
 
@@ -393,8 +393,8 @@ public final class WebVariablesMap
             return this.request.getAttribute(key);
         }
 
-        public boolean containsVariable(final String key) {
-            return existsInEnumeration(this.request.getAttributeNames(), key);
+        public boolean containsVariable(final String name) {
+            return existsInEnumeration(this.request.getAttributeNames(), name);
         }
 
         public Set<String> getVariableNames() {
@@ -480,18 +480,18 @@ public final class WebVariablesMap
             return this.locale;
         }
 
-        public boolean containsVariable(final String key) {
+        public boolean containsVariable(final String name) {
 
             // For most implementations of HttpServletRequest, trying to get a value instead of iterating the
             // keys Enumeration seems faster as a way to know if something exists (in the cases when we are checking
             // for existing keys a good % of the total times).
-            if (this.request.getAttribute(key) != null) {
+            if (this.request.getAttribute(name) != null) {
                 return true;
             }
 
             final Enumeration<String> attrNamesEnum = this.request.getAttributeNames();
 
-            if (key == null) {
+            if (name == null) {
                 while (attrNamesEnum.hasMoreElements()) {
                     if (attrNamesEnum.nextElement() == null) {
                         return true;
@@ -501,7 +501,7 @@ public final class WebVariablesMap
             }
 
             while (attrNamesEnum.hasMoreElements()) {
-                if (key.equals(attrNamesEnum.nextElement())) {
+                if (name.equals(attrNamesEnum.nextElement())) {
                     return true;
                 }
             }

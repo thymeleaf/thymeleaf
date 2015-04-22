@@ -19,21 +19,25 @@
  */
 package org.thymeleaf.aurora.expression;
 
-import java.util.Map;
-
-import org.thymeleaf.aurora.context.IProcessingContext;
-
-
 /**
- *
+ * <p>
+ *   Default implementation of the {@link IExpressionObjects} interface.
+ * </p>
+ * <p>
+ *   This implementation does nothing but to store the objects as a mere map.
+ * </p>
+ * 
  * @author Daniel Fern&aacute;ndez
+ * 
  * @since 3.0.0
  *
  */
-public interface IExpressionObjectFactory {
+public final class ExpressionObjects extends AbstractExpressionObjects {
 
-    public Map<String,Object> buildExpressionObjects(final IProcessingContext processingContext);
 
-    public Map<String,String> getObjectDefinitions();
+    public ExpressionObjects() {
+        super();
+    }
+
 
 }
