@@ -19,8 +19,6 @@
  */
 package org.thymeleaf.aurora.context;
 
-import java.util.Set;
-
 /**
  *
  * @author Daniel Fern&aacute;ndez

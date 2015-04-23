@@ -653,7 +653,7 @@ final class DialectSetConfiguration {
 
             public Map<String, Object> buildMap() {
                 if (this.expressionObjectsList.size() == 0) {
-                    return Collections.EMPTY_MAP;
+                    return new LinkedHashMap<String, Object>(3);
                 }
                 if (this.expressionObjectsList.size() == 1) {
                     return this.expressionObjectsList.get(0).buildMap();

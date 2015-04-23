@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.cache;
 
-import org.thymeleaf.Template;
 
+import org.thymeleaf.aurora.engine.Template;
 
 /**
  * 

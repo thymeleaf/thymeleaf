@@ -250,7 +250,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
         }
 
         if (this.eventQueues[this.handlerExecLevel] == null) {
-            this.eventQueues[this.handlerExecLevel] = new EngineEventQueue(this.templateMode, this.configuration);
+            this.eventQueues[this.handlerExecLevel] = new EngineEventQueue(this.configuration, this.templateMode);
         } else {
             this.eventQueues[this.handlerExecLevel].reset();
         }
@@ -2248,7 +2248,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         IterationSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.iterationQueue = new EngineEventQueue(templateMode, configuration);
+            this.iterationQueue = new EngineEventQueue(configuration, templateMode);
             reset();
         }
 
@@ -2272,7 +2272,7 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         SuspensionSpec(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.suspendedQueue = new EngineEventQueue(templateMode, configuration);
+            this.suspendedQueue = new EngineEventQueue(configuration, templateMode);
             this.suspendedIterator = new ElementProcessorIterator();
         }
 
@@ -2294,8 +2294,8 @@ public final class ProcessorTemplateHandler extends AbstractTemplateHandler {
 
         IterationArtifacts(final TemplateMode templateMode, final IEngineConfiguration configuration) {
             super();
-            this.iterationQueue = new EngineEventQueue(templateMode, configuration);
-            this.suspendedQueue = new EngineEventQueue(templateMode, configuration);
+            this.iterationQueue = new EngineEventQueue(configuration, templateMode);
+            this.suspendedQueue = new EngineEventQueue(configuration, templateMode);
             this.suspendedElementProcessorIterator = new ElementProcessorIterator();
         }
 

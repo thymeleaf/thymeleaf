@@ -23,13 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.Template;
-import org.thymeleaf.dom.Node;
-
-
-
-
-
+import org.thymeleaf.aurora.engine.Template;
 
 
 /**
@@ -42,7 +36,7 @@ import org.thymeleaf.dom.Node;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.0.0
+ * @since 2.0.0 (reimplemented in 3.0.0)
  *
  */
 public abstract class AbstractCacheManager implements ICacheManager {
@@ -51,7 +45,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     private volatile ICache<String,Template> templateCache;
     private volatile boolean templateCacheInitialized = false;
     
-    private volatile ICache<String,List<Node>> fragmentCache;
+    private volatile ICache<String,Template> fragmentCache;
     private volatile boolean fragmentCacheInitialized = false;
     
     private volatile ICache<String,Object> expressionCache;
@@ -79,7 +73,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
     }
 
     
-    public final ICache<String, List<Node>> getFragmentCache() {
+    public final ICache<String, Template> getFragmentCache() {
         if (!this.fragmentCacheInitialized) {
             synchronized(this) {
                 if (!this.fragmentCacheInitialized) {
@@ -136,7 +130,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
             templateCacheObj.clear();
         }
         
-        final ICache<String, List<Node>> fragmentCacheObj = getFragmentCache();
+        final ICache<String, Template> fragmentCacheObj = getFragmentCache();
         if (fragmentCacheObj != null) {
             fragmentCacheObj.clear();
         }
@@ -166,7 +160,7 @@ public abstract class AbstractCacheManager implements ICacheManager {
 
     protected abstract ICache<String,Template> initializeTemplateCache();
 
-    protected abstract ICache<String,List<Node>> initializeFragmentCache();
+    protected abstract ICache<String,Template> initializeFragmentCache();
     
     protected abstract ICache<String,Properties> initializeMessageCache();
     

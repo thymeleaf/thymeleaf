@@ -316,11 +316,12 @@ public final class StandardExpressionObjects extends AbstractExpressionObjects {
             initializeAll();
         }
         // Then we create a new Map object, and we add to it all the objects, previously created
-        final Map<String,Object> map = new HashMap<String, Object>(30);
-        map.putAll(getObjectsMap());
+        final Map<String,Object> map = new HashMap<String, Object>(super.getObjectsMap());
         // There is one non-cachable object, which we consequently will be required to master.
         if (this.processingContext.getVariablesMap().hasSelectionTarget()) {
             map.put(SELECTION_TARGET_EXPRESSION_OBJECT_NAME, this.processingContext.getVariablesMap().getSelectionTarget());
+        } else {
+            map.put(SELECTION_TARGET_EXPRESSION_OBJECT_NAME, this.processingContext.getVariablesMap());
         }
         return map;
     }

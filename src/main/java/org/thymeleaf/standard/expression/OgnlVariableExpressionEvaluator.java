@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import java.util.List;
 import java.util.Map;
 
 import javassist.ClassPool;
@@ -28,16 +27,17 @@ import javassist.CtMethod;
 import javassist.LoaderClassPath;
 import ognl.Ognl;
 import ognl.OgnlException;
+import ognl.OgnlRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.context.IProcessingContext;
+import org.thymeleaf.aurora.context.IVariablesMap;
 import org.thymeleaf.aurora.expression.IExpressionObjects;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.aurora.standard.expression.StandardExpressionObjects;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.EvaluationUtil;
 
@@ -59,14 +59,44 @@ public final class OGNLVariableExpressionEvaluator
 
 
     private static boolean booleanFixApplied = false;
-    
-    
-    
+
+
+
+
+
+
+
+    private OGNLVariableExpressionEvaluator() {
+
+        super();
+
+        /*
+         * INITIALIZE AND REGISTER THE PROPERTY ACCESSOR
+         */
+        final OGNLVariablesMapPropertyAccessor accessor = new OGNLVariablesMapPropertyAccessor();
+        OgnlRuntime.setPropertyAccessor(IVariablesMap.class, accessor);
+
+        /*
+         * APPLY THE BOOLEAN EVALUATION FIX (so that ${!'false'} evaluates as true)
+         */
+        if (!booleanFixApplied && shouldApplyOgnlBooleanFix()) {
+            applyOgnlBooleanFix();
+            booleanFixApplied = true;
+        }
+
+    }
+
+
+
+
+
     public final Object evaluate(
             final IProcessingContext processingContext, final String expression,
             final StandardExpressionExecutionContext expContext, final boolean useSelectionAsRoot) {
        
         try {
+
+            // TODO OGNL now has compiled expressions... maybe worth trying?
 
             if (logger.isTraceEnabled()) {
                 logger.trace("[THYMELEAF][{}] OGNL expression: evaluating expression \"{}\" on target", TemplateEngine.threadIndex(), expression);
@@ -94,19 +124,35 @@ public final class OGNLVariableExpressionEvaluator
                 }
             }
 
-            // TODO This cannot be a simple map, must be some kind of object containing most expression objects
-            // and updated here to set the latest selection target, making sure that the #vars and #object names
-            // point to the correct objects
+            // The IExpressionObjects implementation returned by processing contexts that include the Standard
+            // Dialects will be lazy in the creation of expression objects (i.e. they won't be created until really
+            // needed). But unfortunately, OGNL resolves ALL of the context variables from the specified map when
+            // creating the OgnlContext, so even if we have the capacity of not creating the expression objects until
+            // we really need them, OGNL will not allow us to do so. Anyway, at least the StandardExpressionObjects
+            // implementation will take care of reusing almost all of the objects (except those that depend on the
+            // selection target), so that they are not created for each expression -- only for each template.
             final IExpressionObjects contextVariables = processingContext.getExpressionObjects();
+            final Map<String,Object> contextVariablesMap = contextVariables.buildMap();
 
+            // We might need to apply restrictions on the request parameters. In the case of OGNL, the only way we
+            // can actually communicate with the PropertyAccessor, (OGNLVariablesMapPropertyAccessor), which is the
+            // agent in charge of applying such restrictions, is by adding a context variable that the property accessor
+            // can later lookup during evaluation.
+            if (expContext.getForbidRequestParameters()) {
+                contextVariablesMap.put(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS, OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+            } else {
+                contextVariablesMap.remove(OGNLVariablesMapPropertyAccessor.RESTRICT_REQUEST_PARAMETERS);
+            }
+
+            // The root object on which we will evaluate expressions will depend on whether a selection target is
+            // active or not...
             final Object evaluationRoot =
                     (useSelectionAsRoot?
                             processingContext.getVariablesMap().getSelectionTarget() :
                             processingContext.getVariablesMap());
 
-            setVariableRestrictions(expContext, evaluationRoot, contextVariables);
-
-            final Object result = Ognl.getValue(expressionTree, contextVariables, evaluationRoot);
+            // Execute the expression!
+            final Object result = Ognl.getValue(expressionTree, contextVariablesMap, evaluationRoot);
 
             if (!expContext.getPerformTypeConversion()) {
                 return result;
@@ -126,37 +172,8 @@ public final class OGNLVariableExpressionEvaluator
 
 
 
-
-    
-    protected void setVariableRestrictions(final StandardExpressionExecutionContext expContext, 
-            final Object evaluationRoot, final Map<String,Object> contextVariables) {
-        
-        final List<IContextVariableRestriction> restrictions =
-                (expContext.getForbidRequestParameters()? 
-                        StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
-        
-        final Object context = contextVariables.get(StandardExpressionObjects.CONTEXT_EXPRESSION_OBJECT_NAME);
-        if (context != null && context instanceof IContext) {
-            final VariablesMap<?,?> variablesMap = ((IContext)context).getVariables();
-            variablesMap.setRestrictions(restrictions);
-        }
-        if (evaluationRoot != null && evaluationRoot instanceof VariablesMap<?,?>) {
-            ((VariablesMap<?,?>)evaluationRoot).setRestrictions(restrictions);
-        }
-        
-    }
     
     
-    
-    
-    
-    protected OGNLVariableExpressionEvaluator() {
-        super();
-        if (!booleanFixApplied && shouldApplyOgnlBooleanFix()) {
-            applyOgnlBooleanFix();
-            booleanFixApplied = true;
-        }
-    }
 
     
     

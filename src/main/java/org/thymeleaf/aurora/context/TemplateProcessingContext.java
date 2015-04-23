@@ -23,7 +23,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**

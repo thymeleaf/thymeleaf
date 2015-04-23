@@ -19,7 +19,6 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.context.IProcessingContext;
 
 /**

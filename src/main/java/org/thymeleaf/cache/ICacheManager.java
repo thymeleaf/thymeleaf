@@ -22,8 +22,7 @@ package org.thymeleaf.cache;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.Template;
-import org.thymeleaf.dom.Node;
+import org.thymeleaf.aurora.engine.Template;
 
 
 /**
@@ -43,9 +42,8 @@ import org.thymeleaf.dom.Node;
  * <ul>
  *   <li>A <b>template cache</b>, used for storing parsed templates referenced
  *       by their <i>template name</i>.</li>
- *   <li>A <b>fragment cache</b>, used for storing the parsed DOM tree correspondence
- *       of <i>fragments</i>: pieces of template code that need to be parsed before being
- *       added to the template tree, like for example messages coming from
+ *   <li>A <b>fragment cache</b>, used for storing <i>fragments</i>: parts of templates like
+ *       for example messages coming from
  *       <tt>.properties</tt> files with HTML tags that are included in results using
  *       <tt>th:utext</tt> processors.</li>
  *   <li>A <b>message cache</b>, used for storing messages (usually from internationalization
@@ -70,7 +68,7 @@ import org.thymeleaf.dom.Node;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 2.0.0
+ * @since 2.0.0 (reimplemented in 3.0.0)
  *
  */
 public interface ICacheManager {
@@ -88,9 +86,7 @@ public interface ICacheManager {
     
     /**
      * <p>
-     *   Returns the cache of template code fragments. These fragments are pieces of
-     *   template code that need to be parsed before adding them to the template DOM
-     *   being processed.
+     *   Returns the cache of template code fragments.
      * </p>
      * <p>
      *   Typical examples of these fragments are externalized/internationalized messages like:
@@ -99,15 +95,12 @@ public interface ICacheManager {
      *   home.header=Welcome to the &lt;i&gt;fruit market&lt;/i&gt;!
      * </code>
      * <p>
-     *   ...which are used in templates like <tt>th:utext="#{home.header}"</tt>, and therefore
-     *   need parsing in order to be converted to a DOM subtree (because that "&lt;i&gt;" should
-     *   be a DOM element by itself).
+     *   ...which are used in templates like <tt>th:utext="#{home.header}"</tt>.
      * </p>
      * <p>
      *   Keys in this cache are the String representation of fragments themselves along with
      *   the template mode used for such parsing (like 
-     *   <tt>"{HTML5}Welcome to the &lt;i&gt;fruit market&lt;/i&gt;"</tt>), and values
-     *   are the list of DOM {@link Node}s that correspond to parsing each fragment.
+     *   <tt>"{HTML5}Welcome to the &lt;i&gt;fruit market&lt;/i&gt;"</tt>).
      * </p>
      * <p>
      *   Important: this fragments are <i>not</i> related to <tt>th:fragment</tt> processors. 
@@ -115,7 +108,7 @@ public interface ICacheManager {
      * 
      * @return the cache of parsed template code fragments
      */
-    public ICache<String,List<Node>> getFragmentCache();
+    public ICache<String,Template> getFragmentCache();
     
     /**
      * <p>

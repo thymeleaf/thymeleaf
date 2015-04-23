@@ -19,19 +19,12 @@
  */
 package org.thymeleaf.cache;
 
-import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Template;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.dom.Node;
-
-
-
-
-
+import org.thymeleaf.aurora.engine.Template;
 
 
 /**
@@ -70,7 +63,7 @@ import org.thymeleaf.dom.Node;
  *
  * @author Daniel Fern&aacute;ndez
  *
- * @since 2.0.0
+ * @since 2.0.0 (reimplemented in 3.0.0)
  *
  */
 public class StandardCacheManager extends AbstractCacheManager {
@@ -136,7 +129,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     /**
      * Default fragment cache validity checker: null
      */
-    public static final ICacheEntryValidityChecker<String,List<Node>> DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER = null;
+    public static final ICacheEntryValidityChecker<String,Template> DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER = null;
    
 
     
@@ -216,7 +209,7 @@ public class StandardCacheManager extends AbstractCacheManager {
     private int fragmentCacheMaxSize = DEFAULT_FRAGMENT_CACHE_MAX_SIZE;
     private boolean fragmentCacheUseSoftReferences = DEFAULT_FRAGMENT_CACHE_USE_SOFT_REFERENCES;
     private String fragmentCacheLoggerName = DEFAULT_FRAGMENT_CACHE_LOGGER_NAME;
-    private ICacheEntryValidityChecker<String,List<Node>> fragmentCacheValidityChecker = DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER;
+    private ICacheEntryValidityChecker<String,Template> fragmentCacheValidityChecker = DEFAULT_FRAGMENT_CACHE_VALIDITY_CHECKER;
    
     private String messageCacheName = DEFAULT_MESSAGE_CACHE_NAME;
     private int messageCacheInitialSize = DEFAULT_MESSAGE_CACHE_INITIAL_SIZE;
@@ -253,12 +246,12 @@ public class StandardCacheManager extends AbstractCacheManager {
     }
     
     @Override
-    protected final ICache<String, List<Node>> initializeFragmentCache() {
+    protected final ICache<String, Template> initializeFragmentCache() {
         final int maxSize = getFragmentCacheMaxSize();
         if (maxSize == 0) {
             return null;
         }
-        return new StandardCache<String, List<Node>>(
+        return new StandardCache<String, Template>(
                 getFragmentCacheName(), getFragmentCacheUseSoftReferences(), 
                 getFragmentCacheInitialSize(), maxSize, 
                 getFragmentCacheValidityChecker(), getFragmentCacheLogger());
@@ -348,7 +341,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         return this.fragmentCacheLoggerName;
     }
     
-    public ICacheEntryValidityChecker<String,List<Node>> getFragmentCacheValidityChecker() {
+    public ICacheEntryValidityChecker<String,Template> getFragmentCacheValidityChecker() {
         return this.fragmentCacheValidityChecker;
     }
     
@@ -480,7 +473,7 @@ public class StandardCacheManager extends AbstractCacheManager {
         this.fragmentCacheLoggerName = fragmentCacheLoggerName;
     }
     
-    public void setFragmentCacheValidityChecker(final ICacheEntryValidityChecker<String, List<Node>> fragmentCacheValidityChecker) {
+    public void setFragmentCacheValidityChecker(final ICacheEntryValidityChecker<String, Template> fragmentCacheValidityChecker) {
         this.fragmentCacheValidityChecker = fragmentCacheValidityChecker;
     }
 

@@ -20,7 +20,6 @@
 package org.thymeleaf.aurora.context;
 
 import java.util.Locale;
-import java.util.Map;
 
 import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.aurora.expression.IExpressionObjects;

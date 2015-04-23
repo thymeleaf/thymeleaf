@@ -21,7 +21,7 @@ package org.thymeleaf.messageresolver;
 
 import java.util.Properties;
 
-import org.thymeleaf.Arguments;
+import org.thymeleaf.aurora.context.ITemplateProcessingContext;
 import org.thymeleaf.standard.StandardMessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
@@ -137,7 +137,7 @@ public class StandardMessageResolver
 
 
     public MessageResolution resolveMessage(
-            final Arguments arguments, final String key, final Object[] messageParameters) {
+            final ITemplateProcessingContext processingContext, final String key, final Object[] messageParameters) {
         
         // This method can be overriden
         
@@ -145,7 +145,7 @@ public class StandardMessageResolver
         
         final String message =
             StandardMessageResolutionUtils.resolveMessageForTemplate(
-                    arguments, key, messageParameters, unsafeGetDefaultMessages());
+                    processingContext, key, messageParameters, unsafeGetDefaultMessages());
         
         if (message == null) {
             return null;

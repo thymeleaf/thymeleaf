@@ -61,6 +61,7 @@ final class EngineEventQueue {
 
     private final TemplateMode templateMode;
     private final IEngineConfiguration configuration;
+    private final int initialSize;
 
     private Text textBuffer = null;
     private Comment commentBuffer = null;
@@ -78,19 +79,26 @@ final class EngineEventQueue {
 
 
 
-    EngineEventQueue(final TemplateMode templateMode,
-                     final IEngineConfiguration configuration) {
+    EngineEventQueue(final IEngineConfiguration configuration, final TemplateMode templateMode) {
+        this(configuration, templateMode, DEFAULT_INITIAL_SIZE);
+    }
+
+
+    EngineEventQueue(final IEngineConfiguration configuration, final TemplateMode templateMode, final int initialSize) {
 
         super();
 
-        this.queue = new IEngineTemplateHandlerEvent[DEFAULT_INITIAL_SIZE];
+        this.queue = new IEngineTemplateHandlerEvent[initialSize];
         Arrays.fill(this.queue, null);
 
+        this.initialSize = initialSize;
         this.templateMode = templateMode;
         this.configuration = configuration;
 
 
     }
+
+
 
 
     int size() {
@@ -124,7 +132,7 @@ final class EngineEventQueue {
 
         if (this.queue.length == this.queueSize) {
             // We need to grow the queue!
-            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queue.length + DEFAULT_INITIAL_SIZE];
+            final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queue.length + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -163,7 +171,7 @@ final class EngineEventQueue {
 
             if (this.queue.length <= (this.queueSize + templateHandlerEventQueue.queueSize)) {
                 // We need to grow the queue!
-                final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queueSize + templateHandlerEventQueue.queueSize + DEFAULT_INITIAL_SIZE];
+                final IEngineTemplateHandlerEvent[] newQueue = new IEngineTemplateHandlerEvent[this.queueSize + templateHandlerEventQueue.queueSize + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
                 Arrays.fill(newQueue, null);
                 System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
                 this.queue = newQueue;
@@ -194,6 +202,7 @@ final class EngineEventQueue {
         }
 
     }
+
 
 
 
@@ -437,7 +446,7 @@ final class EngineEventQueue {
 
 
     EngineEventQueue cloneEventQueue() {
-        final EngineEventQueue clone = new EngineEventQueue(this.templateMode, this.configuration);
+        final EngineEventQueue clone = new EngineEventQueue(this.configuration, this.templateMode, this.queueSize);
         clone.resetAsCloneOf(this);
         return clone;
     }

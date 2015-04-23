@@ -21,7 +21,6 @@ package org.thymeleaf.aurora.templatemode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Template;
 import org.thymeleaf.TemplateEngine;
 
 /**

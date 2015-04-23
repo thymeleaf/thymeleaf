@@ -32,6 +32,7 @@ import org.thymeleaf.util.Validate;
 public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQueue {
 
     private static final int DEFAULT_INITIAL_SIZE = 10;
+    private final int initialSize;
 
     int queueSize = 0;
     ITemplateHandlerEvent[] queue;
@@ -49,6 +50,7 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
         Validate.isTrue(initialSize > 0, "Queue initial size must be greater than zero");
 
+        this.initialSize = initialSize;
         this.queue = new ITemplateHandlerEvent[initialSize];
         Arrays.fill(this.queue, null);
 
@@ -87,7 +89,7 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
         if (this.queue.length == this.queueSize) {
             // We need to grow the queue!
-            final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queue.length + DEFAULT_INITIAL_SIZE];
+            final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queue.length + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
             Arrays.fill(newQueue, null);
             System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
             this.queue = newQueue;
@@ -125,7 +127,7 @@ public final class TemplateHandlerEventQueue implements ITemplateHandlerEventQue
 
             if (this.queue.length <= (this.queueSize + templateHandlerEventQueue.queueSize)) {
                 // We need to grow the queue!
-                final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queueSize + templateHandlerEventQueue.queueSize + DEFAULT_INITIAL_SIZE];
+                final ITemplateHandlerEvent[] newQueue = new ITemplateHandlerEvent[this.queueSize + templateHandlerEventQueue.queueSize + Math.max(this.initialSize / 2, DEFAULT_INITIAL_SIZE)];
                 Arrays.fill(newQueue, null);
                 System.arraycopy(this.queue, 0, newQueue, 0, this.queueSize);
                 this.queue = newQueue;
