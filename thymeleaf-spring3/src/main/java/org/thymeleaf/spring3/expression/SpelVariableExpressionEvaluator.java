@@ -40,7 +40,7 @@ import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.context.VariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
-import org.thymeleaf.expression.ExpressionEvaluatorObjects;
+import org.thymeleaf.standard.expression.StandardExpressionObjects;
 import org.thymeleaf.spring3.util.FieldUtils;
 import org.thymeleaf.standard.expression.IStandardConversionService;
 import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
@@ -235,7 +235,7 @@ public class SpelVariableExpressionEvaluator
                 (expContext.getForbidRequestParameters()?
                         StandardVariableRestrictions.REQUEST_PARAMETERS_FORBIDDEN : null);
 
-        final Object context = contextVariables.get(ExpressionEvaluatorObjects.CONTEXT_VARIABLE_NAME);
+        final Object context = contextVariables.get(StandardExpressionObjects.CONTEXT_EXPRESSION_OBJECT_NAME);
         if (context != null && context instanceof IContext) {
             final VariablesMap<?,?> variablesMap = ((IContext)context).getVariables();
             variablesMap.setRestrictions(restrictions);
