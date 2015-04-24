@@ -26,7 +26,7 @@ import ognl.OgnlContext;
 import ognl.OgnlException;
 import ognl.PropertyAccessor;
 import ognl.enhance.UnsupportedCompilationException;
-import org.thymeleaf.aurora.context.IVariablesMap;
+import org.thymeleaf.context.IVariablesMap;
 
 /**
  * <p>
@@ -63,7 +63,7 @@ public final class OGNLVariablesMapPropertyAccessor implements PropertyAccessor 
 
     public Object getProperty(final Map context, final Object target, final Object name) throws OgnlException {
 
-        if (!(target instanceof org.thymeleaf.aurora.context.IVariablesMap)) {
+        if (!(target instanceof IVariablesMap)) {
             throw new IllegalStateException(
                     "Wrong target type. This property accessor is only usable for IVariableMap implementations.");
         }

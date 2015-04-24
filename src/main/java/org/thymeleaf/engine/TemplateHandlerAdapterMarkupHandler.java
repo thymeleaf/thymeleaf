@@ -21,10 +21,10 @@ package org.thymeleaf.engine;
 
 import org.attoparser.AbstractMarkupHandler;
 import org.attoparser.ParseException;
-import org.thymeleaf.aurora.model.IElementAttributes;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.aurora.text.ITextRepository;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**

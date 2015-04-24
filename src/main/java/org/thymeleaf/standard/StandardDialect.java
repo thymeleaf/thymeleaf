@@ -29,7 +29,14 @@ import org.thymeleaf.dialect.IExecutionAttributesDialect;
 import org.thymeleaf.dialect.IExpressionObjectsDialect;
 import org.thymeleaf.expression.IExpressionObjectsFactory;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.expression.IStandardConversionService;
+import org.thymeleaf.standard.expression.IStandardExpressionParser;
+import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.OGNLVariableExpressionEvaluator;
+import org.thymeleaf.standard.expression.StandardConversionService;
 import org.thymeleaf.standard.expression.StandardExpressionObjectsFactory;
+import org.thymeleaf.standard.expression.StandardExpressionParser;
+import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.standard.processor.StandardClassTagProcessor;
 import org.thymeleaf.standard.processor.StandardDefaultAttributesTagProcessor;
 import org.thymeleaf.standard.processor.StandardEachTagProcessor;
@@ -41,13 +48,6 @@ import org.thymeleaf.standard.processor.StandardRemoveTagProcessor;
 import org.thymeleaf.standard.processor.StandardReplaceTagProcessor;
 import org.thymeleaf.standard.processor.StandardTextTagProcessor;
 import org.thymeleaf.standard.processor.StandardWithTagProcessor;
-import org.thymeleaf.standard.expression.IStandardConversionService;
-import org.thymeleaf.standard.expression.IStandardExpressionParser;
-import org.thymeleaf.standard.expression.IStandardVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.OGNLVariableExpressionEvaluator;
-import org.thymeleaf.standard.expression.StandardConversionService;
-import org.thymeleaf.standard.expression.StandardExpressionParser;
-import org.thymeleaf.standard.expression.StandardExpressions;
 import org.thymeleaf.util.Validate;
 
 /**

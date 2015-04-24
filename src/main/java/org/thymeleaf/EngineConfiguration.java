@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.expression.IExpressionObjectsFactory;
+import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.processor.cdatasection.ICDATASectionProcessor;
 import org.thymeleaf.processor.comment.ICommentProcessor;
 import org.thymeleaf.processor.doctype.IDocTypeProcessor;
@@ -40,10 +42,8 @@ import org.thymeleaf.processor.processinginstruction.IProcessingInstructionProce
 import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.text.ITextRepository;
-import org.thymeleaf.cache.ICacheManager;
-import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import org.thymeleaf.text.ITextRepository;
 import org.thymeleaf.util.Validate;
 
 /**

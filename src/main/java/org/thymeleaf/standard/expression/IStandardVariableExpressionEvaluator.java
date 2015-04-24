@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.aurora.context.IProcessingContext;
+import org.thymeleaf.context.IProcessingContext;
 
 /**
  * <p>

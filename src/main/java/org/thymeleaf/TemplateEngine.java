@@ -37,18 +37,15 @@ import java.util.Set;
 import org.attoparser.select.IMarkupSelectorReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.aurora.context.AbstractContext;
-import org.thymeleaf.aurora.context.Context;
-import org.thymeleaf.aurora.context.WebContext;
-import org.thymeleaf.aurora.resource.IResource;
-import org.thymeleaf.aurora.resource.ReaderResource;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.cache.ICacheManager;
 import org.thymeleaf.cache.StandardCacheManager;
+import org.thymeleaf.context.AbstractContext;
+import org.thymeleaf.context.Context;
 import org.thymeleaf.context.DialectAwareProcessingContext;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.context.IWebContext;
+import org.thymeleaf.context.WebContext;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.dom.Document;
 import org.thymeleaf.dom.Node;
@@ -61,12 +58,17 @@ import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.fragment.IFragmentSpec;
 import org.thymeleaf.messageresolver.IMessageResolver;
 import org.thymeleaf.messageresolver.StandardMessageResolver;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.templatemode.ITemplateModeHandler;
 import org.thymeleaf.templatemode.StandardTemplateModeHandlers;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.templatewriter.ITemplateWriter;
+import org.thymeleaf.text.ITextRepository;
+import org.thymeleaf.text.TextRepositories;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 
@@ -221,10 +223,10 @@ import org.thymeleaf.util.Validate;
  * 
  * @author Daniel Fern&aacute;ndez
  * 
- * @since 1.0
+ * @since 1.0 (reimplemented in 3.0.0)
  *
  */
-public class TemplateEngine {
+public final class TemplateEngine implements ITemplateEngine {
 
     /**
      * <p>
@@ -244,12 +246,17 @@ public class TemplateEngine {
 
     private static final int NANOS_IN_SECOND = 1000000;
 
-    
+    private final Set<DialectConfiguration> dialectConfigurations;
+    private final Set<ITemplateResolver> templateResolvers;
+    private final Set<IMessageResolver> messageResolvers;
+    private final ICacheManager cacheManager;
+
+    private final ITextRepository textRepository = TextRepositories.createLimitedSizeCacheRepository();
+
+
     private final Configuration configuration;
     private TemplateRepository templateRepository;
 
-    private volatile boolean initialized;
-    
 
 
     
@@ -266,7 +273,6 @@ public class TemplateEngine {
     public TemplateEngine() {
         super();
         this.configuration = new Configuration();
-        this.initialized = false;
         setCacheManager(new StandardCacheManager());
         setDefaultMessageResolvers(Collections.singleton(new StandardMessageResolver()));
         setDefaultTemplateModeHandlers(StandardTemplateModeHandlers.ALL_TEMPLATE_MODE_HANDLERS);

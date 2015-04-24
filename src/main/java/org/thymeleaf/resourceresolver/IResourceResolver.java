@@ -19,9 +19,9 @@
  */
 package org.thymeleaf.resourceresolver;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IContext;
-import org.thymeleaf.aurora.resource.IResource;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.resource.IResource;
 
 /**
  * <p>

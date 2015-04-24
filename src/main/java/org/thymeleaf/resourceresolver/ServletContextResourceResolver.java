@@ -26,13 +26,13 @@ import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IContext;
-import org.thymeleaf.aurora.context.IWebContext;
-import org.thymeleaf.aurora.resource.IResource;
-import org.thymeleaf.aurora.resource.ReaderResource;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.IWebContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.resource.ReaderResource;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;
 

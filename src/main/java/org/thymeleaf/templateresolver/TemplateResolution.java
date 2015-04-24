@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.templateresolver;
 
-import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**

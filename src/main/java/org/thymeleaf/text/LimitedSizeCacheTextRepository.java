@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.thymeleaf.aurora.util.TextUtil;
+import org.thymeleaf.util.TextUtil;
 
 /**
  * <p>

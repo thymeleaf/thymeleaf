@@ -19,10 +19,10 @@
  */
 package org.thymeleaf.templateparser;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
-import org.thymeleaf.aurora.resource.IResource;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.templatemode.TemplateMode;
 
 
 /**

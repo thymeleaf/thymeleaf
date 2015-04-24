@@ -22,10 +22,10 @@ package org.thymeleaf.context;
 import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.engine.StandardModelFactory;
-import org.thymeleaf.aurora.model.IModelFactory;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.engine.StandardModelFactory;
+import org.thymeleaf.model.IModelFactory;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 import org.thymeleaf.util.Validate;
 

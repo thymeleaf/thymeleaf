@@ -21,7 +21,7 @@ package org.thymeleaf.dialect;
 
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.processor.IProcessor;
 
 
 /**

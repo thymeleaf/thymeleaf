@@ -32,16 +32,16 @@ import org.attoparser.config.ParseConfiguration;
 import org.attoparser.select.BlockSelectorMarkupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.aurora.IEngineConfiguration;
 import org.thymeleaf.engine.ITemplateHandler;
 import org.thymeleaf.engine.TemplateHandlerAdapterMarkupHandler;
-import org.thymeleaf.aurora.resource.CharArrayResource;
-import org.thymeleaf.aurora.resource.IResource;
-import org.thymeleaf.aurora.resource.ReaderResource;
-import org.thymeleaf.aurora.resource.StringResource;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.resource.CharArrayResource;
+import org.thymeleaf.resource.IResource;
+import org.thymeleaf.resource.ReaderResource;
+import org.thymeleaf.resource.StringResource;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**

@@ -20,7 +20,7 @@
 package org.thymeleaf.cache;
 
 
-import org.thymeleaf.aurora.engine.Template;
+import org.thymeleaf.engine.Template;
 
 /**
  * 

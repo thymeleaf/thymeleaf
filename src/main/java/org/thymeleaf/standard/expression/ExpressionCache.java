@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.expression;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
 

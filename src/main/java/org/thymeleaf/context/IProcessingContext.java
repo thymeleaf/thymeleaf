@@ -21,8 +21,8 @@ package org.thymeleaf.context;
 
 import java.util.Locale;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.expression.IExpressionObjects;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.expression.IExpressionObjects;
 
 /**
  *

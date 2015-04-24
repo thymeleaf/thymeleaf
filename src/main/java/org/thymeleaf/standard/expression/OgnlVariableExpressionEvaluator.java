@@ -30,14 +30,14 @@ import ognl.OgnlException;
 import ognl.OgnlRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IProcessingContext;
-import org.thymeleaf.aurora.context.IVariablesMap;
-import org.thymeleaf.aurora.expression.IExpressionObjects;
 import org.thymeleaf.cache.ICache;
 import org.thymeleaf.cache.ICacheManager;
+import org.thymeleaf.context.IProcessingContext;
+import org.thymeleaf.context.IVariablesMap;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.util.ClassLoaderUtils;
 import org.thymeleaf.util.EvaluationUtil;
 

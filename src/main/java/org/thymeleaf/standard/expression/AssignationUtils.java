@@ -22,8 +22,8 @@ package org.thymeleaf.standard.expression;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IProcessingContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IProcessingContext;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.util.StringUtils;
 import org.thymeleaf.util.Validate;

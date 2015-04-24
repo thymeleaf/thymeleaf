@@ -21,7 +21,7 @@ package org.thymeleaf.dialect;
 
 import java.util.List;
 
-import org.thymeleaf.aurora.engine.ITemplateHandler;
+import org.thymeleaf.engine.ITemplateHandler;
 
 
 /**

@@ -38,6 +38,7 @@ import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.engine.AttributeDefinitions;
 import org.thymeleaf.engine.ElementDefinitions;
 import org.thymeleaf.engine.ITemplateHandler;
+import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.expression.IExpressionObjects;
 import org.thymeleaf.expression.IExpressionObjectsFactory;
 import org.thymeleaf.processor.IProcessor;
@@ -51,7 +52,6 @@ import org.thymeleaf.processor.text.ITextProcessor;
 import org.thymeleaf.processor.xmldeclaration.IXMLDeclarationProcessor;
 import org.thymeleaf.standard.StandardDialect;
 import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.util.Validate;
 
 /**

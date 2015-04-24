@@ -22,9 +22,9 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import org.thymeleaf.aurora.model.IElementTag;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.TemplateProcessingException;
+import org.thymeleaf.model.IElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**

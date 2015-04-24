@@ -22,9 +22,9 @@ package org.thymeleaf.engine;
 import java.io.IOException;
 import java.io.Writer;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.model.IUnmatchedCloseElementTag;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.util.Validate;
 
 /**

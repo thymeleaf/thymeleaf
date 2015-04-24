@@ -21,8 +21,8 @@ package org.thymeleaf.templateresolver;
 
 import java.util.regex.Pattern;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.resourceresolver.IResourceResolver;
 import org.thymeleaf.resourceresolver.UrlResourceResolver;

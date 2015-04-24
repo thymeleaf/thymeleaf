@@ -32,11 +32,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.attoparser.util.TextUtil;
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
-import org.thymeleaf.aurora.processor.element.MatchingAttributeName;
-import org.thymeleaf.aurora.processor.element.MatchingElementName;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
 import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.processor.element.IElementProcessor;
+import org.thymeleaf.processor.element.MatchingAttributeName;
+import org.thymeleaf.processor.element.MatchingElementName;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *

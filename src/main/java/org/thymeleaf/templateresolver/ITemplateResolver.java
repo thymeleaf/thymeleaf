@@ -19,8 +19,9 @@
  */
 package org.thymeleaf.templateresolver;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IContext;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ import org.thymeleaf.aurora.context.IContext;
  *       returned Resource Resolver in order to read the template.</li>
  *   <li>The Resource Resolver (implementation of {@link org.thymeleaf.resourceresolver.IResourceResolver})
  *       to be used for trying to read this template.</li>
- *   <li>The Template Mode to be applied to this template: {@link org.thymeleaf.aurora.templatemode.TemplateMode}</li>
+ *   <li>The Template Mode to be applied to this template: {@link TemplateMode}</li>
  *   <li>The character encoding to be used when reading this template.</li>
  *   <li>Whether the template can be cached or not.</li>
  *   <li>If the template can be cached, (optionally) the time it will live in cache.</li>

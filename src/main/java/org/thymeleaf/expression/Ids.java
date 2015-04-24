@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.expression;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.util.Validate;
 
 /**

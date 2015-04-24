@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.context;
 
-import org.thymeleaf.aurora.model.IModelFactory;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.model.IModelFactory;
+import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.TemplateResolution;
 
 /**

@@ -19,8 +19,8 @@
  */
 package org.thymeleaf.engine;
 
-import org.thymeleaf.aurora.templatemode.TemplateMode;
-import org.thymeleaf.aurora.util.TextUtil;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.TextUtil;
 
 /**
  *

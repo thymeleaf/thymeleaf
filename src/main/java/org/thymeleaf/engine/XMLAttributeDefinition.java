@@ -21,7 +21,7 @@ package org.thymeleaf.engine;
 
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.processor.element.IElementProcessor;
 
 /**
  *

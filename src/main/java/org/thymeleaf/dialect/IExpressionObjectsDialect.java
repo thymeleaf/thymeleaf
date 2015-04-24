@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.dialect;
 
-import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
+import org.thymeleaf.expression.IExpressionObjectsFactory;
 
 
 /**

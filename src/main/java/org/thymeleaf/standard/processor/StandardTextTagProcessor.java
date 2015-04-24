@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.standard.processor;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.IEngineConfiguration;
 import org.thymeleaf.context.ITemplateProcessingContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.engine.IElementStructureHandler;

@@ -21,18 +21,18 @@ package org.thymeleaf.engine;
 
 
 import org.thymeleaf.context.ITemplateProcessingContext;
-import org.thymeleaf.aurora.model.IAutoCloseElementTag;
-import org.thymeleaf.aurora.model.IAutoOpenElementTag;
-import org.thymeleaf.aurora.model.ICDATASection;
-import org.thymeleaf.aurora.model.ICloseElementTag;
-import org.thymeleaf.aurora.model.IComment;
-import org.thymeleaf.aurora.model.IDocType;
-import org.thymeleaf.aurora.model.IOpenElementTag;
-import org.thymeleaf.aurora.model.IProcessingInstruction;
-import org.thymeleaf.aurora.model.IStandaloneElementTag;
-import org.thymeleaf.aurora.model.IText;
-import org.thymeleaf.aurora.model.IUnmatchedCloseElementTag;
-import org.thymeleaf.aurora.model.IXMLDeclaration;
+import org.thymeleaf.model.IAutoCloseElementTag;
+import org.thymeleaf.model.IAutoOpenElementTag;
+import org.thymeleaf.model.ICDATASection;
+import org.thymeleaf.model.ICloseElementTag;
+import org.thymeleaf.model.IComment;
+import org.thymeleaf.model.IDocType;
+import org.thymeleaf.model.IOpenElementTag;
+import org.thymeleaf.model.IProcessingInstruction;
+import org.thymeleaf.model.IStandaloneElementTag;
+import org.thymeleaf.model.IText;
+import org.thymeleaf.model.IUnmatchedCloseElementTag;
+import org.thymeleaf.model.IXMLDeclaration;
 import org.thymeleaf.util.Validate;
 
 /**

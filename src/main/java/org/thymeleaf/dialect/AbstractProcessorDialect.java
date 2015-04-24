@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.thymeleaf.aurora.processor.IProcessor;
+import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.util.Validate;
 
 

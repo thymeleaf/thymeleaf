@@ -19,7 +19,7 @@
  */
 package org.thymeleaf.messageresolver;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
+import org.thymeleaf.context.ITemplateProcessingContext;
 
 /**
  * <p>

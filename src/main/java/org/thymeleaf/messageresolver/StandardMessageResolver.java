@@ -21,8 +21,8 @@ package org.thymeleaf.messageresolver;
 
 import java.util.Properties;
 
-import org.thymeleaf.aurora.context.ITemplateProcessingContext;
-import org.thymeleaf.standard.StandardMessageResolutionUtils;
+import org.thymeleaf.context.ITemplateProcessingContext;
+import org.thymeleaf.standard.util.StandardMessageResolutionUtils;
 import org.thymeleaf.util.Validate;
 
 /**

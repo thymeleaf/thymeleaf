@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import org.thymeleaf.aurora.engine.Template;
+import org.thymeleaf.engine.Template;
 
 
 /**

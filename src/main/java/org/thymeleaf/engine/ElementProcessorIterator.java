@@ -21,8 +21,8 @@ package org.thymeleaf.engine;
 
 import java.util.Arrays;
 
-import org.thymeleaf.aurora.processor.PrecedenceProcessorComparator;
-import org.thymeleaf.aurora.processor.element.IElementProcessor;
+import org.thymeleaf.processor.PrecedenceProcessorComparator;
+import org.thymeleaf.processor.element.IElementProcessor;
 
 /**
  *

@@ -23,10 +23,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.model.IAutoOpenElementTag;
-import org.thymeleaf.aurora.model.IElementAttributes;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.model.IAutoOpenElementTag;
+import org.thymeleaf.model.IElementAttributes;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *

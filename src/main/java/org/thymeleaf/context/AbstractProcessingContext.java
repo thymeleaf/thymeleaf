@@ -25,9 +25,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.expression.IExpressionObjects;
-import org.thymeleaf.aurora.expression.IExpressionObjectsFactory;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.expression.IExpressionObjects;
+import org.thymeleaf.expression.IExpressionObjectsFactory;
 import org.thymeleaf.util.Validate;
 
 /**

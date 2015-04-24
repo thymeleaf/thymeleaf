@@ -24,7 +24,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.aurora.engine.Template;
+import org.thymeleaf.engine.Template;
 
 
 /**

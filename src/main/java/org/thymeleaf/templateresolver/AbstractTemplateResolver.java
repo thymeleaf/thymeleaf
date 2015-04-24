@@ -21,11 +21,11 @@ package org.thymeleaf.templateresolver;
 
 import java.util.Set;
 
-import org.thymeleaf.PatternSpec;
-import org.thymeleaf.aurora.IEngineConfiguration;
-import org.thymeleaf.aurora.context.IContext;
-import org.thymeleaf.aurora.templatemode.TemplateMode;
+import org.thymeleaf.IEngineConfiguration;
+import org.thymeleaf.context.IContext;
 import org.thymeleaf.resourceresolver.IResourceResolver;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.util.PatternSpec;
 import org.thymeleaf.util.Validate;
 
 

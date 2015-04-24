@@ -22,7 +22,7 @@ package org.thymeleaf.context;
 import java.util.Locale;
 import java.util.Map;
 
-import org.thymeleaf.aurora.IEngineConfiguration;
+import org.thymeleaf.IEngineConfiguration;
 
 /**
  *
